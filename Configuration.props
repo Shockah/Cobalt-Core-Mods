@@ -8,15 +8,16 @@
 		<CheckEolTargetFramework>false</CheckEolTargetFramework>
 	</PropertyGroup>
 	<Import Project="Configuration.user.props" />
+	<Import Project="_Shared\_Shared.projitems" Label="Shared" />
 	<ItemGroup>
 		<None Include="$(MSBuildProjectDirectory)\..\.editorconfig" Link=".editorconfig" />
 		<None Remove="$(MSBuildProjectDirectory)\.release\**" />
 	</ItemGroup>
 	<ItemGroup>
-		<Reference Include="CobaltCoreModding.Definitions">
-			<Private>True</Private>
-			<HintPath>$(ModLoaderPath)\CobaltCoreModding.Definitions.dll</HintPath>
-		</Reference>
+		<Reference Include="MonoGame.Framework" Private="False" HintPath="$(ModLoaderPath)\MonoGame.Framework.dll"/>
+		<Reference Include="CobaltCoreModding.Definitions" Private="False" HintPath="$(ModLoaderPath)\CobaltCoreModding.Definitions.dll"/>
+		<Reference Include="CobaltCore" Private="False" HintPath="$(GameDllPath)"/>
+		<Reference Include="0Harmony" Private="False" HintPath="$(ModLoaderPath)\0Harmony.dll"/>
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
 	</ItemGroup>
 </Project>
