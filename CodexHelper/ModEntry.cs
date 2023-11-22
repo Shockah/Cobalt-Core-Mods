@@ -57,7 +57,7 @@ public sealed class ModEntry : IModManifest
 			return;
 
 		var rect = __instance.GetScreenRect();
-		Draw.Text(Loc.T("codex.title", "CODEX"), __instance.targetPos.x + rect.w / 2 - 2, __instance.targetPos.y - 8, DB.pinch, Colors.textMain, align: TAlign.Center, extraScale: 0.75);
+		Draw.Text(I18n.MissingFromCodex, __instance.targetPos.x + rect.w / 2 - 2, __instance.targetPos.y - 8, DB.pinch, Colors.textMain, align: TAlign.Center, extraScale: 0.75);
 	}
 
 	private static void ArtifactReward_Render_Postfix(ArtifactReward __instance, G g)
@@ -67,7 +67,7 @@ public sealed class ModEntry : IModManifest
 			if (g.state.storyVars.artifactsOwned.Contains(artifact.Key()))
 				continue;
 
-			Draw.Text(Loc.T("codex.title", "CODEX"), artifact.lastScreenPos.x + 170, artifact.lastScreenPos.y + 12, DB.pinch, Colors.textMain, align: TAlign.Right, extraScale: 0.75);
+			Draw.Text(I18n.MissingFromCodex, artifact.lastScreenPos.x + 170, artifact.lastScreenPos.y + 12, DB.pinch, Colors.textMain, align: TAlign.Right, extraScale: 0.75);
 		}
 	}
 }
