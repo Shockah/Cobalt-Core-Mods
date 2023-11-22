@@ -1,0 +1,22 @@
+<Project>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<LangVersion>11.0</LangVersion>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<WarningsAsErrors>Nullable</WarningsAsErrors>
+		<CheckEolTargetFramework>false</CheckEolTargetFramework>
+	</PropertyGroup>
+	<Import Project="Configuration.user.props" />
+	<ItemGroup>
+		<None Include="$(MSBuildProjectDirectory)\..\.editorconfig" Link=".editorconfig" />
+		<None Remove="$(MSBuildProjectDirectory)\.release\**" />
+	</ItemGroup>
+	<ItemGroup>
+		<Reference Include="CobaltCoreModding.Definitions">
+			<Private>True</Private>
+			<HintPath>$(ModLoaderPath)\CobaltCoreModding.Definitions.dll</HintPath>
+		</Reference>
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+	</ItemGroup>
+</Project>
