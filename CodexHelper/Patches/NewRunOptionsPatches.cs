@@ -46,7 +46,7 @@ internal static class NewRunOptionsPatches
 					ldlocDifficulty,
 					new CodeInstruction(OpCodes.Ldarg_1),
 					new CodeInstruction(OpCodes.Ldarg_2),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(NewRunOptionsPatches), nameof(NewRunOptions_DifficultyOptions_Transpiler_DrawCompletionStar)))
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(NewRunOptionsPatches), nameof(NewRunOptions_DifficultyOptions_Transpiler_DrawCompletionStarAndAddTooltip)))
 				)
 
 				.AllElements();
@@ -58,7 +58,7 @@ internal static class NewRunOptionsPatches
 		}
 	}
 
-	private static void NewRunOptions_DifficultyOptions_Transpiler_DrawCompletionStar(SharedArt.ButtonResult buttonResult, NewRunOptions.DifficultyLevel difficulty, G g, RunConfig runConfig)
+	private static void NewRunOptions_DifficultyOptions_Transpiler_DrawCompletionStarAndAddTooltip(SharedArt.ButtonResult buttonResult, NewRunOptions.DifficultyLevel difficulty, G g, RunConfig runConfig)
 	{
 		var selectedCharKeys = runConfig.selectedChars.Select(d => d.Key()).ToHashSet();
 		var maxBeatenDifficulty = g.state.bigStats.combos
@@ -75,5 +75,8 @@ internal static class NewRunOptionsPatches
 
 		var color = Colors.white.fadeAlpha(runConfig.IsValid(g) ? 1.0 : 0.5);
 		Draw.Sprite(Spr.icons_ace, buttonResult.v.x - 10, buttonResult.v.y + 4, color: color);
+
+		if (buttonResult.isHover)
+			g.tooltips.Add(buttonResult.v + new Vec(63), selectedCharKeys.Count == 0 ? I18n.DifficultyBeatenByAnyCrew : I18n.DifficultyBeatenByThisCrew);
 	}
 }
