@@ -65,7 +65,14 @@ internal static class NewRunOptionsPatches
 			.Select(kvp => (Combo: BigStats.ParseComboKey(kvp.Key), Stats: kvp.Value))
 			.Where(e => e.Combo is not null)
 			.Select(e => (Combo: e.Combo!.Value, Stats: e.Stats))
-			.Where(e => !selectedCharKeys.Except(e.Combo.decks.Select(d => d.Key())).Any())
+			.Where(e =>
+			{
+				// this won't matter for vanilla, but if a mod comes out that makes 2-crew runs possible, this will behave correctly now
+				if (runConfig.IsValid(g))
+					return selectedCharKeys.SetEquals(e.Combo.decks.Select(d => d.Key()));
+				else
+					return !selectedCharKeys.Except(e.Combo.decks.Select(d => d.Key())).Any();
+			})
 			.Select(e => e.Stats.maxDifficultyWin ?? -1)
 			.DefaultIfEmpty(-1)
 			.Max();
