@@ -3,5 +3,10 @@
 	<PropertyGroup>
 		<RootNamespace>Shockah.CodexHelper</RootNamespace>
 		<Version>1.0.0</Version>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Shrike" Version="2.1.0" />
+		<PackageReference Include="Shrike.Harmony" Version="2.0.1" />
+	</ItemGroup>
 </Project>

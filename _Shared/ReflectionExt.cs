@@ -3,11 +3,15 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.Loader;
 
 namespace Shockah.Shared;
 
 public static class ReflectionExt
 {
+	public static AssemblyLoadContext CurrentAssemblyLoadContext
+		=> AssemblyLoadContext.GetLoadContext(typeof(ReflectionExt).Assembly) ?? AssemblyLoadContext.CurrentContextualReflectionContext ?? AssemblyLoadContext.Default;
+
 	public static bool IsBuiltInDebugConfiguration(this Assembly assembly)
 		=> assembly.GetCustomAttributes(false).OfType<DebuggableAttribute>().Any(attr => attr.IsJITTrackingEnabled);
 
