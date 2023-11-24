@@ -14,7 +14,7 @@ public sealed class ModEntry : IModManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 
-	public string Name { get; init; } = typeof(ModEntry).FullName!;
+	public string Name { get; init; } = typeof(ModEntry).Namespace!;
 	public IEnumerable<DependencyEntry> Dependencies => Array.Empty<DependencyEntry>();
 
 	public DirectoryInfo? GameRootFolder { get; set; }
