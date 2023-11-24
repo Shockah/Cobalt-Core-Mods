@@ -7,5 +7,5 @@ Displays a "NEW!" indicator next to cards and artifacts you've never picked (whi
 [![New run difficulties screenshot](images/new-run-difficulties-thumb.png)](images/new-run-difficulties.png)
 
 ## See also
-* [Latest release](../../releases/tag/release%2Fcodex-helper%2F1.1.0)
+* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fcodex-helper-1.1.0)
 * [Release notes](release-notes.md)
