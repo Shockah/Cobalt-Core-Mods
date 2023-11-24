@@ -1,6 +1,7 @@
 <Project>
 	<PropertyGroup>
 		<ModLoaderPath>$(USERPROFILE)\Downloads\CobaltCoreModLauncher</ModLoaderPath>
+		<ModsPath>$(ModLoaderPath)\Mods</ModsPath>
 		<GameDllPath>$(ModLoaderPath)\CobaltCore.dll</GameDllPath>
 	</PropertyGroup>
 </Project>

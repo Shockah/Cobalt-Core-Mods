@@ -6,9 +6,12 @@
 		<Nullable>enable</Nullable>
 		<WarningsAsErrors>Nullable</WarningsAsErrors>
 		<CheckEolTargetFramework>false</CheckEolTargetFramework>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
-	<Import Project="Configuration.user.props" />
+	<Import Project="Configuration.props.user.default" />
+	<Import Project="Configuration.props.user" />
 	<Import Project="_Shared\_Shared.projitems" Label="Shared" />
+	
 	<ItemGroup>
 		<None Include="$(MSBuildProjectDirectory)\..\.editorconfig" Link=".editorconfig" />
 		<None Remove="$(MSBuildProjectDirectory)\.release\**" />
@@ -18,6 +21,20 @@
 		<Reference Include="CobaltCoreModding.Definitions" Private="False" HintPath="$(ModLoaderPath)\CobaltCoreModding.Definitions.dll"/>
 		<Reference Include="CobaltCore" Private="False" HintPath="$(GameDllPath)"/>
 		<Reference Include="0Harmony" Private="False" HintPath="$(ModLoaderPath)\0Harmony.dll"/>
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+		<Reference Include="Microsoft.Extensions.Logging.Abstractions" Private="False" HintPath="$(ModLoaderPath)\Microsoft.Extensions.Logging.Abstractions.dll"/>
 	</ItemGroup>
+	
+	<Target Name="ZipRelease" AfterTargets="CopyFilesToOutputDirectory" Condition="'$(Configuration)' == 'Release'">
+		<MakeDir Directories="$(MSBuildProjectDirectory)\.release" />
+		<ZipDirectory SourceDirectory="$(OutputPath)" DestinationFile="$(MSBuildProjectDirectory)\.release\$(TargetName)-$(Version).zip" Overwrite="true" />
+	</Target>
+
+	<ItemGroup>
+		<CopyToModsFolderFiles Include="$(OutputPath)\*.*" />
+	</ItemGroup>
+	<Target Name="CopyToModsFolder" AfterTargets="CopyFilesToOutputDirectory" Condition="'$(ModsPath)' != ''">
+		<MakeDir Directories="$(ModsPath)" />
+		<MakeDir Directories="$(ModsPath)\$(TargetName)" />
+		<Copy SourceFiles="@(CopyToModsFolderFiles)" DestinationFolder="$(ModsPath)\$(TargetName)" />
+	</Target>
 </Project>

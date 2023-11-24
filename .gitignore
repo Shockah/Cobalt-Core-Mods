@@ -6,4 +6,5 @@
 */.release/**
 packages/**
 **/*.zip
+*.user
 *.user.*
