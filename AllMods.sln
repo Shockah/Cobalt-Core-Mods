@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodexHelper", "CodexHelper\
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "_Shared", "_Shared\_Shared.shproj", "{A0276A09-5FDF-4352-ADF4-ED072DA21953}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_ModBuildConfig", "_ModBuildConfig\_ModBuildConfig.csproj", "{10354485-6039-4E84-AB43-08082D92D6F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_ModBuildConfig", "_ModBuildConfig\_ModBuildConfig.csproj", "{10354485-6039-4E84-AB43-08082D92D6F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

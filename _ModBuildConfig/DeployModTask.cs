@@ -17,6 +17,9 @@ public class DeployModTask : Task
 	public string ModVersion { get; set; } = null!;
 
 	[Required]
+	public string ProjectDir { get; set; } = null!;
+
+	[Required]
 	public string TargetDir { get; set; } = null!;
 
 	[Required]
@@ -36,7 +39,7 @@ public class DeployModTask : Task
 		if (!EnableModDeploy && !EnableModZip)
 			return true;
 
-		var modFiles = GetModFiles(TargetDir).ToList();
+		var modFiles = GetModFiles(TargetDir, ProjectDir).ToList();
 
 		if (EnableModDeploy)
 			DeployMod(modFiles, Path.Combine(ModDeployModsPath, ModName));
@@ -46,16 +49,27 @@ public class DeployModTask : Task
 		return true;
 	}
 
-	private IEnumerable<(FileInfo Info, string RelativeName)> GetModFiles(string targetDir)
+	private IEnumerable<(FileInfo Info, string RelativeName)> GetModFiles(string targetDir, string projectDir)
 	{
-		DirectoryInfo targetDirInfo = new(targetDir);
-		Uri targetDirUri = new(targetDir);
-
-		foreach (FileInfo file in targetDirInfo.EnumerateFiles("*", SearchOption.AllDirectories))
+		IEnumerable<(FileInfo Info, string RelativeName)> GetAllFilesFromDirectory(DirectoryInfo dirInfo)
 		{
-			Uri fileUri = new(file.FullName);
-			string relativeName = targetDirUri.MakeRelativeUri(fileUri).OriginalString;
-			yield return (Info: file, RelativeName: relativeName);
+			Uri dirUri = new(dirInfo.FullName);
+			foreach (FileInfo file in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories))
+			{
+				Uri fileUri = new(file.FullName);
+				string relativeName = dirUri.MakeRelativeUri(fileUri).OriginalString;
+				yield return (Info: file, RelativeName: relativeName);
+			}
+		}
+
+		foreach (var file in GetAllFilesFromDirectory(new(targetDir)))
+			yield return file;
+
+		DirectoryInfo assetsDir = new(Path.Combine(projectDir, "assets"));
+		if (assetsDir.Exists)
+		{
+			foreach (var file in GetAllFilesFromDirectory(assetsDir))
+				yield return file;
 		}
 	}
 

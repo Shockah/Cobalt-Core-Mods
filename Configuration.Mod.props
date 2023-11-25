@@ -72,6 +72,7 @@
 		<DeployModTask
 			ModName="$(ModName)"
 			ModVersion="$(ModVersion)"
+			ProjectDir="$(ProjectDir)"
 			TargetDir="$(TargetDir)"
 			EnableModDeploy="$(EnableModDeploy)"
 			ModDeployModsPath="$(ModDeployModsPath)"
