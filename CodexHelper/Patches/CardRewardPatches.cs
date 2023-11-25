@@ -5,6 +5,7 @@ using Nanoray.Shrike.Harmony;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 
 namespace Shockah.CodexHelper;
@@ -36,7 +37,7 @@ internal static class CardRewardPatches
 	private static void CardReward_Render_Finalizer()
 		=> IsRenderingCardRewardScreen = false;
 
-	private static IEnumerable<CodeInstruction> Card_Render_Transpiler(IEnumerable<CodeInstruction> instructions)
+	private static IEnumerable<CodeInstruction> Card_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
 		try
 		{

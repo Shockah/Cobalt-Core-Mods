@@ -73,8 +73,8 @@ internal static class NewRunOptionsPatches
 				else
 					return !selectedCharKeys.Except(e.Combo.decks.Select(d => d.Key())).Any();
 			})
-			.Select(e => e.Stats.maxDifficultyWin ?? -1)
-			.DefaultIfEmpty(-1)
+			.Select(e => e.Stats.maxDifficultyWin ?? int.MinValue)
+			.DefaultIfEmpty(int.MinValue)
 			.Max();
 
 		if (maxBeatenDifficulty < difficulty.level)
