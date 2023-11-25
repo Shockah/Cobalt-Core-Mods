@@ -1,0 +1,82 @@
+<Project>
+	<!-- General setup -->
+	<Import Project="Configuration.props" />
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+	</PropertyGroup>
+
+	<!-- References -->
+	<Import Project="_Shared\_Shared.projitems" Label="Shared" />
+
+	<!-- Mod build config setup start -->
+	<UsingTask TaskName="Shockah.ModBuildConfig.DeployModTask" AssemblyFile="_ModBuildConfig\.bin\$(Configuration)\netstandard2.0\_ModBuildConfig.dll" />
+
+	<!-- Set build options -->
+	<PropertyGroup>
+		<!-- enable line numbers in stack traces (needs to embedded for Linux/macOS: https://github.com/dotnet/runtime/issues/39987) -->
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>embedded</DebugType>
+
+		<!-- don't create the 'refs' folder (which isn't useful for mods) -->
+		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+
+		<!-- suppress processor architecture mismatch warning (mods should be compiled in 'Any CPU' so they work in both 32-bit and 64-bit mode) -->
+		<ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+
+		<!-- set default package options -->
+		<ModName Condition="'$(ModName)' == ''">$(MSBuildProjectName)</ModName>
+		<ModVersion Condition="'$(ModVersion)' == ''">$(Version)</ModVersion>
+		<ModZipPath Condition="'$(ModZipPath)' == ''">$(MSBuildProjectDirectory)\.release\$(ModName)-$(Version).zip</ModZipPath>
+		<ModDeployModsPath Condition="'$(ModDeployModsPath)' == ''">$(ModsPath)</ModDeployModsPath>
+		<EnableModDeploy Condition="'$(EnableModDeploy)' == ''">true</EnableModDeploy>
+		<EnableModZip Condition="'$(EnableModZip)' == '' And '$(Configuration)' == 'Release'">true</EnableModZip>
+		<EnableModZip Condition="'$(EnableModZip)' == ''">false</EnableModZip>
+		<EnableGameDebugging Condition="'$(EnableGameDebugging)' == ''">true</EnableGameDebugging>
+
+		<!-- copy referenced DLLs into build output -->
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	</PropertyGroup>
+
+	<!-- Enable game debugging -->
+	<PropertyGroup Condition="'$(OS)' == 'Windows_NT' AND '$(EnableGameDebugging)' == 'true'">
+		<StartAction>Program</StartAction>
+		<StartProgram>$(ModLoaderPath)\CobaltCoreModLoaderClassic.exe</StartProgram>
+		<StartWorkingDirectory>$(ModLoaderPath)</StartWorkingDirectory>
+	</PropertyGroup>
+
+	<!-- Add assembly references -->
+	<ItemGroup>
+		<Reference Include="MonoGame.Framework" Private="False" HintPath="$(ModLoaderPath)\MonoGame.Framework.dll"/>
+		<Reference Include="CobaltCoreModding.Definitions" Private="False" HintPath="$(ModLoaderPath)\CobaltCoreModding.Definitions.dll"/>
+		<Reference Include="CobaltCore" Private="False" HintPath="$(GameDllPath)"/>
+		<Reference Include="0Harmony" Private="False" HintPath="$(ModLoaderPath)\0Harmony.dll"/>
+		<Reference Include="Microsoft.Extensions.Logging.Abstractions" Private="False" HintPath="$(ModLoaderPath)\Microsoft.Extensions.Logging.Abstractions.dll"/>
+	</ItemGroup>
+
+	<!-- Show validation messages -->
+	<Target Name="Validation" BeforeTargets="Build">
+		<!-- unknown OS type -->
+		<Error Condition="'$(OS)' != 'OSX' AND '$(OS)' != 'Unix' AND '$(OS)' != 'Windows_NT'" Text="The mod build package doesn't recognise OS type '$(OS)'." />
+
+		<!-- invalid game path -->
+		<Error Condition="!Exists('$(ModLoaderPath)')" Text="The mod build package can't find the mod loader. You can specify where to find it with the `ModLoaderPath` build property." ContinueOnError="false" />
+		<Error Condition="!Exists('$(ModsPath)') And '$(ModDeployModsPath)' == ''" Text="The mod build package can't find the mods folder for deploying purposes. You can specify where to find it with the `ModsPath` build property, or the `ModDeployModsPath` build property." ContinueOnError="false" />
+		<Error Condition="!Exists('$(GameDllPath)')" Text="The mod build package can't find the extracted game DLL. You can specify where to find it with the `GameDllPath` build property." ContinueOnError="false" />
+
+		<!-- invalid target architecture (note: internal value is 'AnyCPU', value shown in Visual Studio is 'Any CPU') -->
+		<Warning Condition="'$(Platform)' != 'AnyCPU'" Text="The target platform should be set to 'Any CPU' for compatibility with both 32-bit and 64-bit versions of the game (currently set to '$(Platform)')." />
+	</Target>
+
+	<!-- Deploy mod files & create release ZIP -->
+	<Target Name="ModDeployAndZip" AfterTargets="Build">
+		<DeployModTask
+			ModName="$(ModName)"
+			ModVersion="$(ModVersion)"
+			TargetDir="$(TargetDir)"
+			EnableModDeploy="$(EnableModDeploy)"
+			ModDeployModsPath="$(ModDeployModsPath)"
+			EnableModZip="$(EnableModZip)"
+			ModZipPath="$(ModZipPath)"
+		/>
+	</Target>
+</Project>

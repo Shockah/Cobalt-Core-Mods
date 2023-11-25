@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="..\Configuration.props" />
 	<PropertyGroup>
 		<RootNamespace>Shockah.CodexHelper</RootNamespace>
 		<Version>1.1.0</Version>
 	</PropertyGroup>
+	<Import Project="..\Configuration.Mod.props" />
 	<ItemGroup>
 		<PackageReference Include="Shrike" Version="2.1.0" />
 		<PackageReference Include="Shrike.Harmony" Version="2.0.2" />

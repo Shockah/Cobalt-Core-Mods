@@ -1,13 +1,11 @@
 <Project>
 	<!-- General setup -->
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
 		<LangVersion>11.0</LangVersion>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<WarningsAsErrors>Nullable</WarningsAsErrors>
 		<CheckEolTargetFramework>false</CheckEolTargetFramework>
-		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Include="$(MSBuildProjectDirectory)\..\.editorconfig" Link=".editorconfig" />
@@ -15,40 +13,4 @@
 	</ItemGroup>
 	<Import Project="Configuration.props.user.default" />
 	<Import Project="Configuration.props.user" />
-
-	<!-- References -->
-	<Import Project="_Shared\_Shared.projitems" Label="Shared" />
-	<ItemGroup>
-		<Reference Include="MonoGame.Framework" Private="False" HintPath="$(ModLoaderPath)\MonoGame.Framework.dll"/>
-		<Reference Include="CobaltCoreModding.Definitions" Private="False" HintPath="$(ModLoaderPath)\CobaltCoreModding.Definitions.dll"/>
-		<Reference Include="CobaltCore" Private="False" HintPath="$(GameDllPath)"/>
-		<Reference Include="0Harmony" Private="False" HintPath="$(ModLoaderPath)\0Harmony.dll"/>
-		<Reference Include="Microsoft.Extensions.Logging.Abstractions" Private="False" HintPath="$(ModLoaderPath)\Microsoft.Extensions.Logging.Abstractions.dll"/>
-	</ItemGroup>
-	
-	<!-- Creating a ZIP file for each release -->
-	<Target Name="ZipRelease" AfterTargets="CopyFilesToOutputDirectory" Condition="'$(Configuration)' == 'Release'">
-		<MakeDir Directories="$(MSBuildProjectDirectory)\.release" />
-		<ZipDirectory SourceDirectory="$(OutputPath)" DestinationFile="$(MSBuildProjectDirectory)\.release\$(TargetName)-$(Version).zip" Overwrite="true" />
-	</Target>
-
-	<!-- Copying built mods to the Mods folder -->
-	<ItemGroup>
-		<CopyToModsFolderFiles Include="$(OutputPath)\*.*" />
-	</ItemGroup>
-	<Target Name="CopyToModsFolder" AfterTargets="CopyFilesToOutputDirectory" Condition="'$(ModsPath)' != ''">
-		<MakeDir Directories="$(ModsPath)" />
-		<MakeDir Directories="$(ModsPath)\$(TargetName)" />
-		<Copy SourceFiles="@(CopyToModsFolderFiles)" DestinationFolder="$(ModsPath)\$(TargetName)" />
-	</Target>
-
-	<!-- Enable game debugging -->
-	<PropertyGroup>
-		<EnableGameDebugging>true</EnableGameDebugging>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(OS)' == 'Windows_NT' AND '$(EnableGameDebugging)' == 'true'">
-		<StartAction>Program</StartAction>
-		<StartProgram>$(ModLoaderPath)\CobaltCoreModLoaderClassic.exe</StartProgram>
-		<StartWorkingDirectory>$(ModLoaderPath)</StartWorkingDirectory>
-	</PropertyGroup>
 </Project>
