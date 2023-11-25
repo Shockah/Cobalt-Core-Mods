@@ -81,7 +81,7 @@ internal static class CardRewardPatches
 		}
 		catch (Exception ex)
 		{
-			Instance.Logger!.LogError("Could not patch methods - {Mod} probably won't work.\nReason: {Exception}", Instance.Name, ex);
+			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
 	}
