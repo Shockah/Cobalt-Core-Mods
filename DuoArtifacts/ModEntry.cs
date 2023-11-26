@@ -23,13 +23,11 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IAr
 	public DirectoryInfo? ModRootFolder { get; set; }
 	public ILogger? Logger { get; set; }
 
-	internal ExternalSprite DizzyDrakeArtifactSprite { get; private set; } = null!;
-	internal ExternalSprite IsaacRiggsArtifactSprite { get; private set; } = null!;
-
 	internal ExternalDeck DuoArtifactsDeck { get; private set; } = null!;
 
 	internal TimeSpan TotalGameTime;
 
+	private readonly Dictionary<HashSet<string>, ExternalSprite> DuoArtifactSprites = new(HashSet<string>.CreateSetComparer());
 	private readonly Dictionary<HashSet<string>, Type> DuoArtifactTypes = new(HashSet<string>.CreateSetComparer());
 
 	public void BootMod(IModLoaderContact contact)
@@ -43,14 +41,17 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IAr
 		ArtifactRewardPatches.Apply(harmony);
 		CharacterPatches.Apply(harmony);
 
-		DizzyDrakeArtifact.Apply(harmony);
-		IsaacRiggsArtifact.Apply(harmony);
+		foreach (var definition in DuoArtifactDefinition.Definitions)
+			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.ApplyPatches(harmony);
 	}
 
 	public void LoadManifest(ISpriteRegistry artRegistry)
 	{
-		DizzyDrakeArtifactSprite = artRegistry.RegisterArtOrThrow($"{typeof(ModEntry).Namespace}.Artifact.DizzyDrake", new FileInfo(Path.Combine(ModRootFolder!.FullName, "assets", "Artifacts", "DizzyDrake.png")));
-		IsaacRiggsArtifactSprite = artRegistry.RegisterArtOrThrow($"{typeof(ModEntry).Namespace}.Artifact.IsaacRiggs", new FileInfo(Path.Combine(ModRootFolder!.FullName, "assets", "Artifacts", "IsaacRiggs.png")));
+		foreach (var definition in DuoArtifactDefinition.Definitions)
+			DuoArtifactSprites[definition.CharacterKeys.Value] = artRegistry.RegisterArtOrThrow(
+				id: $"{typeof(ModEntry).Namespace}.Artifact.{string.Join("_", definition.CharacterKeys.Value.OrderBy(key => key))}",
+				file: new FileInfo(Path.Combine(ModRootFolder!.FullName, "assets", "Artifacts", $"{definition.AssetName}.png"))
+			);
 	}
 
 	public void LoadManifest(IDeckRegistry registry)
@@ -68,22 +69,18 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IAr
 
 	public void LoadManifest(IArtifactRegistry registry)
 	{
-		void Register(IEnumerable<Deck> characters, Type artifactType, ExternalSprite sprite, string name, string description)
+		foreach (var definition in DuoArtifactDefinition.Definitions)
 		{
-			var sortedCharacterKeys = characters.Select(d => d.Key()).OrderBy(key => key).ToList();
 			ExternalArtifact artifact = new(
-				globalName: $"{typeof(ModEntry).Namespace}.Artifact.{string.Join("_", sortedCharacterKeys)}",
-				artifactType: artifactType,
-				sprite: sprite,
+				globalName: $"{typeof(ModEntry).Namespace}.Artifact.{string.Join("_", definition.CharacterKeys.Value.OrderBy(key => key))}",
+				artifactType: definition.Type,
+				sprite: DuoArtifactSprites.GetValueOrDefault(definition.CharacterKeys.Value)!,
 				ownerDeck: DuoArtifactsDeck
 			);
-			artifact.AddLocalisation(name, description);
+			artifact.AddLocalisation(definition.Name, definition.Tooltip);
 			registry.RegisterArtifact(artifact);
-			DuoArtifactTypes[sortedCharacterKeys.ToHashSet()] = artifactType;
+			DuoArtifactTypes[definition.CharacterKeys.Value] = definition.Type;
 		}
-
-		Register(new Deck[] { Deck.dizzy, Deck.eunice }, typeof(DizzyDrakeArtifact), DizzyDrakeArtifactSprite, I18n.DizzyDrakeArtifactName, I18n.DizzyDrakeArtifactTooltip);
-		Register(new Deck[] { Deck.riggs, Deck.goat }, typeof(IsaacRiggsArtifact), IsaacRiggsArtifactSprite, I18n.IsaacRiggsArtifactName, I18n.IsaacRiggsArtifactTooltip);
 	}
 
 	public Type? GetDuoArtifactType(IEnumerable<Deck> characters)
@@ -121,4 +118,12 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IAr
 
 	public IReadOnlySet<Deck>? GetCharactersForDuoArtifact(DuoArtifact artifact)
 		=> GetCharactersForDuoArtifact(artifact.GetType());
+
+	public ExternalSprite? GetSpriteForDuoArtifact(DuoArtifact artifact)
+	{
+		var characterKeys = DuoArtifactTypes.FirstOrNull(kvp => kvp.Value == artifact.GetType())?.Key;
+		if (characterKeys is null)
+			return null;
+		return DuoArtifactSprites.GetValueOrDefault(characterKeys);
+	}
 }

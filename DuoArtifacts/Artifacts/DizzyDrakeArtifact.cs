@@ -15,8 +15,9 @@ internal sealed class DizzyDrakeArtifact : DuoArtifact
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	internal static void Apply(Harmony harmony)
+	protected internal override void ApplyPatches(Harmony harmony)
 	{
+		base.ApplyPatches(harmony);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(AOverheat), nameof(AOverheat.Begin)),
