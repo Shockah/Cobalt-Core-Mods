@@ -23,6 +23,7 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IAr
 	public DirectoryInfo? ModRootFolder { get; set; }
 	public ILogger? Logger { get; set; }
 
+	internal ExternalSprite DizzyDrakeArtifactSprite { get; private set; } = null!;
 	internal ExternalSprite IsaacRiggsArtifactSprite { get; private set; } = null!;
 
 	internal ExternalDeck DuoArtifactsDeck { get; private set; } = null!;
@@ -42,11 +43,13 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IAr
 		ArtifactRewardPatches.Apply(harmony);
 		CharacterPatches.Apply(harmony);
 
+		DizzyDrakeArtifact.Apply(harmony);
 		IsaacRiggsArtifact.Apply(harmony);
 	}
 
 	public void LoadManifest(ISpriteRegistry artRegistry)
 	{
+		DizzyDrakeArtifactSprite = artRegistry.RegisterArtOrThrow($"{typeof(ModEntry).Namespace}.Artifact.DizzyDrake", new FileInfo(Path.Combine(ModRootFolder!.FullName, "assets", "Artifacts", "DizzyDrake.png")));
 		IsaacRiggsArtifactSprite = artRegistry.RegisterArtOrThrow($"{typeof(ModEntry).Namespace}.Artifact.IsaacRiggs", new FileInfo(Path.Combine(ModRootFolder!.FullName, "assets", "Artifacts", "IsaacRiggs.png")));
 	}
 
@@ -79,6 +82,7 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IAr
 			DuoArtifactTypes[sortedCharacterKeys.ToHashSet()] = artifactType;
 		}
 
+		Register(new Deck[] { Deck.dizzy, Deck.eunice }, typeof(DizzyDrakeArtifact), DizzyDrakeArtifactSprite, I18n.DizzyDrakeArtifactName, I18n.DizzyDrakeArtifactTooltip);
 		Register(new Deck[] { Deck.riggs, Deck.goat }, typeof(IsaacRiggsArtifact), IsaacRiggsArtifactSprite, I18n.IsaacRiggsArtifactName, I18n.IsaacRiggsArtifactTooltip);
 	}
 
