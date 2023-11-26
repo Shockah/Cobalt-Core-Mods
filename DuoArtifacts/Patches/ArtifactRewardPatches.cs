@@ -39,7 +39,9 @@ internal static class ArtifactRewardPatches
 		if (!random.Chance(duoArtifactChance))
 			return;
 
-		var possibleDuoArtifacts = Instance.InstantiateDuoArtifacts(s.characters.Select(c => c.deckType!.Value));
+		var possibleDuoArtifacts = Instance.InstantiateDuoArtifacts(s.characters.Select(c => c.deckType!.Value))
+			.Where(duoArtifact => !s.artifacts.Any(artifact => artifact.Key() == duoArtifact.Key()))
+			.ToList();
 		if (possibleDuoArtifacts.Count == 0)
 			return;
 
