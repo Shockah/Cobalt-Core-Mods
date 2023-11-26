@@ -10,6 +10,9 @@ internal static class I18n
 	public static string DizzyDrakeArtifactName => "Dizzy-Drake Duo Artifact";
 	public static string DizzyDrakeArtifactTooltip => "<c=status>OVERHEAT</c> can now reduce <c=status>(TEMP) SHIELD</c> instead of hull.";
 
+	public static string DrakePeriArtifactName => "Drake-Peri Duo Artifact";
+	public static string DrakePeriArtifactTooltip => "Whenever you <c=status>OVERHEAT</c>, convert your <c=status>OVERDRIVE</c> into <c=status>POWERDRIVE</c>.";
+
 	public static string IsaacPeriArtifactName => "Isaac-Peri Duo Artifact";
 	public static string IsaacPeriArtifactTooltip => "Your drones benefit from <c=status>POWERDRIVE</c>, <c=status>OVERDRIVE</c> and <c=status>FLUX</c>.";
 
