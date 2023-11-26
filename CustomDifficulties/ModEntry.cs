@@ -37,6 +37,7 @@ public sealed class ModEntry : IModManifest, ISpriteManifest
 		HardmodePatches.Apply(harmony);
 		NewRunOptionsPatches.Apply(harmony);
 		RunConfigPatches.Apply(harmony);
+		RunSummaryRoutePatches.Apply(harmony);
 		StatePatches.Apply(harmony);
 	}
 
