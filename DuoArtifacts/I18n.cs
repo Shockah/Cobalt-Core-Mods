@@ -4,6 +4,9 @@ internal static class I18n
 {
 	public static string DuoArtifactDeckName => "Duo";
 
+	public static string BooksDrakeArtifactName => "Books-Drake Duo Artifact";
+	public static string BooksDrakeArtifactTooltip => "Whenever you play an attack, lose 2 <c=status>SHARD</c>: the attack becomes piercing. If it was already piercing, it stuns. If it was already stunning, <c=status>TOTAL STUN</c> the opponent.";
+
 	public static string DizzyDrakeArtifactName => "Dizzy-Drake Duo Artifact";
 	public static string DizzyDrakeArtifactTooltip => "<c=status>OVERHEAT</c> can now reduce <c=status>(TEMP) SHIELD</c> instead of hull.";
 
