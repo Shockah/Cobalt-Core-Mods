@@ -11,8 +11,7 @@ using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-[ArtifactMeta(owner = Deck.colorless)]
-internal sealed class IsaacRiggsArtifact : Artifact
+internal sealed class IsaacRiggsArtifact : DuoArtifact
 {
 	private static ModEntry Instance => ModEntry.Instance;
 

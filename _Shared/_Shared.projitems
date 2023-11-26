@@ -9,6 +9,7 @@
     <Import_RootNamespace>_Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ExternalTypesExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HarmonyExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ISpriteRegistryExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LinqExt.cs" />
