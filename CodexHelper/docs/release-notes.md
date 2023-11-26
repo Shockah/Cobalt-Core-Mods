@@ -2,6 +2,11 @@
 
 # Release notes
 
+## 1.1.1
+Released 26 November 2023.
+
+* Fixed compatibility with the [Custom Difficulties](https://github.com/Shockah/Cobalt-Core-Mods/tree/master/CustomDifficulties) mod.
+
 ## 1.1.0
 Released 24 November 2023.
 

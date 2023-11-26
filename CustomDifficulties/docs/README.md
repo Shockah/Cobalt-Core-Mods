@@ -8,5 +8,5 @@ Currently implemented difficulty level:
 [![Difficulty choice screenshot](images/difficulty-choice-thumb.png)](images/difficulty-choice.png)
 
 ## See also
-* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fdifficulty-choice-1.0.0)
+* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fcustom-difficulties-1.0.0)
 * [Release notes](release-notes.md)
