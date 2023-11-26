@@ -31,11 +31,15 @@ internal sealed class IsaacRiggsArtifact : DuoArtifact
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), "DoEvade"),
+			prefix: new HarmonyMethod(typeof(IsaacRiggsArtifact), nameof(Combat_DoEvade_Prefix)),
+			postfix: new HarmonyMethod(typeof(IsaacRiggsArtifact), nameof(Combat_DoEvade_Postfix)),
 			transpiler: new HarmonyMethod(typeof(IsaacRiggsArtifact), nameof(Combat_DoEvade_Transpiler))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), "DoDroneShift"),
+			prefix: new HarmonyMethod(typeof(IsaacRiggsArtifact), nameof(Combat_DoDroneShift_Prefix)),
+			postfix: new HarmonyMethod(typeof(IsaacRiggsArtifact), nameof(Combat_DoDroneShift_Postfix)),
 			transpiler: new HarmonyMethod(typeof(IsaacRiggsArtifact), nameof(Combat_DoDroneShift_Transpiler))
 		);
 	}
@@ -122,6 +126,16 @@ internal sealed class IsaacRiggsArtifact : DuoArtifact
 	private static bool Combat_RenderDroneShiftButtons_Transpiler_ShouldRenderDroneShiftButtonsAnyway(G g)
 		=> g.state.artifacts.Any(a => a is IsaacRiggsArtifact) && g.state.ship.Get(Status.evade) > 0;
 
+	private static void Combat_DoEvade_Prefix(G g, ref int __state)
+		=> __state = g.state.ship.Get(Status.droneShift);
+
+	private static void Combat_DoEvade_Postfix(G g, ref int __state)
+	{
+		if (__state == g.state.ship.Get(Status.droneShift))
+			return;
+		g.state.artifacts.FirstOrDefault(a => a is IsaacRiggsArtifact)?.Pulse();
+	}
+
 	private static IEnumerable<CodeInstruction> Combat_DoEvade_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
 		try
@@ -174,6 +188,16 @@ internal sealed class IsaacRiggsArtifact : DuoArtifact
 
 	private static int Combat_DoEvade_Transpiler_GetCorrectStatusToReduce(G g)
 		=> (int)(g.state.ship.Get(Status.evade) > 0 ? Status.evade : Status.droneShift);
+
+	private static void Combat_DoDroneShift_Prefix(G g, ref int __state)
+		=> __state = g.state.ship.Get(Status.evade);
+
+	private static void Combat_DoDroneShift_Postfix(G g, ref int __state)
+	{
+		if (__state == g.state.ship.Get(Status.evade))
+			return;
+		g.state.artifacts.FirstOrDefault(a => a is IsaacRiggsArtifact)?.Pulse();
+	}
 
 	private static IEnumerable<CodeInstruction> Combat_DoDroneShift_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
