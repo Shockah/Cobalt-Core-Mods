@@ -19,7 +19,9 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "_Shared", "_Shared\_Shared.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_ModBuildConfig", "_ModBuildConfig\_ModBuildConfig.csproj", "{10354485-6039-4E84-AB43-08082D92D6F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomDifficulties", "CustomDifficulties\CustomDifficulties.csproj", "{8BAC323F-5855-4231-A4E3-B11D74EE5598}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomDifficulties", "CustomDifficulties\CustomDifficulties.csproj", "{8BAC323F-5855-4231-A4E3-B11D74EE5598}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrewSelectionHelper", "CrewSelectionHelper\CrewSelectionHelper.csproj", "{F02CBA30-8C1F-4192-89BE-63874084D16D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{8BAC323F-5855-4231-A4E3-B11D74EE5598}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BAC323F-5855-4231-A4E3-B11D74EE5598}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8BAC323F-5855-4231-A4E3-B11D74EE5598}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F02CBA30-8C1F-4192-89BE-63874084D16D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F02CBA30-8C1F-4192-89BE-63874084D16D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F02CBA30-8C1F-4192-89BE-63874084D16D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F02CBA30-8C1F-4192-89BE-63874084D16D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

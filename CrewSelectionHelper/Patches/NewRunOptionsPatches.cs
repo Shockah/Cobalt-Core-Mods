@@ -1,0 +1,153 @@
+﻿using HarmonyLib;
+using Microsoft.Extensions.Logging;
+using Nanoray.Shrike;
+using Nanoray.Shrike.Harmony;
+using Shockah.Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+
+namespace Shockah.CrewSelectionHelper;
+
+internal static class NewRunOptionsPatches
+{
+	private sealed class MouseDownHandler : OnMouseDown
+	{
+		private readonly Action Delegate;
+
+		public MouseDownHandler(Action @delegate)
+		{
+			this.Delegate = @delegate;
+		}
+
+		public void OnMouseDown(G g, Box b)
+			=> Delegate();
+	}
+
+	private static ModEntry Instance => ModEntry.Instance;
+
+	private const int CharactersPerRow = 2;
+	private const int MaxCharactersOnScreen = 8;
+
+	private static readonly Lazy<Func<Rect>> CharSelectPosGetter = new(() => AccessTools.DeclaredField(typeof(NewRunOptions), "charSelectPos").EmitStaticGetter<Rect>());
+
+	private static int ScrollPosition = 0;
+
+	private static int MaxScroll
+	{
+		get
+		{
+			int totalRows = (int)Math.Ceiling((double)NewRunOptions.allChars.Count / CharactersPerRow);
+			int maxScroll = Math.Max(0, totalRows * CharactersPerRow - MaxCharactersOnScreen);
+			return maxScroll;
+		}
+	}
+
+	private static int MaxPageByPageScroll
+	{
+		get
+		{
+			int totalPages = (int)Math.Ceiling((double)NewRunOptions.allChars.Count / MaxCharactersOnScreen);
+			int maxScroll = Math.Max(0, (totalPages - 1) * MaxCharactersOnScreen);
+			return maxScroll;
+		}
+	}
+
+	public static void Apply(Harmony harmony)
+	{
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(NewRunOptions), nameof(NewRunOptions.OnEnter)),
+			postfix: new HarmonyMethod(typeof(NewRunOptionsPatches), nameof(NewRunOptions_OnEnter_Postfix))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(NewRunOptions), nameof(NewRunOptions.Render)),
+			prefix: new HarmonyMethod(typeof(NewRunOptionsPatches), nameof(NewRunOptions_Render_Prefix))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(NewRunOptions), "CharSelect"),
+			postfix: new HarmonyMethod(typeof(NewRunOptionsPatches), nameof(NewRunOptions_CharSelect_Postfix)),
+			transpiler: new HarmonyMethod(typeof(NewRunOptionsPatches), nameof(NewRunOptions_CharSelect_Transpiler))
+		);
+	}
+
+	private static void NewRunOptions_OnEnter_Postfix()
+		=> ScrollPosition = 0;
+
+	private static void NewRunOptions_Render_Prefix()
+	{
+		int mouseScroll = (int)Math.Round(-Input.scrollY / 120);
+		if (mouseScroll != 0)
+			ScrollPosition = Math.Clamp(ScrollPosition + CharactersPerRow * mouseScroll, 0, MaxScroll);
+	}
+
+	private static void NewRunOptions_CharSelect_Postfix(G g)
+	{
+		var charSelectPos = CharSelectPosGetter.Value();
+
+		if (ScrollPosition > 0)
+		{
+			UIKey uIKey = UK.btn_move_left;
+			Rect rect = new(charSelectPos.x + 16, charSelectPos.y - 52, 33, 24);
+			UIKey key = uIKey;
+			OnMouseDown onMouseDown = new MouseDownHandler(() => ScrollPosition = Math.Max(0, ScrollPosition - MaxCharactersOnScreen));
+			RotatedButtonSprite(g, rect, key, Spr.buttons_move, Spr.buttons_move_on, null, null, inactive: false, flipX: true, flipY: false, onMouseDown, autoFocus: false, noHover: false, gamepadUntargetable: true);
+		}
+
+		if (ScrollPosition < MaxScroll)
+		{
+			UIKey uIKey = UK.btn_move_right;
+			Rect rect = new(charSelectPos.x + 16, charSelectPos.y + 140, 33, 24);
+			UIKey key = uIKey;
+			OnMouseDown onMouseDown = new MouseDownHandler(() => ScrollPosition = Math.Clamp(ScrollPosition + MaxCharactersOnScreen, 0, MaxPageByPageScroll));
+			RotatedButtonSprite(g, rect, key, Spr.buttons_move, Spr.buttons_move_on, null, null, inactive: false, flipX: false, flipY: false, onMouseDown, autoFocus: false, noHover: false, gamepadUntargetable: true);
+		}
+	}
+
+	private static IEnumerable<CodeInstruction> NewRunOptions_CharSelect_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(ILMatches.Ldsfld("allChars"))
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(NewRunOptionsPatches), nameof(NewRunOptions_CharSelect_Transpiler_ModifyAllChars)))
+				)
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			return instructions;
+		}
+	}
+
+	private static List<Deck> NewRunOptions_CharSelect_Transpiler_ModifyAllChars(List<Deck> allChars)
+		=> allChars.Skip(ScrollPosition).Take(MaxCharactersOnScreen).ToList();
+
+	// mostly copy-paste of SharedArt.ButtonResult, without too many improvements
+	private static SharedArt.ButtonResult RotatedButtonSprite(G g, Rect rect, UIKey key, Spr sprite, Spr spriteHover, Spr? spriteDown = null, Color? boxColor = null, bool inactive = false, bool flipX = false, bool flipY = false, OnMouseDown? onMouseDown = null, bool autoFocus = false, bool noHover = false, bool showAsPressed = false, bool gamepadUntargetable = false, UIKey? leftHint = null, UIKey? rightHint = null)
+	{
+		bool gamepadUntargetable2 = gamepadUntargetable;
+		Box box = g.Push(key, rect, null, autoFocus, inactive, gamepadUntargetable2, ReticleMode.Quad, onMouseDown, null, null, null, 0, rightHint, leftHint);
+		Vec xy = box.rect.xy;
+		bool flag = !noHover && (box.IsHover() || showAsPressed) && !inactive;
+		if (spriteDown.HasValue && box.IsHover() && Input.mouseLeft)
+			showAsPressed = true;
+		double rotation = Math.PI / 2;
+		Draw.Sprite((!showAsPressed) ? (flag ? spriteHover : sprite) : (spriteDown ?? spriteHover), xy.x + Math.Sin(rotation) * rect.w, xy.y - Math.Cos(rotation) * rect.h, flipX, flipY, rotation, null, null, null, null, boxColor);
+		SharedArt.ButtonResult buttonResult = default;
+		buttonResult.isHover = flag;
+		buttonResult.FIXME_isHoverForTooltip = !noHover && box.IsHover();
+		buttonResult.v = xy;
+		buttonResult.innerOffset = new Vec(0.0, showAsPressed ? 2 : (flag ? 1 : 0));
+		SharedArt.ButtonResult result = buttonResult;
+		g.Pop();
+		return result;
+	}
+}
