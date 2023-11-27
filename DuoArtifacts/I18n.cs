@@ -8,7 +8,7 @@ internal static class I18n
 	public static string BooksDrakeArtifactTooltip => "Whenever you play an attack, lose 2 <c=shard>SHARD</c>: the attack becomes piercing. If it was already piercing, it stuns. If it was already stunning, <c=eunice>TOTAL STUN</c> the opponent.";
 
 	public static string DizzyDrakeArtifactName => "Dizzy-Drake Duo Artifact";
-	public static string DizzyDrakeArtifactTooltip => "<c=eunice>OVERHEAT</c> can now reduce <c=dizzy>(TEMP) SHIELD</c> instead of hull.";
+	public static string DizzyDrakeArtifactTooltip => "<c=eunice>OVERHEAT</c> now causes you to lose 2 <c=dizzy>(TEMP) SHIELD</c> instead of hull, if possible.";
 
 	public static string DrakePeriArtifactName => "Drake-Peri Duo Artifact";
 	public static string DrakePeriArtifactTooltip => "Whenever you <c=eunice>OVERHEAT</c>, convert your <c=peri>OVERDRIVE</c> into <c=peri>POWERDRIVE</c>.";

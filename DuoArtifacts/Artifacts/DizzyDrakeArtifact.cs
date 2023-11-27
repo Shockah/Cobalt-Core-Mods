@@ -15,6 +15,8 @@ internal sealed class DizzyDrakeArtifact : DuoArtifact
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
+	private const int ExtraShieldDamage = 1;
+
 	protected internal override void ApplyPatches(Harmony harmony)
 	{
 		base.ApplyPatches(harmony);
@@ -44,12 +46,12 @@ internal sealed class DizzyDrakeArtifact : DuoArtifact
 	private static void AOverheat_Begin_Transpiler_Damage(Ship ship, State state, Combat combat, int damage)
 	{
 		var artifact = state.artifacts.FirstOrDefault(a => a is DizzyDrakeArtifact);
-		bool doNormalDamage = ship == state.ship && artifact is not null;
+		bool doNormalDamage = ship == state.ship && artifact is not null && ship.Get(Status.shield) + ship.Get(Status.tempShield) >= damage + ExtraShieldDamage;
 
 		if (doNormalDamage)
 		{
 			artifact?.Pulse();
-			ship.NormalDamage(state, combat, damage, -999, worldSpaceAgnostic: true);
+			ship.NormalDamage(state, combat, damage + ExtraShieldDamage, -999, worldSpaceAgnostic: true);
 		}
 		else
 		{

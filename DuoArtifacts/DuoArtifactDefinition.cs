@@ -8,28 +8,44 @@ internal sealed class DuoArtifactDefinition
 {
 	public static readonly IReadOnlyList<DuoArtifactDefinition> Definitions = new List<DuoArtifactDefinition>
 	{
-		new(typeof(BooksDrakeArtifact), new Deck[] { Deck.shard, Deck.eunice }, I18n.BooksDrakeArtifactName, I18n.BooksDrakeArtifactTooltip, "BooksDrake"),
-		new(typeof(DizzyDrakeArtifact), new Deck[] { Deck.dizzy, Deck.eunice }, I18n.DizzyDrakeArtifactName, I18n.DizzyDrakeArtifactTooltip, "DizzyDrake"),
-		new(typeof(DrakePeriArtifact), new Deck[] { Deck.eunice, Deck.peri }, I18n.DrakePeriArtifactName, I18n.DrakePeriArtifactTooltip, "DrakePeri"),
-		new(typeof(IsaacPeriArtifact), new Deck[] { Deck.goat, Deck.peri }, I18n.IsaacPeriArtifactName, I18n.IsaacPeriArtifactTooltip, "IsaacPeri"),
-		new(typeof(IsaacRiggsArtifact), new Deck[] { Deck.goat, Deck.riggs }, I18n.IsaacRiggsArtifactName, I18n.IsaacRiggsArtifactTooltip, "IsaacRiggs"),
+		new(typeof(BooksDrakeArtifact), new Deck[] { Deck.shard, Deck.eunice }, I18n.BooksDrakeArtifactName, I18n.BooksDrakeArtifactTooltip, "BooksDrake", new string[] { "status.shard", "action.stunShip" }),
+		new(typeof(DizzyDrakeArtifact), new Deck[] { Deck.dizzy, Deck.eunice }, I18n.DizzyDrakeArtifactName, I18n.DizzyDrakeArtifactTooltip, "DizzyDrake", new string[] { "action.overheat", "status.shieldAlt" }),
+		new(typeof(DrakePeriArtifact), new Deck[] { Deck.eunice, Deck.peri }, I18n.DrakePeriArtifactName, I18n.DrakePeriArtifactTooltip, "DrakePeri", new string[] { "action.overheat", "status.overdriveAlt", "status.powerdriveAlt" }),
+		new(typeof(IsaacPeriArtifact), new Deck[] { Deck.goat, Deck.peri }, I18n.IsaacPeriArtifactName, I18n.IsaacPeriArtifactTooltip, "IsaacPeri", new string[] { "status.overdriveAlt", "status.powerdriveAlt", "status.libra" }),
+		new(typeof(IsaacRiggsArtifact), new Deck[] { Deck.goat, Deck.riggs }, I18n.IsaacRiggsArtifactName, I18n.IsaacRiggsArtifactTooltip, "IsaacRiggs", new string[] { "status.evade", "status.droneShift" }),
 	};
+
+	private static readonly Dictionary<Type, DuoArtifactDefinition> TypeToDefinitionDictionary = new();
+
+	static DuoArtifactDefinition()
+	{
+		foreach (var definition in Definitions)
+			TypeToDefinitionDictionary[definition.Type] = definition;
+	}
+
+	public static DuoArtifactDefinition? GetDefinition(Type type)
+		=> type.IsAssignableTo(typeof(DuoArtifact)) ? TypeToDefinitionDictionary.GetValueOrDefault(type) : null;
+
+	public static DuoArtifactDefinition? GetDefinition<TType>() where TType : DuoArtifact
+		=> TypeToDefinitionDictionary.GetValueOrDefault(typeof(TType));
 
 	public readonly Type Type;
 	public readonly IReadOnlySet<Deck> Characters;
 	public readonly string Name;
 	public readonly string Tooltip;
 	public readonly string AssetName;
+	public readonly IReadOnlyList<string> ExtraGlossary;
 
 	internal readonly Lazy<HashSet<string>> CharacterKeys;
 
-	public DuoArtifactDefinition(Type type, IEnumerable<Deck> characters, string name, string tooltip, string assetName)
+	public DuoArtifactDefinition(Type type, IEnumerable<Deck> characters, string name, string tooltip, string assetName, IEnumerable<string>? extraGlossary = null)
 	{
 		this.Type = type;
 		this.Characters = characters.ToHashSet();
 		this.Name = name;
 		this.Tooltip = tooltip;
 		this.AssetName = assetName;
+		this.ExtraGlossary = extraGlossary?.ToList() ?? (IReadOnlyList<string>)Array.Empty<string>();
 		this.CharacterKeys = new(() => this.Characters.Select(c => c.Key()).ToHashSet());
 	}
 }
