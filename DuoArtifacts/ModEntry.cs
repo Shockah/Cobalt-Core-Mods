@@ -12,21 +12,18 @@ using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-public sealed class ModEntry : IModManifest, ISpriteManifest, IGlossaryManifest, IDeckManifest, IArtifactManifest
+public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IArtifactManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
 	public IEnumerable<DependencyEntry> Dependencies => new DependencyEntry[] { new DependencyEntry<IModManifest>("Shockah.Kokoro", ignoreIfMissing: false) };
 
-	internal const ExternalGlossary.GlossayType StatusGlossaryType = (ExternalGlossary.GlossayType)2137001;
-
 	public DirectoryInfo? GameRootFolder { get; set; }
 	public DirectoryInfo? ModRootFolder { get; set; }
 	public ILogger? Logger { get; set; }
 
 	internal ExternalDeck DuoArtifactsDeck { get; private set; } = null!;
-	internal string FluxAltGlossaryKey { get; private set; } = null!;
 	internal IKokoroApi KokoroApi { get; set; } = null!;
 
 	internal TimeSpan TotalGameTime;
@@ -44,8 +41,8 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IGlossaryManifest,
 		Harmony harmony = new(Name);
 		ArtifactRewardPatches.Apply(harmony);
 		CharacterPatches.Apply(harmony);
-		EnumPatches.Apply(harmony);
 		MGPatches.Apply(harmony);
+		CustomTTGlossary.Apply(harmony);
 
 		foreach (var definition in DuoArtifactDefinition.Definitions)
 			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.ApplyPatches(harmony);
@@ -58,16 +55,6 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IGlossaryManifest,
 				id: $"{typeof(ModEntry).Namespace}.Artifact.{string.Join("_", definition.CharacterKeys.Value.OrderBy(key => key))}",
 				file: new FileInfo(Path.Combine(ModRootFolder!.FullName, "assets", "Artifacts", $"{definition.AssetName}.png"))
 			);
-	}
-
-	public void LoadManifest(IGlossaryRegisty registry)
-	{
-		{
-			ExternalGlossary glossary = new($"{typeof(ModEntry).Namespace}.Glossary.Flux.Alt", "Flux", false, StatusGlossaryType, ExternalSprite.GetRaw((int)Spr.icons_libra));
-			glossary.AddLocalisation("en", I18n.FluxAltGlossaryName, I18n.FluxAltGlossaryDescription);
-			registry.RegisterGlossary(glossary);
-			FluxAltGlossaryKey = glossary.Head;
-		}
 	}
 
 	public void LoadManifest(IDeckRegistry registry)

@@ -10,8 +10,8 @@ internal sealed class IsaacRiggsArtifact : DuoArtifact, IEvadeHook, IDroneShiftH
 	protected internal override void ApplyPatches(Harmony harmony)
 	{
 		base.ApplyPatches(harmony);
-		Instance.KokoroApi.RegisterEvadeHook(this, -1);
-		Instance.KokoroApi.RegisterDroneShiftHook(this, -1);
+		Instance.KokoroApi.RegisterEvadeHook(this, -100);
+		Instance.KokoroApi.RegisterDroneShiftHook(this, -100);
 	}
 
 	public override void OnTurnStart(State state, Combat combat)

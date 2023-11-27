@@ -14,12 +14,12 @@ public abstract class DuoArtifact : Artifact
 	{
 		var tooltips = base.GetExtraTooltips();
 		var definition = DuoArtifactDefinition.GetDefinition(GetType());
-		if (definition is null || definition.ExtraGlossary.Count == 0)
+		if (definition is null || definition.ExtraTooltips.Count == 0)
 			return tooltips;
 
 		tooltips ??= new();
-		foreach (var glossaryKey in definition.ExtraGlossary)
-			tooltips.Add(new TTGlossary(glossaryKey()));
+		foreach (var tooltip in definition.ExtraTooltips)
+			tooltips.Add(tooltip.MakeTooltip());
 		return tooltips;
 	}
 }
