@@ -4,6 +4,9 @@ internal static class I18n
 {
 	public static string DuoArtifactDeckName => "Duo";
 
+	public static string FluxAltGlossaryName => "Flux";
+	public static string FluxAltGlossaryDescription => "Whenever this ship attacks, it gains <c=status>TEMP SHIELD</c>. <c=downside>Decreases by 1 at end of turn.</c>";
+
 	public static string BooksDrakeArtifactName => "Books-Drake Duo Artifact";
 	public static string BooksDrakeArtifactTooltip => "Whenever you play an attack, lose 2 <c=shard>SHARD</c>: the attack becomes piercing. If it was already piercing, it stuns. If it was already stunning, <c=eunice>TOTAL STUN</c> the opponent.";
 

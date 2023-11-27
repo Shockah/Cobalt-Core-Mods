@@ -19,7 +19,7 @@ public abstract class DuoArtifact : Artifact
 
 		tooltips ??= new();
 		foreach (var glossaryKey in definition.ExtraGlossary)
-			tooltips.Add(new TTGlossary(glossaryKey));
+			tooltips.Add(new TTGlossary(glossaryKey()));
 		return tooltips;
 	}
 }
