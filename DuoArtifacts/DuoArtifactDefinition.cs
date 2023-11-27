@@ -8,7 +8,7 @@ internal sealed class DuoArtifactDefinition
 {
 	public static readonly IReadOnlyList<DuoArtifactDefinition> Definitions = new List<DuoArtifactDefinition>
 	{
-		new(typeof(BooksDrakeArtifact), new Deck[] { Deck.shard, Deck.eunice }, I18n.BooksDrakeArtifactName, I18n.BooksDrakeArtifactTooltip, "BooksDrake", new string[] { "status.shard", "action.stunShip" }),
+		new(typeof(BooksDrakeArtifact), new Deck[] { Deck.shard, Deck.eunice }, I18n.BooksDrakeArtifactName, I18n.BooksDrakeArtifactTooltip, "BooksDrake", new string[] { "status.shard", "action.attackPiercing", "action.stun", "action.stunShip" }),
 		new(typeof(DizzyDrakeArtifact), new Deck[] { Deck.dizzy, Deck.eunice }, I18n.DizzyDrakeArtifactName, I18n.DizzyDrakeArtifactTooltip, "DizzyDrake", new string[] { "action.overheat", "status.shieldAlt" }),
 		new(typeof(DrakePeriArtifact), new Deck[] { Deck.eunice, Deck.peri }, I18n.DrakePeriArtifactName, I18n.DrakePeriArtifactTooltip, "DrakePeri", new string[] { "action.overheat", "status.overdriveAlt", "status.powerdriveAlt" }),
 		new(typeof(IsaacPeriArtifact), new Deck[] { Deck.goat, Deck.peri }, I18n.IsaacPeriArtifactName, I18n.IsaacPeriArtifactTooltip, "IsaacPeri", new string[] { "status.overdriveAlt", "status.powerdriveAlt", "status.libra" }),
