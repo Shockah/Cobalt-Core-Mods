@@ -17,7 +17,7 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IGlossaryManifest,
 	internal static ModEntry Instance { get; private set; } = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
-	public IEnumerable<DependencyEntry> Dependencies => Array.Empty<DependencyEntry>();
+	public IEnumerable<DependencyEntry> Dependencies => new DependencyEntry[] { new DependencyEntry<IModManifest>("Shockah.Kokoro", ignoreIfMissing: false) };
 
 	internal const ExternalGlossary.GlossayType StatusGlossaryType = (ExternalGlossary.GlossayType)2137001;
 
@@ -27,6 +27,7 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IGlossaryManifest,
 
 	internal ExternalDeck DuoArtifactsDeck { get; private set; } = null!;
 	internal string FluxAltGlossaryKey { get; private set; } = null!;
+	internal IKokoroApi KokoroApi { get; set; } = null!;
 
 	internal TimeSpan TotalGameTime;
 
@@ -36,14 +37,15 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IGlossaryManifest,
 	public void BootMod(IModLoaderContact contact)
 	{
 		Instance = this;
+		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 
 		Harmony harmony = new(Name);
-		EnumPatches.Apply(harmony);
-		MGPatches.Apply(harmony);
 		ArtifactRewardPatches.Apply(harmony);
 		CharacterPatches.Apply(harmony);
+		EnumPatches.Apply(harmony);
+		MGPatches.Apply(harmony);
 
 		foreach (var definition in DuoArtifactDefinition.Definitions)
 			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.ApplyPatches(harmony);

@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Shockah.Shared;
 
-public static class ISpriteRegistryExt
+internal static class ISpriteRegistryExt
 {
 	public static ExternalSprite? TryRegisterArt(this ISpriteRegistry artRegistry, string id, FileInfo file)
 	{

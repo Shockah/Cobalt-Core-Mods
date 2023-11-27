@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Shockah.Shared;
 
-public static class TextParserExt
+internal static class TextParserExt
 {
 	private static readonly Regex ColorTagStartRegex = new("\\<c\\=.+?\\>");
 	private static readonly string ColorTagEndPattern = "</c>";

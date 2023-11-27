@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Shockah.Shared;
 
-public static class HarmonyExt
+internal static class HarmonyExt
 {
 	private static void WarnOnDebugAssembly(ILogger logger, Assembly? assembly)
 	{
