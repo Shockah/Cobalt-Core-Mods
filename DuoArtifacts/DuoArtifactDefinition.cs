@@ -15,6 +15,7 @@ internal sealed class DuoArtifactDefinition
 		new(typeof(DrakeRiggsArtifact), new Deck[] { Deck.eunice, Deck.riggs }, I18n.DrakeRiggsArtifactName, I18n.DrakeRiggsArtifactTooltip, "DrakeRiggs", "status.evade", I18n.HeatAltGlossary),
 		new(typeof(IsaacPeriArtifact), new Deck[] { Deck.goat, Deck.peri }, I18n.IsaacPeriArtifactName, I18n.IsaacPeriArtifactTooltip, "IsaacPeri", "status.overdriveAlt", "status.powerdriveAlt", I18n.FluxAltGlossary),
 		new(typeof(IsaacRiggsArtifact), new Deck[] { Deck.goat, Deck.riggs }, I18n.IsaacRiggsArtifactName, I18n.IsaacRiggsArtifactTooltip, "IsaacRiggs", "status.evade", "status.droneShift"),
+		new(typeof(MaxRiggsArtifact), new Deck[] { Deck.hacker, Deck.riggs }, I18n.MaxRiggsArtifactName, I18n.MaxRiggsArtifactTooltip, "MaxRiggs", "status.evade", I18n.AutododgeAltGlossary),
 	};
 
 	private static readonly Dictionary<Type, DuoArtifactDefinition> TypeToDefinitionDictionary = new();

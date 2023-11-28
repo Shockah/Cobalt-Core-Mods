@@ -5,7 +5,7 @@ namespace Shockah.Kokoro;
 
 public sealed class EvadeHookManager : AbstractHookManager<IEvadeHook>
 {
-	public EvadeHookManager() : base()
+	internal EvadeHookManager() : base()
 	{
 		Register(VanillaEvadeHook.Instance, 0);
 		Register(VanillaDebugEvadeHook.Instance, int.MaxValue);

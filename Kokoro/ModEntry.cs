@@ -23,6 +23,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest
 
 	public EvadeHookManager EvadeHookManager { get; private init; } = new();
 	public DroneShiftHookManager DroneShiftHookManager { get; private init; } = new();
+	public ArtifactIconHookManager ArtifactIconHookManager { get; private init; } = new();
 
 	public void BootMod(IModLoaderContact contact)
 	{
@@ -31,6 +32,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 
 		Harmony harmony = new(Name);
+		ArtifactPatches.Apply(harmony);
 		CombatPatches.Apply(harmony);
 	}
 

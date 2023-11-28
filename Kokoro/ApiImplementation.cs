@@ -19,4 +19,12 @@ public sealed class ApiImplementation : IKokoroApi
 	public void UnregisterDroneShiftHook(IDroneShiftHook hook)
 		=> Instance.DroneShiftHookManager.Unregister(hook);
 	#endregion
+
+	#region ArtifactIconHook
+	public void RegisterArtifactIconHook(IArtifactIconHook hook, double priority)
+		=> Instance.ArtifactIconHookManager.Register(hook, priority);
+
+	public void UnregisterArtifactIconHook(IArtifactIconHook hook)
+		=> Instance.ArtifactIconHookManager.Unregister(hook);
+	#endregion
 }
