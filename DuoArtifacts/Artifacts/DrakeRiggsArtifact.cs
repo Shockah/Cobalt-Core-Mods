@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using System;
 using System.Linq;
 
 namespace Shockah.DuoArtifacts;
@@ -36,9 +35,6 @@ internal sealed class DrakeRiggsArtifact : DuoArtifact, IEvadeHook
 		var artifact = state.artifacts.OfType<DrakeRiggsArtifact>().First();
 		artifact.Pulse();
 		artifact.UsedThisTurn = true;
-
-		int heatToAdd = Math.Max(1, state.ship.heatTrigger - state.ship.Get(Status.heat));
-		if (heatToAdd > 0)
-			state.ship.Add(Status.heat, heatToAdd);
+		state.ship.Add(Status.heat, 1);
 	}
 }
