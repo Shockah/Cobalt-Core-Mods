@@ -59,7 +59,7 @@ internal sealed class BooksDrakeArtifact : DuoArtifact
 	{
 		if (attack.targetPlayer || attack.fromDroneX is not null)
 			return;
-		var artifact = state.artifacts.FirstOrDefault(a => a is BooksDrakeArtifact);
+		var artifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksDrakeArtifact);
 		if (artifact is null)
 			return;
 

@@ -21,7 +21,7 @@ internal sealed class DrakePeriArtifact : DuoArtifact
 	public override void AfterPlayerOverheat(State state, Combat combat)
 	{
 		base.AfterPlayerOverheat(state, combat);
-		var artifact = state.artifacts.FirstOrDefault(a => a is DrakePeriArtifact);
+		var artifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is DrakePeriArtifact);
 		if (artifact is null)
 			return;
 

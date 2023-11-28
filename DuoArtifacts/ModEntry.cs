@@ -97,10 +97,11 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IAr
 
 	public List<Artifact> InstantiateDuoArtifacts(IEnumerable<Deck> characters)
 	{
+		List<Deck> charactersList = characters.ToList();
 		List<Artifact> results = new();
-		foreach (var firstCharacter in characters)
+		foreach (var firstCharacter in charactersList)
 		{
-			foreach (var secondCharacter in characters)
+			foreach (var secondCharacter in charactersList)
 			{
 				if (secondCharacter == firstCharacter)
 					continue;

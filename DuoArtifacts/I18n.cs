@@ -24,7 +24,7 @@ internal static class I18n
 	public static string DrakePeriArtifactTooltip => "Whenever you <c=eunice>OVERHEAT</c>, convert your <c=peri>OVERDRIVE</c> into <c=peri>POWERDRIVE</c>.";
 
 	public static string DrakeRiggsArtifactName => "Drake-Riggs Duo Artifact";
-	public static string DrakeRiggsArtifactTooltip => "Once a turn, when you have no <c=riggs>EVADE</c>, you may still <c=riggs>EVADE</c>. Gain 1 <c=eunice>HEAT</c>";
+	public static string DrakeRiggsArtifactTooltip => "Once a turn, when you have no <c=riggs>EVADE</c>, you may still <c=riggs>EVADE</c>. Gain 1 <c=eunice>HEAT</c>.";
 
 	public static string IsaacPeriArtifactName => "Isaac-Peri Duo Artifact";
 	public static string IsaacPeriArtifactTooltip => "Your <c=goat>Attack Drones</c> benefit from <c=peri>OVERDRIVE</c>, <c=peri>POWERDRIVE</c> and <c=peri>FLUX</c>.";

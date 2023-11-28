@@ -29,19 +29,27 @@ internal static class ArtifactRewardPatches
 		);
 	}
 
+	private static IEnumerable<Deck> GetCharactersEligibleForDuoArtifacts(State state)
+	{
+		//return NewRunOptions.allChars;
+
+		foreach (var character in state.characters)
+			if (character.artifacts.Count != 0 && character.deckType is { } deck)
+				yield return deck;
+	}
+
 	private static void ArtifactReward_GetOffering_Postfix(State s, List<ArtifactPool>? limitPools, List<Artifact> __result, Rand? rngOverride)
 	{
-		if (limitPools is null || !limitPools.Contains(ArtifactPool.Boss))
+		if (limitPools is null || limitPools.Contains(ArtifactPool.Boss))
 			return;
 
 		Rand random = rngOverride ?? s.rngArtifactOfferings;
-		double duoArtifactChance = __result.Count * (1.0 / 3.0) / (s.artifacts.Count(a => a is DuoArtifact) + 1);
+		double duoArtifactChance = __result.Count * (1.0 / 3.0) / (s.EnumerateAllArtifacts().Count(a => a is DuoArtifact) + 1);
 		if (!random.Chance(duoArtifactChance))
 			return;
 
-		var possibleDuoArtifacts = Instance.InstantiateDuoArtifacts(new Deck[] { Deck.dizzy, Deck.riggs, Deck.peri, Deck.goat, Deck.eunice, Deck.hacker, Deck.shard })
-		//var possibleDuoArtifacts = Instance.InstantiateDuoArtifacts(s.characters.Select(c => c.deckType!.Value))
-			.Where(duoArtifact => !s.artifacts.Any(artifact => artifact.Key() == duoArtifact.Key()))
+		var possibleDuoArtifacts = Instance.InstantiateDuoArtifacts(GetCharactersEligibleForDuoArtifacts(s))
+			.Where(duoArtifact => !s.EnumerateAllArtifacts().Any(artifact => artifact.Key() == duoArtifact.Key()))
 			.ToList();
 		if (possibleDuoArtifacts.Count == 0)
 			return;

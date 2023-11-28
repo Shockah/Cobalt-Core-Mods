@@ -22,7 +22,7 @@ internal sealed class DrakeRiggsArtifact : DuoArtifact, IEvadeHook
 
 	bool? IEvadeHook.IsEvadePossible(State state, Combat combat, EvadeHookContext context)
 	{
-		var artifact = state.artifacts.OfType<DrakeRiggsArtifact>().FirstOrDefault();
+		var artifact = state.EnumerateAllArtifacts().OfType<DrakeRiggsArtifact>().FirstOrDefault();
 		if (artifact is null)
 			return null;
 		if (artifact.UsedThisTurn)
@@ -32,7 +32,7 @@ internal sealed class DrakeRiggsArtifact : DuoArtifact, IEvadeHook
 
 	void IEvadeHook.PayForEvade(State state, Combat combat, int direction)
 	{
-		var artifact = state.artifacts.OfType<DrakeRiggsArtifact>().First();
+		var artifact = state.EnumerateAllArtifacts().OfType<DrakeRiggsArtifact>().First();
 		artifact.Pulse();
 		artifact.UsedThisTurn = true;
 		state.ship.Add(Status.heat, 1);
