@@ -10,6 +10,7 @@ internal sealed class MaxRiggsArtifact : DuoArtifact, IEvadeHook, IArtifactIconH
 	private static ModEntry Instance => ModEntry.Instance;
 
 	private int LastDirection = 0;
+	private int Count = 0;
 
 	protected internal override void ApplyPatches(Harmony harmony)
 	{
@@ -26,10 +27,14 @@ internal sealed class MaxRiggsArtifact : DuoArtifact, IEvadeHook, IArtifactIconH
 		return tooltips;
 	}
 
+	public override int? GetDisplayNumber(State s)
+		=> LastDirection != 0 ? Count : null;
+
 	public override void OnTurnStart(State state, Combat combat)
 	{
 		base.OnTurnStart(state, combat);
 		LastDirection = 0;
+		Count = 0;
 	}
 
 	void IEvadeHook.AfterEvade(State state, Combat combat, int direction)
@@ -38,15 +43,19 @@ internal sealed class MaxRiggsArtifact : DuoArtifact, IEvadeHook, IArtifactIconH
 		if (artifact is null)
 			return;
 
-		if (direction == artifact.LastDirection)
+		if (direction != artifact.LastDirection)
+		{
+			artifact.LastDirection = direction;
+			artifact.Count = 0;
+		}
+
+		artifact.Count++;
+		if (artifact.Count >= 3)
 		{
 			state.ship.Add(direction > 0 ? Status.autododgeRight : Status.autododgeLeft);
 			artifact.LastDirection = 0;
+			artifact.Count = 0;
 			artifact.Pulse();
-		}
-		else
-		{
-			artifact.LastDirection = direction;
 		}
 	}
 
@@ -58,6 +67,6 @@ internal sealed class MaxRiggsArtifact : DuoArtifact, IEvadeHook, IArtifactIconH
 			return;
 
 		var sprite = Enum.Parse<Spr>(duoArtifact.LastDirection > 0 ? "icons_autododgeRight" : "icons_autododgeLeft");
-		Draw.Sprite(sprite, position.x + 4, position.y + 4);
+		Draw.Sprite(sprite, position.x - 1, position.y - 1);
 	}
 }

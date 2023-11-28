@@ -40,7 +40,7 @@ internal static class I18n
 	public static string IsaacRiggsArtifactTooltip => "<c=riggs>EVADE</c> and <c=goat>DRONESHIFT</c> can be used interchangeably.\nGain 1 <c=riggs>EVADE</c> on the first turn.";
 
 	public static string MaxRiggsArtifactName => "Max-Riggs Duo Artifact";
-	public static string MaxRiggsArtifactTooltip => "After using 2 <c=riggs>EVADE</c> in a row in the same direction, gain 1 <c=hacker>AUTODODGE</c>.";
+	public static string MaxRiggsArtifactTooltip => "After using 3 <c=riggs>EVADE</c> in a row in the same direction, gain 1 <c=hacker>AUTODODGE</c>.";
 	public static string MaxRiggsArtifactTooltipLeft => "You last evaded left.";
 	public static string MaxRiggsArtifactTooltipRight => "You last evaded right.";
 }
