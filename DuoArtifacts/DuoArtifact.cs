@@ -9,6 +9,10 @@ public abstract class DuoArtifact : Artifact
 	{
 	}
 
+	protected internal virtual void ApplyLatePatches(Harmony harmony)
+	{
+	}
+
 	public override List<Tooltip>? GetExtraTooltips()
 	{
 		var tooltips = base.GetExtraTooltips();

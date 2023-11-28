@@ -26,43 +26,43 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
-			transpiler: new HarmonyMethod(typeof(IsaacPeriArtifact), nameof(AAttack_Begin_Transpiler))
+			transpiler: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Transpiler))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(AAttack), "DoLibraEffect"),
-			transpiler: new HarmonyMethod(typeof(IsaacPeriArtifact), nameof(AAttack_DoLibraEffect_Transpiler))
+			transpiler: new HarmonyMethod(GetType(), nameof(AAttack_DoLibraEffect_Transpiler))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
-			prefix: new HarmonyMethod(typeof(IsaacPeriArtifact), nameof(Card_GetAllTooltips_Prefix)),
-			finalizer: new HarmonyMethod(typeof(IsaacPeriArtifact), nameof(Card_GetAllTooltips_Finalizer))
+			prefix: new HarmonyMethod(GetType(), nameof(Card_GetAllTooltips_Prefix)),
+			finalizer: new HarmonyMethod(GetType(), nameof(Card_GetAllTooltips_Finalizer))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderDrones)),
-			prefix: new HarmonyMethod(typeof(IsaacPeriArtifact), nameof(Combat_RenderDrones_Prefix)),
-			finalizer: new HarmonyMethod(typeof(IsaacPeriArtifact), nameof(Combat_RenderDrones_Finalizer))
+			prefix: new HarmonyMethod(GetType(), nameof(Combat_RenderDrones_Prefix)),
+			finalizer: new HarmonyMethod(GetType(), nameof(Combat_RenderDrones_Finalizer))
 		);
 
 		// this doesn't work, the method gets inlined; transpile `GetActions` and `GetTooltips` instead
 		//harmony.TryPatch(
 		//	logger: Instance.Logger!,
 		//	original: () => AccessTools.DeclaredMethod(typeof(AttackDrone), "AttackDamage"),
-		//	postfix: new HarmonyMethod(typeof(IsaacPeriArtifact), nameof(AttackDrone_AttackDamage_Postfix))
+		//	postfix: new HarmonyMethod(GetType(), nameof(AttackDrone_AttackDamage_Postfix))
 		//);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(AttackDrone), nameof(AttackDrone.GetActions)),
-			prefix: new HarmonyMethod(typeof(IsaacPeriArtifact), nameof(AttackDrone_GetActions_Prefix)),
-			finalizer: new HarmonyMethod(typeof(IsaacPeriArtifact), nameof(AttackDrone_GetActions_Finalizer)),
-			transpiler: new HarmonyMethod(typeof(IsaacPeriArtifact), nameof(AttackDrone_GetActions_Transpiler))
+			prefix: new HarmonyMethod(GetType(), nameof(AttackDrone_GetActions_Prefix)),
+			finalizer: new HarmonyMethod(GetType(), nameof(AttackDrone_GetActions_Finalizer)),
+			transpiler: new HarmonyMethod(GetType(), nameof(AttackDrone_GetActions_Transpiler))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(AttackDrone), nameof(AttackDrone.GetTooltips)),
-			transpiler: new HarmonyMethod(typeof(IsaacPeriArtifact), nameof(AttackDrone_GetTooltips_Transpiler))
+			transpiler: new HarmonyMethod(GetType(), nameof(AttackDrone_GetTooltips_Transpiler))
 		);
 	}
 

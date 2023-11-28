@@ -23,7 +23,7 @@ internal sealed class BooksDrakeArtifact : DuoArtifact
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
-			transpiler: new HarmonyMethod(typeof(BooksDrakeArtifact), nameof(AAttack_Begin_Transpiler))
+			transpiler: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Transpiler))
 		);
 	}
 

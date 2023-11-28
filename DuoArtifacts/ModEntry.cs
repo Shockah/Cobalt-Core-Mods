@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IArtifactManifest
+public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IArtifactManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 
@@ -28,8 +28,11 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 
 	internal TimeSpan TotalGameTime;
 
-	private readonly Dictionary<HashSet<string>, ExternalSprite> DuoArtifactSprites = new(HashSet<string>.CreateSetComparer());
+	internal ExternalSprite ShieldCostSprite { get; private set; } = null!;
 	internal readonly DuoArtifactDatabase Database = new();
+
+	private Harmony Harmony { get; set; } = null!;
+	private readonly Dictionary<HashSet<string>, ExternalSprite> DuoArtifactSprites = new(HashSet<string>.CreateSetComparer());
 
 	public void BootMod(IModLoaderContact contact)
 	{
@@ -38,14 +41,20 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 
-		Harmony harmony = new(Name);
-		ArtifactRewardPatches.Apply(harmony);
-		CharacterPatches.Apply(harmony);
-		MGPatches.Apply(harmony);
-		CustomTTGlossary.Apply(harmony);
+		Harmony = new(Name);
+		ArtifactRewardPatches.Apply(Harmony);
+		CharacterPatches.Apply(Harmony);
+		MGPatches.Apply(Harmony);
+		CustomTTGlossary.Apply(Harmony);
 
 		foreach (var definition in DuoArtifactDefinition.Definitions)
-			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.ApplyPatches(harmony);
+			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.ApplyPatches(Harmony);
+	}
+
+	public void FinalizePreperations()
+	{
+		foreach (var definition in DuoArtifactDefinition.Definitions)
+			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.ApplyLatePatches(Harmony);
 	}
 
 	object? IApiProviderManifest.GetApi(IModManifest requestingMod)
@@ -58,6 +67,11 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 				id: $"{typeof(ModEntry).Namespace}.Artifact.{string.Join("_", definition.CharacterKeys.Value.OrderBy(key => key))}",
 				file: new FileInfo(Path.Combine(ModRootFolder!.FullName, "assets", "Artifacts", $"{definition.AssetName}.png"))
 			);
+
+		ShieldCostSprite = artRegistry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Icon.ShieldCost",
+			file: new FileInfo(Path.Combine(ModRootFolder!.FullName, "assets", "Icons", "ShieldCost.png"))
+		);
 	}
 
 	public void LoadManifest(IDeckRegistry registry)

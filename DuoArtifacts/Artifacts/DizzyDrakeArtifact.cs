@@ -23,7 +23,7 @@ internal sealed class DizzyDrakeArtifact : DuoArtifact
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(AOverheat), nameof(AOverheat.Begin)),
-			transpiler: new HarmonyMethod(typeof(DizzyDrakeArtifact), nameof(AOverheat_Begin_Transpiler))
+			transpiler: new HarmonyMethod(GetType(), nameof(AOverheat_Begin_Transpiler))
 		);
 	}
 
@@ -46,16 +46,23 @@ internal sealed class DizzyDrakeArtifact : DuoArtifact
 	private static void AOverheat_Begin_Transpiler_Damage(Ship ship, State state, Combat combat, int damage)
 	{
 		var artifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is DizzyDrakeArtifact);
-		bool doNormalDamage = ship == state.ship && artifact is not null && ship.Get(Status.shield) + ship.Get(Status.tempShield) >= damage + ExtraShieldDamage;
-
-		if (doNormalDamage)
-		{
-			artifact?.Pulse();
-			ship.NormalDamage(state, combat, damage + ExtraShieldDamage, -999, worldSpaceAgnostic: true);
-		}
-		else
+		if (artifact is null || ship != state.ship)
 		{
 			ship.DirectHullDamage(state, combat, damage);
+			return;
 		}
+
+		int totalShield = ship.Get(Status.shield) + ship.Get(Status.tempShield);
+		if (state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+			totalShield += ship.Get(Status.shard);
+
+		if (totalShield < damage + ExtraShieldDamage)
+		{
+			ship.DirectHullDamage(state, combat, damage);
+			return;
+		}
+
+		artifact?.Pulse();
+		ship.NormalDamage(state, combat, damage + ExtraShieldDamage, -999, worldSpaceAgnostic: true);
 	}
 }

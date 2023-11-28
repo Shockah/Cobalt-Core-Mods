@@ -1,0 +1,370 @@
+﻿using HarmonyLib;
+using Microsoft.Extensions.Logging;
+using Nanoray.Shrike.Harmony;
+using Nanoray.Shrike;
+using Shockah.Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Emit;
+using System.Reflection;
+
+namespace Shockah.DuoArtifacts;
+
+internal sealed class BooksDizzyArtifact : DuoArtifact
+{
+	private static ModEntry Instance => ModEntry.Instance;
+
+	private static readonly Stack<int> OldShards = new();
+	private static readonly Stack<int> OldShield = new();
+
+	private static G? RenderActionGraphicsContext;
+	private static int RenderActionShardAvailable;
+
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "Set via IL")]
+	private static int ShardCostIconIndex;
+
+	protected internal override void ApplyPatches(Harmony harmony)
+	{
+		base.ApplyPatches(harmony);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
+			prefix: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Prefix)),
+			finalizer: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Finalizer))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
+			prefix: new HarmonyMethod(GetType(), nameof(Combat_DrainCardActions_Prefix)),
+			finalizer: new HarmonyMethod(GetType(), nameof(Combat_DrainCardActions_Finalizer))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.MakeAllActionIcons)),
+			prefix: new HarmonyMethod(GetType(), nameof(Card_MakeAllActionIcons_Prefix)),
+			finalizer: new HarmonyMethod(GetType(), nameof(Card_MakeAllActionIcons_Finalizer))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(CardAction), nameof(CardAction.GetTooltipsForActions)),
+			prefix: new HarmonyMethod(GetType(), nameof(CardAction_GetTooltipsForActions_Prefix)),
+			finalizer: new HarmonyMethod(GetType(), nameof(CardAction_GetTooltipsForActions_Finalizer))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
+			prefix: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Prefix)),
+			finalizer: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Finalizer)),
+			transpiler: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Transpiler))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => typeof(Card).GetMethods(AccessTools.all).First(m => m.Name.StartsWith("<RenderAction>g__ShardcostIcon") && m.ReturnType == typeof(void)),
+			transpiler: new HarmonyMethod(GetType(), nameof(Card_RenderAction_ShardcostIcon_Transpiler))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(ShieldGun), "GetShieldAmt"),
+			postfix: new HarmonyMethod(GetType(), nameof(ShieldGun_GetShieldAmt_Postfix))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Converter), "GetShieldAmt"),
+			postfix: new HarmonyMethod(GetType(), nameof(Converter_GetShieldAmt_Postfix))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Converter), nameof(Converter.GetActions)),
+			postfix: new HarmonyMethod(GetType(), nameof(Converter_GetActions_Postfix))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Inverter), "GetShieldAmt"),
+			postfix: new HarmonyMethod(GetType(), nameof(Inverter_GetShieldAmt_Postfix))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Inverter), nameof(Converter.GetActions)),
+			postfix: new HarmonyMethod(GetType(), nameof(Inverter_GetActions_Postfix))
+		);
+	}
+
+	private static void TemporarilyApplyShieldToShards(State state)
+	{
+		if (OldShield.Count != 0)
+			return;
+		if (!state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+			return;
+
+		int shield = state.ship.Get(Status.shield);
+		int shards = state.ship.Get(Status.shard);
+
+		OldShield.Push(shield);
+		OldShards.Push(shards);
+
+		state.ship.Add(Status.maxShard, shield);
+		state.ship.Add(Status.shard, shield);
+	}
+
+	private static void UnapplyTemporarilyAppliedShieldFromShards(State state)
+	{
+		if (OldShield.Count != 0)
+			return;
+		if (!state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+			return;
+
+		int oldShield = OldShield.Pop();
+		OldShards.Pop();
+		state.ship.Add(Status.shard, -oldShield);
+		state.ship.Add(Status.maxShard, -oldShield);
+	}
+
+	private static void Ship_NormalDamage_Prefix(Ship __instance, State s)
+	{
+		if (__instance != s.ship)
+			return;
+		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+			return;
+
+		int shards = __instance.Get(Status.shard);
+		OldShards.Push(shards);
+		__instance.Add(Status.maxShield, shards);
+		__instance.Add(Status.shield, shards);
+	}
+
+	private static void Ship_NormalDamage_Finalizer(Ship __instance, State s, Combat c)
+	{
+		if (__instance != s.ship)
+			return;
+		var artifact = s.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksDizzyArtifact);
+		if (artifact is null)
+			return;
+
+		int oldShards = OldShards.Pop();
+		int currentShield = __instance.Get(Status.shield);
+		int currentShards = __instance.Get(Status.shard);
+
+		int resultingShield = currentShield - oldShards;
+
+		int shardsToRemove = Math.Max(0, -resultingShield);
+		resultingShield += shardsToRemove;
+		int resultingShards = currentShards - shardsToRemove;
+
+		int extraHullToRemove = Math.Max(0, -resultingShards);
+		resultingShards += extraHullToRemove;
+
+		if (resultingShards != currentShards)
+		{
+			__instance.Add(Status.shard, resultingShards - currentShards);
+			artifact.Pulse();
+		}
+		if (resultingShield != currentShield)
+			__instance.Add(Status.shield, resultingShield - currentShield);
+
+		__instance.Add(Status.maxShield, -oldShards);
+		if (extraHullToRemove > 0)
+			__instance.DirectHullDamage(s, c, extraHullToRemove);
+	}
+
+	private static void Combat_DrainCardActions_Prefix(G g)
+	{
+		if (OldShield.Count != 0)
+			return;
+		if (!g.state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+			return;
+
+		int shield = g.state.ship.Get(Status.shield);
+		OldShield.Push(shield);
+		g.state.ship.Add(Status.maxShard, shield);
+		g.state.ship.Add(Status.shard, shield);
+	}
+
+	private static void Combat_DrainCardActions_Finalizer(G g)
+	{
+		if (OldShield.Count != 0)
+			return;
+		var artifact = g.state.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksDizzyArtifact);
+		if (artifact is null)
+			return;
+
+		int oldShield = OldShield.Pop();
+		int currentShards = g.state.ship.Get(Status.shard);
+		int currentShield = g.state.ship.Get(Status.shield);
+
+		int resultingShards = currentShards - oldShield;
+
+		int shieldToRemove = Math.Max(0, -resultingShards);
+		resultingShards += shieldToRemove;
+		int resultingShield = currentShield - shieldToRemove;
+
+		int leftOverToRemove = Math.Max(0, -resultingShield);
+		resultingShield += leftOverToRemove;
+
+		if (resultingShield != currentShield)
+		{
+			g.state.ship.Add(Status.shield, resultingShield - currentShield);
+			artifact.Pulse();
+		}
+		if (resultingShards != currentShards)
+			g.state.ship.Add(Status.shard, resultingShards - currentShards);
+
+		g.state.ship.Add(Status.maxShard, -oldShield);
+		// honestly not sure what to do about this?
+		//if (leftOverToRemove > 0)
+		//	g.state.ship.DirectHullDamage(s, c, leftOverToRemove);
+	}
+
+	private static void Card_MakeAllActionIcons_Prefix(State s)
+		=> TemporarilyApplyShieldToShards(s);
+
+	private static void Card_MakeAllActionIcons_Finalizer(State s)
+		=> UnapplyTemporarilyAppliedShieldFromShards(s);
+
+	private static void CardAction_GetTooltipsForActions_Prefix(State s)
+		=> TemporarilyApplyShieldToShards(s);
+
+	private static void CardAction_GetTooltipsForActions_Finalizer(State s)
+		=> UnapplyTemporarilyAppliedShieldFromShards(s);
+
+	private static void Card_RenderAction_Prefix(G g, int shardAvailable)
+	{
+		RenderActionGraphicsContext = g;
+		RenderActionShardAvailable = shardAvailable;
+	}
+
+	private static void Card_RenderAction_Finalizer()
+		=> RenderActionGraphicsContext = null;
+
+	private static IEnumerable<CodeInstruction> Card_RenderAction_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(
+					ILMatches.Ldarg(4),
+					ILMatches.Ldloc<int>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Instruction(OpCodes.Clt),
+					ILMatches.LdcI4(0),
+					ILMatches.Instruction(OpCodes.Ceq),
+					ILMatches.AnyLdloca,
+					ILMatches.Instruction(OpCodes.Call)
+				)
+
+				.PointerMatcher(SequenceMatcherRelativeElement.First)
+				.ExtractLabels(out var labels)
+
+				.Advance()
+				.CreateLdlocInstruction(out var ldlocLoopIterator)
+
+				.Advance(-1)
+				.Insert(
+					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.JustInsertion,
+					ldlocLoopIterator.WithLabels(labels),
+					new CodeInstruction(OpCodes.Stsfld, AccessTools.DeclaredField(typeof(BooksDizzyArtifact), nameof(ShardCostIconIndex)))
+				)
+
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			return instructions;
+		}
+	}
+
+	private static IEnumerable<CodeInstruction> Card_RenderAction_ShardcostIcon_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(
+					ILMatches.Ldarg(0),
+					ILMatches.Brtrue,
+					ILMatches.LdcI4((int)Enum.Parse<Spr>("icons_shardcostoff")),
+					ILMatches.Br,
+					ILMatches.LdcI4((int)Enum.Parse<Spr>("icons_shardcost"))
+				)
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(BooksDizzyArtifact), nameof(Card_RenderAction_ShardcostIcon_Transpiler_ModifySprite)))
+				)
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			return instructions;
+		}
+	}
+
+	private static int Card_RenderAction_ShardcostIcon_Transpiler_ModifySprite(int spriteId, bool costMet)
+	{
+		if (!costMet || RenderActionGraphicsContext is null)
+			return spriteId;
+		if (!RenderActionGraphicsContext.state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+			return spriteId;
+		if (!OldShards.TryPeek(out var shards) || !OldShield.TryPeek(out var shield))
+			return spriteId;
+
+		int totalIndex = ShardCostIconIndex + (shards + shield - RenderActionShardAvailable);
+		if (totalIndex > shards)
+			return Instance.ShieldCostSprite.Id!.Value;
+		return spriteId;
+	}
+
+	private static void ShieldGun_GetShieldAmt_Postfix(State s, ref int __result)
+	{
+		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+			return;
+		__result += s.ship.Get(Status.shard);
+	}
+
+	private static void Converter_GetShieldAmt_Postfix(State s, ref int __result)
+	{
+		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+			return;
+		__result += s.ship.Get(Status.shard);
+	}
+
+	private static void Converter_GetActions_Postfix(Converter __instance, State s, ref List<CardAction> __result)
+	{
+		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+			return;
+		if (__instance.upgrade != Upgrade.B)
+		{
+			__result.Insert(0, new ADummyAction());
+			__result.Add(new HiddenAStatus
+			{
+				status = Status.shard,
+				statusAmount = 0,
+				mode = AStatusMode.Set,
+				targetPlayer = true,
+				omitFromTooltips = true
+			});
+		}
+	}
+
+	private static void Inverter_GetShieldAmt_Postfix(State s, ref int __result)
+	{
+		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+			return;
+		__result += s.ship.Get(Status.shard);
+	}
+
+	private static void Inverter_GetActions_Postfix(Converter __instance, State s, ref List<CardAction> __result)
+	{
+		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+			return;
+		__result.Insert(0, new ADummyAction());
+		__result.Add(new HiddenAStatus
+		{
+			status = Status.shard,
+			statusAmount = 0,
+			mode = AStatusMode.Set,
+			targetPlayer = true,
+			omitFromTooltips = true
+		});
+	}
+}
