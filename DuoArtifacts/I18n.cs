@@ -41,4 +41,6 @@ internal static class I18n
 
 	public static string MaxRiggsArtifactName => "Max-Riggs Duo Artifact";
 	public static string MaxRiggsArtifactTooltip => "After using 2 <c=riggs>EVADE</c> in a row in the same direction, gain 1 <c=hacker>AUTODODGE</c>.";
+	public static string MaxRiggsArtifactTooltipLeft => "You last evaded left.";
+	public static string MaxRiggsArtifactTooltipRight => "You last evaded right.";
 }

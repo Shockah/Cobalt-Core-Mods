@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.DuoArtifacts;
@@ -15,6 +16,14 @@ internal sealed class MaxRiggsArtifact : DuoArtifact, IEvadeHook, IArtifactIconH
 		base.ApplyPatches(harmony);
 		Instance.KokoroApi.RegisterEvadeHook(this, 0);
 		Instance.KokoroApi.RegisterArtifactIconHook(this, 0);
+	}
+
+	public override List<Tooltip>? GetExtraTooltips()
+	{
+		var tooltips = base.GetExtraTooltips() ?? new();
+		if (LastDirection != 0)
+			tooltips.Insert(0, new TTText(LastDirection > 0 ? I18n.MaxRiggsArtifactTooltipRight : I18n.MaxRiggsArtifactTooltipLeft));
+		return tooltips;
 	}
 
 	public override void OnTurnStart(State state, Combat combat)
