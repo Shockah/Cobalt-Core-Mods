@@ -7,7 +7,7 @@ internal sealed class DrakeRiggsArtifact : DuoArtifact, IEvadeHook
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private bool UsedThisTurn = false;
+	public bool UsedThisTurn = false;
 
 	protected internal override void ApplyPatches(Harmony harmony)
 	{

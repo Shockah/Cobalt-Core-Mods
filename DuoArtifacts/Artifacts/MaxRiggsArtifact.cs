@@ -9,8 +9,8 @@ internal sealed class MaxRiggsArtifact : DuoArtifact, IEvadeHook, IArtifactIconH
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private int LastDirection = 0;
-	private int Count = 0;
+	public int LastDirection = 0;
+	public int Count = 0;
 
 	protected internal override void ApplyPatches(Harmony harmony)
 	{
