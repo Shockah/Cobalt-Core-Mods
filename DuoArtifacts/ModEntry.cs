@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IArtifactManifest
+public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IArtifactManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 
@@ -29,7 +29,7 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IAr
 	internal TimeSpan TotalGameTime;
 
 	private readonly Dictionary<HashSet<string>, ExternalSprite> DuoArtifactSprites = new(HashSet<string>.CreateSetComparer());
-	private readonly Dictionary<HashSet<string>, Type> DuoArtifactTypes = new(HashSet<string>.CreateSetComparer());
+	internal readonly DuoArtifactDatabase Database = new();
 
 	public void BootMod(IModLoaderContact contact)
 	{
@@ -47,6 +47,9 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IAr
 		foreach (var definition in DuoArtifactDefinition.Definitions)
 			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.ApplyPatches(harmony);
 	}
+
+	object? IApiProviderManifest.GetApi(IModManifest requestingMod)
+		=> new ApiImplementation(Database);
 
 	public void LoadManifest(ISpriteRegistry artRegistry)
 	{
@@ -82,52 +85,7 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IAr
 			);
 			artifact.AddLocalisation(definition.Name, definition.Tooltip);
 			registry.RegisterArtifact(artifact);
-			DuoArtifactTypes[definition.CharacterKeys.Value] = definition.Type;
+			Database.RegisterDuoArtifact(definition.Type, definition.Characters);
 		}
-	}
-
-	public Type? GetDuoArtifactType(IEnumerable<Deck> characters)
-		=> DuoArtifactTypes.TryGetValue(characters.Select(d => d.Key()).ToHashSet(), out var artifactType) ? artifactType : null;
-
-	public Artifact? InstantiateDuoArtifact(IEnumerable<Deck> characters)
-	{
-		var type = GetDuoArtifactType(characters);
-		return type is null ? null : (Artifact)Activator.CreateInstance(type)!;
-	}
-
-	public List<Artifact> InstantiateDuoArtifacts(IEnumerable<Deck> characters)
-	{
-		List<Deck> charactersList = characters.ToList();
-		List<Artifact> results = new();
-		foreach (var firstCharacter in charactersList)
-		{
-			foreach (var secondCharacter in charactersList)
-			{
-				if (secondCharacter == firstCharacter)
-					continue;
-
-				var artifact = InstantiateDuoArtifact(new Deck[] { firstCharacter, secondCharacter });
-				if (artifact is not null)
-					results.Add(artifact);
-			}
-		}
-		return results;
-	}
-
-	public IReadOnlySet<Deck>? GetCharactersForDuoArtifact(Type artifactType)
-	{
-		var characterKeys = DuoArtifactTypes.FirstOrNull(kvp => kvp.Value == artifactType)?.Key;
-		return characterKeys is null ? null : DB.decks.Where(kvp => characterKeys.Contains(kvp.Key.Key())).Select(kvp => kvp.Key).ToHashSet();
-	}
-
-	public IReadOnlySet<Deck>? GetCharactersForDuoArtifact(DuoArtifact artifact)
-		=> GetCharactersForDuoArtifact(artifact.GetType());
-
-	public ExternalSprite? GetSpriteForDuoArtifact(DuoArtifact artifact)
-	{
-		var characterKeys = DuoArtifactTypes.FirstOrNull(kvp => kvp.Value == artifact.GetType())?.Key;
-		if (characterKeys is null)
-			return null;
-		return DuoArtifactSprites.GetValueOrDefault(characterKeys);
 	}
 }

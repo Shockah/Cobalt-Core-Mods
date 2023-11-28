@@ -15,6 +15,8 @@ internal static class ArtifactRewardPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
+	private const double SingleColorTransitionAnimationLengthSeconds = 1;
+
 	public static void Apply(Harmony harmony)
 	{
 		harmony.TryPatch(
@@ -48,7 +50,7 @@ internal static class ArtifactRewardPatches
 		if (!random.Chance(duoArtifactChance))
 			return;
 
-		var possibleDuoArtifacts = Instance.InstantiateDuoArtifacts(GetCharactersEligibleForDuoArtifacts(s))
+		var possibleDuoArtifacts = Instance.Database.InstantiateMatchingDuoArtifacts(GetCharactersEligibleForDuoArtifacts(s))
 			.Where(duoArtifact => !s.EnumerateAllArtifacts().Any(artifact => artifact.Key() == duoArtifact.Key()))
 			.ToList();
 		if (possibleDuoArtifacts.Count == 0)
@@ -107,12 +109,28 @@ internal static class ArtifactRewardPatches
 		if (artifact is not DuoArtifact duoArtifact)
 			return color;
 
-		var characters = Instance.GetCharactersForDuoArtifact(duoArtifact)?.OrderBy(c => c.Key()).ToList();
-		if (characters is null)
+		var colors = Instance.Database.GetDuoArtifactOwnership(duoArtifact)
+			?.OrderBy(c => c.Key())
+			.Select(key => DB.decks[key].color)
+			.ToList();
+		if (colors is null)
 			return color;
 
-		var firstColor = DB.decks[characters[0]].color;
-		var secondColor = DB.decks[characters[1]].color;
-		return Color.Lerp(firstColor, secondColor, Math.Sin(Instance.TotalGameTime.TotalSeconds * 4) / 2 + 0.5);
+		static (Color, Color, double) GetLerpInfo(List<Color> colors, double totalFraction)
+		{
+			double singleFraction = 1.0 / colors.Count;
+			int whichFraction = ((int)Math.Round(totalFraction / singleFraction) + colors.Count - 1) % colors.Count;
+			double fractionStart = singleFraction * whichFraction;
+			double fractionEnd = singleFraction * (whichFraction + 1);
+			double fraction = (totalFraction - fractionStart) / (fractionEnd - fractionStart);
+			return (colors[whichFraction], colors[(whichFraction + 1) % colors.Count], fraction);
+		}
+
+		double animationLength = colors.Count * SingleColorTransitionAnimationLengthSeconds;
+		double animationPosition = Instance.TotalGameTime.TotalSeconds % animationLength;
+		double totalFraction = animationPosition / animationLength;
+		var (fromColor, toColor, fraction) = GetLerpInfo(colors, totalFraction);
+		double lerpFraction = Math.Sin(fraction * Math.PI) * 0.5 + 0.5;
+		return Color.Lerp(fromColor, toColor, lerpFraction);
 	}
 }
