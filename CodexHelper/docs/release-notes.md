@@ -2,6 +2,11 @@
 
 # Release notes
 
+## 1.1.2
+Released 29 November 2023.
+
+* Fixed wrong assets being used after/between game updates.
+
 ## 1.1.1
 Released 26 November 2023.
 
