@@ -14,6 +14,7 @@ internal sealed class DuoArtifactDefinition
 		new(typeof(DizzyDrakeArtifact), new Deck[] { Deck.dizzy, Deck.eunice }, I18n.DizzyDrakeArtifactName, I18n.DizzyDrakeArtifactTooltip, "DizzyDrake", "action.overheat", "status.shieldAlt"),
 		new(typeof(DrakePeriArtifact), new Deck[] { Deck.eunice, Deck.peri }, I18n.DrakePeriArtifactName, I18n.DrakePeriArtifactTooltip, "DrakePeri", "action.overheat", "status.overdriveAlt", "status.powerdriveAlt"),
 		new(typeof(DrakeRiggsArtifact), new Deck[] { Deck.eunice, Deck.riggs }, I18n.DrakeRiggsArtifactName, I18n.DrakeRiggsArtifactTooltip, "DrakeRiggs", "status.evade", I18n.HeatAltGlossary),
+		new(typeof(IsaacMaxArtifact), new Deck[] { Deck.goat, Deck.hacker }, I18n.IsaacMaxArtifactName, I18n.IsaacMaxArtifactTooltip, "IsaacMax", "cardtrait.exhaust", "midrow.bubbleShield", "action.spawn", "midrow.asteroid"),
 		new(typeof(IsaacPeriArtifact), new Deck[] { Deck.goat, Deck.peri }, I18n.IsaacPeriArtifactName, I18n.IsaacPeriArtifactTooltip, "IsaacPeri", "status.overdriveAlt", "status.powerdriveAlt", I18n.FluxAltGlossary),
 		new(typeof(IsaacRiggsArtifact), new Deck[] { Deck.goat, Deck.riggs }, I18n.IsaacRiggsArtifactName, I18n.IsaacRiggsArtifactTooltip, "IsaacRiggs", "status.evade", "status.droneShift"),
 		new(typeof(MaxRiggsArtifact), new Deck[] { Deck.hacker, Deck.riggs }, I18n.MaxRiggsArtifactName, I18n.MaxRiggsArtifactTooltip, "MaxRiggs", "status.evade", I18n.AutododgeAltGlossary),

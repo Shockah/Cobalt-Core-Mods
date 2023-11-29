@@ -36,6 +36,9 @@ internal static class I18n
 	public static string DrakeRiggsArtifactName => "Drake-Riggs Duo Artifact";
 	public static string DrakeRiggsArtifactTooltip => "Once a turn, when you have no <c=riggs>EVADE</c>, you may still <c=riggs>EVADE</c>. Gain 1 <c=eunice>HEAT</c>.";
 
+	public static string IsaacMaxArtifactName => "Isaac-Max Duo Artifact";
+	public static string IsaacMaxArtifactTooltip => "Whenever you <c=hacker>DISCARD</c> or <c=hacker>EXHAUST</c> any number of cards, put a <c=goat>BUBBLE</c> on a random <c=goat>midrow object</c> without one in front of the ship. If there are none, <c=goat>LAUNCH</c> an <c=goat>asteroid</c> on a random space in front of the ship.";
+
 	public static string IsaacPeriArtifactName => "Isaac-Peri Duo Artifact";
 	public static string IsaacPeriArtifactTooltip => "Your <c=goat>Attack Drones</c> benefit from <c=peri>OVERDRIVE</c>, <c=peri>POWERDRIVE</c> and <c=peri>FLUX</c>.";
 
