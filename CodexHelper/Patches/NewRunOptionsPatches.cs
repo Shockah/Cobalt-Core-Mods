@@ -81,7 +81,7 @@ internal static class NewRunOptionsPatches
 			return;
 
 		var color = Colors.white.fadeAlpha(runConfig.IsValid(g) ? 1.0 : 0.5);
-		Draw.Sprite(Spr.icons_ace, buttonResult.v.x - 10, buttonResult.v.y + 4, color: color);
+		Draw.Sprite(StableSpr.icons_ace, buttonResult.v.x - 10, buttonResult.v.y + 4, color: color);
 
 		if (buttonResult.isHover)
 			g.tooltips.Add(buttonResult.v + new Vec(63), selectedCharKeys.Count == 0 ? I18n.DifficultyBeatenByAnyCrew : I18n.DifficultyBeatenByThisCrew);
