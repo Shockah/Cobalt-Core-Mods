@@ -1,10 +1,13 @@
-﻿using HarmonyLib;
+﻿using daisyowl.text;
+using HarmonyLib;
 using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework.Graphics;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -91,20 +94,16 @@ internal static class NewRunOptionsPatches
 
 		if (ScrollPosition > 0)
 		{
-			UIKey uIKey = UK.btn_move_left;
 			Rect rect = new(charSelectPos.x + 16, charSelectPos.y - 52, 33, 24);
-			UIKey key = uIKey;
 			OnMouseDown onMouseDown = new MouseDownHandler(() => ScrollPosition = Math.Max(0, ScrollPosition - MaxCharactersOnScreen));
-			RotatedButtonSprite(g, rect, key, Spr.buttons_move, Spr.buttons_move_on, null, null, inactive: false, flipX: true, flipY: false, onMouseDown, autoFocus: false, noHover: false, gamepadUntargetable: true);
+			RotatedButtonSprite(g, rect, UKs.btn_move_left, Sprs.buttons_move, Sprs.buttons_move_on, null, null, inactive: false, flipX: true, flipY: false, onMouseDown, autoFocus: false, noHover: false, gamepadUntargetable: true);
 		}
 
 		if (ScrollPosition < MaxScroll)
 		{
-			UIKey uIKey = UK.btn_move_right;
 			Rect rect = new(charSelectPos.x + 16, charSelectPos.y + 140, 33, 24);
-			UIKey key = uIKey;
 			OnMouseDown onMouseDown = new MouseDownHandler(() => ScrollPosition = Math.Clamp(ScrollPosition + MaxCharactersOnScreen, 0, MaxPageByPageScroll));
-			RotatedButtonSprite(g, rect, key, Spr.buttons_move, Spr.buttons_move_on, null, null, inactive: false, flipX: false, flipY: false, onMouseDown, autoFocus: false, noHover: false, gamepadUntargetable: true);
+			RotatedButtonSprite(g, rect, UKs.btn_move_right, Sprs.buttons_move, Sprs.buttons_move_on, null, null, inactive: false, flipX: false, flipY: false, onMouseDown, autoFocus: false, noHover: false, gamepadUntargetable: true);
 		}
 	}
 
@@ -113,11 +112,24 @@ internal static class NewRunOptionsPatches
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+
+				.Find(ILMatches.Ldstr("newRunOptions.crew"))
+				.Find(ILMatches.Call("Text"))
+				.Replace(
+					new CodeInstruction(OpCodes.Ldarg_2),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(NewRunOptionsPatches), nameof(NewRunOptions_CharSelect_Transpiler_HijackDrawCrewText)))
+				)
+
+				.Find(ILMatches.Ldstr("newRunOptions.crewCount"))
+				.Find(ILMatches.Call("Text"))
+				.Replace(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(NewRunOptionsPatches), nameof(NewRunOptions_CharSelect_Transpiler_HijackDrawCrewCountText))))
+
 				.Find(ILMatches.Ldsfld("allChars"))
 				.Insert(
 					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(NewRunOptionsPatches), nameof(NewRunOptions_CharSelect_Transpiler_ModifyAllChars)))
 				)
+
 				.AllElements();
 		}
 		catch (Exception ex)
@@ -125,6 +137,27 @@ internal static class NewRunOptionsPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+	}
+
+	[SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Hijacking a real method call")]
+	private static Rect NewRunOptions_CharSelect_Transpiler_HijackDrawCrewText(string str, double x, double y, Font? font, Color? color, Color? colorForce, double? progress, double? maxWidth, TAlign? align, bool dontDraw, int? lineHeight, Color? outline, BlendState? blend, SamplerState? samplerState, Effect? effect, bool dontSubstituteLocFont, double letterSpacing, double extraScale, RunConfig runConfig)
+	{
+		var orderedSelectedChars = runConfig.selectedChars.OrderBy(NewRunOptions.allChars.IndexOf).ToList();
+		for (int i = 0; i < 3; i++)
+		{
+			Deck? deck = i < orderedSelectedChars.Count ? orderedSelectedChars[i] : null;
+			string charText = deck is null ? I18n.EmptyCrewSlot : Loc.T($"char.{deck.Value.Key()}");
+			Color charTextColor = deck is null || !DB.decks.TryGetValue(deck.Value, out var deckDef) ? Colors.downside.fadeAlpha(0.4) : deckDef.color;
+			Draw.Text(charText, x, y - 5 + i * 8, font, charTextColor);
+		}
+		return new();
+	}
+
+	[SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Hijacking a real method call")]
+	private static Rect NewRunOptions_CharSelect_Transpiler_HijackDrawCrewCountText(string str, double x, double y, Font? font, Color? color, Color? colorForce, double? progress, double? maxWidth, TAlign? align, bool dontDraw, int? lineHeight, Color? outline, BlendState? blend, SamplerState? samplerState, Effect? effect, bool dontSubstituteLocFont, double letterSpacing, double extraScale)
+	{
+		// do nothing
+		return new();
 	}
 
 	private static List<Deck> NewRunOptions_CharSelect_Transpiler_ModifyAllChars(List<Deck> allChars)
