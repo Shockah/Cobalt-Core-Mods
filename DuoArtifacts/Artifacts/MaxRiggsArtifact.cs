@@ -39,7 +39,7 @@ internal sealed class MaxRiggsArtifact : DuoArtifact, IEvadeHook, IArtifactIconH
 
 	void IEvadeHook.AfterEvade(State state, Combat combat, int direction)
 	{
-		var artifact = state.EnumerateAllArtifacts().OfType<MaxRiggsArtifact>().First();
+		var artifact = state.EnumerateAllArtifacts().OfType<MaxRiggsArtifact>().FirstOrDefault();
 		if (artifact is null)
 			return;
 

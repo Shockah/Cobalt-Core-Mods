@@ -37,7 +37,7 @@ internal static class ArtifactRewardPatches
 
 		foreach (var character in state.characters)
 			if (character.artifacts.Count != 0 && character.deckType is { } deck)
-				yield return deck;
+				yield return deck == Deck.colorless ? Deck.catartifact : deck;
 	}
 
 	private static void ArtifactReward_GetOffering_Postfix(State s, List<ArtifactPool>? limitPools, List<Artifact> __result, Rand? rngOverride)

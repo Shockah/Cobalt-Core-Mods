@@ -24,6 +24,9 @@ internal static class I18n
 	public static string BooksDizzyArtifactName => "Books-Dizzy Duo Artifact";
 	public static string BooksDizzyArtifactTooltip => "<c=dizzy>SHIELD</c> and <c=shard>SHARD</c> can be used interchangeably.";
 
+	public static string CatMaxArtifactName => "CAT-Max Duo Artifact";
+	public static string CatMaxArtifactTooltip => "Gain 1 <c=status>random positive status</c> each turn.";
+
 	public static string DizzyDrakeArtifactName => "Dizzy-Drake Duo Artifact";
 	public static string DizzyDrakeArtifactTooltip => "<c=eunice>OVERHEAT</c> now causes you to lose 2 <c=dizzy>(TEMP) SHIELD</c> instead of hull, if possible.";
 
