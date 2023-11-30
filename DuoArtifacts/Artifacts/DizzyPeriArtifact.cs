@@ -17,6 +17,12 @@ internal sealed class DizzyPeriArtifact : DuoArtifact
 		);
 	}
 
+	public override void OnTurnStart(State state, Combat combat)
+	{
+		base.OnTurnStart(state, combat);
+		state.ship.Add(Status.shield, -state.ship.Get(Status.overdrive));
+	}
+
 	private static void Ship_Set_Prefix(Ship __instance, Status status, ref int n)
 	{
 		if (status != Status.shield)
