@@ -1,17 +1,17 @@
-﻿using HarmonyLib;
+﻿using CobaltCoreModding.Definitions.ExternalItems;
+using CobaltCoreModding.Definitions.ModContactPoints;
+using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Nanoray.Shrike.Harmony;
 using Nanoray.Shrike;
+using Nanoray.Shrike.Harmony;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Reflection;
-using CobaltCoreModding.Definitions.ModContactPoints;
-using System.IO;
-using CobaltCoreModding.Definitions.ExternalItems;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Shockah.DuoArtifacts;
 
@@ -21,10 +21,9 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 
 	private static readonly Stack<(int Shield, int MaxShield, int Shards, int MaxShards)> OldStatusStates = new();
 	private static int TemporarilyAppliedShieldToShardsCounter = 0;
-
 	private static int RenderActionShardAvailable;
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "Set via IL")]
+	[SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "Set via IL")]
 	private static int ShardCostIconIndex;
 
 	protected internal override void ApplyPatches(Harmony harmony)
@@ -45,14 +44,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.MakeAllActionIcons)),
-			prefix: new HarmonyMethod(GetType(), nameof(Card_MakeAllActionIcons_Prefix)),
-			finalizer: new HarmonyMethod(GetType(), nameof(Card_MakeAllActionIcons_Finalizer))
-		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(CardAction), nameof(CardAction.GetTooltipsForActions)),
-			prefix: new HarmonyMethod(GetType(), nameof(CardAction_GetTooltipsForActions_Prefix)),
-			finalizer: new HarmonyMethod(GetType(), nameof(CardAction_GetTooltipsForActions_Finalizer))
+			transpiler: new HarmonyMethod(GetType(), nameof(Card_MakeAllActionIcons_Transpiler))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
@@ -64,6 +56,11 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			logger: Instance.Logger!,
 			original: () => typeof(Card).GetMethods(AccessTools.all).First(m => m.Name.StartsWith("<RenderAction>g__ShardcostIcon") && m.ReturnType == typeof(void)),
 			transpiler: new HarmonyMethod(GetType(), nameof(Card_RenderAction_ShardcostIcon_Transpiler))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(AVariableHint), nameof(AVariableHint.GetTooltips)),
+			transpiler: new HarmonyMethod(GetType(), nameof(AVariableHint_GetTooltips_Transpiler))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
@@ -101,20 +98,6 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		);
 	}
 
-	internal static int GetRealStatus(Ship ship, Status status)
-	{
-		if (!AnyStatusState)
-			return ship.Get(status);
-		return status switch
-		{
-			Status.shield => OldStatusStates.Last().Shield,
-			Status.maxShield => OldStatusStates.Last().MaxShield,
-			Status.shard => OldStatusStates.Last().Shards,
-			Status.maxShard => OldStatusStates.Last().MaxShards,
-			_ => ship.Get(status)
-		};
-	}
-
 	private static void AddStatusNoPulse(Ship ship, Status status, int n)
 	{
 		double? statusEffectPulse = ship.statusEffectPulses.TryGetValue(status, out var dictValue) ? dictValue : null;
@@ -141,54 +124,8 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 
 	private static (int Shield, int Shards) PopStatusState()
 	{
-		var (shield, shards, _, _) = OldStatusStates.Pop();
+		var (shield, _, shards, _) = OldStatusStates.Pop();
 		return (shield, shards);
-	}
-
-	private static bool TryPeekStatusState([MaybeNullWhen(false)] out int shield, [MaybeNullWhen(false)] out int shards)
-	{
-		if (OldStatusStates.TryPeek(out var oldState))
-		{
-			shield = oldState.Shield;
-			shards = oldState.Shards;
-			return true;
-		}
-		else
-		{
-			shield = default;
-			shards = default;
-			return false;
-		}
-	}
-
-	private static void TemporarilyApplyShieldToShards(State state)
-	{
-		if (TemporarilyAppliedShieldToShardsCounter > 0)
-			return;
-		if (!state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
-			return;
-
-		int shield = state.ship.Get(Status.shield);
-		PushStatusState(state.ship);
-		AddStatusNoPulse(state.ship, Status.maxShard, shield);
-		AddStatusNoPulse(state.ship, Status.shard, shield);
-		TemporarilyAppliedShieldToShardsCounter++;
-	}
-
-	private static void UnapplyTemporarilyAppliedShieldFromShards(State state)
-	{
-		if (TemporarilyAppliedShieldToShardsCounter <= 0)
-			return;
-		if (!state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
-			return;
-
-		TemporarilyAppliedShieldToShardsCounter--;
-		if (TemporarilyAppliedShieldToShardsCounter > 0)
-			return;
-
-		var (oldShield, _) = PopStatusState();
-		AddStatusNoPulse(state.ship, Status.shard, -oldShield);
-		AddStatusNoPulse(state.ship, Status.maxShard, -oldShield);
 	}
 
 	private static void Ship_NormalDamage_Prefix(Ship __instance, State s)
@@ -198,7 +135,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
 
-		int shards = __instance.Get(Status.shield);
+		int shards = __instance.Get(Status.shard);
 		PushStatusState(__instance);
 		AddStatusNoPulse(__instance, Status.maxShield, shards);
 		AddStatusNoPulse(__instance, Status.shield, shards);
@@ -227,7 +164,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 
 		if (resultingShards != currentShards)
 		{
-			AddStatusNoPulse(__instance, Status.shard, resultingShards - currentShards);
+			__instance.Add(Status.shard, resultingShards - currentShards);
 			artifact.Pulse();
 		}
 		if (resultingShield != currentShield)
@@ -239,7 +176,18 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	}
 
 	private static void Combat_DrainCardActions_Prefix(G g)
-		=> TemporarilyApplyShieldToShards(g.state);
+	{
+		if (TemporarilyAppliedShieldToShardsCounter > 0)
+			return;
+		if (!g.state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+			return;
+
+		int shield = g.state.ship.Get(Status.shield);
+		PushStatusState(g.state.ship);
+		AddStatusNoPulse(g.state.ship, Status.maxShard, shield);
+		AddStatusNoPulse(g.state.ship, Status.shard, shield);
+		TemporarilyAppliedShieldToShardsCounter++;
+	}
 
 	private static void Combat_DrainCardActions_Finalizer(G g)
 	{
@@ -280,17 +228,37 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		//	g.state.ship.DirectHullDamage(s, c, leftOverToRemove);
 	}
 
-	private static void Card_MakeAllActionIcons_Prefix(State s)
-		=> TemporarilyApplyShieldToShards(s);
+	private static IEnumerable<CodeInstruction> Card_MakeAllActionIcons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(
+					ILMatches.Ldarg(2),
+					ILMatches.Ldfld("ship"),
+					ILMatches.LdcI4((int)Status.shard),
+					ILMatches.Call("Get")
+				)
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldarg_2),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(BooksDizzyArtifact), nameof(Card_MakeAllActionIcons_Transpiler_ModifyStatusValue)))
+				)
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			return instructions;
+		}
+	}
 
-	private static void Card_MakeAllActionIcons_Finalizer(State s)
-		=> UnapplyTemporarilyAppliedShieldFromShards(s);
-
-	private static void CardAction_GetTooltipsForActions_Prefix(State s)
-		=> TemporarilyApplyShieldToShards(s);
-
-	private static void CardAction_GetTooltipsForActions_Finalizer(State s)
-		=> UnapplyTemporarilyAppliedShieldFromShards(s);
+	private static int Card_MakeAllActionIcons_Transpiler_ModifyStatusValue(int value, State state)
+	{
+		if (!state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+			return value;
+		return value + state.ship.Get(Status.shield);
+	}
 
 	private static void Card_RenderAction_Prefix(int shardAvailable)
 		=> RenderActionShardAvailable = shardAvailable;
@@ -364,8 +332,9 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			return spriteId;
 		if (StateExt.Instance is not { } state || !state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return spriteId;
-		if (!TryPeekStatusState(out var shield, out var shards))
-			return spriteId;
+
+		int shield = state.ship.Get(Status.shield);
+		int shards = state.ship.Get(Status.shard);
 
 		int totalIndex = ShardCostIconIndex + (shards + shield - RenderActionShardAvailable);
 		if (totalIndex > shards)
@@ -373,18 +342,58 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		return spriteId;
 	}
 
+	private static IEnumerable<CodeInstruction> AVariableHint_GetTooltips_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(
+					ILMatches.Ldarg(1),
+					ILMatches.Ldfld("ship"),
+					ILMatches.Ldarg(0),
+					ILMatches.Instruction(OpCodes.Ldflda, AccessTools.DeclaredField(typeof(AVariableHint), nameof(AVariableHint.status))),
+					ILMatches.Call("get_Value"),
+					ILMatches.Call("Get")
+				)
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldarg_1),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(BooksDizzyArtifact), nameof(AVariableHint_GetTooltips_Transpiler_ModifyStatusValue)))
+				)
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			return instructions;
+		}
+	}
+
+	private static int AVariableHint_GetTooltips_Transpiler_ModifyStatusValue(int value, AVariableHint hint, State state)
+	{
+		if (!state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+			return value;
+		return hint.status switch
+		{
+			Status.shield => value + state.ship.Get(Status.shard),
+			Status.shard => value + state.ship.Get(Status.shield),
+			_ => value
+		};
+	}
+
 	private static void ShieldGun_GetShieldAmt_Postfix(State s, ref int __result)
 	{
 		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
-		__result += GetRealStatus(s.ship, Status.shard);
+		__result += s.ship.Get(Status.shard);
 	}
 
 	private static void Converter_GetShieldAmt_Postfix(State s, ref int __result)
 	{
 		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
-		__result += GetRealStatus(s.ship, Status.shard);
+		__result += s.ship.Get(Status.shard);
 	}
 
 	private static void Converter_GetActions_Postfix(Converter __instance, State s, ref List<CardAction> __result)
@@ -409,7 +418,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	{
 		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
-		__result += GetRealStatus(s.ship, Status.shard);
+		__result += s.ship.Get(Status.shard);
 	}
 
 	private static void Inverter_GetActions_Postfix(Converter __instance, State s, ref List<CardAction> __result)
