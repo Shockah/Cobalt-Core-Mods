@@ -10,6 +10,7 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 	private static ModEntry Instance => ModEntry.Instance;
 
 	private static bool WaitingForActionDrain = false;
+	private static bool IsDuringTryPlayCard = false;
 
 	protected internal override void ApplyPatches(Harmony harmony)
 	{
@@ -28,6 +29,12 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
 			postfix: new HarmonyMethod(GetType(), nameof(Combat_DrainCardActions_Postfix))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
+			prefix: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Prefix)),
+			finalizer: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Finalizer))
 		);
 	}
 
@@ -95,7 +102,11 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 	}
 
 	private static void Combat_SendCardToDiscard_Postfix(Combat __instance, State s)
-		=> DoAction(s, __instance);
+	{
+		if (IsDuringTryPlayCard)
+			return;
+		DoAction(s, __instance);
+	}
 
 	private static void Combat_SendCardToExhaust_Postfix(Combat __instance, State s)
 		=> DoAction(s, __instance);
@@ -105,4 +116,10 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 		if (__instance.cardActions.Count == 0)
 			WaitingForActionDrain = false;
 	}
+
+	private static void Combat_TryPlayCard_Prefix()
+		=> IsDuringTryPlayCard = true;
+
+	private static void Combat_TryPlayCard_Finalizer()
+		=> IsDuringTryPlayCard = false;
 }
