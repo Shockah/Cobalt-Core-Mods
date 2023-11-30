@@ -101,12 +101,6 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		);
 	}
 
-	private static bool AnyStatusState
-		=> OldStatusStates.Count != 0;
-
-	private static void PushStatusState(Ship ship)
-		=> OldStatusStates.Push((Shield: ship.Get(Status.shield), MaxShield: ship.Get(Status.maxShield), Shards: ship.Get(Status.shard), MaxShards: ship.Get(Status.maxShard)));
-
 	internal static int GetRealStatus(Ship ship, Status status)
 	{
 		if (!AnyStatusState)
@@ -120,6 +114,30 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			_ => ship.Get(status)
 		};
 	}
+
+	private static void AddStatusNoPulse(Ship ship, Status status, int n)
+	{
+		double? statusEffectPulse = ship.statusEffectPulses.TryGetValue(status, out var dictValue) ? dictValue : null;
+		bool pendingOneShotStatusAnimation = ship.pendingOneShotStatusAnimations.Contains(status);
+
+		ship.Add(status, n);
+
+		if (statusEffectPulse is null)
+			ship.statusEffectPulses.Remove(status);
+		else
+			ship.statusEffectPulses[status] = statusEffectPulse.Value;
+
+		if (pendingOneShotStatusAnimation)
+			ship.pendingOneShotStatusAnimations.Add(status);
+		else
+			ship.pendingOneShotStatusAnimations.Remove(status);
+	}
+
+	private static bool AnyStatusState
+		=> OldStatusStates.Count != 0;
+
+	private static void PushStatusState(Ship ship)
+		=> OldStatusStates.Push((Shield: ship.Get(Status.shield), MaxShield: ship.Get(Status.maxShield), Shards: ship.Get(Status.shard), MaxShards: ship.Get(Status.maxShard)));
 
 	private static (int Shield, int Shards) PopStatusState()
 	{
@@ -152,8 +170,8 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 
 		int shield = state.ship.Get(Status.shield);
 		PushStatusState(state.ship);
-		state.ship.Add(Status.maxShard, shield);
-		state.ship.Add(Status.shard, shield);
+		AddStatusNoPulse(state.ship, Status.maxShard, shield);
+		AddStatusNoPulse(state.ship, Status.shard, shield);
 		TemporarilyAppliedShieldToShardsCounter++;
 	}
 
@@ -169,8 +187,8 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			return;
 
 		var (oldShield, _) = PopStatusState();
-		state.ship.Add(Status.shard, -oldShield);
-		state.ship.Add(Status.maxShard, -oldShield);
+		AddStatusNoPulse(state.ship, Status.shard, -oldShield);
+		AddStatusNoPulse(state.ship, Status.maxShard, -oldShield);
 	}
 
 	private static void Ship_NormalDamage_Prefix(Ship __instance, State s)
@@ -182,8 +200,8 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 
 		int shards = __instance.Get(Status.shield);
 		PushStatusState(__instance);
-		__instance.Add(Status.maxShield, shards);
-		__instance.Add(Status.shield, shards);
+		AddStatusNoPulse(__instance, Status.maxShield, shards);
+		AddStatusNoPulse(__instance, Status.shield, shards);
 	}
 
 	private static void Ship_NormalDamage_Finalizer(Ship __instance, State s, Combat c)
@@ -209,13 +227,13 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 
 		if (resultingShards != currentShards)
 		{
-			__instance.Add(Status.shard, resultingShards - currentShards);
+			AddStatusNoPulse(__instance, Status.shard, resultingShards - currentShards);
 			artifact.Pulse();
 		}
 		if (resultingShield != currentShield)
-			__instance.Add(Status.shield, resultingShield - currentShield);
+			AddStatusNoPulse(__instance, Status.shield, resultingShield - currentShield);
 
-		__instance.Add(Status.maxShield, -oldShards);
+		AddStatusNoPulse(__instance, Status.maxShield, -oldShards);
 		if (extraHullToRemove > 0)
 			__instance.DirectHullDamage(s, c, extraHullToRemove);
 	}
@@ -250,13 +268,13 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 
 		if (resultingShield != currentShield)
 		{
-			g.state.ship.Add(Status.shield, resultingShield - currentShield);
+			AddStatusNoPulse(g.state.ship, Status.shield, resultingShield - currentShield);
 			artifact.Pulse();
 		}
 		if (resultingShards != currentShards)
-			g.state.ship.Add(Status.shard, resultingShards - currentShards);
+			AddStatusNoPulse(g.state.ship, Status.shard, resultingShards - currentShards);
 
-		g.state.ship.Add(Status.maxShard, -oldShield);
+		AddStatusNoPulse(g.state.ship, Status.maxShard, -oldShield);
 		// honestly not sure what to do about this?
 		//if (leftOverToRemove > 0)
 		//	g.state.ship.DirectHullDamage(s, c, leftOverToRemove);
