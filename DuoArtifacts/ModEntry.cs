@@ -4,6 +4,7 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using CobaltCoreModding.Definitions.ModManifests;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IArtifactManifest
+public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IArtifactManifest, ICardManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 
@@ -24,12 +25,10 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	public ILogger? Logger { get; set; }
 
 	internal ExternalDeck DuoArtifactsDeck { get; private set; } = null!;
-	internal IKokoroApi KokoroApi { get; set; } = null!;
+	internal IKokoroApi KokoroApi { get; private set; } = null!;
+	internal readonly DuoArtifactDatabase Database = new();
 
 	internal TimeSpan TotalGameTime;
-
-	internal ExternalSprite ShieldCostSprite { get; private set; } = null!;
-	internal readonly DuoArtifactDatabase Database = new();
 
 	private Harmony Harmony { get; set; } = null!;
 	private readonly Dictionary<HashSet<string>, ExternalSprite> DuoArtifactSprites = new(HashSet<string>.CreateSetComparer());
@@ -60,18 +59,17 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	object? IApiProviderManifest.GetApi(IModManifest requestingMod)
 		=> new ApiImplementation(Database);
 
-	public void LoadManifest(ISpriteRegistry artRegistry)
+	public void LoadManifest(ISpriteRegistry registry)
 	{
+		string namePrefix = $"{typeof(ModEntry).Namespace}.Sprite";
 		foreach (var definition in DuoArtifactDefinition.Definitions)
-			DuoArtifactSprites[definition.CharacterKeys.Value] = artRegistry.RegisterArtOrThrow(
+		{
+			DuoArtifactSprites[definition.CharacterKeys.Value] = registry.RegisterArtOrThrow(
 				id: $"{typeof(ModEntry).Namespace}.Artifact.{string.Join("_", definition.CharacterKeys.Value.OrderBy(key => key))}",
 				file: new FileInfo(Path.Combine(ModRootFolder!.FullName, "assets", "Artifacts", $"{definition.AssetName}.png"))
 			);
-
-		ShieldCostSprite = artRegistry.RegisterArtOrThrow(
-			id: $"{typeof(ModEntry).Namespace}.Icon.ShieldCost",
-			file: new FileInfo(Path.Combine(ModRootFolder!.FullName, "assets", "Icons", "ShieldCost.png"))
-		);
+			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.RegisterArt(registry, namePrefix);
+		}
 	}
 
 	public void LoadManifest(IDeckRegistry registry)
@@ -101,5 +99,12 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 			registry.RegisterArtifact(artifact);
 			Database.RegisterDuoArtifact(definition.Type, definition.Characters);
 		}
+	}
+
+	public void LoadManifest(ICardRegistry registry)
+	{
+		string namePrefix = $"{typeof(ModEntry).Namespace}.Card";
+		foreach (var definition in DuoArtifactDefinition.Definitions)
+			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.RegisterCards(registry, namePrefix);
 	}
 }

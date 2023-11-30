@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using CobaltCoreModding.Definitions.ModContactPoints;
+using HarmonyLib;
 using System.Collections.Generic;
 
 namespace Shockah.DuoArtifacts;
@@ -12,6 +13,14 @@ public abstract class DuoArtifact : Artifact
 	}
 
 	protected internal virtual void ApplyLatePatches(Harmony harmony)
+	{
+	}
+
+	protected internal virtual void RegisterArt(ISpriteRegistry registry, string namePrefix)
+	{
+	}
+
+	protected internal virtual void RegisterCards(ICardRegistry registry, string namePrefix)
 	{
 	}
 

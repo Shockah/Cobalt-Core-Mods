@@ -1,70 +1,62 @@
-﻿using HarmonyLib;
-using System;
+﻿using CobaltCoreModding.Definitions.ExternalItems;
+using CobaltCoreModding.Definitions.ModContactPoints;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-internal sealed class MaxRiggsArtifact : DuoArtifact, IEvadeHook, IArtifactIconHook
+internal sealed class MaxRiggsArtifact : DuoArtifact
 {
-	public int LastDirection = 0;
-	public int Count = 0;
-
-	protected internal override void ApplyPatches(Harmony harmony)
+	protected internal override void RegisterCards(ICardRegistry registry, string namePrefix)
 	{
-		base.ApplyPatches(harmony);
-		Instance.KokoroApi.RegisterEvadeHook(this, 0);
-		Instance.KokoroApi.RegisterArtifactIconHook(this, 0);
+		base.RegisterCards(registry, namePrefix);
+		ExternalCard card = new(
+			$"{namePrefix}.MaxRiggsArtifactCard",
+			typeof(MaxRiggsArtifactCard),
+			ExternalSprite.GetRaw((int)StableSpr.cards_BranchPrediction),
+			ExternalDeck.GetRaw((int)Deck.colorless)
+		);
+		card.AddLocalisation(I18n.MaxRiggsArtifactCardName);
+		registry.RegisterCard(card);
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
 		var tooltips = base.GetExtraTooltips() ?? new();
-		if (LastDirection != 0)
-			tooltips.Insert(0, new TTText(LastDirection > 0 ? I18n.MaxRiggsArtifactTooltipRight : I18n.MaxRiggsArtifactTooltipLeft));
+		tooltips.Add(new TTCard { card = new MaxRiggsArtifactCard() });
 		return tooltips;
 	}
 
-	public override int? GetDisplayNumber(State s)
-		=> LastDirection != 0 ? Count : null;
-
-	public override void OnTurnStart(State state, Combat combat)
+	public override void OnCombatStart(State state, Combat combat)
 	{
-		base.OnTurnStart(state, combat);
-		LastDirection = 0;
-		Count = 0;
-	}
-
-	void IEvadeHook.AfterEvade(State state, Combat combat, int direction)
-	{
-		var artifact = state.EnumerateAllArtifacts().OfType<MaxRiggsArtifact>().FirstOrDefault();
-		if (artifact is null)
-			return;
-
-		if (direction != artifact.LastDirection)
+		base.OnCombatStart(state, combat);
+		combat.QueueImmediate(new AAddCard
 		{
-			artifact.LastDirection = direction;
-			artifact.Count = 0;
-		}
+			card = new MaxRiggsArtifactCard(),
+			destination = CardDestination.Hand
+		});
+	}
+}
 
-		artifact.Count++;
-		if (artifact.Count >= 3)
+[CardMeta(dontOffer = true)]
+internal sealed class MaxRiggsArtifactCard : Card
+{
+	public override CardData GetData(State state)
+		=> new()
 		{
-			state.ship.Add(direction > 0 ? Status.autododgeRight : Status.autododgeLeft);
-			artifact.LastDirection = 0;
-			artifact.Count = 0;
-			artifact.Pulse();
-		}
-	}
+			cost = 0,
+			temporary = true,
+			exhaust = true,
+			retain = true
+		};
 
-	void IArtifactIconHook.OnRenderArtifactIcon(G g, Artifact artifact, Vec position)
-	{
-		if (artifact is not MaxRiggsArtifact duoArtifact)
-			return;
-		if (duoArtifact.LastDirection == 0)
-			return;
-
-		var sprite = Enum.Parse<Spr>(duoArtifact.LastDirection > 0 ? "icons_autododgeRight" : "icons_autododgeLeft");
-		Draw.Sprite(sprite, position.x - 1, position.y - 1);
-	}
+	public override List<CardAction> GetActions(State s, Combat c)
+		=> new()
+		{
+			new AStatus
+			{
+				status = Status.autododgeLeft,
+				statusAmount = 1,
+				targetPlayer = true
+			}
+		};
 }

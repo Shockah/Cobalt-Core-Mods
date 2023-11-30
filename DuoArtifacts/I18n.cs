@@ -14,10 +14,6 @@ internal static class I18n
 	public static string HeatAltGlossaryDescription => "Excess heat. If heat is too high at end of turn, <c=action>OVERHEAT</c> <c=downside>(take 1 hull damage and reset heat to 0)</c>.";
 	public static CustomTTGlossary HeatAltGlossary = new(CustomTTGlossary.GlossaryType.status, Enum.Parse<Spr>("icons_heat"), HeatAltGlossaryName, HeatAltGlossaryDescription);
 
-	public static string AutododgeAltGlossaryName => "Autododge";
-	public static string AutododgeAltGlossaryDescription => "If fired on, will completely move out of the way to the side. <c=downside>Decreases by 1 every time it triggers. Goes away at start of next turn.</c>";
-	public static CustomTTGlossary AutododgeAltGlossary = new(CustomTTGlossary.GlossaryType.status, Enum.Parse<Spr>("icons_autododgeRight"), AutododgeAltGlossaryName, AutododgeAltGlossaryDescription);
-
 	public static string BooksDrakeArtifactName => "Books-Drake Duo Artifact";
 	public static string BooksDrakeArtifactTooltip => "Whenever you play an attack, lose 2 <c=shard>SHARD</c>: the attack becomes piercing. If it was already piercing, it stuns. If it was already stunning, <c=eunice>TOTAL STUN</c> the opponent.";
 
@@ -49,7 +45,6 @@ internal static class I18n
 	public static string IsaacRiggsArtifactTooltip => "<c=riggs>EVADE</c> and <c=goat>DRONESHIFT</c> can be used interchangeably.\nGain 1 <c=riggs>EVADE</c> on the first turn.";
 
 	public static string MaxRiggsArtifactName => "Max-Riggs Duo Artifact";
-	public static string MaxRiggsArtifactTooltip => "After using 3 <c=riggs>EVADE</c> in a row in the same direction, gain 1 <c=hacker>AUTODODGE</c>.";
-	public static string MaxRiggsArtifactTooltipLeft => "You last evaded left.";
-	public static string MaxRiggsArtifactTooltipRight => "You last evaded right.";
+	public static string MaxRiggsArtifactTooltip => "At the start of combat, gain a <c=card>Max-Riggs Duo Artifact Card</c>.";
+	public static string MaxRiggsArtifactCardName => "Max-Riggs Duo Artifact Card";
 }

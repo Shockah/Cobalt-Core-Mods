@@ -7,8 +7,9 @@
 	<ItemGroup>
 		<PackageReference Include="Shrike" Version="2.1.0" />
 		<PackageReference Include="Shrike.Harmony" Version="2.0.2" />
+		<PackageReference Include="EnumByNameSourceGenerator" Version="1.1.1" PrivateAssets="All" ExcludeAssets="runtime" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="assets\" />
+		<Folder Include="assets\" />
 	</ItemGroup>
 </Project>

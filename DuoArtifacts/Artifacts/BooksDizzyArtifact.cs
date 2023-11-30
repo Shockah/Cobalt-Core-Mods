@@ -8,11 +8,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Reflection;
+using CobaltCoreModding.Definitions.ModContactPoints;
+using System.IO;
+using CobaltCoreModding.Definitions.ExternalItems;
 
 namespace Shockah.DuoArtifacts;
 
 internal sealed class BooksDizzyArtifact : DuoArtifact
 {
+	private static ExternalSprite ShieldCostSprite = null!;
+
 	private static readonly Stack<int> OldShards = new();
 	private static readonly Stack<int> OldShield = new();
 
@@ -83,6 +88,15 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Inverter), nameof(Converter.GetActions)),
 			postfix: new HarmonyMethod(GetType(), nameof(Inverter_GetActions_Postfix))
+		);
+	}
+
+	protected internal override void RegisterArt(ISpriteRegistry registry, string namePrefix)
+	{
+		base.RegisterArt(registry, namePrefix);
+		ShieldCostSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Icon.ShieldCost",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Icons", "ShieldCost.png"))
 		);
 	}
 
@@ -300,7 +314,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 
 		int totalIndex = ShardCostIconIndex + (shards + shield - RenderActionShardAvailable);
 		if (totalIndex > shards)
-			return Instance.ShieldCostSprite.Id!.Value;
+			return ShieldCostSprite.Id!.Value;
 		return spriteId;
 	}
 
