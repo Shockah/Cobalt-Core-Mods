@@ -11,6 +11,7 @@ using System.Reflection;
 using CobaltCoreModding.Definitions.ModContactPoints;
 using System.IO;
 using CobaltCoreModding.Definitions.ExternalItems;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Shockah.DuoArtifacts;
 
@@ -18,8 +19,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 {
 	private static ExternalSprite ShieldCostSprite = null!;
 
-	private static readonly Stack<int> OldShards = new();
-	private static readonly Stack<int> OldShield = new();
+	private static readonly Stack<(int Shield, int MaxShield, int Shards, int MaxShards)> OldStatusStates = new();
 	private static int TemporarilyAppliedShieldToShardsCounter = 0;
 
 	private static int RenderActionShardAvailable;
@@ -102,19 +102,46 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	}
 
 	private static bool AnyStatusState
-		=> OldShards.Count != 0;
+		=> OldStatusStates.Count != 0;
 
 	private static void PushStatusState(Ship ship)
-		=> PushStatusState(ship.Get(Status.shield), ship.Get(Status.shard));
+		=> OldStatusStates.Push((Shield: ship.Get(Status.shield), MaxShield: ship.Get(Status.maxShield), Shards: ship.Get(Status.shard), MaxShards: ship.Get(Status.maxShard)));
 
-	private static void PushStatusState(int shield, int shards)
+	internal static int GetRealStatus(Ship ship, Status status)
 	{
-		OldShield.Push(shield);
-		OldShards.Push(shards);
+		if (!AnyStatusState)
+			return ship.Get(status);
+		return status switch
+		{
+			Status.shield => OldStatusStates.Last().Shield,
+			Status.maxShield => OldStatusStates.Last().MaxShield,
+			Status.shard => OldStatusStates.Last().Shards,
+			Status.maxShard => OldStatusStates.Last().MaxShards,
+			_ => ship.Get(status)
+		};
 	}
 
 	private static (int Shield, int Shards) PopStatusState()
-		=> (OldShield.Pop(), OldShards.Pop());
+	{
+		var (shield, shards, _, _) = OldStatusStates.Pop();
+		return (shield, shards);
+	}
+
+	private static bool TryPeekStatusState([MaybeNullWhen(false)] out int shield, [MaybeNullWhen(false)] out int shards)
+	{
+		if (OldStatusStates.TryPeek(out var oldState))
+		{
+			shield = oldState.Shield;
+			shards = oldState.Shards;
+			return true;
+		}
+		else
+		{
+			shield = default;
+			shards = default;
+			return false;
+		}
+	}
 
 	private static void TemporarilyApplyShieldToShards(State state)
 	{
@@ -319,7 +346,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			return spriteId;
 		if (StateExt.Instance is not { } state || !state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return spriteId;
-		if (!OldShards.TryPeek(out var shards) || !OldShield.TryPeek(out var shield))
+		if (!TryPeekStatusState(out var shield, out var shards))
 			return spriteId;
 
 		int totalIndex = ShardCostIconIndex + (shards + shield - RenderActionShardAvailable);
@@ -332,14 +359,14 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	{
 		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
-		__result += s.ship.Get(Status.shard);
+		__result += GetRealStatus(s.ship, Status.shard);
 	}
 
 	private static void Converter_GetShieldAmt_Postfix(State s, ref int __result)
 	{
 		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
-		__result += s.ship.Get(Status.shard);
+		__result += GetRealStatus(s.ship, Status.shard);
 	}
 
 	private static void Converter_GetActions_Postfix(Converter __instance, State s, ref List<CardAction> __result)
@@ -364,7 +391,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	{
 		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
-		__result += s.ship.Get(Status.shard);
+		__result += GetRealStatus(s.ship, Status.shard);
 	}
 
 	private static void Inverter_GetActions_Postfix(Converter __instance, State s, ref List<CardAction> __result)
