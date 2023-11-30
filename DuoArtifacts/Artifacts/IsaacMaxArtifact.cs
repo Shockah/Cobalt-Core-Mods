@@ -7,8 +7,6 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class IsaacMaxArtifact : DuoArtifact
 {
-	private static ModEntry Instance => ModEntry.Instance;
-
 	private static bool WaitingForActionDrain = false;
 	private static bool IsDuringTryPlayCard = false;
 

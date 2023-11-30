@@ -13,12 +13,9 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class BooksDizzyArtifact : DuoArtifact
 {
-	private static ModEntry Instance => ModEntry.Instance;
-
 	private static readonly Stack<int> OldShards = new();
 	private static readonly Stack<int> OldShield = new();
 
-	private static G? RenderActionGraphicsContext;
 	private static int RenderActionShardAvailable;
 
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "Set via IL")]
@@ -55,7 +52,6 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Prefix)),
-			finalizer: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Finalizer)),
 			transpiler: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Transpiler))
 		);
 		harmony.TryPatch(
@@ -227,14 +223,8 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	private static void CardAction_GetTooltipsForActions_Finalizer(State s)
 		=> UnapplyTemporarilyAppliedShieldFromShards(s);
 
-	private static void Card_RenderAction_Prefix(G g, int shardAvailable)
-	{
-		RenderActionGraphicsContext = g;
-		RenderActionShardAvailable = shardAvailable;
-	}
-
-	private static void Card_RenderAction_Finalizer()
-		=> RenderActionGraphicsContext = null;
+	private static void Card_RenderAction_Prefix(int shardAvailable)
+		=> RenderActionShardAvailable = shardAvailable;
 
 	private static IEnumerable<CodeInstruction> Card_RenderAction_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
@@ -301,9 +291,9 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 
 	private static int Card_RenderAction_ShardcostIcon_Transpiler_ModifySprite(int spriteId, bool costMet)
 	{
-		if (!costMet || RenderActionGraphicsContext is null)
+		if (!costMet)
 			return spriteId;
-		if (!RenderActionGraphicsContext.state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+		if (StateExt.Instance?.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact) != true)
 			return spriteId;
 		if (!OldShards.TryPeek(out var shards) || !OldShield.TryPeek(out var shield))
 			return spriteId;

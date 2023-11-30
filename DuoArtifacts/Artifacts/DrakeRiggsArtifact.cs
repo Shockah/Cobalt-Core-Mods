@@ -5,8 +5,6 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class DrakeRiggsArtifact : DuoArtifact, IEvadeHook
 {
-	private static ModEntry Instance => ModEntry.Instance;
-
 	public bool UsedThisTurn = false;
 
 	protected internal override void ApplyPatches(Harmony harmony)

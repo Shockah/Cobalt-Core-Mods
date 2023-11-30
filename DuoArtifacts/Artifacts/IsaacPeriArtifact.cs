@@ -13,8 +13,6 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class IsaacPeriArtifact : DuoArtifact
 {
-	private static ModEntry Instance => ModEntry.Instance;
-
 	private static State? TooltipState;
 	private static State? ActionState;
 	private static int? LastLibra;

@@ -13,8 +13,6 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class DizzyDrakeArtifact : DuoArtifact
 {
-	private static ModEntry Instance => ModEntry.Instance;
-
 	private const int ExtraShieldDamage = 1;
 
 	protected internal override void ApplyPatches(Harmony harmony)

@@ -13,8 +13,6 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class BooksDrakeArtifact : DuoArtifact
 {
-	private static ModEntry Instance => ModEntry.Instance;
-
 	private const int ShardCost = 2;
 
 	protected internal override void ApplyPatches(Harmony harmony)

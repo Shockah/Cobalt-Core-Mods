@@ -5,6 +5,8 @@ namespace Shockah.DuoArtifacts;
 
 public abstract class DuoArtifact : Artifact
 {
+	protected static ModEntry Instance => ModEntry.Instance;
+
 	protected internal virtual void ApplyPatches(Harmony harmony)
 	{
 	}

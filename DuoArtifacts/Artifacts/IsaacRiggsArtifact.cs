@@ -5,8 +5,6 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class IsaacRiggsArtifact : DuoArtifact, IEvadeHook, IDroneShiftHook
 {
-	private static ModEntry Instance => ModEntry.Instance;
-
 	protected internal override void ApplyPatches(Harmony harmony)
 	{
 		base.ApplyPatches(harmony);

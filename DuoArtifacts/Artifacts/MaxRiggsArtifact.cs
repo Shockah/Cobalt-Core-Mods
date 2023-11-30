@@ -7,8 +7,6 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class MaxRiggsArtifact : DuoArtifact, IEvadeHook, IArtifactIconHook
 {
-	private static ModEntry Instance => ModEntry.Instance;
-
 	public int LastDirection = 0;
 	public int Count = 0;
 
