@@ -29,6 +29,9 @@ internal static class I18n
 	public static string DizzyPeriArtifactName => "Dizzy-Peri Duo Artifact";
 	public static string DizzyPeriArtifactTooltip => "Any gained <c=dizzy>SHIELD</c> over <c=dizzy>max shield</c> is converted into <c=peri>OVERDRIVE</c> instead.\n<c=downside>Lose <c=dizzy>SHIELD</c> equal to <c=peri>OVERDRIVE</c> each turn.</c>";
 
+	public static string DrakeIsaacArtifactName => "Drake-Isaac Duo Artifact";
+	public static string DrakeIsaacArtifactTooltip => "Whenever you <c=goat>LAUNCH</c> a <c=goat>midrow object</c>, lose 1 <c=eunice>HEAT</c>. If you do so, the object gets destroyed on your next turn.";
+
 	public static string DrakePeriArtifactName => "Drake-Peri Duo Artifact";
 	public static string DrakePeriArtifactTooltip => "Whenever you <c=eunice>OVERHEAT</c>, convert your <c=peri>OVERDRIVE</c> into <c=peri>POWERDRIVE</c>.";
 
