@@ -39,7 +39,7 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 
 	private static void DoAction(State state, Combat combat)
 	{
-		if (WaitingForActionDrain)
+		if (WaitingForActionDrain || !combat.isPlayerTurn)
 			return;
 
 		var artifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is IsaacMaxArtifact);
