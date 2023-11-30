@@ -20,6 +20,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 
 	private static readonly Stack<int> OldShards = new();
 	private static readonly Stack<int> OldShield = new();
+	private static int TemporarilyAppliedShieldToShardsCounter = 0;
 
 	private static int RenderActionShardAvailable;
 
@@ -100,32 +101,47 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		);
 	}
 
+	private static bool AnyStatusState
+		=> OldShards.Count != 0;
+
+	private static void PushStatusState(Ship ship)
+		=> PushStatusState(ship.Get(Status.shield), ship.Get(Status.shard));
+
+	private static void PushStatusState(int shield, int shards)
+	{
+		OldShield.Push(shield);
+		OldShards.Push(shards);
+	}
+
+	private static (int Shield, int Shards) PopStatusState()
+		=> (OldShield.Pop(), OldShards.Pop());
+
 	private static void TemporarilyApplyShieldToShards(State state)
 	{
-		if (OldShield.Count != 0)
+		if (TemporarilyAppliedShieldToShardsCounter > 0)
 			return;
 		if (!state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
 
 		int shield = state.ship.Get(Status.shield);
-		int shards = state.ship.Get(Status.shard);
-
-		OldShield.Push(shield);
-		OldShards.Push(shards);
-
+		PushStatusState(state.ship);
 		state.ship.Add(Status.maxShard, shield);
 		state.ship.Add(Status.shard, shield);
+		TemporarilyAppliedShieldToShardsCounter++;
 	}
 
 	private static void UnapplyTemporarilyAppliedShieldFromShards(State state)
 	{
-		if (OldShield.Count != 0)
+		if (TemporarilyAppliedShieldToShardsCounter <= 0)
 			return;
 		if (!state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
 
-		int oldShield = OldShield.Pop();
-		OldShards.Pop();
+		TemporarilyAppliedShieldToShardsCounter--;
+		if (TemporarilyAppliedShieldToShardsCounter > 0)
+			return;
+
+		var (oldShield, _) = PopStatusState();
 		state.ship.Add(Status.shard, -oldShield);
 		state.ship.Add(Status.maxShard, -oldShield);
 	}
@@ -137,8 +153,8 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
 
-		int shards = __instance.Get(Status.shard);
-		OldShards.Push(shards);
+		int shards = __instance.Get(Status.shield);
+		PushStatusState(__instance);
 		__instance.Add(Status.maxShield, shards);
 		__instance.Add(Status.shield, shards);
 	}
@@ -151,7 +167,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		if (artifact is null)
 			return;
 
-		int oldShards = OldShards.Pop();
+		var (_, oldShards) = PopStatusState();
 		int currentShield = __instance.Get(Status.shield);
 		int currentShards = __instance.Get(Status.shard);
 
@@ -178,27 +194,21 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	}
 
 	private static void Combat_DrainCardActions_Prefix(G g)
-	{
-		if (OldShield.Count != 0)
-			return;
-		if (!g.state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
-			return;
-
-		int shield = g.state.ship.Get(Status.shield);
-		OldShield.Push(shield);
-		g.state.ship.Add(Status.maxShard, shield);
-		g.state.ship.Add(Status.shard, shield);
-	}
+		=> TemporarilyApplyShieldToShards(g.state);
 
 	private static void Combat_DrainCardActions_Finalizer(G g)
 	{
-		if (OldShield.Count != 0)
+		if (TemporarilyAppliedShieldToShardsCounter <= 0)
 			return;
 		var artifact = g.state.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksDizzyArtifact);
 		if (artifact is null)
 			return;
 
-		int oldShield = OldShield.Pop();
+		TemporarilyAppliedShieldToShardsCounter--;
+		if (TemporarilyAppliedShieldToShardsCounter > 0)
+			return;
+
+		var (oldShield, _) = PopStatusState();
 		int currentShards = g.state.ship.Get(Status.shard);
 		int currentShield = g.state.ship.Get(Status.shield);
 
@@ -307,7 +317,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	{
 		if (!costMet)
 			return spriteId;
-		if (StateExt.Instance?.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact) != true)
+		if (StateExt.Instance is not { } state || !state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return spriteId;
 		if (!OldShards.TryPeek(out var shards) || !OldShield.TryPeek(out var shield))
 			return spriteId;

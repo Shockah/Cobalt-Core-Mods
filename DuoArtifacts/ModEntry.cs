@@ -4,7 +4,6 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using CobaltCoreModding.Definitions.ModManifests;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Microsoft.Win32;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -50,13 +49,13 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.ApplyPatches(Harmony);
 	}
 
-	public void FinalizePreperations()
+	public void FinalizePreperations(IPrelaunchContactPoint contact)
 	{
 		foreach (var definition in DuoArtifactDefinition.Definitions)
 			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.ApplyLatePatches(Harmony);
 	}
 
-	object? IApiProviderManifest.GetApi(IModManifest requestingMod)
+	object? IApiProviderManifest.GetApi(IManifest requestingMod)
 		=> new ApiImplementation(Database);
 
 	public void LoadManifest(ISpriteRegistry registry)

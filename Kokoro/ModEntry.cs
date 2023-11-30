@@ -36,6 +36,6 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest
 		CombatPatches.Apply(harmony);
 	}
 
-	object? IApiProviderManifest.GetApi(IModManifest requestingMod)
+	object? IApiProviderManifest.GetApi(IManifest requestingMod)
 		=> new ApiImplementation();
 }
