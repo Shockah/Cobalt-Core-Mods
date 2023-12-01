@@ -24,3 +24,12 @@ Introduces new difficulty levels to the game.
 \[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fcustom-difficulties-1.0.0)] \[[release notes](CustomDifficulties/docs/release-notes.md)] \[[README/source code](CustomDifficulties)]
 
 [![Difficulty choice screenshot](CustomDifficulties/docs/images/difficulty-choice-thumb.png)](CustomDifficulties/docs/images/difficulty-choice.png)
+
+# Rerolls
+
+Adds a way to reroll artifact and card rewards.  
+\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Frerolls-1.0.0)] \[[release notes](Rerolls/docs/release-notes.md)] \[[README/source code](Rerolls)]
+
+[![Artifact icon screenshot](Rerolls/docs/images/artifact-thumb.png)](Rerolls/docs/images/artifact.png)
+[![Artifact reward screenshot](Rerolls/docs/images/artifact-reward-thumb.png)](Rerolls/docs/images/artifact-reward.png)
+[![Shop screenshot](Rerolls/docs/images/shop-thumb.png)](Rerolls/docs/images/shop.png)
