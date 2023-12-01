@@ -79,6 +79,8 @@ internal static class CardRewardPatches
 
 	private static void CardReward_Render_Postfix(CardReward __instance, G g)
 	{
+		if (__instance.ugpradePreview is not null)
+			return;
 		if (LastGetOfferingArguments is not { } arguments)
 			return;
 		if (arguments.inCombat)
