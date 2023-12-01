@@ -28,7 +28,7 @@ Introduces new difficulty levels to the game.
 # Rerolls
 
 Adds a way to reroll artifact and card rewards.  
-\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Frerolls-1.0.0)] \[[release notes](Rerolls/docs/release-notes.md)] \[[README/source code](Rerolls)]
+\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Frerolls-1.0.1)] \[[release notes](Rerolls/docs/release-notes.md)] \[[README/source code](Rerolls)]
 
 [![Artifact icon screenshot](Rerolls/docs/images/artifact-thumb.png)](Rerolls/docs/images/artifact.png)
 [![Artifact reward screenshot](Rerolls/docs/images/artifact-reward-thumb.png)](Rerolls/docs/images/artifact-reward.png)
