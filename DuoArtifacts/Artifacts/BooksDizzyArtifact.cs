@@ -308,9 +308,9 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 				.Find(
 					ILMatches.Ldarg(0),
 					ILMatches.Brtrue,
-					ILMatches.LdcI4((int)Enum.Parse<Spr>("icons_shardcostoff")),
+					ILMatches.LdcI4((int)StableSpr.icons_shardcostoff),
 					ILMatches.Br,
-					ILMatches.LdcI4((int)Enum.Parse<Spr>("icons_shardcost"))
+					ILMatches.LdcI4((int)StableSpr.icons_shardcost)
 				)
 				.Insert(
 					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,

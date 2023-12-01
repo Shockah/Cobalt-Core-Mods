@@ -8,11 +8,15 @@ internal static class I18n
 
 	public static string FluxAltGlossaryName => "Flux";
 	public static string FluxAltGlossaryDescription => "Whenever this ship attacks, it gains <c=status>TEMP SHIELD</c>. <c=downside>Decreases by 1 at end of turn.</c>";
-	public static CustomTTGlossary FluxAltGlossary = new(CustomTTGlossary.GlossaryType.status, Enum.Parse<Spr>("icons_libra"), FluxAltGlossaryName, FluxAltGlossaryDescription);
+	public static CustomTTGlossary FluxAltGlossary = new(CustomTTGlossary.GlossaryType.status, StableSpr.icons_libra, FluxAltGlossaryName, FluxAltGlossaryDescription);
 
 	public static string HeatAltGlossaryName => "Heat";
 	public static string HeatAltGlossaryDescription => "Excess heat. If heat is too high at end of turn, <c=action>OVERHEAT</c> <c=downside>(take 1 hull damage and reset heat to 0)</c>.";
-	public static CustomTTGlossary HeatAltGlossary = new(CustomTTGlossary.GlossaryType.status, Enum.Parse<Spr>("icons_heat"), HeatAltGlossaryName, HeatAltGlossaryDescription);
+	public static CustomTTGlossary HeatAltGlossary = new(CustomTTGlossary.GlossaryType.status, StableSpr.icons_heat, HeatAltGlossaryName, HeatAltGlossaryDescription);
+
+	public static string ScorchingGlossaryName => "Scorching";
+	public static string ScorchingGlossaryDescription => "The object takes damage each turn. If this object collides with a ship, the ship gains 2 <c=status>HEAT</c>.";
+	public static CustomTTGlossary ScorchingGlossary = new(CustomTTGlossary.GlossaryType.midrow, StableSpr.icons_overheat, ScorchingGlossaryName, ScorchingGlossaryDescription);
 
 	public static string BooksDrakeArtifactName => "Books-Drake Duo Artifact";
 	public static string BooksDrakeArtifactTooltip => "Whenever you play an attack, lose 2 <c=shard>SHARD</c>: the attack becomes piercing. If it was already piercing, it stuns. If it was already stunning, <c=eunice>TOTAL STUN</c> the opponent.";
@@ -30,7 +34,7 @@ internal static class I18n
 	public static string DizzyPeriArtifactTooltip => "Any gained <c=dizzy>SHIELD</c> over <c=dizzy>max shield</c> is converted into <c=peri>OVERDRIVE</c> instead.\n<c=downside>Lose <c=dizzy>SHIELD</c> equal to <c=peri>OVERDRIVE</c> each turn.</c>";
 
 	public static string DrakeIsaacArtifactName => "Drake-Isaac Duo Artifact";
-	public static string DrakeIsaacArtifactTooltip => "Whenever you <c=goat>LAUNCH</c> a <c=goat>midrow object</c>, lose 1 <c=eunice>HEAT</c>. If you do so, the object gets destroyed on your next turn.";
+	public static string DrakeIsaacArtifactTooltip => "Whenever you <c=goat>LAUNCH</c> a <c=goat>midrow object</c>, lose 1 <c=eunice>HEAT</c>. If you do so, the object gains <c=eunice>SCORCHING</c>.";
 
 	public static string DrakePeriArtifactName => "Drake-Peri Duo Artifact";
 	public static string DrakePeriArtifactTooltip => "Whenever you <c=eunice>OVERHEAT</c>, convert your <c=peri>OVERDRIVE</c> into <c=peri>POWERDRIVE</c>.";

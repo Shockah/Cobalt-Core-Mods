@@ -15,8 +15,9 @@ internal sealed class CustomTTGlossary : TTGlossary
 
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private static CustomTTGlossary? CurrentContext;
+	private static readonly Stack<TTGlossary> ContextStack = new();
 
+	private static int NextID = 0;
 	private readonly GlossaryType Type;
 	private readonly Spr? Icon;
 	private readonly string Title;
@@ -29,7 +30,7 @@ internal sealed class CustomTTGlossary : TTGlossary
 
 	public CustomTTGlossary(GlossaryType type, Spr? icon, string title, string description, IEnumerable<object> values) : this(type, icon, title, description, values.Select<object, Func<object>>(v => () => v).ToArray()) { }
 
-	public CustomTTGlossary(GlossaryType type, Spr? icon, string title, string description, IEnumerable<Func<object>>? values = null) : base($"{Enum.GetName(type)}.customttglossary")
+	public CustomTTGlossary(GlossaryType type, Spr? icon, string title, string description, IEnumerable<Func<object>>? values = null) : base($"{Enum.GetName(type)}.customttglossary.{NextID++}")
 	{
 		this.Type = type;
 		this.Icon = icon;
@@ -64,36 +65,36 @@ internal sealed class CustomTTGlossary : TTGlossary
 	}
 
 	private static void TTGlossary_BuildIconAndText_Prefix(TTGlossary __instance)
-		=> CurrentContext = __instance as CustomTTGlossary;
+		=> ContextStack.Push(__instance);
 
 	private static void TTGlossary_BuildIconAndText_Finalizer()
-		=> CurrentContext = null;
+		=> ContextStack.Pop();
 
 	private static bool TTGlossary_TryGetIcon_Prefix(ref Spr? __result)
 	{
-		if (CurrentContext is null)
+		if (!ContextStack.TryPeek(out var glossary) || glossary is not CustomTTGlossary custom)
 			return true;
 
-		__result = CurrentContext.Icon;
+		__result = custom.Icon;
 		return false;
 	}
 
 	private static bool TTGlossary_MakeNameDescPair_Prefix(string nameColor, ref string __result)
 	{
-		if (CurrentContext is null)
+		if (!ContextStack.TryPeek(out var glossary) || glossary is not CustomTTGlossary custom)
 			return true;
 
-		__result = $"<c={nameColor}>{CurrentContext.Title.ToUpper()}</c>\n{BuildString(CurrentContext.Description, CurrentContext.Values.Select(v => v()).ToArray())}";
+		__result = $"<c={nameColor}>{custom.Title.ToUpper()}</c>\n{BuildString(custom.Description, custom.Values.Select(v => v()).ToArray())}";
 		return false;
 	}
 
 	private static bool TTGlossary_BuildString_Prefix(ref string __result)
 	{
-		if (CurrentContext is null)
+		if (!ContextStack.TryPeek(out var glossary) || glossary is not CustomTTGlossary custom)
 			return true;
 
-		object[] args = CurrentContext.Values.Select((object v) => "<c=boldPink>{0}</c>".FF(v.ToString() ?? "")).ToArray();
-		__result = string.Format(CurrentContext.Description, args);
+		object[] args = custom.Values.Select((object v) => "<c=boldPink>{0}</c>".FF(v.ToString() ?? "")).ToArray();
+		__result = string.Format(custom.Description, args);
 		return false;
 	}
 }
