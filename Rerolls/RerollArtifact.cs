@@ -6,6 +6,8 @@ namespace Shockah.Rerolls;
 internal sealed class RerollArtifact : Artifact
 {
 	public int RerollsLeft = 1;
+	public ArtifactOfferingConfig? LastArtifactOfferingConfig;
+	public CardOfferingConfig? LastCardOfferingConfig;
 
 	public override int? GetDisplayNumber(State s)
 		=> RerollsLeft;

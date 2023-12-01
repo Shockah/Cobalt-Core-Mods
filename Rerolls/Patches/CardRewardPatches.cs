@@ -13,7 +13,6 @@ internal static class CardRewardPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private static (int count, Deck? limitDeck, BattleType battleType, Rarity? rarityOverride, bool? overrideUpgradeChances, bool makeAllCardsTemporary, bool inCombat, int discount)? LastGetOfferingArguments;
 	private static readonly List<Card> RerolledCards = new();
 
 	public static void Apply(Harmony harmony)
@@ -37,22 +36,23 @@ internal static class CardRewardPatches
 
 	private static void Reroll(CardReward menu, G g)
 	{
-		if (LastGetOfferingArguments is not { } arguments)
-			return;
-
 		var artifact = g.state.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault();
-		if (artifact is null)
+		if (artifact is null || artifact.LastCardOfferingConfig is not { } config)
 			return;
 
 		RerolledCards.AddRange(menu.cards);
-		menu.cards = CardReward.GetOffering(g.state, arguments.count, arguments.limitDeck, arguments.battleType, arguments.rarityOverride, arguments.overrideUpgradeChances, arguments.makeAllCardsTemporary, arguments.inCombat, arguments.discount);
+		menu.cards = CardReward.GetOffering(g.state, config.Count, config.LimitDeck, config.BattleType, config.RarityOverride, config.OverrideUpgradeChances, config.MakeAllCardsTemporary, config.InCombat, config.Discount);
 		artifact.RerollsLeft--;
 		artifact.Pulse();
 	}
 
-	private static void CardReward_GetOffering_Postfix(int count, Deck? limitDeck, BattleType battleType, Rarity? rarityOverride, bool? overrideUpgradeChances, bool makeAllCardsTemporary, bool inCombat, int discount)
+	private static void CardReward_GetOffering_Postfix(State s, int count, Deck? limitDeck, BattleType battleType, Rarity? rarityOverride, bool? overrideUpgradeChances, bool makeAllCardsTemporary, bool inCombat, int discount)
 	{
-		LastGetOfferingArguments = (count, limitDeck, battleType, rarityOverride, overrideUpgradeChances, makeAllCardsTemporary, inCombat, discount);
+		var artifact = s.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault();
+		if (artifact is null)
+			return;
+
+		artifact.LastCardOfferingConfig = new(count, limitDeck, battleType, rarityOverride, overrideUpgradeChances, makeAllCardsTemporary, inCombat, discount);
 		RerolledCards.Clear();
 	}
 
@@ -81,13 +81,11 @@ internal static class CardRewardPatches
 	{
 		if (__instance.ugpradePreview is not null)
 			return;
-		if (LastGetOfferingArguments is not { } arguments)
-			return;
-		if (arguments.inCombat)
-			return;
-
+		
 		var artifact = g.state.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault();
-		if (artifact is null || artifact.RerollsLeft <= 0)
+		if (artifact is null || artifact.RerollsLeft <= 0 || artifact.LastCardOfferingConfig is not { } config)
+			return;
+		if (config.InCombat)
 			return;
 
 		SharedArt.ButtonText(g, new Vec(210, 228), (UIKey)(UK)21370001, I18n.RerollButton, null, null, inactive: artifact.RerollsLeft <= 0, new MouseDownHandler(() => Reroll(__instance, g)), platformButtonHint: Btn.Y);

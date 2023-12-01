@@ -10,7 +10,6 @@ internal static class ArtifactRewardPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private static (int count, Deck? limitDeck, List<ArtifactPool>? limitPools, Rand? rngOverride)? LastGetOfferingArguments;
 	private static readonly List<Artifact> RerolledArtifacts = new();
 
 	public static void Apply(Harmony harmony)
@@ -34,21 +33,23 @@ internal static class ArtifactRewardPatches
 
 	private static void Reroll(ArtifactReward menu, G g)
 	{
-		if (LastGetOfferingArguments is not { } arguments)
-			return;
-
 		var artifact = g.state.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault();
-		if (artifact is null)
+		if (artifact is null || artifact.LastArtifactOfferingConfig is not { } config)
 			return;
 
 		RerolledArtifacts.AddRange(menu.artifacts);
-		menu.artifacts = ArtifactReward.GetOffering(g.state, arguments.count, arguments.limitDeck, arguments.limitPools, arguments.rngOverride);
+		menu.artifacts = ArtifactReward.GetOffering(g.state, config.Count, config.LimitDeck, config.LimitPools);
 		artifact.RerollsLeft--;
 		artifact.Pulse();
 	}
 
-	private static void ArtifactReward_GetOffering_Postfix(int count, Deck? limitDeck, List<ArtifactPool>? limitPools, Rand? rngOverride)
-		=> LastGetOfferingArguments = (count, limitDeck, limitPools, rngOverride);
+	private static void ArtifactReward_GetOffering_Postfix(State s, int count, Deck? limitDeck, List<ArtifactPool>? limitPools)
+	{
+		var artifact = s.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault();
+		if (artifact is null)
+			return;
+		artifact.LastArtifactOfferingConfig = new(count, limitDeck, limitPools);
+	}
 
 	private static void ArtifactReward_GetBlockedArtifacts_Postfix(ref HashSet<Type> __result)
 	{
