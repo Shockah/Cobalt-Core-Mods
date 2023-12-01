@@ -16,19 +16,6 @@ namespace Shockah.CrewSelectionHelper;
 
 internal static class NewRunOptionsPatches
 {
-	private sealed class MouseDownHandler : OnMouseDown
-	{
-		private readonly Action Delegate;
-
-		public MouseDownHandler(Action @delegate)
-		{
-			this.Delegate = @delegate;
-		}
-
-		public void OnMouseDown(G g, Box b)
-			=> Delegate();
-	}
-
 	private static ModEntry Instance => ModEntry.Instance;
 
 	private const int CharactersPerRow = 2;
