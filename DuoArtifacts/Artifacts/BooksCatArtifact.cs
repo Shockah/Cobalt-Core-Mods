@@ -8,6 +8,7 @@ internal sealed class BooksCatArtifact : DuoArtifact
 		if (combat.turn == 0 || combat.energy <= 0)
 			return;
 
+		Pulse();
 		combat.QueueImmediate(new AStatus
 		{
 			status = Status.shard,

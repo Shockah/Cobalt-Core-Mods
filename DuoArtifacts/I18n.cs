@@ -22,6 +22,10 @@ internal static class I18n
 	public static string ScorchingGlossaryDescription => "The object takes damage each turn. If this object collides with a ship, the ship gains 2 <c=status>HEAT</c>.";
 	public static CustomTTGlossary ScorchingGlossary = new(CustomTTGlossary.GlossaryType.midrow, StableSpr.icons_overheat, ScorchingGlossaryName, ScorchingGlossaryDescription);
 
+	public static string DroneMoveAltGlossaryName => "DRONE MOVE";
+	public static string DroneMoveAltGlossaryDescription => "Instantly move all <c=midrow>midrow objects</c> in some direction.";
+	public static CustomTTGlossary DroneMoveGlossary = new(CustomTTGlossary.GlossaryType.action, StableSpr.icons_droneMoveRandom, DroneMoveAltGlossaryName, DroneMoveAltGlossaryDescription);
+
 	public static string BooksCatArtifactName => "Books-CAT Duo Artifact";
 	public static string BooksCatArtifactTooltip => "At the end of each turn, gain <c=shard>SHARD</c> equal to unspent <c=comp>energy</c>.";
 
@@ -33,6 +37,9 @@ internal static class I18n
 
 	public static string CatDizzyArtifactName => "CAT-Dizzy Duo Artifact";
 	public static string CatDizzyArtifactTooltip => "The first time you would lose <c=dizzy>SHIELD</c> or hull due to damage each combat, gain <c=comp>PERFECT SHIELD</c> equal to your <c=dizzy>SHIELD</c> + 2. <c=downside>Lose ALL <c=dizzy>max shield</c>.</c>";
+
+	public static string CatIsaacArtifactName => "CAT-Isaac Duo Artifact";
+	public static string CatIsaacArtifactTooltip => "Whenever you are about to <c=goat>LAUNCH</c> into an object and doing so would not benefit you, <c=goat>DRONESHIFT</c> the shortest possible distance to avoid doing that.";
 
 	public static string CatMaxArtifactName => "CAT-Max Duo Artifact";
 	public static string CatMaxArtifactTooltip => "Gain 1 <c=status>random positive status</c> each turn.";
