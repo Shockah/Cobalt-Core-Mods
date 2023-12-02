@@ -54,13 +54,13 @@ internal static class I18n
 	public static string DizzyMaxArtifactName => "Dizzy-Max Duo Artifact";
 	public static string DizzyMaxArtifactTooltip => "At the start of combat, gain a <c=card>Dizzy-Max Duo Artifact Card</c>.";
 	public static string DizzyMaxArtifactCardName => "Dizzy-Max Duo Artifact Card";
-	public static string DizzyMaxArtifactCardDescription => "Lose 1 <c=status>(TEMP) SHIELD</c>. If you do so, gain 1 <c=status>BOOST</c>.";
+	public static string DizzyMaxArtifactCardDescription => "Lose 3 <c=status>(TEMP) SHIELD</c>: gain 1 <c=status>BOOST</c>.";
 
 	public static string DizzyPeriArtifactName => "Dizzy-Peri Duo Artifact";
 	public static string DizzyPeriArtifactTooltip => "Any gained <c=dizzy>SHIELD</c> over <c=dizzy>max shield</c> is converted into <c=peri>OVERDRIVE</c> instead.\n<c=downside>Lose <c=dizzy>SHIELD</c> equal to <c=peri>OVERDRIVE</c> each turn.</c>";
 
 	public static string DrakeIsaacArtifactName => "Drake-Isaac Duo Artifact";
-	public static string DrakeIsaacArtifactTooltip => "Whenever you <c=goat>LAUNCH</c> a <c=goat>midrow object</c>, lose 1 <c=eunice>HEAT</c>. If you do so, the object gains <c=eunice>SCORCHING</c>.";
+	public static string DrakeIsaacArtifactTooltip => "Whenever you <c=goat>LAUNCH</c> a <c=goat>midrow object</c>, lose 1 <c=eunice>HEAT</c>: the object gains <c=eunice>SCORCHING</c>.";
 
 	public static string DrakePeriArtifactName => "Drake-Peri Duo Artifact";
 	public static string DrakePeriArtifactTooltip => "Whenever you <c=eunice>OVERHEAT</c>, convert your <c=peri>OVERDRIVE</c> into <c=peri>POWERDRIVE</c>.";

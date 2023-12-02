@@ -1,6 +1,8 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Shockah.DuoArtifacts;
@@ -56,35 +58,39 @@ internal sealed class DizzyMaxArtifactCard : Card
 		{
 			new ADelegateAction((_, s, _) =>
 			{
-				if (TryToPayAndTrigger(s.ship, Status.tempShield))
-					return;
-				if (TryToPayAndTrigger(s.ship, Status.shield))
-					return;
-
+				List<Status> statuses = new() { Status.tempShield, Status.shield };
 				var booksDizzyArtifact = s.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksDizzyArtifact);
-				if (booksDizzyArtifact is null)
+				if (booksDizzyArtifact is not null)
+					statuses.Add(Status.shard);
+
+				if (!TryToPay(s.ship, statuses, 3, out var paid))
 					return;
 
-				if (TryToPayAndTrigger(s.ship, Status.shard))
+				if (booksDizzyArtifact is not null && paid.ContainsKey(Status.shard))
 					booksDizzyArtifact.Pulse();
+				s.ship.Add(Status.boost);
 			})
 		};
 
-	private static bool TryToPayAndTrigger(Ship ship, Status status)
+	private static bool TryToPay(Ship ship, List<Status> statuses, int amount, [MaybeNullWhen(false)] out Dictionary<Status, int> paid)
 	{
-		var success = TryToPay(ship, status);
-		if (success)
-			ship.Add(Status.boost);
-		return success;
-	}
-
-	private static bool TryToPay(Ship ship, Status status)
-	{
-		if (ship.Get(status) > 0)
+		if (statuses.Select(ship.Get).Sum() < amount)
 		{
-			ship.Add(status, -1);
-			return true;
+			paid = null;
+			return false;
 		}
-		return false;
+
+		paid = new();
+		foreach (var status in statuses)
+		{
+			int toTake = Math.Min(amount, ship.Get(status));
+			ship.Add(status, -toTake);
+			amount -= toTake;
+			paid[status] = toTake;
+
+			if (amount <= 0)
+				break;
+		}
+		return true;
 	}
 }
