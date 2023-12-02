@@ -22,6 +22,9 @@ internal static class I18n
 	public static string ScorchingGlossaryDescription => "The object takes damage each turn. If this object collides with a ship, the ship gains 2 <c=status>HEAT</c>.";
 	public static CustomTTGlossary ScorchingGlossary = new(CustomTTGlossary.GlossaryType.midrow, StableSpr.icons_overheat, ScorchingGlossaryName, ScorchingGlossaryDescription);
 
+	public static string BooksCatArtifactName => "Books-CAT Duo Artifact";
+	public static string BooksCatArtifactTooltip => "At the end of each turn, gain <c=shard>SHARD</c> equal to unspent <c=comp>energy</c>.";
+
 	public static string BooksDrakeArtifactName => "Books-Drake Duo Artifact";
 	public static string BooksDrakeArtifactTooltip => "Whenever you play an attack, lose 2 <c=shard>SHARD</c>: the attack becomes piercing. If it was already piercing, it stuns. If it was already stunning, <c=eunice>TOTAL STUN</c> the opponent.";
 

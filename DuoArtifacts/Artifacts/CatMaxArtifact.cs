@@ -2,7 +2,7 @@
 
 namespace Shockah.DuoArtifacts;
 
-internal sealed class CatMaxArtifact : DuoArtifact, IEvadeHook, IDroneShiftHook
+internal sealed class CatMaxArtifact : DuoArtifact
 {
 	private static readonly List<Status> PossibleStatuses = new()
 	{

@@ -8,6 +8,7 @@ internal sealed class DuoArtifactDefinition
 {
 	public static readonly IReadOnlyList<DuoArtifactDefinition> Definitions = new List<DuoArtifactDefinition>
 	{
+		new(typeof(BooksCatArtifact), new Deck[] { Deck.shard, Deck.catartifact }, I18n.BooksCatArtifactName, I18n.BooksCatArtifactTooltip, "BooksCat", "status.shard"),
 		new(typeof(BooksDizzyArtifact), new Deck[] { Deck.shard, Deck.dizzy }, I18n.BooksDizzyArtifactName, I18n.BooksDizzyArtifactTooltip, "BooksDizzy", "status.shieldAlt", "status.shard"),
 		new(typeof(BooksDrakeArtifact), new Deck[] { Deck.shard, Deck.eunice }, I18n.BooksDrakeArtifactName, I18n.BooksDrakeArtifactTooltip, "BooksDrake", "status.shard", "action.attackPiercing", "action.stun", "action.stunShip"),
 		new(typeof(CatDizzyArtifact), new Deck[] { Deck.catartifact, Deck.dizzy }, I18n.CatDizzyArtifactName, I18n.CatDizzyArtifactTooltip, "CatDizzy", "status.shieldAlt", "status.perfectShield", I18n.MaxShieldLowerAltGlossary),
