@@ -39,6 +39,9 @@ internal static class I18n
 	public static string CatIsaacArtifactName => "CAT-Isaac Duo Artifact";
 	public static string CatIsaacArtifactTooltip => "Whenever you are about to <c=goat>LAUNCH</c> into an object and doing so would not benefit you, <c=goat>DRONESHIFT</c> the shortest possible distance to avoid doing that.";
 
+	public static string CatRiggsArtifactName => "CAT-Riggs Duo Artifact";
+	public static string CatRiggsArtifactTooltip => "<c=comp>DISCOUNT</c> the first extra card drawn each turn.";
+
 	public static string CatMaxArtifactName => "CAT-Max Duo Artifact";
 	public static string CatMaxArtifactTooltip => "Gain 1 <c=status>random positive status</c> each turn.";
 

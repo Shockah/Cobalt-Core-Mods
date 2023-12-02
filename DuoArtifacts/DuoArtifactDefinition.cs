@@ -15,6 +15,7 @@ internal sealed class DuoArtifactDefinition
 		new(typeof(CatIsaacArtifact), new Deck[] { Deck.catartifact, Deck.goat }, I18n.CatIsaacArtifactName, I18n.CatIsaacArtifactTooltip, "CatIsaac", "action.spawn", I18n.DroneMoveGlossary),
 		new(typeof(CatMaxArtifact), new Deck[] { Deck.catartifact, Deck.hacker }, I18n.CatMaxArtifactName, I18n.CatMaxArtifactTooltip, "CatMax"),
 		new(typeof(CatPeriArtifact), new Deck[] { Deck.catartifact, Deck.peri }, I18n.CatPeriArtifactName, I18n.CatPeriArtifactTooltip, "CatPeri", "cardtrait.temporary", "status.overdriveAlt"),
+		new(typeof(CatRiggsArtifact), new Deck[] { Deck.catartifact, Deck.riggs }, I18n.CatRiggsArtifactName, I18n.CatRiggsArtifactTooltip, "CatRiggs", new TTGlossary("cardtrait.discount", 1)),
 		new(typeof(DizzyDrakeArtifact), new Deck[] { Deck.dizzy, Deck.eunice }, I18n.DizzyDrakeArtifactName, I18n.DizzyDrakeArtifactTooltip, "DizzyDrake", "action.overheat", "status.shieldAlt"),
 		new(typeof(DizzyPeriArtifact), new Deck[] { Deck.dizzy, Deck.peri }, I18n.DizzyPeriArtifactName, I18n.DizzyPeriArtifactTooltip, "DizzyPeri", "status.shieldAlt", "status.overdriveAlt"),
 		new(typeof(DrakeIsaacArtifact), new Deck[] { Deck.eunice, Deck.goat }, I18n.DrakeIsaacArtifactName, I18n.DrakeIsaacArtifactTooltip, "DrakeIsaac", "action.spawn", I18n.ScorchingGlossary, I18n.HeatAltGlossary),
@@ -69,15 +70,12 @@ internal sealed class DuoArtifactDefinition
 			this.TooltipFactory = () => lazyFunction().MakeTooltip();
 		}
 
-		public DefinitionTooltip(string glossaryKey)
+		public DefinitionTooltip(Tooltip tooltip)
 		{
-			this.TooltipFactory = () => new TTGlossary(glossaryKey);
+			this.TooltipFactory = () => tooltip;
 		}
 
-		public DefinitionTooltip(CustomTTGlossary glossary)
-		{
-			this.TooltipFactory = () => glossary;
-		}
+		public DefinitionTooltip(string glossaryKey) : this(new TTGlossary(glossaryKey)) { }
 
 		public Tooltip MakeTooltip()
 			=> TooltipFactory();
@@ -85,10 +83,10 @@ internal sealed class DuoArtifactDefinition
 		public static implicit operator DefinitionTooltip(Func<DefinitionTooltip> lazyFunction)
 			=> new(lazyFunction);
 
+		public static implicit operator DefinitionTooltip(Tooltip tooltip)
+			=> new(tooltip);
+
 		public static implicit operator DefinitionTooltip(string glossaryKey)
 			=> new(glossaryKey);
-
-		public static implicit operator DefinitionTooltip(CustomTTGlossary glossary)
-			=> new(glossary);
 	}
 }
