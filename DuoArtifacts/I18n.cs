@@ -14,6 +14,10 @@ internal static class I18n
 	public static string HeatAltGlossaryDescription => "Excess heat. If heat is too high at end of turn, <c=action>OVERHEAT</c> <c=downside>(take 1 hull damage and reset heat to 0)</c>.";
 	public static CustomTTGlossary HeatAltGlossary = new(CustomTTGlossary.GlossaryType.status, StableSpr.icons_heat, HeatAltGlossaryName, HeatAltGlossaryDescription);
 
+	public static string MaxShieldLowerAltGlossaryName => "Shield capacity";
+	public static string MaxShieldLowerAltGlossaryDescription => "Max shield is lowered for the rest of combat.";
+	public static CustomTTGlossary MaxShieldLowerAltGlossary = new(CustomTTGlossary.GlossaryType.status, StableSpr.icons_maxShieldLower, MaxShieldLowerAltGlossaryName, MaxShieldLowerAltGlossaryDescription);
+
 	public static string ScorchingGlossaryName => "Scorching";
 	public static string ScorchingGlossaryDescription => "The object takes damage each turn. If this object collides with a ship, the ship gains 2 <c=status>HEAT</c>.";
 	public static CustomTTGlossary ScorchingGlossary = new(CustomTTGlossary.GlossaryType.midrow, StableSpr.icons_overheat, ScorchingGlossaryName, ScorchingGlossaryDescription);
@@ -23,6 +27,9 @@ internal static class I18n
 
 	public static string BooksDizzyArtifactName => "Books-Dizzy Duo Artifact";
 	public static string BooksDizzyArtifactTooltip => "<c=dizzy>SHIELD</c> and <c=shard>SHARD</c> can be used interchangeably.";
+
+	public static string CatDizzyArtifactName => "CAT-Dizzy Duo Artifact";
+	public static string CatDizzyArtifactTooltip => "The first time you would lose <c=dizzy>SHIELD</c> or hull due to damage each combat, gain <c=comp>PERFECT SHIELD</c> equal to your <c=dizzy>SHIELD</c> + 2. <c=downside>Lose ALL <c=dizzy>max shield</c>.</c>";
 
 	public static string CatMaxArtifactName => "CAT-Max Duo Artifact";
 	public static string CatMaxArtifactTooltip => "Gain 1 <c=status>random positive status</c> each turn.";

@@ -10,6 +10,7 @@ internal sealed class DuoArtifactDefinition
 	{
 		new(typeof(BooksDizzyArtifact), new Deck[] { Deck.shard, Deck.dizzy }, I18n.BooksDizzyArtifactName, I18n.BooksDizzyArtifactTooltip, "BooksDizzy", "status.shieldAlt", "status.shard"),
 		new(typeof(BooksDrakeArtifact), new Deck[] { Deck.shard, Deck.eunice }, I18n.BooksDrakeArtifactName, I18n.BooksDrakeArtifactTooltip, "BooksDrake", "status.shard", "action.attackPiercing", "action.stun", "action.stunShip"),
+		new(typeof(CatDizzyArtifact), new Deck[] { Deck.catartifact, Deck.dizzy }, I18n.CatDizzyArtifactName, I18n.CatDizzyArtifactTooltip, "CatDizzy", "status.shieldAlt", "status.perfectShield", I18n.MaxShieldLowerAltGlossary),
 		new(typeof(CatMaxArtifact), new Deck[] { Deck.catartifact, Deck.hacker }, I18n.CatMaxArtifactName, I18n.CatMaxArtifactTooltip, "CatMax"),
 		new(typeof(DizzyDrakeArtifact), new Deck[] { Deck.dizzy, Deck.eunice }, I18n.DizzyDrakeArtifactName, I18n.DizzyDrakeArtifactTooltip, "DizzyDrake", "action.overheat", "status.shieldAlt"),
 		new(typeof(DizzyPeriArtifact), new Deck[] { Deck.dizzy, Deck.peri }, I18n.DizzyPeriArtifactName, I18n.DizzyPeriArtifactTooltip, "DizzyPeri", "status.shieldAlt", "status.overdriveAlt"),
