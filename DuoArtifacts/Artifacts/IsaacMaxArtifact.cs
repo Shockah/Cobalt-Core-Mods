@@ -66,7 +66,7 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 		if (midrowObjects.Any(o => !o.bubbleShield))
 		{
 			var midrowObject = midrowObjects[state.rngActions.NextInt() % midrowObjects.Count];
-			combat.QueueImmediate(new ADelegateAction(() =>
+			combat.QueueImmediate(new ADelegateAction((_, _, _) =>
 			{
 				midrowObject.bubbleShield = true;
 				Audio.Play(Event.Status_PowerUp);

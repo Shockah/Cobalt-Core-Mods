@@ -4,9 +4,9 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class ADelegateAction : CardAction
 {
-	private Action Delegate;
+	private Action<G, State, Combat> Delegate;
 
-	public ADelegateAction(Action @delegate)
+	public ADelegateAction(Action<G, State, Combat> @delegate)
 	{
 		this.Delegate = @delegate;
 	}
@@ -14,6 +14,6 @@ internal sealed class ADelegateAction : CardAction
 	public override void Begin(G g, State s, Combat c)
 	{
 		base.Begin(g, s, c);
-		Delegate();
+		Delegate(g, s, c);
 	}
 }

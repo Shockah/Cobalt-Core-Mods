@@ -51,6 +51,11 @@ internal static class I18n
 	public static string DizzyDrakeArtifactName => "Dizzy-Drake Duo Artifact";
 	public static string DizzyDrakeArtifactTooltip => "<c=eunice>OVERHEAT</c> now causes you to lose 2 <c=dizzy>(TEMP) SHIELD</c> instead of hull, if possible.";
 
+	public static string DizzyMaxArtifactName => "Dizzy-Max Duo Artifact";
+	public static string DizzyMaxArtifactTooltip => "At the start of combat, gain a <c=card>Dizzy-Max Duo Artifact Card</c>.";
+	public static string DizzyMaxArtifactCardName => "Dizzy-Max Duo Artifact Card";
+	public static string DizzyMaxArtifactCardDescription => "Lose 1 <c=status>(TEMP) SHIELD</c>. If you do so, gain 1 <c=status>BOOST</c>.";
+
 	public static string DizzyPeriArtifactName => "Dizzy-Peri Duo Artifact";
 	public static string DizzyPeriArtifactTooltip => "Any gained <c=dizzy>SHIELD</c> over <c=dizzy>max shield</c> is converted into <c=peri>OVERDRIVE</c> instead.\n<c=downside>Lose <c=dizzy>SHIELD</c> equal to <c=peri>OVERDRIVE</c> each turn.</c>";
 
