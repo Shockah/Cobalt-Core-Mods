@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Shockah.DuoArtifacts;
+﻿namespace Shockah.DuoArtifacts;
 
 internal static class I18n
 {
@@ -43,6 +41,9 @@ internal static class I18n
 
 	public static string CatMaxArtifactName => "CAT-Max Duo Artifact";
 	public static string CatMaxArtifactTooltip => "Gain 1 <c=status>random positive status</c> each turn.";
+
+	public static string CatPeriArtifactName => "CAT-Peri Duo Artifact";
+	public static string CatPeriArtifactTooltip => "Whenever you play a <c=comp>TEMPORARY</c> attack, gain 1 <c=peri>OVERDRIVE</c>.\n<c=downside>Lose an extra <c=peri>OVERDRIVE</c> each turn.</c>";
 
 	public static string DizzyDrakeArtifactName => "Dizzy-Drake Duo Artifact";
 	public static string DizzyDrakeArtifactTooltip => "<c=eunice>OVERHEAT</c> now causes you to lose 2 <c=dizzy>(TEMP) SHIELD</c> instead of hull, if possible.";

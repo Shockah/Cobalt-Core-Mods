@@ -33,6 +33,6 @@ internal sealed class DrakeRiggsArtifact : DuoArtifact, IEvadeHook
 		var artifact = state.EnumerateAllArtifacts().OfType<DrakeRiggsArtifact>().First();
 		artifact.Pulse();
 		artifact.UsedThisTurn = true;
-		state.ship.Add(Status.heat, 1);
+		state.ship.Add(Status.heat);
 	}
 }
