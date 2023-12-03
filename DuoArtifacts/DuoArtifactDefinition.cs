@@ -20,6 +20,7 @@ internal sealed class DuoArtifactDefinition
 		new(typeof(DizzyMaxArtifact), new Deck[] { Deck.dizzy, Deck.hacker }, I18n.DizzyMaxArtifactName, I18n.DizzyMaxArtifactTooltip, "DizzyMax", "status.shieldAlt", new TTGlossary("status.boost", 1)),
 		new(typeof(DizzyPeriArtifact), new Deck[] { Deck.dizzy, Deck.peri }, I18n.DizzyPeriArtifactName, I18n.DizzyPeriArtifactTooltip, "DizzyPeri", "status.shieldAlt", "status.overdriveAlt"),
 		new(typeof(DrakeIsaacArtifact), new Deck[] { Deck.eunice, Deck.goat }, I18n.DrakeIsaacArtifactName, I18n.DrakeIsaacArtifactTooltip, "DrakeIsaac", "action.spawn", I18n.ScorchingGlossary, I18n.HeatAltGlossary),
+		new(typeof(DrakeMaxArtifact), new Deck[] { Deck.eunice, Deck.hacker }, I18n.DrakeMaxArtifactName, I18n.DrakeMaxArtifactTooltip, "DrakeMax"),
 		new(typeof(DrakePeriArtifact), new Deck[] { Deck.eunice, Deck.peri }, I18n.DrakePeriArtifactName, I18n.DrakePeriArtifactTooltip, "DrakePeri", "action.overheat", "status.overdriveAlt", "status.powerdriveAlt"),
 		new(typeof(DrakeRiggsArtifact), new Deck[] { Deck.eunice, Deck.riggs }, I18n.DrakeRiggsArtifactName, I18n.DrakeRiggsArtifactTooltip, "DrakeRiggs", "status.evade", I18n.HeatAltGlossary),
 		new(typeof(IsaacMaxArtifact), new Deck[] { Deck.goat, Deck.hacker }, I18n.IsaacMaxArtifactName, I18n.IsaacMaxArtifactTooltip, "IsaacMax", "cardtrait.exhaust", "midrow.bubbleShield", "action.spawn", "midrow.asteroid"),

@@ -29,6 +29,7 @@ internal sealed class MaxRiggsArtifact : DuoArtifact
 	public override void OnCombatStart(State state, Combat combat)
 	{
 		base.OnCombatStart(state, combat);
+		Pulse();
 		combat.QueueImmediate(new AAddCard
 		{
 			card = new MaxRiggsArtifactCard(),

@@ -6,23 +6,28 @@ internal static class I18n
 
 	public static string FluxAltGlossaryName => "Flux";
 	public static string FluxAltGlossaryDescription => "Whenever this ship attacks, it gains <c=status>TEMP SHIELD</c>. <c=downside>Decreases by 1 at end of turn.</c>";
-	public static CustomTTGlossary FluxAltGlossary = new(CustomTTGlossary.GlossaryType.status, StableSpr.icons_libra, FluxAltGlossaryName, FluxAltGlossaryDescription);
+	public static CustomTTGlossary FluxAltGlossary = new(CustomTTGlossary.GlossaryType.status, () => StableSpr.icons_libra, () => FluxAltGlossaryName, () => FluxAltGlossaryDescription);
 
 	public static string HeatAltGlossaryName => "Heat";
 	public static string HeatAltGlossaryDescription => "Excess heat. If heat is too high at end of turn, <c=action>OVERHEAT</c> <c=downside>(take 1 hull damage and reset heat to 0)</c>.";
-	public static CustomTTGlossary HeatAltGlossary = new(CustomTTGlossary.GlossaryType.status, StableSpr.icons_heat, HeatAltGlossaryName, HeatAltGlossaryDescription);
+	public static CustomTTGlossary HeatAltGlossary = new(CustomTTGlossary.GlossaryType.status, () => StableSpr.icons_heat, () => HeatAltGlossaryName, () => HeatAltGlossaryDescription);
 
 	public static string MaxShieldLowerAltGlossaryName => "Shield capacity";
 	public static string MaxShieldLowerAltGlossaryDescription => "Max shield is lowered for the rest of combat.";
-	public static CustomTTGlossary MaxShieldLowerAltGlossary = new(CustomTTGlossary.GlossaryType.status, StableSpr.icons_maxShieldLower, MaxShieldLowerAltGlossaryName, MaxShieldLowerAltGlossaryDescription);
+	public static CustomTTGlossary MaxShieldLowerAltGlossary = new(CustomTTGlossary.GlossaryType.status, () => StableSpr.icons_maxShieldLower, () => MaxShieldLowerAltGlossaryName, () => MaxShieldLowerAltGlossaryDescription);
 
 	public static string ScorchingGlossaryName => "Scorching";
 	public static string ScorchingGlossaryDescription => "The object takes damage each turn. If this object collides with a ship, the ship gains 2 <c=status>HEAT</c>.";
-	public static CustomTTGlossary ScorchingGlossary = new(CustomTTGlossary.GlossaryType.midrow, StableSpr.icons_overheat, ScorchingGlossaryName, ScorchingGlossaryDescription);
+	public static CustomTTGlossary ScorchingGlossary = new(CustomTTGlossary.GlossaryType.midrow, () => StableSpr.icons_overheat, () => ScorchingGlossaryName, () => ScorchingGlossaryDescription);
 
 	public static string DroneMoveAltGlossaryName => "DRONE MOVE";
 	public static string DroneMoveAltGlossaryDescription => "Instantly move all <c=midrow>midrow objects</c> in some direction.";
-	public static CustomTTGlossary DroneMoveGlossary = new(CustomTTGlossary.GlossaryType.action, StableSpr.icons_droneMoveRandom, DroneMoveAltGlossaryName, DroneMoveAltGlossaryDescription);
+	public static CustomTTGlossary DroneMoveGlossary = new(CustomTTGlossary.GlossaryType.action, () => StableSpr.icons_droneMoveRandom, () => DroneMoveAltGlossaryName, () => DroneMoveAltGlossaryDescription);
+
+	public static string WormStatusName => "WORM";
+	public static string WormStatusDescription => "Cancels {0} intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>";
+	public static string WormStatusAltGlossaryDescription => "Cancels intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>";
+	public static CustomTTGlossary WormStatusGlossary = new(CustomTTGlossary.GlossaryType.action, () => (Spr)DrakeMaxArtifact.WormSprite.Id!.Value, () => WormStatusName, () => WormStatusAltGlossaryDescription);
 
 	public static string BooksCatArtifactName => "Books-CAT Duo Artifact";
 	public static string BooksCatArtifactTooltip => "At the end of each turn, gain <c=shard>SHARD</c> equal to unspent <c=comp>energy</c>.";
@@ -61,6 +66,11 @@ internal static class I18n
 
 	public static string DrakeIsaacArtifactName => "Drake-Isaac Duo Artifact";
 	public static string DrakeIsaacArtifactTooltip => "Whenever you <c=goat>LAUNCH</c> a <c=goat>midrow object</c>, lose 1 <c=eunice>HEAT</c>: the object gains <c=eunice>SCORCHING</c>.";
+
+	public static string DrakeMaxArtifactName => "Drake-Max Duo Artifact";
+	public static string DrakeMaxArtifactTooltip => "At the start of combat, shuffle a <c=card>Drake-Max Duo Artifact Card</c> and a <c=cardtrait>TEMPORARY</cardtrait> <c=card>Worm</c> into your deck.";
+	public static string DrakeMaxArtifactCardName => "Drake-Max Duo Artifact Card";
+	public static string DrakeMaxArtifactCardDescription => "<c=cardtrait>Exhaust</c> all <c=card>Worm</c> in your hand. Apply <c=status>WORM</c> to the enemy for each.";
 
 	public static string DrakePeriArtifactName => "Drake-Peri Duo Artifact";
 	public static string DrakePeriArtifactTooltip => "Whenever you <c=eunice>OVERHEAT</c>, convert your <c=peri>OVERDRIVE</c> into <c=peri>POWERDRIVE</c>.";

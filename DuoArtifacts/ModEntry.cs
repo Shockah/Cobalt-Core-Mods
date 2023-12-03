@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IArtifactManifest, ICardManifest
+public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IStatusManifest, IDeckManifest, IArtifactManifest, ICardManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 
@@ -69,6 +69,13 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 			);
 			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.RegisterArt(registry, namePrefix);
 		}
+	}
+
+	public void LoadManifest(IStatusRegistry registry)
+	{
+		string namePrefix = $"{typeof(ModEntry).Namespace}.Status";
+		foreach (var definition in DuoArtifactDefinition.Definitions)
+			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.RegisterStatuses(registry, namePrefix);
 	}
 
 	public void LoadManifest(IDeckRegistry registry)

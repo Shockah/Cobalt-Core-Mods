@@ -20,6 +20,10 @@ public abstract class DuoArtifact : Artifact
 	{
 	}
 
+	protected internal virtual void RegisterStatuses(IStatusRegistry registry, string namePrefix)
+	{
+	}
+
 	protected internal virtual void RegisterCards(ICardRegistry registry, string namePrefix)
 	{
 	}

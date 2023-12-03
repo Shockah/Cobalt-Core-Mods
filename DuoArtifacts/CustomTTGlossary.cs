@@ -19,18 +19,14 @@ internal sealed class CustomTTGlossary : TTGlossary
 
 	private static int NextID = 0;
 	private readonly GlossaryType Type;
-	private readonly Spr? Icon;
-	private readonly string Title;
-	private readonly string Description;
+	private readonly Func<Spr?> Icon;
+	private readonly Func<string> Title;
+	private readonly Func<string> Description;
 	private readonly IReadOnlyList<Func<object>> Values;
 
-	public CustomTTGlossary(GlossaryType type, string title, string description, IEnumerable<object> values) : this(type, null, title, description, values) { }
+	public CustomTTGlossary(GlossaryType type, Func<string> title, Func<string> description, IEnumerable<Func<object>>? values = null) : this(type, () => null, title, description, values) { }
 
-	public CustomTTGlossary(GlossaryType type, string title, string description, IEnumerable<Func<object>>? values = null) : this(type, null, title, description, values) { }
-
-	public CustomTTGlossary(GlossaryType type, Spr? icon, string title, string description, IEnumerable<object> values) : this(type, icon, title, description, values.Select<object, Func<object>>(v => () => v).ToArray()) { }
-
-	public CustomTTGlossary(GlossaryType type, Spr? icon, string title, string description, IEnumerable<Func<object>>? values = null) : base($"{Enum.GetName(type)}.customttglossary.{NextID++}")
+	public CustomTTGlossary(GlossaryType type, Func<Spr?> icon, Func<string> title, Func<string> description, IEnumerable<Func<object>>? values = null) : base($"{Enum.GetName(type)}.customttglossary.{NextID++}")
 	{
 		this.Type = type;
 		this.Icon = icon;
@@ -75,7 +71,7 @@ internal sealed class CustomTTGlossary : TTGlossary
 		if (!ContextStack.TryPeek(out var glossary) || glossary is not CustomTTGlossary custom)
 			return true;
 
-		__result = custom.Icon;
+		__result = custom.Icon();
 		return false;
 	}
 
@@ -84,7 +80,7 @@ internal sealed class CustomTTGlossary : TTGlossary
 		if (!ContextStack.TryPeek(out var glossary) || glossary is not CustomTTGlossary custom)
 			return true;
 
-		__result = $"<c={nameColor}>{custom.Title.ToUpper()}</c>\n{BuildString(custom.Description, custom.Values.Select(v => v()).ToArray())}";
+		__result = $"<c={nameColor}>{custom.Title().ToUpper()}</c>\n{BuildString(custom.Description(), custom.Values.Select(v => v()).ToArray())}";
 		return false;
 	}
 
@@ -94,7 +90,7 @@ internal sealed class CustomTTGlossary : TTGlossary
 			return true;
 
 		object[] args = custom.Values.Select((object v) => "<c=boldPink>{0}</c>".FF(v.ToString() ?? "")).ToArray();
-		__result = string.Format(custom.Description, args);
+		__result = string.Format(custom.Description(), args);
 		return false;
 	}
 }
