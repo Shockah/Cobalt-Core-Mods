@@ -41,6 +41,9 @@ internal static class I18n
 	public static string CatDizzyArtifactName => "CAT-Dizzy Duo Artifact";
 	public static string CatDizzyArtifactTooltip => "The first time you would lose <c=dizzy>SHIELD</c> or hull due to damage each combat, gain <c=comp>PERFECT SHIELD</c> equal to your <c=dizzy>SHIELD</c> + 2. <c=downside>Lose ALL <c=dizzy>max shield</c>.</c>";
 
+	public static string CatDrakeArtifactName => "CAT-Drake Duo Artifact";
+	public static string CatDrakeArtifactTooltip => "Whenever you gain <c=eunice>SERENITY</c>, gain <c=comp>TIMESTOP</c>. Whenever you gain <c=comp>TIMESTOP</c>, gain <c=eunice>SERENITY</c>.";
+
 	public static string CatIsaacArtifactName => "CAT-Isaac Duo Artifact";
 	public static string CatIsaacArtifactTooltip => "Whenever you are about to <c=goat>LAUNCH</c> into an object and doing so would not benefit you, <c=goat>DRONESHIFT</c> the shortest possible distance to avoid doing that.";
 
