@@ -28,6 +28,7 @@ internal sealed class DuoArtifactDefinition
 		new(typeof(IsaacMaxArtifact), new Deck[] { Deck.goat, Deck.hacker }, I18n.IsaacMaxArtifactName, I18n.IsaacMaxArtifactTooltip, "IsaacMax", "cardtrait.exhaust", "midrow.bubbleShield", "action.spawn", "midrow.asteroid"),
 		new(typeof(IsaacPeriArtifact), new Deck[] { Deck.goat, Deck.peri }, I18n.IsaacPeriArtifactName, I18n.IsaacPeriArtifactTooltip, "IsaacPeri", "status.overdriveAlt", "status.powerdriveAlt", I18n.FluxAltGlossary),
 		new(typeof(IsaacRiggsArtifact), new Deck[] { Deck.goat, Deck.riggs }, I18n.IsaacRiggsArtifactName, I18n.IsaacRiggsArtifactTooltip, "IsaacRiggs", "status.evade", "status.droneShift"),
+		new(typeof(MaxPeriArtifact), new Deck[] { Deck.hacker, Deck.peri }, I18n.MaxPeriArtifactName, I18n.MaxPeriArtifactTooltip, "MaxPeri"),
 		new(typeof(MaxRiggsArtifact), new Deck[] { Deck.hacker, Deck.riggs }, I18n.MaxRiggsArtifactName, I18n.MaxRiggsArtifactTooltip, "MaxRiggs"),
 	};
 

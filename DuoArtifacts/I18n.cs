@@ -93,6 +93,9 @@ internal static class I18n
 	public static string IsaacRiggsArtifactName => "Isaac-Riggs Duo Artifact";
 	public static string IsaacRiggsArtifactTooltip => "<c=riggs>EVADE</c> and <c=goat>DRONESHIFT</c> can be used interchangeably.\nGain 1 <c=riggs>EVADE</c> on the first turn.";
 
+	public static string MaxPeriArtifactName => "Max-Peri Duo Artifact";
+	public static string MaxPeriArtifactTooltip => "Your leftmost <c=action>ATTACK</c> deals 1 more damage.\nYour rightmost <c=action>ATTACK</c> does an extra 1 damage shot.\nThe last <c=action>ATTACK</c> in your hand gets no bonuses.";
+
 	public static string MaxRiggsArtifactName => "Max-Riggs Duo Artifact";
 	public static string MaxRiggsArtifactTooltip => "At the start of combat, gain a <c=card>Max-Riggs Duo Artifact Card</c>.";
 	public static string MaxRiggsArtifactCardName => "Max-Riggs Duo Artifact Card";
