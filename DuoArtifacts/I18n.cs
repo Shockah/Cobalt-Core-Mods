@@ -41,6 +41,9 @@ internal static class I18n
 	public static string BooksMaxArtifactName => "Books-Max Duo Artifact";
 	public static string BooksMaxArtifactTooltip => "Whenever you <c=hacker>EXHAUST</c> a card, gain 1 <c=shard>SHARD</c>.";
 
+	public static string BooksPeriArtifactName => "Books-Peri Duo Artifact";
+	public static string BooksPeriArtifactTooltip => "Whenever you play an <c=peri>ATTACK</c>, lose 1 <c=shard>SHARD</c>: the attack deals 1 more damage.";
+
 	public static string BooksRiggsArtifactName => "Books-Riggs Duo Artifact";
 	public static string BooksRiggsArtifactTooltip => "Gain 1 <c=riggs>HERMES BOOTS</c> for each 3 <c=shard>SHARD</c> you have each turn.";
 
@@ -85,7 +88,7 @@ internal static class I18n
 	public static string DrakePeriArtifactTooltip => "Whenever you <c=eunice>OVERHEAT</c>, convert your <c=peri>OVERDRIVE</c> into <c=peri>POWERDRIVE</c>.";
 
 	public static string DrakeRiggsArtifactName => "Drake-Riggs Duo Artifact";
-	public static string DrakeRiggsArtifactTooltip => "Once a turn, when you have no <c=riggs>EVADE</c>, you may still <c=riggs>EVADE</c>. Gain 1 <c=eunice>HEAT</c>.";
+	public static string DrakeRiggsArtifactTooltip => "Once a turn, when you have no <c=riggs>EVADE</c>, you may still <c=riggs>EVADE</c>: gain 1 <c=eunice>HEAT</c>.";
 
 	public static string IsaacMaxArtifactName => "Isaac-Max Duo Artifact";
 	public static string IsaacMaxArtifactTooltip => "Whenever you <c=hacker>DISCARD</c> or <c=hacker>EXHAUST</c> any number of cards during your turn, put a <c=goat>BUBBLE</c> on a random <c=goat>midrow object</c> without one in front of the ship. If there are none, <c=goat>LAUNCH</c> an <c=goat>asteroid</c> on a random space in front of the ship.";
@@ -97,9 +100,8 @@ internal static class I18n
 	public static string IsaacRiggsArtifactTooltip => "<c=riggs>EVADE</c> and <c=goat>DRONESHIFT</c> can be used interchangeably.\nGain 1 <c=riggs>EVADE</c> on the first turn.";
 
 	public static string MaxPeriArtifactName => "Max-Peri Duo Artifact";
-	public static string MaxPeriArtifactTooltip => "Your leftmost <c=action>ATTACK</c> deals 1 more damage.\nYour rightmost <c=action>ATTACK</c> does an extra 1 damage shot.\nThe last <c=action>ATTACK</c> in your hand gets no bonuses.";
+	public static string MaxPeriArtifactTooltip => "Your <c=hacker>leftmost</> <c=peri>ATTACK</c> deals 1 more damage.\nYour <c=hacker>rightmost</> <c=peri>ATTACK</c> does an extra 1 damage shot.\nThe last <c=peri>ATTACK</c> in your hand gets no bonuses.";
 
 	public static string MaxRiggsArtifactName => "Max-Riggs Duo Artifact";
-	public static string MaxRiggsArtifactTooltip => "At the start of combat, gain a <c=card>Max-Riggs Duo Artifact Card</c>.";
-	public static string MaxRiggsArtifactCardName => "Max-Riggs Duo Artifact Card";
+	public static string MaxRiggsArtifactTooltip => "Gain 1 <c=hacker>AUTOPILOT</c>, but lose 1 <c=riggs>EVADE</c> each turn.";
 }

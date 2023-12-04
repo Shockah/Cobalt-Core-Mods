@@ -12,6 +12,7 @@ internal sealed class DuoArtifactDefinition
 		new(typeof(BooksDizzyArtifact), new Deck[] { Deck.shard, Deck.dizzy }, I18n.BooksDizzyArtifactName, I18n.BooksDizzyArtifactTooltip, "BooksDizzy", "status.shieldAlt", "status.shard"),
 		new(typeof(BooksDrakeArtifact), new Deck[] { Deck.shard, Deck.eunice }, I18n.BooksDrakeArtifactName, I18n.BooksDrakeArtifactTooltip, "BooksDrake", "status.shard", "action.attackPiercing", "action.stun", "action.stunShip"),
 		new(typeof(BooksMaxArtifact), new Deck[] { Deck.shard, Deck.hacker }, I18n.BooksMaxArtifactName, I18n.BooksMaxArtifactTooltip, "BooksMax", "cardtrait.exhaust", "status.shard"),
+		new(typeof(BooksPeriArtifact), new Deck[] { Deck.shard, Deck.peri }, I18n.BooksPeriArtifactName, I18n.BooksPeriArtifactTooltip, "BooksPeri", "status.shard"),
 		new(typeof(BooksRiggsArtifact), new Deck[] { Deck.shard, Deck.riggs }, I18n.BooksRiggsArtifactName, I18n.BooksRiggsArtifactTooltip, "BooksRiggs", new TTGlossary("status.hermes", 1), "status.shard"),
 		new(typeof(CatDizzyArtifact), new Deck[] { Deck.catartifact, Deck.dizzy }, I18n.CatDizzyArtifactName, I18n.CatDizzyArtifactTooltip, "CatDizzy", "status.shieldAlt", "status.perfectShield", I18n.MaxShieldLowerAltGlossary),
 		new(typeof(CatDrakeArtifact), new Deck[] { Deck.catartifact, Deck.eunice }, I18n.CatDrakeArtifactName, I18n.CatDrakeArtifactTooltip, "CatDrake", "status.serenity", "status.timeStop"),

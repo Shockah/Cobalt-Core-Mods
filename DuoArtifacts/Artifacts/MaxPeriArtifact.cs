@@ -38,7 +38,7 @@ internal sealed class MaxPeriArtifact : DuoArtifact
 			return base.ModifyBaseDamage(baseDamage, card, state, combat, fromPlayer);
 
 		if (ModifyBaseDamageNestingCounter > 0)
-			return 0;
+			return base.ModifyBaseDamage(baseDamage, card, state, combat, fromPlayer);
 		ModifyBaseDamageNestingCounter++;
 		var attacks = combat.hand.Where(c => c == card || c.GetActions(state, combat).Any(a => a is AAttack)).ToList();
 		ModifyBaseDamageNestingCounter--;
