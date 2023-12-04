@@ -38,6 +38,9 @@ internal static class I18n
 	public static string BooksDizzyArtifactName => "Books-Dizzy Duo Artifact";
 	public static string BooksDizzyArtifactTooltip => "<c=dizzy>SHIELD</c> and <c=shard>SHARD</c> can be used interchangeably.";
 
+	public static string BooksMaxArtifactName => "Books-Max Duo Artifact";
+	public static string BooksMaxArtifactTooltip => "Whenever you <c=hacker>EXHAUST</c> a card, gain 1 <c=shard>SHARD</c>.";
+
 	public static string CatDizzyArtifactName => "CAT-Dizzy Duo Artifact";
 	public static string CatDizzyArtifactTooltip => "The first time you would lose <c=dizzy>SHIELD</c> or hull due to damage each combat, gain <c=comp>PERFECT SHIELD</c> equal to your <c=dizzy>SHIELD</c> + 2. <c=downside>Lose ALL <c=dizzy>max shield</c>.</c>";
 
