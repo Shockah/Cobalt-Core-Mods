@@ -13,7 +13,12 @@ internal sealed class CatPeriArtifact : DuoArtifact
 		if (!card.GetActions(state, combat).Any(a => a is AAttack))
 			return;
 
-		state.ship.Add(Status.overdrive);
+		combat.QueueImmediate(new AStatus
+		{
+			status = Status.overdrive,
+			statusAmount = 1,
+			targetPlayer = true
+		});
 		Pulse();
 	}
 
@@ -22,7 +27,12 @@ internal sealed class CatPeriArtifact : DuoArtifact
 		base.OnTurnEnd(state, combat);
 		if (state.ship.Get(Status.overdrive) > 0)
 		{
-			state.ship.Add(Status.overdrive, -1);
+			combat.QueueImmediate(new AStatus
+			{
+				status = Status.overdrive,
+				statusAmount = 1,
+				targetPlayer = true
+			});
 			Pulse();
 		}
 	}

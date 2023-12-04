@@ -55,39 +55,53 @@ internal sealed class DizzyMaxArtifactCard : Card
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
+	{
+		List<CardAction> actions = new();
+
+		List<Status> statuses = new() { Status.tempShield, Status.shield };
+		var booksDizzyArtifact = s.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksDizzyArtifact);
+		if (booksDizzyArtifact is not null)
+			statuses.Add(Status.shard);
+
+		if (!TryToPay(s.ship, statuses, 3, out var toPay))
+			return actions;
+
+		foreach (var (status, toTake) in toPay)
 		{
-			new ADelegateAction((_, s, _) =>
+			c.Queue(new AStatus
 			{
-				List<Status> statuses = new() { Status.tempShield, Status.shield };
-				var booksDizzyArtifact = s.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksDizzyArtifact);
-				if (booksDizzyArtifact is not null)
-					statuses.Add(Status.shard);
+				status = status,
+				statusAmount = -toTake,
+				targetPlayer = true
+			});
 
-				if (!TryToPay(s.ship, statuses, 3, out var paid))
-					return;
+			if (booksDizzyArtifact is not null && status == Status.shard)
+				booksDizzyArtifact.Pulse();
+		}
+		c.QueueImmediate(new AStatus
+		{
+			status = Status.boost,
+			statusAmount = 1,
+			targetPlayer = true
+		});
 
-				if (booksDizzyArtifact is not null && paid.ContainsKey(Status.shard))
-					booksDizzyArtifact.Pulse();
-				s.ship.Add(Status.boost);
-			})
-		};
+		return actions;
+	}
 
-	private static bool TryToPay(Ship ship, List<Status> statuses, int amount, [MaybeNullWhen(false)] out Dictionary<Status, int> paid)
+	private static bool TryToPay(Ship ship, List<Status> statuses, int amount, [MaybeNullWhen(false)] out Dictionary<Status, int> toPay)
 	{
 		if (statuses.Select(ship.Get).Sum() < amount)
 		{
-			paid = null;
+			toPay = null;
 			return false;
 		}
 
-		paid = new();
+		toPay = new();
 		foreach (var status in statuses)
 		{
 			int toTake = Math.Min(amount, ship.Get(status));
-			ship.Add(status, -toTake);
 			amount -= toTake;
-			paid[status] = toTake;
+			toPay[status] = toTake;
 
 			if (amount <= 0)
 				break;

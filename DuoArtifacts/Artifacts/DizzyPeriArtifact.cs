@@ -21,8 +21,15 @@ internal sealed class DizzyPeriArtifact : DuoArtifact
 	{
 		base.OnTurnStart(state, combat);
 		int toSubtract = Math.Min(0, state.ship.Get(Status.overdrive));
-		if (toSubtract > 0)
-			state.ship.Add(Status.shield, -toSubtract);
+		if (toSubtract <= 0)
+			return;
+
+		combat.QueueImmediate(new AStatus
+		{
+			status = Status.shield,
+			statusAmount = -toSubtract,
+			targetPlayer = true
+		});
 	}
 
 	private static void Ship_Set_Prefix(Ship __instance, Status status, ref int n)
@@ -34,13 +41,21 @@ internal sealed class DizzyPeriArtifact : DuoArtifact
 		if (artifact is null)
 			return;
 
+		if (StateExt.Instance?.route is not Combat combat)
+			return;
+
 		int maxShield = __instance.GetMaxShield();
 		int overshield = Math.Max(0, n - maxShield);
 		if (overshield <= 0)
 			return;
 
-		__instance.Add(Status.overdrive, overshield);
 		n -= overshield;
+		combat.QueueImmediate(new AStatus
+		{
+			status = Status.overdrive,
+			statusAmount = overshield,
+			targetPlayer = true
+		});
 		artifact.Pulse();
 	}
 }

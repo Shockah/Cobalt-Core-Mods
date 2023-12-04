@@ -33,6 +33,11 @@ internal sealed class DrakeRiggsArtifact : DuoArtifact, IEvadeHook
 		var artifact = state.EnumerateAllArtifacts().OfType<DrakeRiggsArtifact>().First();
 		artifact.Pulse();
 		artifact.UsedThisTurn = true;
-		state.ship.Add(Status.heat);
+		combat.QueueImmediate(new AStatus
+		{
+			status = Status.heat,
+			statusAmount = 1,
+			targetPlayer = true
+		});
 	}
 }

@@ -179,7 +179,12 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 		if (!artifact.ScorchingMidrowObjectPositions.Contains(action.worldX))
 			return;
 
-		combat.otherShip.Add(Status.heat, 2);
+		combat.QueueImmediate(new AStatus
+		{
+			status = Status.heat,
+			statusAmount = 2,
+			targetPlayer = false
+		});
 		artifact.ScorchingMidrowObjectPositions.Remove(action.worldX);
 	}
 

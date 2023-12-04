@@ -16,13 +16,18 @@ internal sealed class BooksMaxArtifact : DuoArtifact
 		);
 	}
 
-	private static void Combat_SendCardToExhaust_Postfix(State s)
+	private static void Combat_SendCardToExhaust_Postfix(Combat __instance, State s)
 	{
 		var artifact = s.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksMaxArtifact);
 		if (artifact is null)
 			return;
 
-		s.ship.Add(Status.shard);
+		__instance.QueueImmediate(new AStatus
+		{
+			status = Status.shard,
+			statusAmount = 1,
+			targetPlayer = true
+		});
 		artifact.Pulse();
 	}
 }
