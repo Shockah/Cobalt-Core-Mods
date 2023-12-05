@@ -1,8 +1,48 @@
-﻿namespace Shockah.DuoArtifacts;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Shockah.DuoArtifacts;
 
 internal static class I18n
 {
 	public static string DuoArtifactDeckName => "Duo";
+	public static string DuoArtifactTooltip => "{0}-{1} Duo Artifact";
+	public static string TrioArtifactTooltip => "{0}-{1}-{2} Trio Artifact";
+	public static string ComboArtifactTooltip => "{0} Combo Artifact";
+	public static string ComboArtifactTooltipSeparator => "-";
+
+	// can't use Loc.T, we're doing this too early
+	private static string GetCharacterName(Deck character)
+		=> character switch
+		{
+			Deck.colorless => "CAT",
+			Deck.dizzy => "Dizzy",
+			Deck.riggs => "Riggs",
+			Deck.peri => "Peri",
+			Deck.goat => "Isaac",
+			Deck.eunice => "Drake",
+			Deck.hacker => "Max",
+			Deck.shard => "Books",
+			_ => throw new ArgumentException()
+		};
+
+	public static string GetDuoArtifactTooltip(IEnumerable<Deck> characters)
+	{
+		var characterNamesWithColor = characters
+			.Distinct()
+			.Select(c => c == Deck.catartifact ? Deck.colorless : c)
+			.OrderBy(NewRunOptions.allChars.IndexOf)
+			.Select(c => $"<c={c.Key()}>{GetCharacterName(c)}</c>")
+			.ToList();
+
+		return characterNamesWithColor.Count switch
+		{
+			2 => string.Format(DuoArtifactTooltip, characterNamesWithColor[0], characterNamesWithColor[1]),
+			3 => string.Format(TrioArtifactTooltip, characterNamesWithColor[0], characterNamesWithColor[1], characterNamesWithColor[2]),
+			_ => string.Format(ComboArtifactTooltip, string.Join(ComboArtifactTooltipSeparator, characterNamesWithColor))
+		};
+	}
 
 	public static string FluxAltGlossaryName => "Flux";
 	public static string FluxAltGlossaryDescription => "Whenever this ship attacks, it gains <c=status>TEMP SHIELD</c>. <c=downside>Decreases by 1 at end of turn.</c>";
@@ -34,46 +74,46 @@ internal static class I18n
 	public static CustomTTGlossary OxidationStatusGlossary = new(CustomTTGlossary.GlossaryType.status, () => (Spr)DizzyIsaacArtifact.OxidationSprite.Id!.Value, () => OxidationStatusName, () => OxidationStatusDescription);
 
 	public static string BooksCatArtifactName => "Books-CAT Duo Artifact";
-	public static string BooksCatArtifactTooltip => "At the end of each turn, gain <c=shard>SHARD</c> equal to unspent <c=comp>energy</c>.";
+	public static string BooksCatArtifactTooltip => "At the end of each turn, gain <c=status>SHARD</c> equal to unspent <c=keyword>energy</c>.";
 
 	public static string BooksDrakeArtifactName => "Books-Drake Duo Artifact";
-	public static string BooksDrakeArtifactTooltip => "Whenever you play an attack, lose 2 <c=shard>SHARD</c>: the attack becomes piercing. If it was already piercing, it stuns. If it was already stunning, <c=eunice>TOTAL STUN</c> the opponent.";
+	public static string BooksDrakeArtifactTooltip => "Whenever you play an attack, lose 2 <c=status>SHARD</c>: the attack becomes piercing. If it was already piercing, it stuns. If it was already stunning, <c=action>TOTAL STUN</c> the opponent.";
 
 	public static string BooksDizzyArtifactName => "Books-Dizzy Duo Artifact";
-	public static string BooksDizzyArtifactTooltip => "<c=dizzy>SHIELD</c> and <c=shard>SHARD</c> can be used interchangeably.";
+	public static string BooksDizzyArtifactTooltip => "<c=status>SHIELD</c> and <c=status>SHARD</c> can be used interchangeably.";
 
 	public static string BooksIsaacArtifactName => "Books-Isaac Duo Artifact";
 	public static string BooksIsaacArtifactTooltip => "At the end of your turn, lose 2 <c=status>SHARD</c>: your <c=midrow>Attack Drones</c> deal 1 more damage.";
 
 	public static string BooksMaxArtifactName => "Books-Max Duo Artifact";
-	public static string BooksMaxArtifactTooltip => "Whenever you <c=hacker>EXHAUST</c> a card, gain 1 <c=shard>SHARD</c>.";
+	public static string BooksMaxArtifactTooltip => "Whenever you <c=cardtrait>EXHAUST</c> a card, gain 1 <c=status>SHARD</c>.";
 
 	public static string BooksPeriArtifactName => "Books-Peri Duo Artifact";
-	public static string BooksPeriArtifactTooltip => "Whenever you play an <c=peri>ATTACK</c>, lose 1 <c=shard>SHARD</c>: the attack deals 1 more damage.";
+	public static string BooksPeriArtifactTooltip => "Whenever you play an <c=action>ATTACK</c>, lose 1 <c=status>SHARD</c>: the attack deals 1 more damage.";
 
 	public static string BooksRiggsArtifactName => "Books-Riggs Duo Artifact";
-	public static string BooksRiggsArtifactTooltip => "Gain 1 <c=riggs>HERMES BOOTS</c> for each 3 <c=shard>SHARD</c> you have each turn.";
+	public static string BooksRiggsArtifactTooltip => "Gain 1 <c=status>HERMES BOOTS</c> for each 3 <c=status>SHARD</c> you have each turn.";
 
 	public static string CatDizzyArtifactName => "CAT-Dizzy Duo Artifact";
-	public static string CatDizzyArtifactTooltip => "The first time you would lose <c=dizzy>SHIELD</c> or hull due to damage each combat, gain <c=comp>PERFECT SHIELD</c> equal to your <c=dizzy>SHIELD</c> + 2. <c=downside>Lose ALL <c=dizzy>max shield</c>.</c>";
+	public static string CatDizzyArtifactTooltip => "The first time you would lose <c=status>SHIELD</c> or hull due to damage each combat, gain <c=status>PERFECT SHIELD</c> equal to your <c=status>SHIELD</c> + 2. <c=downside>Lose ALL <c=status>max shield</c>.</c>";
 
 	public static string CatDrakeArtifactName => "CAT-Drake Duo Artifact";
-	public static string CatDrakeArtifactTooltip => "Whenever you gain <c=eunice>SERENITY</c>, gain <c=comp>TIMESTOP</c>. Whenever you gain <c=comp>TIMESTOP</c>, gain <c=eunice>SERENITY</c>.";
+	public static string CatDrakeArtifactTooltip => "Whenever you gain <c=status>SERENITY</c>, gain <c=status>TIMESTOP</c>. Whenever you gain <c=status>TIMESTOP</c>, gain <c=status>SERENITY</c>.";
 
 	public static string CatIsaacArtifactName => "CAT-Isaac Duo Artifact";
-	public static string CatIsaacArtifactTooltip => "Whenever you are about to <c=goat>LAUNCH</c> into an object and doing so would not benefit you, <c=goat>DRONESHIFT</c> the shortest possible distance to avoid doing that.";
+	public static string CatIsaacArtifactTooltip => "Whenever you are about to <c=action>LAUNCH</c> into an object and doing so would not benefit you, <c=action>DRONESHIFT</c> the shortest possible distance to avoid doing that.";
 
 	public static string CatRiggsArtifactName => "CAT-Riggs Duo Artifact";
-	public static string CatRiggsArtifactTooltip => "<c=comp>DISCOUNT</c> the first extra card drawn each turn.";
+	public static string CatRiggsArtifactTooltip => "<c=cardtrait>DISCOUNT</c> the first extra card drawn each turn.";
 
 	public static string CatMaxArtifactName => "CAT-Max Duo Artifact";
-	public static string CatMaxArtifactTooltip => "Gain 1 <c=status>random positive status</c> each turn.";
+	public static string CatMaxArtifactTooltip => "Gain 1 random positive status each turn.";
 
 	public static string CatPeriArtifactName => "CAT-Peri Duo Artifact";
-	public static string CatPeriArtifactTooltip => "Whenever you play a <c=comp>TEMPORARY</c> attack, gain 1 <c=peri>OVERDRIVE</c>.\n<c=downside>Lose an extra <c=peri>OVERDRIVE</c> each turn.</c>";
+	public static string CatPeriArtifactTooltip => "Whenever you play a <c=cardtrait>TEMPORARY</c> <c=action>ATTACK</c>, gain 1 <c=status>OVERDRIVE</c>.\n<c=downside>Lose an extra <c=status>OVERDRIVE</c> each turn.</c>";
 
 	public static string DizzyDrakeArtifactName => "Dizzy-Drake Duo Artifact";
-	public static string DizzyDrakeArtifactTooltip => "<c=eunice>OVERHEAT</c> now causes you to lose 2 <c=dizzy>(TEMP) SHIELD</c> instead of hull, if possible.";
+	public static string DizzyDrakeArtifactTooltip => "<c=action>OVERHEAT</c> now causes you to lose 2 <c=status>(TEMP) SHIELD</c> instead of hull, if possible.";
 
 	public static string DizzyIsaacArtifactName => "Dizzy-Isaac Duo Artifact";
 	public static string DizzyIsaacArtifactTooltip => "Whenever a <c=midrow>midrow object</c> gets destroyed by an <c=action>ATTACK</c> or <c=action>LAUNCH</c>, the ship that caused it gains 1 <c=status>OXIDATION</c>.";
@@ -84,13 +124,13 @@ internal static class I18n
 	public static string DizzyMaxArtifactCardDescription => "Lose 3 <c=status>(TEMP) SHIELD</c>: gain 1 <c=status>BOOST</c>.";
 
 	public static string DizzyPeriArtifactName => "Dizzy-Peri Duo Artifact";
-	public static string DizzyPeriArtifactTooltip => "Any gained <c=dizzy>SHIELD</c> over <c=dizzy>max shield</c> is converted into <c=peri>OVERDRIVE</c> instead.\n<c=downside>Lose <c=dizzy>SHIELD</c> equal to <c=peri>OVERDRIVE</c> each turn.</c>";
+	public static string DizzyPeriArtifactTooltip => "Any gained <c=status>SHIELD</c> over <c=status>max shield</c> is converted into <c=status>OVERDRIVE</c> instead.\n<c=downside>Lose <c=status>SHIELD</c> equal to <c=status>OVERDRIVE</c> each turn.</c>";
 
 	public static string DizzyRiggsArtifactName => "Dizzy-Riggs Duo Artifact";
 	public static string DizzyRiggsArtifactTooltip => "Whenever you lose all <c=status>SHIELD</c>, gain 1 <c=status>EVADE</c>.";
 
 	public static string DrakeIsaacArtifactName => "Drake-Isaac Duo Artifact";
-	public static string DrakeIsaacArtifactTooltip => "Whenever you <c=goat>LAUNCH</c> a <c=goat>midrow object</c>, lose 1 <c=eunice>HEAT</c>: the object gains <c=eunice>SCORCHING</c>.";
+	public static string DrakeIsaacArtifactTooltip => "Whenever you <c=action>LAUNCH</c> a <c=midrow>midrow object</c>, lose 1 <c=status>HEAT</c>: the object gains <c=midrow>SCORCHING</c>.";
 
 	public static string DrakeMaxArtifactName => "Drake-Max Duo Artifact";
 	public static string DrakeMaxArtifactTooltip => "At the start of combat, shuffle a <c=card>Drake-Max Duo Artifact Card</c> and a <c=cardtrait>TEMPORARY</cardtrait> <c=card>Worm</c> into your deck.";
@@ -98,26 +138,26 @@ internal static class I18n
 	public static string DrakeMaxArtifactCardDescription => "<c=cardtrait>Exhaust</c> all <c=card>Worm</c> in your hand. Apply <c=status>WORM</c> to the enemy for each.";
 
 	public static string DrakePeriArtifactName => "Drake-Peri Duo Artifact";
-	public static string DrakePeriArtifactTooltip => "Whenever you <c=eunice>OVERHEAT</c>, convert your <c=peri>OVERDRIVE</c> into <c=peri>POWERDRIVE</c>.";
+	public static string DrakePeriArtifactTooltip => "Whenever you <c=action>OVERHEAT</c>, convert your <c=status>OVERDRIVE</c> into <c=status>POWERDRIVE</c>.";
 
 	public static string DrakeRiggsArtifactName => "Drake-Riggs Duo Artifact";
-	public static string DrakeRiggsArtifactTooltip => "Once a turn, when you have no <c=riggs>EVADE</c>, you may still <c=riggs>EVADE</c>: gain 1 <c=eunice>HEAT</c>.";
+	public static string DrakeRiggsArtifactTooltip => "Once a turn, when you have no <c=status>EVADE</c>, you may still <c=status>EVADE</c>: gain 1 <c=status>HEAT</c>.";
 
 	public static string IsaacMaxArtifactName => "Isaac-Max Duo Artifact";
-	public static string IsaacMaxArtifactTooltip => "Whenever you <c=hacker>DISCARD</c> or <c=hacker>EXHAUST</c> any number of cards during your turn, put a <c=goat>BUBBLE</c> on a random <c=goat>midrow object</c> without one in front of the ship. If there are none, <c=goat>LAUNCH</c> an <c=goat>asteroid</c> on a random space in front of the ship.";
+	public static string IsaacMaxArtifactTooltip => "Whenever you <c=action>DISCARD</c> or <c=cardtrait>EXHAUST</c> any number of cards during your turn, put a <c=midrow>BUBBLE</c> on a random <c=midrow>midrow object</c> without one in front of the ship. If there are none, <c=action>LAUNCH</c> an <c=midrow>asteroid</c> on a random space in front of the ship.";
 
 	public static string IsaacPeriArtifactName => "Isaac-Peri Duo Artifact";
-	public static string IsaacPeriArtifactTooltip => "Your <c=goat>Attack Drones</c> benefit from <c=peri>OVERDRIVE</c>, <c=peri>POWERDRIVE</c> and <c=peri>FLUX</c>.";
+	public static string IsaacPeriArtifactTooltip => "Your <c=midrow>Attack Drones</c> benefit from <c=status>OVERDRIVE</c>, <c=status>POWERDRIVE</c> and <c=status>FLUX</c>.";
 
 	public static string IsaacRiggsArtifactName => "Isaac-Riggs Duo Artifact";
-	public static string IsaacRiggsArtifactTooltip => "<c=riggs>EVADE</c> and <c=goat>DRONESHIFT</c> can be used interchangeably.\nGain 1 <c=riggs>EVADE</c> on the first turn.";
+	public static string IsaacRiggsArtifactTooltip => "<c=status>EVADE</c> and <c=status>DRONESHIFT</c> can be used interchangeably.\nGain 1 <c=status>EVADE</c> on the first turn.";
 
 	public static string MaxPeriArtifactName => "Max-Peri Duo Artifact";
-	public static string MaxPeriArtifactTooltip => "Your <c=hacker>leftmost</c> <c=peri>ATTACK</c> deals 1 more damage.\nYour <c=hacker>rightmost</c> <c=peri>ATTACK</c> does an extra 1 damage shot.\nThe last <c=peri>ATTACK</c> in your hand gets no bonuses.";
+	public static string MaxPeriArtifactTooltip => "Your leftmost <c=action>ATTACK</c> deals 1 more damage.\nYour rightmost <c=action>ATTACK</c> does an extra 1 damage shot.\nThe last <c=action>ATTACK</c> in your hand gets no bonuses.";
 
 	public static string MaxRiggsArtifactName => "Max-Riggs Duo Artifact";
-	public static string MaxRiggsArtifactTooltip => "Gain 1 <c=hacker>AUTOPILOT</c> each turn. <c=downside>Gain 1 <c=status>ENGINE STALL</c> each turn.</c>";
+	public static string MaxRiggsArtifactTooltip => "Gain 1 <c=status>AUTOPILOT</c> each turn. <c=downside>Gain 1 <c=status>ENGINE STALL</c> each turn.</c>";
 
 	public static string PeriRiggsArtifactName => "Peri-Riggs Duo Artifact";
-	public static string PeriRiggsArtifactTooltip => "Gain 1 <c=peri>STRAFE</c> each combat. <c=downside>You can only use 2 <c=riggs>EVADE</c> each turn.";
+	public static string PeriRiggsArtifactTooltip => "Gain 1 <c=status>STRAFE</c> each combat. <c=downside>You can only use 2 <c=status>EVADE</c> each turn.";
 }
