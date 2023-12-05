@@ -50,7 +50,9 @@ internal sealed class BooksPeriArtifact : DuoArtifact
 
 		int shards = state.ship.Get(Status.shard);
 		int shield = 0;
-		if (state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+
+		var booksDizzyArtifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksDizzyArtifact);
+		if (booksDizzyArtifact is not null)
 			shield = state.ship.Get(Status.shield);
 
 		if (shards + shield < totalShardCost + BuffCost)
@@ -74,6 +76,7 @@ internal sealed class BooksPeriArtifact : DuoArtifact
 		int shieldToPay = Math.Min(shield, leftToPay);
 		if (shieldToPay > 0)
 		{
+			booksDizzyArtifact?.Pulse();
 			combat.QueueImmediate(new AStatus
 			{
 				status = Status.shard,

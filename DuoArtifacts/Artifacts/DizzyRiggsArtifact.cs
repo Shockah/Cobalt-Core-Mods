@@ -4,10 +4,9 @@ using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-internal sealed class CatDrakeArtifact : DuoArtifact
+internal sealed class DizzyRiggsArtifact : DuoArtifact
 {
-	private static int SerenityChange = 0;
-	private static int TimeStopChange = 0;
+	private static int ShieldChange = 0;
 
 	protected internal override void ApplyPatches(Harmony harmony)
 	{
@@ -30,40 +29,30 @@ internal sealed class CatDrakeArtifact : DuoArtifact
 
 	private static void Ship_Set_Postfix(Ship __instance, Status status, ref int __state)
 	{
-		int change = __instance.Get(status) - __state;
-		switch (status)
-		{
-			case Status.serenity:
-				SerenityChange += change;
-				break;
-			case Status.timeStop:
-				TimeStopChange += change;
-				break;
-		}
+		if (status != Status.shield)
+			return;
+		int change = __instance.Get(Status.shield) - __state;
+		ShieldChange += change;
 	}
 
 	private static void Combat_Update_Postfix(G g)
 	{
-		if (SerenityChange == 0 && TimeStopChange == 0)
+		if (ShieldChange == 0 || g.state.ship.Get(Status.shield) > 0)
 			return;
-		int serenityChange = SerenityChange;
-		int timeStopChange = TimeStopChange;
 
 		var artifact = g.state.EnumerateAllArtifacts().FirstOrDefault(a => a is CatDrakeArtifact);
 		if (artifact is null)
 		{
-			SerenityChange = 0;
-			TimeStopChange = 0;
+			ShieldChange = 0;
 			return;
 		}
 
 		artifact.Pulse();
-
-		if (serenityChange > 0)
-			g.state.ship.Add(Status.timeStop, serenityChange);
-		if (timeStopChange > 0)
-			g.state.ship.Add(Status.serenity, timeStopChange);
-		SerenityChange = 0;
-		TimeStopChange = 0;
+		(g.state.route as Combat)?.Queue(new AStatus
+		{
+			status = Status.evade,
+			statusAmount = 1,
+			targetPlayer = true
+		});
 	}
 }

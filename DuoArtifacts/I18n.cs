@@ -42,6 +42,9 @@ internal static class I18n
 	public static string BooksDizzyArtifactName => "Books-Dizzy Duo Artifact";
 	public static string BooksDizzyArtifactTooltip => "<c=dizzy>SHIELD</c> and <c=shard>SHARD</c> can be used interchangeably.";
 
+	public static string BooksIsaacArtifactName => "Books-Isaac Duo Artifact";
+	public static string BooksIsaacArtifactTooltip => "At the end of your turn, lose 2 <c=status>SHARD</c>: your <c=midrow>Attack Drones</c> deal 1 more damage.";
+
 	public static string BooksMaxArtifactName => "Books-Max Duo Artifact";
 	public static string BooksMaxArtifactTooltip => "Whenever you <c=hacker>EXHAUST</c> a card, gain 1 <c=shard>SHARD</c>.";
 
@@ -82,6 +85,9 @@ internal static class I18n
 
 	public static string DizzyPeriArtifactName => "Dizzy-Peri Duo Artifact";
 	public static string DizzyPeriArtifactTooltip => "Any gained <c=dizzy>SHIELD</c> over <c=dizzy>max shield</c> is converted into <c=peri>OVERDRIVE</c> instead.\n<c=downside>Lose <c=dizzy>SHIELD</c> equal to <c=peri>OVERDRIVE</c> each turn.</c>";
+
+	public static string DizzyRiggsArtifactName => "Dizzy-Riggs Duo Artifact";
+	public static string DizzyRiggsArtifactTooltip => "Whenever you lose all <c=status>SHIELD</c>, gain 1 <c=status>EVADE</c>.";
 
 	public static string DrakeIsaacArtifactName => "Drake-Isaac Duo Artifact";
 	public static string DrakeIsaacArtifactTooltip => "Whenever you <c=goat>LAUNCH</c> a <c=goat>midrow object</c>, lose 1 <c=eunice>HEAT</c>: the object gains <c=eunice>SCORCHING</c>.";
