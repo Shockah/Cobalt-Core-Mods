@@ -53,8 +53,8 @@ internal sealed class DrakeMaxArtifact : DuoArtifact
 		ExternalCard card = new(
 			$"{namePrefix}.DrakeMaxArtifactCard",
 			typeof(DrakeMaxArtifactCard),
-			ExternalSprite.GetRaw((int)StableSpr.cards_BranchPrediction),
-			ExternalDeck.GetRaw((int)Deck.colorless)
+			ExternalSprite.GetRaw((int)StableSpr.cards_hacker),
+			ExternalDeck.GetRaw((int)Deck.ephemeral)
 		);
 		card.AddLocalisation(I18n.DrakeMaxArtifactCardName);
 		registry.RegisterCard(card);

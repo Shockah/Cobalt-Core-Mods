@@ -7,9 +7,9 @@ namespace Shockah.DuoArtifacts;
 internal static class I18n
 {
 	public static string DuoArtifactDeckName => "Duo";
-	public static string DuoArtifactTooltip => "{0}-{1} Duo Artifact";
-	public static string TrioArtifactTooltip => "{0}-{1}-{2} Trio Artifact";
-	public static string ComboArtifactTooltip => "{0} Combo Artifact";
+	public static string DuoArtifactTooltip => "{0}-{1} Duo Artifact.";
+	public static string TrioArtifactTooltip => "{0}-{1}-{2} Trio Artifact.";
+	public static string ComboArtifactTooltip => "{0} Combo Artifact.";
 	public static string ComboArtifactTooltipSeparator => "-";
 
 	// can't use Loc.T, we're doing this too early
@@ -85,7 +85,7 @@ internal static class I18n
 	public static string BooksIsaacArtifactName => "Books-Isaac Duo Artifact";
 	public static string BooksIsaacArtifactTooltip => "At the end of your turn, lose 2 <c=status>SHARD</c>: your <c=midrow>Attack Drones</c> deal 1 more damage.";
 
-	public static string BooksMaxArtifactName => "Books-Max Duo Artifact";
+	public static string BooksMaxArtifactName => "Evaporator";
 	public static string BooksMaxArtifactTooltip => "Whenever you <c=cardtrait>EXHAUST</c> a card, gain 1 <c=status>SHARD</c>.";
 
 	public static string BooksPeriArtifactName => "Books-Peri Duo Artifact";
@@ -100,7 +100,7 @@ internal static class I18n
 	public static string CatDrakeArtifactName => "CAT-Drake Duo Artifact";
 	public static string CatDrakeArtifactTooltip => "Whenever you gain <c=status>SERENITY</c>, gain <c=status>TIMESTOP</c>. Whenever you gain <c=status>TIMESTOP</c>, gain <c=status>SERENITY</c>.";
 
-	public static string CatIsaacArtifactName => "CAT-Isaac Duo Artifact";
+	public static string CatIsaacArtifactName => "Smart Launch System";
 	public static string CatIsaacArtifactTooltip => "Whenever you are about to <c=action>LAUNCH</c> into an object and doing so would not benefit you, <c=action>DRONESHIFT</c> the shortest possible distance to avoid doing that.";
 
 	public static string CatRiggsArtifactName => "CAT-Riggs Duo Artifact";
@@ -118,12 +118,12 @@ internal static class I18n
 	public static string DizzyIsaacArtifactName => "Dizzy-Isaac Duo Artifact";
 	public static string DizzyIsaacArtifactTooltip => "Whenever a <c=midrow>midrow object</c> gets destroyed by an <c=action>ATTACK</c> or <c=action>LAUNCH</c>, the ship that caused it gains 1 <c=status>OXIDATION</c>.";
 
-	public static string DizzyMaxArtifactName => "Dizzy-Max Duo Artifact";
-	public static string DizzyMaxArtifactTooltip => "At the start of combat, gain a <c=card>Dizzy-Max Duo Artifact Card</c>.";
-	public static string DizzyMaxArtifactCardName => "Dizzy-Max Duo Artifact Card";
+	public static string DizzyMaxArtifactName => "Dynamo";
+	public static string DizzyMaxArtifactTooltip => "At the start of combat, gain a <c=card>Dynamo</c>.";
+	public static string DizzyMaxArtifactCardName => "Dynamo";
 	public static string DizzyMaxArtifactCardDescription => "Lose 3 <c=status>(TEMP) SHIELD</c>: gain 1 <c=status>BOOST</c>.";
 
-	public static string DizzyPeriArtifactName => "Dizzy-Peri Duo Artifact";
+	public static string DizzyPeriArtifactName => "Energy Condenser";
 	public static string DizzyPeriArtifactTooltip => "Any gained <c=status>SHIELD</c> over <c=status>max shield</c> is converted into <c=status>OVERDRIVE</c> instead.\n<c=downside>Lose <c=status>SHIELD</c> equal to <c=status>OVERDRIVE</c> each turn.</c>";
 
 	public static string DizzyRiggsArtifactName => "Dizzy-Riggs Duo Artifact";
@@ -132,24 +132,24 @@ internal static class I18n
 	public static string DrakeIsaacArtifactName => "Drake-Isaac Duo Artifact";
 	public static string DrakeIsaacArtifactTooltip => "Whenever you <c=action>LAUNCH</c> a <c=midrow>midrow object</c>, lose 1 <c=status>HEAT</c>: the object gains <c=midrow>SCORCHING</c>.";
 
-	public static string DrakeMaxArtifactName => "Drake-Max Duo Artifact";
-	public static string DrakeMaxArtifactTooltip => "At the start of combat, shuffle a <c=card>Drake-Max Duo Artifact Card</c> and a <c=cardtrait>TEMPORARY</cardtrait> <c=card>Worm</c> into your deck.";
-	public static string DrakeMaxArtifactCardName => "Drake-Max Duo Artifact Card";
+	public static string DrakeMaxArtifactName => "Trojan Drive";
+	public static string DrakeMaxArtifactTooltip => "At the start of combat, shuffle a <c=card>Trojan Drive</c> and a <c=cardtrait>TEMPORARY</cardtrait> <c=card>Worm</c> into your deck.";
+	public static string DrakeMaxArtifactCardName => "Trojan Drive";
 	public static string DrakeMaxArtifactCardDescription => "<c=cardtrait>Exhaust</c> all <c=card>Worm</c> in your hand. Apply <c=status>WORM</c> to the enemy for each.";
 
 	public static string DrakePeriArtifactName => "Drake-Peri Duo Artifact";
 	public static string DrakePeriArtifactTooltip => "Whenever you <c=action>OVERHEAT</c>, convert your <c=status>OVERDRIVE</c> into <c=status>POWERDRIVE</c>.";
 
-	public static string DrakeRiggsArtifactName => "Drake-Riggs Duo Artifact";
+	public static string DrakeRiggsArtifactName => "Backup Thrusters";
 	public static string DrakeRiggsArtifactTooltip => "Once a turn, when you have no <c=status>EVADE</c>, you may still <c=status>EVADE</c>: gain 1 <c=status>HEAT</c>.";
 
-	public static string IsaacMaxArtifactName => "Isaac-Max Duo Artifact";
+	public static string IsaacMaxArtifactName => "Recycler";
 	public static string IsaacMaxArtifactTooltip => "Whenever you <c=action>DISCARD</c> or <c=cardtrait>EXHAUST</c> any number of cards during your turn, put a <c=midrow>BUBBLE</c> on a random <c=midrow>midrow object</c> without one in front of the ship. If there are none, <c=action>LAUNCH</c> an <c=midrow>asteroid</c> on a random space in front of the ship.";
 
-	public static string IsaacPeriArtifactName => "Isaac-Peri Duo Artifact";
+	public static string IsaacPeriArtifactName => "Enhanced Antenna";
 	public static string IsaacPeriArtifactTooltip => "Your <c=midrow>Attack Drones</c> benefit from <c=status>OVERDRIVE</c>, <c=status>POWERDRIVE</c> and <c=status>FLUX</c>.";
 
-	public static string IsaacRiggsArtifactName => "Isaac-Riggs Duo Artifact";
+	public static string IsaacRiggsArtifactName => "Relativistic Motion Engine";
 	public static string IsaacRiggsArtifactTooltip => "<c=status>EVADE</c> and <c=status>DRONESHIFT</c> can be used interchangeably.\nGain 1 <c=status>EVADE</c> on the first turn.";
 
 	public static string MaxPeriArtifactName => "Max-Peri Duo Artifact";

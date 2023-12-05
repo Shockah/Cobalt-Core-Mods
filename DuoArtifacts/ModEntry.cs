@@ -84,9 +84,9 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 			globalName: $"{typeof(ModEntry).Namespace}.Deck.Duo",
 			deckColor: System.Drawing.Color.White,
 			titleColor: System.Drawing.Color.White,
-			cardArtDefault: ExternalDeck.GetRaw((int)Deck.colorless).CardArtDefault,
-			borderSprite: ExternalDeck.GetRaw((int)Deck.colorless).BorderSprite,
-			bordersOverSprite: ExternalDeck.GetRaw((int)Deck.colorless).BordersOverSprite
+			cardArtDefault: ExternalDeck.GetRaw((int)Deck.ephemeral).CardArtDefault,
+			borderSprite: ExternalDeck.GetRaw((int)Deck.ephemeral).BorderSprite,
+			bordersOverSprite: ExternalDeck.GetRaw((int)Deck.ephemeral).BordersOverSprite
 		);
 		registry.RegisterDeck(DuoArtifactsDeck);
 	}
