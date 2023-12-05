@@ -1,15 +1,14 @@
 ﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Nanoray.Shrike.Harmony;
+using Microsoft.Xna.Framework.Graphics;
 using Nanoray.Shrike;
+using Nanoray.Shrike.Harmony;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Reflection;
-using static System.Collections.Specialized.BitVector32;
-using Microsoft.Xna.Framework.Graphics;
+using System.Reflection.Emit;
 
 namespace Shockah.DuoArtifacts;
 

@@ -1,5 +1,6 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
+using HarmonyLib;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +12,16 @@ internal sealed class DrakeMaxArtifact : DuoArtifact
 {
 	internal static ExternalSprite WormSprite { get; private set; } = null!;
 	internal static ExternalStatus WormStatus { get; private set; } = null!;
+
+	protected internal override void ApplyPatches(Harmony harmony)
+	{
+		base.ApplyPatches(harmony);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
+			postfix: new HarmonyMethod(GetType(), nameof(Card_GetAllTooltips_Postfix))
+		);
+	}
 
 	protected internal override void RegisterArt(ISpriteRegistry registry, string namePrefix)
 	{
@@ -93,6 +104,21 @@ internal sealed class DrakeMaxArtifact : DuoArtifact
 		}
 
 		combat.otherShip.Add((Status)WormStatus.Id!.Value, -1);
+	}
+
+	private static void Card_GetAllTooltips_Postfix(State s, ref IEnumerable<Tooltip> __result)
+	{
+		var result = __result;
+		IEnumerable<Tooltip> ModifyResult()
+		{
+			foreach (var tooltip in result)
+			{
+				if (tooltip is TTGlossary glossary && glossary.key == $"status.{WormStatus.Id!.Value}" && (glossary.vals is null || glossary.vals.Length == 0 || Equals(glossary.vals[0], "<c=boldPink>0</c>")))
+					glossary.vals = new object[] { "<c=boldPink>1</c>" };
+				yield return tooltip;
+			}
+		}
+		__result = ModifyResult();
 	}
 }
 
