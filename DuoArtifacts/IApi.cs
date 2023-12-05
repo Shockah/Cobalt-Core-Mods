@@ -7,6 +7,8 @@ namespace Shockah.DuoArtifacts;
 public interface IApi
 {
 	ExternalDeck DuoArtifactDeck { get; }
+	ExternalDeck TrioArtifactDeck { get; }
+	ExternalDeck ComboArtifactDeck { get; }
 
 	bool IsDuoArtifactType(Type type);
 	bool IsDuoArtifact(Artifact artifact);

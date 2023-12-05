@@ -19,7 +19,11 @@ internal static class CharacterPatches
 
 	private static void Character_GetDisplayName_Postfix(string charId, ref string __result)
 	{
-		if (charId == Instance.DuoArtifactsDeck.GlobalName)
+		if (charId == Instance.Database.DuoArtifactDeck.GlobalName)
 			__result = I18n.DuoArtifactDeckName;
+		else if (charId == Instance.Database.TrioArtifactDeck.GlobalName)
+			__result = I18n.TrioArtifactDeckName;
+		else if (charId == Instance.Database.ComboArtifactDeck.GlobalName)
+			__result = I18n.ComboArtifactDeckName;
 	}
 }

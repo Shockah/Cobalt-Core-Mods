@@ -23,7 +23,6 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	public DirectoryInfo? ModRootFolder { get; set; }
 	public ILogger? Logger { get; set; }
 
-	internal ExternalDeck DuoArtifactsDeck { get; private set; } = null!;
 	internal IKokoroApi KokoroApi { get; private set; } = null!;
 	internal readonly DuoArtifactDatabase Database = new();
 
@@ -80,7 +79,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 	public void LoadManifest(IDeckRegistry registry)
 	{
-		DuoArtifactsDeck = new(
+		Database.DuoArtifactDeck = new(
 			globalName: $"{typeof(ModEntry).Namespace}.Deck.Duo",
 			deckColor: System.Drawing.Color.White,
 			titleColor: System.Drawing.Color.White,
@@ -88,18 +87,44 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 			borderSprite: ExternalDeck.GetRaw((int)Deck.ephemeral).BorderSprite,
 			bordersOverSprite: ExternalDeck.GetRaw((int)Deck.ephemeral).BordersOverSprite
 		);
-		registry.RegisterDeck(DuoArtifactsDeck);
+		registry.RegisterDeck(Database.DuoArtifactDeck);
+
+		Database.TrioArtifactDeck = new(
+			globalName: $"{typeof(ModEntry).Namespace}.Deck.Trio",
+			deckColor: System.Drawing.Color.White,
+			titleColor: System.Drawing.Color.White,
+			cardArtDefault: ExternalDeck.GetRaw((int)Deck.ephemeral).CardArtDefault,
+			borderSprite: ExternalDeck.GetRaw((int)Deck.ephemeral).BorderSprite,
+			bordersOverSprite: ExternalDeck.GetRaw((int)Deck.ephemeral).BordersOverSprite
+		);
+		registry.RegisterDeck(Database.TrioArtifactDeck);
+
+		Database.ComboArtifactDeck = new(
+			globalName: $"{typeof(ModEntry).Namespace}.Deck.Combo",
+			deckColor: System.Drawing.Color.White,
+			titleColor: System.Drawing.Color.White,
+			cardArtDefault: ExternalDeck.GetRaw((int)Deck.ephemeral).CardArtDefault,
+			borderSprite: ExternalDeck.GetRaw((int)Deck.ephemeral).BorderSprite,
+			bordersOverSprite: ExternalDeck.GetRaw((int)Deck.ephemeral).BordersOverSprite
+		);
+		registry.RegisterDeck(Database.ComboArtifactDeck);
 	}
 
 	public void LoadManifest(IArtifactRegistry registry)
 	{
 		foreach (var definition in DuoArtifactDefinition.Definitions)
 		{
+			var deck = definition.Characters.Count switch
+			{
+				2 => Database.DuoArtifactDeck,
+				3 => Database.TrioArtifactDeck,
+				_ => Database.ComboArtifactDeck
+			};
 			ExternalArtifact artifact = new(
 				globalName: $"{typeof(ModEntry).Namespace}.Artifact.{string.Join("_", definition.CharacterKeys.Value.OrderBy(key => key))}",
 				artifactType: definition.Type,
 				sprite: DuoArtifactSprites.GetValueOrDefault(definition.CharacterKeys.Value)!,
-				ownerDeck: DuoArtifactsDeck
+				ownerDeck: deck
 			);
 			artifact.AddLocalisation(definition.Name, $"{I18n.GetDuoArtifactTooltip(definition.Characters)}\n{definition.Tooltip}");
 			registry.RegisterArtifact(artifact);

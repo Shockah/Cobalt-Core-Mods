@@ -7,7 +7,9 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class DuoArtifactDatabase
 {
-	internal ExternalDeck DuoArtifactsDeck { get; set; } = null!;
+	internal ExternalDeck DuoArtifactDeck { get; set; } = null!;
+	internal ExternalDeck TrioArtifactDeck { get; set; } = null!;
+	internal ExternalDeck ComboArtifactDeck { get; set; } = null!;
 	private readonly Dictionary<HashSet<string>, HashSet<Type>> ComboToTypeDictionary = new(HashSet<string>.CreateSetComparer());
 	private readonly Dictionary<Type, HashSet<string>> TypeToComboDictionary = new();
 

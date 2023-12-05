@@ -14,7 +14,13 @@ public sealed class ApiImplementation : IApi
 	}
 
 	public ExternalDeck DuoArtifactDeck
-		=> ModEntry.Instance.DuoArtifactsDeck;
+		=> Database.DuoArtifactDeck;
+
+	public ExternalDeck TrioArtifactDeck
+		=> Database.TrioArtifactDeck;
+
+	public ExternalDeck ComboArtifactDeck
+		=> Database.ComboArtifactDeck;
 
 	public bool IsDuoArtifactType(Type type)
 		=> Database.IsDuoArtifactType(type);

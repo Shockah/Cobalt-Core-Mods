@@ -8,7 +8,11 @@ internal static class I18n
 {
 	public static string DuoArtifactDeckName => "Duo";
 	public static string DuoArtifactTooltip => "{0}-{1} Duo Artifact.";
+
+	public static string TrioArtifactDeckName => "Duo";
 	public static string TrioArtifactTooltip => "{0}-{1}-{2} Trio Artifact.";
+
+	public static string ComboArtifactDeckName => "Combo";
 	public static string ComboArtifactTooltip => "{0} Combo Artifact.";
 	public static string ComboArtifactTooltipSeparator => "-";
 
