@@ -34,10 +34,10 @@ public sealed class VanillaDroneShiftHook : IDroneShiftHook
 
 	private VanillaDroneShiftHook() { }
 
-	bool? IDroneShiftHook.IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
+	public bool? IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
 		=> state.ship.Get(Status.droneShift) > 0 ? true : null;
 
-	void IDroneShiftHook.PayForDroneShift(State state, Combat combat, int direction)
+	public void PayForDroneShift(State state, Combat combat, int direction)
 		=> state.ship.Add(Status.droneShift, -1);
 }
 
@@ -47,7 +47,7 @@ public sealed class VanillaDebugDroneShiftHook : IDroneShiftHook
 
 	private VanillaDebugDroneShiftHook() { }
 
-	bool? IDroneShiftHook.IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
+	public bool? IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
 		=> FeatureFlags.Debug && Input.shift ? true : null;
 }
 
@@ -57,7 +57,7 @@ public sealed class VanillaMidrowCheckDroneShiftHook : IDroneShiftHook
 
 	private VanillaMidrowCheckDroneShiftHook() { }
 
-	bool? IDroneShiftHook.IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
+	public bool? IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
 	{
 		if (context != DroneShiftHookContext.Action)
 			return null;
@@ -68,6 +68,6 @@ public sealed class VanillaMidrowCheckDroneShiftHook : IDroneShiftHook
 		return false;
 	}
 
-	void IDroneShiftHook.PayForDroneShift(State state, Combat combat, int direction)
+	public void PayForDroneShift(State state, Combat combat, int direction)
 		=> state.ship.Add(Status.droneShift, -1);
 }

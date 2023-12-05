@@ -130,7 +130,7 @@ internal static class CombatPatches
 			});
 			hook.PayForEvade(g.state, combat, dir);
 			foreach (var hooks in Instance.EvadeHookManager)
-				hooks.AfterEvade(g.state, combat, dir);
+				hooks.AfterEvade(g.state, combat, dir, hook);
 		}
 		return false;
 	}
@@ -148,8 +148,8 @@ internal static class CombatPatches
 				dir = dir
 			});
 			hook.PayForDroneShift(g.state, combat, dir);
-			foreach (var hooks in Instance.EvadeHookManager)
-				hooks.AfterEvade(g.state, combat, dir);
+			foreach (var hooks in Instance.DroneShiftHookManager)
+				hooks.AfterDroneShift(g.state, combat, dir, hook);
 		}
 		return false;
 	}

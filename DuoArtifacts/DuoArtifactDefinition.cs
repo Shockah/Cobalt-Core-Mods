@@ -32,6 +32,7 @@ internal sealed class DuoArtifactDefinition
 		new(typeof(IsaacRiggsArtifact), new Deck[] { Deck.goat, Deck.riggs }, I18n.IsaacRiggsArtifactName, I18n.IsaacRiggsArtifactTooltip, "IsaacRiggs", "status.evade", "status.droneShift"),
 		new(typeof(MaxPeriArtifact), new Deck[] { Deck.hacker, Deck.peri }, I18n.MaxPeriArtifactName, I18n.MaxPeriArtifactTooltip, "MaxPeri"),
 		new(typeof(MaxRiggsArtifact), new Deck[] { Deck.hacker, Deck.riggs }, I18n.MaxRiggsArtifactName, I18n.MaxRiggsArtifactTooltip, "MaxRiggs"),
+		new(typeof(PeriRiggsArtifact), new Deck[] { Deck.peri, Deck.riggs }, I18n.PeriRiggsArtifactName, I18n.PeriRiggsArtifactTooltip, "PeriRiggs", new TTGlossary("status.strafe", 1), "status.evade"),
 	};
 
 	private static readonly Dictionary<Type, DuoArtifactDefinition> TypeToDefinitionDictionary = new();

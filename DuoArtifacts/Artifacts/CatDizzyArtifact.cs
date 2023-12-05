@@ -11,7 +11,7 @@ using System.Reflection.Emit;
 
 namespace Shockah.DuoArtifacts;
 
-internal sealed class CatDizzyArtifact : DuoArtifact, IEvadeHook, IDroneShiftHook
+internal sealed class CatDizzyArtifact : DuoArtifact
 {
 	public bool TriggeredThisCombat = false;
 

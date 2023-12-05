@@ -4,6 +4,12 @@ public sealed class ApiImplementation : IKokoroApi
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
+	public IEvadeHook VanillaEvadeHook
+		=> Kokoro.VanillaEvadeHook.Instance;
+
+	public IEvadeHook VanillaDebugEvadeHook
+		=> Kokoro.VanillaDebugEvadeHook.Instance;
+
 	#region EvadeHook
 	public void RegisterEvadeHook(IEvadeHook hook, double priority)
 		=> Instance.EvadeHookManager.Register(hook, priority);
@@ -13,6 +19,12 @@ public sealed class ApiImplementation : IKokoroApi
 	#endregion
 
 	#region DroneShiftHook
+	public IDroneShiftHook VanillaDroneShiftHook
+		=> Kokoro.VanillaDroneShiftHook.Instance;
+
+	public IDroneShiftHook VanillaDebugDroneShiftHook
+		=> Kokoro.VanillaDebugDroneShiftHook.Instance;
+
 	public void RegisterDroneShiftHook(IDroneShiftHook hook, double priority)
 		=> Instance.DroneShiftHookManager.Register(hook, priority);
 

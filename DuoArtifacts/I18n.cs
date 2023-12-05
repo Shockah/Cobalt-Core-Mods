@@ -100,8 +100,11 @@ internal static class I18n
 	public static string IsaacRiggsArtifactTooltip => "<c=riggs>EVADE</c> and <c=goat>DRONESHIFT</c> can be used interchangeably.\nGain 1 <c=riggs>EVADE</c> on the first turn.";
 
 	public static string MaxPeriArtifactName => "Max-Peri Duo Artifact";
-	public static string MaxPeriArtifactTooltip => "Your <c=hacker>leftmost</> <c=peri>ATTACK</c> deals 1 more damage.\nYour <c=hacker>rightmost</> <c=peri>ATTACK</c> does an extra 1 damage shot.\nThe last <c=peri>ATTACK</c> in your hand gets no bonuses.";
+	public static string MaxPeriArtifactTooltip => "Your <c=hacker>leftmost</c> <c=peri>ATTACK</c> deals 1 more damage.\nYour <c=hacker>rightmost</c> <c=peri>ATTACK</c> does an extra 1 damage shot.\nThe last <c=peri>ATTACK</c> in your hand gets no bonuses.";
 
 	public static string MaxRiggsArtifactName => "Max-Riggs Duo Artifact";
-	public static string MaxRiggsArtifactTooltip => "Gain 1 <c=hacker>AUTOPILOT</c>, but lose 1 <c=riggs>EVADE</c> each turn.";
+	public static string MaxRiggsArtifactTooltip => "Gain 1 <c=hacker>AUTOPILOT</c> each turn. <c=downside>Lose 1 <c=riggs>EVADE</c> each turn.</c>";
+
+	public static string PeriRiggsArtifactName => "Peri-Riggs Duo Artifact";
+	public static string PeriRiggsArtifactTooltip => "Gain 1 <c=peri>STRAFE</c> each combat. <c=downside>You can only use 2 <c=riggs>EVADE</c> each turn.";
 }

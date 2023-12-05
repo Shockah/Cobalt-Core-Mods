@@ -35,10 +35,10 @@ public sealed class VanillaEvadeHook : IEvadeHook
 
 	private VanillaEvadeHook() { }
 
-	bool? IEvadeHook.IsEvadePossible(State state, Combat combat, EvadeHookContext context)
+	public bool? IsEvadePossible(State state, Combat combat, EvadeHookContext context)
 		=> state.ship.Get(Status.evade) > 0 ? true : null;
 
-	void IEvadeHook.PayForEvade(State state, Combat combat, int direction)
+	public void PayForEvade(State state, Combat combat, int direction)
 		=> state.ship.Add(Status.evade, -1);
 }
 
@@ -48,7 +48,7 @@ public sealed class VanillaDebugEvadeHook : IEvadeHook
 
 	private VanillaDebugEvadeHook() { }
 
-	bool? IEvadeHook.IsEvadePossible(State state, Combat combat, EvadeHookContext context)
+	public bool? IsEvadePossible(State state, Combat combat, EvadeHookContext context)
 		=> FeatureFlags.Debug && Input.shift ? true : null;
 }
 
@@ -58,7 +58,7 @@ public sealed class VanillaTrashAnchorEvadeHook : IEvadeHook
 
 	private VanillaTrashAnchorEvadeHook() { }
 
-	bool? IEvadeHook.IsEvadePossible(State state, Combat combat, EvadeHookContext context)
+	public bool? IsEvadePossible(State state, Combat combat, EvadeHookContext context)
 	{
 		if (context != EvadeHookContext.Action)
 			return null;
@@ -70,6 +70,6 @@ public sealed class VanillaTrashAnchorEvadeHook : IEvadeHook
 		return false;
 	}
 
-	void IEvadeHook.PayForEvade(State state, Combat combat, int direction)
+	public void PayForEvade(State state, Combat combat, int direction)
 		=> state.ship.Add(Status.evade, -1);
 }
