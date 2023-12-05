@@ -85,7 +85,7 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 		}
 
 		if (leftToPay > 0)
-			Instance.Logger!.LogError("Invalid state in {Type}: leftToPay = {LeftToPay}, should be 0", typeof(BooksPeriArtifact), leftToPay);
+			Instance.Logger!.LogError("Invalid state in {Type}: leftToPay = {LeftToPay}, should be 0", typeof(BooksIsaacArtifact), leftToPay);
 
 		IsPaidForAndActive = true;
 	}
