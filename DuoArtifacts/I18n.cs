@@ -27,7 +27,11 @@ internal static class I18n
 	public static string WormStatusName => "WORM";
 	public static string WormStatusDescription => "Cancels {0} intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>";
 	public static string WormStatusAltGlossaryDescription => "Cancels intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>";
-	public static CustomTTGlossary WormStatusGlossary = new(CustomTTGlossary.GlossaryType.action, () => (Spr)DrakeMaxArtifact.WormSprite.Id!.Value, () => WormStatusName, () => WormStatusAltGlossaryDescription);
+	public static CustomTTGlossary WormStatusGlossary = new(CustomTTGlossary.GlossaryType.status, () => (Spr)DrakeMaxArtifact.WormSprite.Id!.Value, () => WormStatusName, () => WormStatusAltGlossaryDescription);
+
+	public static string OxidationStatusName => "OXIDATION";
+	public static string OxidationStatusDescription => "If oxidation is 7 or more at end of turn, gain 1 <c=status>CORRODE</c> and set oxidation to 0.";
+	public static CustomTTGlossary OxidationStatusGlossary = new(CustomTTGlossary.GlossaryType.status, () => (Spr)DizzyIsaacArtifact.OxidationSprite.Id!.Value, () => OxidationStatusName, () => OxidationStatusDescription);
 
 	public static string BooksCatArtifactName => "Books-CAT Duo Artifact";
 	public static string BooksCatArtifactTooltip => "At the end of each turn, gain <c=shard>SHARD</c> equal to unspent <c=comp>energy</c>.";
@@ -67,6 +71,9 @@ internal static class I18n
 
 	public static string DizzyDrakeArtifactName => "Dizzy-Drake Duo Artifact";
 	public static string DizzyDrakeArtifactTooltip => "<c=eunice>OVERHEAT</c> now causes you to lose 2 <c=dizzy>(TEMP) SHIELD</c> instead of hull, if possible.";
+
+	public static string DizzyIsaacArtifactName => "Dizzy-Isaac Duo Artifact";
+	public static string DizzyIsaacArtifactTooltip => "Whenever a <c=midrow>midrow object</c> gets destroyed by an <c=action>ATTACK</c> or <c=action>LAUNCH</c>, the ship that caused it gains 1 <c=status>OXIDATION</c>.";
 
 	public static string DizzyMaxArtifactName => "Dizzy-Max Duo Artifact";
 	public static string DizzyMaxArtifactTooltip => "At the start of combat, gain a <c=card>Dizzy-Max Duo Artifact Card</c>.";
