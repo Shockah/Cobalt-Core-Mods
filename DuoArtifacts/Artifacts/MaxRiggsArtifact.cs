@@ -11,14 +11,14 @@ internal sealed class MaxRiggsArtifact : DuoArtifact
 		Pulse();
 		combat.Queue(new AStatus
 		{
-			status = Status.autopilot,
+			status = Status.engineStall,
 			statusAmount = 1,
 			targetPlayer = true
 		});
 		combat.Queue(new AStatus
 		{
-			status = Status.evade,
-			statusAmount = -1,
+			status = Status.autopilot,
+			statusAmount = 1,
 			targetPlayer = true
 		});
 	}

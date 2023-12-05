@@ -103,7 +103,7 @@ internal static class I18n
 	public static string MaxPeriArtifactTooltip => "Your <c=hacker>leftmost</c> <c=peri>ATTACK</c> deals 1 more damage.\nYour <c=hacker>rightmost</c> <c=peri>ATTACK</c> does an extra 1 damage shot.\nThe last <c=peri>ATTACK</c> in your hand gets no bonuses.";
 
 	public static string MaxRiggsArtifactName => "Max-Riggs Duo Artifact";
-	public static string MaxRiggsArtifactTooltip => "Gain 1 <c=hacker>AUTOPILOT</c> each turn. <c=downside>Lose 1 <c=riggs>EVADE</c> each turn.</c>";
+	public static string MaxRiggsArtifactTooltip => "Gain 1 <c=hacker>AUTOPILOT</c> each turn. <c=downside>Gain 1 <c=status>ENGINE STALL</c> each turn.</c>";
 
 	public static string PeriRiggsArtifactName => "Peri-Riggs Duo Artifact";
 	public static string PeriRiggsArtifactTooltip => "Gain 1 <c=peri>STRAFE</c> each combat. <c=downside>You can only use 2 <c=riggs>EVADE</c> each turn.";
