@@ -30,7 +30,7 @@ internal sealed class CatPeriArtifact : DuoArtifact
 			combat.QueueImmediate(new AStatus
 			{
 				status = Status.overdrive,
-				statusAmount = 1,
+				statusAmount = -1,
 				targetPlayer = true
 			});
 			Pulse();
