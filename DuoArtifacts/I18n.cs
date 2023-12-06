@@ -93,7 +93,7 @@ internal static class I18n
 	public static string BooksMaxArtifactTooltip => "Whenever you <c=cardtrait>EXHAUST</c> a card, gain 1 <c=status>SHARD</c>.";
 
 	public static string BooksPeriArtifactName => "Shardblade Infuser";
-	public static string BooksPeriArtifactTooltip => "Whenever you play an <c=action>ATTACK</c>, lose 1 <c=status>SHARD</c>: the attack deals 1 more damage.";
+	public static string BooksPeriArtifactTooltip => "Whenever you play an <c=action>ATTACK</c>, lose 1 <c=status>SHARD</c>: the <c=action>ATTACK</c> deals 1 more damage.";
 
 	public static string BooksRiggsArtifactName => "Fleetfoot Resonator";
 	public static string BooksRiggsArtifactTooltip => "Gain 1 <c=status>HERMES BOOTS</c> for each 3 <c=status>SHARD</c> you have each turn.";
