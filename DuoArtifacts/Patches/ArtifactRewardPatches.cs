@@ -15,6 +15,10 @@ internal static class ArtifactRewardPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
+	private const int ArtifactsRequiredForEligibility = 1;
+	private const int RareCardsRequiredForEligibility = 1;
+	private const int AnyCardsRequiredForEligibility = 5;
+
 	private const double SingleColorTransitionAnimationLengthSeconds = 1;
 
 	public static void Apply(Harmony harmony)
@@ -33,10 +37,30 @@ internal static class ArtifactRewardPatches
 
 	private static IEnumerable<Deck> GetCharactersEligibleForDuoArtifacts(State state)
 	{
+		bool IsEligible(Character character)
+		{
+			if (character.artifacts.Count >= ArtifactsRequiredForEligibility)
+				return true;
+
+			var characterCardsInDeck = state.deck
+				.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && !meta.dontOffer && meta.deck == character.deckType)
+				.ToList();
+			if (characterCardsInDeck.Count >= AnyCardsRequiredForEligibility)
+				return true;
+
+			var rareCharacterCardsInDeck = characterCardsInDeck
+				.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && (int)meta.rarity >= (int)Rarity.rare)
+				.ToList();
+			if (rareCharacterCardsInDeck.Count >= RareCardsRequiredForEligibility)
+				return true;
+
+			return false;
+		}
+
 		//return NewRunOptions.allChars;
 
 		foreach (var character in state.characters)
-			if (character.artifacts.Count != 0 && character.deckType is { } deck)
+			if (character.deckType is { } deck && IsEligible(character))
 				yield return deck == Deck.colorless ? Deck.catartifact : deck;
 	}
 
@@ -51,13 +75,62 @@ internal static class ArtifactRewardPatches
 			return;
 
 		var possibleDuoArtifacts = Instance.Database.InstantiateMatchingDuoArtifacts(GetCharactersEligibleForDuoArtifacts(s))
-			.Where(duoArtifact => !s.EnumerateAllArtifacts().Any(artifact => artifact.Key() == duoArtifact.Key()))
+			.Where(duoArtifact => !s.EnumerateAllArtifacts().Any(a => Instance.Database.IsDuoArtifact(a) && Instance.Database.GetDuoArtifactOwnership(a)!.SetEquals(Instance.Database.GetDuoArtifactOwnership(duoArtifact)!)))
 			.ToList();
 		if (possibleDuoArtifacts.Count == 0)
 			return;
 
-		int slotToReplace = random.NextInt() % __result.Count;
 		int duoToTake = random.NextInt() % possibleDuoArtifacts.Count;
+		var duoArtifact = possibleDuoArtifacts[duoToTake];
+
+		if (__result.Count <= 3)
+		{
+			__result.Add(duoArtifact);
+			return;
+		}
+
+		IEnumerable<int> GetPossibleSlotsToReplace()
+		{
+			bool yieldedAny = false;
+
+			// try any colorless artifact
+			for (int i = 0; i < __result.Count; i++)
+			{
+				if (!DB.artifactMetas.TryGetValue(__result[i].Key(), out var meta))
+					continue;
+				if (meta.owner != Deck.colorless)
+					continue;
+
+				yieldedAny = true;
+				yield return i;
+			}
+
+			if (yieldedAny)
+				yield break;
+
+			// no colorless artifacts; try any char-specific artifact
+			for (int i = 0; i < __result.Count; i++)
+			{
+				if (!DB.artifactMetas.TryGetValue(__result[i].Key(), out var meta))
+					continue;
+				if (!NewRunOptions.allChars.Contains(meta.owner))
+					continue;
+
+				yieldedAny = true;
+				yield return i;
+			}
+
+			if (yieldedAny)
+				yield break;
+
+			// no char-specific artifacts; did another mod replace rewards? nothing to return
+		}
+
+		var possibleSlots = GetPossibleSlotsToReplace().ToList();
+		if (possibleSlots.Count == 0)
+			return;
+
+		int slotToReplace = possibleSlots[random.NextInt() % possibleSlots.Count];
 		__result[slotToReplace] = possibleDuoArtifacts[duoToTake];
 	}
 
