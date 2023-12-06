@@ -99,7 +99,7 @@ internal static class I18n
 	public static string BooksRiggsArtifactTooltip => "Gain 1 <c=status>HERMES BOOTS</c> for each 3 <c=status>SHARD</c> you have each turn.";
 
 	public static string CatDizzyArtifactName => "Quantum Sanctuary";
-	public static string CatDizzyArtifactTooltip => "The first time you would lose <c=status>SHIELD</c> or hull due to damage each combat, gain <c=status>PERFECT SHIELD</c> equal to your <c=status>SHIELD</c> + 2. <c=downside>Lose ALL <c=status>max shield</c>.</c>";
+	public static string CatDizzyArtifactTooltip => "The first time you would lose <c=status>SHIELD</c> or hull due to damage each combat, gain <c=status>PERFECT SHIELD</c> equal to your <c=status>SHIELD</c>. <c=downside>Lose ALL <c=status>max shield</c>.</c>";
 
 	public static string CatDrakeArtifactName => "Temporal Heat Dissipator";
 	public static string CatDrakeArtifactTooltip => "Whenever you gain <c=status>SERENITY</c>, gain <c=status>TIMESTOP</c>. Whenever you gain <c=status>TIMESTOP</c>, gain <c=status>SERENITY</c>.";
