@@ -127,7 +127,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 				sprite: DuoArtifactSprites.GetValueOrDefault(definition.CharacterKeys.Value)!,
 				ownerDeck: deck
 			);
-			artifact.AddLocalisation(definition.Name, $"{I18n.GetDuoArtifactTooltip(definition.Characters)}\n{definition.Tooltip}");
+			artifact.AddLocalisation(definition.Name.ToUpper(), $"{I18n.GetDuoArtifactTooltip(definition.Characters)}\n{definition.Tooltip}");
 			registry.RegisterArtifact(artifact);
 			Database.RegisterDuoArtifact(definition.Type, definition.Characters);
 		}
