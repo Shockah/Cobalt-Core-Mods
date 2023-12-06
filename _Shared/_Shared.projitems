@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)HarmonyExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ISpriteRegistryExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MouseDownHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RandExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ReflectionExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextParserExt.cs" />
   </ItemGroup>
