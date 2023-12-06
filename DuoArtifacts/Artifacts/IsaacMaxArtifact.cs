@@ -7,7 +7,7 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class IsaacMaxArtifact : DuoArtifact
 {
-	private static bool WaitingForActionDrain = false;
+	public bool WaitingForActionDrain = false;
 	private static bool IsDuringTryPlayCard = false;
 
 	protected internal override void ApplyPatches(Harmony harmony)
@@ -42,13 +42,22 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 		WaitingForActionDrain = false;
 	}
 
-	private static void DoAction(State state, Combat combat)
+	private static void QueueAction(State state, Combat combat)
 	{
-		if (WaitingForActionDrain || !combat.isPlayerTurn)
+		var artifact = state.EnumerateAllArtifacts().OfType<IsaacMaxArtifact>().FirstOrDefault();
+		if (artifact is null || artifact.WaitingForActionDrain || !combat.isPlayerTurn)
 			return;
 
-		var artifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is IsaacMaxArtifact);
-		if (artifact is null)
+		if (combat.cardActions.Count == 0)
+			DoAction(state, combat);
+		else
+			artifact.WaitingForActionDrain = true;
+	}
+
+	private static void DoAction(State state, Combat combat)
+	{
+		var artifact = state.EnumerateAllArtifacts().OfType<IsaacMaxArtifact>().FirstOrDefault();
+		if (artifact is null || artifact.WaitingForActionDrain || !combat.isPlayerTurn)
 			return;
 
 		var shipMinX = state.ship.x;
@@ -92,27 +101,32 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 			}
 		}
 
+		artifact.WaitingForActionDrain = false;
 		if (didSomething)
-		{
-			WaitingForActionDrain = true;
 			artifact.Pulse();
-		}
 	}
 
 	private static void Combat_SendCardToDiscard_Postfix(Combat __instance, State s)
 	{
-		if (IsDuringTryPlayCard)
+		if (IsDuringTryPlayCard || !__instance.isPlayerTurn)
 			return;
-		DoAction(s, __instance);
+		QueueAction(s, __instance);
 	}
 
 	private static void Combat_SendCardToExhaust_Postfix(Combat __instance, State s)
-		=> DoAction(s, __instance);
+		=> QueueAction(s, __instance);
 
-	private static void Combat_DrainCardActions_Postfix(Combat __instance)
+	private static void Combat_DrainCardActions_Postfix(Combat __instance, G g)
 	{
-		if (__instance.cardActions.Count == 0)
-			WaitingForActionDrain = false;
+		var artifact = g.state.EnumerateAllArtifacts().OfType<IsaacMaxArtifact>().FirstOrDefault();
+		if (artifact is null)
+			return;
+
+		if (__instance.cardActions.Count == 0 && artifact.WaitingForActionDrain)
+		{
+			artifact.WaitingForActionDrain = false;
+			QueueAction(g.state, __instance);
+		}
 	}
 
 	private static void Combat_TryPlayCard_Prefix()
