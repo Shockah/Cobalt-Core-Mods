@@ -68,7 +68,7 @@ internal sealed class DizzyMaxArtifactCard : Card
 
 		foreach (var (status, toTake) in toPay)
 		{
-			c.Queue(new AStatus
+			actions.Add(new AStatus
 			{
 				status = status,
 				statusAmount = -toTake,
@@ -78,7 +78,7 @@ internal sealed class DizzyMaxArtifactCard : Card
 			if (booksDizzyArtifact is not null && status == Status.shard)
 				booksDizzyArtifact.Pulse();
 		}
-		c.QueueImmediate(new AStatus
+		actions.Add(new AStatus
 		{
 			status = Status.boost,
 			statusAmount = 1,
