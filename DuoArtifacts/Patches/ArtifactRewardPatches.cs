@@ -21,6 +21,9 @@ internal static class ArtifactRewardPatches
 
 	private const double SingleColorTransitionAnimationLengthSeconds = 1;
 
+	private static readonly string FirstZoneDuoTag = $"{typeof(ModEntry).Namespace!}.Duo.FirstZone";
+	private static readonly string PastFirstZoneDuoTag = $"{typeof(ModEntry).Namespace!}.Duo.PastFirstZone";
+
 	public static void Apply(Harmony harmony)
 	{
 		harmony.TryPatch(
@@ -33,7 +36,15 @@ internal static class ArtifactRewardPatches
 			original: () => AccessTools.DeclaredMethod(typeof(ArtifactReward), nameof(ArtifactReward.Render)),
 			transpiler: new HarmonyMethod(typeof(ArtifactRewardPatches), nameof(ArtifactReward_Render_Transpiler))
 		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(ArtifactReward), nameof(ArtifactReward.OnMouseDown)),
+			postfix: new HarmonyMethod(typeof(ArtifactRewardPatches), nameof(ArtifactReward_OnMouseDown_Postfix))
+		);
 	}
+
+	private static string GetTagForMap(MapBase map)
+		=> map is MapFirst ? FirstZoneDuoTag : PastFirstZoneDuoTag;
 
 	private static IEnumerable<Deck> GetCharactersEligibleForDuoArtifacts(State state)
 	{
@@ -68,19 +79,17 @@ internal static class ArtifactRewardPatches
 	{
 		if (limitPools is null || limitPools.Contains(ArtifactPool.Boss))
 			return;
-
-		Rand random = rngOverride ?? s.rngArtifactOfferings;
-		double duoArtifactChance = __result.Count * (1.0 / 3.0) / (s.EnumerateAllArtifacts().Count(a => a is DuoArtifact) + 1);
-		if (!random.Chance(duoArtifactChance))
+		if (s.storyVars.oncePerRunTags.Contains(GetTagForMap(s.map)))
 			return;
 
+		var random = rngOverride ?? s.rngArtifactOfferings;
 		var possibleDuoArtifacts = Instance.Database.InstantiateMatchingDuoArtifacts(GetCharactersEligibleForDuoArtifacts(s))
 			.Where(duoArtifact => !s.EnumerateAllArtifacts().Any(a => Instance.Database.IsDuoArtifact(a) && Instance.Database.GetDuoArtifactOwnership(a)!.SetEquals(Instance.Database.GetDuoArtifactOwnership(duoArtifact)!)))
 			.ToList();
 		if (possibleDuoArtifacts.Count == 0)
 			return;
 
-		int duoToTake = random.NextInt() % possibleDuoArtifacts.Count;
+		var duoToTake = random.NextInt() % possibleDuoArtifacts.Count;
 		var duoArtifact = possibleDuoArtifacts[duoToTake];
 
 		if (__result.Count <= 3)
@@ -205,5 +214,18 @@ internal static class ArtifactRewardPatches
 		var (fromColor, toColor, fraction) = GetLerpInfo(colors, totalFraction);
 		double lerpFraction = Math.Sin(fraction * Math.PI) * 0.5 + 0.5;
 		return Color.Lerp(fromColor, toColor, lerpFraction);
+	}
+
+	private static void ArtifactReward_OnMouseDown_Postfix(ArtifactReward __instance, G g, Box b)
+	{
+		var index = b.key?.ValueFor(StableUKs.artifactReward_artifact);
+		if (index is null)
+			return;
+
+		var artifact = __instance.artifacts.ElementAtOrDefault(index.Value);
+		if (artifact is null || !Instance.Database.IsDuoArtifact(artifact))
+			return;
+
+		g.state.storyVars.oncePerRunTags.Add(GetTagForMap(g.state.map));
 	}
 }
