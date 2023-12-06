@@ -20,7 +20,7 @@ internal sealed class DizzyPeriArtifact : DuoArtifact
 	public override void OnTurnStart(State state, Combat combat)
 	{
 		base.OnTurnStart(state, combat);
-		int toSubtract = Math.Min(0, state.ship.Get(Status.overdrive));
+		int toSubtract = Math.Max(0, state.ship.Get(Status.overdrive));
 		if (toSubtract <= 0)
 			return;
 
