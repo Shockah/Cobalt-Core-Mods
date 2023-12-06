@@ -66,15 +66,18 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 			.Where(kvp => kvp.Key >= shipMinX && kvp.Key <= shipMaxX)
 			.Select(kvp => kvp.Value)
 			.ToList();
+		var unbubbledMidrowObjects = midrowObjects
+			.Where(o => !o.bubbleShield)
+			.ToList();
 		var emptyMidrowSlots = Enumerable.Range(shipMinX, shipMaxX - shipMinX + 1)
 			.Where(x => !midrowObjects.Any(o => o.x == x))
 			.ToList();
 
 		bool didSomething = false;
 
-		if (midrowObjects.Any(o => !o.bubbleShield))
+		if (unbubbledMidrowObjects.Any())
 		{
-			var midrowObject = midrowObjects[state.rngActions.NextInt() % midrowObjects.Count];
+			var midrowObject = unbubbledMidrowObjects[state.rngActions.NextInt() % unbubbledMidrowObjects.Count];
 			combat.QueueImmediate(new ADelegateAction((_, _, _) =>
 			{
 				midrowObject.bubbleShield = true;
