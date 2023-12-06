@@ -55,7 +55,7 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IArtifactManifest
 			sprite: RerollArtifactSprite,
 			ownerDeck: ExternalDeck.GetRaw((int)Deck.colorless)
 		);
-		artifact.AddLocalisation(I18n.ArtifactName, I18n.ArtifactTooltip);
+		artifact.AddLocalisation(I18n.ArtifactName.ToUpper(), I18n.ArtifactTooltip);
 		registry.RegisterArtifact(artifact);
 	}
 }
