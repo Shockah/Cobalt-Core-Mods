@@ -37,15 +37,16 @@ internal sealed class DizzyRiggsArtifact : DuoArtifact
 
 	private static void Combat_Update_Postfix(G g)
 	{
-		if (ShieldChange == 0 || g.state.ship.Get(Status.shield) > 0)
+		if (ShieldChange == 0)
+			return;
+		ShieldChange = 0;
+
+		if (g.state.ship.Get(Status.shield) > 0)
 			return;
 
-		var artifact = g.state.EnumerateAllArtifacts().FirstOrDefault(a => a is CatDrakeArtifact);
+		var artifact = g.state.EnumerateAllArtifacts().FirstOrDefault(a => a is DizzyRiggsArtifact);
 		if (artifact is null)
-		{
-			ShieldChange = 0;
 			return;
-		}
 
 		artifact.Pulse();
 		(g.state.route as Combat)?.Queue(new AStatus
