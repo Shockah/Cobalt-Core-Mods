@@ -32,6 +32,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 
 		Harmony harmony = new(Name);
+		ArtifactBrowsePatches.Apply(harmony);
 		ArtifactPatches.Apply(harmony);
 		CombatPatches.Apply(harmony);
 	}
