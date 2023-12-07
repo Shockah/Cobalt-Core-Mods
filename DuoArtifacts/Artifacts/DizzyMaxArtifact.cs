@@ -51,6 +51,7 @@ internal sealed class DizzyMaxArtifactCard : Card
 			infinite = true,
 			temporary = true,
 			retain = true,
+			flippable = true,
 			description = I18n.DizzyMaxArtifactCardDescription
 		};
 
@@ -86,6 +87,23 @@ internal sealed class DizzyMaxArtifactCard : Card
 		});
 
 		return actions;
+	}
+
+	public override void OnFlip(G g)
+	{
+		base.OnFlip(g);
+		if (g.state.route is not Combat combat)
+			return;
+
+		var index = combat.hand.IndexOf(this);
+		if (index == -1)
+			return;
+
+		combat.hand.Remove(this);
+		if (index == 0)
+			combat.hand.Add(this);
+		else
+			combat.hand.Insert(0, this);
 	}
 
 	private static bool TryToPay(Ship ship, List<Status> statuses, int amount, [MaybeNullWhen(false)] out Dictionary<Status, int> toPay)
