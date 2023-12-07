@@ -20,21 +20,31 @@ internal sealed class DizzyPeriArtifact : DuoArtifact
 	public override void OnTurnStart(State state, Combat combat)
 	{
 		base.OnTurnStart(state, combat);
-		int toSubtract = Math.Max(0, state.ship.Get(Status.overdrive));
-		if (toSubtract <= 0)
-			return;
 
-		combat.QueueImmediate(new AStatus
-		{
-			status = Status.shield,
-			statusAmount = -toSubtract,
-			targetPlayer = true
-		});
+		int toSubtract = Math.Clamp(state.ship.Get(Status.overdrive), 0, state.ship.Get(Status.shield));
+		if (toSubtract > 0)
+			combat.QueueImmediate(new AStatus
+			{
+				status = Status.shield,
+				statusAmount = -toSubtract,
+				targetPlayer = true
+			});
+
+		toSubtract = Math.Clamp(state.ship.Get(Status.perfectShield), 0, state.ship.Get(Status.overdrive));
+		if (toSubtract > 0)
+			combat.QueueImmediate(new AStatus
+			{
+				status = Status.overdrive,
+				statusAmount = -toSubtract,
+				targetPlayer = true
+			});
 	}
 
 	private static void Ship_Set_Prefix(Ship __instance, Status status, ref int n)
 	{
 		if (status != Status.shield)
+			return;
+		if (StateExt.Instance?.ship != __instance)
 			return;
 
 		var artifact = StateExt.Instance?.EnumerateAllArtifacts().FirstOrDefault(a => a is DizzyPeriArtifact);

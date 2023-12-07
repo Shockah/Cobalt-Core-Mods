@@ -81,7 +81,7 @@ internal static class I18n
 	public static string BooksCatArtifactTooltip => "At the end of each turn, gain <c=status>SHARD</c> equal to unspent <c=keyword>energy</c>.";
 
 	public static string BooksDrakeArtifactName => "Stunflare Catalyst";
-	public static string BooksDrakeArtifactTooltip => "Whenever you play an attack, lose 2 <c=status>SHARD</c>: the attack becomes piercing. If it was already piercing, it stuns. If it was already stunning, <c=action>TOTAL STUN</c> the opponent.";
+	public static string BooksDrakeArtifactTooltip => "Whenever you play an <c=action>ATTACK</c>, lose 2 <c=status>SHARD</c>: the <c=action>ATTACK</c> becomes piercing. If it was already piercing, it stuns. If it was already stunning, <c=action>TOTAL STUN</c> the opponent.";
 
 	public static string BooksDizzyArtifactName => "Aegis Transmuter";
 	public static string BooksDizzyArtifactTooltip => "<c=status>SHIELD</c> and <c=status>SHARD</c> can be used interchangeably.";
@@ -128,7 +128,7 @@ internal static class I18n
 	public static string DizzyMaxArtifactCardDescription => "Lose 3 <c=status>(TEMP) SHIELD</c>: gain 1 <c=status>BOOST</c>.";
 
 	public static string DizzyPeriArtifactName => "Energy Condenser";
-	public static string DizzyPeriArtifactTooltip => "Any gained <c=status>SHIELD</c> over <c=status>max shield</c> is converted into <c=status>OVERDRIVE</c> instead.\n<c=downside>Lose <c=status>SHIELD</c> equal to <c=status>OVERDRIVE</c> each turn.</c>";
+	public static string DizzyPeriArtifactTooltip => "Any gained <c=status>SHIELD</c> over <c=status>max shield</c> is converted into <c=status>OVERDRIVE</c> instead.\n<c=downside>Lose <c=status>SHIELD</c> equal to <c=status>OVERDRIVE</c> each turn.</c>\n<c=downside>Lose <c=status>OVERDRIVE</c> equal to <c=status>PERFECT SHIELD</c> each turn.</c>";
 
 	public static string DizzyRiggsArtifactName => "Emergency Box";
 	public static string DizzyRiggsArtifactTooltip => "Whenever you lose all <c=status>SHIELD</c>, gain 1 <c=status>EVADE</c>.";
