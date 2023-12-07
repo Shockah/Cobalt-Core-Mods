@@ -452,7 +452,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		__result += s.ship.Get(Status.shield);
 	}
 
-	private static void Glimmershot_GetActions_Postfix(Glimmershot __instance, State s, ref List<CardAction> __result)
+	private static void Glimmershot_GetActions_Postfix(State s, ref List<CardAction> __result)
 	{
 		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;

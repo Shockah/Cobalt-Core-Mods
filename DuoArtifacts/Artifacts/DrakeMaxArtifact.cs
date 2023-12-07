@@ -90,23 +90,18 @@ internal sealed class DrakeMaxArtifact : DuoArtifact
 		if (worm <= 0)
 			return;
 
-		var partXWithIntent = Enumerable.Range(0, combat.otherShip.parts.Count)
+		var partXsWithIntent = Enumerable.Range(0, combat.otherShip.parts.Count)
 			.Where(x => combat.otherShip.parts[x].intent is not null)
 			.Select(x => x + combat.otherShip.x)
 			.ToList();
 
-		for (int i = 0; i < worm; i++)
-		{
-			if (partXWithIntent.Count == 0)
-				break;
-			int partX = partXWithIntent[state.rngActions.NextInt() % partXWithIntent.Count];
-			combat.QueueImmediate(new AStunPart { worldX = partX });
-		}
+		foreach (var partXWithIntent in partXsWithIntent.Shuffle(state.rngActions).Take(worm))
+			combat.Queue(new AStunPart { worldX = partXWithIntent });
 
 		combat.otherShip.Add((Status)WormStatus.Id!.Value, -1);
 	}
 
-	private static void Card_GetAllTooltips_Postfix(State s, ref IEnumerable<Tooltip> __result)
+	private static void Card_GetAllTooltips_Postfix(ref IEnumerable<Tooltip> __result)
 	{
 		var result = __result;
 		IEnumerable<Tooltip> ModifyResult()
