@@ -22,6 +22,10 @@ internal static class MapRoutePatches
 			return true;
 		if (!g.state.map.markers.TryGetValue(key, out var marker) || marker.contents is null)
 			return true;
-		return !marker.wasVisited && !marker.wasCleared;
+		if (!marker.wasVisited && !marker.wasCleared)
+			return true;
+
+		g.state.map.currentLocation = key;
+		return false;
 	}
 }

@@ -35,6 +35,7 @@ public sealed class ModEntry : IModManifest, ISpriteManifest
 		Harmony harmony = new(Name);
 		EventsPatches.Apply(harmony);
 		MapBasePatches.Apply(harmony);
+		MapRoutePatches.Apply(harmony);
 	}
 
 	public void LoadManifest(ISpriteRegistry registry)

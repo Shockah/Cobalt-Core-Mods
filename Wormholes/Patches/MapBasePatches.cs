@@ -16,11 +16,6 @@ internal static class MapBasePatches
 			original: () => AccessTools.DeclaredMethod(typeof(MapBase), nameof(MapBase.Populate)),
 			postfix: new HarmonyMethod(typeof(MapBasePatches), nameof(MapBase_Populate_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(MapBase), nameof(MapBase.MakeRoute)),
-			postfix: new HarmonyMethod(typeof(MapBasePatches), nameof(MapBase_MakeRoute_Postfix))
-		);
 	}
 
 	private static void MapBase_Populate_Postfix(MapBase __instance, Rand rng)
@@ -57,27 +52,41 @@ internal static class MapBasePatches
 			return null;
 		}
 
-		var earlyWormholePosition = GetRandomPosition(firstPossibleY, firstPossibleY + 2, -1);
-		if (earlyWormholePosition is null)
-			return;
+		(Vec EarlyPosition, Vec LatePosition)? GetRandomPositions()
+		{
+			for (int i = 0; i < 100; i++)
+			{
+				var earlyWormholePosition = GetRandomPosition(firstPossibleY, firstPossibleY + 2, -1);
+				if (earlyWormholePosition is null)
+					continue;
 
-		var lateWormholePosition = GetRandomPosition(Math.Max(lastPossibleY - 2, (int)earlyWormholePosition.Value.y + 4), lastPossibleY, 1);
-		if (lateWormholePosition is null)
-			return;
+				var lateWormholePosition = GetRandomPosition(Math.Max(lastPossibleY - 2, (int)earlyWormholePosition.Value.y + 4), lastPossibleY, 1);
+				if (lateWormholePosition is null)
+					continue;
 
-		if (!__instance.markers.TryGetValue(earlyWormholePosition.Value, out var earlyWormhole))
+				return (earlyWormholePosition.Value, lateWormholePosition.Value);
+			}
+			return null;
+		}
+
+		var wormholePositions = GetRandomPositions();
+		if (wormholePositions is null)
+			return;
+		var (earlyWormholePosition, lateWormholePosition) = wormholePositions.Value;
+
+		if (!__instance.markers.TryGetValue(earlyWormholePosition, out var earlyWormhole))
 		{
 			earlyWormhole = new();
-			__instance.markers[earlyWormholePosition.Value] = earlyWormhole;
+			__instance.markers[earlyWormholePosition] = earlyWormhole;
 		}
-		if (!__instance.markers.TryGetValue(lateWormholePosition.Value, out var lateWormhole))
+		if (!__instance.markers.TryGetValue(lateWormholePosition, out var lateWormhole))
 		{
 			lateWormhole = new();
-			__instance.markers[lateWormholePosition.Value] = lateWormhole;
+			__instance.markers[lateWormholePosition] = lateWormhole;
 		}
 
-		earlyWormhole.contents = new MapWormhole { OtherWormholePosition = lateWormholePosition.Value, IsFurther = false };
-		lateWormhole.contents = new MapWormhole { OtherWormholePosition = earlyWormholePosition.Value, IsFurther = true };
+		earlyWormhole.contents = new MapWormhole { OtherWormholePosition = lateWormholePosition, IsFurther = false };
+		lateWormhole.contents = new MapWormhole { OtherWormholePosition = earlyWormholePosition, IsFurther = true };
 
 		void AddPaths(Marker marker, Vec position)
 		{
@@ -90,15 +99,7 @@ internal static class MapBasePatches
 			}
 		}
 
-		AddPaths(earlyWormhole, earlyWormholePosition.Value);
-		AddPaths(lateWormhole, lateWormholePosition.Value);
-	}
-
-	private static void MapBase_MakeRoute_Postfix(MapBase __instance, Vec key, ref Route __result)
-	{
-		if (!__instance.markers.TryGetValue(key, out var marker) || marker.contents is null)
-			return;
-		if ((marker.contents is MapBattle && marker.wasCleared) || (marker.contents is not MapBattle && marker.wasVisited))
-			__result = new MapRoute();
+		AddPaths(earlyWormhole, earlyWormholePosition);
+		AddPaths(lateWormhole, lateWormholePosition);
 	}
 }
