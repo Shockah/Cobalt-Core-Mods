@@ -25,15 +25,10 @@ internal sealed class CatPeriArtifact : DuoArtifact
 	public override void OnTurnEnd(State state, Combat combat)
 	{
 		base.OnTurnEnd(state, combat);
-		if (state.ship.Get(Status.overdrive) > 0)
-		{
-			combat.QueueImmediate(new AStatus
-			{
-				status = Status.overdrive,
-				statusAmount = -1,
-				targetPlayer = true
-			});
-			Pulse();
-		}
+		if (state.ship.Get(Status.overdrive) <= 0 || state.ship.Get(Status.timeStop) > 0)
+			return;
+
+		state.ship.Add(Status.overdrive, -1);
+		Pulse();
 	}
 }
