@@ -1,4 +1,5 @@
 ﻿using CobaltCoreModding.Definitions;
+using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
 using CobaltCoreModding.Definitions.ModManifests;
 using HarmonyLib;
@@ -24,7 +25,7 @@ public sealed class ModEntry : IModManifest, ISpriteManifest
 	public ILogger? Logger { get; set; }
 
 
-	internal Spr EasyModeArtifactSprite { get; private set; }
+	internal ExternalSprite EasyModeArtifactSprite { get; private set; } = null!;
 
 	public void BootMod(IModLoaderContact contact)
 	{

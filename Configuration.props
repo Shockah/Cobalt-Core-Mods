@@ -11,6 +11,5 @@
 		<None Include="$(MSBuildProjectDirectory)\..\.editorconfig" Link=".editorconfig" />
 		<None Remove="$(MSBuildProjectDirectory)\.release\**" />
 	</ItemGroup>
-	<Import Project="Configuration.props.user.default" />
-	<Import Project="Configuration.props.user" />
+	<Import Project="Configuration.props.user" Condition="Exists('Configuration.props.user')" />
 </Project>

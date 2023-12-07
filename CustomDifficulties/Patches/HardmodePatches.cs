@@ -30,7 +30,7 @@ internal static class HardmodePatches
 	private static void Hardmode_GetSprite_Postfix(HARDMODE __instance, ref Spr __result)
 	{
 		if (__instance.difficulty == ModEntry.EasyDifficultyLevel)
-			__result = Instance.EasyModeArtifactSprite;
+			__result = (Spr)Instance.EasyModeArtifactSprite.Id!.Value;
 	}
 
 	private static void Hardmode_GetExtraTooltips_Postfix(HARDMODE __instance, ref List<Tooltip>? __result)
