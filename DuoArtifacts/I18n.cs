@@ -87,7 +87,7 @@ internal static class I18n
 	public static string BooksDizzyArtifactTooltip => "<c=status>SHIELD</c> and <c=status>SHARD</c> can be used interchangeably.";
 
 	public static string BooksIsaacArtifactName => "Drone Amplification Matrix";
-	public static string BooksIsaacArtifactTooltip => "At the end of your turn, lose 2 <c=status>SHARD</c>: your <c=midrow>Attack Drones</c> deal 1 more damage.";
+	public static string BooksIsaacArtifactTooltip => "At the end of each turn, lose 2 <c=status>SHARD</c>: your <c=midrow>Attack Drones</c> deal 1 more damage.";
 
 	public static string BooksMaxArtifactName => "Evaporator";
 	public static string BooksMaxArtifactTooltip => "Whenever you <c=cardtrait>EXHAUST</c> a card, gain 1 <c=status>SHARD</c>.";

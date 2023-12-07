@@ -23,18 +23,18 @@ internal sealed class DrakeMaxArtifact : DuoArtifact
 		);
 	}
 
-	protected internal override void RegisterArt(ISpriteRegistry registry, string namePrefix)
+	protected internal override void RegisterArt(ISpriteRegistry registry, string namePrefix, DuoArtifactDefinition definition)
 	{
-		base.RegisterArt(registry, namePrefix);
+		base.RegisterArt(registry, namePrefix, definition);
 		WormSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Icon.Worm",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Icons", "Worm.png"))
 		);
 	}
 
-	protected internal override void RegisterStatuses(IStatusRegistry registry, string namePrefix)
+	protected internal override void RegisterStatuses(IStatusRegistry registry, string namePrefix, DuoArtifactDefinition definition)
 	{
-		base.RegisterStatuses(registry, namePrefix);
+		base.RegisterStatuses(registry, namePrefix, definition);
 		WormStatus = new(
 			$"{namePrefix}.Worm",
 			isGood: false,
@@ -47,9 +47,9 @@ internal sealed class DrakeMaxArtifact : DuoArtifact
 		registry.RegisterStatus(WormStatus);
 	}
 
-	protected internal override void RegisterCards(ICardRegistry registry, string namePrefix)
+	protected internal override void RegisterCards(ICardRegistry registry, string namePrefix, DuoArtifactDefinition definition)
 	{
-		base.RegisterCards(registry, namePrefix);
+		base.RegisterCards(registry, namePrefix, definition);
 		ExternalCard card = new(
 			$"{namePrefix}.DrakeMaxArtifactCard",
 			typeof(DrakeMaxArtifactCard),

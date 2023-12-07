@@ -89,9 +89,9 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		);
 	}
 
-	protected internal override void RegisterArt(ISpriteRegistry registry, string namePrefix)
+	protected internal override void RegisterArt(ISpriteRegistry registry, string namePrefix, DuoArtifactDefinition definition)
 	{
-		base.RegisterArt(registry, namePrefix);
+		base.RegisterArt(registry, namePrefix, definition);
 		ShieldCostSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Icon.ShieldCost",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Icons", "ShieldCost.png"))

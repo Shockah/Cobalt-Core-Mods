@@ -46,18 +46,18 @@ internal sealed class DizzyIsaacArtifact : DuoArtifact
 		);
 	}
 
-	protected internal override void RegisterArt(ISpriteRegistry registry, string namePrefix)
+	protected internal override void RegisterArt(ISpriteRegistry registry, string namePrefix, DuoArtifactDefinition definition)
 	{
-		base.RegisterArt(registry, namePrefix);
+		base.RegisterArt(registry, namePrefix, definition);
 		OxidationSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Icon.Oxidation",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Icons", "Oxidation.png"))
 		);
 	}
 
-	protected internal override void RegisterStatuses(IStatusRegistry registry, string namePrefix)
+	protected internal override void RegisterStatuses(IStatusRegistry registry, string namePrefix, DuoArtifactDefinition definition)
 	{
-		base.RegisterStatuses(registry, namePrefix);
+		base.RegisterStatuses(registry, namePrefix, definition);
 		OxidationStatus = new(
 			$"{namePrefix}.Oxidation",
 			isGood: false,

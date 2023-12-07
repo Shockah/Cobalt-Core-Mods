@@ -1,10 +1,13 @@
-﻿using HarmonyLib;
+﻿using CobaltCoreModding.Definitions.ExternalItems;
+using CobaltCoreModding.Definitions.ModContactPoints;
+using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -13,6 +16,8 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class CatDizzyArtifact : DuoArtifact
 {
+	internal static ExternalSprite InactiveSprite { get; private set; } = null!;
+
 	public bool TriggeredThisCombat = false;
 
 	protected internal override void ApplyPatches(Harmony harmony)
@@ -29,6 +34,18 @@ internal sealed class CatDizzyArtifact : DuoArtifact
 			prefix: new HarmonyMethod(GetType(), nameof(Ship_DirectHullDamage_Prefix))
 		);
 	}
+
+	protected internal override void RegisterArt(ISpriteRegistry registry, string namePrefix, DuoArtifactDefinition definition)
+	{
+		base.RegisterArt(registry, namePrefix, definition);
+		InactiveSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Artifact.{string.Join("_", definition.CharacterKeys.Value.OrderBy(key => key))}.Inactive",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Artifacts", "CatDizzyInactive.png"))
+		);
+	}
+
+	public override Spr GetSprite()
+		=> TriggeredThisCombat ? (Spr)InactiveSprite.Id!.Value : base.GetSprite();
 
 	public override void OnCombatStart(State state, Combat combat)
 	{

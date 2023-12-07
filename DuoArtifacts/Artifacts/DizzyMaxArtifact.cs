@@ -9,9 +9,9 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class DizzyMaxArtifact : DuoArtifact
 {
-	protected internal override void RegisterCards(ICardRegistry registry, string namePrefix)
+	protected internal override void RegisterCards(ICardRegistry registry, string namePrefix, DuoArtifactDefinition definition)
 	{
-		base.RegisterCards(registry, namePrefix);
+		base.RegisterCards(registry, namePrefix, definition);
 		ExternalCard card = new(
 			$"{namePrefix}.DizzyMaxArtifactCard",
 			typeof(DizzyMaxArtifactCard),

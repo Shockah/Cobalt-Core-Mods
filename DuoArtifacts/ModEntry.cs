@@ -67,7 +67,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 				id: $"{typeof(ModEntry).Namespace}.Artifact.{string.Join("_", definition.CharacterKeys.Value.OrderBy(key => key))}",
 				file: new FileInfo(Path.Combine(ModRootFolder!.FullName, "assets", "Artifacts", $"{definition.AssetName}.png"))
 			);
-			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.RegisterArt(registry, namePrefix);
+			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.RegisterArt(registry, namePrefix, definition);
 		}
 	}
 
@@ -75,7 +75,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	{
 		string namePrefix = $"{typeof(ModEntry).Namespace}.Status";
 		foreach (var definition in DuoArtifactDefinition.Definitions)
-			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.RegisterStatuses(registry, namePrefix);
+			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.RegisterStatuses(registry, namePrefix, definition);
 	}
 
 	public void LoadManifest(IDeckRegistry registry)
@@ -137,6 +137,6 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	{
 		string namePrefix = $"{typeof(ModEntry).Namespace}.Card";
 		foreach (var definition in DuoArtifactDefinition.Definitions)
-			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.RegisterCards(registry, namePrefix);
+			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.RegisterCards(registry, namePrefix, definition);
 	}
 }
