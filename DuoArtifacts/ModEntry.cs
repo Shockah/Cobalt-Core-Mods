@@ -146,6 +146,9 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 	internal static bool IsEligibleForDuoArtifact(Deck deck, State state)
 	{
+		if (state.IsOutsideRun())
+			return false;
+
 		var character = state.characters.FirstOrDefault(c => c.deckType == deck || c.deckType == Deck.colorless && deck == Deck.catartifact);
 		if (character is null)
 			return false;
@@ -153,14 +156,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		if (character.artifacts.Count >= ArtifactsRequiredForEligibility)
 			return true;
 
-		IEnumerable<Card> allCards = state.deck;
-		if (state.route is Combat combat)
-			allCards = allCards
-				.Concat(combat.hand)
-				.Concat(combat.discard)
-				.Concat(combat.exhausted);
-
-		var characterCardsInDeck = allCards
+		var characterCardsInDeck = state.GetAllCards()
 			.Where(c => !c.GetDataWithOverrides(state).temporary)
 			.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && !meta.dontOffer && meta.deck == character.deckType)
 			.ToList();
