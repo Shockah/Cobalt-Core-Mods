@@ -25,7 +25,7 @@ internal sealed class MaxPeriArtifact : DuoArtifact
 
 		var oldHand = combat.hand.ToList();
 		oldHand.Insert(handPosition, card);
-		var attacks = oldHand.Where(c => c == card || c.GetActions(state, combat).Any(a => a is AAttack)).ToList();
+		var attacks = oldHand.Where(c => c.GetActions(state, combat).Any(a => a is AAttack)).ToList();
 		if (!attacks.Contains(card) || attacks.Count == 1)
 			return;
 
