@@ -15,10 +15,6 @@ internal static class ArtifactRewardPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private const int ArtifactsRequiredForEligibility = 1;
-	private const int RareCardsRequiredForEligibility = 1;
-	private const int AnyCardsRequiredForEligibility = 5;
-
 	private const double SingleColorTransitionAnimationLengthSeconds = 1;
 
 	private static readonly string FirstZoneDuoTag = $"{typeof(ModEntry).Namespace!}.Duo.FirstZone";
@@ -48,30 +44,10 @@ internal static class ArtifactRewardPatches
 
 	private static IEnumerable<Deck> GetCharactersEligibleForDuoArtifacts(State state)
 	{
-		bool IsEligible(Character character)
-		{
-			if (character.artifacts.Count >= ArtifactsRequiredForEligibility)
-				return true;
-
-			var characterCardsInDeck = state.deck
-				.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && !meta.dontOffer && meta.deck == character.deckType)
-				.ToList();
-			if (characterCardsInDeck.Count >= AnyCardsRequiredForEligibility)
-				return true;
-
-			var rareCharacterCardsInDeck = characterCardsInDeck
-				.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && (int)meta.rarity >= (int)Rarity.rare)
-				.ToList();
-			if (rareCharacterCardsInDeck.Count >= RareCardsRequiredForEligibility)
-				return true;
-
-			return false;
-		}
-
 		//return NewRunOptions.allChars;
 
 		foreach (var character in state.characters)
-			if (character.deckType is { } deck && IsEligible(character))
+			if (character.deckType is { } deck && ModEntry.IsEligibleForDuoArtifact(deck, state))
 				yield return deck == Deck.colorless ? Deck.catartifact : deck;
 	}
 

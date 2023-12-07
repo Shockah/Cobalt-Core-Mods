@@ -10,6 +10,8 @@ public interface IApi
 	ExternalDeck TrioArtifactDeck { get; }
 	ExternalDeck ComboArtifactDeck { get; }
 
+	bool IsEligibleForDuoArtifact(Deck deck, State state);
+
 	bool IsDuoArtifactType(Type type);
 	bool IsDuoArtifact(Artifact artifact);
 	IReadOnlySet<Deck>? GetDuoArtifactTypeOwnership(Type type);

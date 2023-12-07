@@ -14,6 +14,10 @@ namespace Shockah.DuoArtifacts;
 
 public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IStatusManifest, IDeckManifest, IArtifactManifest, ICardManifest
 {
+	private const int ArtifactsRequiredForEligibility = 1;
+	private const int RareCardsRequiredForEligibility = 1;
+	private const int AnyCardsRequiredForEligibility = 5;
+
 	internal static ModEntry Instance { get; private set; } = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
@@ -138,5 +142,37 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		string namePrefix = $"{typeof(ModEntry).Namespace}.Card";
 		foreach (var definition in DuoArtifactDefinition.Definitions)
 			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.RegisterCards(registry, namePrefix, definition);
+	}
+
+	internal static bool IsEligibleForDuoArtifact(Deck deck, State state)
+	{
+		var character = state.characters.FirstOrDefault(c => c.deckType == deck || c.deckType == Deck.colorless && deck == Deck.catartifact);
+		if (character is null)
+			return false;
+
+		if (character.artifacts.Count >= ArtifactsRequiredForEligibility)
+			return true;
+
+		IEnumerable<Card> allCards = state.deck;
+		if (state.route is Combat combat)
+			allCards = allCards
+				.Concat(combat.hand)
+				.Concat(combat.discard)
+				.Concat(combat.exhausted);
+
+		var characterCardsInDeck = allCards
+			.Where(c => !c.GetDataWithOverrides(state).temporary)
+			.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && !meta.dontOffer && meta.deck == character.deckType)
+			.ToList();
+		if (characterCardsInDeck.Count >= AnyCardsRequiredForEligibility)
+			return true;
+
+		var rareCharacterCardsInDeck = characterCardsInDeck
+			.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && (int)meta.rarity >= (int)Rarity.rare)
+			.ToList();
+		if (rareCharacterCardsInDeck.Count >= RareCardsRequiredForEligibility)
+			return true;
+
+		return false;
 	}
 }

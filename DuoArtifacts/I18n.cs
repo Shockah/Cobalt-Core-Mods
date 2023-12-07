@@ -16,6 +16,8 @@ internal static class I18n
 	public static string ComboArtifactTooltip => "{0} Combo Artifact.";
 	public static string ComboArtifactTooltipSeparator => "-";
 
+	public static string CharacterEligibleForDuoArtifact => "Eligible for duo artifacts.";
+
 	// can't use Loc.T, we're doing this too early
 	private static string GetCharacterName(Deck character)
 		=> character switch
