@@ -131,16 +131,21 @@ internal sealed class DrakeMaxArtifactCard : Card
 			cost = 1,
 			temporary = true,
 			retain = true,
+			exhaust = true,
 			description = I18n.DrakeMaxArtifactCardDescription
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		var cards = c.hand.OfType<WormFood>().ToList();
+		var cards = s.deck
+			.Concat(c.discard)
+			.Concat(c.hand)
+			.OfType<WormFood>()
+			.ToList();
 
 		List<CardAction> actions = new();
 		foreach (var card in cards)
-			actions.Add(new AExhaustOtherCard { uuid = card.uuid });
+			actions.Add(new AExhaustWherever { uuid = card.uuid });
 		actions.Add(new AStatus
 		{
 			status = (Status)DrakeMaxArtifact.WormStatus.Id!.Value,

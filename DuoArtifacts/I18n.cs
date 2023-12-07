@@ -141,7 +141,7 @@ internal static class I18n
 	public static string DrakeMaxArtifactName => "Trojan Drive";
 	public static string DrakeMaxArtifactTooltip => "At the start of combat, shuffle a <c=card>Trojan Drive</c> and a <c=cardtrait>TEMPORARY</cardtrait> <c=card>Worm</c> into your deck.";
 	public static string DrakeMaxArtifactCardName => "Trojan Drive";
-	public static string DrakeMaxArtifactCardDescription => "<c=cardtrait>Exhaust</c> all <c=card>Worm</c> in your hand. Apply <c=status>WORM</c> to the enemy for each.";
+	public static string DrakeMaxArtifactCardDescription => "<c=cardtrait>Exhaust</c> all <c=card>Worm</c>. Apply <c=status>WORM</c> to the enemy for each.";
 
 	public static string DrakePeriArtifactName => "Critical Mass";
 	public static string DrakePeriArtifactTooltip => "Whenever you <c=action>OVERHEAT</c>, convert your <c=status>OVERDRIVE</c> into <c=status>POWERDRIVE</c>.";
