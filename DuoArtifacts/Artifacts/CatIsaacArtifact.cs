@@ -18,7 +18,7 @@ internal sealed class CatIsaacArtifact : DuoArtifact
 
 	private static bool Combat_BeginCardAction_Prefix(Combat __instance, G g, CardAction a)
 	{
-		if (a is not ASpawn action)
+		if (a is not ASpawn action || !action.fromPlayer)
 			return true;
 
 		int siloPartX = g.state.ship.parts.FindIndex(p => p.active && p.type == PType.missiles);
