@@ -7,6 +7,11 @@ namespace Shockah.Wormholes;
 
 internal static class MapBasePatches
 {
+	private enum Rows
+	{
+		FirstToLast, LastToFirst, Random
+	}
+
 	private static ModEntry Instance => ModEntry.Instance;
 
 	public static void Apply(Harmony harmony)
@@ -28,9 +33,22 @@ internal static class MapBasePatches
 		int firstPossibleY = firstY + 1;
 		int lastPossibleY = lastY - 3;
 
-		Vec? GetRandomPosition(int minY, int maxY, int connectionOffset)
+		Vec? GetRandomPosition(int minY, int maxY, int minX, int maxX, int connectionOffset, Rows rows)
 		{
-			foreach (var y in Enumerable.Range(minY, maxY - minY + 1).Shuffle(rng))
+			var rowsEnumerable = Enumerable.Range(minY, maxY - minY + 1);
+			switch (rows)
+			{
+				case Rows.FirstToLast:
+					break;
+				case Rows.LastToFirst:
+					rowsEnumerable = rowsEnumerable.Reverse();
+					break;
+				case Rows.Random:
+					rowsEnumerable = rowsEnumerable.Shuffle(rng);
+					break;
+			}
+
+			foreach (var y in rowsEnumerable)
 			{
 				foreach (var x in Enumerable.Range(minX, maxX - minX + 1).Shuffle(rng))
 				{
@@ -52,19 +70,32 @@ internal static class MapBasePatches
 			return null;
 		}
 
+		(Vec EarlyPosition, Vec LatePosition)? TryGetRandomPositions(int minX, int maxX)
+		{
+			var lateWormholePosition = GetRandomPosition(lastPossibleY - 2, lastPossibleY, minX, maxX, 1, Rows.LastToFirst);
+			if (lateWormholePosition is null)
+				return null;
+
+			var earlyWormholePosition = GetRandomPosition(firstPossibleY, Math.Max((int)lateWormholePosition.Value.y - 4, firstPossibleY), minX, maxX, -1, Rows.Random);
+			if (earlyWormholePosition is null)
+				return null;
+
+			return (earlyWormholePosition.Value, lateWormholePosition.Value);
+		}
+
 		(Vec EarlyPosition, Vec LatePosition)? GetRandomPositions()
 		{
-			for (int i = 0; i < 100; i++)
+			for (int i = 0; i < 25; i++)
 			{
-				var earlyWormholePosition = GetRandomPosition(firstPossibleY, firstPossibleY + 2, -1);
-				if (earlyWormholePosition is null)
-					continue;
-
-				var lateWormholePosition = GetRandomPosition(Math.Max(lastPossibleY - 2, (int)earlyWormholePosition.Value.y + 4), lastPossibleY, 1);
-				if (lateWormholePosition is null)
-					continue;
-
-				return (earlyWormholePosition.Value, lateWormholePosition.Value);
+				var positions = TryGetRandomPositions(minX, maxX);
+				if (positions is not null)
+					return positions;
+			}
+			for (int i = 0; i < 25; i++)
+			{
+				var positions = TryGetRandomPositions(minX - 1, maxX + 1);
+				if (positions is not null)
+					return positions;
 			}
 			return null;
 		}
