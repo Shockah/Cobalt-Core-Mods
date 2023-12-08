@@ -113,7 +113,7 @@ internal static class I18n
 	public static string CatMaxArtifactTooltip => "Gain 1 random positive status each turn.";
 
 	public static string CatPeriArtifactName => "Combat Training Simulator";
-	public static string CatPeriArtifactTooltip => "Whenever you play a <c=cardtrait>TEMPORARY</c> <c=action>ATTACK</c>, gain 1 <c=status>OVERDRIVE</c>.\n<c=downside>Lose an extra <c=status>OVERDRIVE</c> each turn.</c>";
+	public static string CatPeriArtifactTooltip => "Whenever you play a <c=cardtrait>temporary</c> <c=action>ATTACK</c>, gain 1 <c=status>OVERDRIVE</c>.\n<c=downside>Lose an extra <c=status>OVERDRIVE</c> each turn.</c>";
 
 	public static string CatRiggsArtifactName => "Tech-Support Protocol";
 	public static string CatRiggsArtifactTooltip => "<c=cardtrait>DISCOUNT</c> the first non-zero-cost extra card drawn each turn.";
@@ -139,7 +139,7 @@ internal static class I18n
 	public static string DrakeIsaacArtifactTooltip => "Whenever you <c=action>LAUNCH</c> a <c=midrow>midrow object</c>, lose 1 <c=status>HEAT</c>: the object gains <c=midrow>SCORCHING</c>.";
 
 	public static string DrakeMaxArtifactName => "Trojan Drive";
-	public static string DrakeMaxArtifactTooltip => "At the start of combat, shuffle a <c=card>Trojan Drive</c> and a <c=cardtrait>TEMPORARY</cardtrait> <c=card>Worm</c> into your deck.";
+	public static string DrakeMaxArtifactTooltip => "At the start of combat, shuffle a <c=card>Trojan Drive</c> and a <c=cardtrait>temporary</cardtrait> <c=card>Worm</c> into your deck.";
 	public static string DrakeMaxArtifactCardName => "Trojan Drive";
 	public static string DrakeMaxArtifactCardDescription => "<c=cardtrait>Exhaust</c> all <c=card>Worm</c>. Apply <c=status>WORM</c> to the enemy for each.";
 
