@@ -17,10 +17,9 @@ internal sealed class MapWormhole : MapNodeContents
 
 	public override Route MakeRoute(State s)
 	{
-		ModEntry.Instance.UsingWormhole = true;
-		string query = IsFurther ? "BootSequenceDownside" : "BootSequence";
+		ModEntry.Instance.WormholeMode = IsFurther ? WormholeMode.Backward : WormholeMode.Forward;
 		s.map.currentLocation = OtherWormholePosition;
 		s.map.markers[OtherWormholePosition].wasVisited = true;
-		return Dialogue.MakeDialogueRouteOrSkip(s, DB.story.QuickLookup(s, query), OnDone.map);
+		return Dialogue.MakeDialogueRouteOrSkip(s, DB.story.QuickLookup(s, "BootSequenceDownside"), OnDone.map);
 	}
 }

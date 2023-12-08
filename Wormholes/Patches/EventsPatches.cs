@@ -24,12 +24,10 @@ internal static class EventsPatches
 
 	private static void ClearChoiceKeysIfNeeded(List<Choice> choices)
 	{
-		if (!Instance.UsingWormhole)
-			return;
-
-		foreach (var choice in choices)
-			choice.key = null;
-		Instance.UsingWormhole = false;
+		if (Instance.WormholeMode == WormholeMode.Backward)
+			foreach (var choice in choices)
+				choice.key = null;
+		Instance.WormholeMode = WormholeMode.None;
 	}
 
 	private static void Events_BootSequence_Postfix(ref List<Choice> __result)

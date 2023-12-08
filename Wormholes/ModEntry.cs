@@ -24,7 +24,7 @@ public sealed class ModEntry : IModManifest, ISpriteManifest
 
 	internal ExternalSprite WormholeSprite { get; private set; } = null!;
 
-	internal bool UsingWormhole = false;
+	internal WormholeMode WormholeMode = WormholeMode.None;
 
 	public void BootMod(IModLoaderContact contact)
 	{
