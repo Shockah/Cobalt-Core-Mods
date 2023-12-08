@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Shockah.Shared;
+using System;
 using System.Linq;
 
 namespace Shockah.DuoArtifacts;
@@ -46,23 +47,34 @@ internal sealed class CatIsaacArtifact : DuoArtifact
 		if (CanLaunch(launchX))
 			return true;
 
-		artifact.Pulse();
-		for (int i = 1; i < int.MaxValue; i++)
+		int GetShoveValue()
 		{
-			if (CanLaunch(launchX - i))
+			for (int i = 1; i < int.MaxValue; i++)
 			{
-				__instance.QueueImmediate(action);
-				__instance.QueueImmediate(new ADroneMove { dir = i });
-				__instance.currentCardAction = null;
-				break;
+				bool left = CanLaunch(launchX - i);
+				bool right = CanLaunch(launchX + i);
+
+				if (left && right)
+					return g.state.rngActions.NextInt() % 2 == 0 ? -i : i;
+				else if (left)
+					return -i;
+				else if (right)
+					return i;
 			}
-			else if (CanLaunch(launchX + i))
+			// TODO: make sure this works with Walled fights (Buried Relic)
+			throw new InvalidOperationException("Impossible state");
+		}
+
+		artifact.Pulse();
+		int shoveValue = GetShoveValue();
+		__instance.QueueImmediate(action);
+		for (int i = 0; i < Math.Abs(shoveValue); i++)
+		{
+			__instance.QueueImmediate(new AKickMiette
 			{
-				__instance.QueueImmediate(action);
-				__instance.QueueImmediate(new ADroneMove { dir = -i });
-				__instance.currentCardAction = null;
-				break;
-			}
+				x = launchX + i * Math.Sign(shoveValue),
+				dir = Math.Sign(shoveValue)
+			});
 		}
 		return false;
 	}

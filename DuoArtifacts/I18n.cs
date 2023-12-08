@@ -107,7 +107,7 @@ internal static class I18n
 	public static string CatDrakeArtifactTooltip => "Whenever you gain <c=status>SERENITY</c>, gain <c=status>TIMESTOP</c>. Whenever you gain <c=status>TIMESTOP</c>, gain <c=status>SERENITY</c>.";
 
 	public static string CatIsaacArtifactName => "Smart Launch System";
-	public static string CatIsaacArtifactTooltip => "Whenever you are about to <c=action>LAUNCH</c> into an object and doing so would not benefit you, <c=action>DRONESHIFT</c> the shortest possible distance to avoid doing that.";
+	public static string CatIsaacArtifactTooltip => "Whenever you are about to <c=action>LAUNCH</c> into an object and doing so would not benefit you, shove objects to the side to make space for it instead.";
 
 	public static string CatMaxArtifactName => "Gashapon.EXE";
 	public static string CatMaxArtifactTooltip => "Gain 1 random positive status each turn.";
