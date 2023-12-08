@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Shockah.Shared;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.Wormholes;
@@ -31,9 +32,10 @@ internal static class MapBasePatches
 		int maxX = __instance.markers.Keys.Max(v => (int)v.x);
 
 		int firstPossibleY = firstY + 1;
-		int lastPossibleY = lastY - 3;
+		int lastPossibleY = lastY - (__instance.IsFinalZone() ? 2 : 3);
+		var preferredSkipLength = (int)Math.Ceiling((lastPossibleY - firstPossibleY + 1) / 2.0);
 
-		Vec? GetRandomPosition(int minY, int maxY, int minX, int maxX, int connectionOffset, Rows rows)
+		IEnumerable<Vec> GetRandomPositionEnumerable(int minY, int maxY, int minX, int maxX, Rows rows, int maxPathOffset)
 		{
 			var rowsEnumerable = Enumerable.Range(minY, maxY - minY + 1);
 			switch (rows)
@@ -54,6 +56,10 @@ internal static class MapBasePatches
 				{
 					if (__instance.markers.TryGetValue(new(x, y), out var marker) && marker.contents is not null)
 						continue;
+					if (x == minX && (!__instance.markers.TryGetValue(new(x + 1, y), out var neighbor) || neighbor.contents is null))
+						continue;
+					if (x == maxX && (!__instance.markers.TryGetValue(new(x - 1, y), out neighbor) || neighbor.contents is null))
+						continue;
 
 					bool HasPossiblePath(int offsetX, int offsetY)
 					{
@@ -62,75 +68,115 @@ internal static class MapBasePatches
 						return marker.contents is not null;
 					}
 
-					if (!Enumerable.Range(-1, 3).Any(offset => HasPossiblePath(offset, connectionOffset)))
+					if (!Enumerable.Range(-maxPathOffset, maxPathOffset * 2 + 1).Any(offset => HasPossiblePath(offset, -1) && HasPossiblePath(offset, 1)))
 						continue;
-					return new(x, y);
+					yield return new(x, y);
 				}
 			}
-			return null;
 		}
 
-		(Vec EarlyPosition, Vec LatePosition)? TryGetRandomPositions(int minX, int maxX)
+		IEnumerable<(Vec EarlyPosition, Vec LatePosition)> GetRandomPositionsEnumerable(int minX, int maxX, int maxPathOffset = 1)
 		{
-			var lateWormholePosition = GetRandomPosition(lastPossibleY - 2, lastPossibleY, minX, maxX, 1, Rows.LastToFirst);
-			if (lateWormholePosition is null)
-				return null;
-
-			var earlyWormholePosition = GetRandomPosition(firstPossibleY, Math.Max((int)lateWormholePosition.Value.y - 4, firstPossibleY), minX, maxX, -1, Rows.Random);
-			if (earlyWormholePosition is null)
-				return null;
-
-			return (earlyWormholePosition.Value, lateWormholePosition.Value);
+			foreach (var lateWormholePosition in GetRandomPositionEnumerable(lastPossibleY - 2, lastPossibleY, minX, maxX, Rows.LastToFirst, maxPathOffset))
+				foreach (var earlyWormholePosition in GetRandomPositionEnumerable(firstPossibleY, Math.Max((int)lateWormholePosition.y - 4, firstPossibleY), minX, maxX, Rows.Random, maxPathOffset).OrderByDescending(p => Math.Abs(p.x - lateWormholePosition.x)))
+					if (Math.Abs(lateWormholePosition.x - earlyWormholePosition.x) <= 6)
+						yield return (earlyWormholePosition, lateWormholePosition);
 		}
 
-		(Vec EarlyPosition, Vec LatePosition)? GetRandomPositions()
-		{
-			for (int i = 0; i < 25; i++)
+		var positions = GetRandomPositionsEnumerable(minX - 1, maxX + 1, maxPathOffset: 2)
+			.Where(p => Math.Abs((int)p.EarlyPosition.x - (int)p.LatePosition.x) <= 6)
+			.Select(p =>
 			{
-				var positions = TryGetRandomPositions(minX, maxX);
-				if (positions is not null)
-					return positions;
-			}
-			for (int i = 0; i < 25; i++)
-			{
-				var positions = TryGetRandomPositions(minX - 1, maxX + 1);
-				if (positions is not null)
-					return positions;
-			}
-			return null;
-		}
+				int GetMinXOffset(Vec position, int offsetY)
+				{
+					bool HasPossiblePath(int offsetX, int offsetY)
+					{
+						if (!__instance.markers.TryGetValue(new(position.x + offsetX, position.y + offsetY), out var marker))
+							return false;
+						return marker.contents is not null;
+					}
 
-		var wormholePositions = GetRandomPositions();
-		if (wormholePositions is null)
+					for (int i = 0; i <= 2; i++)
+					{
+						if (i != 0 && HasPossiblePath(-i, -1) && HasPossiblePath(-i, 1))
+							return i;
+						if (HasPossiblePath(i, -1) && HasPossiblePath(i, 1))
+							return i;
+					}
+					return 100;
+				}
+
+				return (
+					EarlyPosition: p.EarlyPosition,
+					LatePosition: p.LatePosition,
+					EarlyMinPreviousXOffset: Math.Max(GetMinXOffset(p.EarlyPosition, -1), 1),
+					EarlyMinNextXOffset: Math.Max(GetMinXOffset(p.EarlyPosition, 1), 1),
+					LateMinPreviousXOffset: Math.Max(GetMinXOffset(p.LatePosition, -1), 1),
+					LateMinNextXOffset: Math.Max(GetMinXOffset(p.LatePosition, 1), 1)
+				);
+			})
+			.OrderBy(p => Math.Max(Math.Max(p.EarlyMinPreviousXOffset, p.EarlyMinNextXOffset), Math.Max(p.LateMinPreviousXOffset, p.LateMinNextXOffset)))
+			.ThenBy(p => Math.Abs(Math.Max(maxX, Math.Max((int)p.EarlyPosition.x, (int)p.LatePosition.x)) - Math.Min(minX, Math.Min((int)p.EarlyPosition.x, (int)p.LatePosition.x))))
+			.ThenBy(p => Math.Max(p.EarlyMinPreviousXOffset, p.EarlyMinNextXOffset) + Math.Max(p.LateMinPreviousXOffset, p.LateMinNextXOffset))
+			.ThenBy(p => p.EarlyMinPreviousXOffset + p.EarlyMinNextXOffset + p.LateMinPreviousXOffset + p.LateMinNextXOffset)
+			.ThenBy(p => Math.Abs(Math.Abs((int)p.EarlyPosition.y - (int)p.LatePosition.y) - 1 - preferredSkipLength))
+			.ThenByDescending(p => Math.Abs((int)p.EarlyPosition.x - (int)p.LatePosition.x))
+			.FirstOrNull();
+		if (positions is null)
 			return;
-		var (earlyWormholePosition, lateWormholePosition) = wormholePositions.Value;
 
-		if (!__instance.markers.TryGetValue(earlyWormholePosition, out var earlyWormhole))
+		if (!__instance.markers.TryGetValue(positions.Value.EarlyPosition, out var earlyWormhole))
 		{
 			earlyWormhole = new();
-			__instance.markers[earlyWormholePosition] = earlyWormhole;
+			__instance.markers[positions.Value.EarlyPosition] = earlyWormhole;
 		}
-		if (!__instance.markers.TryGetValue(lateWormholePosition, out var lateWormhole))
+		if (!__instance.markers.TryGetValue(positions.Value.LatePosition, out var lateWormhole))
 		{
 			lateWormhole = new();
-			__instance.markers[lateWormholePosition] = lateWormhole;
+			__instance.markers[positions.Value.LatePosition] = lateWormhole;
 		}
 
-		earlyWormhole.contents = new MapWormhole { OtherWormholePosition = lateWormholePosition, IsFurther = false };
-		lateWormhole.contents = new MapWormhole { OtherWormholePosition = earlyWormholePosition, IsFurther = true };
+		earlyWormhole.contents = new MapWormhole { OtherWormholePosition = positions.Value.LatePosition, IsFurther = false };
+		lateWormhole.contents = new MapWormhole { OtherWormholePosition = positions.Value.EarlyPosition, IsFurther = true };
 
-		void AddPaths(Marker marker, Vec position)
+		void AddPaths(Marker marker, Vec position, int minPreviousXOffset, int minNextXOffset)
 		{
-			for (int offset = -1; offset <= 1; offset++)
+			for (int span = 0; span <= Math.Max(minPreviousXOffset, 1); span++)
 			{
-				if (__instance.markers.TryGetValue(new(position.x + offset, position.y - 1), out var neighbor) && neighbor.contents is not null)
+				bool addedAny = false;
+				if (span != 0 && __instance.markers.TryGetValue(new(position.x - span, position.y - 1), out var neighbor) && neighbor.contents is not null)
+				{
 					neighbor.paths.Add((int)position.x);
-				if (__instance.markers.TryGetValue(new(position.x + offset, position.y + 1), out neighbor) && neighbor.contents is not null)
-					marker.paths.Add((int)position.x + offset);
+					addedAny = true;
+				}
+				if (__instance.markers.TryGetValue(new(position.x + span, position.y - 1), out neighbor) && neighbor.contents is not null)
+				{
+					neighbor.paths.Add((int)position.x);
+					addedAny = true;
+				}
+				if (span >= 1 && addedAny)
+					break;
+			}
+
+			for (int span = 0; span <= Math.Max(minNextXOffset, 1); span++)
+			{
+				bool addedAny = false;
+				if (span != 0 && __instance.markers.TryGetValue(new(position.x - span, position.y + 1), out var neighbor) && neighbor.contents is not null)
+				{
+					marker.paths.Add((int)position.x - span);
+					addedAny = true;
+				}
+				if (__instance.markers.TryGetValue(new(position.x + span, position.y + 1), out neighbor) && neighbor.contents is not null)
+				{
+					marker.paths.Add((int)position.x + span);
+					addedAny = true;
+				}
+				if (span >= 1 && addedAny)
+					break;
 			}
 		}
 
-		AddPaths(earlyWormhole, earlyWormholePosition);
-		AddPaths(lateWormhole, lateWormholePosition);
+		AddPaths(earlyWormhole, positions.Value.EarlyPosition, positions.Value.EarlyMinPreviousXOffset, positions.Value.EarlyMinNextXOffset);
+		AddPaths(lateWormhole, positions.Value.LatePosition, positions.Value.LateMinPreviousXOffset, positions.Value.LateMinNextXOffset);
 	}
 }
