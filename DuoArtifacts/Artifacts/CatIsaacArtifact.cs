@@ -49,10 +49,18 @@ internal sealed class CatIsaacArtifact : DuoArtifact
 
 		int GetShoveValue()
 		{
+			int leftWall = __instance.leftWall ?? int.MinValue;
+			int rightWall = __instance.rightWall ?? int.MaxValue;
+
 			for (int i = 1; i < int.MaxValue; i++)
 			{
-				bool left = CanLaunch(launchX - i);
-				bool right = CanLaunch(launchX + i);
+				bool leftInWall = launchX - i < leftWall || launchX - i >= rightWall;
+				bool rightInWall = launchX + i < leftWall || launchX + i >= rightWall;
+				if (leftInWall && rightInWall)
+					return 0;
+
+				bool left = !leftInWall && CanLaunch(launchX - i);
+				bool right = !rightInWall && CanLaunch(launchX + i);
 
 				if (left && right)
 					return g.state.rngActions.NextInt() % 2 == 0 ? -i : i;
@@ -61,12 +69,14 @@ internal sealed class CatIsaacArtifact : DuoArtifact
 				else if (right)
 					return i;
 			}
-			// TODO: make sure this works with Walled fights (Buried Relic)
-			throw new InvalidOperationException("Impossible state");
+			return 0;
 		}
 
-		artifact.Pulse();
 		int shoveValue = GetShoveValue();
+		if (shoveValue == 0)
+			return true;
+
+		artifact.Pulse();
 		__instance.QueueImmediate(action);
 		for (int i = 0; i < Math.Abs(shoveValue); i++)
 		{
