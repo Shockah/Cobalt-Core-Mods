@@ -33,3 +33,10 @@ Adds a way to reroll artifact and card rewards.
 [![Artifact icon screenshot](Rerolls/docs/images/artifact-thumb.png)](Rerolls/docs/images/artifact.png)
 [![Artifact reward screenshot](Rerolls/docs/images/artifact-reward-thumb.png)](Rerolls/docs/images/artifact-reward.png)
 [![Shop screenshot](Rerolls/docs/images/shop-thumb.png)](Rerolls/docs/images/shop.png)
+
+# Wormholes
+
+Is that... a wormhole? Adds a pair of wormholes on each map, which lets you traverse forward or backward, with some down/upsides.  
+\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fwormholes-1.0.0)] \[[release notes](Wormholes/docs/release-notes.md)] \[[README/source code](Wormholes)]
+
+[![Map screenshot](Wormholes/docs/images/map-thumb.png)](Wormholes/docs/images/map.png)
