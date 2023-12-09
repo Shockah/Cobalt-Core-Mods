@@ -26,10 +26,12 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	public ILogger? Logger { get; set; }
 
 	internal Content Content = new();
-	public EvadeHookManager EvadeHookManager { get; private init; } = new();
-	public DroneShiftHookManager DroneShiftHookManager { get; private init; } = new();
-	public ArtifactIconHookManager ArtifactIconHookManager { get; private init; } = new();
-	public HookManager<IMidrowScorchingHook> MidrowScorchingHookManager { get; private init; } = new();
+	public EvadeManager EvadeManager { get; private init; } = new();
+	public DroneShiftManager DroneShiftManager { get; private init; } = new();
+	public ArtifactIconManager ArtifactIconManager { get; private init; } = new();
+	public MidrowScorchingManager MidrowScorchingManager { get; private init; } = new();
+	public WormStatusManager WormStatusManager { get; private init; } = new();
+	public OxidationStatusManager OxidationStatusManager { get; private init; } = new();
 
 	internal TimeSpan TotalGameTime;
 

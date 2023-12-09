@@ -2,9 +2,9 @@
 
 namespace Shockah.Kokoro;
 
-public sealed class DroneShiftHookManager : HookManager<IDroneShiftHook>
+public sealed class DroneShiftManager : HookManager<IDroneShiftHook>
 {
-	internal DroneShiftHookManager() : base()
+	internal DroneShiftManager() : base()
 	{
 		Register(VanillaDroneShiftHook.Instance, 0);
 		Register(VanillaDebugDroneShiftHook.Instance, int.MaxValue);

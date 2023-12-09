@@ -19,16 +19,6 @@ internal static class CardPatches
 
 	private static void Card_GetAllTooltips_Postfix(ref IEnumerable<Tooltip> __result)
 	{
-		var result = __result;
-		IEnumerable<Tooltip> ModifyResult()
-		{
-			foreach (var tooltip in result)
-			{
-				if (tooltip is TTGlossary glossary && glossary.key == $"status.{Instance.Content.WormStatus.Id!.Value}" && (glossary.vals is null || glossary.vals.Length == 0 || Equals(glossary.vals[0], "<c=boldPink>0</c>")))
-					glossary.vals = new object[] { "<c=boldPink>1</c>" };
-				yield return tooltip;
-			}
-		}
-		__result = ModifyResult();
+		__result = Instance.WormStatusManager.ModifyCardTooltips(__result);
 	}
 }

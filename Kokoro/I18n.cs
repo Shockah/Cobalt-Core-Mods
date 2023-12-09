@@ -10,7 +10,6 @@ internal static class I18n
 	public static string WormStatusDescription => "Cancels {0} intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>";
 	public static string WormStatusAltGlossaryDescription => "Cancels intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>";
 
-	//public static string OxidationStatusName => "OXIDATION";
-	//public static string OxidationStatusDescription => "If oxidation is 7 or more at end of turn, gain 1 <c=status>CORRODE</c> and set oxidation to 0.";
-	//public static CustomTTGlossary OxidationStatusGlossary = new(CustomTTGlossary.GlossaryType.status, () => (Spr)DizzyIsaacArtifact.OxidationSprite.Id!.Value, () => OxidationStatusName, () => OxidationStatusDescription);
+	public static string OxidationStatusName => "OXIDATION";
+	public static string OxidationStatusDescription => "If oxidation is {0} or more at end of turn, gain 1 <c=status>CORRODE</c> and set oxidation to 0.";
 }

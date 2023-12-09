@@ -62,10 +62,6 @@ internal static class I18n
 	public static string MaxShieldLowerAltGlossaryDescription => "Max shield is lowered for the rest of combat.";
 	public static CustomTTGlossary MaxShieldLowerAltGlossary = new(CustomTTGlossary.GlossaryType.status, () => StableSpr.icons_maxShieldLower, () => MaxShieldLowerAltGlossaryName, () => MaxShieldLowerAltGlossaryDescription);
 
-	public static string OxidationStatusName => "OXIDATION";
-	public static string OxidationStatusDescription => "If oxidation is 7 or more at end of turn, gain 1 <c=status>CORRODE</c> and set oxidation to 0.";
-	public static CustomTTGlossary OxidationStatusGlossary = new(CustomTTGlossary.GlossaryType.status, () => (Spr)DizzyIsaacArtifact.OxidationSprite.Id!.Value, () => OxidationStatusName, () => OxidationStatusDescription);
-
 	public static string BooksCatArtifactName => "Shard Synthesizer";
 	public static string BooksCatArtifactTooltip => "At the end of each turn, gain <c=status>SHARD</c> equal to unspent <c=keyword>energy</c>.";
 

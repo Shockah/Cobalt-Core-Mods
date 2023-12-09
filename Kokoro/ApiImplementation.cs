@@ -29,6 +29,23 @@ public sealed class ApiImplementation : IKokoroApi
 			: new TTGlossary($"status.{Instance.Content.WormStatus.Id!.Value}", value.Value);
 	#endregion
 
+	#region OxidationStatus
+	public ExternalStatus OxidationStatus
+		=> Instance.Content.OxidationStatus;
+
+	public Tooltip GetOxidationStatusTooltip(Ship ship, State state)
+		=> new TTGlossary($"status.{Instance.Content.OxidationStatus.Id!.Value}", Instance.OxidationStatusManager.GetOxidationStatusMaxValue(ship, state));
+
+	public int GetOxidationStatusMaxValue(Ship ship, State state)
+		=> Instance.OxidationStatusManager.GetOxidationStatusMaxValue(ship, state);
+
+	public void RegisterOxidationStatusHook(IOxidationStatusHook hook, double priority)
+		=> Instance.OxidationStatusManager.Register(hook, priority);
+
+	public void UnregisterOxidationStatusHook(IOxidationStatusHook hook)
+		=> Instance.OxidationStatusManager.Unregister(hook);
+	#endregion
+
 	#region MidrowTags
 	public void TagMidrowObject(Combat combat, StuffBase @object, string tag, object? tagValue = null)
 		=> MidrowTracker.ObtainMidrowTracker(combat).ObtainEntry(@object).Tags[tag] = tagValue;
@@ -56,7 +73,7 @@ public sealed class ApiImplementation : IKokoroApi
 	{
 		int oldValue = GetScorchingStatus(combat, @object);
 		TagMidrowObject(combat, @object, ModEntry.ScorchingTag, value);
-		foreach (var hook in Instance.MidrowScorchingHookManager)
+		foreach (var hook in Instance.MidrowScorchingManager)
 			hook.OnScorchingChange(combat, @object, oldValue, value);
 	}
 
@@ -64,18 +81,18 @@ public sealed class ApiImplementation : IKokoroApi
 		=> SetScorchingStatus(combat, @object, Math.Max(GetScorchingStatus(combat, @object) + value, 0));
 
 	public void RegisterMidrowScorchingHook(IMidrowScorchingHook hook, double priority)
-		=> Instance.MidrowScorchingHookManager.Register(hook, priority);
+		=> Instance.MidrowScorchingManager.Register(hook, priority);
 
 	public void UnregisterMidrowScorchingHook(IMidrowScorchingHook hook)
-		=> Instance.MidrowScorchingHookManager.Unregister(hook);
+		=> Instance.MidrowScorchingManager.Unregister(hook);
 	#endregion
 
 	#region EvadeHook
 	public void RegisterEvadeHook(IEvadeHook hook, double priority)
-		=> Instance.EvadeHookManager.Register(hook, priority);
+		=> Instance.EvadeManager.Register(hook, priority);
 
 	public void UnregisterEvadeHook(IEvadeHook hook)
-		=> Instance.EvadeHookManager.Unregister(hook);
+		=> Instance.EvadeManager.Unregister(hook);
 	#endregion
 
 	#region DroneShiftHook
@@ -86,17 +103,17 @@ public sealed class ApiImplementation : IKokoroApi
 		=> Kokoro.VanillaDebugDroneShiftHook.Instance;
 
 	public void RegisterDroneShiftHook(IDroneShiftHook hook, double priority)
-		=> Instance.DroneShiftHookManager.Register(hook, priority);
+		=> Instance.DroneShiftManager.Register(hook, priority);
 
 	public void UnregisterDroneShiftHook(IDroneShiftHook hook)
-		=> Instance.DroneShiftHookManager.Unregister(hook);
+		=> Instance.DroneShiftManager.Unregister(hook);
 	#endregion
 
 	#region ArtifactIconHook
 	public void RegisterArtifactIconHook(IArtifactIconHook hook, double priority)
-		=> Instance.ArtifactIconHookManager.Register(hook, priority);
+		=> Instance.ArtifactIconManager.Register(hook, priority);
 
 	public void UnregisterArtifactIconHook(IArtifactIconHook hook)
-		=> Instance.ArtifactIconHookManager.Unregister(hook);
+		=> Instance.ArtifactIconManager.Unregister(hook);
 	#endregion
 }

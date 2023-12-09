@@ -55,5 +55,5 @@ internal static class ArtifactPatches
 	}
 
 	private static void Artifact_Render_Transpiler_CallManager(Artifact artifact, G g, Vec position)
-		=> Instance.ArtifactIconHookManager.OnRenderArtifactIcon(g, artifact, position);
+		=> Instance.ArtifactIconManager.OnRenderArtifactIcon(g, artifact, position);
 }

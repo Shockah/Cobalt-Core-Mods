@@ -73,7 +73,7 @@ internal static class CombatPatches
 	{
 		if (g.state.route is not Combat combat)
 			return false;
-		return Instance.EvadeHookManager.IsEvadePossible(g.state, combat, EvadeHookContext.Rendering);
+		return Instance.EvadeManager.IsEvadePossible(g.state, combat, EvadeHookContext.Rendering);
 	}
 
 	private static IEnumerable<CodeInstruction> Combat_RenderDroneShiftButtons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
@@ -111,7 +111,7 @@ internal static class CombatPatches
 	{
 		if (g.state.route is not Combat combat)
 			return false;
-		return Instance.DroneShiftHookManager.IsDroneShiftPossible(g.state, combat, DroneShiftHookContext.Rendering);
+		return Instance.DroneShiftManager.IsDroneShiftPossible(g.state, combat, DroneShiftHookContext.Rendering);
 	}
 
 	private static bool Combat_DoEvade_Prefix(G g, int dir)
@@ -119,7 +119,7 @@ internal static class CombatPatches
 		if (g.state.route is not Combat combat)
 			return true;
 
-		var hook = Instance.EvadeHookManager.GetHandlingHook(g.state, combat);
+		var hook = Instance.EvadeManager.GetHandlingHook(g.state, combat);
 		if (hook is not null)
 		{
 			combat.Queue(new AMove
@@ -129,7 +129,7 @@ internal static class CombatPatches
 				fromEvade = true
 			});
 			hook.PayForEvade(g.state, combat, dir);
-			foreach (var hooks in Instance.EvadeHookManager)
+			foreach (var hooks in Instance.EvadeManager)
 				hooks.AfterEvade(g.state, combat, dir, hook);
 		}
 		return false;
@@ -140,7 +140,7 @@ internal static class CombatPatches
 		if (g.state.route is not Combat combat)
 			return true;
 
-		var hook = Instance.DroneShiftHookManager.GetHandlingHook(g.state, combat);
+		var hook = Instance.DroneShiftManager.GetHandlingHook(g.state, combat);
 		if (hook is not null)
 		{
 			combat.Queue(new ADroneMove
@@ -148,7 +148,7 @@ internal static class CombatPatches
 				dir = dir
 			});
 			hook.PayForDroneShift(g.state, combat, dir);
-			foreach (var hooks in Instance.DroneShiftHookManager)
+			foreach (var hooks in Instance.DroneShiftManager)
 				hooks.AfterDroneShift(g.state, combat, dir, hook);
 		}
 		return false;
