@@ -1,6 +1,6 @@
 ﻿namespace Shockah.Kokoro;
 
-public sealed class ArtifactIconHookManager : AbstractHookManager<IArtifactIconHook>
+public sealed class ArtifactIconHookManager : HookManager<IArtifactIconHook>
 {
 	internal ArtifactIconHookManager() : base()
 	{

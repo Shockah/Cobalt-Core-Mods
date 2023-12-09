@@ -64,15 +64,15 @@ internal sealed class MidrowTracker : FX
 
 	public static MidrowTracker ObtainMidrowTracker(Combat combat)
 	{
-		var state = combat.fx.OfType<MidrowTracker>().FirstOrDefault();
-		if (state is null)
+		var tracker = combat.fx.OfType<MidrowTracker>().FirstOrDefault();
+		if (tracker is null)
 		{
-			state = new();
-			combat.fx.Add(state);
+			tracker = new();
+			combat.fx.Add(tracker);
 		}
-		state.FixAfterDeserialization(combat);
-		state.Update(combat);
-		return state;
+		tracker.FixAfterDeserialization(combat);
+		tracker.Update(combat);
+		return tracker;
 	}
 
 	public override void Update(G g)
@@ -93,9 +93,9 @@ internal sealed class MidrowTracker : FX
 		var oldObjects = EntriesByObject.Values.Select(e => e.Object).ToHashSet();
 		var newObjects = combat.stuff.Values.ToHashSet();
 
-		var addedObjects = newObjects.Where(o => !oldObjects.Contains(o));
-		var removedObjects = oldObjects.Where(o => !newObjects.Contains(o));
-		var existingObjects = newObjects.Where(oldObjects.Contains);
+		var addedObjects = newObjects.Where(o => !oldObjects.Contains(o)).ToHashSet();
+		var removedObjects = oldObjects.Where(o => !newObjects.Contains(o)).ToHashSet();
+		var existingObjects = newObjects.Where(oldObjects.Contains).ToHashSet();
 
 		foreach (var @object in removedObjects)
 			RemoveObject(@object);

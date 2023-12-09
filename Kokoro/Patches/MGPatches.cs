@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Shockah.Shared;
 
-namespace Shockah.DuoArtifacts;
+namespace Shockah.Kokoro;
 
 internal static class MGPatches
 {

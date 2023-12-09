@@ -62,10 +62,6 @@ internal static class I18n
 	public static string MaxShieldLowerAltGlossaryDescription => "Max shield is lowered for the rest of combat.";
 	public static CustomTTGlossary MaxShieldLowerAltGlossary = new(CustomTTGlossary.GlossaryType.status, () => StableSpr.icons_maxShieldLower, () => MaxShieldLowerAltGlossaryName, () => MaxShieldLowerAltGlossaryDescription);
 
-	public static string ScorchingGlossaryName => "Scorching";
-	public static string ScorchingGlossaryDescription => "The object takes damage each turn. If this object collides with a ship, or is destroyed by a ship's <c=action>ATTACK</c> or <c=action>LAUNCH</c>, the ship gains 3 <c=status>HEAT</c>.";
-	public static CustomTTGlossary ScorchingGlossary = new(CustomTTGlossary.GlossaryType.midrow, () => StableSpr.icons_overheat, () => ScorchingGlossaryName, () => ScorchingGlossaryDescription);
-
 	public static string WormStatusName => "WORM";
 	public static string WormStatusDescription => "Cancels {0} intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>";
 	public static string WormStatusAltGlossaryDescription => "Cancels intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>";
@@ -132,7 +128,7 @@ internal static class I18n
 	public static string DizzyRiggsArtifactTooltip => "Whenever you lose all <c=status>SHIELD</c>, gain 1 <c=status>EVADE</c>.";
 
 	public static string DrakeIsaacArtifactName => "Embercore Missiles";
-	public static string DrakeIsaacArtifactTooltip => "Whenever you <c=action>LAUNCH</c> a <c=midrow>midrow object</c>, lose 1 <c=status>HEAT</c>: the object gains <c=midrow>SCORCHING</c>.";
+	public static string DrakeIsaacArtifactTooltip => "Whenever you <c=action>LAUNCH</c> a <c=midrow>midrow object</c>, lose 1 <c=status>HEAT</c>: the object gains 3 <c=midrow>SCORCHING</c>.";
 
 	public static string DrakeMaxArtifactName => "Trojan Drive";
 	public static string DrakeMaxArtifactTooltip => "At the start of combat, shuffle a <c=card>Trojan Drive</c> and a <c=cardtrait>temporary</cardtrait> <c=card>Worm</c> into your deck.";

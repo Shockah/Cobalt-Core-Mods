@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
 
-public abstract class AbstractHookManager<THook> : IEnumerable<THook>
+public class HookManager<THook> : IEnumerable<THook>
 {
 	protected readonly OrderedList<THook, double> Hooks = new();
 

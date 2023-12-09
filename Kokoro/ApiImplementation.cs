@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Shockah.Kokoro;
 
@@ -12,7 +13,12 @@ public sealed class ApiImplementation : IKokoroApi
 	public IEvadeHook VanillaDebugEvadeHook
 		=> Kokoro.VanillaDebugEvadeHook.Instance;
 
-	#region Midrow
+	#region Generic
+	public TimeSpan TotalGameTime
+		=> Instance.TotalGameTime;
+	#endregion
+
+	#region MidrowTags
 	public void TagMidrowObject(Combat combat, StuffBase @object, string tag, object? tagValue = null)
 		=> MidrowTracker.ObtainMidrowTracker(combat).ObtainEntry(@object).Tags[tag] = tagValue;
 
@@ -24,6 +30,33 @@ public sealed class ApiImplementation : IKokoroApi
 
 	public bool TryGetMidrowObjectTag(Combat combat, StuffBase @object, string tag, [MaybeNullWhen(false)] out object? tagValue)
 		=> MidrowTracker.ObtainMidrowTracker(combat).ObtainEntry(@object).Tags.TryGetValue(tag, out tagValue);
+	#endregion
+
+	#region MidrowScorching
+	public Tooltip GetScorchingTooltip(int? value = null)
+		=> value is null
+			? new CustomTTGlossary(CustomTTGlossary.GlossaryType.midrow, () => StableSpr.icons_overheat, () => I18n.ScorchingGlossaryName, () => I18n.ScorchingGlossaryAltDescription)
+			: new CustomTTGlossary(CustomTTGlossary.GlossaryType.midrow, () => StableSpr.icons_overheat, () => I18n.ScorchingGlossaryName, () => I18n.ScorchingGlossaryDescription, new Func<object>[] { () => value.Value });
+
+	public int GetScorchingStatus(Combat combat, StuffBase @object)
+		=> TryGetMidrowObjectTag(combat, @object, ModEntry.ScorchingTag, out var value) && value is int intValue ? intValue : 0;
+
+	public void SetScorchingStatus(Combat combat, StuffBase @object, int value)
+	{
+		int oldValue = GetScorchingStatus(combat, @object);
+		TagMidrowObject(combat, @object, ModEntry.ScorchingTag, value);
+		foreach (var hook in Instance.MidrowScorchingHookManager)
+			hook.OnScorchingChange(combat, @object, oldValue, value);
+	}
+
+	public void AddScorchingStatus(Combat combat, StuffBase @object, int value)
+		=> SetScorchingStatus(combat, @object, Math.Max(GetScorchingStatus(combat, @object) + value, 0));
+
+	public void RegisterMidrowScorchingHook(IMidrowScorchingHook hook, double priority)
+		=> Instance.MidrowScorchingHookManager.Register(hook, priority);
+
+	public void UnregisterMidrowScorchingHook(IMidrowScorchingHook hook)
+		=> Instance.MidrowScorchingHookManager.Unregister(hook);
 	#endregion
 
 	#region EvadeHook

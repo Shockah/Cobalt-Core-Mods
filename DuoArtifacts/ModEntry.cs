@@ -30,8 +30,6 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	internal IKokoroApi KokoroApi { get; private set; } = null!;
 	internal readonly DuoArtifactDatabase Database = new();
 
-	internal TimeSpan TotalGameTime;
-
 	private Harmony Harmony { get; set; } = null!;
 	private readonly Dictionary<HashSet<string>, ExternalSprite> DuoArtifactSprites = new(HashSet<string>.CreateSetComparer());
 
@@ -46,7 +44,6 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		ArtifactBrowsePatches.Apply(Harmony);
 		ArtifactRewardPatches.Apply(Harmony);
 		CharacterPatches.Apply(Harmony);
-		MGPatches.Apply(Harmony);
 		CustomTTGlossary.Apply(Harmony);
 
 		foreach (var definition in DuoArtifactDefinition.Definitions)

@@ -185,7 +185,7 @@ internal static class ArtifactRewardPatches
 		}
 
 		double animationLength = colors.Count * SingleColorTransitionAnimationLengthSeconds;
-		double animationPosition = Instance.TotalGameTime.TotalSeconds % animationLength;
+		double animationPosition = Instance.KokoroApi.TotalGameTime.TotalSeconds % animationLength;
 		double totalFraction = animationPosition / animationLength;
 		var (fromColor, toColor, fraction) = GetLerpInfo(colors, totalFraction);
 		double lerpFraction = Math.Sin(fraction * Math.PI) * 0.5 + 0.5;

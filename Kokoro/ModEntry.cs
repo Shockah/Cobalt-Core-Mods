@@ -10,9 +10,13 @@ using System.IO;
 
 namespace Shockah.Kokoro;
 
-public sealed class ModEntry : IModManifest, IApiProviderManifest
+public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest
 {
+	internal static readonly string ScorchingTag = $"{typeof(ModEntry).Namespace}.MidrowTag.Scorching";
+
 	public static ModEntry Instance { get; private set; } = null!;
+	internal readonly ApiImplementation Api = new();
+	private Harmony Harmony = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
 	public IEnumerable<DependencyEntry> Dependencies => Array.Empty<DependencyEntry>();
@@ -24,6 +28,9 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest
 	public EvadeHookManager EvadeHookManager { get; private init; } = new();
 	public DroneShiftHookManager DroneShiftHookManager { get; private init; } = new();
 	public ArtifactIconHookManager ArtifactIconHookManager { get; private init; } = new();
+	public HookManager<IMidrowScorchingHook> MidrowScorchingHookManager { get; private init; } = new();
+
+	internal TimeSpan TotalGameTime;
 
 	public void BootMod(IModLoaderContact contact)
 	{
@@ -31,12 +38,23 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 
-		Harmony harmony = new(Name);
-		ArtifactBrowsePatches.Apply(harmony);
-		ArtifactPatches.Apply(harmony);
-		CombatPatches.Apply(harmony);
+		Harmony = new(Name);
+
+		ArtifactBrowsePatches.Apply(Harmony);
+		ArtifactPatches.Apply(Harmony);
+		CombatPatches.Apply(Harmony);
+		MGPatches.Apply(Harmony);
+		ShipPatches.Apply(Harmony);
+		StuffBasePatches.Apply(Harmony);
+
+		CustomTTGlossary.Apply(Harmony);
 	}
 
-	object? IApiProviderManifest.GetApi(IManifest requestingMod)
+	public void FinalizePreperations(IPrelaunchContactPoint prelaunchManifest)
+	{
+		StuffBasePatches.ApplyLate(Harmony);
+	}
+
+	public object? GetApi(IManifest requestingMod)
 		=> new ApiImplementation();
 }

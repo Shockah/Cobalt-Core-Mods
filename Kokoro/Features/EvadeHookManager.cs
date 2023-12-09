@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Shockah.Kokoro;
 
-public sealed class EvadeHookManager : AbstractHookManager<IEvadeHook>
+public sealed class EvadeHookManager : HookManager<IEvadeHook>
 {
 	internal EvadeHookManager() : base()
 	{

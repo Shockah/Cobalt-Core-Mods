@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Shockah.DuoArtifacts;
+namespace Shockah.Kokoro;
 
 internal sealed class CustomTTGlossary : TTGlossary
 {
