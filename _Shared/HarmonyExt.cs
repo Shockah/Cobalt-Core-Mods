@@ -2,6 +2,7 @@ using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -54,6 +55,9 @@ internal static class HarmonyExt
 		if (originalMethod is null)
 		{
 			logger.Log(problemLogLevel, "Could not patch method - the mod may not work correctly.\nReason: Unknown method to patch.");
+#if DEBUG
+			Debugger.Break();
+#endif
 			return false;
 		}
 
@@ -69,6 +73,9 @@ internal static class HarmonyExt
 		catch (Exception ex)
 		{
 			logger.Log(problemLogLevel, "Could not patch method {Method} - the mod may not work correctly.\nReason: {Exception}", originalMethod, ex);
+#if DEBUG
+			Debugger.Break();
+#endif
 			return false;
 		}
 	}
@@ -142,7 +149,7 @@ internal static class HarmonyExt
 		}
 	}
 
-	public static (int patched, int total) TryPatchVirtual(
+	public static int TryPatchVirtual(
 		this Harmony self,
 		Func<MethodBase?> original,
 		ILogger logger,
@@ -158,17 +165,18 @@ internal static class HarmonyExt
 		if (originalMethod is null)
 		{
 			logger.Log(problemLogLevel, "Could not patch method - the mod may not work correctly.\nReason: Unknown method to patch.");
-			return (0, 1);
+#if DEBUG
+			Debugger.Break();
+#endif
+			return 0;
 		}
 
 		try
 		{
 			int patched = 0;
-			int total = 0;
 			Type declaringType = originalMethod.DeclaringType ?? throw new ArgumentException($"{nameof(original)}.{nameof(originalMethod.DeclaringType)} is null.");
 			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
 			{
-				total++;
 				IEnumerable<Type> subtypes = Enumerable.Empty<Type>();
 				try
 				{
@@ -218,15 +226,21 @@ internal static class HarmonyExt
 					catch (Exception ex)
 					{
 						logger.Log(problemLogLevel, "Could not patch method - the mod may not work correctly.\nReason: {Exception}", ex);
+#if DEBUG
+						Debugger.Break();
+#endif
 					}
 				}
 			}
-			return (patched, total);
+			return patched;
 		}
 		catch (Exception ex)
 		{
 			logger.Log(problemLogLevel, "Could not patch method {Method} - the mod may not work correctly.\nReason: {Exception}", originalMethod, ex);
-			return (0, 1);
+#if DEBUG
+			Debugger.Break();
+#endif
+			return 0;
 		}
 	}
 }

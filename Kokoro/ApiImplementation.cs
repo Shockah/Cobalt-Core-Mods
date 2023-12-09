@@ -1,4 +1,6 @@
-﻿namespace Shockah.Kokoro;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Shockah.Kokoro;
 
 public sealed class ApiImplementation : IKokoroApi
 {
@@ -9,6 +11,20 @@ public sealed class ApiImplementation : IKokoroApi
 
 	public IEvadeHook VanillaDebugEvadeHook
 		=> Kokoro.VanillaDebugEvadeHook.Instance;
+
+	#region Midrow
+	public void TagMidrowObject(Combat combat, StuffBase @object, string tag, object? tagValue = null)
+		=> MidrowTracker.ObtainMidrowTracker(combat).ObtainEntry(@object).Tags[tag] = tagValue;
+
+	public void UntagMidrowObject(Combat combat, StuffBase @object, string tag)
+		=> MidrowTracker.ObtainMidrowTracker(combat).ObtainEntry(@object).Tags.Remove(tag);
+
+	public bool IsMidrowObjectTagged(Combat combat, StuffBase @object, string tag)
+		=> MidrowTracker.ObtainMidrowTracker(combat).ObtainEntry(@object).Tags.ContainsKey(tag);
+
+	public bool TryGetMidrowObjectTag(Combat combat, StuffBase @object, string tag, [MaybeNullWhen(false)] out object? tagValue)
+		=> MidrowTracker.ObtainMidrowTracker(combat).ObtainEntry(@object).Tags.TryGetValue(tag, out tagValue);
+	#endregion
 
 	#region EvadeHook
 	public void RegisterEvadeHook(IEvadeHook hook, double priority)

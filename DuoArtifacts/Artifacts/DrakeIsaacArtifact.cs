@@ -14,7 +14,7 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class DrakeIsaacArtifact : DuoArtifact
 {
-	public HashSet<int> ScorchingMidrowObjectPositions = new();
+	private static readonly string ScorchingTag = $"{typeof(ModEntry).Namespace}.MidrowTag.Scorching";
 
 	protected internal override void ApplyPatches(Harmony harmony)
 	{
@@ -23,11 +23,6 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(ASpawn), nameof(ASpawn.Begin)),
 			postfix: new HarmonyMethod(GetType(), nameof(ASpawn_Begin_Postfix))
-		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(ADroneMove), nameof(ADroneMove.Begin)),
-			postfix: new HarmonyMethod(GetType(), nameof(ADroneMove_Begin_Postfix))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
@@ -46,20 +41,14 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 		base.ApplyLatePatches(harmony);
 		harmony.TryPatchVirtual(
 			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.DoDestroyedEffect)),
-			postfix: new HarmonyMethod(GetType(), nameof(StuffBase_DoDestroyedEffect_Postfix))
-		);
-		harmony.TryPatchVirtual(
-			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.GetTooltips)),
 			postfix: new HarmonyMethod(GetType(), nameof(StuffBase_GetTooltips_Postfix))
 		);
-	}
-
-	public override void OnCombatStart(State state, Combat combat)
-	{
-		base.OnCombatStart(state, combat);
-		ScorchingMidrowObjectPositions.Clear();
+		harmony.TryPatchVirtual(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.GetActionsOnDestroyed)),
+			postfix: new HarmonyMethod(GetType(), nameof(StuffBase_GetActionsOnDestroyed_Postfix))
+		);
 	}
 
 	public override void OnTurnStart(State state, Combat combat)
@@ -67,9 +56,9 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 		base.OnTurnStart(state, combat);
 		var artifact = StateExt.Instance?.EnumerateAllArtifacts().FirstOrDefault(a => a is DrakeIsaacArtifact);
 
-		foreach (var midrowObjectX in ScorchingMidrowObjectPositions.ToList())
+		foreach (var @object in combat.stuff.Values)
 		{
-			if (!combat.stuff.TryGetValue(midrowObjectX, out var @object))
+			if (!Instance.KokoroApi.IsMidrowObjectTagged(combat, @object, ScorchingTag))
 				continue;
 
 			bool isInvincible = @object.Invincible();
@@ -91,13 +80,13 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 				continue;
 			}
 
-			combat.QueueImmediate(@object.GetActionsOnDestroyed(state, combat, wasPlayer: true, midrowObjectX));
+			Instance.KokoroApi.UntagMidrowObject(combat, @object, ScorchingTag);
+			combat.QueueImmediate(@object.GetActionsOnDestroyed(state, combat, wasPlayer: true, @object.x));
 			@object.DoDestroyedEffect(state, combat);
-			combat.stuff.Remove(midrowObjectX);
+			combat.stuff.Remove(@object.x);
 
 			foreach (var someArtifact in state.EnumerateAllArtifacts())
 				someArtifact.OnPlayerDestroyDrone(state, combat);
-			ScorchingMidrowObjectPositions.Remove(midrowObjectX);
 		}
 	}
 
@@ -120,24 +109,15 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 			statusAmount = -1,
 			targetPlayer = true
 		});
-		artifact.ScorchingMidrowObjectPositions.Add(__instance.thing.x);
+		Instance.KokoroApi.TagMidrowObject(c, __instance.thing, ScorchingTag);
 		artifact.Pulse();
-	}
-
-	private static void ADroneMove_Begin_Postfix(ADroneMove __instance)
-	{
-		var artifact = StateExt.Instance?.EnumerateAllArtifacts().OfType<DrakeIsaacArtifact>().FirstOrDefault();
-		if (artifact is null)
-			return;
-		artifact.ScorchingMidrowObjectPositions = artifact.ScorchingMidrowObjectPositions.Select(x => x + __instance.dir).ToHashSet();
 	}
 
 	private static void StuffBase_DrawWithHilight_Postfix(StuffBase __instance, G g, Spr id, Vec v, bool flipX, bool flipY)
 	{
-		var artifact = StateExt.Instance?.EnumerateAllArtifacts().OfType<DrakeIsaacArtifact>().FirstOrDefault();
-		if (artifact is null)
+		if (g.state.route is not Combat combat)
 			return;
-		if (!artifact.ScorchingMidrowObjectPositions.Contains(__instance.x))
+		if (!Instance.KokoroApi.IsMidrowObjectTagged(combat, __instance, ScorchingTag))
 			return;
 
 		var color = new Color(1, 0.35, 0).fadeAlpha(Math.Sin(Instance.TotalGameTime.TotalSeconds * Math.PI * 2) * 0.5 + 0.5);
@@ -157,7 +137,6 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 				.Insert(
 					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
 					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Ldarg_3),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(DrakeIsaacArtifact), nameof(AMissileHit_Update_Transpiler_ApplyHeat)))
 				)
@@ -170,39 +149,42 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 		}
 	}
 
-	private static void AMissileHit_Update_Transpiler_ApplyHeat(AMissileHit action, State state, Combat combat)
+	private static void AMissileHit_Update_Transpiler_ApplyHeat(AMissileHit action, Combat combat)
 	{
-		var artifact = state.EnumerateAllArtifacts().OfType<DrakeIsaacArtifact>().FirstOrDefault();
-		if (artifact is null)
+		if (!combat.stuff.TryGetValue(action.worldX, out var @object))
 			return;
-		if (!artifact.ScorchingMidrowObjectPositions.Contains(action.worldX))
+		if (!Instance.KokoroApi.IsMidrowObjectTagged(combat, @object, ScorchingTag))
 			return;
 
 		combat.QueueImmediate(new AStatus
 		{
 			status = Status.heat,
-			statusAmount = 2,
-			targetPlayer = false
+			statusAmount = 3,
+			targetPlayer = action.targetPlayer
 		});
-		artifact.ScorchingMidrowObjectPositions.Remove(action.worldX);
 	}
 
-	private static void StuffBase_DoDestroyedEffect_Postfix(StuffBase __instance)
+	private static void StuffBase_GetTooltips_Postfix(StuffBase __instance, ref List<Tooltip> __result)
 	{
-		var artifact = StateExt.Instance?.EnumerateAllArtifacts().OfType<DrakeIsaacArtifact>().FirstOrDefault();
-		if (artifact is null)
+		if (StateExt.Instance?.route is not Combat combat)
 			return;
-		artifact.ScorchingMidrowObjectPositions.Remove(__instance.x);
-	}
-
-	private static void StuffBase_GetTooltips_Postfix(Missile __instance, ref List<Tooltip> __result)
-	{
-		var artifact = StateExt.Instance?.EnumerateAllArtifacts().OfType<DrakeIsaacArtifact>().FirstOrDefault();
-		if (artifact is null)
-			return;
-		if (!artifact.ScorchingMidrowObjectPositions.Contains(__instance.x))
+		if (!Instance.KokoroApi.IsMidrowObjectTagged(combat, __instance, ScorchingTag))
 			return;
 
 		__result.Add(I18n.ScorchingGlossary);
+	}
+
+	private static void StuffBase_GetActionsOnDestroyed_Postfix(StuffBase __instance, Combat __1, bool __2 /* wasPlayer */, ref List<CardAction>? __result)
+	{
+		if (!Instance.KokoroApi.IsMidrowObjectTagged(__1, __instance, ScorchingTag))
+			return;
+
+		__result ??= new();
+		__result.Add(new AStatus
+		{
+			status = Status.heat,
+			statusAmount = 3,
+			targetPlayer = __2
+		});
 	}
 }

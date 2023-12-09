@@ -63,7 +63,7 @@ internal static class I18n
 	public static CustomTTGlossary MaxShieldLowerAltGlossary = new(CustomTTGlossary.GlossaryType.status, () => StableSpr.icons_maxShieldLower, () => MaxShieldLowerAltGlossaryName, () => MaxShieldLowerAltGlossaryDescription);
 
 	public static string ScorchingGlossaryName => "Scorching";
-	public static string ScorchingGlossaryDescription => "The object takes damage each turn. If this object collides with a ship, the ship gains 2 <c=status>HEAT</c>.";
+	public static string ScorchingGlossaryDescription => "The object takes damage each turn. If this object collides with a ship, or is destroyed by a ship's <c=action>ATTACK</c> or <c=action>LAUNCH</c>, the ship gains 3 <c=status>HEAT</c>.";
 	public static CustomTTGlossary ScorchingGlossary = new(CustomTTGlossary.GlossaryType.midrow, () => StableSpr.icons_overheat, () => ScorchingGlossaryName, () => ScorchingGlossaryDescription);
 
 	public static string WormStatusName => "WORM";
