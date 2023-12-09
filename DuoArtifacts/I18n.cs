@@ -66,10 +66,6 @@ internal static class I18n
 	public static string ScorchingGlossaryDescription => "The object takes damage each turn. If this object collides with a ship, the ship gains 2 <c=status>HEAT</c>.";
 	public static CustomTTGlossary ScorchingGlossary = new(CustomTTGlossary.GlossaryType.midrow, () => StableSpr.icons_overheat, () => ScorchingGlossaryName, () => ScorchingGlossaryDescription);
 
-	public static string DroneMoveAltGlossaryName => "DRONE MOVE";
-	public static string DroneMoveAltGlossaryDescription => "Instantly move all <c=midrow>midrow objects</c> in some direction.";
-	public static CustomTTGlossary DroneMoveGlossary = new(CustomTTGlossary.GlossaryType.action, () => StableSpr.icons_droneMoveRandom, () => DroneMoveAltGlossaryName, () => DroneMoveAltGlossaryDescription);
-
 	public static string WormStatusName => "WORM";
 	public static string WormStatusDescription => "Cancels {0} intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>";
 	public static string WormStatusAltGlossaryDescription => "Cancels intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>";
@@ -107,7 +103,7 @@ internal static class I18n
 	public static string CatDrakeArtifactTooltip => "Whenever you gain <c=status>SERENITY</c>, gain <c=status>TIMESTOP</c>. Whenever you gain <c=status>TIMESTOP</c>, gain <c=status>SERENITY</c>.";
 
 	public static string CatIsaacArtifactName => "Smart Launch System";
-	public static string CatIsaacArtifactTooltip => "Whenever you are about to <c=action>LAUNCH</c> into an object and doing so would not benefit you, shove objects to the side to make space for it instead.";
+	public static string CatIsaacArtifactTooltip => "Twice per turn, whenever you are about to <c=action>LAUNCH</c> into an object and doing so would not benefit you, shove objects to the side to make space for it instead.";
 
 	public static string CatMaxArtifactName => "Gashapon.EXE";
 	public static string CatMaxArtifactTooltip => "Gain 1 random positive status each turn.";

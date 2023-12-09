@@ -17,7 +17,7 @@ internal sealed class DuoArtifactDefinition
 		new(typeof(BooksRiggsArtifact), new Deck[] { Deck.shard, Deck.riggs }, I18n.BooksRiggsArtifactName, I18n.BooksRiggsArtifactTooltip, "BooksRiggs", new TTGlossary("status.hermes", 1), "status.shard"),
 		new(typeof(CatDizzyArtifact), new Deck[] { Deck.catartifact, Deck.dizzy }, I18n.CatDizzyArtifactName, I18n.CatDizzyArtifactTooltip, "CatDizzy", "status.shieldAlt", "status.perfectShield", I18n.MaxShieldLowerAltGlossary),
 		new(typeof(CatDrakeArtifact), new Deck[] { Deck.catartifact, Deck.eunice }, I18n.CatDrakeArtifactName, I18n.CatDrakeArtifactTooltip, "CatDrake", "status.serenity", "status.timeStop"),
-		new(typeof(CatIsaacArtifact), new Deck[] { Deck.catartifact, Deck.goat }, I18n.CatIsaacArtifactName, I18n.CatIsaacArtifactTooltip, "CatIsaac", "action.spawn", I18n.DroneMoveGlossary),
+		new(typeof(CatIsaacArtifact), new Deck[] { Deck.catartifact, Deck.goat }, I18n.CatIsaacArtifactName, I18n.CatIsaacArtifactTooltip, "CatIsaac", "action.spawn"),
 		new(typeof(CatMaxArtifact), new Deck[] { Deck.catartifact, Deck.hacker }, I18n.CatMaxArtifactName, I18n.CatMaxArtifactTooltip, "CatMax"),
 		new(typeof(CatPeriArtifact), new Deck[] { Deck.catartifact, Deck.peri }, I18n.CatPeriArtifactName, I18n.CatPeriArtifactTooltip, "CatPeri", "cardtrait.temporary", "status.overdriveAlt"),
 		new(typeof(CatRiggsArtifact), new Deck[] { Deck.catartifact, Deck.riggs }, I18n.CatRiggsArtifactName, I18n.CatRiggsArtifactTooltip, "CatRiggs", new TTGlossary("cardtrait.discount", 1)),

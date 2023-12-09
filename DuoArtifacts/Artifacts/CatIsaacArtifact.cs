@@ -7,6 +7,10 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class CatIsaacArtifact : DuoArtifact
 {
+	private const int ChargesPerTurn = 2;
+
+	public int Charges = ChargesPerTurn;
+
 	protected internal override void ApplyPatches(Harmony harmony)
 	{
 		base.ApplyPatches(harmony);
@@ -17,6 +21,15 @@ internal sealed class CatIsaacArtifact : DuoArtifact
 		);
 	}
 
+	public override void OnTurnStart(State state, Combat combat)
+	{
+		base.OnTurnStart(state, combat);
+		Charges = ChargesPerTurn;
+	}
+
+	public override int? GetDisplayNumber(State s)
+		=> Charges;
+
 	private static bool Combat_BeginCardAction_Prefix(Combat __instance, G g, CardAction a)
 	{
 		if (a is not ASpawn action || !action.fromPlayer)
@@ -26,8 +39,8 @@ internal sealed class CatIsaacArtifact : DuoArtifact
 		if (siloPartX == -1)
 			return true;
 
-		var artifact = g.state.EnumerateAllArtifacts().FirstOrDefault(a => a is CatIsaacArtifact);
-		if (artifact is null)
+		var artifact = g.state.EnumerateAllArtifacts().OfType<CatIsaacArtifact>().FirstOrDefault();
+		if (artifact is null || artifact.Charges <= 0)
 			return true;
 
 		bool CanLaunch(int x)
@@ -77,6 +90,7 @@ internal sealed class CatIsaacArtifact : DuoArtifact
 			return true;
 
 		artifact.Pulse();
+		artifact.Charges--;
 		__instance.QueueImmediate(action);
 		for (int i = 0; i < Math.Abs(shoveValue); i++)
 		{
