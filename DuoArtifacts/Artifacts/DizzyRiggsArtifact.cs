@@ -24,6 +24,18 @@ internal sealed class DizzyRiggsArtifact : DuoArtifact
 		);
 	}
 
+	public override void OnCombatStart(State state, Combat combat)
+	{
+		base.OnCombatStart(state, combat);
+		ShieldChange = 0;
+	}
+
+	public override void OnCombatEnd(State state)
+	{
+		base.OnCombatEnd(state);
+		ShieldChange = 0;
+	}
+
 	private static void Ship_Set_Prefix(Ship __instance, Status status, ref int __state)
 		=> __state = __instance.Get(status);
 
