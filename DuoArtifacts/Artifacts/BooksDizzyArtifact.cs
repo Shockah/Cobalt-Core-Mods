@@ -26,6 +26,8 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	[SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "Set via IL")]
 	private static int ShardCostIconIndex;
 
+	public int ShardsToRestoreOnNextCombat = 0;
+
 	protected internal override void ApplyPatches(Harmony harmony)
 	{
 		base.ApplyPatches(harmony);
@@ -106,6 +108,37 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			id: $"{typeof(ModEntry).Namespace}.Icon.ShieldCost",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Icons", "ShieldCost.png"))
 		);
+	}
+
+	public override void OnCombatStart(State state, Combat combat)
+	{
+		base.OnCombatStart(state, combat);
+		if (ShardsToRestoreOnNextCombat <= 0)
+			return;
+
+		var shieldMemoryArtifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is ShieldMemory);
+		if (shieldMemoryArtifact is null)
+		{
+			ShardsToRestoreOnNextCombat = 0;
+			return;
+		}
+
+		Pulse();
+		shieldMemoryArtifact.Pulse();
+		combat.QueueImmediate(new AStatus
+		{
+			targetPlayer = true,
+			status = Status.shield,
+			statusAmount = ShardsToRestoreOnNextCombat
+		});
+		ShardsToRestoreOnNextCombat = 0;
+	}
+
+	public override void OnCombatEnd(State state)
+	{
+		base.OnCombatEnd(state);
+		if (state.EnumerateAllArtifacts().Any(a => a is ShieldMemory))
+			ShardsToRestoreOnNextCombat = state.ship.Get(Status.shard);
 	}
 
 	private static void AddStatusNoPulse(Ship ship, Status status, int n)
