@@ -10,7 +10,7 @@ using System.IO;
 
 namespace Shockah.Kokoro;
 
-public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest
+public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IStatusManifest
 {
 	internal static readonly string ScorchingTag = $"{typeof(ModEntry).Namespace}.MidrowTag.Scorching";
 
@@ -25,6 +25,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	public DirectoryInfo? ModRootFolder { get; set; }
 	public ILogger? Logger { get; set; }
 
+	internal Content Content = new();
 	public EvadeHookManager EvadeHookManager { get; private init; } = new();
 	public DroneShiftHookManager DroneShiftHookManager { get; private init; } = new();
 	public ArtifactIconHookManager ArtifactIconHookManager { get; private init; } = new();
@@ -42,6 +43,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 		ArtifactBrowsePatches.Apply(Harmony);
 		ArtifactPatches.Apply(Harmony);
+		CardPatches.Apply(Harmony);
 		CombatPatches.Apply(Harmony);
 		MGPatches.Apply(Harmony);
 		ShipPatches.Apply(Harmony);
@@ -57,4 +59,10 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 	public object? GetApi(IManifest requestingMod)
 		=> new ApiImplementation();
+
+	public void LoadManifest(ISpriteRegistry registry)
+		=> Content.RegisterArt(registry);
+
+	public void LoadManifest(IStatusRegistry registry)
+		=> Content.RegisterStatuses(registry);
 }

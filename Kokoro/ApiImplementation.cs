@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CobaltCoreModding.Definitions.ExternalItems;
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shockah.Kokoro;
@@ -16,6 +17,16 @@ public sealed class ApiImplementation : IKokoroApi
 	#region Generic
 	public TimeSpan TotalGameTime
 		=> Instance.TotalGameTime;
+	#endregion
+
+	#region WormStatus
+	public ExternalStatus WormStatus
+		=> Instance.Content.WormStatus;
+
+	public Tooltip GetWormStatusTooltip(int? value = null)
+		=> value is null
+			? new CustomTTGlossary(CustomTTGlossary.GlossaryType.status, () => (Spr)Instance.Content.WormSprite.Id!.Value, () => I18n.WormStatusName, () => I18n.WormStatusAltGlossaryDescription)
+			: new TTGlossary($"status.{Instance.Content.WormStatus.Id!.Value}", value.Value);
 	#endregion
 
 	#region MidrowTags

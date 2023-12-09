@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Shockah.Shared;
+using System.Linq;
 
 namespace Shockah.Kokoro;
 
@@ -16,20 +17,17 @@ internal static class ShipPatches
 		);
 	}
 
-	private static void Ship_OnBeginTurn_Postfix_Last(Ship __instance, State s, Combat c)
+	private static void HandleMidrowScorching(State state, Combat combat)
 	{
-		if (__instance != s.ship)
-			return;
-
-		foreach (var @object in c.stuff.Values)
+		foreach (var @object in combat.stuff.Values)
 		{
-			if (Instance.Api.GetScorchingStatus(c, @object) <= 0)
+			if (Instance.Api.GetScorchingStatus(combat, @object) <= 0)
 				continue;
 
 			bool isInvincible = @object.Invincible();
-			foreach (var someArtifact in s.EnumerateAllArtifacts())
+			foreach (var someArtifact in state.EnumerateAllArtifacts())
 			{
-				if (someArtifact.ModifyDroneInvincibility(s, c, @object) != true)
+				if (someArtifact.ModifyDroneInvincibility(state, combat, @object) != true)
 					continue;
 				isInvincible = true;
 				someArtifact.Pulse();
@@ -43,13 +41,39 @@ internal static class ShipPatches
 				continue;
 			}
 
-			Instance.Api.SetScorchingStatus(c, @object, 0);
-			c.QueueImmediate(@object.GetActionsOnDestroyed(s, c, wasPlayer: true, @object.x));
-			@object.DoDestroyedEffect(s, c);
-			c.stuff.Remove(@object.x);
+			Instance.Api.SetScorchingStatus(combat, @object, 0);
+			combat.QueueImmediate(@object.GetActionsOnDestroyed(state, combat, wasPlayer: true, @object.x));
+			@object.DoDestroyedEffect(state, combat);
+			combat.stuff.Remove(@object.x);
 
-			foreach (var someArtifact in s.EnumerateAllArtifacts())
-				someArtifact.OnPlayerDestroyDrone(s, c);
+			foreach (var someArtifact in state.EnumerateAllArtifacts())
+				someArtifact.OnPlayerDestroyDrone(state, combat);
 		}
+	}
+
+	private static void HandleWormStatus(State state, Combat combat)
+	{
+		int worm = combat.otherShip.Get((Status)Instance.Content.WormStatus.Id!.Value);
+		if (worm <= 0)
+			return;
+
+		var partXsWithIntent = Enumerable.Range(0, combat.otherShip.parts.Count)
+			.Where(x => combat.otherShip.parts[x].intent is not null)
+			.Select(x => x + combat.otherShip.x)
+			.ToList();
+
+		foreach (var partXWithIntent in partXsWithIntent.Shuffle(state.rngActions).Take(worm))
+			combat.Queue(new AStunPart { worldX = partXWithIntent });
+
+		combat.otherShip.Add((Status)Instance.Content.WormStatus.Id!.Value, -1);
+	}
+
+	private static void Ship_OnBeginTurn_Postfix_Last(Ship __instance, State s, Combat c)
+	{
+		if (__instance != s.ship)
+			return;
+
+		HandleMidrowScorching(s, c);
+		HandleWormStatus(s, c);
 	}
 }
