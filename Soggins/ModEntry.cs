@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Shockah.Soggins;
 
-public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest
+public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IStatusManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = new();
@@ -31,7 +31,10 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal ExternalCharacter SogginsCharacter { get; private set; } = null!;
 
 	internal ExternalSprite SogginsMini { get; private set; } = null!;
-	internal ExternalSprite SmugnessArtifactSprite { get; private set; } = null!;
+	internal ExternalSprite SmugArtifactSprite { get; private set; } = null!;
+	internal ExternalSprite SmugStatusSprite { get; private set; } = null!;
+
+	internal ExternalStatus SmugStatus { get; private set; } = null!;
 
 	internal ExternalAnimation SogginsMadAnimation { get; private set; } = null!;
 	internal ExternalAnimation SogginsMeekAnimation { get; private set; } = null!;
@@ -40,6 +43,27 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal ExternalAnimation SogginsTubAnimation { get; private set; } = null!;
 	internal ExternalAnimation SogginsMiniAnimation { get; private set; } = null!;
 
+	internal static readonly Type[] ApologyCards = new Type[]
+	{
+		typeof(AttackApologyCard),
+		typeof(ShieldApologyCard),
+		typeof(TempShieldApologyCard),
+		typeof(EvadeApologyCard),
+		typeof(DroneShiftApologyCard),
+		typeof(MoveApologyCard),
+		typeof(EnergyApologyCard),
+		typeof(DrawApologyCard),
+		typeof(AsteroidApologyCard),
+		typeof(MissileApologyCard),
+		typeof(MineApologyCard),
+		typeof(HealApologyCard),
+	};
+	internal static readonly Type[] CommonCards = new Type[]
+	{
+		typeof(SmugnessControlCard),
+		typeof(PressingButtonsCard),
+	};
+
 	public void BootMod(IModLoaderContact contact)
 	{
 		Instance = this;
@@ -47,7 +71,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 
 		Harmony harmony = new(Name);
-		SmugArtifact.ApplyPatches(harmony);
+		SmugStatusManager.ApplyPatches(harmony);
 	}
 
 	public object? GetApi(IManifest requestingMod)
@@ -56,12 +80,16 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	public void LoadManifest(ISpriteRegistry registry)
 	{
 		SogginsMini = registry.RegisterArtOrThrow(
-			id: $"{GetType().Namespace}.Sprite.Soggins.Mini",
+			id: $"{GetType().Namespace}.Character.Soggins.Mini",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "SogginsMini.png"))
 		);
-		SmugnessArtifactSprite = registry.RegisterArtOrThrow(
-			id: $"{GetType().Namespace}.Sprite.SmugnessArtifact",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "SmugnessArtifact.png"))
+		SmugArtifactSprite = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.Artifact.Smug",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "SmugArtifact.png"))
+		);
+		SmugStatusSprite = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.Status.Smug",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "SmugStatus.png"))
 		);
 	}
 
@@ -76,6 +104,20 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 			bordersOverSprite: null
 		);
 		registry.RegisterDeck(SogginsDeck);
+	}
+
+	public void LoadManifest(IStatusRegistry registry)
+	{
+		SmugStatus = new(
+			$"{typeof(ModEntry).Namespace}.Status.Smug",
+			isGood: false,
+			mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
+			borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
+			SmugStatusSprite,
+			affectedByTimestop: false
+		);
+		SmugStatus.AddLocalisation(I18n.SmugStatusName, I18n.SmugStatusDescription);
+		registry.RegisterStatus(SmugStatus);
 	}
 
 	public void LoadManifest(IAnimationRegistry registry)
@@ -180,7 +222,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		ExternalArtifact smugnessArtifact = new(
 			globalName: $"{GetType().Namespace}.Artifact.Smugness",
 			artifactType: typeof(SmugArtifact),
-			sprite: SmugnessArtifactSprite,
+			sprite: SmugArtifactSprite,
 			ownerDeck: SogginsDeck
 		);
 		smugnessArtifact.AddLocalisation(I18n.SmugArtifactName.ToUpper(), I18n.SmugArtifactDescription);
@@ -189,7 +231,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 
 	public void LoadManifest(ICardRegistry registry)
 	{
-		foreach (var cardType in SmugArtifact.ApologyCards)
+		foreach (var cardType in ApologyCards.Concat(CommonCards))
 		{
 			if (Activator.CreateInstance(cardType) is not IRegisterableCard card)
 				continue;
@@ -203,7 +245,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 			globalName: $"{GetType().Namespace}.Character.Soggins",
 			deck: SogginsDeck,
 			charPanelSpr: ExternalSprite.GetRaw((int)StableSpr.panels_char_soggins),
-			starterDeck: Array.Empty<Type>(),
+			starterDeck: new Type[] { typeof(SmugnessControlCard), typeof(PressingButtonsCard) },
 			starterArtifacts: new Type[] { typeof(SmugArtifact) },
 			neutralAnimation: SogginsNeutralAnimation,
 			miniAnimation: SogginsMiniAnimation

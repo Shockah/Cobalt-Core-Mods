@@ -6,3 +6,7 @@ internal interface IRegisterableCard
 {
 	void RegisterCard(ICardRegistry registry);
 }
+
+internal interface IFrogproofCard
+{
+}

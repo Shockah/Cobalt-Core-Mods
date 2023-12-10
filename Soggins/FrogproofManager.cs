@@ -33,7 +33,7 @@ public sealed class FrogproofCardTraintFrogproofHook : IFrogproofHook
 	private FrogproofCardTraintFrogproofHook() { }
 
 	public bool? IsFrogproof(State state, Combat? combat, Card card, FrogproofHookContext context)
-		=> card is ApologyCard;
+		=> card is IFrogproofCard ? true : null;
 
 	public void PayForFrogproof(State state, Combat? combat, Card card) { }
 }
