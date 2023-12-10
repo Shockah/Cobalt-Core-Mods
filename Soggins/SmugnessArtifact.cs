@@ -18,6 +18,7 @@ internal sealed class SmugnessArtifact : Artifact
 
 	private static readonly double[] BotchChances = new double[] { 0.15, 0.14, 0.12, 0.10, 0.08, 0.06, 0.05, 1.00 };
 	private static readonly double[] DoubleChances = new double[] { 0.05, 0.06, 0.08, 0.10, 0.12, 0.14, 0.15, 0.00 };
+	private static readonly Type[] ApologyCards = new Type[] { typeof(AttackApologyCard), typeof(ShieldApologyCard) };
 
 	private static bool IsDuringTryPlayCard = false;
 	private static bool HasPlayNoMatterWhatForFreeSet = false;
@@ -70,7 +71,9 @@ internal sealed class SmugnessArtifact : Artifact
 
 	private static void Card_GetActionsOverridden_Postfix(Card __instance, State s, ref List<CardAction> __result)
 	{
-		if (!IsDuringTryPlayCard || HasPlayNoMatterWhatForFreeSet)
+		if (!IsDuringTryPlayCard)
+			return;
+		if (HasPlayNoMatterWhatForFreeSet)
 			return;
 
 		var artifact = s.EnumerateAllArtifacts().OfType<SmugnessArtifact>().FirstOrDefault();
@@ -78,9 +81,11 @@ internal sealed class SmugnessArtifact : Artifact
 			return;
 
 		var hook = Instance.FrogproofManager.GetHandlingHook(s, s.route as Combat, __instance, FrogproofHookContext.Action);
-		if (hook is null)
+		if (hook is not null)
+		{
+			hook.PayForFrogproof(s, s.route as Combat, __instance);
 			return;
-		hook.PayForFrogproof(s, s.route as Combat, __instance);
+		}
 
 		var result = artifact.GetSmugResult(s.rngActions);
 		switch (result)
@@ -88,11 +93,12 @@ internal sealed class SmugnessArtifact : Artifact
 			case SmugResult.Botch:
 				artifact.Pulse();
 				__result.Clear();
-				__result.Add(new AAddCard
-				{
-					card = new ChipShot(),
-					destination = CardDestination.Hand
-				});
+				for (int i = 0; i < __instance.GetCurrentCost(s); i++)
+					__result.Add(new AAddCard
+					{
+						card = (Card)Activator.CreateInstance(ApologyCards[s.rngActions.NextInt() % ApologyCards.Length])!,
+						destination = CardDestination.Hand
+					});
 
 				if (artifact.Smugness == BotchChances.Length - 1)
 					artifact.Smugness = 0;

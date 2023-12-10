@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Shockah.Soggins;
 
-public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IAnimationManifest, IArtifactManifest, ICharacterManifest
+public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = new();
@@ -184,6 +184,30 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		);
 		smugnessArtifact.AddLocalisation(I18n.SmugnessArtifactName.ToUpper(), I18n.SmugnessArtifactDescription);
 		registry.RegisterArtifact(smugnessArtifact);
+	}
+
+	public void LoadManifest(ICardRegistry registry)
+	{
+		{
+			ExternalCard card = new(
+				globalName: $"{GetType().Namespace}.Card.Apology.Attack",
+				cardType: typeof(AttackApologyCard),
+				cardArt: ExternalSprite.GetRaw((int)StableSpr.cards_Cannon),
+				actualDeck: SogginsDeck
+			);
+			card.AddLocalisation(I18n.ApologyCardName);
+			registry.RegisterCard(card);
+		}
+		{
+			ExternalCard card = new(
+				globalName: $"{GetType().Namespace}.Card.Apology.Shield",
+				cardType: typeof(ShieldApologyCard),
+				cardArt: ExternalSprite.GetRaw((int)StableSpr.cards_Shield),
+				actualDeck: SogginsDeck
+			);
+			card.AddLocalisation(I18n.ApologyCardName);
+			registry.RegisterCard(card);
+		}
 	}
 
 	public void LoadManifest(ICharacterRegistry registry)
