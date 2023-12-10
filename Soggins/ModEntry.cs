@@ -69,10 +69,10 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		SogginsDeck = new(
 			globalName: $"{GetType().Namespace}.Deck.Soggins",
 			deckColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF6A9C59)),
-			titleColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF6A9C59)),
-			cardArtDefault: ExternalDeck.GetRaw((int)Deck.soggins).CardArtDefault,
-			borderSprite: ExternalDeck.GetRaw((int)Deck.soggins).BorderSprite,
-			bordersOverSprite: ExternalDeck.GetRaw((int)Deck.soggins).BordersOverSprite
+			titleColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF000000)),
+			cardArtDefault: ExternalSprite.GetRaw((int)StableSpr.cards_colorless),
+			borderSprite: ExternalSprite.GetRaw((int)StableSpr.cardShared_border_soggins),
+			bordersOverSprite: null
 		);
 		registry.RegisterDeck(SogginsDeck);
 	}
@@ -192,7 +192,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 			ExternalCard card = new(
 				globalName: $"{GetType().Namespace}.Card.Apology.Attack",
 				cardType: typeof(AttackApologyCard),
-				cardArt: ExternalSprite.GetRaw((int)StableSpr.cards_Cannon),
+				cardArt: ExternalSprite.GetRaw((int)StableSpr.cardShared_border_soggins),
 				actualDeck: SogginsDeck
 			);
 			card.AddLocalisation(I18n.ApologyCardName);
@@ -202,7 +202,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 			ExternalCard card = new(
 				globalName: $"{GetType().Namespace}.Card.Apology.Shield",
 				cardType: typeof(ShieldApologyCard),
-				cardArt: ExternalSprite.GetRaw((int)StableSpr.cards_Shield),
+				cardArt: ExternalSprite.GetRaw((int)StableSpr.cardShared_border_soggins),
 				actualDeck: SogginsDeck
 			);
 			card.AddLocalisation(I18n.ApologyCardName);

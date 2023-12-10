@@ -5,10 +5,11 @@ namespace Shockah.Soggins;
 public sealed class AttackApologyCard : ApologyCard
 {
 	public override CardData GetData(State state)
-		=> new()
-		{
-			cost = 0
-		};
+	{
+		var data = base.GetData(state);
+		data.art = StableSpr.cards_Cannon;
+		return data;
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> new()
