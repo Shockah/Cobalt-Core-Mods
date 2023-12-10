@@ -1,41 +1,81 @@
 ﻿using HarmonyLib;
 using Shockah.Shared;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
 internal sealed class DrakeIsaacArtifact : DuoArtifact
 {
-	protected internal override void ApplyPatches(Harmony harmony)
+	protected internal override void ApplyLatePatches(Harmony harmony)
 	{
-		base.ApplyPatches(harmony);
-		harmony.TryPatch(
+		base.ApplyLatePatches(harmony);
+		harmony.TryPatchVirtual(
 			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(ASpawn), nameof(ASpawn.Begin)),
-			postfix: new HarmonyMethod(GetType(), nameof(ASpawn_Begin_Postfix))
+			original: () => AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.GetActions)),
+			postfix: new HarmonyMethod(GetType(), nameof(StuffBase_GetActions_Postfix))
 		);
 	}
 
-	private static void ASpawn_Begin_Postfix(ASpawn __instance, State s, Combat c)
+	public override int? GetDisplayNumber(State s)
 	{
+		if (s.route is not Combat combat)
+			return base.GetDisplayNumber(s);
+
+		int drones = combat.stuff.Values.Count(o => o is AttackDrone or ShieldDrone && o.fromPlayer);
+		int heatToGain = drones - 1;
+		return Math.Max(heatToGain, 0);
+	}
+
+	public override List<Tooltip>? GetExtraTooltips()
+	{
+		if (StateExt.Instance?.route is not Combat combat)
+			return base.GetExtraTooltips();
+
+		foreach (var @object in combat.stuff.Values)
+		{
+			if (@object is not AttackDrone or ShieldDrone)
+				continue;
+			if (!@object.fromPlayer)
+				continue;
+			@object.hilight = 2;
+		}
+		return base.GetExtraTooltips();
+	}
+
+	public override void OnTurnStart(State state, Combat combat)
+	{
+		base.OnTurnStart(state, combat);
+		int drones = combat.stuff.Values.Count(o => o is AttackDrone or ShieldDrone && o.fromPlayer);
+		int heatToGain = drones - 1;
+
+		if (heatToGain <= 0)
+			return;
+		Pulse();
+		combat.Queue(new AStatus
+		{
+			status = Status.heat,
+			statusAmount = heatToGain,
+			targetPlayer = true
+		});
+	}
+
+	private static void StuffBase_GetActions_Postfix(StuffBase __instance, State s, ref List<CardAction>? __result)
+	{
+		if (__instance is not AttackDrone or ShieldDrone)
+			return;
 		if (!__instance.fromPlayer)
 			return;
-		if (!c.stuff.TryGetValue(__instance.thing.x, out var @object) || @object != __instance.thing)
-			return;
-		if (s.ship.Get(Status.heat) <= s.ship.heatMin)
+		if (__result is null || __result.Count == 0)
 			return;
 
-		var artifact = StateExt.Instance?.EnumerateAllArtifacts().OfType<DrakeIsaacArtifact>().FirstOrDefault();
+		var artifact = s.EnumerateAllArtifacts().FirstOrDefault(a => a is DrakeIsaacArtifact);
 		if (artifact is null)
 			return;
 
-		c.QueueImmediate(new AStatus
-		{
-			status = Status.heat,
-			statusAmount = -1,
-			targetPlayer = true
-		});
-		Instance.KokoroApi.AddScorchingStatus(c, __instance.thing, 3);
 		artifact.Pulse();
+		__result ??= new();
+		__result.AddRange(__result.ToList());
 	}
 }

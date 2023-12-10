@@ -63,7 +63,7 @@ internal static class I18n
 	public static CustomTTGlossary MaxShieldLowerAltGlossary = new(CustomTTGlossary.GlossaryType.status, () => StableSpr.icons_maxShieldLower, () => MaxShieldLowerAltGlossaryName, () => MaxShieldLowerAltGlossaryDescription);
 
 	public static string BooksCatArtifactName => "Shard Synthesizer";
-	public static string BooksCatArtifactTooltip => "At the end of each turn, gain <c=status>SHARD</c> equal to unspent <c=keyword>energy</c>.";
+	public static string BooksCatArtifactTooltip => "At the end of each turn, gain <c=status>SHARD</c> equal to unspent <c=status>ENERGY</c>.";
 
 	public static string BooksDrakeArtifactName => "Stunflare Catalyst";
 	public static string BooksDrakeArtifactTooltip => "Whenever you play an <c=action>ATTACK</c>, lose 2 <c=status>SHARD</c>: the <c=action>ATTACK</c> becomes piercing. If it was already piercing, it stuns. If it was already stunning, <c=action>TOTAL STUN</c> the opponent.";
@@ -118,8 +118,8 @@ internal static class I18n
 	public static string DizzyRiggsArtifactName => "Emergency Box";
 	public static string DizzyRiggsArtifactTooltip => "Whenever you lose all <c=status>SHIELD</c>, gain 1 <c=status>EVADE</c>.";
 
-	public static string DrakeIsaacArtifactName => "Embercore Missiles";
-	public static string DrakeIsaacArtifactTooltip => "Whenever you <c=action>LAUNCH</c> a <c=midrow>midrow object</c>, lose 1 <c=status>HEAT</c>: the object gains 3 <c=midrow>SCORCHING</c>.";
+	public static string DrakeIsaacArtifactName => "Drone Overclock";
+	public static string DrakeIsaacArtifactTooltip => "Your <c=midrow>Attack and Shield Drones</c> trigger twice. <c=downside>Each turn, gain <c=status>HEAT</c> equal to the number of these drones, -1.</c>";
 
 	public static string DrakeMaxArtifactName => "Trojan Drive";
 	public static string DrakeMaxArtifactTooltip => "At the start of combat, shuffle a <c=card>Trojan Drive</c> and a <c=cardtrait>temporary</cardtrait> <c=card>Worm</c> into your deck.";
