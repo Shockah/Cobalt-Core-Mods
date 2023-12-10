@@ -26,6 +26,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 
 	internal FrogproofManager FrogproofManager { get; private set; } = new();
 
+	internal ExternalSprite SogginsDeckBorder { get; private set; } = ExternalSprite.GetRaw((int)StableSpr.cardShared_border_soggins);
 	internal ExternalDeck SogginsDeck { get; private set; } = null!;
 	internal ExternalCharacter SogginsCharacter { get; private set; } = null!;
 
@@ -46,7 +47,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 
 		Harmony harmony = new(Name);
-		SmugnessArtifact.ApplyPatches(harmony);
+		SmugArtifact.ApplyPatches(harmony);
 	}
 
 	public object? GetApi(IManifest requestingMod)
@@ -178,35 +179,21 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	{
 		ExternalArtifact smugnessArtifact = new(
 			globalName: $"{GetType().Namespace}.Artifact.Smugness",
-			artifactType: typeof(SmugnessArtifact),
+			artifactType: typeof(SmugArtifact),
 			sprite: SmugnessArtifactSprite,
 			ownerDeck: SogginsDeck
 		);
-		smugnessArtifact.AddLocalisation(I18n.SmugnessArtifactName.ToUpper(), I18n.SmugnessArtifactDescription);
+		smugnessArtifact.AddLocalisation(I18n.SmugArtifactName.ToUpper(), I18n.SmugArtifactDescription);
 		registry.RegisterArtifact(smugnessArtifact);
 	}
 
 	public void LoadManifest(ICardRegistry registry)
 	{
+		foreach (var cardType in SmugArtifact.ApologyCards)
 		{
-			ExternalCard card = new(
-				globalName: $"{GetType().Namespace}.Card.Apology.Attack",
-				cardType: typeof(AttackApologyCard),
-				cardArt: ExternalSprite.GetRaw((int)StableSpr.cardShared_border_soggins),
-				actualDeck: SogginsDeck
-			);
-			card.AddLocalisation(I18n.ApologyCardName);
-			registry.RegisterCard(card);
-		}
-		{
-			ExternalCard card = new(
-				globalName: $"{GetType().Namespace}.Card.Apology.Shield",
-				cardType: typeof(ShieldApologyCard),
-				cardArt: ExternalSprite.GetRaw((int)StableSpr.cardShared_border_soggins),
-				actualDeck: SogginsDeck
-			);
-			card.AddLocalisation(I18n.ApologyCardName);
-			registry.RegisterCard(card);
+			if (Activator.CreateInstance(cardType) is not IRegisterableCard card)
+				continue;
+			card.RegisterCard(registry);
 		}
 	}
 
@@ -217,7 +204,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 			deck: SogginsDeck,
 			charPanelSpr: ExternalSprite.GetRaw((int)StableSpr.panels_char_soggins),
 			starterDeck: Array.Empty<Type>(),
-			starterArtifacts: new Type[] { typeof(SmugnessArtifact) },
+			starterArtifacts: new Type[] { typeof(SmugArtifact) },
 			neutralAnimation: SogginsNeutralAnimation,
 			miniAnimation: SogginsMiniAnimation
 		);

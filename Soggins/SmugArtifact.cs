@@ -7,7 +7,7 @@ using System.Linq;
 namespace Shockah.Soggins;
 
 [ArtifactMeta(unremovable = true)]
-internal sealed class SmugnessArtifact : Artifact
+internal sealed class SmugArtifact : Artifact
 {
 	public enum SmugResult
 	{
@@ -18,7 +18,21 @@ internal sealed class SmugnessArtifact : Artifact
 
 	private static readonly double[] BotchChances = new double[] { 0.15, 0.14, 0.12, 0.10, 0.08, 0.06, 0.05, 1.00 };
 	private static readonly double[] DoubleChances = new double[] { 0.05, 0.06, 0.08, 0.10, 0.12, 0.14, 0.15, 0.00 };
-	private static readonly Type[] ApologyCards = new Type[] { typeof(AttackApologyCard), typeof(ShieldApologyCard) };
+	internal static readonly Type[] ApologyCards = new Type[]
+	{
+		typeof(AttackApologyCard),
+		typeof(ShieldApologyCard),
+		typeof(TempShieldApologyCard),
+		typeof(EvadeApologyCard),
+		typeof(DroneShiftApologyCard),
+		typeof(MoveApologyCard),
+		typeof(EnergyApologyCard),
+		typeof(DrawApologyCard),
+		typeof(AsteroidApologyCard),
+		typeof(MissileApologyCard),
+		typeof(MineApologyCard),
+		typeof(HealApologyCard),
+	};
 
 	private static bool IsDuringTryPlayCard = false;
 	private static bool HasPlayNoMatterWhatForFreeSet = false;
@@ -30,13 +44,13 @@ internal sealed class SmugnessArtifact : Artifact
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
-			prefix: new HarmonyMethod(typeof(SmugnessArtifact), nameof(Combat_TryPlayCard_Prefix)),
-			finalizer: new HarmonyMethod(typeof(SmugnessArtifact), nameof(Combat_TryPlayCard_Finalizer))
+			prefix: new HarmonyMethod(typeof(SmugArtifact), nameof(Combat_TryPlayCard_Prefix)),
+			finalizer: new HarmonyMethod(typeof(SmugArtifact), nameof(Combat_TryPlayCard_Finalizer))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
-			postfix: new HarmonyMethod(typeof(SmugnessArtifact), nameof(Card_GetActionsOverridden_Postfix))
+			postfix: new HarmonyMethod(typeof(SmugArtifact), nameof(Card_GetActionsOverridden_Postfix))
 		);
 	}
 
@@ -76,7 +90,7 @@ internal sealed class SmugnessArtifact : Artifact
 		if (HasPlayNoMatterWhatForFreeSet)
 			return;
 
-		var artifact = s.EnumerateAllArtifacts().OfType<SmugnessArtifact>().FirstOrDefault();
+		var artifact = s.EnumerateAllArtifacts().OfType<SmugArtifact>().FirstOrDefault();
 		if (artifact is null)
 			return;
 
@@ -107,6 +121,8 @@ internal sealed class SmugnessArtifact : Artifact
 				break;
 			case SmugResult.Double:
 				artifact.Pulse();
+				if (__result.Any(a => a is ASpawn))
+					__result.Add(new ADroneMove { dir = 1 });
 				__result.AddRange(__result.ToList());
 				artifact.AddSmugness(1);
 				break;

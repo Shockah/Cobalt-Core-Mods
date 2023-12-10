@@ -8,6 +8,7 @@ public abstract class ApologyCard : Card
 		{
 			cost = 0,
 			temporary = true,
-			exhaust = true
+			exhaust = true,
+			art = StableSpr.cards_colorless
 		};
 }

@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 namespace Shockah.Soggins;
 
-public sealed class ShieldApologyCard : ApologyCard, IRegisterableCard
+public sealed class MineApologyCard : ApologyCard, IRegisterableCard
 {
 	public void RegisterCard(ICardRegistry registry)
 	{
 		ExternalCard card = new(
-			globalName: $"{GetType().Namespace}.Card.Apology.Shield",
+			globalName: $"{GetType().Namespace}.Card.Apology.Mine",
 			cardType: GetType(),
 			cardArt: ModEntry.Instance.SogginsDeckBorder,
 			actualDeck: ModEntry.Instance.SogginsDeck
@@ -21,18 +21,19 @@ public sealed class ShieldApologyCard : ApologyCard, IRegisterableCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = StableSpr.cards_Shield;
+		data.art = StableSpr.cards_GoatDrone;
 		return data;
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> new()
 		{
-			new AStatus
+			new ASpawn
 			{
-				status = Status.shield,
-				statusAmount = 1,
-				targetPlayer = true
+				thing = new SpaceMine
+				{
+					yAnimation = 0.0
+				}
 			}
 		};
 }

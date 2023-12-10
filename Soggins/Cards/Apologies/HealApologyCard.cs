@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 namespace Shockah.Soggins;
 
-public sealed class ShieldApologyCard : ApologyCard, IRegisterableCard
+public sealed class HealApologyCard : ApologyCard, IRegisterableCard
 {
 	public void RegisterCard(ICardRegistry registry)
 	{
 		ExternalCard card = new(
-			globalName: $"{GetType().Namespace}.Card.Apology.Shield",
+			globalName: $"{GetType().Namespace}.Card.Apology.Heal",
 			cardType: GetType(),
 			cardArt: ModEntry.Instance.SogginsDeckBorder,
 			actualDeck: ModEntry.Instance.SogginsDeck
@@ -21,17 +21,16 @@ public sealed class ShieldApologyCard : ApologyCard, IRegisterableCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = StableSpr.cards_Shield;
+		data.art = StableSpr.cards_Repairs;
 		return data;
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> new()
 		{
-			new AStatus
+			new AHeal
 			{
-				status = Status.shield,
-				statusAmount = 1,
+				healAmount = 1,
 				targetPlayer = true
 			}
 		};
