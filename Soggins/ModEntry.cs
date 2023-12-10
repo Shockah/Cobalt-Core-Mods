@@ -12,9 +12,10 @@ using System.Linq;
 
 namespace Shockah.Soggins;
 
-public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IAnimationManifest, IArtifactManifest, ICharacterManifest
+public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IAnimationManifest, IArtifactManifest, ICharacterManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
+	internal ApiImplementation Api { get; private set; } = new();
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
 	public IEnumerable<DependencyEntry> Dependencies => Array.Empty<DependencyEntry>();
@@ -22,6 +23,8 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IAn
 	public DirectoryInfo? GameRootFolder { get; set; }
 	public DirectoryInfo? ModRootFolder { get; set; }
 	public ILogger? Logger { get; set; }
+
+	internal FrogproofManager FrogproofManager { get; private set; } = new();
 
 	internal ExternalDeck SogginsDeck { get; private set; } = null!;
 	internal ExternalCharacter SogginsCharacter { get; private set; } = null!;
@@ -45,6 +48,9 @@ public sealed class ModEntry : IModManifest, ISpriteManifest, IDeckManifest, IAn
 		Harmony harmony = new(Name);
 		SmugnessArtifact.ApplyPatches(harmony);
 	}
+
+	public object? GetApi(IManifest requestingMod)
+		=> new ApiImplementation();
 
 	public void LoadManifest(ISpriteRegistry registry)
 	{

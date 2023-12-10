@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 

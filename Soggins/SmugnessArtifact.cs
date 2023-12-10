@@ -20,6 +20,7 @@ internal sealed class SmugnessArtifact : Artifact
 	private static readonly double[] DoubleChances = new double[] { 0.05, 0.06, 0.08, 0.10, 0.12, 0.14, 0.15, 0.00 };
 
 	private static bool IsDuringTryPlayCard = false;
+	private static bool HasPlayNoMatterWhatForFreeSet = false;
 
 	public int Smugness = (BotchChances.Length - 1) / 2;
 
@@ -58,22 +59,28 @@ internal sealed class SmugnessArtifact : Artifact
 	public override int? GetDisplayNumber(State s)
 		=> Smugness;
 
-	private static void Combat_TryPlayCard_Prefix()
-		=> IsDuringTryPlayCard = true;
+	private static void Combat_TryPlayCard_Prefix(bool playNoMatterWhatForFree)
+	{
+		IsDuringTryPlayCard = true;
+		HasPlayNoMatterWhatForFreeSet = playNoMatterWhatForFree;
+	}
 
 	private static void Combat_TryPlayCard_Finalizer()
 		=> IsDuringTryPlayCard = false;
 
 	private static void Card_GetActionsOverridden_Postfix(Card __instance, State s, ref List<CardAction> __result)
 	{
-		if (!IsDuringTryPlayCard)
-			return;
-		if (__instance is ChipShot)
+		if (!IsDuringTryPlayCard || HasPlayNoMatterWhatForFreeSet)
 			return;
 
 		var artifact = s.EnumerateAllArtifacts().OfType<SmugnessArtifact>().FirstOrDefault();
 		if (artifact is null)
 			return;
+
+		var hook = Instance.FrogproofManager.GetHandlingHook(s, s.route as Combat, __instance, FrogproofHookContext.Action);
+		if (hook is null)
+			return;
+		hook.PayForFrogproof(s, s.route as Combat, __instance);
 
 		var result = artifact.GetSmugResult(s.rngActions);
 		switch (result)

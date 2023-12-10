@@ -1,4 +1,6 @@
-﻿namespace Shockah.Kokoro;
+﻿using Shockah.Shared;
+
+namespace Shockah.Kokoro;
 
 public sealed class ArtifactIconManager : HookManager<IArtifactIconHook>
 {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Shockah.Kokoro;
+namespace Shockah.Shared;
 
 public class HookManager<THook> : IEnumerable<THook> where THook : class
 {
