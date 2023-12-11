@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Reflection;
 using System;
+using System.Linq;
 
 namespace Shockah.Soggins;
 
@@ -118,7 +119,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 
 			foreach (var tooltip in tooltips)
 			{
-				if (tooltip is TTGlossary glossary && glossary.key.StartsWith("cardtrait.") && glossary.key != "cardtrait.unplayable")
+				if (!yieldedFrogproof && tooltip is TTGlossary glossary && glossary.key.StartsWith("cardtrait.") && glossary.key != "cardtrait.unplayable")
 				{
 					yield return Instance.Api.FrogproofCardTraitTooltip;
 					yieldedFrogproof = true;
