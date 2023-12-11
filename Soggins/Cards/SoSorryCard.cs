@@ -68,12 +68,13 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 				});
 
 			if (upgrade == Upgrade.A)
-				actions.Add(new AAddCard
-				{
-					card = SmugStatusManager.GenerateAndTrackApology(s, c, s.rngActions),
-					destination = CardDestination.Hand,
-					omitFromTooltips = amount != 0
-				});
+				for (int i = 0; i < 2; i++)
+					actions.Add(new AAddCard
+					{
+						card = SmugStatusManager.GenerateAndTrackApology(s, c, s.rngActions),
+						destination = CardDestination.Hand,
+						omitFromTooltips = amount != 0 || i != 0
+					});
 		}
 		else
 		{
@@ -90,6 +91,7 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 				{
 					card = new RandomPlaceholderApologyCard(),
 					destination = CardDestination.Hand,
+					amount = 2,
 					omitFromTooltips = true
 				});
 		}
