@@ -31,12 +31,8 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
 			prefix: new HarmonyMethod(typeof(SmugStatusManager), nameof(Combat_TryPlayCard_Prefix)),
-			finalizer: new HarmonyMethod(typeof(SmugStatusManager), nameof(Combat_TryPlayCard_Finalizer))
-		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
-			postfix: new HarmonyMethod(typeof(SmugStatusManager), nameof(Card_GetActionsOverridden_Postfix))
+			finalizer: new HarmonyMethod(typeof(SmugStatusManager), nameof(Combat_TryPlayCard_Finalizer)),
+			transpiler: new HarmonyMethod(typeof(SmugStatusManager), nameof(Combat_TryPlayCard_Transpiler))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
@@ -100,62 +96,97 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 	private static void Combat_TryPlayCard_Finalizer()
 		=> IsDuringTryPlayCard = false;
 
-	private static void Card_GetActionsOverridden_Postfix(Card __instance, State s, ref List<CardAction> __result)
+	private static IEnumerable<CodeInstruction> Combat_TryPlayCard_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
-		if (s.route is not Combat combat)
-			return;
-		if (!IsDuringTryPlayCard)
-			return;
-		if (HasPlayNoMatterWhatForFreeSet)
-			return;
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(
+					ILMatches.Ldloc<CardData>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldfld("exhaust"),
+					ILMatches.Ldarg(4),
+					ILMatches.Instruction(OpCodes.Or),
+					ILMatches.Stloc<bool>(originalMethod.GetMethodBody()!.LocalVariables)
+				)
+				.PointerMatcher(SequenceMatcherRelativeElement.Last)
+				.CreateLdlocaInstruction(out var ldlocaExhaust)
+				.Find(
+					ILMatches.Ldloc<List<CardAction>>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Call("Queue")
+				)
+				.PointerMatcher(SequenceMatcherRelativeElement.First)
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldarg_1),
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldarg_2),
+					new CodeInstruction(OpCodes.Ldarg_3),
+					ldlocaExhaust,
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(SmugStatusManager), nameof(Combat_TryPlayCard_Transpiler_ModifyActions)))
+				)
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			return instructions;
+		}
+	}
 
-		var handlingHook = Instance.FrogproofManager.GetHandlingHook(s, combat, __instance, FrogproofHookContext.Action);
+	private static List<CardAction> Combat_TryPlayCard_Transpiler_ModifyActions(List<CardAction> actions, State state, Combat combat, Card card, bool playNoMatterWhatForFree, ref bool exhaust)
+	{
+		if (playNoMatterWhatForFree)
+			return actions;
+
+		var handlingHook = Instance.FrogproofManager.GetHandlingHook(state, combat, card, FrogproofHookContext.Action);
 		if (handlingHook is not null)
 		{
-			handlingHook.PayForFrogproof(s, combat, __instance);
-			return;
+			handlingHook.PayForFrogproof(state, combat, card);
+			return actions;
 		}
 
-		var result = GetSmugResult(s.ship, s.rngActions);
-		var swing = Math.Max(__instance.GetCurrentCost(s), 1);
+		var result = GetSmugResult(state.ship, state.rngActions);
+		var swing = Math.Max(card.GetCurrentCost(state), 1);
 		switch (result)
 		{
 			case SmugResult.Botch:
-				s.ship.Add((Status)Instance.BotchesStatus.Id!.Value);
-				s.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
+				exhaust = false;
+				state.ship.Add((Status)Instance.BotchesStatus.Id!.Value);
+				state.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
 
-				__result.Clear();
+				actions.Clear();
 				for (int i = 0; i < swing; i++)
 				{
-					__result.Add(new AAddCard
+					actions.Add(new AAddCard
 					{
-						card = GenerateAndTrackApology(s, combat, s.rngActions),
+						card = GenerateAndTrackApology(state, combat, state.rngActions),
 						destination = CardDestination.Hand
 					});
 				}
 
-				if (Instance.Api.IsOversmug(s.ship))
-					Instance.Api.SetSmug(s.ship, Instance.Api.GetMinSmug(s.ship));
+				if (Instance.Api.IsOversmug(state.ship))
+					Instance.Api.SetSmug(state.ship, Instance.Api.GetMinSmug(state.ship));
 				else
-					Instance.Api.AddSmug(s.ship, -swing);
+					Instance.Api.AddSmug(state.ship, -swing);
 
 				foreach (var hook in Instance.SmugStatusManager)
-					hook.OnCardBotchedBySmug(s, combat, __instance);
+					hook.OnCardBotchedBySmug(state, combat, card);
 				break;
 			case SmugResult.Double:
-				s.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
+				state.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
 
-				var toAdd = __result.Select(a => Mutil.DeepCopy(a)).ToList();
-				if (__result.Any(a => a is ASpawn))
+				var toAdd = actions.Select(a => Mutil.DeepCopy(a)).ToList();
+				if (actions.Any(a => a is ASpawn))
 					toAdd.Insert(0, new ADroneMove { dir = 1 });
-				__result.AddRange(toAdd);
+				actions.AddRange(toAdd);
 
-				Instance.Api.AddSmug(s.ship, swing);
+				Instance.Api.AddSmug(state.ship, swing);
 
 				foreach (var hook in Instance.SmugStatusManager)
-					hook.OnCardDoubledBySmug(s, combat, __instance);
+					hook.OnCardDoubledBySmug(state, combat, card);
 				break;
 		}
+		return actions;
 	}
 
 	private static void Ship_Set_Prefix(Ship __instance, Status status, ref int n)
