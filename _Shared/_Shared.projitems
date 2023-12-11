@@ -21,5 +21,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ReflectionExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StateExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextParserExt.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WeightedRandom.cs" />
   </ItemGroup>
 </Project>

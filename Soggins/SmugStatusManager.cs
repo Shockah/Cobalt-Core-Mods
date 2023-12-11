@@ -22,6 +22,7 @@ internal static class SmugStatusManager
 
 	private static bool IsDuringTryPlayCard = false;
 	private static bool HasPlayNoMatterWhatForFreeSet = false;
+	private static readonly Dictionary<Type, int> TimesApologyWasGiven = new();
 
 	internal static void ApplyPatches(Harmony harmony)
 	{
@@ -51,6 +52,11 @@ internal static class SmugStatusManager
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), "RenderStatusRow"),
 			transpiler: new HarmonyMethod(typeof(SmugStatusManager), nameof(Ship_RenderStatusRow_Transpiler))
 		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Make)),
+			postfix: new HarmonyMethod(typeof(SmugStatusManager), nameof(Combat_Make_Postfix))
+		);
 	}
 
 	private static SmugResult GetSmugResult(Ship ship, Rand rng)
@@ -67,6 +73,19 @@ internal static class SmugStatusManager
 			return SmugResult.Normal;
 	}
 
+	private static Card GenerateApology(State state, Combat combat, Rand rng)
+	{
+		WeightedRandom<Card> weightedRandom = new();
+		foreach (var apologyType in ModEntry.ApologyCards)
+		{
+			var apology = (ApologyCard)Activator.CreateInstance(apologyType)!;
+			var weight = apology.GetApologyWeight(state, combat, TimesApologyWasGiven.GetValueOrDefault(apologyType));
+			if (weight > 0)
+				weightedRandom.Add(new(weight, apology));
+		}
+		return weightedRandom.Next(rng);
+	}
+
 	private static void Combat_TryPlayCard_Prefix(bool playNoMatterWhatForFree)
 	{
 		IsDuringTryPlayCard = true;
@@ -78,15 +97,17 @@ internal static class SmugStatusManager
 
 	private static void Card_GetActionsOverridden_Postfix(Card __instance, State s, ref List<CardAction> __result)
 	{
+		if (s.route is not Combat combat)
+			return;
 		if (!IsDuringTryPlayCard)
 			return;
 		if (HasPlayNoMatterWhatForFreeSet)
 			return;
 
-		var hook = Instance.FrogproofManager.GetHandlingHook(s, s.route as Combat, __instance, FrogproofHookContext.Action);
+		var hook = Instance.FrogproofManager.GetHandlingHook(s, combat, __instance, FrogproofHookContext.Action);
 		if (hook is not null)
 		{
-			hook.PayForFrogproof(s, s.route as Combat, __instance);
+			hook.PayForFrogproof(s, combat, __instance);
 			return;
 		}
 
@@ -97,12 +118,15 @@ internal static class SmugStatusManager
 				s.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
 				__result.Clear();
 				for (int i = 0; i < __instance.GetCurrentCost(s); i++)
+				{
+					var apology = GenerateApology(s, combat, s.rngActions);
 					__result.Add(new AAddCard
 					{
-						card = (Card)Activator.CreateInstance(ModEntry.ApologyCards[s.rngActions.NextInt() % ModEntry.ApologyCards.Length])!,
+						card = apology,
 						destination = CardDestination.Hand
 					});
-
+					TimesApologyWasGiven[apology.GetType()] = TimesApologyWasGiven.GetValueOrDefault(apology.GetType()) + 1;
+				}
 				if (Instance.Api.IsOversmug(s.ship))
 					Instance.Api.SetSmug(s.ship, Instance.Api.GetMinSmug(s.ship));
 				else
@@ -213,4 +237,7 @@ internal static class SmugStatusManager
 		else
 			return new Color("b2f2ff").fadeAlpha(0.3);
 	}
+
+	private static void Combat_Make_Postfix()
+		=> TimesApologyWasGiven.Clear();
 }

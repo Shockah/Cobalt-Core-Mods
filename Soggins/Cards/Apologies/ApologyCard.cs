@@ -11,4 +11,7 @@ public abstract class ApologyCard : Card, IFrogproofCard
 			exhaust = true,
 			art = StableSpr.cards_colorless
 		};
+
+	public virtual double GetApologyWeight(State state, Combat combat, int timesGiven)
+		=> 1;
 }
