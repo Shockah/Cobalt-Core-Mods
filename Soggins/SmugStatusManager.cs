@@ -112,12 +112,13 @@ internal static class SmugStatusManager
 		}
 
 		var result = GetSmugResult(s.ship, s.rngActions);
+		var swing = Math.Max(__instance.GetCurrentCost(s), 1);
 		switch (result)
 		{
 			case SmugResult.Botch:
 				s.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
 				__result.Clear();
-				for (int i = 0; i < __instance.GetCurrentCost(s); i++)
+				for (int i = 0; i < swing; i++)
 				{
 					var apology = GenerateApology(s, combat, s.rngActions);
 					__result.Add(new AAddCard
@@ -130,7 +131,7 @@ internal static class SmugStatusManager
 				if (Instance.Api.IsOversmug(s.ship))
 					Instance.Api.SetSmug(s.ship, Instance.Api.GetMinSmug(s.ship));
 				else
-					Instance.Api.AddSmug(s.ship, -1);
+					Instance.Api.AddSmug(s.ship, -swing);
 				break;
 			case SmugResult.Double:
 				s.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
@@ -138,7 +139,7 @@ internal static class SmugStatusManager
 				if (__result.Any(a => a is ASpawn))
 					toAdd.Insert(0, new ADroneMove { dir = 1 });
 				__result.AddRange(toAdd);
-				Instance.Api.AddSmug(s.ship, 1);
+				Instance.Api.AddSmug(s.ship, swing);
 				break;
 		}
 	}
