@@ -10,7 +10,7 @@ internal sealed class SmugArtifact : Artifact
 	public override List<Tooltip>? GetExtraTooltips()
 	{
 		var tooltips = base.GetExtraTooltips() ?? new();
-		tooltips.Add(new TTGlossary($"status.{Instance.SmugStatus.Id!.Value}"));
+		tooltips.Add(Instance.Api.GetSmugTooltip());
 		return tooltips;
 	}
 

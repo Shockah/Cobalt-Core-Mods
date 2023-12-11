@@ -34,6 +34,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal ExternalSprite SogginsMini { get; private set; } = null!;
 	internal ExternalSprite SmugArtifactSprite { get; private set; } = null!;
 	internal ExternalSprite SmugStatusSprite { get; private set; } = null!;
+	internal ExternalSprite FrogproofSprite { get; private set; } = null!;
 
 	internal ExternalStatus SmugStatus { get; private set; } = null!;
 
@@ -86,7 +87,9 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 
 		Harmony = new(Name);
+		FrogproofManager.ApplyPatches(Harmony);
 		SmugStatusManager.ApplyPatches(Harmony);
+		CustomTTGlossary.ApplyPatches(Harmony);
 	}
 
 	public object? GetApi(IManifest requestingMod)
@@ -105,6 +108,10 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		SmugStatusSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Status.Smug",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "SmugStatus.png"))
+		);
+		FrogproofSprite = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.Icon.Frogproof",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "FrogproofIcon.png"))
 		);
 	}
 

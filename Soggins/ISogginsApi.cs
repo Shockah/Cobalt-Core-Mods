@@ -2,6 +2,10 @@
 
 public interface ISogginsApi
 {
+	Tooltip GetSmugTooltip();
+	Tooltip GetSmugTooltip(State state, Ship ship);
+	Tooltip FrogproofCardTraitTooltip { get; }
+
 	int GetMinSmug(Ship ship);
 	int GetMaxSmug(Ship ship);
 	int? GetSmug(Ship ship);
