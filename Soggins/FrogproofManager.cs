@@ -1,13 +1,12 @@
 ﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Nanoray.Shrike.Harmony;
 using Nanoray.Shrike;
+using Nanoray.Shrike.Harmony;
 using Shockah.Shared;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Reflection;
 using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Shockah.Soggins;
 
@@ -19,6 +18,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 	{
 		Register(FrogproofCardTraitFrogproofHook.Instance, 0);
 		Register(TrashCardFrogproofHook.Instance, -1);
+		Register(FrogproofingFrogproofHook.Instance, -10);
 	}
 
 	internal static void ApplyPatches(Harmony harmony)
@@ -157,4 +157,17 @@ public sealed class TrashCardFrogproofHook : IFrogproofHook
 		=> card.GetMeta().deck == Deck.trash ? true : null;
 
 	public void PayForFrogproof(State state, Combat? combat, Card card) { }
+}
+
+public sealed class FrogproofingFrogproofHook : IFrogproofHook
+{
+	public static FrogproofingFrogproofHook Instance { get; private set; } = new();
+
+	private FrogproofingFrogproofHook() { }
+
+	public bool? IsFrogproof(State state, Combat? combat, Card card, FrogproofHookContext context)
+		=> context == FrogproofHookContext.Action && state.ship.Get((Status)ModEntry.Instance.FrogproofingStatus.Id!.Value) > 0 ? true : null;
+
+	public void PayForFrogproof(State state, Combat? combat, Card card)
+		=> state.ship.Add((Status)ModEntry.Instance.FrogproofingStatus.Id!.Value, -1);
 }

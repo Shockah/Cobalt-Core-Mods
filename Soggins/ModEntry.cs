@@ -37,6 +37,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal ExternalSprite FrogproofSprite { get; private set; } = null!;
 
 	internal ExternalStatus SmugStatus { get; private set; } = null!;
+	internal ExternalStatus FrogproofingStatus { get; private set; } = null!;
 
 	internal ExternalAnimation SogginsMadAnimation { get; private set; } = null!;
 	internal ExternalAnimation SogginsMeekAnimation { get; private set; } = null!;
@@ -71,6 +72,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		typeof(RunningInCirclesCard),
 		typeof(BetterSpaceMineCard),
 		typeof(ThoughtsAndPrayersCard),
+		typeof(StopItCard),
 	};
 	internal static readonly Type[] UncommonCards = new Type[]
 	{
@@ -130,16 +132,30 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 
 	public void LoadManifest(IStatusRegistry registry)
 	{
-		SmugStatus = new(
-			$"{typeof(ModEntry).Namespace}.Status.Smug",
-			isGood: false,
-			mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
-			borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
-			SmugStatusSprite,
-			affectedByTimestop: false
-		);
-		SmugStatus.AddLocalisation(I18n.SmugStatusName, I18n.SmugStatusDescription);
-		registry.RegisterStatus(SmugStatus);
+		{
+			SmugStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.Smug",
+				isGood: false,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF00BB00)),
+				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF00BB00)),
+				SmugStatusSprite,
+				affectedByTimestop: false
+			);
+			SmugStatus.AddLocalisation(I18n.SmugStatusName, I18n.SmugStatusDescription);
+			registry.RegisterStatus(SmugStatus);
+		}
+		{
+			FrogproofingStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.Frogproofing",
+				isGood: false,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
+				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
+				FrogproofSprite,
+				affectedByTimestop: false
+			);
+			FrogproofingStatus.AddLocalisation(I18n.FrogproofingStatusName, I18n.FrogproofingStatusDescription);
+			registry.RegisterStatus(FrogproofingStatus);
+		}
 	}
 
 	public void LoadManifest(IAnimationRegistry registry)

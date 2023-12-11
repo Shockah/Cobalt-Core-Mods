@@ -35,14 +35,6 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard, IFrogproof
 		);
 	}
 
-	private string GetText()
-		=> upgrade switch
-		{
-			Upgrade.A => I18n.ThoughtsAndPrayersCardTextA,
-			Upgrade.B => I18n.ThoughtsAndPrayersCardTextB,
-			_ => I18n.ThoughtsAndPrayersCardText0,
-		};
-
 	private int GetAmount()
 		=> upgrade switch
 		{

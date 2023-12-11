@@ -1,11 +1,16 @@
-﻿namespace Shockah.Soggins;
+﻿using CobaltCoreModding.Definitions.ExternalItems;
+
+namespace Shockah.Soggins;
 
 public interface ISogginsApi
 {
-	Tooltip GetSmugTooltip();
-	Tooltip GetSmugTooltip(State state, Ship ship);
 	Tooltip FrogproofCardTraitTooltip { get; }
 
+	ExternalStatus FrogproofingStatus { get; }
+
+	ExternalStatus SmugStatus { get; }
+	Tooltip GetSmugTooltip();
+	Tooltip GetSmugTooltip(State state, Ship ship);
 	int GetMinSmug(Ship ship);
 	int GetMaxSmug(Ship ship);
 	int? GetSmug(Ship ship);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CobaltCoreModding.Definitions.ExternalItems;
+using System;
 
 namespace Shockah.Soggins;
 
@@ -9,14 +10,20 @@ public sealed class ApiImplementation : ISogginsApi
 	private static readonly double[] BotchChances = new double[] { 0.15, 0.14, 0.12, 0.10, 0.08, 0.06, 0.05 };
 	private static readonly double[] DoubleChances = new double[] { 0.05, 0.06, 0.08, 0.10, 0.12, 0.14, 0.15 };
 
+	public Tooltip FrogproofCardTraitTooltip
+		=> new CustomTTGlossary(CustomTTGlossary.GlossaryType.cardtrait, () => (Spr)Instance.FrogproofSprite.Id!.Value, () => I18n.FrogproofCardTraitName, () => I18n.FrogproofCardTraitText);
+
+	public ExternalStatus FrogproofingStatus
+		=> Instance.FrogproofingStatus;
+
+	public ExternalStatus SmugStatus
+		=> Instance.SmugStatus;
+
 	public Tooltip GetSmugTooltip()
 		=> new TTGlossary($"status.{Instance.SmugStatus.Id!.Value}");
 
 	public Tooltip GetSmugTooltip(State state, Ship ship)
 		=> GetSmugTooltip();
-
-	public Tooltip FrogproofCardTraitTooltip
-		=> new CustomTTGlossary(CustomTTGlossary.GlossaryType.cardtrait, () => (Spr)Instance.FrogproofSprite.Id!.Value, () => I18n.FrogproofCardTraitName, () => I18n.FrogproofCardTraitText);
 
 	public int GetMinSmug(Ship ship)
 		=> -BotchChances.Length / 2;
