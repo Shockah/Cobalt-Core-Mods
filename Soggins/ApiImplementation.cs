@@ -24,8 +24,30 @@ public sealed class ApiImplementation : ISogginsApi
 	public void SetSmug(Ship ship, int? value)
 		=> ship.Set((Status)Instance.SmugStatus.Id!.Value, value is null ? 0 : Math.Clamp(value.Value, GetMinSmug(ship), GetMaxSmug(ship) + 1) + 100);
 
+	public CardAction MakeSetSmugAction(State state, int? value, bool targetPlayer = true, bool disabled = false)
+	{
+		var ship = targetPlayer ? state.ship : (state.route as Combat ?? DB.fakeCombat).otherShip;
+		return new AStatus
+		{
+			status = (Status)Instance.SmugStatus.Id!.Value,
+			mode = AStatusMode.Set,
+			statusAmount = value is null ? 0 : Math.Clamp(value.Value, GetMinSmug(ship), GetMaxSmug(ship) + 1) + 100,
+			targetPlayer = targetPlayer,
+			disabled = disabled
+		};
+	}
+
 	public void AddSmug(Ship ship, int value)
 		=> SetSmug(ship, (GetSmug(ship) ?? 0) + value);
+
+	public CardAction MakeAddSmugAction(State state, int value, bool targetPlayer = true, bool disabled = false)
+		=> new AStatus
+		{
+			status = (Status)Instance.SmugStatus.Id!.Value,
+			statusAmount = value,
+			targetPlayer = targetPlayer,
+			disabled = disabled
+		};
 
 	public bool IsOversmug(Ship ship)
 	{

@@ -6,7 +6,9 @@ public interface ISogginsApi
 	int GetMaxSmug(Ship ship);
 	int? GetSmug(Ship ship);
 	void SetSmug(Ship ship, int? value);
+	CardAction MakeSetSmugAction(State state, int? value, bool targetPlayer = true, bool disabled = false);
 	void AddSmug(Ship ship, int value);
+	CardAction MakeAddSmugAction(State state, int value, bool targetPlayer = true, bool disabled = false);
 	bool IsOversmug(Ship ship);
 	double GetSmugBotchChance(Ship ship);
 	double GetSmugDoubleChance(Ship ship);

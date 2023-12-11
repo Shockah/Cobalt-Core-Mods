@@ -63,6 +63,11 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		typeof(SmugnessControlCard),
 		typeof(PressingButtonsCard),
 		typeof(TakeCoverCard),
+		typeof(ZenCard),
+	};
+	internal static readonly Type[] UncommonCards = new Type[]
+	{
+		typeof(HarnessingSmugnessCard),
 	};
 
 	public void BootMod(IModLoaderContact contact)
@@ -232,7 +237,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 
 	public void LoadManifest(ICardRegistry registry)
 	{
-		foreach (var cardType in ApologyCards.Concat(CommonCards))
+		foreach (var cardType in ApologyCards.Concat(CommonCards).Concat(UncommonCards))
 		{
 			if (Activator.CreateInstance(cardType) is not IRegisterableCard card)
 				continue;
