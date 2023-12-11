@@ -133,7 +133,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	{
 		SogginsDeck = new(
 			globalName: $"{GetType().Namespace}.Deck.Soggins",
-			deckColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF6A9C59)),
+			deckColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFB79CE5)), // 0xFF6A9C59
 			titleColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF000000)),
 			cardArtDefault: ExternalSprite.GetRaw((int)StableSpr.cards_colorless),
 			borderSprite: ExternalSprite.GetRaw((int)StableSpr.cardShared_border_soggins),
