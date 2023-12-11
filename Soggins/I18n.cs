@@ -15,6 +15,8 @@ internal static class I18n
 	public static string SmugStatusDescription => "The current level of <c=soggins>Soggins'</c> smugness, which affects his chance to <c=cheevoGold>double</c> or <c=downside>botch</c> card effects.\nLow smugness will <c=downside>botch</c> more often, while high smugness will <c=cheevoGold>double</c> more often.\n<c=downside>Beware of reaching max smugness, as that WILL GUARANTEE a botch and set smugness to 0.</c>";
 	public static string FrogproofingStatusName => "Frogproofing";
 	public static string FrogproofingStatusDescription => "Whenever you play a card that is not <c=cardtrait>FROGPROOF</c>, temporarily give it <c=cardtrait>FROGPROOF</c> <c=downside>and decrease this by 1.</c>";
+	public static string BotchesStatusName => "Botches";
+	public static string BotchesStatusDescription => "The number of times an action has been <c=downside>botched</c> this combat through <c=status>SMUG</c>.";
 
 	public static string ApologyCardName => "Halfhearted Apology";
 	public static string BlankApologyCardText => $"*a random {ApologyCardName} card*";
@@ -31,7 +33,5 @@ internal static class I18n
 	public static string StopItCardName => "Stop It!";
 
 	public static string HarnessingSmugnessCardName => "Harnessing Smugness";
-	public static string SoSorryCardName => "Stop It!";
-	public static string SoSorryCardTextGeneric => "Add a <c=card>Halfhearted Apology</c> to your hand for each botched action.";
-	public static string SoSorryCardTextCurrent => "Add a <c=card>Halfhearted Apology</c> to your hand for each botched action (<c=boldPink>{0}</c>).";
+	public static string SoSorryCardName => "So Sorry";
 }

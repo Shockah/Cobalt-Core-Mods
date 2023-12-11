@@ -35,9 +35,11 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal ExternalSprite SmugArtifactSprite { get; private set; } = null!;
 	internal ExternalSprite SmugStatusSprite { get; private set; } = null!;
 	internal ExternalSprite FrogproofSprite { get; private set; } = null!;
+	internal ExternalSprite BotchesStatusSprite { get; private set; } = null!;
 
 	internal ExternalStatus SmugStatus { get; private set; } = null!;
 	internal ExternalStatus FrogproofingStatus { get; private set; } = null!;
+	internal ExternalStatus BotchesStatus { get; private set; } = null!;
 
 	internal ExternalAnimation SogginsMadAnimation { get; private set; } = null!;
 	internal ExternalAnimation SogginsMeekAnimation { get; private set; } = null!;
@@ -116,6 +118,10 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 			id: $"{GetType().Namespace}.Icon.Frogproof",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "FrogproofIcon.png"))
 		);
+		BotchesStatusSprite = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.Icon.Botches",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "BotchesStatus.png"))
+		);
 	}
 
 	public void LoadManifest(IDeckRegistry registry)
@@ -148,7 +154,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		{
 			FrogproofingStatus = new(
 				$"{typeof(ModEntry).Namespace}.Status.Frogproofing",
-				isGood: false,
+				isGood: true,
 				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
 				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
 				FrogproofSprite,
@@ -156,6 +162,18 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 			);
 			FrogproofingStatus.AddLocalisation(I18n.FrogproofingStatusName, I18n.FrogproofingStatusDescription);
 			registry.RegisterStatus(FrogproofingStatus);
+		}
+		{
+			BotchesStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.Botches",
+				isGood: false,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
+				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
+				BotchesStatusSprite,
+				affectedByTimestop: false
+			);
+			BotchesStatus.AddLocalisation(I18n.BotchesStatusName, I18n.BotchesStatusDescription);
+			registry.RegisterStatus(BotchesStatus);
 		}
 	}
 

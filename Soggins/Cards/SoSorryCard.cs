@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Soggins;
 
-[CardMeta(rarity = Rarity.uncommon)]
+[CardMeta(rarity = Rarity.uncommon, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
 public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 {
 	private static ModEntry Instance => ModEntry.Instance;
@@ -38,8 +38,7 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = StableSpr.cards_colorless;
-		data.description = state.route is Combat combat ? string.Format(I18n.SoSorryCardTextCurrent, Instance.Api.GetTimesBotchedThisCombat(state, combat)) : I18n.SoSorryCardTextGeneric;
+		data.art = StableSpr.cards_Reroute;
 		data.cost = 2;
 		return data;
 	}
@@ -48,10 +47,16 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 	{
 		List<CardAction> actions = new()
 		{
-			Instance.Api.MakeAddSmugAction(s, 1)
+			new AVariableHint
+			{
+				status = (Status)Instance.BotchesStatus.Id!.Value
+			}
 		};
 
-		int amount = Instance.Api.GetTimesBotchedThisCombat(s, c);
+		var amount = Instance.Api.GetTimesBotchedThisCombat(s, c);
+		if (upgrade == Upgrade.B)
+			amount *= 2;
+
 		if (IsDuringTryPlayCard)
 		{
 			for (int i = 0; i < amount; i++)
@@ -61,6 +66,14 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 					destination = CardDestination.Hand,
 					omitFromTooltips = i != 0
 				});
+
+			if (upgrade == Upgrade.A)
+				actions.Add(new AAddCard
+				{
+					card = SmugStatusManager.GenerateAndTrackApology(s, c, s.rngActions),
+					destination = CardDestination.Hand,
+					omitFromTooltips = amount != 0
+				});
 		}
 		else
 		{
@@ -68,8 +81,17 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 			{
 				card = new RandomPlaceholderApologyCard(),
 				destination = CardDestination.Hand,
-				amount = amount
+				amount = amount,
+				xHint = upgrade == Upgrade.B ? 2 : 1
 			});
+
+			if (upgrade == Upgrade.A)
+				actions.Add(new AAddCard
+				{
+					card = new RandomPlaceholderApologyCard(),
+					destination = CardDestination.Hand,
+					omitFromTooltips = true
+				});
 		}
 
 		return actions;

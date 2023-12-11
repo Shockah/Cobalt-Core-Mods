@@ -98,7 +98,7 @@ public sealed class ApiImplementation : ISogginsApi
 	}
 
 	public int GetTimesBotchedThisCombat(State state, Combat combat)
-		=> SmugStatusManager.TimesBotchedThisCombat;
+		=> state.ship.Get((Status)Instance.BotchesStatus.Id!.Value);
 
 	public bool IsFrogproof(Card card)
 		=> card is ChipShot;
