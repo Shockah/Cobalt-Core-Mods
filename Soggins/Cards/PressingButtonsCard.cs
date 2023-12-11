@@ -22,7 +22,7 @@ public sealed class PressingButtonsCard : Card, IRegisterableCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = StableSpr.cards_Panic;
+		data.art = StableSpr.cards_ButtonMash;
 		data.cost = 1;
 		return data;
 	}
