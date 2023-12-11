@@ -59,6 +59,7 @@ public sealed class HarnessingSmugnessCard : Card, IRegisterableCard, IFrogproof
 		data.art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top;
 		data.cost = 1;
 		data.floppable = true;
+		data.infinite = true;
 		return data;
 	}
 
