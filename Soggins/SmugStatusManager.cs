@@ -110,9 +110,10 @@ internal static class SmugStatusManager
 				break;
 			case SmugResult.Double:
 				s.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
+				var toAdd = __result.Select(a => Mutil.DeepCopy(a)).ToList();
 				if (__result.Any(a => a is ASpawn))
-					__result.Add(new ADroneMove { dir = 1 });
-				__result.AddRange(__result.ToList());
+					toAdd.Insert(0, new ADroneMove { dir = 1 });
+				__result.AddRange(toAdd);
 				Instance.Api.AddSmug(s.ship, 1);
 				break;
 		}
