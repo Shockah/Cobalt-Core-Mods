@@ -6,7 +6,8 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 {
 	internal FrogproofManager() : base()
 	{
-		Register(FrogproofCardTraintFrogproofHook.Instance, 0);
+		Register(FrogproofCardTraitFrogproofHook.Instance, 0);
+		Register(TrashCardFrogproofHook.Instance, -1);
 	}
 
 	public bool IsFrogproof(State state, Combat? combat, Card card, FrogproofHookContext context)
@@ -26,14 +27,26 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 	}
 }
 
-public sealed class FrogproofCardTraintFrogproofHook : IFrogproofHook
+public sealed class FrogproofCardTraitFrogproofHook : IFrogproofHook
 {
-	public static FrogproofCardTraintFrogproofHook Instance { get; private set; } = new();
+	public static FrogproofCardTraitFrogproofHook Instance { get; private set; } = new();
 
-	private FrogproofCardTraintFrogproofHook() { }
+	private FrogproofCardTraitFrogproofHook() { }
 
 	public bool? IsFrogproof(State state, Combat? combat, Card card, FrogproofHookContext context)
 		=> card is IFrogproofCard ? true : null;
+
+	public void PayForFrogproof(State state, Combat? combat, Card card) { }
+}
+
+public sealed class TrashCardFrogproofHook : IFrogproofHook
+{
+	public static TrashCardFrogproofHook Instance { get; private set; } = new();
+
+	private TrashCardFrogproofHook() { }
+
+	public bool? IsFrogproof(State state, Combat? combat, Card card, FrogproofHookContext context)
+		=> card.GetMeta().deck == Deck.trash ? true : null;
 
 	public void PayForFrogproof(State state, Combat? combat, Card card) { }
 }
