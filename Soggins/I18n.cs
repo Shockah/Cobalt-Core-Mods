@@ -47,4 +47,8 @@ internal static class I18n
 	public static string BetterThanYouCardText0 => "Discard non <c=B79CE5>Soggins</c> cards. Draw as many <c=B79CE5>Soggins</c> cards.";
 	public static string BetterThanYouCardTextA => "Discard non <c=B79CE5>Soggins</c> cards. Draw as many <c=B79CE5>Soggins</c> cards.";
 	public static string BetterThanYouCardTextB => "Draw 10 <c=B79CE5>Soggins</c> cards.";
+	public static string DoSomethingCardName => "Do Something!";
+	public static string DoSomethingCardText0 => "Play a random card from your <c=keyword>draw pile</c>.";
+	public static string DoSomethingCardTextA => "Play a random card from your <c=keyword>discard pile</c>.";
+	public static string DoSomethingCardTextB => "Play 2 random cards from your <c=keyword>draw, discard or exhaust pile</c>.";
 }

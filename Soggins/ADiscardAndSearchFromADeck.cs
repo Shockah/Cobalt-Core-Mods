@@ -1,10 +1,11 @@
-﻿using Shockah.Shared;
+﻿using FSPRO;
+using Shockah.Shared;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.Soggins;
 
-public sealed class ADiscardAndDrawFromADeck : CardAction
+public sealed class ADiscardAndSearchFromADeck : CardAction
 {
 	public Deck Deck = Deck.colorless;
 	public int? Limit = null;
@@ -44,5 +45,7 @@ public sealed class ADiscardAndDrawFromADeck : CardAction
 			c.discard.Remove(card);
 			c.SendCardToHand(s, card);
 		}
+
+		Audio.Play(Event.CardHandling);
 	}
 }
