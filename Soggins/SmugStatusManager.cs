@@ -11,7 +11,7 @@ using System.Reflection.Emit;
 
 namespace Shockah.Soggins;
 
-internal class SmugStatusManager : HookManager<ISmugHook>
+internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook
 {
 	private enum SmugResult
 	{
@@ -24,6 +24,11 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 	private static bool IsDuringTryPlayCard = false;
 	private static bool HasPlayNoMatterWhatForFreeSet = false;
+
+	internal SmugStatusManager() : base()
+	{
+		Register(this, 0);
+	}
 
 	internal static void ApplyPatches(Harmony harmony)
 	{
@@ -54,6 +59,23 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Make)),
 			postfix: new HarmonyMethod(typeof(SmugStatusManager), nameof(Combat_Make_Postfix))
 		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.OnBeginTurn)),
+			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(SmugStatusManager), nameof(Ship_OnBeginTurn_Postfix_Last)), Priority.Last)
+		);
+	}
+
+	public void OnCardBotchedBySmug(State state, Combat combat, Card card)
+	{
+		int extraApologies = state.ship.Get((Status)Instance.ExtraApologiesStatus.Id!.Value);
+		for (int i = 0; i < extraApologies; i++)
+			combat.Queue(new AAddCard
+			{
+				card = GenerateAndTrackApology(state, combat, state.rngActions),
+				destination = CardDestination.Hand,
+				statusPulse = (Status)Instance.ExtraApologiesStatus.Id!.Value
+			});
 	}
 
 	private static SmugResult GetSmugResult(Ship ship, Rand rng)
@@ -286,4 +308,19 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 	private static void Combat_Make_Postfix()
 		=> TimesApologyWasGiven.Clear();
+
+	private static void Ship_OnBeginTurn_Postfix_Last(Ship __instance, State s, Combat c)
+	{
+		if (__instance != s.ship)
+			return;
+
+		int constantApologies = s.ship.Get((Status)Instance.ConstantApologiesStatus.Id!.Value);
+		for (int i = 0; i < constantApologies; i++)
+			c.Queue(new AAddCard
+			{
+				card = GenerateAndTrackApology(s, c, s.rngActions),
+				destination = CardDestination.Hand,
+				statusPulse = (Status)Instance.ConstantApologiesStatus.Id!.Value
+			});
+	}
 }

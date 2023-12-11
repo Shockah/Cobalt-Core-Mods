@@ -25,6 +25,10 @@ internal static class I18n
 	public static string FrogproofingStatusDescription => "Whenever you play a card that is not <c=cardtrait>FROGPROOF</c>, temporarily give it <c=cardtrait>FROGPROOF</c> <c=downside>and decrease this by 1.</c>";
 	public static string BotchesStatusName => "Botches";
 	public static string BotchesStatusDescription => "The number of cards <c=downside>botched</c> this combat through <c=status>SMUG</c>.";
+	public static string ExtraApologiesStatusName => "Extra Apologies";
+	public static string ExtraApologiesStatusDescription => "<c=downside>Botching</c> a card grants you <c=boldPink>{0}</c> extra <c=card>Halfhearted Apology</c>.";
+	public static string ConstantApologiesStatusName => "Constant Apologies";
+	public static string ConstantApologiesStatusDescription => "Gain {0} <c=card>Halfhearted Apology</c> at the start of every turn.";
 
 	public static string ApologyCardName => "Halfhearted Apology";
 	public static string BlankApologyCardText => $"*a random {ApologyCardName} card*";
@@ -51,4 +55,6 @@ internal static class I18n
 	public static string DoSomethingCardText0 => "Play a random card from your <c=keyword>draw pile</c>.";
 	public static string DoSomethingCardTextA => "Play a random card from your <c=keyword>discard pile</c>.";
 	public static string DoSomethingCardTextB => "Play 2 random cards from your <c=keyword>draw, discard or exhaust pile</c>.";
+
+	public static string ExtraApologyCardName => "Extra Apology";
 }

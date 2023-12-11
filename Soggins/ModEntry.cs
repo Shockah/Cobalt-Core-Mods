@@ -36,10 +36,14 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	internal ExternalSprite SmugStatusSprite { get; private set; } = null!;
 	internal ExternalSprite FrogproofSprite { get; private set; } = null!;
 	internal ExternalSprite BotchesStatusSprite { get; private set; } = null!;
+	internal ExternalSprite ExtraApologiesStatusSprite { get; private set; } = null!;
+	internal ExternalSprite ConstantApologiesStatusSprite { get; private set; } = null!;
 
 	internal ExternalStatus SmugStatus { get; private set; } = null!;
 	internal ExternalStatus FrogproofingStatus { get; private set; } = null!;
 	internal ExternalStatus BotchesStatus { get; private set; } = null!;
+	internal ExternalStatus ExtraApologiesStatus { get; private set; } = null!;
+	internal ExternalStatus ConstantApologiesStatus { get; private set; } = null!;
 
 	internal ExternalAnimation SogginsMadAnimation { get; private set; } = null!;
 	internal ExternalAnimation SogginsMeekAnimation { get; private set; } = null!;
@@ -83,9 +87,13 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		typeof(BetterThanYouCard),
 		typeof(DoSomethingCard),
 	};
+	internal static readonly Type[] RareCards = new Type[]
+	{
+		typeof(ExtraApologyCard),
+	};
 
 	internal static IEnumerable<Type> AllCards
-		=> ApologyCards.Concat(CommonCards).Concat(UncommonCards);
+		=> ApologyCards.Concat(CommonCards).Concat(UncommonCards).Concat(RareCards);
 
 	internal static readonly Type[] AllArtifacts = new Type[]
 	{
@@ -132,8 +140,16 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "FrogproofIcon.png"))
 		);
 		BotchesStatusSprite = registry.RegisterArtOrThrow(
-			id: $"{GetType().Namespace}.Icon.Botches",
+			id: $"{GetType().Namespace}.Status.Botches",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "BotchesStatus.png"))
+		);
+		ExtraApologiesStatusSprite = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.Status.ExtraApologies",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "ExtraApologiesStatus.png"))
+		);
+		ConstantApologiesStatusSprite = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.Status.ConstantApologies",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "ConstantApologiesStatus.png"))
 		);
 
 		foreach (var cardType in AllArtifacts)
@@ -194,6 +210,30 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 			);
 			BotchesStatus.AddLocalisation(I18n.BotchesStatusName, I18n.BotchesStatusDescription);
 			registry.RegisterStatus(BotchesStatus);
+		}
+		{
+			ExtraApologiesStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.ExtraApologies",
+				isGood: false,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
+				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
+				ExtraApologiesStatusSprite,
+				affectedByTimestop: false
+			);
+			ExtraApologiesStatus.AddLocalisation(I18n.ExtraApologiesStatusName, I18n.ExtraApologiesStatusDescription);
+			registry.RegisterStatus(ExtraApologiesStatus);
+		}
+		{
+			ConstantApologiesStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.ConstantApologies",
+				isGood: false,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
+				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
+				ConstantApologiesStatusSprite,
+				affectedByTimestop: false
+			);
+			ConstantApologiesStatus.AddLocalisation(I18n.ConstantApologiesStatusName, I18n.ConstantApologiesStatusDescription);
+			registry.RegisterStatus(ConstantApologiesStatus);
 		}
 	}
 
