@@ -15,4 +15,5 @@ internal static class I18n
 
 	public static string SmugnessControlCardName => "Smugness Control";
 	public static string PressingButtonsCardName => "Pressing Buttons";
+	public static string TakeCoverCardName => "Take Cover!";
 }

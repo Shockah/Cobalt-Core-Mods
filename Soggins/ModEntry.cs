@@ -62,6 +62,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	{
 		typeof(SmugnessControlCard),
 		typeof(PressingButtonsCard),
+		typeof(TakeCoverCard),
 	};
 
 	public void BootMod(IModLoaderContact contact)
