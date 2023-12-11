@@ -24,16 +24,16 @@ public sealed class SmugnessControlCard : Card, IRegisterableCard, IFrogproofCar
 	private int GetCost()
 		=> upgrade switch
 		{
-			Upgrade.A => 1,
-			Upgrade.B => 0,
+			Upgrade.A => 0,
+			Upgrade.B => 1,
 			_ => 1,
 		};
 
 	private int GetTopSmug()
 		=> upgrade switch
 		{
-			Upgrade.A => 3,
-			Upgrade.B => 1,
+			Upgrade.A => 1,
+			Upgrade.B => 3,
 			_ => 2,
 		};
 
@@ -43,8 +43,8 @@ public sealed class SmugnessControlCard : Card, IRegisterableCard, IFrogproofCar
 	private int GetTempShield()
 		=> upgrade switch
 		{
-			Upgrade.A => 3,
-			Upgrade.B => 1,
+			Upgrade.A => 1,
+			Upgrade.B => 3,
 			_ => 2,
 		};
 
