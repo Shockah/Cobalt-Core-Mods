@@ -21,4 +21,5 @@ internal static class I18n
 	public static string HarnessingSmugnessCardName => "Harnessing Smugness";
 	public static string MysteriousAmmoCardName => "Mysterious Ammo";
 	public static string RunningInCirclesCardName => "Running in Circles";
+	public static string BetterSpaceMineCardName => "Better Space Mine";
 }
