@@ -65,6 +65,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		typeof(TakeCoverCard),
 		typeof(ZenCard),
 		typeof(MysteriousAmmoCard),
+		typeof(RunningInCirclesCard),
 	};
 	internal static readonly Type[] UncommonCards = new Type[]
 	{

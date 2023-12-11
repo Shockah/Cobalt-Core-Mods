@@ -20,4 +20,5 @@ internal static class I18n
 	public static string ZenCardText => "Reset your <c=status>SMUG</c>.";
 	public static string HarnessingSmugnessCardName => "Harnessing Smugness";
 	public static string MysteriousAmmoCardName => "Mysterious Ammo";
+	public static string RunningInCirclesCardName => "Running in Circles";
 }
