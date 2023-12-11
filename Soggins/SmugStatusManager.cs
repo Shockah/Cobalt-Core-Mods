@@ -73,17 +73,21 @@ internal static class SmugStatusManager
 			return SmugResult.Normal;
 	}
 
-	private static Card GenerateApology(State state, Combat combat, Rand rng)
+	public static Card GenerateAndTrackApology(State state, Combat combat, Rand rng)
 	{
-		WeightedRandom<Card> weightedRandom = new();
+		ApologyCard apology;
+		WeightedRandom<ApologyCard> weightedRandom = new();
 		foreach (var apologyType in ModEntry.ApologyCards)
 		{
-			var apology = (ApologyCard)Activator.CreateInstance(apologyType)!;
+			apology = (ApologyCard)Activator.CreateInstance(apologyType)!;
 			var weight = apology.GetApologyWeight(state, combat, TimesApologyWasGiven.GetValueOrDefault(apologyType));
 			if (weight > 0)
 				weightedRandom.Add(new(weight, apology));
 		}
-		return weightedRandom.Next(rng);
+
+		apology = weightedRandom.Next(rng);
+		TimesApologyWasGiven[apology.GetType()] = TimesApologyWasGiven.GetValueOrDefault(apology.GetType()) + 1;
+		return apology;
 	}
 
 	private static void Combat_TryPlayCard_Prefix(bool playNoMatterWhatForFree)
@@ -120,13 +124,11 @@ internal static class SmugStatusManager
 				__result.Clear();
 				for (int i = 0; i < swing; i++)
 				{
-					var apology = GenerateApology(s, combat, s.rngActions);
 					__result.Add(new AAddCard
 					{
-						card = apology,
+						card = GenerateAndTrackApology(s, combat, s.rngActions),
 						destination = CardDestination.Hand
 					});
-					TimesApologyWasGiven[apology.GetType()] = TimesApologyWasGiven.GetValueOrDefault(apology.GetType()) + 1;
 				}
 				if (Instance.Api.IsOversmug(s.ship))
 					Instance.Api.SetSmug(s.ship, Instance.Api.GetMinSmug(s.ship));

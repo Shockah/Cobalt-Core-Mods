@@ -16,6 +16,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = new();
+	private Harmony Harmony { get; set; } = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
 	public IEnumerable<DependencyEntry> Dependencies => Array.Empty<DependencyEntry>();
@@ -45,6 +46,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 
 	internal static readonly Type[] ApologyCards = new Type[]
 	{
+		typeof(BlankApologyCard),
 		typeof(AttackApologyCard),
 		typeof(ShieldApologyCard),
 		typeof(TempShieldApologyCard),
@@ -67,11 +69,15 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		typeof(MysteriousAmmoCard),
 		typeof(RunningInCirclesCard),
 		typeof(BetterSpaceMineCard),
+		typeof(ThoughtsAndPrayersCard),
 	};
 	internal static readonly Type[] UncommonCards = new Type[]
 	{
 		typeof(HarnessingSmugnessCard),
 	};
+
+	internal static IEnumerable<Type> AllCards
+		=> ApologyCards.Concat(CommonCards).Concat(UncommonCards);
 
 	public void BootMod(IModLoaderContact contact)
 	{
@@ -79,8 +85,8 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 
-		Harmony harmony = new(Name);
-		SmugStatusManager.ApplyPatches(harmony);
+		Harmony = new(Name);
+		SmugStatusManager.ApplyPatches(Harmony);
 	}
 
 	public object? GetApi(IManifest requestingMod)
@@ -240,11 +246,12 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 
 	public void LoadManifest(ICardRegistry registry)
 	{
-		foreach (var cardType in ApologyCards.Concat(CommonCards).Concat(UncommonCards))
+		foreach (var cardType in AllCards)
 		{
 			if (Activator.CreateInstance(cardType) is not IRegisterableCard card)
 				continue;
 			card.RegisterCard(registry);
+			card.ApplyPatches(Harmony);
 		}
 	}
 
