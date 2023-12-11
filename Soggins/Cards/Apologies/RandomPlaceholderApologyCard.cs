@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Shockah.Soggins;
 
 [CardMeta(dontOffer = true, rarity = Rarity.common, unreleased = true)]
-public sealed class BlankApologyCard : ApologyCard, IRegisterableCard
+public sealed class RandomPlaceholderApologyCard : ApologyCard, IRegisterableCard
 {
 	public void RegisterCard(ICardRegistry registry)
 	{

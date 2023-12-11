@@ -3,12 +3,11 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using HarmonyLib;
 using Shockah.Shared;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Shockah.Soggins;
 
 [CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
-public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard
+public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard, IFrogproofCard
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
@@ -52,9 +51,6 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard
 			_ => 3,
 		};
 
-	private static Card GenerateAndTrackApology(State state, Combat combat)
-		=> IsDuringTryPlayCard ? SmugStatusManager.GenerateAndTrackApology(state, combat, state.rngActions) : new BlankApologyCard();
-
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
@@ -66,12 +62,34 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> Enumerable.Range(0, GetAmount()).Select(i => (CardAction)new AAddCard
+	{
+		List<CardAction> actions = new()
 		{
-			card = GenerateAndTrackApology(s, c),
-			destination = CardDestination.Hand,
-			omitFromTooltips = i != 0
-		}).ToList();
+			Instance.Api.MakeAddSmugAction(s, 1)
+		};
+
+		if (IsDuringTryPlayCard)
+		{
+			for (int i = 0; i < GetAmount(); i++)
+				actions.Add(new AAddCard
+				{
+					card = SmugStatusManager.GenerateAndTrackApology(s, c, s.rngActions),
+					destination = CardDestination.Hand,
+					omitFromTooltips = i != 0
+				});
+		}
+		else
+		{
+			actions.Add(new AAddCard
+			{
+				card = new RandomPlaceholderApologyCard(),
+				destination = CardDestination.Hand,
+				amount = GetAmount()
+			});
+		}
+			
+		return actions;
+	}
 
 	private static void Combat_TryPlayCard_Prefix()
 		=> IsDuringTryPlayCard = true;

@@ -46,7 +46,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 
 	internal static readonly Type[] ApologyCards = new Type[]
 	{
-		typeof(BlankApologyCard),
+		typeof(RandomPlaceholderApologyCard),
 		typeof(AttackApologyCard),
 		typeof(ShieldApologyCard),
 		typeof(TempShieldApologyCard),
