@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Shockah.Soggins;
 
 [CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
-public sealed class MysteriousAmmoCard : Card, IRegisterableCard, IFrogproofCard
+public sealed class MysteriousAmmoCard : Card, IRegisterableCard
 {
 	public void RegisterCard(ICardRegistry registry)
 	{
