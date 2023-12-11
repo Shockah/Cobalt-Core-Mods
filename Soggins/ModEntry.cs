@@ -80,6 +80,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	{
 		typeof(HarnessingSmugnessCard),
 		typeof(SoSorryCard),
+		typeof(BetterThanYouCard),
 	};
 
 	internal static IEnumerable<Type> AllCards

@@ -31,6 +31,7 @@ internal static class I18n
 
 	public static string SmugnessControlCardName => "Smugness Control";
 	public static string PressingButtonsCardName => "Pressing Buttons";
+
 	public static string TakeCoverCardName => "Take Cover!";
 	public static string ZenCardName => "Zen";
 	public static string ZenCardText => "Reset your <c=status>SMUG</c>.";
@@ -42,4 +43,8 @@ internal static class I18n
 
 	public static string HarnessingSmugnessCardName => "Harnessing Smugness";
 	public static string SoSorryCardName => "So Sorry";
+	public static string BetterThanYouCardName => "Better Than You";
+	public static string BetterThanYouCardText0 => "Discard non <c=B79CE5>Soggins</c> cards. Draw as many <c=B79CE5>Soggins</c> cards.";
+	public static string BetterThanYouCardTextA => "Discard non <c=B79CE5>Soggins</c> cards. Draw as many <c=B79CE5>Soggins</c> cards.";
+	public static string BetterThanYouCardTextB => "Draw 10 <c=B79CE5>Soggins</c> cards.";
 }
