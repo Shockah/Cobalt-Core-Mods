@@ -87,7 +87,10 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	internal static readonly Type[] AllArtifacts = new Type[]
 	{
 		typeof(SmugArtifact),
+
 		typeof(VideoWillArtifact),
+
+		typeof(RepeatedMistakesArtifact),
 	};
 
 	public void BootMod(IModLoaderContact contact)
