@@ -77,6 +77,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal static readonly Type[] UncommonCards = new Type[]
 	{
 		typeof(HarnessingSmugnessCard),
+		typeof(SoSorryCard),
 	};
 
 	internal static IEnumerable<Type> AllCards

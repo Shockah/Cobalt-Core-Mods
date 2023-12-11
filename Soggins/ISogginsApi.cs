@@ -22,6 +22,8 @@ public interface ISogginsApi
 	double GetSmugBotchChance(Ship ship);
 	double GetSmugDoubleChance(Ship ship);
 
+	int GetTimesBotchedThisCombat(State state, Combat combat);
+
 	bool IsFrogproof(State state, Combat? combat, Card card, FrogproofHookContext context);
 	void RegisterFrogproofHook(IFrogproofHook hook, double priority);
 	void UnregisterFrogproofHook(IFrogproofHook hook);

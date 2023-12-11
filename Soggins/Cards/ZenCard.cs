@@ -24,6 +24,7 @@ public sealed class ZenCard : Card, IRegisterableCard, IFrogproofCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
+		data.art = StableSpr.cards_colorless;
 		data.description = I18n.ZenCardText;
 		data.cost = 0;
 		data.exhaust = upgrade != Upgrade.A;

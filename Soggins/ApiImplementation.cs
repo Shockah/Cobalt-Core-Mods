@@ -97,6 +97,9 @@ public sealed class ApiImplementation : ISogginsApi
 			return DoubleChances[smug.Value - GetMinSmug(ship)];
 	}
 
+	public int GetTimesBotchedThisCombat(State state, Combat combat)
+		=> SmugStatusManager.TimesBotchedThisCombat;
+
 	public bool IsFrogproof(Card card)
 		=> card is ChipShot;
 

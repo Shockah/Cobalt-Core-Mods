@@ -20,9 +20,12 @@ internal static class SmugStatusManager
 
 	private static ModEntry Instance => ModEntry.Instance;
 
+	internal static int TimesBotchedThisCombat { get; private set; } = 0;
+
+	private static readonly Dictionary<Type, int> TimesApologyWasGiven = new();
+
 	private static bool IsDuringTryPlayCard = false;
 	private static bool HasPlayNoMatterWhatForFreeSet = false;
-	private static readonly Dictionary<Type, int> TimesApologyWasGiven = new();
 
 	internal static void ApplyPatches(Harmony harmony)
 	{
@@ -120,6 +123,7 @@ internal static class SmugStatusManager
 		switch (result)
 		{
 			case SmugResult.Botch:
+				TimesBotchedThisCombat++;
 				s.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
 				__result.Clear();
 				for (int i = 0; i < swing; i++)
