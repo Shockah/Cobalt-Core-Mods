@@ -7,6 +7,7 @@ public interface ISogginsApi
 	Tooltip FrogproofCardTraitTooltip { get; }
 
 	ExternalStatus FrogproofingStatus { get; }
+	Tooltip FrogproofingTooltip { get; }
 
 	ExternalStatus SmugStatus { get; }
 	Tooltip GetSmugTooltip();

@@ -7,6 +7,8 @@ internal static class I18n
 
 	public static string SmugArtifactName => "Smug";
 	public static string SmugArtifactDescription => "Start each combat with <c=status>SMUG</c>.";
+	public static string VideoWillArtifactName => "Video Will";
+	public static string VideoWillArtifactDescription => "Start each combat with 3 <c=status>FROGPROOFING</c>.";
 
 	public static string FrogproofCardTraitName => $"Frogproof";
 	public static string FrogproofCardTraitText => $"This card ignores <c=status>SMUG</c>.";

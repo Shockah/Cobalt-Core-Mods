@@ -32,7 +32,6 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	internal ExternalCharacter SogginsCharacter { get; private set; } = null!;
 
 	internal ExternalSprite SogginsMini { get; private set; } = null!;
-	internal ExternalSprite SmugArtifactSprite { get; private set; } = null!;
 	internal ExternalSprite SmugStatusSprite { get; private set; } = null!;
 	internal ExternalSprite FrogproofSprite { get; private set; } = null!;
 	internal ExternalSprite BotchesStatusSprite { get; private set; } = null!;
@@ -85,6 +84,12 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	internal static IEnumerable<Type> AllCards
 		=> ApologyCards.Concat(CommonCards).Concat(UncommonCards);
 
+	internal static readonly Type[] AllArtifacts = new Type[]
+	{
+		typeof(SmugArtifact),
+		typeof(VideoWillArtifact),
+	};
+
 	public void BootMod(IModLoaderContact contact)
 	{
 		Instance = this;
@@ -111,10 +116,6 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 			id: $"{GetType().Namespace}.Character.Soggins.Mini",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "SogginsMini.png"))
 		);
-		SmugArtifactSprite = registry.RegisterArtOrThrow(
-			id: $"{GetType().Namespace}.Artifact.Smug",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "SmugArtifact.png"))
-		);
 		SmugStatusSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Status.Smug",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "SmugStatus.png"))
@@ -127,6 +128,13 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 			id: $"{GetType().Namespace}.Icon.Botches",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "BotchesStatus.png"))
 		);
+
+		foreach (var cardType in AllArtifacts)
+		{
+			if (Activator.CreateInstance(cardType) is not IRegisterableArtifact card)
+				continue;
+			card.RegisterArt(registry);
+		}
 	}
 
 	public void LoadManifest(IDeckRegistry registry)
@@ -281,14 +289,12 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 
 	public void LoadManifest(IArtifactRegistry registry)
 	{
-		ExternalArtifact smugnessArtifact = new(
-			globalName: $"{GetType().Namespace}.Artifact.Smugness",
-			artifactType: typeof(SmugArtifact),
-			sprite: SmugArtifactSprite,
-			ownerDeck: SogginsDeck
-		);
-		smugnessArtifact.AddLocalisation(I18n.SmugArtifactName.ToUpper(), I18n.SmugArtifactDescription);
-		registry.RegisterArtifact(smugnessArtifact);
+		foreach (var cardType in AllArtifacts)
+		{
+			if (Activator.CreateInstance(cardType) is not IRegisterableArtifact card)
+				continue;
+			card.RegisterArtifact(registry);
+		}
 	}
 
 	public void LoadManifest(ICardRegistry registry)

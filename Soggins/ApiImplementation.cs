@@ -16,6 +16,9 @@ public sealed class ApiImplementation : ISogginsApi
 	public ExternalStatus FrogproofingStatus
 		=> Instance.FrogproofingStatus;
 
+	public Tooltip FrogproofingTooltip
+		=> new TTGlossary($"status.{Instance.FrogproofingStatus.Id!.Value}");
+
 	public ExternalStatus SmugStatus
 		=> Instance.SmugStatus;
 
