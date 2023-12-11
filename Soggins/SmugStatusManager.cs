@@ -11,7 +11,7 @@ using System.Reflection.Emit;
 
 namespace Shockah.Soggins;
 
-internal static class SmugStatusManager
+internal class SmugStatusManager : HookManager<ISmugHook>
 {
 	private enum SmugResult
 	{
@@ -109,10 +109,10 @@ internal static class SmugStatusManager
 		if (HasPlayNoMatterWhatForFreeSet)
 			return;
 
-		var hook = Instance.FrogproofManager.GetHandlingHook(s, combat, __instance, FrogproofHookContext.Action);
-		if (hook is not null)
+		var handlingHook = Instance.FrogproofManager.GetHandlingHook(s, combat, __instance, FrogproofHookContext.Action);
+		if (handlingHook is not null)
 		{
-			hook.PayForFrogproof(s, combat, __instance);
+			handlingHook.PayForFrogproof(s, combat, __instance);
 			return;
 		}
 
@@ -123,6 +123,7 @@ internal static class SmugStatusManager
 			case SmugResult.Botch:
 				s.ship.Add((Status)Instance.BotchesStatus.Id!.Value);
 				s.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
+
 				__result.Clear();
 				for (int i = 0; i < swing; i++)
 				{
@@ -132,18 +133,27 @@ internal static class SmugStatusManager
 						destination = CardDestination.Hand
 					});
 				}
+
 				if (Instance.Api.IsOversmug(s.ship))
 					Instance.Api.SetSmug(s.ship, Instance.Api.GetMinSmug(s.ship));
 				else
 					Instance.Api.AddSmug(s.ship, -swing);
+
+				foreach (var hook in Instance.SmugStatusManager)
+					hook.OnCardBotchedBySmug(s, combat, __instance);
 				break;
 			case SmugResult.Double:
 				s.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
+
 				var toAdd = __result.Select(a => Mutil.DeepCopy(a)).ToList();
 				if (__result.Any(a => a is ASpawn))
 					toAdd.Insert(0, new ADroneMove { dir = 1 });
 				__result.AddRange(toAdd);
+
 				Instance.Api.AddSmug(s.ship, swing);
+
+				foreach (var hook in Instance.SmugStatusManager)
+					hook.OnCardDoubledBySmug(s, combat, __instance);
 				break;
 		}
 	}

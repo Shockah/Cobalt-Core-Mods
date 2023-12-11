@@ -25,6 +25,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	public DirectoryInfo? ModRootFolder { get; set; }
 	public ILogger? Logger { get; set; }
 
+	internal SmugStatusManager SmugStatusManager { get; private set; } = new();
 	internal FrogproofManager FrogproofManager { get; private set; } = new();
 
 	internal ExternalSprite SogginsDeckBorder { get; private set; } = ExternalSprite.GetRaw((int)StableSpr.cardShared_border_soggins);
@@ -89,6 +90,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		typeof(SmugArtifact),
 
 		typeof(VideoWillArtifact),
+		typeof(PiratedShipCadArtifact),
 
 		typeof(RepeatedMistakesArtifact),
 	};

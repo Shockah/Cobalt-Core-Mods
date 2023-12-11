@@ -10,6 +10,8 @@ internal static class I18n
 
 	public static string VideoWillArtifactName => "Video Will";
 	public static string VideoWillArtifactDescription => "Start each combat with 3 <c=status>FROGPROOFING</c>.";
+	public static string PiratedShipCadArtifactName => "Pirated Ship CAD";
+	public static string PiratedShipCadArtifactDescription => "Whenever you <c=downside>botch</c> a card, gain 1 <c=status>TEMP SHIELD</c>.";
 
 	public static string RepeatedMistakesArtifactName => "Repeated Mistakes";
 	public static string RepeatedMistakesArtifactDescription => "Start each combat with 4 <c=status>MISSILE MALFUNCTION</c>. At the end of each turn, <c=action>LAUNCH</c> a <c=midrow>SEEKER</c>.";
@@ -18,11 +20,11 @@ internal static class I18n
 	public static string FrogproofCardTraitText => $"This card ignores <c=status>SMUG</c>.";
 
 	public static string SmugStatusName => "Smug";
-	public static string SmugStatusDescription => "The current level of <c=B79CE5>Soggins'</c> smugness, which affects his chance to <c=cheevoGold>double</c> or <c=downside>botch</c> card effects.\nLow smugness will <c=downside>botch</c> more often, while high smugness will <c=cheevoGold>double</c> more often.\n<c=downside>Beware of reaching max smugness, as that WILL GUARANTEE a botch and set smugness to 0.</c>";
+	public static string SmugStatusDescription => "Affects the chance to <c=cheevoGold>double</c> or <c=downside>botch</c> cards.\nLow smug will <c=downside>botch</c> more often, while high smug will <c=cheevoGold>double</c> more often.\n<c=downside>Beware of reaching max smug, as that WILL GUARANTEE a botch and set smugness to minimum.</c>";
 	public static string FrogproofingStatusName => "Frogproofing";
 	public static string FrogproofingStatusDescription => "Whenever you play a card that is not <c=cardtrait>FROGPROOF</c>, temporarily give it <c=cardtrait>FROGPROOF</c> <c=downside>and decrease this by 1.</c>";
 	public static string BotchesStatusName => "Botches";
-	public static string BotchesStatusDescription => "The number of times an action has been <c=downside>botched</c> this combat through <c=status>SMUG</c>.";
+	public static string BotchesStatusDescription => "The number of cards <c=downside>botched</c> this combat through <c=status>SMUG</c>.";
 
 	public static string ApologyCardName => "Halfhearted Apology";
 	public static string BlankApologyCardText => $"*a random {ApologyCardName} card*";

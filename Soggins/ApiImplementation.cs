@@ -103,6 +103,12 @@ public sealed class ApiImplementation : ISogginsApi
 	public int GetTimesBotchedThisCombat(State state, Combat combat)
 		=> state.ship.Get((Status)Instance.BotchesStatus.Id!.Value);
 
+	public void RegisterSmugHook(ISmugHook hook, double priority)
+		=> Instance.SmugStatusManager.Register(hook, priority);
+
+	public void UnregisterSmugHook(ISmugHook hook)
+		=> Instance.SmugStatusManager.Unregister(hook);
+
 	public bool IsFrogproof(Card card)
 		=> card is ChipShot;
 
