@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Reflection;
 using System;
+using System.Linq;
 
 namespace Shockah.Kokoro;
 
@@ -127,18 +128,17 @@ internal static class ShipPatches
 		if (state.route is not Combat combat)
 			return statusEffects;
 
-		var result = new Dictionary<Status, int>(statusEffects);
-
-		foreach (var (status, amount) in statusEffects)
-			if (!Instance.StatusRenderManager.ShouldShowStatus(state, combat, ship, status, amount))
-				result.Remove(status);
-
-		foreach (var hook in Instance.StatusRenderManager)
-			foreach (var status in hook.GetExtraStatusesToShow(state, combat, ship))
-				if (!result.ContainsKey(status))
-					result.Add(status, ship.Get(status));
-
-		return result;
+		return statusEffects
+			.Select(kvp => (Status: kvp.Key, Priority: 0.0, Amount: kvp.Value))
+			.Concat(
+				Instance.StatusRenderManager
+					.SelectMany(hook => hook.GetExtraStatusesToShow(state, combat, ship))
+					.Select(e => (Status: e.Status, Priority: e.Priority, Amount: ship.Get(e.Status)))
+			)
+			.OrderByDescending(e => e.Priority)
+			.DistinctBy(e => e.Status)
+			.Where(e => Instance.StatusRenderManager.ShouldShowStatus(state, combat, ship, e.Status, e.Amount))
+			.ToDictionary(e => e.Status, e => e.Amount);
 	}
 
 	private static IEnumerable<CodeInstruction> Ship_RenderStatusRow_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)

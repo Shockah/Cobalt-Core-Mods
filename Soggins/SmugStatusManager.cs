@@ -73,10 +73,10 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 		return Math.Max(amount + extraApologies, 1);
 	}
 
-	public IEnumerable<Status> GetExtraStatusesToShow(State state, Combat combat, Ship ship)
+	public IEnumerable<(Status Status, double Priority)> GetExtraStatusesToShow(State state, Combat combat, Ship ship)
 	{
 		if (Instance.Api.GetSmug(ship) is not null)
-			yield return (Status)Instance.SmugStatus.Id!.Value;
+			yield return (Status: (Status)Instance.SmugStatus.Id!.Value, Priority: 10);
 	}
 
 	public bool? ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)

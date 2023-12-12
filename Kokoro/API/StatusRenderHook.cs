@@ -14,7 +14,7 @@ public partial interface IKokoroApi
 
 public interface IStatusRenderHook
 {
-	IEnumerable<Status> GetExtraStatusesToShow(State state, Combat combat, Ship ship) => Enumerable.Empty<Status>();
+	IEnumerable<(Status Status, double Priority)> GetExtraStatusesToShow(State state, Combat combat, Ship ship) => Enumerable.Empty<(Status Status, double Priority)>();
 	bool? ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount) => null;
 	bool? ShouldOverrideStatusRenderingAsBars(State state, Combat combat, Ship ship, Status status, int amount) => null;
 	(IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(State state, Combat combat, Ship ship, Status status, int amount) => new();
