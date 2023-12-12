@@ -1,5 +1,6 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shockah.Kokoro;
@@ -17,6 +18,81 @@ public sealed class ApiImplementation : IKokoroApi
 	#region Generic
 	public TimeSpan TotalGameTime
 		=> Instance.TotalGameTime;
+	#endregion
+
+	#region ExtensionData
+	private static T ConvertExtensionData<T>(object o) where T : notnull
+	{
+		if (typeof(T).IsInstanceOfType(o))
+			return (T)o;
+		if (typeof(T) == typeof(int))
+			return (T)(object)Convert.ToInt32(o);
+		else if (typeof(T) == typeof(long))
+			return (T)(object)Convert.ToInt64(o);
+		else if (typeof(T) == typeof(short))
+			return (T)(object)Convert.ToInt16(o);
+		else if (typeof(T) == typeof(byte))
+			return (T)(object)Convert.ToByte(o);
+		else if (typeof(T) == typeof(bool))
+			return (T)(object)Convert.ToBoolean(o);
+		else if (typeof(T) == typeof(float))
+			return (T)(object)Convert.ToSingle(o);
+		else if (typeof(T) == typeof(double))
+			return (T)(object)Convert.ToDouble(o);
+		else
+			return (T)o;
+	}
+
+	public T GetExtensionData<T>(object o, string key) where T : notnull
+	{
+		if (!Instance.ExtensionDataStorage.TryGetValue(o, out var extensionData))
+			throw new KeyNotFoundException($"Object {o} does not contain extension data with key `{key}`");
+		if (!extensionData.TryGetValue(key, out var data))
+			throw new KeyNotFoundException($"Object {o} does not contain extension data with key `{key}`");
+		return ConvertExtensionData<T>(data);
+	}
+
+	public bool TryGetExtensionData<T>(object o, string key, [MaybeNullWhen(false)] out T data) where T : notnull
+	{
+		if (!Instance.ExtensionDataStorage.TryGetValue(o, out var extensionData))
+		{
+			data = default;
+			return false;
+		}
+		if (!extensionData.TryGetValue(key, out var rawData))
+		{
+			data = default;
+			return false;
+		}
+		data = ConvertExtensionData<T>(rawData);
+		return true;
+	}
+
+	public bool ContainsExtensionData(object o, string key)
+	{
+		if (!Instance.ExtensionDataStorage.TryGetValue(o, out var extensionData))
+			return false;
+		if (!extensionData.TryGetValue(key, out _))
+			return false;
+		return true;
+	}
+
+	public void SetExtensionData<T>(object o, string key, T data) where T : notnull
+	{
+		if (!Instance.ExtensionDataStorage.TryGetValue(o, out var extensionData))
+		{
+			extensionData = new();
+			Instance.ExtensionDataStorage.AddOrUpdate(o, extensionData);
+		}
+		extensionData[key] = data;
+	}
+
+	public void RemoveExtensionData(object o, string key)
+	{
+		if (!Instance.ExtensionDataStorage.TryGetValue(o, out var extensionData))
+			return;
+		extensionData.Remove(key);
+	}
 	#endregion
 
 	#region WormStatus
@@ -46,20 +122,6 @@ public sealed class ApiImplementation : IKokoroApi
 		=> Instance.OxidationStatusManager.Unregister(hook);
 	#endregion
 
-	#region MidrowTags
-	public void TagMidrowObject(Combat combat, StuffBase @object, string tag, object? tagValue = null)
-		=> MidrowTracker.ObtainMidrowTracker(combat).ObtainEntry(@object).Tags[tag] = tagValue;
-
-	public void UntagMidrowObject(Combat combat, StuffBase @object, string tag)
-		=> MidrowTracker.ObtainMidrowTracker(combat).ObtainEntry(@object).Tags.Remove(tag);
-
-	public bool IsMidrowObjectTagged(Combat combat, StuffBase @object, string tag)
-		=> MidrowTracker.ObtainMidrowTracker(combat).ObtainEntry(@object).Tags.ContainsKey(tag);
-
-	public bool TryGetMidrowObjectTag(Combat combat, StuffBase @object, string tag, [MaybeNullWhen(false)] out object? tagValue)
-		=> MidrowTracker.ObtainMidrowTracker(combat).ObtainEntry(@object).Tags.TryGetValue(tag, out tagValue);
-	#endregion
-
 	#region MidrowScorching
 	public Tooltip GetScorchingTooltip(int? value = null)
 		=> value is null
@@ -67,12 +129,12 @@ public sealed class ApiImplementation : IKokoroApi
 			: new CustomTTGlossary(CustomTTGlossary.GlossaryType.midrow, () => StableSpr.icons_overheat, () => I18n.ScorchingGlossaryName, () => I18n.ScorchingGlossaryDescription, new Func<object>[] { () => value.Value });
 
 	public int GetScorchingStatus(Combat combat, StuffBase @object)
-		=> TryGetMidrowObjectTag(combat, @object, ModEntry.ScorchingTag, out var value) && value is int intValue ? intValue : 0;
+		=> TryGetExtensionData(@object, ModEntry.ScorchingTag, out int value) ? value : 0;
 
 	public void SetScorchingStatus(Combat combat, StuffBase @object, int value)
 	{
 		int oldValue = GetScorchingStatus(combat, @object);
-		TagMidrowObject(combat, @object, ModEntry.ScorchingTag, value);
+		SetExtensionData(@object, ModEntry.ScorchingTag, value);
 		foreach (var hook in Instance.MidrowScorchingManager)
 			hook.OnScorchingChange(combat, @object, oldValue, value);
 	}

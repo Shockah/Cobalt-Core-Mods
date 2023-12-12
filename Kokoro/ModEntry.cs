@@ -3,10 +3,13 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using CobaltCoreModding.Definitions.ModManifests;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
@@ -16,6 +19,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 	public static ModEntry Instance { get; private set; } = null!;
 	internal readonly ApiImplementation Api = new();
+	internal readonly ConditionalWeakTable<object, Dictionary<string, object>> ExtensionDataStorage = new();
 	private Harmony Harmony = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
@@ -52,6 +56,8 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		StuffBasePatches.Apply(Harmony);
 
 		CustomTTGlossary.Apply(Harmony);
+
+		SetupSerializationChanges();
 	}
 
 	public void FinalizePreperations(IPrelaunchContactPoint prelaunchManifest)
@@ -67,4 +73,10 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 	public void LoadManifest(IStatusRegistry registry)
 		=> Content.RegisterStatuses(registry);
+
+	private void SetupSerializationChanges()
+	{
+		JSONSettings.indented.ContractResolver = new ConditionalWeakTableExtensionDataContractResolver(JSONSettings.indented.ContractResolver ?? new DefaultContractResolver(), ExtensionDataStorage);
+		JSONSettings.serializer.ContractResolver = new ConditionalWeakTableExtensionDataContractResolver(JSONSettings.serializer.ContractResolver ?? new DefaultContractResolver(), ExtensionDataStorage);
+	}
 }
