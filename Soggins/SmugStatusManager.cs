@@ -252,6 +252,10 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 					.ToList();
 				if (actions.Any(a => a is ASpawn))
 					toAdd.Add(new ADroneMove { dir = 1 });
+				toAdd.Insert(0, new AShakeShip
+				{
+					statusPulse = (Status)Instance.SmugStatus.Id!.Value
+				});
 				toAdd.Insert(0, new AStatus
 				{
 					status = (Status)Instance.SmugStatus.Id!.Value,
