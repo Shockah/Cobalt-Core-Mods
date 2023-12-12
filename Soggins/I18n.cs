@@ -10,7 +10,7 @@ internal static class I18n
 
 	public static string VideoWillArtifactName => "Video Will";
 	public static string VideoWillArtifactDescription => "Start each combat with 3 <c=status>FROGPROOFING</c>.";
-	public static string PiratedShipCadArtifactName => "Pirated Ship CAD";
+	public static string PiratedShipCadArtifactName => "Pirated C.A.T.";
 	public static string PiratedShipCadArtifactDescription => "Whenever you <c=downside>botch</c> a card, gain 1 <c=status>TEMP SHIELD</c>.";
 
 	public static string RepeatedMistakesArtifactName => "Repeated Mistakes";
