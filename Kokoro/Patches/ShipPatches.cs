@@ -17,6 +17,42 @@ internal static class ShipPatches
 
 	private static (IReadOnlyList<Color> Colors, int? BarTickWidth)? LastStatusBarRenderingOverride;
 
+	private static readonly Lazy<Func<Ship, G, Status, int, int>> GetStatusSizeBoxWidthMethod = new(() =>
+	{
+		var statusPlanType = AccessTools.Inner(typeof(Ship), "StatusPlan");
+		var boxWidth = AccessTools.DeclaredField(statusPlanType, "boxWidth");
+		var getStatusSizeMethod = AccessTools.DeclaredMethod(typeof(Ship), "GetStatusSize");
+
+		DynamicMethod method = new("GetStatusSizeBoxWidth", typeof(int), new Type[] { typeof(Ship), typeof(G), typeof(Status), typeof(int) });
+		var il = method.GetILGenerator();
+		il.Emit(OpCodes.Ldarg_0);
+		il.Emit(OpCodes.Ldarg_1);
+		il.Emit(OpCodes.Ldarg_2);
+		il.Emit(OpCodes.Ldarg_3);
+		il.Emit(OpCodes.Call, getStatusSizeMethod);
+		il.Emit(OpCodes.Ldfld, boxWidth);
+		il.Emit(OpCodes.Ret);
+		return method.CreateDelegate<Func<Ship, G, Status, int, int>>();
+	});
+
+	private static readonly Lazy<Action<Ship, G, string, List<KeyValuePair<Status, int>>, int, int, int>> RenderStatusRowMethod = new(() =>
+	{
+		var renderStatusRowMethod = AccessTools.DeclaredMethod(typeof(Ship), "RenderStatusRow");
+
+		DynamicMethod method = new("RenderStatusRow", typeof(void), new Type[] { typeof(Ship), typeof(G), typeof(string), typeof(List<KeyValuePair<Status, int>>), typeof(int), typeof(int), typeof(int) });
+		var il = method.GetILGenerator();
+		il.Emit(OpCodes.Ldarg_0);
+		il.Emit(OpCodes.Ldarg_1);
+		il.Emit(OpCodes.Ldarg_2);
+		il.Emit(OpCodes.Ldarg_3);
+		il.Emit(OpCodes.Ldarg, 4);
+		il.Emit(OpCodes.Ldarg, 5);
+		il.Emit(OpCodes.Ldarg, 6);
+		il.Emit(OpCodes.Call, renderStatusRowMethod);
+		il.Emit(OpCodes.Ret);
+		return method.CreateDelegate<Action<Ship, G, string, List<KeyValuePair<Status, int>>, int, int, int>>();
+	});
+
 	public static void Apply(Harmony harmony)
 	{
 		harmony.TryPatch(
@@ -95,15 +131,9 @@ internal static class ShipPatches
 
 	private static bool Ship_RenderStatuses_Prefix(Ship __instance, G g, string keyPrefix)
 	{
-		// TODO: use a publicizer, or emit some IL to do this instead. performance must suck
-		var statusPlanType = AccessTools.Inner(typeof(Ship), "StatusPlan");
-		var boxWidthField = AccessTools.DeclaredField(statusPlanType, "boxWidth");
-		var getStatusSizeMethod = AccessTools.DeclaredMethod(typeof(Ship), "GetStatusSize");
-		var renderStatusRowMethod = AccessTools.DeclaredMethod(typeof(Ship), "RenderStatusRow");
-
 		var combat = g.state.route as Combat ?? DB.fakeCombat;
-
 		var toRender = __instance.statusEffects
+			.Where(kvp => kvp.Key != Status.shield && kvp.Key != Status.tempShield)
 			.Select(kvp => (Status: kvp.Key, Priority: 0.0, Amount: kvp.Value))
 			.Concat(
 				Instance.StatusRenderManager
@@ -124,7 +154,7 @@ internal static class ShipPatches
 			if (currentRow.Count == 0)
 				return;
 
-			renderStatusRowMethod.Invoke(__instance, new object?[] { g, keyPrefix, currentRow, rowIndex, 0, currentRow.Count });
+			RenderStatusRowMethod.Value(__instance, g, keyPrefix, currentRow, rowIndex, 0, currentRow.Count);
 
 			currentRow.Clear();
 			currentRowLength = 0;
@@ -133,8 +163,7 @@ internal static class ShipPatches
 
 		foreach (var kvp in toRender)
 		{
-			var statusSize = getStatusSizeMethod.Invoke(__instance, new object?[] { g, kvp.Key, kvp.Value });
-			int boxWidth = (int)boxWidthField.GetValue(statusSize)!;
+			var boxWidth = GetStatusSizeBoxWidthMethod.Value(__instance, g, kvp.Key, kvp.Value);
 
 			if (currentRowLength + boxWidth > 142)
 				FinishRow();

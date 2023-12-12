@@ -62,11 +62,16 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 
 	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, List<Tooltip> tooltips)
 	{
-		if (status != (Status)Instance.DoublersLuckStatus.Id!.Value)
-			return tooltips;
-
-		tooltips.Clear();
-		tooltips.Add(new TTGlossary($"status.{Instance.DoublersLuckStatus.Id!.Value}", amount + 1));
+		if (status == (Status)Instance.SmugStatus.Id!.Value)
+		{
+			if (StateExt.Instance is { } state)
+				tooltips.Add(new TTText(string.Format(I18n.SmugStatusCurrentChancesDescription, Instance.Api.GetSmugDoubleChance(state.ship) * 100, Instance.Api.GetSmugBotchChance(state.ship) * 100)));
+		}
+		else if (status == (Status)Instance.DoublersLuckStatus.Id!.Value)
+		{
+			tooltips.Clear();
+			tooltips.Add(new TTGlossary($"status.{Instance.DoublersLuckStatus.Id!.Value}", amount + 1));
+		}
 		return tooltips;
 	}
 }
