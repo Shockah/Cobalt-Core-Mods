@@ -31,19 +31,19 @@ internal static class ShipPatches
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Ship), "GetStatusSize"),
+			postfix: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_GetStatusSize_Postfix))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), "RenderStatuses"),
-			transpiler: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatuses_Transpiler))
+			prefix: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatuses_Prefix))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), "RenderStatusRow"),
 			prefix: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatusRow_Postfix)),
 			transpiler: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatusRow_Transpiler))
-		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), "GetStatusSize"),
-			postfix: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_GetStatusSize_Postfix))
 		);
 	}
 
@@ -59,11 +59,6 @@ internal static class ShipPatches
 	private static void Ship_OnAfterTurn_Prefix_First(Ship __instance, State s)
 	{
 		Instance.OxidationStatusManager.OnTurnEnd(s, __instance);
-	}
-
-	private static void Ship_RenderStatusRow_Postfix(Ship __instance, G g)
-	{
-		Instance.OxidationStatusManager.ModifyStatusTooltips(__instance, g);
 	}
 
 	private static void Ship_GetStatusSize_Postfix(Ship __instance, Status status, int amount, ref object __result)
@@ -98,27 +93,56 @@ internal static class ShipPatches
 		boxWidthField.SetValue(__result, 17 + @override.Colors.Count * (barTickWidth + 1));
 	}
 
-	private static IEnumerable<CodeInstruction> Ship_RenderStatuses_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	private static bool Ship_RenderStatuses_Prefix(Ship __instance, G g, string keyPrefix)
 	{
-		try
+		// TODO: use a publicizer, or emit some IL to do this instead. performance must suck
+		var statusPlanType = AccessTools.Inner(typeof(Ship), "StatusPlan");
+		var boxWidthField = AccessTools.DeclaredField(statusPlanType, "boxWidth");
+		var getStatusSizeMethod = AccessTools.DeclaredMethod(typeof(Ship), "GetStatusSize");
+		var renderStatusRowMethod = AccessTools.DeclaredMethod(typeof(Ship), "RenderStatusRow");
+
+		var combat = g.state.route as Combat ?? DB.fakeCombat;
+
+		var toRender = __instance.statusEffects
+			.Select(kvp => (Status: kvp.Key, Priority: 0.0, Amount: kvp.Value))
+			.Concat(
+				Instance.StatusRenderManager
+					.SelectMany(hook => hook.GetExtraStatusesToShow(g.state, combat, __instance))
+					.Select(e => (Status: e.Status, Priority: e.Priority, Amount: __instance.Get(e.Status)))
+			)
+			.OrderByDescending(e => e.Priority)
+			.DistinctBy(e => e.Status)
+			.Where(e => Instance.StatusRenderManager.ShouldShowStatus(g.state, combat, __instance, e.Status, e.Amount))
+			.Select(e => new KeyValuePair<Status, int>(e.Status, e.Amount));
+
+		List<KeyValuePair<Status, int>> currentRow = new();
+		int currentRowLength = 0;
+		int rowIndex = 0;
+
+		void FinishRow()
 		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
-					ILMatches.Ldarg(0),
-					ILMatches.Ldfld("statusEffects")
-				)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_RenderStatuses_Transpiler_ModifyStatusesToShow)))
-				)
-				.AllElements();
+			if (currentRow.Count == 0)
+				return;
+
+			renderStatusRowMethod.Invoke(__instance, new object?[] { g, keyPrefix, currentRow, rowIndex, 0, currentRow.Count });
+
+			currentRow.Clear();
+			currentRowLength = 0;
+			rowIndex++;
 		}
-		catch (Exception ex)
+
+		foreach (var kvp in toRender)
 		{
-			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
-			return instructions;
+			var statusSize = getStatusSizeMethod.Invoke(__instance, new object?[] { g, kvp.Key, kvp.Value });
+			int boxWidth = (int)boxWidthField.GetValue(statusSize)!;
+
+			if (currentRowLength + boxWidth > 142)
+				FinishRow();
+			currentRow.Add(kvp);
+			currentRowLength += boxWidth;
 		}
+		FinishRow();
+		return false;
 	}
 
 	private static Dictionary<Status, int> Ship_RenderStatuses_Transpiler_ModifyStatusesToShow(Dictionary<Status, int> statusEffects, Ship ship)
@@ -139,6 +163,11 @@ internal static class ShipPatches
 			.DistinctBy(e => e.Status)
 			.Where(e => Instance.StatusRenderManager.ShouldShowStatus(state, combat, ship, e.Status, e.Amount))
 			.ToDictionary(e => e.Status, e => e.Amount);
+	}
+
+	private static void Ship_RenderStatusRow_Postfix(Ship __instance, G g)
+	{
+		Instance.OxidationStatusManager.ModifyStatusTooltips(__instance, g);
 	}
 
 	private static IEnumerable<CodeInstruction> Ship_RenderStatusRow_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
