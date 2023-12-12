@@ -60,6 +60,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		CombatPatches.Apply(Harmony);
 		MGPatches.Apply(Harmony);
 		ShipPatches.Apply(Harmony);
+		StatusMetaPatches.Apply(Harmony);
 		StuffBasePatches.Apply(Harmony);
 
 		CustomTTGlossary.Apply(Harmony);

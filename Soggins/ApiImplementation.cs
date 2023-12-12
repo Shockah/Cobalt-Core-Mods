@@ -48,10 +48,12 @@ public sealed class ApiImplementation : ISogginsApi
 		var smug = GetSmug(ship);
 		if (smug is null)
 			return 0;
-		else if (smug.Value < GetMinSmug(ship))
-			return Instance.Config.BotchChances[0];
+		else if (ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0)
+			return 0;
 		else if (smug.Value > GetMaxSmug(ship))
 			return 1; // oversmug
+		else if (smug.Value < GetMinSmug(ship))
+			return Instance.Config.BotchChances[0];
 		else
 			return Instance.Config.BotchChances[smug.Value - GetMinSmug(ship)];
 	}
@@ -61,12 +63,14 @@ public sealed class ApiImplementation : ISogginsApi
 		var smug = GetSmug(ship);
 		if (smug is null)
 			return 0;
-		else if (smug.Value < GetMinSmug(ship))
-			return Instance.Config.DoubleChances[0];
+		else if (ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0)
+			return 1;
 		else if (smug.Value > GetMaxSmug(ship))
 			return 0; // oversmug
+		else if (smug.Value < GetMinSmug(ship))
+			return Instance.Config.DoubleChances[0] * (ship.Get((Status)Instance.DoublersLuckStatus.Id!.Value) + 1);
 		else
-			return Instance.Config.DoubleChances[smug.Value - GetMinSmug(ship)];
+			return Instance.Config.DoubleChances[smug.Value - GetMinSmug(ship)] * (ship.Get((Status)Instance.DoublersLuckStatus.Id!.Value) + 1);
 	}
 
 	public int GetTimesBotchedThisCombat(State state, Combat combat)

@@ -11,7 +11,7 @@ using System.Reflection.Emit;
 
 namespace Shockah.Soggins;
 
-internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRenderHook
+internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook
 {
 	private enum SmugResult
 	{
@@ -28,7 +28,6 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 	internal SmugStatusManager() : base()
 	{
 		Register(this, 0);
-		Instance.KokoroApi.RegisterStatusRenderHook(this, 0);
 	}
 
 	internal static void ApplyPatches(Harmony harmony)
@@ -62,6 +61,11 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.OnAfterTurn)),
+			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(SmugStatusManager), nameof(Ship_OnAfterTurn_Prefix_First)), Priority.First)
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
 			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(SmugStatusManager), nameof(Card_GetAllTooltips_Postfix)), Priority.Normal - 1)
 		);
@@ -71,49 +75,6 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 	{
 		int extraApologies = state.ship.Get((Status)Instance.ExtraApologiesStatus.Id!.Value);
 		return Math.Max(amount + extraApologies, 1);
-	}
-
-	public IEnumerable<(Status Status, double Priority)> GetExtraStatusesToShow(State state, Combat combat, Ship ship)
-	{
-		if (Instance.Api.GetSmug(ship) is not null)
-			yield return (Status: (Status)Instance.SmugStatus.Id!.Value, Priority: 10);
-	}
-
-	public bool? ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)
-		=> status == (Status)Instance.SmuggedStatus.Id!.Value ? false : null;
-
-	public bool? ShouldOverrideStatusRenderingAsBars(State state, Combat combat, Ship ship, Status status, int amount)
-		=> status == (Status)Instance.SmugStatus.Id!.Value ? true : null;
-
-	public (IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(State state, Combat combat, Ship ship, Status status, int amount)
-	{
-		var barCount = Instance.Api.GetMaxSmug(ship) - Instance.Api.GetMinSmug(ship) + 1;
-		var colors = new Color[barCount];
-
-		if (Instance.Api.IsOversmug(ship))
-		{
-			Array.Fill(colors, Colors.downside);
-			return (colors, null);
-		}
-
-		for (int barIndex = 0; barIndex < colors.Length; barIndex++)
-		{
-			var smugIndex = barIndex + Instance.Api.GetMinSmug(ship);
-			if (smugIndex == 0)
-			{
-				colors[barIndex] = Colors.white;
-				continue;
-			}
-
-			var smug = Instance.Api.GetSmug(ship) ?? 0;
-			if (smug < 0 && smugIndex >= smug && smugIndex < 0)
-				colors[barIndex] = Colors.downside;
-			else if (smug > 0 && smugIndex <= smug && smugIndex > 0)
-				colors[barIndex] = Colors.cheevoGold;
-			else
-				colors[barIndex] = Instance.KokoroApi.DefaultInactiveStatusBarColor;
-		}
-		return (colors, null);
 	}
 
 	private static SmugResult GetSmugResult(Ship ship, Rand rng)
@@ -266,16 +227,20 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 					.ToList();
 				if (actions.Any(a => a is ASpawn))
 					toAdd.Add(new ADroneMove { dir = 1 });
+
+				bool hasDoubleTime = state.ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0;
 				toAdd.Insert(0, new AShakeShip
 				{
-					statusPulse = (Status)Instance.SmugStatus.Id!.Value
+					statusPulse = hasDoubleTime ? (Status)Instance.DoubleTimeStatus.Id!.Value : (Status)Instance.SmugStatus.Id!.Value
 				});
-				toAdd.Insert(0, new AStatus
-				{
-					status = (Status)Instance.SmugStatus.Id!.Value,
-					statusAmount = swing,
-					targetPlayer = true
-				});
+				if (!hasDoubleTime)
+					toAdd.Insert(0, new AStatus
+					{
+						status = (Status)Instance.SmugStatus.Id!.Value,
+						statusAmount = swing,
+						targetPlayer = true
+					});
+
 				actions.InsertRange(0, toAdd);
 
 				foreach (var hook in Instance.SmugStatusManager)
@@ -306,6 +271,24 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 		if (__instance != s.ship)
 			return;
 
+		if (s.ship.Get((Status)Instance.BidingTimeStatus.Id!.Value) > 0)
+		{
+			c.Queue(new AStatus
+			{
+				status = (Status)Instance.DoubleTimeStatus.Id!.Value,
+				statusAmount = 1,
+				targetPlayer = true
+			});
+
+			if (s.ship.Get(Status.timeStop) <= 0)
+				c.Queue(new AStatus
+				{
+					status = (Status)Instance.BidingTimeStatus.Id!.Value,
+					statusAmount = -1,
+					targetPlayer = true
+				});
+		}
+
 		int constantApologies = s.ship.Get((Status)Instance.ConstantApologiesStatus.Id!.Value);
 		for (int i = 0; i < constantApologies; i++)
 			c.Queue(new AAddCard
@@ -314,6 +297,23 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 				destination = CardDestination.Hand,
 				statusPulse = (Status)Instance.ConstantApologiesStatus.Id!.Value
 			});
+	}
+
+	private static void Ship_OnAfterTurn_Prefix_First(Ship __instance, State s, Combat c)
+	{
+		if (__instance != s.ship)
+			return;
+
+		if (s.ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0)
+		{
+			c.Queue(new AStatus
+			{
+				status = (Status)Instance.DoubleTimeStatus.Id!.Value,
+				mode = AStatusMode.Set,
+				statusAmount = 0,
+				targetPlayer = true
+			});
+		}
 	}
 
 	private static void Card_GetAllTooltips_Postfix(Card __instance, G g, State s, bool showCardTraits, ref IEnumerable<Tooltip> __result)

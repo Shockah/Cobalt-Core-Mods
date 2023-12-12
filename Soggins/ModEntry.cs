@@ -30,6 +30,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 
 	internal SmugStatusManager SmugStatusManager { get; private set; } = null!;
 	internal FrogproofManager FrogproofManager { get; private set; } = null!;
+	internal StatusRenderManager StatusRenderManager { get; private set; } = null!;
 
 	internal ExternalSprite SogginsDeckBorder { get; private set; } = ExternalSprite.GetRaw((int)StableSpr.cardShared_border_soggins);
 	internal ExternalDeck SogginsDeck { get; private set; } = null!;
@@ -41,6 +42,9 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	internal ExternalSprite BotchesStatusSprite { get; private set; } = null!;
 	internal ExternalSprite ExtraApologiesStatusSprite { get; private set; } = null!;
 	internal ExternalSprite ConstantApologiesStatusSprite { get; private set; } = null!;
+	internal ExternalSprite BidingTimeStatusSprite { get; private set; } = null!;
+	internal ExternalSprite DoubleTimeStatusSprite { get; private set; } = null!;
+	internal ExternalSprite DoublersLuckStatusSprite { get; private set; } = null!;
 
 	internal ExternalStatus SmuggedStatus { get; private set; } = null!;
 	internal ExternalStatus SmugStatus { get; private set; } = null!;
@@ -48,6 +52,9 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	internal ExternalStatus BotchesStatus { get; private set; } = null!;
 	internal ExternalStatus ExtraApologiesStatus { get; private set; } = null!;
 	internal ExternalStatus ConstantApologiesStatus { get; private set; } = null!;
+	internal ExternalStatus BidingTimeStatus { get; private set; } = null!;
+	internal ExternalStatus DoubleTimeStatus { get; private set; } = null!;
+	internal ExternalStatus DoublersLuckStatus { get; private set; } = null!;
 
 	internal ExternalAnimation SogginsMadAnimation { get; private set; } = null!;
 	internal ExternalAnimation SogginsMeekAnimation { get; private set; } = null!;
@@ -96,6 +103,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	{
 		typeof(ExtraApologyCard),
 		typeof(DoSomethingCard),
+		typeof(ImAlwaysRightCard),
 	};
 
 	internal static IEnumerable<Type> AllCards
@@ -123,6 +131,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 
 		SmugStatusManager = new();
 		FrogproofManager = new();
+		StatusRenderManager = new();
 
 		Harmony = new(Name);
 		FrogproofManager.ApplyPatches(Harmony);
@@ -130,9 +139,22 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		CustomTTGlossary.ApplyPatches(Harmony);
 	}
 
+	public void FinalizePreperations(IPrelaunchContactPoint prelaunchManifest)
+	{
+		DBExtenderPatches.ApplyLatePatches(Harmony);
+	}
+
+	public object? GetApi(IManifest requestingMod)
+		=> new ApiImplementation();
+
 	private Config ObtainConfig()
 	{
-		var serializer = JsonSerializer.Create(JSONSettings.indented);
+		var serializer = JsonSerializer.Create(new JsonSerializerSettings
+		{
+			TypeNameHandling = TypeNameHandling.Auto,
+			Formatting = Formatting.Indented,
+			ObjectCreationHandling = ObjectCreationHandling.Replace
+		});
 		var path = Path.Combine(ModRootFolder!.FullName, "config.json");
 		Config? config = null;
 
@@ -156,14 +178,6 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 
 		return config;
 	}
-
-	public void FinalizePreperations(IPrelaunchContactPoint prelaunchManifest)
-	{
-		DBExtenderPatches.ApplyLatePatches(Harmony);
-	}
-
-	public object? GetApi(IManifest requestingMod)
-		=> new ApiImplementation();
 
 	public void LoadManifest(ISpriteRegistry registry)
 	{
@@ -190,6 +204,18 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		ConstantApologiesStatusSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Status.ConstantApologies",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "ConstantApologiesStatus.png"))
+		);
+		BidingTimeStatusSprite = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.Status.BidingTime",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "BidingTimeStatus.png"))
+		);
+		DoubleTimeStatusSprite = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.Status.DoubleTime",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "DoubleTimeStatus.png"))
+		);
+		DoublersLuckStatusSprite = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.Status.DoublersLuck",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "DoublersLuckStatus.png"))
 		);
 
 		foreach (var cardType in AllArtifacts)
@@ -287,9 +313,42 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 			ConstantApologiesStatus.AddLocalisation(I18n.ConstantApologiesStatusName, I18n.ConstantApologiesStatusDescription);
 			registry.RegisterStatus(ConstantApologiesStatus);
 		}
-
-		// Biding Time: 639bff
-		// Double Time: cc503d
+		{
+			BidingTimeStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.BidingTime",
+				isGood: false,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF639BFF)),
+				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF639BFF)),
+				BidingTimeStatusSprite,
+				affectedByTimestop: true
+			);
+			BidingTimeStatus.AddLocalisation(I18n.BidingTimeStatusName, I18n.BidingTimeStatusDescription);
+			registry.RegisterStatus(BidingTimeStatus);
+		}
+		{
+			DoubleTimeStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.DoubleTime",
+				isGood: false,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFCC503D)),
+				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFCC503D)),
+				DoubleTimeStatusSprite,
+				affectedByTimestop: false
+			);
+			DoubleTimeStatus.AddLocalisation(I18n.DoubleTimeStatusName, I18n.DoubleTimeStatusDescription);
+			registry.RegisterStatus(DoubleTimeStatus);
+		}
+		{
+			DoublersLuckStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.DoublersLuck",
+				isGood: false,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF0C560E)),
+				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF0C560E)),
+				DoublersLuckStatusSprite,
+				affectedByTimestop: false
+			);
+			DoublersLuckStatus.AddLocalisation(I18n.DoublersLuckStatusName, I18n.DoublersLuckStatusDescription);
+			registry.RegisterStatus(DoublersLuckStatus);
+		}
 	}
 
 	public void LoadManifest(IAnimationRegistry registry)

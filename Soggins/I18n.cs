@@ -31,6 +31,12 @@ internal static class I18n
 	public static string ExtraApologiesStatusDescription => "<c=downside>Botching</c> a card grants you <c=boldPink>{0}</c> extra <c=card>Halfhearted Apology</c>.";
 	public static string ConstantApologiesStatusName => "Constant Apologies";
 	public static string ConstantApologiesStatusDescription => "Gain {0} <c=card>Halfhearted Apology</c> at the start of every turn.";
+	public static string BidingTimeStatusName => "Biding Time";
+	public static string BidingTimeStatusDescription => "Gain <c=status>DOUBLE TIME</c> at the start of your turn and <c=downside>decrease this by 1.</c>";
+	public static string DoubleTimeStatusName => "Double Time";
+	public static string DoubleTimeStatusDescription => "All your card effects this turn are <c=cheevoGold>doubled</c> and ignore <c=status>SMUG</c>. <c=downside>Lose this at the end of your turn.</c>";
+	public static string DoublersLuckStatusName => "Doubler's Luck";
+	public static string DoublersLuckStatusDescription => "Your chance to <c=cheevoGold>double</c> card effects through <c=status>SMUG</c> is {0}x higher.";
 
 	public static string ApologyCardName => "Halfhearted Apology";
 	public static string BlankApologyCardText => $"*a random {ApologyCardName} card*";
@@ -63,6 +69,7 @@ internal static class I18n
 	public static string DoSomethingCardText0 => "Play a random card from your <c=keyword>draw pile</c>.";
 	public static string DoSomethingCardTextA => "Play a random card from your <c=keyword>discard pile</c>.";
 	public static string DoSomethingCardTextB => "Play 2 random cards from your <c=keyword>draw, discard or exhaust pile</c>.";
+	public static string ImAlwaysRightCardName => "I'm Always Right!";
 
 	public static readonly string[] ApologyFlavorTexts = new[]
 	{
