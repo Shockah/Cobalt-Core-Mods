@@ -17,4 +17,6 @@ internal interface IRegisterableCard
 
 internal interface IFrogproofCard
 {
+	bool IsFrogproof(State state, Combat? combat)
+		=> true;
 }

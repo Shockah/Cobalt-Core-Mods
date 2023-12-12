@@ -142,7 +142,7 @@ public sealed class FrogproofCardTraitFrogproofHook : IFrogproofHook
 	private FrogproofCardTraitFrogproofHook() { }
 
 	public bool? IsFrogproof(State state, Combat? combat, Card card, FrogproofHookContext context)
-		=> card is IFrogproofCard ? true : null;
+		=> card is IFrogproofCard frogproofCard && frogproofCard.IsFrogproof(state, combat) ? true : null;
 
 	public void PayForFrogproof(State state, Combat? combat, Card card) { }
 }
