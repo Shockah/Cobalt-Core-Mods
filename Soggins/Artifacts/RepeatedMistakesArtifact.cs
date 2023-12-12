@@ -39,15 +39,15 @@ public sealed class RepeatedMistakesArtifact : Artifact, IRegisterableArtifact
 		combat.Queue(new AStatus
 		{
 			status = Status.backwardsMissiles,
-			statusAmount = 4,
+			statusAmount = 3,
 			targetPlayer = true,
 			artifactPulse = Key()
 		});
 	}
 
-	public override void OnTurnEnd(State state, Combat combat)
+	public override void OnTurnStart(State state, Combat combat)
 	{
-		base.OnTurnEnd(state, combat);
+		base.OnTurnStart(state, combat);
 		if (combat.turn == 0)
 			return;
 

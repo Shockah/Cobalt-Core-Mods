@@ -18,7 +18,7 @@ internal static class I18n
 	public static string HijinksArtifactDescription => "Gain 1 extra <c=energy>ENERGY</c> every turn. <c=downside>You are 5% more likely to botch a card.</c>";
 
 	public static string RepeatedMistakesArtifactName => "Repeated Mistakes";
-	public static string RepeatedMistakesArtifactDescription => "Start each combat with 4 <c=status>MISSILE MALFUNCTION</c>. At the end of each turn, <c=action>LAUNCH</c> a <c=midrow>SEEKER</c>.";
+	public static string RepeatedMistakesArtifactDescription => "Start each combat with 3 <c=status>MISSILE MALFUNCTION</c>. At the start of each turn, <c=action>LAUNCH</c> a <c=midrow>SEEKER</c>.";
 
 	public static string FrogproofCardTraitName => $"Frogproof";
 	public static string FrogproofCardTraitText => $"This card ignores <c=status>SMUG</c>.";
