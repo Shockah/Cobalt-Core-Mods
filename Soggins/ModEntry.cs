@@ -16,17 +16,18 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = new();
+	internal IKokoroApi KokoroApi { get; private set; } = null!;
 	private Harmony Harmony { get; set; } = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
-	public IEnumerable<DependencyEntry> Dependencies => Array.Empty<DependencyEntry>();
+	public IEnumerable<DependencyEntry> Dependencies => new DependencyEntry[] { new DependencyEntry<IModManifest>("Shockah.Kokoro", ignoreIfMissing: false) };
 
 	public DirectoryInfo? GameRootFolder { get; set; }
 	public DirectoryInfo? ModRootFolder { get; set; }
 	public ILogger? Logger { get; set; }
 
-	internal SmugStatusManager SmugStatusManager { get; private set; } = new();
-	internal FrogproofManager FrogproofManager { get; private set; } = new();
+	internal SmugStatusManager SmugStatusManager { get; private set; } = null!;
+	internal FrogproofManager FrogproofManager { get; private set; } = null!;
 
 	internal ExternalSprite SogginsDeckBorder { get; private set; } = ExternalSprite.GetRaw((int)StableSpr.cardShared_border_soggins);
 	internal ExternalDeck SogginsDeck { get; private set; } = null!;
@@ -110,6 +111,10 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		Instance = this;
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
+		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+
+		SmugStatusManager = new();
+		FrogproofManager = new();
 
 		Harmony = new(Name);
 		FrogproofManager.ApplyPatches(Harmony);

@@ -4,7 +4,6 @@ using CobaltCoreModding.Definitions.ModManifests;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.Pintail;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Shockah.Shared;
 using System;
@@ -35,6 +34,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	public EvadeManager EvadeManager { get; private init; } = new();
 	public DroneShiftManager DroneShiftManager { get; private init; } = new();
 	public ArtifactIconManager ArtifactIconManager { get; private init; } = new();
+	public StatusRenderManager StatusRenderManager { get; private init; } = new();
 	public MidrowScorchingManager MidrowScorchingManager { get; private init; } = new();
 	public WormStatusManager WormStatusManager { get; private init; } = new();
 	public OxidationStatusManager OxidationStatusManager { get; private init; } = new();

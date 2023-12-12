@@ -190,4 +190,18 @@ public sealed class ApiImplementation : IKokoroApi
 	public void UnregisterArtifactIconHook(IArtifactIconHook hook)
 		=> Instance.ArtifactIconManager.Unregister(hook);
 	#endregion
+
+	#region StatusRenderHook
+	public void RegisterStatusRenderHook(IStatusRenderHook hook, double priority)
+		=> Instance.StatusRenderManager.Register(hook, priority);
+
+	public void UnregisterStatusRenderHook(IStatusRenderHook hook)
+		=> Instance.StatusRenderManager.Unregister(hook);
+
+	public Color DefaultActiveStatusBarColor
+		=> new("b2f2ff");
+
+	public Color DefaultInactiveStatusBarColor
+		=> DefaultActiveStatusBarColor.fadeAlpha(0.3);
+	#endregion
 }
