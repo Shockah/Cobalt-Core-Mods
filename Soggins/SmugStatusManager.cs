@@ -173,10 +173,20 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook
 		{
 			case SmugResult.Botch:
 				exhaust = false;
-				state.ship.Add((Status)Instance.BotchesStatus.Id!.Value);
-				state.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
 
 				actions.Clear();
+				actions.Add(new AStatus
+				{
+					status = (Status)Instance.BotchesStatus.Id!.Value,
+					statusAmount = 1,
+					targetPlayer = true
+				});
+
+				if (Instance.Api.IsOversmug(state.ship))
+					actions.Add(Instance.Api.MakeSetSmugAction(state, Instance.Api.GetMinSmug(state.ship)));
+				else
+					actions.Add(Instance.Api.MakeAddSmugAction(state, -swing));
+				
 				for (int i = 0; i < swing; i++)
 				{
 					actions.Add(new AAddCard
@@ -186,25 +196,17 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook
 					});
 				}
 
-				if (Instance.Api.IsOversmug(state.ship))
-					Instance.Api.SetSmug(state.ship, Instance.Api.GetMinSmug(state.ship));
-				else
-					Instance.Api.AddSmug(state.ship, -swing);
-
 				foreach (var hook in Instance.SmugStatusManager)
 					hook.OnCardBotchedBySmug(state, combat, card);
 				break;
 			case SmugResult.Double:
-				state.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
-
 				var toAdd = card.GetActionsOverridden(state, combat)
 					.Where(a => a is not AEndTurn)
 					.ToList();
 				if (actions.Any(a => a is ASpawn))
 					toAdd.Add(new ADroneMove { dir = 1 });
+				toAdd.Insert(0, Instance.Api.MakeAddSmugAction(state, swing));
 				actions.InsertRange(0, toAdd);
-
-				Instance.Api.AddSmug(state.ship, swing);
 
 				foreach (var hook in Instance.SmugStatusManager)
 					hook.OnCardDoubledBySmug(state, combat, card);
