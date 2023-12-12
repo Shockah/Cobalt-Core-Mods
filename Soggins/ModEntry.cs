@@ -104,6 +104,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 
 		typeof(VideoWillArtifact),
 		typeof(PiratedShipCadArtifact),
+		typeof(HotTubArtifact),
 
 		typeof(RepeatedMistakesArtifact),
 	};
@@ -363,6 +364,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 			if (Activator.CreateInstance(cardType) is not IRegisterableArtifact card)
 				continue;
 			card.RegisterArtifact(registry);
+			card.ApplyPatches(Harmony);
 		}
 	}
 

@@ -12,6 +12,8 @@ internal static class I18n
 	public static string VideoWillArtifactDescription => "Start each combat with 3 <c=status>FROGPROOFING</c>.";
 	public static string PiratedShipCadArtifactName => "Pirated C.A.T.";
 	public static string PiratedShipCadArtifactDescription => "Whenever you <c=downside>botch</c> a card, gain 1 <c=status>TEMP SHIELD</c>.";
+	public static string HotTubArtifactName => "Hot Tub";
+	public static string HotTubArtifactDescription => "At the end of your turn, if <c=status>SMUG</c> is <c=boldPink>{0}</c>, gain 1 <c=status>SMUG</c>; if <c=status>SMUG</c> is <c=boldPink>{1}</c>, lose 1 <c=status>SMUG</c>.";
 
 	public static string RepeatedMistakesArtifactName => "Repeated Mistakes";
 	public static string RepeatedMistakesArtifactDescription => "Start each combat with 4 <c=status>MISSILE MALFUNCTION</c>. At the end of each turn, <c=action>LAUNCH</c> a <c=midrow>SEEKER</c>.";

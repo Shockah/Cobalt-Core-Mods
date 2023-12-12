@@ -42,6 +42,11 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Ship), "CanBeNegative"),
+			postfix: new HarmonyMethod(typeof(SmugStatusManager), nameof(Ship_CanBeNegative_Postfix))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.Set)),
 			prefix: new HarmonyMethod(typeof(SmugStatusManager), nameof(Ship_Set_Prefix))
 		);
@@ -262,11 +267,17 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 		return actions;
 	}
 
+	private static void Ship_CanBeNegative_Postfix(Status status, ref bool __result)
+	{
+		if (status == (Status)Instance.SmugStatus.Id!.Value)
+			__result = true;
+	}
+
 	private static void Ship_Set_Prefix(Ship __instance, Status status, ref int n)
 	{
 		if (status != (Status)Instance.SmugStatus.Id!.Value)
 			return;
-		n = n <= 0 ? 0 : Math.Clamp(n, Instance.Api.GetMinSmug(__instance), Instance.Api.GetMaxSmug(__instance) + 1);
+		n = Math.Clamp(n, Instance.Api.GetMinSmug(__instance), Instance.Api.GetMaxSmug(__instance) + 1);
 	}
 
 	private static void Combat_Make_Postfix()
