@@ -148,18 +148,16 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 		}
 
 		apology = weightedRandom.Next(rng);
+		int totalApologies = TimesApologyWasGiven.Values.Sum() - TimesApologyWasGiven.GetValueOrDefault(typeof(DualApologyCard));
 		if (!forDual)
-			apology.ApologyFlavorText = $"<c=B79CE5>{string.Format(I18n.ApologyFlavorTexts[rng.NextInt() % I18n.ApologyFlavorTexts.Length], TimesApologyWasGiven.Values.Sum())}</c>";
+			apology.ApologyFlavorText = $"<c=B79CE5>{string.Format(I18n.ApologyFlavorTexts[rng.NextInt() % I18n.ApologyFlavorTexts.Length], totalApologies)}</c>";
 
 		if (apology is DualApologyCard dualApology)
 		{
 			dualApology.FirstCard = GenerateAndTrackApology(state, combat, rng, forDual: true);
 			dualApology.SecondCard = GenerateAndTrackApology(state, combat, rng, forDual: true, ignoringType: dualApology.FirstCard.GetType());
 		}
-		else
-		{
-			TimesApologyWasGiven[apology.GetType()] = TimesApologyWasGiven.GetValueOrDefault(apology.GetType()) + 1;
-		}
+		TimesApologyWasGiven[apology.GetType()] = TimesApologyWasGiven.GetValueOrDefault(apology.GetType()) + 1;
 
 		return apology;
 	}
