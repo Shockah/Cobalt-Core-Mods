@@ -197,10 +197,12 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook
 			case SmugResult.Double:
 				state.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
 
-				var toAdd = actions.Select(a => Mutil.DeepCopy(a)).ToList();
+				var toAdd = card.GetActionsOverridden(state, combat)
+					.Where(a => a is not AEndTurn)
+					.ToList();
 				if (actions.Any(a => a is ASpawn))
-					toAdd.Insert(0, new ADroneMove { dir = 1 });
-				actions.AddRange(toAdd);
+					toAdd.Add(new ADroneMove { dir = 1 });
+				actions.InsertRange(0, toAdd);
 
 				Instance.Api.AddSmug(state.ship, swing);
 
