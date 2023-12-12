@@ -64,6 +64,11 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.OnBeginTurn)),
 			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(SmugStatusManager), nameof(Ship_OnBeginTurn_Postfix_Last)), Priority.Last)
 		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
+			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(SmugStatusManager), nameof(Card_GetAllTooltips_Postfix)), Priority.Normal - 1)
+		);
 	}
 
 	public int ModifyApologyAmountForBotchingBySmug(State state, Combat combat, Card card, int amount)
@@ -100,6 +105,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook
 
 		apology = weightedRandom.Next(rng);
 		TimesApologyWasGiven[apology.GetType()] = TimesApologyWasGiven.GetValueOrDefault(apology.GetType()) + 1;
+		apology.ApologyFlavorText = $"<c=B79CE5>{string.Format(I18n.ApologyFlavorTexts[rng.NextInt() % I18n.ApologyFlavorTexts.Length], TimesApologyWasGiven.Values.Sum())}</c>";
 		return apology;
 	}
 
@@ -324,5 +330,34 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook
 				destination = CardDestination.Hand,
 				statusPulse = (Status)Instance.ConstantApologiesStatus.Id!.Value
 			});
+	}
+
+	private static void Card_GetAllTooltips_Postfix(Card __instance, G g, State s, bool showCardTraits, ref IEnumerable<Tooltip> __result)
+	{
+		if (__instance is not ApologyCard apology)
+			return;
+		if (string.IsNullOrEmpty(apology.ApologyFlavorText))
+			return;
+		var tooltipToYield = new TTText(apology.ApologyFlavorText);
+
+		IEnumerable<Tooltip> ModifyTooltips(IEnumerable<Tooltip> tooltips)
+		{
+			bool yieldedFlavorText = false;
+
+			foreach (var tooltip in tooltips)
+			{
+				if (!yieldedFlavorText && tooltip is TTGlossary glossary && glossary.key.StartsWith("cardtrait.") && glossary.key != "cardtrait.unplayable")
+				{
+					yield return tooltipToYield;
+					yieldedFlavorText = true;
+				}
+				yield return tooltip;
+			}
+
+			if (!yieldedFlavorText)
+				yield return tooltipToYield;
+		}
+
+		__result = ModifyTooltips(__result);
 	}
 }

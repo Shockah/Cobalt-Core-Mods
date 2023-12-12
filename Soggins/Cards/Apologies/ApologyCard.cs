@@ -3,6 +3,8 @@
 [CardMeta(dontOffer = true, rarity = Rarity.common)]
 public abstract class ApologyCard : Card, IFrogproofCard
 {
+	public string? ApologyFlavorText;
+
 	public override CardData GetData(State state)
 		=> new()
 		{

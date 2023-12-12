@@ -57,4 +57,48 @@ internal static class I18n
 	public static string DoSomethingCardTextB => "Play 2 random cards from your <c=keyword>draw, discard or exhaust pile</c>.";
 
 	public static string ExtraApologyCardName => "Extra Apology";
+
+	public static readonly string[] ApologyFlavorTexts = new[]
+	{
+		"I'm sorry you feel that way",
+		"Sowwee",
+		"That wasn't my fault",
+		"It wasn't a big deal, right?",
+		"Being the ship's captain is so difficult!",
+		"I said sorry, can we move on?",
+		"I said sorry already!",
+		"Are you sure it was my fault?",
+		"We can do better",
+		"Your forgiveness is accepted",
+		"We can hug it out",
+		"This was a traumatic experience for me",
+		"I O U",
+		"</3",
+		"*sniffles*",
+		"Pwease?",
+		"My sincerest apology for whatever that was",
+		"I couldn't do any better!!",
+		"Let's see the bright side of this",
+		"I'm sorry I guess",
+		"I'm soooo sorry",
+		"What happened again?",
+		"You were at fault too",
+		"I'll be the better man and say sorry",
+		"Could we move on?",
+		"This is awkward",
+		"But it was funny, right?",
+		"I hope that wasn't important",
+		"This makes up for it, don't you think?",
+		"We'll remember this as a funny memory",
+		"I'll make it up to you",
+		"There's always next time",
+		"It's always me, isn't it?",
+		"Oops! Was that yours?",
+		"Uh oh! That wasn't okay",
+		"All is good now",
+		"We're okay now",
+		"This is fine",
+		"*sob*",
+		"Apology #{0}"
+	};
 }
