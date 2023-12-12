@@ -4,6 +4,7 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using CobaltCoreModding.Definitions.ModManifests;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,8 @@ namespace Shockah.Soggins;
 public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IStatusManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
-	internal ApiImplementation Api { get; private set; } = new();
+	internal Config Config { get; private set; } = null!;
+	internal ApiImplementation Api { get; private set; } = null!;
 	internal IKokoroApi KokoroApi { get; private set; } = null!;
 	private Harmony Harmony { get; set; } = null!;
 
@@ -116,6 +118,8 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+		Config = ObtainConfig();
+		Api = new();
 
 		SmugStatusManager = new();
 		FrogproofManager = new();
@@ -124,6 +128,33 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		FrogproofManager.ApplyPatches(Harmony);
 		SmugStatusManager.ApplyPatches(Harmony);
 		CustomTTGlossary.ApplyPatches(Harmony);
+	}
+
+	private Config ObtainConfig()
+	{
+		var serializer = JsonSerializer.Create(JSONSettings.indented);
+		var path = Path.Combine(ModRootFolder!.FullName, "config.json");
+		Config? config = null;
+
+		if (File.Exists(path))
+			using (var fileStream = File.OpenRead(path))
+			{
+				using StreamReader streamReader = new(fileStream);
+				using JsonTextReader jsonReader = new(streamReader);
+				config = serializer.Deserialize<Config>(jsonReader);
+			}
+
+		if (config is not null)
+			return config;
+
+		config = new();
+		using (var fileStream = File.OpenWrite(path))
+		{
+			using StreamWriter streamWriter = new(fileStream);
+			serializer.Serialize(streamWriter, config);
+		}
+
+		return config;
 	}
 
 	public void FinalizePreperations(IPrelaunchContactPoint prelaunchManifest)
