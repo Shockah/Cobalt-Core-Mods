@@ -66,16 +66,10 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook
 		);
 	}
 
-	public void OnCardBotchedBySmug(State state, Combat combat, Card card)
+	public int ModifyApologyAmountForBotchingBySmug(State state, Combat combat, Card card, int amount)
 	{
 		int extraApologies = state.ship.Get((Status)Instance.ExtraApologiesStatus.Id!.Value);
-		for (int i = 0; i < extraApologies; i++)
-			combat.Queue(new AAddCard
-			{
-				card = GenerateAndTrackApology(state, combat, state.rngActions),
-				destination = CardDestination.Hand,
-				statusPulse = (Status)Instance.ExtraApologiesStatus.Id!.Value
-			});
+		return Math.Max(amount + extraApologies, 1);
 	}
 
 	private static SmugResult GetSmugResult(Ship ship, Rand rng)
@@ -186,8 +180,12 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook
 					actions.Add(Instance.Api.MakeSetSmugAction(state, Instance.Api.GetMinSmug(state.ship)));
 				else
 					actions.Add(Instance.Api.MakeAddSmugAction(state, -swing));
+
+				int apologies = swing;
+				foreach (var hook in Instance.SmugStatusManager)
+					apologies = hook.ModifyApologyAmountForBotchingBySmug(state, combat, card, apologies);
 				
-				for (int i = 0; i < swing; i++)
+				for (int i = 0; i < apologies; i++)
 				{
 					actions.Add(new AAddCard
 					{

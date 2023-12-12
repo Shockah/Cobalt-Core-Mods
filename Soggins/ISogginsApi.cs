@@ -36,6 +36,9 @@ public interface ISmugHook
 {
 	void OnCardBotchedBySmug(State state, Combat combat, Card card) { }
 	void OnCardDoubledBySmug(State state, Combat combat, Card card) { }
+
+	int ModifyApologyAmountForBotchingBySmug(State state, Combat combat, Card card, int amount)
+		=> amount;
 }
 
 public enum FrogproofHookContext
