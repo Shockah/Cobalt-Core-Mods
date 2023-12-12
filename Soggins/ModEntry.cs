@@ -118,6 +118,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		typeof(HotTubArtifact),
 
 		typeof(RepeatedMistakesArtifact),
+		typeof(HijinksArtifact),
 	};
 
 	public void BootMod(IModLoaderContact contact)
