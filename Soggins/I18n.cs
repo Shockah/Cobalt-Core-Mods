@@ -38,7 +38,6 @@ internal static class I18n
 
 	public static string TakeCoverCardName => "Take Cover!";
 	public static string ZenCardName => "Zen";
-	public static string ZenCardText => "Reset your <c=status>SMUG</c>.";
 	public static string MysteriousAmmoCardName => "Mysterious Ammo";
 	public static string RunningInCirclesCardName => "Running in Circles";
 	public static string BetterSpaceMineCardName => "Better Space Mine";

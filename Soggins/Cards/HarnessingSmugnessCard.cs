@@ -66,14 +66,26 @@ public sealed class HarnessingSmugnessCard : Card, IRegisterableCard, IFrogproof
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> new()
 		{
-			Instance.Api.MakeAddSmugAction(s, GetTopSmug(), disabled: flipped),
+			new AStatus
+			{
+				status = (Status)Instance.SmugStatus.Id!.Value,
+				statusAmount = GetTopSmug(),
+				targetPlayer = true,
+				disabled = flipped
+			},
 			new AAttack
 			{
 				damage = GetDmg(s, GetAttack()),
 				disabled = flipped
 			},
 			new ADummyAction(),
-			Instance.Api.MakeAddSmugAction(s, GetBottomSmug(), disabled: !flipped),
+			new AStatus
+			{
+				status = (Status)Instance.SmugStatus.Id!.Value,
+				statusAmount = GetBottomSmug(),
+				targetPlayer = true,
+				disabled = !flipped
+			},
 			new AStatus
 			{
 				status = Status.shield,

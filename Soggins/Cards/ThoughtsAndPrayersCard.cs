@@ -57,7 +57,12 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard, IFrogproof
 	{
 		List<CardAction> actions = new()
 		{
-			Instance.Api.MakeAddSmugAction(s, 1)
+			new AStatus
+			{
+				status = (Status)Instance.SmugStatus.Id!.Value,
+				statusAmount = 1,
+				targetPlayer = true
+			}
 		};
 
 		if (IsDuringTryPlayCard)

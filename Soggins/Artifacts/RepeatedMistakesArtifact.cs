@@ -51,14 +51,14 @@ public sealed class RepeatedMistakesArtifact : Artifact, IRegisterableArtifact
 		if (combat.turn == 0)
 			return;
 
-		Pulse();
 		combat.QueueImmediate(new ASpawn
 		{
 			thing = new Missile
 			{
 				yAnimation = 0.0,
 				missileType = MissileType.seeker
-			}
+			},
+			artifactPulse = Key()
 		});
 	}
 

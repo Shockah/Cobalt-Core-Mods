@@ -24,8 +24,7 @@ public sealed class ZenCard : Card, IRegisterableCard, IFrogproofCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = StableSpr.cards_colorless;
-		data.description = I18n.ZenCardText;
+		data.art = StableSpr.cards_Serenity;
 		data.cost = 0;
 		data.exhaust = upgrade != Upgrade.A;
 		data.retain = upgrade == Upgrade.B;
@@ -35,6 +34,12 @@ public sealed class ZenCard : Card, IRegisterableCard, IFrogproofCard
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> new()
 		{
-			Instance.Api.MakeSetSmugAction(s, 0)
+			new AStatus
+			{
+				status = (Status)Instance.SmugStatus.Id!.Value,
+				mode = AStatusMode.Set,
+				statusAmount = 0,
+				targetPlayer = true
+			}
 		};
 }

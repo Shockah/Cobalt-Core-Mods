@@ -44,12 +44,6 @@ internal sealed class PiratedShipCadArtifact : Artifact, IRegisterableArtifact, 
 		return tooltips;
 	}
 
-	public override void OnCombatStart(State state, Combat combat)
-	{
-		base.OnCombatStart(state, combat);
-		Instance.Api.SetSmug(state.ship, 0);
-	}
-
 	public void OnCardBotchedBySmug(State state, Combat combat, Card card)
 	{
 		var artifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is PiratedShipCadArtifact);
@@ -63,6 +57,5 @@ internal sealed class PiratedShipCadArtifact : Artifact, IRegisterableArtifact, 
 			targetPlayer = true,
 			artifactPulse = artifact.Key()
 		});
-		artifact.Pulse();
 	}
 }

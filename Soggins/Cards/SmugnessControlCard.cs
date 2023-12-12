@@ -60,7 +60,13 @@ public sealed class SmugnessControlCard : Card, IRegisterableCard, IFrogproofCar
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> new()
 		{
-			Instance.Api.MakeAddSmugAction(s, GetTopSmug(), disabled: flipped),
+			new AStatus
+			{
+				status = (Status)Instance.SmugStatus.Id!.Value,
+				statusAmount = GetTopSmug(),
+				targetPlayer = true,
+				disabled = flipped
+			},
 			new AStatus
 			{
 				status = Status.tempShield,
@@ -69,7 +75,13 @@ public sealed class SmugnessControlCard : Card, IRegisterableCard, IFrogproofCar
 				disabled = flipped
 			},
 			new ADummyAction(),
-			Instance.Api.MakeAddSmugAction(s, GetBottomSmug(), disabled: !flipped),
+			new AStatus
+			{
+				status = (Status)Instance.SmugStatus.Id!.Value,
+				statusAmount = GetBottomSmug(),
+				targetPlayer = true,
+				disabled = !flipped
+			},
 			new AStatus
 			{
 				status = Status.tempShield,

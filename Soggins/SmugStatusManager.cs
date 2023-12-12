@@ -68,6 +68,15 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 		return Math.Max(amount + extraApologies, 1);
 	}
 
+	public IEnumerable<Status> GetExtraStatusesToShow(State state, Combat combat, Ship ship)
+	{
+		if (Instance.Api.GetSmug(ship) is not null)
+			yield return (Status)Instance.SmugStatus.Id!.Value;
+	}
+
+	public bool? ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)
+		=> status == (Status)Instance.SmuggedStatus.Id!.Value ? false : null;
+
 	public bool? ShouldOverrideStatusRenderingAsBars(State state, Combat combat, Ship ship, Status status, int amount)
 		=> status == (Status)Instance.SmugStatus.Id!.Value ? true : null;
 
@@ -207,10 +216,14 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 					targetPlayer = true
 				});
 
-				if (Instance.Api.IsOversmug(state.ship))
-					actions.Add(Instance.Api.MakeSetSmugAction(state, Instance.Api.GetMinSmug(state.ship)));
-				else
-					actions.Add(Instance.Api.MakeAddSmugAction(state, -swing));
+				bool isOversmug = Instance.Api.IsOversmug(state.ship);
+				actions.Add(new AStatus
+				{
+					status = (Status)Instance.SmugStatus.Id!.Value,
+					mode = isOversmug ? AStatusMode.Set : AStatusMode.Add,
+					statusAmount = isOversmug ? Instance.Api.GetMinSmug(state.ship) : -swing,
+					targetPlayer = true
+				});
 
 				int apologies = swing;
 				foreach (var hook in Instance.SmugStatusManager)
@@ -234,7 +247,12 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 					.ToList();
 				if (actions.Any(a => a is ASpawn))
 					toAdd.Add(new ADroneMove { dir = 1 });
-				toAdd.Insert(0, Instance.Api.MakeAddSmugAction(state, swing));
+				toAdd.Insert(0, new AStatus
+				{
+					status = (Status)Instance.SmugStatus.Id!.Value,
+					statusAmount = swing,
+					targetPlayer = true
+				});
 				actions.InsertRange(0, toAdd);
 
 				foreach (var hook in Instance.SmugStatusManager)
@@ -248,7 +266,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 	{
 		if (status != (Status)Instance.SmugStatus.Id!.Value)
 			return;
-		n = n <= 0 ? 0 : Math.Clamp(n, 100 + Instance.Api.GetMinSmug(__instance), 100 + Instance.Api.GetMaxSmug(__instance) + 1);
+		n = n <= 0 ? 0 : Math.Clamp(n, Instance.Api.GetMinSmug(__instance), Instance.Api.GetMaxSmug(__instance) + 1);
 	}
 
 	private static void Combat_Make_Postfix()

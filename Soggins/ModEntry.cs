@@ -40,6 +40,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	internal ExternalSprite ExtraApologiesStatusSprite { get; private set; } = null!;
 	internal ExternalSprite ConstantApologiesStatusSprite { get; private set; } = null!;
 
+	internal ExternalStatus SmuggedStatus { get; private set; } = null!;
 	internal ExternalStatus SmugStatus { get; private set; } = null!;
 	internal ExternalStatus FrogproofingStatus { get; private set; } = null!;
 	internal ExternalStatus BotchesStatus { get; private set; } = null!;
@@ -180,6 +181,17 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 
 	public void LoadManifest(IStatusRegistry registry)
 	{
+		{
+			SmuggedStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.Smugged",
+				isGood: false,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF000000)),
+				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF000000)),
+				SmugStatusSprite,
+				affectedByTimestop: false
+			);
+			registry.RegisterStatus(SmuggedStatus);
+		}
 		{
 			SmugStatus = new(
 				$"{typeof(ModEntry).Namespace}.Status.Smug",
