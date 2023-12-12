@@ -67,7 +67,7 @@ public sealed class RepeatedMistakesArtifact : Artifact, IRegisterableArtifact
 		var tooltips = base.GetExtraTooltips() ?? new();
 		tooltips.Add(new TTGlossary("status.backwardsMissiles"));
 		tooltips.Add(new TTGlossary("action.spawn"));
-		tooltips.Add(new TTGlossary("midrow.missile_seeker"));
+		tooltips.Add(new TTGlossary("midrow.missile_seeker", 2));
 		return tooltips;
 	}
 }
