@@ -89,7 +89,7 @@ internal static class I18n
 		"We can hug it out",
 		"This was a traumatic experience for me",
 		"I O U",
-		"</3",
+		"XOXO",
 		"*sniffles*",
 		"Pwease?",
 		"My sincerest apology for whatever that was",
@@ -115,6 +115,7 @@ internal static class I18n
 		"We're okay now",
 		"This is fine",
 		"*sob*",
+		"Less than slash three",
 		"Apology #{0}"
 	};
 }

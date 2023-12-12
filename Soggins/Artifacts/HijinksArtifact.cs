@@ -36,6 +36,12 @@ public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook
 		Instance.Api.RegisterSmugHook(this, 0);
 	}
 
+	public override void OnReceiveArtifact(State state)
+		=> state.ship.baseEnergy++;
+
+	public override void OnRemoveArtifact(State state)
+		=> state.ship.baseEnergy--;
+
 	public override void OnCombatStart(State state, Combat combat)
 	{
 		base.OnCombatStart(state, combat);
