@@ -179,8 +179,8 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 			SmugStatus = new(
 				$"{typeof(ModEntry).Namespace}.Status.Smug",
 				isGood: false,
-				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF00BB00)),
-				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF00BB00)),
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF483C57)),
+				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF483C57)),
 				SmugStatusSprite,
 				affectedByTimestop: false
 			);
@@ -191,8 +191,8 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 			FrogproofingStatus = new(
 				$"{typeof(ModEntry).Namespace}.Status.Frogproofing",
 				isGood: true,
-				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
-				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF483C57)),
+				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF483C57)),
 				FrogproofSprite,
 				affectedByTimestop: false
 			);
@@ -203,8 +203,8 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 			BotchesStatus = new(
 				$"{typeof(ModEntry).Namespace}.Status.Botches",
 				isGood: false,
-				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
-				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF7E503C)),
+				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF7E503C)),
 				BotchesStatusSprite,
 				affectedByTimestop: false
 			);
@@ -215,8 +215,8 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 			ExtraApologiesStatus = new(
 				$"{typeof(ModEntry).Namespace}.Status.ExtraApologies",
 				isGood: false,
-				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
-				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF2B5549)),
+				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF2B5549)),
 				ExtraApologiesStatusSprite,
 				affectedByTimestop: false
 			);
@@ -227,14 +227,17 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 			ConstantApologiesStatus = new(
 				$"{typeof(ModEntry).Namespace}.Status.ConstantApologies",
 				isGood: false,
-				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
-				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFBB00BB)),
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF2B5549)),
+				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF2B5549)),
 				ConstantApologiesStatusSprite,
 				affectedByTimestop: false
 			);
 			ConstantApologiesStatus.AddLocalisation(I18n.ConstantApologiesStatusName, I18n.ConstantApologiesStatusDescription);
 			registry.RegisterStatus(ConstantApologiesStatus);
 		}
+
+		// Biding Time: 639bff
+		// Double Time: cc503d
 	}
 
 	public void LoadManifest(IAnimationRegistry registry)
