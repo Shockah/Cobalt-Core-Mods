@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Soggins;
 
-[CardMeta(rarity = Rarity.uncommon, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
+[CardMeta(rarity = Rarity.rare, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
 public sealed class DoSomethingCard : Card, IRegisterableCard
 {
 	public void RegisterCard(ICardRegistry registry)
