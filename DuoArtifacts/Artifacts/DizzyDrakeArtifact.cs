@@ -61,6 +61,6 @@ internal sealed class DizzyDrakeArtifact : DuoArtifact
 		}
 
 		artifact?.Pulse();
-		ship.NormalDamage(state, combat, damage + ExtraShieldDamage, -999, worldSpaceAgnostic: true);
+		ship.NormalDamage(state, combat, damage + ExtraShieldDamage, maybeWorldGridX: null);
 	}
 }
