@@ -130,12 +130,17 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 			return SmugResult.Normal;
 	}
 
-	public static Card GenerateAndTrackApology(State state, Combat combat, Rand rng)
+	public static Card GenerateAndTrackApology(State state, Combat combat, Rand rng, bool forDual = false, Type? ignoringType = null)
 	{
 		ApologyCard apology;
 		WeightedRandom<ApologyCard> weightedRandom = new();
 		foreach (var apologyType in ModEntry.ApologyCards)
 		{
+			if (forDual && apologyType == typeof(DualApologyCard))
+				continue;
+			if (ignoringType is not null && apologyType == ignoringType)
+				continue;
+
 			apology = (ApologyCard)Activator.CreateInstance(apologyType)!;
 			var weight = apology.GetApologyWeight(state, combat, TimesApologyWasGiven.GetValueOrDefault(apologyType));
 			if (weight > 0)
@@ -143,8 +148,19 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook, IStatusRen
 		}
 
 		apology = weightedRandom.Next(rng);
-		TimesApologyWasGiven[apology.GetType()] = TimesApologyWasGiven.GetValueOrDefault(apology.GetType()) + 1;
-		apology.ApologyFlavorText = $"<c=B79CE5>{string.Format(I18n.ApologyFlavorTexts[rng.NextInt() % I18n.ApologyFlavorTexts.Length], TimesApologyWasGiven.Values.Sum())}</c>";
+		if (!forDual)
+			apology.ApologyFlavorText = $"<c=B79CE5>{string.Format(I18n.ApologyFlavorTexts[rng.NextInt() % I18n.ApologyFlavorTexts.Length], TimesApologyWasGiven.Values.Sum())}</c>";
+
+		if (apology is DualApologyCard dualApology)
+		{
+			dualApology.FirstCard = GenerateAndTrackApology(state, combat, rng, forDual: true);
+			dualApology.SecondCard = GenerateAndTrackApology(state, combat, rng, forDual: true, ignoringType: dualApology.FirstCard.GetType());
+		}
+		else
+		{
+			TimesApologyWasGiven[apology.GetType()] = TimesApologyWasGiven.GetValueOrDefault(apology.GetType()) + 1;
+		}
+
 		return apology;
 	}
 
