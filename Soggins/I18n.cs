@@ -33,9 +33,11 @@ internal static class I18n
 	public static string ApologyCardName => "Halfhearted Apology";
 	public static string BlankApologyCardText => $"*a random {ApologyCardName} card*";
 
+	// starter common cards
 	public static string SmugnessControlCardName => "Smugness Control";
 	public static string PressingButtonsCardName => "Pressing Buttons";
 
+	// common cards
 	public static string TakeCoverCardName => "Take Cover!";
 	public static string ZenCardName => "Zen";
 	public static string MysteriousAmmoCardName => "Mysterious Ammo";
@@ -44,18 +46,21 @@ internal static class I18n
 	public static string ThoughtsAndPrayersCardName => "Thoughts and Prayers";
 	public static string StopItCardName => "Stop It!";
 
+	// uncommon cards
 	public static string HarnessingSmugnessCardName => "Harnessing Smugness";
 	public static string SoSorryCardName => "So Sorry";
 	public static string BetterThanYouCardName => "Better Than You";
 	public static string BetterThanYouCardText0 => "Discard non <c=B79CE5>Soggins</c> cards. Draw as many <c=B79CE5>Soggins</c> cards.";
 	public static string BetterThanYouCardTextA => "Discard non <c=B79CE5>Soggins</c> cards. Draw as many <c=B79CE5>Soggins</c> cards.";
 	public static string BetterThanYouCardTextB => "Draw 10 <c=B79CE5>Soggins</c> cards.";
+	public static string ImTryingCardName => "I'm Trying!";
+
+	// rare cards
+	public static string ExtraApologyCardName => "Extra Apology";
 	public static string DoSomethingCardName => "Do Something!";
 	public static string DoSomethingCardText0 => "Play a random card from your <c=keyword>draw pile</c>.";
 	public static string DoSomethingCardTextA => "Play a random card from your <c=keyword>discard pile</c>.";
 	public static string DoSomethingCardTextB => "Play 2 random cards from your <c=keyword>draw, discard or exhaust pile</c>.";
-
-	public static string ExtraApologyCardName => "Extra Apology";
 
 	public static readonly string[] ApologyFlavorTexts = new[]
 	{

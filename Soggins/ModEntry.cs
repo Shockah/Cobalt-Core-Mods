@@ -87,6 +87,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		typeof(HarnessingSmugnessCard),
 		typeof(SoSorryCard),
 		typeof(BetterThanYouCard),
+		typeof(ImTryingCard),
 	};
 	internal static readonly Type[] RareCards = new Type[]
 	{
@@ -190,6 +191,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 				SmugStatusSprite,
 				affectedByTimestop: false
 			);
+			SmuggedStatus.AddLocalisation("<implementation details>", "<implementation details>");
 			registry.RegisterStatus(SmuggedStatus);
 		}
 		{
