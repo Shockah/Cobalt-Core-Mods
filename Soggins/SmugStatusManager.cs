@@ -11,23 +11,36 @@ using System.Reflection.Emit;
 
 namespace Shockah.Soggins;
 
-internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook
+internal class SmugStatusManager : HookManager<ISmugHook>
 {
 	private enum SmugResult
 	{
 		Botch, Normal, Double
 	}
 
+	private sealed class ExtraApologiesSmugHook : ISmugHook
+	{
+		public int ModifyApologyAmountForBotchingBySmug(State state, Combat combat, Card card, int amount)
+		{
+			int extraApologies = state.ship.Get((Status)Instance.ExtraApologiesStatus.Id!.Value);
+			return Math.Max(amount + extraApologies, 1);
+		}
+	}
+
+	private sealed class DoublersLuckSmugHook : ISmugHook
+	{
+		public double ModifySmugDoubleChance(State state, Ship ship, double chance)
+			=> chance * (ship.Get((Status)Instance.DoublersLuckStatus.Id!.Value) + 1);
+	}
+
 	private static ModEntry Instance => ModEntry.Instance;
 
 	private static readonly Dictionary<Type, int> TimesApologyWasGiven = new();
 
-	private static bool IsDuringTryPlayCard = false;
-	private static bool HasPlayNoMatterWhatForFreeSet = false;
-
 	internal SmugStatusManager() : base()
 	{
-		Register(this, 0);
+		Register(new ExtraApologiesSmugHook(), 0);
+		Register(new DoublersLuckSmugHook(), -100);
 	}
 
 	internal static void ApplyPatches(Harmony harmony)
@@ -35,8 +48,6 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
-			prefix: new HarmonyMethod(typeof(SmugStatusManager), nameof(Combat_TryPlayCard_Prefix)),
-			finalizer: new HarmonyMethod(typeof(SmugStatusManager), nameof(Combat_TryPlayCard_Finalizer)),
 			transpiler: new HarmonyMethod(typeof(SmugStatusManager), nameof(Combat_TryPlayCard_Transpiler))
 		);
 		harmony.TryPatch(
@@ -71,24 +82,51 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook
 		);
 	}
 
-	public int ModifyApologyAmountForBotchingBySmug(State state, Combat combat, Card card, int amount)
+	public double GetSmugBotchChance(State state, Ship ship)
 	{
-		int extraApologies = state.ship.Get((Status)Instance.ExtraApologiesStatus.Id!.Value);
-		return Math.Max(amount + extraApologies, 1);
+		var smug = Instance.Api.GetSmug(ship);
+		if (smug is null)
+			return 0;
+		else if (ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0)
+			return 0;
+		else if (smug.Value > Instance.Api.GetMaxSmug(ship))
+			return 1; // oversmug
+
+		var chance = smug.Value < Instance.Api.GetMinSmug(ship) ? Instance.Config.BotchChances[0] : Instance.Config.BotchChances[smug.Value - Instance.Api.GetMinSmug(ship)];
+		foreach (var hook in this)
+			chance = hook.ModifySmugBotchChance(state, ship, chance);
+		return chance;
 	}
 
-	private static SmugResult GetSmugResult(Ship ship, Rand rng)
+	public double GetSmugDoubleChance(State state, Ship ship)
 	{
-		double botchChance = Instance.Api.GetSmugBotchChance(ship);
-		double doubleChance = Instance.Api.GetSmugDoubleChance(ship);
+		var smug = Instance.Api.GetSmug(ship);
+		if (smug is null)
+			return 0;
+		else if (ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0)
+			return 1;
+		else if (smug.Value > Instance.Api.GetMaxSmug(ship))
+			return 0; // oversmug
 
+		var chance = smug.Value < Instance.Api.GetMinSmug(ship) ? Instance.Config.DoubleChances[0] : Instance.Config.DoubleChances[smug.Value - Instance.Api.GetMinSmug(ship)];
+		foreach (var hook in this)
+			chance = hook.ModifySmugDoubleChance(state, ship, chance);
+		return chance;
+	}
+
+	private static SmugResult GetSmugResult(State state, Ship ship, Rand rng)
+	{
 		var result = rng.Next();
+
+		var botchChance = Instance.Api.GetSmugBotchChance(state, ship);
 		if (result < botchChance)
 			return SmugResult.Botch;
-		else if (result < botchChance + doubleChance)
+
+		var doubleChance = Instance.Api.GetSmugDoubleChance(state, ship);
+		if (result < botchChance + doubleChance)
 			return SmugResult.Double;
-		else
-			return SmugResult.Normal;
+
+		return SmugResult.Normal;
 	}
 
 	public static Card GenerateAndTrackApology(State state, Combat combat, Rand rng, bool forDual = false, Type? ignoringType = null)
@@ -122,15 +160,6 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook
 
 		return apology;
 	}
-
-	private static void Combat_TryPlayCard_Prefix(bool playNoMatterWhatForFree)
-	{
-		IsDuringTryPlayCard = true;
-		HasPlayNoMatterWhatForFreeSet = playNoMatterWhatForFree;
-	}
-
-	private static void Combat_TryPlayCard_Finalizer()
-		=> IsDuringTryPlayCard = false;
 
 	private static IEnumerable<CodeInstruction> Combat_TryPlayCard_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
@@ -181,7 +210,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>, ISmugHook
 			return actions;
 		}
 
-		var result = GetSmugResult(state.ship, state.rngActions);
+		var result = GetSmugResult(state, state.ship, state.rngActions);
 		var swing = Math.Max(card.GetCurrentCost(state), 1);
 		switch (result)
 		{

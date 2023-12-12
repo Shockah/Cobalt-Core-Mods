@@ -16,8 +16,8 @@ public interface ISogginsApi
 	int GetMaxSmug(Ship ship);
 	int? GetSmug(Ship ship);
 	bool IsOversmug(Ship ship);
-	double GetSmugBotchChance(Ship ship);
-	double GetSmugDoubleChance(Ship ship);
+	double GetSmugBotchChance(State state, Ship ship);
+	double GetSmugDoubleChance(State state, Ship ship);
 	void RegisterSmugHook(ISmugHook hook, double priority);
 	void UnregisterSmugHook(ISmugHook hook);
 
@@ -33,8 +33,9 @@ public interface ISmugHook
 	void OnCardBotchedBySmug(State state, Combat combat, Card card) { }
 	void OnCardDoubledBySmug(State state, Combat combat, Card card) { }
 
-	int ModifyApologyAmountForBotchingBySmug(State state, Combat combat, Card card, int amount)
-		=> amount;
+	double ModifySmugBotchChance(State state, Ship ship, double chance) => chance;
+	double ModifySmugDoubleChance(State state, Ship ship, double chance) => chance;
+	int ModifyApologyAmountForBotchingBySmug(State state, Combat combat, Card card, int amount) => amount;
 }
 
 public enum FrogproofHookContext

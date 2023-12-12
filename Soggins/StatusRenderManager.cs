@@ -65,7 +65,7 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 		if (status == (Status)Instance.SmugStatus.Id!.Value)
 		{
 			if (StateExt.Instance is { } state)
-				tooltips.Add(new TTText(string.Format(I18n.SmugStatusCurrentChancesDescription, Instance.Api.GetSmugDoubleChance(state.ship) * 100, Instance.Api.GetSmugBotchChance(state.ship) * 100)));
+				tooltips.Add(new TTText(string.Format(I18n.SmugStatusCurrentChancesDescription, Instance.Api.GetSmugDoubleChance(state, state.ship) * 100, Instance.Api.GetSmugBotchChance(state, state.ship) * 100)));
 		}
 		else if (status == (Status)Instance.DoublersLuckStatus.Id!.Value)
 		{
