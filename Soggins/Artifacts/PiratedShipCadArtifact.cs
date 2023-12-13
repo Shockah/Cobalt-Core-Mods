@@ -7,7 +7,7 @@ using System.IO;
 namespace Shockah.Soggins;
 
 [ArtifactMeta(unremovable = true)]
-internal sealed class PiratedShipCadArtifact : Artifact, IRegisterableArtifact, ISmugHook
+public sealed class PiratedShipCadArtifact : Artifact, IRegisterableArtifact, ISmugHook
 {
 	private static ModEntry Instance => ModEntry.Instance;
 

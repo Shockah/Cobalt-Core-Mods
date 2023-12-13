@@ -8,7 +8,7 @@ using System.IO;
 namespace Shockah.Soggins;
 
 [ArtifactMeta(unremovable = true)]
-internal sealed class SmugArtifact : Artifact, IRegisterableArtifact
+public sealed class SmugArtifact : Artifact, IRegisterableArtifact
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
