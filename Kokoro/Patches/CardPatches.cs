@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Shockah.Shared;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Shockah.Kokoro;
 
@@ -44,6 +45,12 @@ internal static class CardPatches
 
 		if (conditional.Action is { } wrappedAction)
 		{
+			if (wrappedAction is AAttack attack)
+			{
+				var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
+				attack.stunEnemy = shouldStun;
+			}
+
 			g.Push(rect: new(position.x - initialX, 0));
 			position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
 			g.Pop();
