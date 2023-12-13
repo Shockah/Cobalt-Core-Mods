@@ -133,32 +133,38 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 	public static Card GenerateAndTrackApology(State state, Combat combat, Rand rng, bool forDual = false, Type? ignoringType = null)
 	{
 		ApologyCard apology;
-		WeightedRandom<ApologyCard> weightedRandom = new();
-		foreach (var apologyType in ModEntry.ApologyCards)
+		if (!forDual && rng.Next() < Instance.Config.DualApologyChance)
 		{
-			if (forDual && apologyType == typeof(DualApologyCard))
-				continue;
-			if (ignoringType is not null && apologyType == ignoringType)
-				continue;
+			var firstCard = GenerateAndTrackApology(state, combat, rng, forDual: true);
+			var secondCard = GenerateAndTrackApology(state, combat, rng, forDual: true, ignoringType: firstCard.GetType());
+			apology = new DualApologyCard
+			{
+				FirstCard = firstCard,
+				SecondCard = secondCard
+			};
+		}
+		else
+		{
+			WeightedRandom<ApologyCard> weightedRandom = new();
+			foreach (var apologyType in ModEntry.ApologyCards)
+			{
+				if (forDual && apologyType == typeof(DualApologyCard))
+					continue;
+				if (ignoringType is not null && apologyType == ignoringType)
+					continue;
 
-			apology = (ApologyCard)Activator.CreateInstance(apologyType)!;
-			var weight = apology.GetApologyWeight(state, combat, TimesApologyWasGiven.GetValueOrDefault(apologyType));
-			if (weight > 0)
-				weightedRandom.Add(new(weight, apology));
+				apology = (ApologyCard)Activator.CreateInstance(apologyType)!;
+				var weight = apology.GetApologyWeight(state, combat, TimesApologyWasGiven.GetValueOrDefault(apologyType));
+				if (weight > 0)
+					weightedRandom.Add(new(weight, apology));
+			}
+			apology = weightedRandom.Next(rng);
 		}
 
-		apology = weightedRandom.Next(rng);
 		int totalApologies = TimesApologyWasGiven.Values.Sum() - TimesApologyWasGiven.GetValueOrDefault(typeof(DualApologyCard));
 		if (!forDual)
 			apology.ApologyFlavorText = $"<c=B79CE5>{string.Format(I18n.ApologyFlavorTexts[rng.NextInt() % I18n.ApologyFlavorTexts.Length], totalApologies)}</c>";
-
-		if (apology is DualApologyCard dualApology)
-		{
-			dualApology.FirstCard = GenerateAndTrackApology(state, combat, rng, forDual: true);
-			dualApology.SecondCard = GenerateAndTrackApology(state, combat, rng, forDual: true, ignoringType: dualApology.FirstCard.GetType());
-		}
 		TimesApologyWasGiven[apology.GetType()] = TimesApologyWasGiven.GetValueOrDefault(apology.GetType()) + 1;
-
 		return apology;
 	}
 

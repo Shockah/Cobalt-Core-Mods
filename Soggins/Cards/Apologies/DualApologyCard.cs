@@ -9,8 +9,6 @@ namespace Shockah.Soggins;
 [CardMeta(dontOffer = true, rarity = Rarity.common, unreleased = true)]
 public sealed class DualApologyCard : ApologyCard, IRegisterableCard
 {
-	private static ModEntry Instance => ModEntry.Instance;
-
 	public Card? FirstCard;
 	public Card? SecondCard;
 
@@ -42,10 +40,7 @@ public sealed class DualApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override double GetApologyWeight(State state, Combat combat, int timesGiven)
-		=> ModEntry.ApologyCards
-			.Where(t => t != GetType())
-			.Select(t => (ApologyCard)Activator.CreateInstance(t)!)
-			.Sum(a => a.GetApologyWeight(state, combat, 0)) * Instance.Config.DualApologyChance;
+		=> 0;
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
