@@ -69,6 +69,7 @@ internal static class I18n
 	public static string ImTryingCardName => "I'm Trying!";
 	public static string BlastFromThePastCardName => "Blast from the Past";
 	public static string HumiliatingAttackCardName => "Humiliating Attack";
+	public static string BegForMercyCardName => "Beg for Mercy";
 
 	// rare cards
 	public static string ExtraApologyCardName => "Extra Apology";

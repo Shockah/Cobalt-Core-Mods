@@ -100,6 +100,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		typeof(ImTryingCard),
 		typeof(BlastFromThePastCard),
 		typeof(HumiliatingAttackCard),
+		typeof(BegForMercyCard),
 	};
 	internal static readonly Type[] RareCards = new Type[]
 	{
