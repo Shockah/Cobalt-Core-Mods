@@ -68,6 +68,7 @@ internal static class I18n
 	public static string BetterThanYouCardTextB => "Draw 10 <c=B79CE5>Soggins</c> cards.";
 	public static string ImTryingCardName => "I'm Trying!";
 	public static string BlastFromThePastCardName => "Blast from the Past";
+	public static string HumiliatingAttackCardName => "Humiliating Attack";
 
 	// rare cards
 	public static string ExtraApologyCardName => "Extra Apology";
