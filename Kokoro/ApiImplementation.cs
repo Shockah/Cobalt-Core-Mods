@@ -1,4 +1,5 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
+using Nanoray.Pintail;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -18,6 +19,17 @@ public sealed class ApiImplementation : IKokoroApi
 	#region Generic
 	public TimeSpan TotalGameTime
 		=> Instance.TotalGameTime;
+
+	public bool TryProxy<T>(object @object, [MaybeNullWhen(false)] out T proxy) where T : class
+	{
+		if (!typeof(T).IsInterface)
+		{
+			proxy = null;
+			return false;
+		}
+		return Instance.ProxyManager.TryProxy(@object, "Unknown", Instance.Name, out proxy);
+	}
+
 	#endregion
 
 	#region ExtensionData
@@ -109,11 +121,11 @@ public sealed class ApiImplementation : IKokoroApi
 	public ExternalStatus OxidationStatus
 		=> Instance.Content.OxidationStatus;
 
-	public Tooltip GetOxidationStatusTooltip(Ship ship, State state)
-		=> new TTGlossary($"status.{Instance.Content.OxidationStatus.Id!.Value}", Instance.OxidationStatusManager.GetOxidationStatusMaxValue(ship, state));
+	public Tooltip GetOxidationStatusTooltip(State state, Ship ship)
+		=> new TTGlossary($"status.{Instance.Content.OxidationStatus.Id!.Value}", Instance.OxidationStatusManager.GetOxidationStatusMaxValue(state, ship));
 
-	public int GetOxidationStatusMaxValue(Ship ship, State state)
-		=> Instance.OxidationStatusManager.GetOxidationStatusMaxValue(ship, state);
+	public int GetOxidationStatusMaxValue(State state, Ship ship)
+		=> Instance.OxidationStatusManager.GetOxidationStatusMaxValue(state, ship);
 
 	public void RegisterOxidationStatusHook(IOxidationStatusHook hook, double priority)
 		=> Instance.OxidationStatusManager.Register(hook, priority);
@@ -128,19 +140,19 @@ public sealed class ApiImplementation : IKokoroApi
 			? new CustomTTGlossary(CustomTTGlossary.GlossaryType.midrow, () => StableSpr.icons_overheat, () => I18n.ScorchingGlossaryName, () => I18n.ScorchingGlossaryAltDescription)
 			: new CustomTTGlossary(CustomTTGlossary.GlossaryType.midrow, () => StableSpr.icons_overheat, () => I18n.ScorchingGlossaryName, () => I18n.ScorchingGlossaryDescription, new Func<object>[] { () => value.Value });
 
-	public int GetScorchingStatus(Combat combat, StuffBase @object)
+	public int GetScorchingStatus(State state, Combat combat, StuffBase @object)
 		=> TryGetExtensionData(@object, ModEntry.ScorchingTag, out int value) ? value : 0;
 
-	public void SetScorchingStatus(Combat combat, StuffBase @object, int value)
+	public void SetScorchingStatus(State state, Combat combat, StuffBase @object, int value)
 	{
-		int oldValue = GetScorchingStatus(combat, @object);
+		int oldValue = GetScorchingStatus(state, combat, @object);
 		SetExtensionData(@object, ModEntry.ScorchingTag, value);
-		foreach (var hook in Instance.MidrowScorchingManager)
+		foreach (var hook in Instance.MidrowScorchingManager.GetHooksWithProxies(state.EnumerateAllArtifacts()))
 			hook.OnScorchingChange(combat, @object, oldValue, value);
 	}
 
-	public void AddScorchingStatus(Combat combat, StuffBase @object, int value)
-		=> SetScorchingStatus(combat, @object, Math.Max(GetScorchingStatus(combat, @object) + value, 0));
+	public void AddScorchingStatus(State state, Combat combat, StuffBase @object, int value)
+		=> SetScorchingStatus(state, combat, @object, Math.Max(GetScorchingStatus(state, combat, @object) + value, 0));
 
 	public void RegisterMidrowScorchingHook(IMidrowScorchingHook hook, double priority)
 		=> Instance.MidrowScorchingManager.Register(hook, priority);

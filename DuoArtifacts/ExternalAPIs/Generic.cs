@@ -6,3 +6,8 @@ public partial interface IKokoroApi
 {
 	TimeSpan TotalGameTime { get; }
 }
+
+public interface IHookPriority
+{
+	double HookPriority { get; }
+}

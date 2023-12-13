@@ -5,5 +5,5 @@ namespace Shockah.DuoArtifacts;
 public partial interface IKokoroApi
 {
 	ExternalStatus OxidationStatus { get; }
-	Tooltip GetOxidationStatusTooltip(Ship ship, State state);
+	Tooltip GetOxidationStatusTooltip(State state, Ship ship);
 }

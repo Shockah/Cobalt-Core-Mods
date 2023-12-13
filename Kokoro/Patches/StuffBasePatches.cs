@@ -41,9 +41,9 @@ internal static class StuffBasePatches
 		Instance.MidrowScorchingManager.ModifyMidrowObjectTooltips(__instance, __result);
 	}
 
-	private static void StuffBase_GetActionsOnDestroyed_Postfix(StuffBase __instance, Combat __1, bool __2 /* wasPlayer */, ref List<CardAction>? __result)
+	private static void StuffBase_GetActionsOnDestroyed_Postfix(StuffBase __instance, State __0, Combat __1, bool __2 /* wasPlayer */, ref List<CardAction>? __result)
 	{
 		__result ??= new();
-		Instance.MidrowScorchingManager.ModifyMidrowObjectDestroyedActions(__instance, __1, __2, __result);
+		Instance.MidrowScorchingManager.ModifyMidrowObjectDestroyedActions(__0, __1, __instance, __2, __result);
 	}
 }

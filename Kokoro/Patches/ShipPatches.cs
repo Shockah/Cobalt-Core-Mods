@@ -37,7 +37,7 @@ internal static class ShipPatches
 
 	private static void Ship_OnAfterTurn_Prefix_First(Ship __instance, State s)
 	{
-		Instance.OxidationStatusManager.OnTurnEnd(__instance, s);
+		Instance.OxidationStatusManager.OnTurnEnd(s, __instance);
 	}
 
 	private static void Ship_RenderStatusRow_Postfix(Ship __instance, G g)

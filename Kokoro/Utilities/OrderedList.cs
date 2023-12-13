@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Shockah.Kokoro;
@@ -55,6 +56,19 @@ public sealed class OrderedList<TElement, TOrderingValue> : IReadOnlyList<TEleme
 				return true;
 			}
 		}
+		return false;
+	}
+
+	public bool TryGetOrderingValue(TElement element, [MaybeNullWhen(false)] out TOrderingValue orderingValue)
+	{
+		foreach (var entry in Entries)
+		{
+			if (!Equals(entry.Element, element))
+				continue;
+			orderingValue = entry.OrderingValue;
+			return true;
+		}
+		orderingValue = default;
 		return false;
 	}
 }

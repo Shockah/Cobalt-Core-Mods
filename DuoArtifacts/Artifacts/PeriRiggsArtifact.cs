@@ -13,7 +13,6 @@ internal sealed class PeriRiggsArtifact : DuoArtifact, IEvadeHook
 	protected internal override void ApplyPatches(Harmony harmony)
 	{
 		base.ApplyPatches(harmony);
-		Instance.KokoroApi.RegisterEvadeHook(this, 0);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(AccessTools.TypeByName("Shockah.Kokoro.VanillaEvadeHook"), nameof(IEvadeHook.IsEvadePossible)),
@@ -45,11 +44,7 @@ internal sealed class PeriRiggsArtifact : DuoArtifact, IEvadeHook
 	{
 		if (hook != Instance.KokoroApi.VanillaEvadeHook)
 			return;
-
-		var artifact = state.EnumerateAllArtifacts().OfType<PeriRiggsArtifact>().FirstOrDefault();
-		if (artifact is null)
-			return;
-		artifact.EvadesLeft--;
+		EvadesLeft--;
 	}
 
 	private static void VanillaEvadeHook_IsEvadePossible_Postfix(State state, ref bool? __result)

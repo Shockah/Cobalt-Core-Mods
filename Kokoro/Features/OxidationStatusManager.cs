@@ -6,17 +6,17 @@ public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>
 
 	private static ModEntry Instance => ModEntry.Instance;
 
-	public int GetOxidationStatusMaxValue(Ship ship, State state)
+	public int GetOxidationStatusMaxValue(State state, Ship ship)
 	{
 		int value = BaseOxidationStatusMaxValue;
-		foreach (var hook in Hooks)
-			value = hook.ModifyOxidationRequirement(ship, state, value);
+		foreach (var hook in GetHooksWithProxies(state.EnumerateAllArtifacts()))
+			value = hook.ModifyOxidationRequirement(state, ship, value);
 		return value;
 	}
 
-	internal void OnTurnEnd(Ship ship, State state)
+	internal void OnTurnEnd(State state, Ship ship)
 	{
-		if (ship.Get((Status)Instance.Content.OxidationStatus.Id!.Value) < GetOxidationStatusMaxValue(ship, state))
+		if (ship.Get((Status)Instance.Content.OxidationStatus.Id!.Value) < GetOxidationStatusMaxValue(state, ship))
 			return;
 
 		ship.Add(Status.corrode);
@@ -29,7 +29,7 @@ public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>
 		{
 			var tooltip = g.tooltips.tooltips[i];
 			if (tooltip is TTGlossary glossary && glossary.key == $"status.{Instance.Content.OxidationStatus.Id!.Value}")
-				glossary.vals = new object[] { $"<c=boldPink>{GetOxidationStatusMaxValue(ship, g.state)}</c>" };
+				glossary.vals = new object[] { $"<c=boldPink>{GetOxidationStatusMaxValue(g.state, ship)}</c>" };
 		}
 	}
 }

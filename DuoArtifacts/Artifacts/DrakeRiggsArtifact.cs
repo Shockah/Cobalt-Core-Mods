@@ -1,23 +1,16 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
-using HarmonyLib;
 using Shockah.Shared;
 using System.IO;
 using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-internal sealed class DrakeRiggsArtifact : DuoArtifact, IEvadeHook
+internal sealed class DrakeRiggsArtifact : DuoArtifact, IEvadeHook, IHookPriority
 {
 	internal static ExternalSprite InactiveSprite { get; private set; } = null!;
 
 	public bool UsedThisTurn = false;
-
-	protected internal override void ApplyPatches(Harmony harmony)
-	{
-		base.ApplyPatches(harmony);
-		Instance.KokoroApi.RegisterEvadeHook(this, -10);
-	}
 
 	protected internal override void RegisterArt(ISpriteRegistry registry, string namePrefix, DuoArtifactDefinition definition)
 	{
@@ -36,12 +29,12 @@ internal sealed class DrakeRiggsArtifact : DuoArtifact, IEvadeHook
 		UsedThisTurn = false;
 	}
 
+	public double HookPriority
+		=> -10;
+
 	bool? IEvadeHook.IsEvadePossible(State state, Combat combat, EvadeHookContext context)
 	{
-		var artifact = state.EnumerateAllArtifacts().OfType<DrakeRiggsArtifact>().FirstOrDefault();
-		if (artifact is null)
-			return null;
-		if (artifact.UsedThisTurn)
+		if (UsedThisTurn)
 			return null;
 		return true;
 	}

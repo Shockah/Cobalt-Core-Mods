@@ -3,6 +3,7 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using CobaltCoreModding.Definitions.ModManifests;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
+using Nanoray.Pintail;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Shockah.Shared;
@@ -18,7 +19,8 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	internal static readonly string ScorchingTag = $"{typeof(ModEntry).Namespace}.MidrowTag.Scorching";
 
 	public static ModEntry Instance { get; private set; } = null!;
-	internal readonly ApiImplementation Api = new();
+	internal IProxyManager<string> ProxyManager { get; private set; } = null!;
+	internal ApiImplementation Api { get; private set; } = null!;
 	internal readonly ConditionalWeakTable<object, Dictionary<string, object>> ExtensionDataStorage = new();
 	private Harmony Harmony = null!;
 
@@ -44,6 +46,11 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		Instance = this;
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
+
+		var perModModLoaderContactType = AccessTools.TypeByName("CobaltCoreModding.Components.Services.PerModModLoaderContact, CobaltCoreModding.Components");
+		var proxyManagerField = AccessTools.DeclaredField(perModModLoaderContactType, "proxyManager");
+		ProxyManager = (IProxyManager<string>)proxyManagerField.GetValue(contact)!;
+		Api = new();
 
 		Harmony = new(Name);
 

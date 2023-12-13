@@ -8,7 +8,7 @@ public sealed class ArtifactIconManager : HookManager<IArtifactIconHook>
 
 	internal void OnRenderArtifactIcon(G g, Artifact artifact, Vec position)
 	{
-		foreach (var hook in Hooks)
+		foreach (var hook in GetHooksWithProxies(g.state.EnumerateAllArtifacts()))
 			hook.OnRenderArtifactIcon(g, artifact, position);
 	}
 }
