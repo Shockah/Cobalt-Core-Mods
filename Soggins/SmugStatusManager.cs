@@ -116,11 +116,17 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 	private static SmugResult GetSmugResult(Rand rng, double botchChance, double doubleChance)
 	{
+		if (botchChance >= 1)
+			return SmugResult.Botch;
+		if (botchChance <= 0 && doubleChance >= 1)
+			return SmugResult.Double;
+
 		var result = rng.Next();
 		if (result < botchChance)
 			return SmugResult.Botch;
 		if (result < botchChance + doubleChance)
 			return SmugResult.Double;
+
 		return SmugResult.Normal;
 	}
 
@@ -200,6 +206,8 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 		var handlingHook = Instance.FrogproofManager.GetHandlingHook(state, combat, card, FrogproofHookContext.Action);
 		var frogproofType = handlingHook?.GetFrogproofType(state, combat, card, FrogproofHookContext.Action) ?? FrogproofType.None;
+		if (frogproofType == FrogproofType.Innate)
+			return actions;
 
 		double botchChance = Instance.Api.GetSmugBotchChance(state, state.ship);
 		if (frogproofType == FrogproofType.Paid && botchChance > 0)
@@ -209,9 +217,6 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		}
 
 		double doubleChance = Instance.Api.GetSmugDoubleChance(state, state.ship);
-		if (frogproofType == FrogproofType.Innate && botchChance <= 0 && doubleChance >= 0)
-			return actions;
-
 		var result = GetSmugResult(state.rngActions, botchChance, doubleChance);
 		var swing = Math.Max(card.GetCurrentCost(state), 1);
 		switch (result)
