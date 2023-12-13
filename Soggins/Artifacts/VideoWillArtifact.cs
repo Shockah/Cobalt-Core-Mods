@@ -17,7 +17,7 @@ public sealed class VideoWillArtifact : Artifact, IRegisterableArtifact
 	{
 		Sprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Artifact.VideoWill",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "VideoWillArtifact.png"))
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Artifact", "VideoWill.png"))
 		);
 	}
 

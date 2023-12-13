@@ -20,11 +20,11 @@ public sealed class MisprintedApologyArtifact : Artifact, IRegisterableArtifact
 	{
 		Sprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Artifact.MisprintedApology",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "MisprintedApologyArtifact.png"))
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Artifact", "MisprintedApology.png"))
 		);
 		InactiveSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Artifact.MisprintedApologyInactive",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "MisprintedApologyInactiveArtifact.png"))
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Artifact", "MisprintedApologyInactive.png"))
 		);
 	}
 

@@ -17,7 +17,7 @@ internal sealed class PiratedShipCadArtifact : Artifact, IRegisterableArtifact, 
 	{
 		Sprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Artifact.PiratedShipCad",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "PiratedShipCadArtifact.png"))
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Artifact", "PiratedShipCad.png"))
 		);
 	}
 

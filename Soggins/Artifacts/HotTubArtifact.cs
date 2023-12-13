@@ -18,7 +18,7 @@ public sealed class HotTubArtifact : Artifact, IRegisterableArtifact
 	{
 		Sprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Artifact.HotTub",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "HotTubArtifact.png"))
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Artifact", "HotTub.png"))
 		);
 	}
 

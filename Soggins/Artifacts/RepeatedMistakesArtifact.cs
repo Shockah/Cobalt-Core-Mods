@@ -17,7 +17,7 @@ public sealed class RepeatedMistakesArtifact : Artifact, IRegisterableArtifact
 	{
 		Sprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Artifact.RepeatedMistakes",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "RepeatedMistakesArtifact.png"))
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Artifact", "RepeatedMistakes.png"))
 		);
 	}
 

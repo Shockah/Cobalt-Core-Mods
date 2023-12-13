@@ -192,7 +192,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		);
 		SmugStatusSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Status.Smug",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "SmugStatus.png"))
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Status", "Smug.png"))
 		);
 		FrogproofSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Icon.Frogproof",
@@ -200,27 +200,27 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		);
 		BotchesStatusSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Status.Botches",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "BotchesStatus.png"))
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Status", "Botches.png"))
 		);
 		ExtraApologiesStatusSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Status.ExtraApologies",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "ExtraApologiesStatus.png"))
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Status", "ExtraApologies.png"))
 		);
 		ConstantApologiesStatusSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Status.ConstantApologies",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "ConstantApologiesStatus.png"))
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Status", "ConstantApologies.png"))
 		);
 		BidingTimeStatusSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Status.BidingTime",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "BidingTimeStatus.png"))
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Status", "BidingTime.png"))
 		);
 		DoubleTimeStatusSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Status.DoubleTime",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "DoubleTimeStatus.png"))
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Status", "DoubleTime.png"))
 		);
 		DoublersLuckStatusSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Status.DoublersLuck",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "DoublersLuckStatus.png"))
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Status", "DoublersLuck.png"))
 		);
 
 		foreach (var cardType in AllArtifacts)

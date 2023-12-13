@@ -17,7 +17,7 @@ public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook
 	{
 		Sprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Artifact.Hijinks",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "HijinksArtifact.png"))
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Artifact", "Hijinks.png"))
 		);
 	}
 

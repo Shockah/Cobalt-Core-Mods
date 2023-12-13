@@ -20,11 +20,11 @@ internal sealed class SmugArtifact : Artifact, IRegisterableArtifact
 		for (int smug = -Sprites.Length / 2; smug <= Sprites.Length / 2; smug++)
 			Sprites[smug + Sprites.Length / 2] = registry.RegisterArtOrThrow(
 				id: $"{GetType().Namespace}.Artifact.Smug{smug}",
-				file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", $"SmugArtifact{smug}.png"))
+				file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Smug", $"{smug}.png"))
 			);
 		OversmugSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Artifact.SmugOversmug",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", $"SmugArtifactOversmug.png"))
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Smug", $"Oversmug.png"))
 		);
 	}
 
