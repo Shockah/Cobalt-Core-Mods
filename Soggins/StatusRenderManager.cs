@@ -22,10 +22,13 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 		=> status == (Status)Instance.SmuggedStatus.Id!.Value ? false : null;
 
 	public bool? ShouldOverrideStatusRenderingAsBars(State state, Combat combat, Ship ship, Status status, int amount)
-		=> status == (Status)Instance.SmugStatus.Id!.Value ? true : null;
+		=> status == (Status)Instance.SmugStatus.Id!.Value || status == (Status)Instance.DoubleTimeStatus.Id!.Value ? true : null;
 
 	public (IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(State state, Combat combat, Ship ship, Status status, int amount)
 	{
+		if (status == (Status)Instance.DoubleTimeStatus.Id!.Value)
+			return (new Color[] { new(0, 0, 0, 0) }, -3);
+
 		var barCount = Instance.Api.GetMaxSmug(ship) - Instance.Api.GetMinSmug(ship) + 1;
 		var colors = new Color[barCount];
 
