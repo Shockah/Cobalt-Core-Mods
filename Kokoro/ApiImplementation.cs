@@ -50,6 +50,32 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 
 	#endregion
 
+	#region ConditionalActions
+	public IConditionalActionIntExpression MakeConditionalActionIntConstant(int value)
+		=> new ConditionalActionIntConstant(value);
+
+	public IConditionalActionIntExpression MakeConditionalActionHandConstant(int value)
+		=> new ConditionalActionHandConstant(value);
+
+	public IConditionalActionIntExpression MakeConditionalActionXConstant(int value)
+		=> new ConditionalActionXConstant(value);
+
+	public IConditionalActionIntExpression MakeConditionalActionScalarMultiplier(IConditionalActionIntExpression expression, int scalar)
+		=> new ConditionalActionScalarMultiplier(expression, scalar);
+
+	public IConditionalActionBoolExpression MakeConditionalActionHasStatusExpression(Status status, bool targetPlayer = true, bool countNegative = false)
+		=> new ConditionalActionHasStatusExpression(status, targetPlayer, countNegative);
+
+	public IConditionalActionIntExpression MakeConditionalActionStatusExpression(Status status, bool targetPlayer = true)
+		=> new ConditionalActionStatusExpression(status, targetPlayer);
+
+	public IConditionalActionBoolExpression MakeConditionalActionEquation(IConditionalActionIntExpression lhs, ConditionalActionEquationOperator @operator, IConditionalActionIntExpression rhs)
+		=> new ConditionalActionEquation(lhs, @operator, rhs);
+
+	public CardAction MakeConditionalAction(IConditionalActionBoolExpression expression, CardAction action)
+		=> new AConditional { Expression = expression, Action = action };
+	#endregion
+
 	#region ExtensionData
 	private static T ConvertExtensionData<T>(object o) where T : notnull
 	{

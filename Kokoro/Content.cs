@@ -15,6 +15,14 @@ internal sealed class Content
 	internal ExternalSprite OxidationSprite { get; private set; } = null!;
 	internal ExternalStatus OxidationStatus { get; private set; } = null!;
 
+	internal ExternalSprite QuestionMarkSprite { get; private set; } = null!;
+	internal ExternalSprite EqualSprite { get; private set; } = null!;
+	internal ExternalSprite NotEqualSprite { get; private set; } = null!;
+	internal ExternalSprite GreaterThanSprite { get; private set; } = null!;
+	internal ExternalSprite LessThanSprite { get; private set; } = null!;
+	internal ExternalSprite GreaterThanOrEqualSprite { get; private set; } = null!;
+	internal ExternalSprite LessThanOrEqualSprite { get; private set; } = null!;
+
 	internal void RegisterArt(ISpriteRegistry registry)
 	{
 		WormSprite = registry.RegisterArtOrThrow(
@@ -24,6 +32,34 @@ internal sealed class Content
 		OxidationSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Status.Oxidation",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "OxidationStatus.png"))
+		);
+		QuestionMarkSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Conditional.QuestionMark",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Conditional", "QuestionMark.png"))
+		);
+		EqualSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Conditional.Equal",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Conditional", "Equal.png"))
+		);
+		NotEqualSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Conditional.NotEqual",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Conditional", "NotEqual.png"))
+		);
+		GreaterThanSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Conditional.GreaterThan",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Conditional", "GreaterThan.png"))
+		);
+		LessThanSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Conditional.LessThan",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Conditional", "LessThan.png"))
+		);
+		GreaterThanOrEqualSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Conditional.GreaterThanOrEqual",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Conditional", "GreaterThanOrEqual.png"))
+		);
+		LessThanOrEqualSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Conditional.LessThanOrEqual",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Conditional", "LessThanOrEqual.png"))
 		);
 	}
 
