@@ -17,7 +17,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 	internal FrogproofManager() : base()
 	{
 		Register(FrogproofCardTraitFrogproofHook.Instance, 0);
-		Register(TrashCardFrogproofHook.Instance, -1);
+		Register(TrashCardFrogproofHook.Instance, 1);
 		Register(FrogproofingFrogproofHook.Instance, -10);
 	}
 
@@ -42,10 +42,10 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 	{
 		foreach (var hook in Hooks)
 		{
-			var hookResult = hook.IsFrogproof(state, combat, card, context);
-			if (hookResult == false)
+			var hookResult = hook.GetFrogproofType(state, combat, card, context);
+			if (hookResult == FrogproofType.None)
 				return null;
-			else if (hookResult == true)
+			else if (hookResult != null)
 				return hook;
 		}
 		return null;
@@ -141,8 +141,8 @@ public sealed class FrogproofCardTraitFrogproofHook : IFrogproofHook
 
 	private FrogproofCardTraitFrogproofHook() { }
 
-	public bool? IsFrogproof(State state, Combat? combat, Card card, FrogproofHookContext context)
-		=> card is IFrogproofCard frogproofCard && frogproofCard.IsFrogproof(state, combat) ? true : null;
+	public FrogproofType? GetFrogproofType(State state, Combat? combat, Card card, FrogproofHookContext context)
+		=> card is IFrogproofCard frogproofCard && frogproofCard.IsFrogproof(state, combat) ? FrogproofType.Innate : null;
 
 	public void PayForFrogproof(State state, Combat? combat, Card card) { }
 }
@@ -153,8 +153,8 @@ public sealed class TrashCardFrogproofHook : IFrogproofHook
 
 	private TrashCardFrogproofHook() { }
 
-	public bool? IsFrogproof(State state, Combat? combat, Card card, FrogproofHookContext context)
-		=> card.GetMeta().deck == Deck.trash ? true : null;
+	public FrogproofType? GetFrogproofType(State state, Combat? combat, Card card, FrogproofHookContext context)
+		=> card.GetMeta().deck == Deck.trash ? FrogproofType.Innate : null;
 
 	public void PayForFrogproof(State state, Combat? combat, Card card) { }
 }
@@ -165,8 +165,8 @@ public sealed class FrogproofingFrogproofHook : IFrogproofHook
 
 	private FrogproofingFrogproofHook() { }
 
-	public bool? IsFrogproof(State state, Combat? combat, Card card, FrogproofHookContext context)
-		=> context == FrogproofHookContext.Action && state.ship.Get((Status)ModEntry.Instance.FrogproofingStatus.Id!.Value) > 0 ? true : null;
+	public FrogproofType? GetFrogproofType(State state, Combat? combat, Card card, FrogproofHookContext context)
+		=> context == FrogproofHookContext.Action && state.ship.Get((Status)ModEntry.Instance.FrogproofingStatus.Id!.Value) > 0 ? FrogproofType.Paid : null;
 
 	public void PayForFrogproof(State state, Combat? combat, Card card)
 		=> state.ship.Add((Status)ModEntry.Instance.FrogproofingStatus.Id!.Value, -1);

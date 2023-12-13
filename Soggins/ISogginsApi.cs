@@ -43,8 +43,13 @@ public enum FrogproofHookContext
 	Rendering, Action
 }
 
+public enum FrogproofType
+{
+	None, Innate, Paid
+}
+
 public interface IFrogproofHook
 {
-	bool? IsFrogproof(State state, Combat? combat, Card card, FrogproofHookContext context);
+	FrogproofType? GetFrogproofType(State state, Combat? combat, Card card, FrogproofHookContext context);
 	void PayForFrogproof(State state, Combat? combat, Card card);
 }
