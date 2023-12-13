@@ -25,6 +25,7 @@ internal static class RevengeDrivePatches
 		if (!__instance.alreadyActivated || __state)
 			return;
 
+		// TODO: fix behavior for wrapped actions - this code won't trigger on these, but the original that we're fixing won't either
 		if (!Instance.StatusLogicManager.IsAffectedByBoost(state, combat, state.ship, Status.overdrive))
 			foreach (var action in combat.cardActions)
 				if (action is AAttack attack && !attack.targetPlayer && attack.fromDroneX is null)
