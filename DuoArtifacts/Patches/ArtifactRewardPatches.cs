@@ -47,7 +47,7 @@ internal static class ArtifactRewardPatches
 		//return NewRunOptions.allChars;
 
 		foreach (var character in state.characters)
-			if (character.deckType is { } deck && ModEntry.IsEligibleForDuoArtifact(deck, state))
+			if (character.deckType is { } deck && Instance.GetDuoArtifactEligibity(deck, state) == DuoArtifactEligibity.Eligible)
 				yield return deck == Deck.colorless ? Deck.catartifact : deck;
 	}
 

@@ -10,7 +10,7 @@ public interface IApi
 	ExternalDeck TrioArtifactDeck { get; }
 	ExternalDeck ComboArtifactDeck { get; }
 
-	bool IsEligibleForDuoArtifact(Deck deck, State state);
+	DuoArtifactEligibity GetDuoArtifactEligibity(Deck deck, State state);
 
 	bool IsDuoArtifactType(Type type);
 	bool IsDuoArtifact(Artifact artifact);
@@ -28,4 +28,9 @@ public interface IApi
 
 	void RegisterDuoArtifact(Type type, IEnumerable<Deck> combo);
 	void RegisterDuoArtifact<TArtifact>(IEnumerable<Deck> combo) where TArtifact : Artifact;
+}
+
+public enum DuoArtifactEligibity
+{
+	InvalidState, RequirementsNotSatisfied, NoDuosForThisCharacter, NoDuosForThisCrew, Eligible
 }

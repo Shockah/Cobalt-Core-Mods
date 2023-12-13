@@ -75,8 +75,23 @@ internal static class CharacterPatches
 
 	private static void Character_Render_Transpiler_AddDuoTooltips(Character character, G g, Vec pos)
 	{
-		if (character.deckType is not { } deck || !ModEntry.IsEligibleForDuoArtifact(deck, g.state))
+		if (character.deckType is not { } deck)
 			return;
-		g.tooltips.AddText(pos, I18n.CharacterEligibleForDuoArtifact);
+
+		switch (ModEntry.Instance.GetDuoArtifactEligibity(deck, g.state))
+		{
+			case DuoArtifactEligibity.InvalidState:
+			case DuoArtifactEligibity.RequirementsNotSatisfied:
+				break;
+			case DuoArtifactEligibity.NoDuosForThisCharacter:
+				g.tooltips.AddText(pos, I18n.CharacterEligibleForDuoArtifactNoDuos);
+				break;
+			case DuoArtifactEligibity.NoDuosForThisCrew:
+				g.tooltips.AddText(pos, I18n.CharacterEligibleForDuoArtifactNoMatchingDuos);
+				break;
+			case DuoArtifactEligibity.Eligible:
+				g.tooltips.AddText(pos, I18n.CharacterEligibleForDuoArtifact);
+				break;
+		}
 	}
 }

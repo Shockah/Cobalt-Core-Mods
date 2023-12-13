@@ -141,31 +141,53 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.RegisterCards(registry, namePrefix, definition);
 	}
 
-	internal static bool IsEligibleForDuoArtifact(Deck deck, State state)
+	internal DuoArtifactEligibity GetDuoArtifactEligibity(Deck deck, State state)
 	{
 		if (state.IsOutsideRun())
-			return false;
-
-		var character = state.characters.FirstOrDefault(c => c.deckType == deck || c.deckType == Deck.colorless && deck == Deck.catartifact);
+			return DuoArtifactEligibity.InvalidState;
+		
+		var character = state.characters.FirstOrDefault(c => DeckMatches(c.deckType, deck));
 		if (character is null)
-			return false;
+			return DuoArtifactEligibity.InvalidState;
+
+		DuoArtifactEligibity CheckDetailedEligibity()
+		{
+			var artifactsForThisCharacter = Database.GetAllDuoArtifactTypes()
+				.Select(t => (Type: t, Ownership: Database.GetDuoArtifactTypeOwnership(t)!))
+				.Where(e => e.Ownership.Any(owner => DeckMatches(deck, owner)));
+
+			if (!artifactsForThisCharacter.Any())
+				return DuoArtifactEligibity.NoDuosForThisCharacter;
+
+			var artifactsForThisCharacterInThisCrew = Database.GetMatchingDuoArtifactTypes(state.characters.Select(c => c.deckType).WhereNotNull())
+				.Select(t => (Type: t, Ownership: Database.GetDuoArtifactTypeOwnership(t)!))
+				.Where(e => e.Ownership.Any(owner => DeckMatches(deck, owner)));
+
+			if (!artifactsForThisCharacterInThisCrew.Any())
+				return DuoArtifactEligibity.NoDuosForThisCrew;
+
+			return DuoArtifactEligibity.Eligible;
+		}
 
 		if (character.artifacts.Count >= ArtifactsRequiredForEligibility)
-			return true;
+			return CheckDetailedEligibity();
 
 		var characterCardsInDeck = state.GetAllCards()
 			.Where(c => !c.GetDataWithOverrides(state).temporary)
 			.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && !meta.dontOffer && meta.deck == character.deckType)
 			.ToList();
 		if (characterCardsInDeck.Count >= AnyCardsRequiredForEligibility)
-			return true;
+			return CheckDetailedEligibity();
 
 		var rareCharacterCardsInDeck = characterCardsInDeck
 			.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && (int)meta.rarity >= (int)Rarity.rare)
 			.ToList();
 		if (rareCharacterCardsInDeck.Count >= RareCardsRequiredForEligibility)
-			return true;
+			return CheckDetailedEligibity();
 
-		return false;
+		return DuoArtifactEligibity.RequirementsNotSatisfied;
 	}
+
+	internal static bool DeckMatches(Deck? lhs, Deck? rhs)
+		=> Equals(lhs, rhs) || (lhs == Deck.colorless && rhs == Deck.catartifact) || (lhs == Deck.catartifact && rhs == Deck.colorless);
 }

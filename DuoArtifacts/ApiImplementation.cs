@@ -22,8 +22,8 @@ public sealed class ApiImplementation : IApi
 	public ExternalDeck ComboArtifactDeck
 		=> Database.ComboArtifactDeck;
 
-	public bool IsEligibleForDuoArtifact(Deck deck, State state)
-		=> ModEntry.IsEligibleForDuoArtifact(deck, state);
+	public DuoArtifactEligibity GetDuoArtifactEligibity(Deck deck, State state)
+		=> ModEntry.Instance.GetDuoArtifactEligibity(deck, state);
 
 	public bool IsDuoArtifactType(Type type)
 		=> Database.IsDuoArtifactType(type);
