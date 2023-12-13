@@ -203,11 +203,14 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		if (playNoMatterWhatForFree)
 			return actions;
 
-		var handlingHook = Instance.FrogproofManager.GetHandlingHook(state, combat, card, FrogproofHookContext.Action);
-		if (handlingHook is not null)
+		if (Instance.Api.GetSmugBotchChance(state, state.ship) > 0)
 		{
-			handlingHook.PayForFrogproof(state, combat, card);
-			return actions;
+			var handlingHook = Instance.FrogproofManager.GetHandlingHook(state, combat, card, FrogproofHookContext.Action);
+			if (handlingHook is not null)
+			{
+				handlingHook.PayForFrogproof(state, combat, card);
+				return actions;
+			}
 		}
 
 		var result = GetSmugResult(state, state.ship, state.rngActions);
