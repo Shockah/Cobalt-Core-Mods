@@ -1,5 +1,4 @@
-﻿using FSPRO;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Shockah.Shared;
 using System.Linq;
 
@@ -78,11 +77,10 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 		if (unbubbledMidrowObjects.Any())
 		{
 			var midrowObject = unbubbledMidrowObjects[state.rngActions.NextInt() % unbubbledMidrowObjects.Count];
-			combat.QueueImmediate(new ADelegateAction((_, _, _) =>
+			combat.QueueImmediate(new ABubble
 			{
-				midrowObject.bubbleShield = true;
-				Audio.Play(Event.Status_PowerUp);
-			}));
+				worldX = midrowObject.x
+			});
 			didSomething = true;
 		}
 		else if (emptyMidrowSlots.Any())
