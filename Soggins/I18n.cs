@@ -15,7 +15,7 @@ internal static class I18n
 	public static string HotTubArtifactName => "Hot Tub";
 	public static string HotTubArtifactDescription => "At the end of your turn, if <c=status>SMUG</c> is <c=boldPink>{0}</c>, gain 1 <c=status>SMUG</c>; if <c=status>SMUG</c> is <c=boldPink>{1}</c>, lose 1 <c=status>SMUG</c>.";
 	public static string HijinksArtifactName => "Hijinks";
-	public static string HijinksArtifactDescription => "Gain 1 extra <c=energy>ENERGY</c> every turn. <c=downside>You are 5% more likely to botch a card.</c>";
+	public static string HijinksArtifactDescription => "Gain 1 extra <c=energy>ENERGY</c> every turn. <c=downside>Your chance to botch card effects through <c=status>SMUG</c> is doubled.</c>";
 
 	public static string RepeatedMistakesArtifactName => "Repeated Mistakes";
 	public static string RepeatedMistakesArtifactDescription => "Start each combat with 3 <c=status>MISSILE MALFUNCTION</c>. At the start of each turn, <c=action>LAUNCH</c> a <c=midrow>SEEKER</c>.";

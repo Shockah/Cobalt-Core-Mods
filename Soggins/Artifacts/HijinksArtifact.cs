@@ -7,7 +7,7 @@ using System.IO;
 namespace Shockah.Soggins;
 
 [ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Boss })]
-public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook
+public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook, IHookPriority
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
@@ -39,18 +39,6 @@ public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook
 	public override void OnRemoveArtifact(State state)
 		=> state.ship.baseEnergy--;
 
-	public override void OnCombatStart(State state, Combat combat)
-	{
-		base.OnCombatStart(state, combat);
-		combat.Queue(new AStatus
-		{
-			status = (Status)Instance.FrogproofingStatus.Id!.Value,
-			statusAmount = 3,
-			targetPlayer = true,
-			artifactPulse = Key()
-		});
-	}
-
 	public override List<Tooltip>? GetExtraTooltips()
 	{
 		var tooltips = base.GetExtraTooltips() ?? new();
@@ -58,6 +46,9 @@ public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook
 		return tooltips;
 	}
 
+	public double HookPriority
+		=> -100;
+
 	public double ModifySmugBotchChance(State state, Ship ship, double chance)
-		=> chance + 0.05;
+		=> chance * 2;
 }
