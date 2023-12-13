@@ -31,6 +31,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	internal SmugStatusManager SmugStatusManager { get; private set; } = null!;
 	internal FrogproofManager FrogproofManager { get; private set; } = null!;
 	internal StatusRenderManager StatusRenderManager { get; private set; } = null!;
+	internal StatusLogicManager StatusLogicManager { get; private set; } = null!;
 
 	internal ExternalSprite SogginsDeckBorder { get; private set; } = ExternalSprite.GetRaw((int)StableSpr.cardShared_border_soggins);
 	internal ExternalDeck SogginsDeck { get; private set; } = null!;
@@ -137,6 +138,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		SmugStatusManager = new();
 		FrogproofManager = new();
 		StatusRenderManager = new();
+		StatusLogicManager = new();
 
 		Harmony = new(Name);
 		FrogproofManager.ApplyPatches(Harmony);

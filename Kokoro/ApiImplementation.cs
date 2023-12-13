@@ -248,4 +248,12 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 	public Color DefaultInactiveStatusBarColor
 		=> DefaultActiveStatusBarColor.fadeAlpha(0.3);
 	#endregion
+
+	#region StatusLogicHook
+	public void RegisterStatusLogicHook(IStatusLogicHook hook, double priority)
+		=> Instance.StatusLogicManager.Register(hook, priority);
+
+	public void UnregisterStatusLogicHook(IStatusLogicHook hook)
+		=> Instance.StatusLogicManager.Unregister(hook);
+	#endregion
 }

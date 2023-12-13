@@ -35,6 +35,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	public DroneShiftManager DroneShiftManager { get; private init; } = new();
 	public ArtifactIconManager ArtifactIconManager { get; private init; } = new();
 	public StatusRenderManager StatusRenderManager { get; private init; } = new();
+	public StatusLogicManager StatusLogicManager { get; private init; } = new();
 	public MidrowScorchingManager MidrowScorchingManager { get; private init; } = new();
 	public WormStatusManager WormStatusManager { get; private init; } = new();
 	public OxidationStatusManager OxidationStatusManager { get; private init; } = new();
@@ -56,9 +57,11 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 		ArtifactBrowsePatches.Apply(Harmony);
 		ArtifactPatches.Apply(Harmony);
+		AStatusPatches.Apply(Harmony);
 		CardPatches.Apply(Harmony);
 		CombatPatches.Apply(Harmony);
 		MGPatches.Apply(Harmony);
+		RevengeDrivePatches.Apply(Harmony);
 		ShipPatches.Apply(Harmony);
 		StatusMetaPatches.Apply(Harmony);
 		StuffBasePatches.Apply(Harmony);
