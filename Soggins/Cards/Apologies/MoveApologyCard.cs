@@ -21,7 +21,6 @@ public sealed class MoveApologyCard : ApologyCard, IRegisterableCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = StableSpr.cards_Juke;
 		data.flippable = true;
 		return data;
 	}

@@ -1,6 +1,8 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
+using Shockah.Shared;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Shockah.Soggins;
 
@@ -8,6 +10,21 @@ namespace Shockah.Soggins;
 public sealed class SmugnessControlCard : Card, IRegisterableCard, IFrogproofCard
 {
 	private static ModEntry Instance => ModEntry.Instance;
+
+	private static ExternalSprite TopArt = null!;
+	private static ExternalSprite BottomArt = null!;
+
+	public void RegisterArt(ISpriteRegistry registry)
+	{
+		TopArt = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.CardArt.SmugnessControlTop",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "CardArt", "SmugnessControlTop.png"))
+		);
+		BottomArt = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.CardArt.SmugnessControlBottom",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "CardArt", "SmugnessControlBottom.png"))
+		);
+	}
 
 	public void RegisterCard(ICardRegistry registry)
 	{
@@ -51,7 +68,7 @@ public sealed class SmugnessControlCard : Card, IRegisterableCard, IFrogproofCar
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top;
+		data.art = (Spr)(flipped ? BottomArt : TopArt).Id!.Value;
 		data.cost = GetCost();
 		data.floppable = true;
 		return data;

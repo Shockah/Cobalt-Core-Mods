@@ -1,7 +1,9 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
+using Shockah.Shared;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Shockah.Soggins;
@@ -9,11 +11,28 @@ namespace Shockah.Soggins;
 [CardMeta(dontOffer = true, rarity = Rarity.common, unreleased = true)]
 public sealed class DualApologyCard : ApologyCard, IRegisterableCard
 {
+	private static ModEntry Instance => ModEntry.Instance;
+
+	private static ExternalSprite TopArt = null!;
+	private static ExternalSprite BottomArt = null!;
+
 	public Card? FirstCard;
 	public Card? SecondCard;
 
 	public bool CustomFlipped = false;
 	public bool CustomFlopped = false;
+
+	public override void RegisterArt(ISpriteRegistry registry)
+	{
+		TopArt = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.CardArt.ApologyDualTop",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "CardArt", "ApologyDualTop.png"))
+		);
+		BottomArt = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.CardArt.ApologyDualBottom",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "CardArt", "ApologyDualBottom.png"))
+		);
+	}
 
 	public void RegisterCard(ICardRegistry registry)
 	{
@@ -32,7 +51,7 @@ public sealed class DualApologyCard : ApologyCard, IRegisterableCard
 		var data = base.GetData(state);
 		var firstData = FirstCard?.GetData(state);
 		var secondData = SecondCard?.GetData(state);
-		data.art = CustomFlopped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top;
+		data.art = (Spr)(flipped ? BottomArt : TopArt).Id!.Value;
 		data.floppable = true;
 		data.flippable = firstData?.flippable == true || secondData?.flippable == true;
 		data.singleUse = firstData?.singleUse == true || secondData?.singleUse == true;

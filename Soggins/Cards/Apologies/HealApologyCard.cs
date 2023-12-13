@@ -21,7 +21,6 @@ public sealed class HealApologyCard : ApologyCard, IRegisterableCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = StableSpr.cards_Repairs;
 		data.singleUse = true;
 		return data;
 	}

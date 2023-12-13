@@ -22,7 +22,6 @@ public sealed class RandomPlaceholderApologyCard : ApologyCard, IRegisterableCar
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = StableSpr.cards_colorless;
 		data.description = I18n.BlankApologyCardText;
 		return data;
 	}

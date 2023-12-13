@@ -3,6 +3,7 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using HarmonyLib;
 using Shockah.Shared;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Shockah.Soggins;
 
@@ -11,7 +12,17 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard, IFrogproof
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
+	private static ExternalSprite Art = null!;
+
 	private static bool IsDuringTryPlayCard = false;
+
+	public void RegisterArt(ISpriteRegistry registry)
+	{
+		Art = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.CardArt.ThoughtsAndPrayers",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "CardArt", "ThoughtsAndPrayers.png"))
+		);
+	}
 
 	public void RegisterCard(ICardRegistry registry)
 	{
@@ -46,7 +57,7 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard, IFrogproof
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = StableSpr.cards_colorless;
+		data.art = (Spr)Art.Id!.Value;
 		data.cost = upgrade == Upgrade.B ? 0 : 1;
 		data.exhaust = upgrade == Upgrade.B;
 		data.buoyant = upgrade == Upgrade.B;

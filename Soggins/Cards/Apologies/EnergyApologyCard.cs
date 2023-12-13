@@ -18,13 +18,6 @@ public sealed class EnergyApologyCard : ApologyCard, IRegisterableCard
 		registry.RegisterCard(card);
 	}
 
-	public override CardData GetData(State state)
-	{
-		var data = base.GetData(state);
-		data.art = StableSpr.cards_ExtraBattery;
-		return data;
-	}
-
 	public override double GetApologyWeight(State state, Combat combat, int timesGiven)
 		=> base.GetApologyWeight(state, combat, timesGiven) * 0.5;
 

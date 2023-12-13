@@ -229,6 +229,12 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 				continue;
 			card.RegisterArt(registry);
 		}
+		foreach (var cardType in AllCards)
+		{
+			if (Activator.CreateInstance(cardType) is not IRegisterableCard card)
+				continue;
+			card.RegisterArt(registry);
+		}
 	}
 
 	public void LoadManifest(IDeckRegistry registry)
