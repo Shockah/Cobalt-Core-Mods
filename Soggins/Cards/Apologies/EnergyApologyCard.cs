@@ -25,6 +25,9 @@ public sealed class EnergyApologyCard : ApologyCard, IRegisterableCard
 		return data;
 	}
 
+	public override double GetApologyWeight(State state, Combat combat, int timesGiven)
+		=> base.GetApologyWeight(state, combat, timesGiven) * 0.5;
+
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> new()
 		{

@@ -27,7 +27,7 @@ public sealed class HealApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override double GetApologyWeight(State state, Combat combat, int timesGiven)
-		=> timesGiven > 0 ? 0 : 0.5;
+		=> timesGiven > 0 ? 0 : base.GetApologyWeight(state, combat, timesGiven) * 0.5;
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> new()

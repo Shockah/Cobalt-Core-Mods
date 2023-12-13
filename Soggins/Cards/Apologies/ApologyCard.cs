@@ -15,5 +15,5 @@ public abstract class ApologyCard : Card, IFrogproofCard
 		};
 
 	public virtual double GetApologyWeight(State state, Combat combat, int timesGiven)
-		=> 1;
+		=> 1.0 / (timesGiven + 1);
 }
