@@ -50,18 +50,6 @@ public sealed class HotTubArtifact : Artifact, IRegisterableArtifact
 		return string.Format(I18n.HotTubArtifactDescription, Instance.Api.GetMinSmug(state.ship), Instance.Api.GetMaxSmug(state.ship));
 	}
 
-	public override void OnCombatStart(State state, Combat combat)
-	{
-		base.OnCombatStart(state, combat);
-		combat.Queue(new AStatus
-		{
-			status = (Status)Instance.FrogproofingStatus.Id!.Value,
-			statusAmount = 3,
-			targetPlayer = true,
-			artifactPulse = Key()
-		});
-	}
-
 	public override void OnTurnEnd(State state, Combat combat)
 	{
 		base.OnTurnEnd(state, combat);
