@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace Shockah.Soggins;
 
+[CardMeta(dontOffer = true, rarity = Rarity.common, unreleased = true)]
 public sealed class DualApologyCard : ApologyCard, IRegisterableCard
 {
 	private static ModEntry Instance => ModEntry.Instance;
