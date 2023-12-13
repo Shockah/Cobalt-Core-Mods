@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Shockah.Kokoro;
 
@@ -143,6 +145,13 @@ internal sealed class ConditionalActionHasStatusExpression : IConditionalActionB
 			Draw.Sprite(icon, position.x, position.y, color: isDisabled ? Colors.disabledIconTint : Colors.white);
 		position.x += 8;
 	}
+
+	public List<Tooltip> GetTooltips(State state, Combat? combat)
+	{
+		var ship = TargetPlayer ? state.ship : combat?.otherShip;
+		var amount = ship?.Get(Status) ?? 1;
+		return new() { new TTGlossary($"status.{Status.Key()}", amount) };
+	}
 }
 
 internal sealed class ConditionalActionStatusExpression : IConditionalActionIntExpression
@@ -179,6 +188,13 @@ internal sealed class ConditionalActionStatusExpression : IConditionalActionIntE
 		if (!dontRender)
 			Draw.Sprite(icon, position.x, position.y, color: isDisabled ? Colors.disabledIconTint : Colors.white);
 		position.x += 8;
+	}
+
+	public List<Tooltip> GetTooltips(State state, Combat? combat)
+	{
+		var ship = TargetPlayer ? state.ship : combat?.otherShip;
+		var amount = ship?.Get(Status) ?? 1;
+		return new() { new TTGlossary($"status.{Status.Key()}", amount) };
 	}
 }
 
@@ -238,4 +254,7 @@ internal sealed class ConditionalActionEquation : IConditionalActionBoolExpressi
 
 		Rhs.Render(g, ref position, isDisabled, dontRender);
 	}
+
+	public List<Tooltip> GetTooltips(State state, Combat? combat)
+		=> Lhs.GetTooltips(state, combat).Concat(Rhs.GetTooltips(state, combat)).ToList();
 }

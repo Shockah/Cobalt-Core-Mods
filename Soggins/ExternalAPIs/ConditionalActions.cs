@@ -1,4 +1,6 @@
-﻿namespace Shockah.Soggins;
+﻿using System.Collections.Generic;
+
+namespace Shockah.Soggins;
 
 public partial interface IKokoroApi
 {
@@ -20,6 +22,7 @@ public enum ConditionalActionEquationOperator
 public interface IConditionalActionExpression
 {
 	void Render(G g, ref Vec position, bool isDisabled, bool dontRender);
+	List<Tooltip> GetTooltips(State state, Combat? combat) => new();
 }
 
 public interface IConditionalActionBoolExpression : IConditionalActionExpression
