@@ -132,9 +132,13 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 	public static Card GenerateAndTrackApology(State state, Combat combat, Rand rng, bool forDual = false, Type? ignoringType = null)
 	{
+		var misprintedApologyArtifact = state.EnumerateAllArtifacts().OfType<MisprintedApologyArtifact>().FirstOrDefault();
+
 		ApologyCard apology;
-		if (!forDual && rng.Next() < Instance.Config.DualApologyChance)
+		if (!forDual && misprintedApologyArtifact is not null && !misprintedApologyArtifact.TriggeredThisTurn)
 		{
+			misprintedApologyArtifact.Pulse();
+			misprintedApologyArtifact.TriggeredThisTurn = true;
 			var firstCard = GenerateAndTrackApology(state, combat, rng, forDual: true);
 			var secondCard = GenerateAndTrackApology(state, combat, rng, forDual: true, ignoringType: firstCard.GetType());
 			apology = new DualApologyCard

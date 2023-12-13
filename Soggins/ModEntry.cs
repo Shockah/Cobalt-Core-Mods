@@ -116,6 +116,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		typeof(VideoWillArtifact),
 		typeof(PiratedShipCadArtifact),
 		typeof(HotTubArtifact),
+		typeof(MisprintedApologyArtifact),
 
 		typeof(RepeatedMistakesArtifact),
 		typeof(HijinksArtifact),
