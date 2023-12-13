@@ -29,14 +29,14 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 		var barCount = Instance.Api.GetMaxSmug(ship) - Instance.Api.GetMinSmug(ship) + 1;
 		var colors = new Color[barCount];
 
-		if (Instance.Api.IsOversmug(ship))
-		{
-			Array.Fill(colors, Colors.downside);
-			return (colors, null);
-		}
 		if (ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0)
 		{
 			Array.Fill(colors, Colors.cheevoGold);
+			return (colors, null);
+		}
+		if (Instance.Api.IsOversmug(ship))
+		{
+			Array.Fill(colors, Colors.downside);
 			return (colors, null);
 		}
 
