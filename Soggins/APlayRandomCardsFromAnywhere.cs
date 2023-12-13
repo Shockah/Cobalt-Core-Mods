@@ -13,6 +13,7 @@ public sealed class APlayRandomCardsFromAnywhere : CardAction
 	public bool FromDiscard = false;
 	public bool FromExhaust = false;
 	public int? IgnoreCardID = null;
+	public string? IgnoreCardType = null;
 
 	public override void Begin(G g, State s, Combat c)
 	{
@@ -31,6 +32,8 @@ public sealed class APlayRandomCardsFromAnywhere : CardAction
 			potentialCards = potentialCards.Where(c => c.GetMeta().deck == Deck.Value);
 		if (IgnoreCardID is not null)
 			potentialCards = potentialCards.Where(c => c.uuid != IgnoreCardID.Value);
+		if (IgnoreCardType is not null)
+			potentialCards = potentialCards.Where(c => c.Key() != IgnoreCardType);
 		potentialCards = potentialCards.Shuffle(s.rngActions);
 
 		foreach (var card in potentialCards.Take(Amount))

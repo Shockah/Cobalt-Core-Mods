@@ -49,7 +49,7 @@ public sealed class DoSomethingCard : Card, IRegisterableCard
 				FromDrawPile = upgrade != Upgrade.A,
 				FromDiscard = upgrade != Upgrade.None,
 				FromExhaust = upgrade == Upgrade.B,
-				IgnoreCardID = uuid
+				IgnoreCardType = Key()
 			}
 		};
 }
