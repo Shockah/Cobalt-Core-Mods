@@ -93,7 +93,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			return 1; // oversmug
 
 		var chance = smug.Value < Instance.Api.GetMinSmug(ship) ? Instance.Config.BotchChances[0] : Instance.Config.BotchChances[smug.Value - Instance.Api.GetMinSmug(ship)];
-		foreach (var hook in this)
+		foreach (var hook in GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
 			chance = hook.ModifySmugBotchChance(state, ship, chance);
 		return chance;
 	}
@@ -109,7 +109,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			return 0; // oversmug
 
 		var chance = smug.Value < Instance.Api.GetMinSmug(ship) ? Instance.Config.DoubleChances[0] : Instance.Config.DoubleChances[smug.Value - Instance.Api.GetMinSmug(ship)];
-		foreach (var hook in this)
+		foreach (var hook in GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
 			chance = hook.ModifySmugDoubleChance(state, ship, chance);
 		return chance;
 	}
@@ -248,7 +248,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 				});
 
 				int apologies = swing;
-				foreach (var hook in Instance.SmugStatusManager)
+				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
 					apologies = hook.ModifyApologyAmountForBotchingBySmug(state, combat, card, apologies);
 				
 				for (int i = 0; i < apologies; i++)
@@ -260,7 +260,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 					});
 				}
 
-				foreach (var hook in Instance.SmugStatusManager)
+				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
 					hook.OnCardBotchedBySmug(state, combat, card);
 				break;
 			case SmugResult.Double:
@@ -285,7 +285,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 				actions.InsertRange(0, toAdd);
 
-				foreach (var hook in Instance.SmugStatusManager)
+				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
 					hook.OnCardDoubledBySmug(state, combat, card);
 				break;
 		}

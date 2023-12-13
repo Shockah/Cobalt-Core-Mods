@@ -40,7 +40,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 
 	public IFrogproofHook? GetHandlingHook(State state, Combat? combat, Card card, FrogproofHookContext context = FrogproofHookContext.Action)
 	{
-		foreach (var hook in Hooks)
+		foreach (var hook in GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
 		{
 			var hookResult = hook.GetFrogproofType(state, combat, card, context);
 			if (hookResult == FrogproofType.None)

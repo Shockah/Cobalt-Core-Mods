@@ -6,7 +6,7 @@ public sealed class StatusRenderManager : HookManager<IStatusRenderHook>
 {
 	public bool ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)
 	{
-		foreach (var hook in Hooks)
+		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
 		{
 			var hookResult = hook.ShouldShowStatus(state, combat, ship, status, amount);
 			if (hookResult == false)
@@ -19,7 +19,7 @@ public sealed class StatusRenderManager : HookManager<IStatusRenderHook>
 
 	public IStatusRenderHook? GetOverridingAsBarsHook(State state, Combat combat, Ship ship, Status status, int amount)
 	{
-		foreach (var hook in Hooks)
+		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
 		{
 			var hookResult = hook.ShouldOverrideStatusRenderingAsBars(state, combat, ship, status, amount);
 			if (hookResult == false)

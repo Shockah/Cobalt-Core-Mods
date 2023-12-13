@@ -11,7 +11,7 @@ public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>
 	public int GetOxidationStatusMaxValue(State state, Ship ship)
 	{
 		int value = BaseOxidationStatusMaxValue;
-		foreach (var hook in GetHooksWithProxies(state.EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(Instance.Api, state.EnumerateAllArtifacts()))
 			value = hook.ModifyOxidationRequirement(state, ship, value);
 		return value;
 	}

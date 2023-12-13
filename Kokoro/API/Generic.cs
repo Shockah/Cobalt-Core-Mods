@@ -1,13 +1,11 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using Shockah.Shared;
+using System;
 
 namespace Shockah.Kokoro;
 
-public partial interface IKokoroApi
+public partial interface IKokoroApi : IProxyProvider
 {
 	TimeSpan TotalGameTime { get; }
-
-	bool TryProxy<T>(object @object, [MaybeNullWhen(false)] out T proxy) where T : class;
 }
 
 public interface IHookPriority

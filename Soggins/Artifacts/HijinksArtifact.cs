@@ -3,7 +3,6 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Shockah.Soggins;
 
@@ -32,8 +31,6 @@ public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook
 		);
 		artifact.AddLocalisation(I18n.HijinksArtifactName.ToUpper(), I18n.HijinksArtifactDescription);
 		registry.RegisterArtifact(artifact);
-
-		Instance.Api.RegisterSmugHook(this, 0);
 	}
 
 	public override void OnReceiveArtifact(State state)
@@ -62,9 +59,5 @@ public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook
 	}
 
 	public double ModifySmugBotchChance(State state, Ship ship, double chance)
-	{
-		if (!state.EnumerateAllArtifacts().Any(a => a is HijinksArtifact))
-			return chance;
-		return chance + 0.05;
-	}
+		=> chance + 0.05;
 }

@@ -17,7 +17,7 @@ public sealed class DroneShiftManager : HookManager<IDroneShiftHook>
 
 	public IDroneShiftHook? GetHandlingHook(State state, Combat combat, DroneShiftHookContext context = DroneShiftHookContext.Action)
 	{
-		foreach (var hook in GetHooksWithProxies(state.EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
 		{
 			var hookResult = hook.IsDroneShiftPossible(state, combat, context);
 			if (hookResult == false)

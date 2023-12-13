@@ -18,7 +18,7 @@ public sealed class EvadeManager : HookManager<IEvadeHook>
 
 	public IEvadeHook? GetHandlingHook(State state, Combat combat, EvadeHookContext context = EvadeHookContext.Action)
 	{
-		foreach (var hook in GetHooksWithProxies(state.EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
 		{
 			var hookResult = hook.IsEvadePossible(state, combat, context);
 			if (hookResult == false)

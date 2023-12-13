@@ -1,14 +1,18 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using Nanoray.Pintail;
+using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
-public sealed class ApiImplementation : IKokoroApi
+public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 {
 	private static ModEntry Instance => ModEntry.Instance;
+
+	private readonly Dictionary<Type, ConditionalWeakTable<object, object?>> ProxyCache = new();
 
 	public IEvadeHook VanillaEvadeHook
 		=> Kokoro.VanillaEvadeHook.Instance;
@@ -27,7 +31,21 @@ public sealed class ApiImplementation : IKokoroApi
 			proxy = null;
 			return false;
 		}
-		return Instance.ProxyManager.TryProxy(@object, "Unknown", Instance.Name, out proxy);
+		if (!ProxyCache.TryGetValue(typeof(T), out var table))
+		{
+			table = new();
+			ProxyCache[typeof(T)] = table;
+		}
+		if (table.TryGetValue(@object, out var rawProxy))
+		{
+			proxy = rawProxy is null ? default : (T)rawProxy;
+			return rawProxy is not null;
+		}
+
+		var newNullableProxy = Instance.ProxyManager.TryProxy<string, T>(@object, "Unknown", Instance.Name, out var newProxy) ? newProxy : null;
+		table.AddOrUpdate(@object, newNullableProxy);
+		proxy = newNullableProxy is null ? default : newNullableProxy;
+		return newNullableProxy is not null;
 	}
 
 	#endregion
@@ -147,7 +165,7 @@ public sealed class ApiImplementation : IKokoroApi
 	{
 		int oldValue = GetScorchingStatus(state, combat, @object);
 		SetExtensionData(@object, ModEntry.ScorchingTag, value);
-		foreach (var hook in Instance.MidrowScorchingManager.GetHooksWithProxies(state.EnumerateAllArtifacts()))
+		foreach (var hook in Instance.MidrowScorchingManager.GetHooksWithProxies(this, state.EnumerateAllArtifacts()))
 			hook.OnScorchingChange(combat, @object, oldValue, value);
 	}
 

@@ -3,7 +3,6 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Shockah.Soggins;
 
@@ -32,8 +31,6 @@ internal sealed class PiratedShipCadArtifact : Artifact, IRegisterableArtifact, 
 		);
 		artifact.AddLocalisation(I18n.PiratedShipCadArtifactName.ToUpper(), I18n.PiratedShipCadArtifactDescription);
 		registry.RegisterArtifact(artifact);
-
-		Instance.Api.RegisterSmugHook(this, 0);
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
@@ -46,16 +43,12 @@ internal sealed class PiratedShipCadArtifact : Artifact, IRegisterableArtifact, 
 
 	public void OnCardBotchedBySmug(State state, Combat combat, Card card)
 	{
-		var artifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is PiratedShipCadArtifact);
-		if (artifact is null)
-			return;
-
 		combat.Queue(new AStatus
 		{
 			status = Status.tempShield,
 			statusAmount = 1,
 			targetPlayer = true,
-			artifactPulse = artifact.Key()
+			artifactPulse = Key()
 		});
 	}
 }
