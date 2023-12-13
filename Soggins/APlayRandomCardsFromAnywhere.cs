@@ -34,6 +34,7 @@ public sealed class APlayRandomCardsFromAnywhere : CardAction
 			potentialCards = potentialCards.Where(c => c.uuid != IgnoreCardID.Value);
 		if (IgnoreCardType is not null)
 			potentialCards = potentialCards.Where(c => c.Key() != IgnoreCardType);
+		potentialCards = potentialCards.Where(c => !c.GetDataWithOverrides(s).unplayable);
 		potentialCards = potentialCards.Shuffle(s.rngActions);
 
 		foreach (var card in potentialCards.Take(Amount))
