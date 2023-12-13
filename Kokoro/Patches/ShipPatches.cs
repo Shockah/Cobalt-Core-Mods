@@ -73,7 +73,8 @@ internal static class ShipPatches
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), "RenderStatuses"),
-			prefix: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatuses_Prefix))
+			prefix: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatuses_Prefix)),
+			finalizer: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatuses_Finalizer))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
@@ -131,6 +132,8 @@ internal static class ShipPatches
 
 	private static bool Ship_RenderStatuses_Prefix(Ship __instance, G g, string keyPrefix)
 	{
+		Instance.StatusRenderManager.IsDuringShipStatusRendering = true;
+
 		var combat = g.state.route as Combat ?? DB.fakeCombat;
 		var toRender = __instance.statusEffects
 			.Where(kvp => kvp.Key != Status.shield && kvp.Key != Status.tempShield)
@@ -173,6 +176,9 @@ internal static class ShipPatches
 		FinishRow();
 		return false;
 	}
+
+	private static void Ship_RenderStatuses_Finalizer()
+		=> Instance.StatusRenderManager.IsDuringShipStatusRendering = false;
 
 	private static Dictionary<Status, int> Ship_RenderStatuses_Transpiler_ModifyStatusesToShow(Dictionary<Status, int> statusEffects, Ship ship)
 	{

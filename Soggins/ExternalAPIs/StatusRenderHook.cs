@@ -18,5 +18,5 @@ public interface IStatusRenderHook
 	bool? ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount) => null;
 	bool? ShouldOverrideStatusRenderingAsBars(State state, Combat combat, Ship ship, Status status, int amount) => null;
 	(IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(State state, Combat combat, Ship ship, Status status, int amount) => new();
-	List<Tooltip> OverrideStatusTooltips(Status status, int amount, List<Tooltip> tooltips) => tooltips;
+	List<Tooltip> OverrideStatusTooltips(Status status, int amount, bool isForShipStatus, List<Tooltip> tooltips) => tooltips;
 }

@@ -18,8 +18,5 @@ internal static class StatusMetaPatches
 	}
 
 	private static void StatusMeta_GetTooltips_Postfix(Status status, int amt, ref List<Tooltip> __result)
-	{
-		foreach (var hook in Instance.StatusRenderManager.GetHooksWithProxies(Instance.Api, (StateExt.Instance ?? DB.fakeState).EnumerateAllArtifacts()))
-			__result = hook.OverrideStatusTooltips(status, amt, __result);
-	}
+		=> __result = Instance.StatusRenderManager.OverrideStatusTooltips(status, amt, __result);
 }

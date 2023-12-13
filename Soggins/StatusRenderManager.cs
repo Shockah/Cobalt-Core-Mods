@@ -63,11 +63,11 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 		return (colors, null);
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, List<Tooltip> tooltips)
+	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, bool isForShipStatus, List<Tooltip> tooltips)
 	{
 		if (status == (Status)Instance.SmugStatus.Id!.Value)
 		{
-			if (StateExt.Instance is { } state && state.ship.Get((Status)Instance.SmuggedStatus.Id!.Value) > 0)
+			if (isForShipStatus && StateExt.Instance is { } state && state.ship.Get((Status)Instance.SmuggedStatus.Id!.Value) > 0)
 				tooltips.Add(new TTText(string.Format(I18n.SmugStatusCurrentChancesDescription, Instance.Api.GetSmugDoubleChance(state, state.ship) * 100, Instance.Api.GetSmugBotchChance(state, state.ship) * 100)));
 		}
 		else if (status == (Status)Instance.BidingTimeStatus.Id!.Value)

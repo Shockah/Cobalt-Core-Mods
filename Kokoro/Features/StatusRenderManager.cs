@@ -1,9 +1,14 @@
 ﻿using Shockah.Shared;
+using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
 
 public sealed class StatusRenderManager : HookManager<IStatusRenderHook>
 {
+	private static ModEntry Instance => ModEntry.Instance;
+
+	internal bool IsDuringShipStatusRendering = false;
+
 	public bool ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)
 	{
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
@@ -28,5 +33,12 @@ public sealed class StatusRenderManager : HookManager<IStatusRenderHook>
 				return hook;
 		}
 		return null;
+	}
+
+	internal List<Tooltip> OverrideStatusTooltips(Status status, int amount, List<Tooltip> tooltips)
+	{
+		foreach (var hook in GetHooksWithProxies(Instance.Api, (StateExt.Instance ?? DB.fakeState).EnumerateAllArtifacts()))
+			tooltips = hook.OverrideStatusTooltips(status, amount, IsDuringShipStatusRendering, tooltips);
+		return tooltips;
 	}
 }
