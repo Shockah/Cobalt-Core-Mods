@@ -169,7 +169,11 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 			return DuoArtifactEligibity.Eligible;
 		}
 
-		if (character.artifacts.Count >= ArtifactsRequiredForEligibility)
+		var eligibleArtifacts = character.artifacts
+			.Where(a => a.GetMeta().pools.Contains(ArtifactPool.Boss) || !a.GetMeta().unremovable)
+			.ToList();
+
+		if (eligibleArtifacts.Count >= ArtifactsRequiredForEligibility)
 			return CheckDetailedEligibity();
 
 		var characterCardsInDeck = state.GetAllCards()
