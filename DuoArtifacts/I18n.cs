@@ -18,7 +18,7 @@ internal static class I18n
 
 	public static string CharacterEligibleForDuoArtifact => "Eligible for duo artifacts.";
 	public static string CharacterEligibleForDuoArtifactNoDuos => "Technically eligible for duo artifacts... but there are none for them!";
-	public static string CharacterEligibleForDuoArtifactNoMatchingDuos => "Technically eligible for duo artifacts... but there are none you can get with this crew!";
+	public static string CharacterEligibleForDuoArtifactNoMatchingDuos => "Technically eligible for duo artifacts... but there are none for them you can get with this crew!";
 
 	// can't use Loc.T, we're doing this too early
 	private static string GetCharacterName(Deck character)
