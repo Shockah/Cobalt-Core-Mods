@@ -35,7 +35,7 @@ internal sealed class CustomTTGlossary : TTGlossary
 		this.Values = values?.ToList() ?? (IReadOnlyList<Func<object>>)Array.Empty<Func<object>>();
 	}
 
-	public static void Apply(Harmony harmony)
+	public static void ApplyPatches(Harmony harmony)
 	{
 		harmony.TryPatch(
 			logger: Instance.Logger!,

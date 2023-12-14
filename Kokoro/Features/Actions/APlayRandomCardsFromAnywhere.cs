@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Shockah.Soggins;
+namespace Shockah.Kokoro;
 
 public sealed class APlayRandomCardsFromAnywhere : CardAction
 {
@@ -10,8 +10,8 @@ public sealed class APlayRandomCardsFromAnywhere : CardAction
 	public int Amount = 1;
 	public bool FromHand = false;
 	public bool FromDrawPile = true;
-	public bool FromDiscard = false;
-	public bool FromExhaust = false;
+	public bool FromDiscardPile = false;
+	public bool FromExhaustPile = false;
 	public int? IgnoreCardID = null;
 	public string? IgnoreCardType = null;
 
@@ -24,9 +24,9 @@ public sealed class APlayRandomCardsFromAnywhere : CardAction
 			potentialCards = potentialCards.Concat(c.hand);
 		if (FromDrawPile)
 			potentialCards = potentialCards.Concat(s.deck);
-		if (FromDiscard)
+		if (FromDiscardPile)
 			potentialCards = potentialCards.Concat(c.discard);
-		if (FromExhaust)
+		if (FromExhaustPile)
 			potentialCards = potentialCards.Concat(c.exhausted);
 		if (Deck is not null)
 			potentialCards = potentialCards.Where(c => c.GetMeta().deck == Deck.Value);

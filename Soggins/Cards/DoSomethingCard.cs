@@ -56,13 +56,12 @@ public sealed class DoSomethingCard : Card, IRegisterableCard
 			{
 				time = -0.5
 			},
-			new APlayRandomCardsFromAnywhere
-			{
-				Amount = upgrade == Upgrade.B ? 2 : 1,
-				FromDrawPile = upgrade != Upgrade.A,
-				FromDiscard = upgrade != Upgrade.None,
-				FromExhaust = upgrade == Upgrade.B,
-				IgnoreCardType = Key()
-			}
+			Instance.KokoroApi.Actions.MakePlayRandomCardsFromAnywhere(
+				amount: upgrade == Upgrade.B ? 2 : 1,
+				fromDrawPile: upgrade != Upgrade.A,
+				fromDiscardPile: upgrade != Upgrade.None,
+				fromExhaustPile: upgrade == Upgrade.B,
+				ignoreCardType: Key()
+			)
 		};
 }

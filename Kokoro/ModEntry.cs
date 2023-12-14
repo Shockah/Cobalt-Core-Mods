@@ -66,7 +66,8 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		StatusMetaPatches.Apply(Harmony);
 		StuffBasePatches.Apply(Harmony);
 
-		CustomTTGlossary.Apply(Harmony);
+		CustomTTGlossary.ApplyPatches(Harmony);
+		APlaySpecificCardFromAnywhere.ApplyPatches(Harmony);
 
 		SetupSerializationChanges();
 	}

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using static Shockah.Kokoro.IKokoroApi.IConditionalActionApi;
 
 namespace Shockah.Kokoro;
 
@@ -232,34 +231,58 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 		=> Instance.StatusLogicManager.Unregister(hook);
 	#endregion
 
+	#region Actions
+	public IKokoroApi.IActionApi Actions { get; } = new ActionApiImplementation();
+
+	public sealed class ActionApiImplementation : IKokoroApi.IActionApi
+	{
+		public CardAction MakePlaySpecificCardFromAnywhere(int cardId, bool showTheCardIfNotInHand = true)
+			=> new APlaySpecificCardFromAnywhere { CardID = cardId, ShowTheCardIfNotInHand = showTheCardIfNotInHand };
+
+		public CardAction MakePlayRandomCardsFromAnywhere(
+			Deck? deck = null,
+			int amount = 1,
+			bool fromHand = false, bool fromDrawPile = true, bool fromDiscardPile = false, bool fromExhaustPile = false,
+			int? ignoreCardId = null, string? ignoreCardType = null
+		)
+			=> new APlayRandomCardsFromAnywhere
+			{
+				Deck = deck,
+				Amount = amount,
+				FromHand = fromHand, FromDrawPile = fromDrawPile, FromDiscardPile = fromDiscardPile, FromExhaustPile = fromExhaustPile,
+				IgnoreCardID = ignoreCardId, IgnoreCardType = ignoreCardType
+			};
+	}
+	#endregion
+
 	#region ComplexActions
 	public IKokoroApi.IConditionalActionApi ConditionalActions { get; } = new ConditionalActionApiImplementation();
-	#endregion
 
 	public sealed class ConditionalActionApiImplementation : IKokoroApi.IConditionalActionApi
 	{
-		public CardAction Make(IBoolExpression expression, CardAction action, bool fadeUnsatisfied = true)
+		public CardAction Make(IKokoroApi.IConditionalActionApi.IBoolExpression expression, CardAction action, bool fadeUnsatisfied = true)
 			=> new AConditional { Expression = expression, Action = action, FadeUnsatisfied = fadeUnsatisfied };
 
-		public IIntExpression Constant(int value)
+		public IKokoroApi.IConditionalActionApi.IIntExpression Constant(int value)
 			=> new ConditionalActionIntConstant(value);
 
-		public IIntExpression HandConstant(int value)
+		public IKokoroApi.IConditionalActionApi.IIntExpression HandConstant(int value)
 			=> new ConditionalActionHandConstant(value);
 
-		public IIntExpression XConstant(int value)
+		public IKokoroApi.IConditionalActionApi.IIntExpression XConstant(int value)
 			=> new ConditionalActionXConstant(value);
 
-		public IIntExpression ScalarMultiplier(IIntExpression expression, int scalar)
+		public IKokoroApi.IConditionalActionApi.IIntExpression ScalarMultiplier(IKokoroApi.IConditionalActionApi.IIntExpression expression, int scalar)
 			=> new ConditionalActionScalarMultiplier(expression, scalar);
 
-		public IBoolExpression HasStatus(Status status, bool targetPlayer = true, bool countNegative = false)
+		public IKokoroApi.IConditionalActionApi.IBoolExpression HasStatus(Status status, bool targetPlayer = true, bool countNegative = false)
 			=> new ConditionalActionHasStatusExpression(status, targetPlayer, countNegative);
 
-		public IIntExpression Status(Status status, bool targetPlayer = true)
+		public IKokoroApi.IConditionalActionApi.IIntExpression Status(Status status, bool targetPlayer = true)
 			=> new ConditionalActionStatusExpression(status, targetPlayer);
 
-		public IBoolExpression Equation(IIntExpression lhs, EquationOperator @operator, IIntExpression rhs, bool hideOperator = false)
+		public IKokoroApi.IConditionalActionApi.IBoolExpression Equation(IKokoroApi.IConditionalActionApi.IIntExpression lhs, IKokoroApi.IConditionalActionApi.EquationOperator @operator, IKokoroApi.IConditionalActionApi.IIntExpression rhs, bool hideOperator = false)
 			=> new ConditionalActionEquation(lhs, @operator, rhs, hideOperator);
 	}
+	#endregion
 }

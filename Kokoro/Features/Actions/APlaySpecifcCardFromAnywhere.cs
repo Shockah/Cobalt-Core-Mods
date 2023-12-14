@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Shockah.Shared;
 using System.Linq;
 
-namespace Shockah.Soggins;
+namespace Shockah.Kokoro;
 
 public sealed class APlaySpecificCardFromAnywhere : CardAction
 {
