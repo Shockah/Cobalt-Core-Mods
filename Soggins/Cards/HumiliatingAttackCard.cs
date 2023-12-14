@@ -71,7 +71,9 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 					{
 						damage = GetDmg(s, 2)
 					}
-				)
+				),
+				new ADummyAction(),
+				new ADummyAction()
 			},
 			_ => new()
 			{
@@ -85,7 +87,8 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 					{
 						damage = GetDmg(s, 5)
 					}
-				)
+				),
+				new ADummyAction()
 			}
 		};
 }

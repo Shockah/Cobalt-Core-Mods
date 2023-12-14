@@ -95,7 +95,10 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard, IFrogproof
 				amount = GetAmount()
 			});
 		}
-			
+
+		for (int i = 0; i < 2; i++)
+			actions.Add(new ADummyAction());
+
 		return actions;
 	}
 

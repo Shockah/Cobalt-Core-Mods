@@ -46,6 +46,7 @@ public sealed class ZenCard : Card, IRegisterableCard, IFrogproofCard
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> new()
 		{
+			new ADummyAction(),
 			new AStatus
 			{
 				status = (Status)Instance.SmugStatus.Id!.Value,

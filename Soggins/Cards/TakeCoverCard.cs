@@ -76,6 +76,8 @@ public sealed class TakeCoverCard : Card, IRegisterableCard
 				targetPlayer = true,
 				disabled = flipped
 			},
+			new ADummyAction(),
+			new ADummyAction(),
 			new AStatus
 			{
 				status = Status.tempShield,
@@ -83,5 +85,6 @@ public sealed class TakeCoverCard : Card, IRegisterableCard
 				targetPlayer = true,
 				disabled = flipped
 			},
+			new ADummyAction()
 		};
 }

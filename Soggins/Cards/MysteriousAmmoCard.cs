@@ -73,6 +73,8 @@ public sealed class MysteriousAmmoCard : Card, IRegisterableCard
 				status = Status.backwardsMissiles,
 				statusAmount = 2,
 				targetPlayer = true
-			}
+			},
+			new ADummyAction(),
+			new ADummyAction()
 		};
 }

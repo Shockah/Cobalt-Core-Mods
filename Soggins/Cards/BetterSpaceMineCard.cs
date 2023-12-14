@@ -61,7 +61,10 @@ public sealed class BetterSpaceMineCard : Card, IRegisterableCard
 						yAnimation = 0.0
 					},
 					offset = 1
-				}
+				},
+				new ADummyAction(),
+				new ADummyAction(),
+				new ADummyAction()
 			},
 			Upgrade.B => new()
 			{
@@ -87,7 +90,9 @@ public sealed class BetterSpaceMineCard : Card, IRegisterableCard
 						yAnimation = 0.0
 					},
 					offset = 2
-				}
+				},
+				new ADummyAction(),
+				new ADummyAction()
 			},
 			_ => new()
 			{
@@ -105,7 +110,10 @@ public sealed class BetterSpaceMineCard : Card, IRegisterableCard
 						yAnimation = 0.0
 					},
 					offset = 1
-				}
+				},
+				new ADummyAction(),
+				new ADummyAction(),
+				new ADummyAction()
 			}
 		};
 }

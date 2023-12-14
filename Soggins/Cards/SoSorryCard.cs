@@ -107,6 +107,9 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 				});
 		}
 
+		while (actions.Count < 5)
+			actions.Add(new ADummyAction());
+
 		return actions;
 	}
 

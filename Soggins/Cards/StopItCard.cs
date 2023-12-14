@@ -71,6 +71,7 @@ public sealed class StopItCard : Card, IRegisterableCard, IFrogproofCard
 				status = Status.shield,
 				statusAmount = GetShield(),
 				targetPlayer = true
-			}
+			},
+			new ADummyAction()
 		};
 }
