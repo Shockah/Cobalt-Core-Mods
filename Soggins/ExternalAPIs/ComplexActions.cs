@@ -8,7 +8,7 @@ public partial interface IKokoroApi
 
 	public partial interface IConditionalActionApi
 	{
-		CardAction Make(IBoolExpression expression, CardAction action);
+		CardAction Make(IBoolExpression expression, CardAction action, bool fadeUnsatisfied = true);
 		IIntExpression Constant(int value);
 		IIntExpression HandConstant(int value);
 		IIntExpression XConstant(int value);

@@ -238,8 +238,8 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 
 	public sealed class ConditionalActionApiImplementation : IKokoroApi.IConditionalActionApi
 	{
-		public CardAction Make(IBoolExpression expression, CardAction action)
-			=> new AConditional { Expression = expression, Action = action };
+		public CardAction Make(IBoolExpression expression, CardAction action, bool fadeUnsatisfied = true)
+			=> new AConditional { Expression = expression, Action = action, FadeUnsatisfied = fadeUnsatisfied };
 
 		public IIntExpression Constant(int value)
 			=> new ConditionalActionIntConstant(value);

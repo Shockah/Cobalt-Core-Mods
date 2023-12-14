@@ -51,14 +51,18 @@ internal static class CardPatches
 		if (conditional.Action is not { } wrappedAction)
 			return false;
 
+		bool oldActionDisabled = wrappedAction.disabled;
+		bool faded = action.disabled || (conditional.FadeUnsatisfied && state.route is Combat combat && conditional.Expression?.GetValue(state, combat) == false);
+		wrappedAction.disabled = faded;
+
 		var position = g.Push(rect: new()).rect.xy;
 		int initialX = (int)position.x;
 
-		conditional.Expression?.Render(g, ref position, action.disabled, dontDraw);
+		conditional.Expression?.Render(g, ref position, faded, dontDraw);
 		if (conditional.Expression?.ShouldRenderQuestionMark(state, state.route as Combat) == true)
 		{
 			if (!dontDraw)
-				Draw.Sprite((Spr)Instance.Content.QuestionMarkSprite.Id!.Value, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
+				Draw.Sprite((Spr)Instance.Content.QuestionMarkSprite.Id!.Value, position.x, position.y, color: faded ? Colors.disabledIconTint : Colors.white);
 			position.x += SpriteLoader.Get((Spr)Instance.Content.QuestionMarkSprite.Id!.Value)?.Width ?? 0;
 			position.x -= 1;
 		}
@@ -76,6 +80,7 @@ internal static class CardPatches
 
 		__result = (int)position.x - initialX;
 		g.Pop();
+		wrappedAction.disabled = oldActionDisabled;
 		return false;
 	}
 

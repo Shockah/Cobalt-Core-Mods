@@ -6,6 +6,7 @@ public sealed class AConditional : CardAction, ICardActionWrapper
 {
 	public IKokoroApi.IConditionalActionApi.IBoolExpression? Expression;
 	public CardAction? Action;
+	public bool FadeUnsatisfied = true;
 
 	public override void Begin(G g, State s, Combat c)
 	{
