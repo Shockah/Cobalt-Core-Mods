@@ -30,7 +30,7 @@ public sealed class ImTryingCard : Card, IRegisterableCard
 		ExternalCard card = new(
 			globalName: $"{GetType().Namespace}.Card.ImTrying",
 			cardType: GetType(),
-			cardArt: ModEntry.Instance.SogginsDeckBorder,
+			cardArt: Art,
 			actualDeck: ModEntry.Instance.SogginsDeck
 		);
 		card.AddLocalisation(I18n.ImTryingCardName);
@@ -65,7 +65,6 @@ public sealed class ImTryingCard : Card, IRegisterableCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = (Spr)Art.Id!.Value;
 		data.cost = GetCost();
 		data.retain = upgrade != Upgrade.None;
 		data.exhaust = upgrade == Upgrade.B;

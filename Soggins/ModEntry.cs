@@ -33,7 +33,8 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	internal StatusRenderManager StatusRenderManager { get; private set; } = null!;
 	internal StatusLogicManager StatusLogicManager { get; private set; } = null!;
 
-	internal ExternalSprite SogginsDeckBorder { get; private set; } = ExternalSprite.GetRaw((int)StableSpr.cardShared_border_soggins);
+	internal ExternalSprite SogginsDeckBorder { get; private set; } = null!;
+	internal ExternalSprite SogginsCharacterBorder { get; private set; } = null!;
 	internal ExternalDeck SogginsDeck { get; private set; } = null!;
 	internal ExternalCharacter SogginsCharacter { get; private set; } = null!;
 
@@ -188,10 +189,20 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 
 	public void LoadManifest(ISpriteRegistry registry)
 	{
+		SogginsDeckBorder = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.Character.Soggins.DeckBorder",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "DeckBorder.png"))
+		);
+		SogginsCharacterBorder = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.Character.Soggins.CharacterBorder",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "CharacterBorder.png"))
+		);
+
 		SogginsMini = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Character.Soggins.Mini",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "SogginsMini.png"))
 		);
+
 		SmugStatusSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Status.Smug",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Status", "Smug.png"))
@@ -246,7 +257,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 			deckColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFB79CE5)), // 0xFF6A9C59
 			titleColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF000000)),
 			cardArtDefault: ExternalSprite.GetRaw((int)StableSpr.cards_colorless),
-			borderSprite: ExternalSprite.GetRaw((int)StableSpr.cardShared_border_soggins),
+			borderSprite: SogginsDeckBorder,
 			bordersOverSprite: null
 		);
 		registry.RegisterDeck(SogginsDeck);
@@ -488,7 +499,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		SogginsCharacter = new ExternalCharacter(
 			globalName: $"{GetType().Namespace}.Character.Soggins",
 			deck: SogginsDeck,
-			charPanelSpr: ExternalSprite.GetRaw((int)StableSpr.panels_char_soggins),
+			charPanelSpr: SogginsCharacterBorder,
 			starterDeck: new Type[] { typeof(SmugnessControlCard), typeof(PressingButtonsCard) },
 			starterArtifacts: new Type[] { typeof(SmugArtifact) },
 			neutralAnimation: SogginsNeutralAnimation,

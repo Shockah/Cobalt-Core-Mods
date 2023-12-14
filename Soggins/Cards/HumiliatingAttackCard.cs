@@ -26,7 +26,7 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 		ExternalCard card = new(
 			globalName: $"{GetType().Namespace}.Card.HumiliatingAttack",
 			cardType: GetType(),
-			cardArt: ModEntry.Instance.SogginsDeckBorder,
+			cardArt: Art,
 			actualDeck: ModEntry.Instance.SogginsDeck
 		);
 		card.AddLocalisation(I18n.HumiliatingAttackCardName);
@@ -36,7 +36,6 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = (Spr)Art.Id!.Value;
 		data.cost = 2;
 		data.retain = upgrade == Upgrade.B;
 		return data;

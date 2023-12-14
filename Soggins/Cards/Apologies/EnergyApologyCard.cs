@@ -11,7 +11,7 @@ public sealed class EnergyApologyCard : ApologyCard, IRegisterableCard
 		ExternalCard card = new(
 			globalName: $"{GetType().Namespace}.Card.Apology.Energy",
 			cardType: GetType(),
-			cardArt: ModEntry.Instance.SogginsDeckBorder,
+			cardArt: Art,
 			actualDeck: ModEntry.Instance.SogginsDeck
 		);
 		card.AddLocalisation(I18n.ApologyCardName);

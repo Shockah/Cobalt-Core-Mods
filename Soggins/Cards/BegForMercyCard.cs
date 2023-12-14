@@ -26,7 +26,7 @@ public sealed class BegForMercyCard : Card, IRegisterableCard, IFrogproofCard
 		ExternalCard card = new(
 			globalName: $"{GetType().Namespace}.Card.BegForMercy",
 			cardType: GetType(),
-			cardArt: ModEntry.Instance.SogginsDeckBorder,
+			cardArt: Art,
 			actualDeck: ModEntry.Instance.SogginsDeck
 		);
 		card.AddLocalisation(I18n.BegForMercyCardName);

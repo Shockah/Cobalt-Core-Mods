@@ -26,7 +26,7 @@ public sealed class ZenCard : Card, IRegisterableCard, IFrogproofCard
 		ExternalCard card = new(
 			globalName: $"{GetType().Namespace}.Card.Zen",
 			cardType: GetType(),
-			cardArt: ModEntry.Instance.SogginsDeckBorder,
+			cardArt: Art,
 			actualDeck: ModEntry.Instance.SogginsDeck
 		);
 		card.AddLocalisation(I18n.ZenCardName);
@@ -36,7 +36,6 @@ public sealed class ZenCard : Card, IRegisterableCard, IFrogproofCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = (Spr)Art.Id!.Value;
 		data.cost = 0;
 		data.exhaust = upgrade != Upgrade.A;
 		data.retain = upgrade == Upgrade.B;

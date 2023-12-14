@@ -10,7 +10,7 @@ public abstract class ApologyCard : Card, IFrogproofCard
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private static ExternalSprite Art = null!;
+	protected static ExternalSprite Art { get; private set; } = null!;
 
 	public string? ApologyFlavorText;
 

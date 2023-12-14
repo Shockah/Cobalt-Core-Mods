@@ -26,7 +26,7 @@ public sealed class ExtraApologyCard : Card, IRegisterableCard
 		ExternalCard card = new(
 			globalName: $"{GetType().Namespace}.Card.ExtraApology",
 			cardType: GetType(),
-			cardArt: ModEntry.Instance.SogginsDeckBorder,
+			cardArt: Art,
 			actualDeck: ModEntry.Instance.SogginsDeck
 		);
 		card.AddLocalisation(I18n.ExtraApologyCardName);
@@ -52,7 +52,6 @@ public sealed class ExtraApologyCard : Card, IRegisterableCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = (Spr)Art.Id!.Value;
 		data.cost = GetCost();
 		data.exhaust = true;
 		return data;

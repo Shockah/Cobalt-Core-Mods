@@ -29,7 +29,7 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 		ExternalCard card = new(
 			globalName: $"{GetType().Namespace}.Card.SoSorry",
 			cardType: GetType(),
-			cardArt: ModEntry.Instance.SogginsDeckBorder,
+			cardArt: Art,
 			actualDeck: ModEntry.Instance.SogginsDeck
 		);
 		card.AddLocalisation(I18n.SoSorryCardName);
@@ -49,7 +49,6 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = (Spr)Art.Id!.Value;
 		data.cost = 2;
 		return data;
 	}

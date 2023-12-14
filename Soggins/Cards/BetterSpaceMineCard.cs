@@ -26,7 +26,7 @@ public sealed class BetterSpaceMineCard : Card, IRegisterableCard
 		ExternalCard card = new(
 			globalName: $"{GetType().Namespace}.Card.BetterSpaceMine",
 			cardType: GetType(),
-			cardArt: ModEntry.Instance.SogginsDeckBorder,
+			cardArt: Art,
 			actualDeck: ModEntry.Instance.SogginsDeck
 		);
 		card.AddLocalisation(I18n.BetterSpaceMineCardName);
@@ -36,7 +36,6 @@ public sealed class BetterSpaceMineCard : Card, IRegisterableCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = (Spr)Art.Id!.Value;
 		data.cost = 2;
 		return data;
 	}

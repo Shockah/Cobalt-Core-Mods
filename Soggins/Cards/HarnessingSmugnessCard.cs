@@ -31,7 +31,7 @@ public sealed class HarnessingSmugnessCard : Card, IRegisterableCard, IFrogproof
 		ExternalCard card = new(
 			globalName: $"{GetType().Namespace}.Card.HarnessingSmugness",
 			cardType: GetType(),
-			cardArt: ModEntry.Instance.SogginsDeckBorder,
+			cardArt: TopArt,
 			actualDeck: ModEntry.Instance.SogginsDeck
 		);
 		card.AddLocalisation(I18n.HarnessingSmugnessCardName);

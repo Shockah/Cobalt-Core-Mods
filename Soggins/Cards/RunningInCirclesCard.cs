@@ -26,7 +26,7 @@ public sealed class RunningInCirclesCard : Card, IRegisterableCard
 		ExternalCard card = new(
 			globalName: $"{GetType().Namespace}.Card.RunningInCircles",
 			cardType: GetType(),
-			cardArt: ModEntry.Instance.SogginsDeckBorder,
+			cardArt: Art,
 			actualDeck: ModEntry.Instance.SogginsDeck
 		);
 		card.AddLocalisation(I18n.RunningInCirclesCardName);
@@ -36,7 +36,6 @@ public sealed class RunningInCirclesCard : Card, IRegisterableCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = (Spr)Art.Id!.Value;
 		data.cost = upgrade == Upgrade.B ? 1 : 0;
 		data.infinite = upgrade == Upgrade.B;
 		return data;

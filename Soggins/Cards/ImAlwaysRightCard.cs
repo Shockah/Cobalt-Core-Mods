@@ -26,7 +26,7 @@ public sealed class ImAlwaysRightCard : Card, IRegisterableCard, IFrogproofCard
 		ExternalCard card = new(
 			globalName: $"{GetType().Namespace}.Card.ImAlwaysRight",
 			cardType: GetType(),
-			cardArt: ModEntry.Instance.SogginsDeckBorder,
+			cardArt: Art,
 			actualDeck: ModEntry.Instance.SogginsDeck
 		);
 		card.AddLocalisation(I18n.ImAlwaysRightCardName);
@@ -52,7 +52,6 @@ public sealed class ImAlwaysRightCard : Card, IRegisterableCard, IFrogproofCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = (Spr)Art.Id!.Value;
 		data.cost = GetCost();
 		data.exhaust = true;
 		return data;

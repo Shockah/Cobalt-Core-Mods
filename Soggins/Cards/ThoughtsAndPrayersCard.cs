@@ -29,7 +29,7 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard, IFrogproof
 		ExternalCard card = new(
 			globalName: $"{GetType().Namespace}.Card.ThoughtsAndPrayers",
 			cardType: GetType(),
-			cardArt: ModEntry.Instance.SogginsDeckBorder,
+			cardArt: Art,
 			actualDeck: ModEntry.Instance.SogginsDeck
 		);
 		card.AddLocalisation(I18n.ThoughtsAndPrayersCardName);
@@ -57,7 +57,6 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard, IFrogproof
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = (Spr)Art.Id!.Value;
 		data.cost = upgrade == Upgrade.B ? 1 : 2;
 		data.exhaust = upgrade == Upgrade.B;
 		data.buoyant = upgrade == Upgrade.B;

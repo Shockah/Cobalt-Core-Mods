@@ -31,7 +31,7 @@ public sealed class SmugnessControlCard : Card, IRegisterableCard, IFrogproofCar
 		ExternalCard card = new(
 			globalName: $"{GetType().Namespace}.Card.SmugnessControl",
 			cardType: GetType(),
-			cardArt: ModEntry.Instance.SogginsDeckBorder,
+			cardArt: TopArt,
 			actualDeck: ModEntry.Instance.SogginsDeck
 		);
 		card.AddLocalisation(I18n.SmugnessControlCardName);

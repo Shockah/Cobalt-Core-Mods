@@ -12,7 +12,7 @@ public sealed class RandomPlaceholderApologyCard : ApologyCard, IRegisterableCar
 		ExternalCard card = new(
 			globalName: $"{GetType().Namespace}.Card.Apology.Blank",
 			cardType: GetType(),
-			cardArt: ModEntry.Instance.SogginsDeckBorder,
+			cardArt: Art,
 			actualDeck: ModEntry.Instance.SogginsDeck
 		);
 		card.AddLocalisation(I18n.ApologyCardName);
