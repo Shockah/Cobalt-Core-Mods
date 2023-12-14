@@ -118,6 +118,19 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 		return true;
 	}
 
+	public T ObtainExtensionData<T>(object o, string key, Func<T> factory) where T : notnull
+	{
+		if (!TryGetExtensionData<T>(o, key, out var data))
+		{
+			data = factory();
+			SetExtensionData(o, key, data);
+		}
+		return data;
+	}
+
+	public T ObtainExtensionData<T>(object o, string key) where T : notnull, new()
+		=> ObtainExtensionData(o, key, () => new T());
+
 	public bool ContainsExtensionData(object o, string key)
 	{
 		if (!Instance.ExtensionDataStorage.TryGetValue(o, out var extensionData))

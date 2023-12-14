@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Shockah.Kokoro;
+namespace Shockah.Soggins;
 
 public partial interface IKokoroApi
 {

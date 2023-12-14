@@ -55,8 +55,6 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private static readonly Dictionary<Type, int> TimesApologyWasGiven = new();
-
 	internal SmugStatusManager() : base()
 	{
 		Register(new ExtraApologiesSmugHook(), 0);
@@ -81,11 +79,6 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.Set)),
 			prefix: new HarmonyMethod(typeof(SmugStatusManager), nameof(Ship_Set_Prefix))
-		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Make)),
-			postfix: new HarmonyMethod(typeof(SmugStatusManager), nameof(Combat_Make_Postfix))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
@@ -154,6 +147,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 	public static Card GenerateAndTrackApology(State state, Combat combat, Rand rng, bool forDual = false, Type? ignoringType = null)
 	{
+		var timesApologyWasGiven = Instance.KokoroApi.ObtainExtensionData<Dictionary<string, int>>(combat, "TimesApologyWasGiven");
 		var misprintedApologyArtifact = state.EnumerateAllArtifacts().OfType<MisprintedApologyArtifact>().FirstOrDefault();
 
 		ApologyCard apology;
@@ -180,17 +174,17 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 					continue;
 
 				apology = (ApologyCard)Activator.CreateInstance(apologyType)!;
-				var weight = apology.GetApologyWeight(state, combat, TimesApologyWasGiven.GetValueOrDefault(apologyType));
+				var weight = apology.GetApologyWeight(state, combat, timesApologyWasGiven.GetValueOrDefault(apologyType.FullName!));
 				if (weight > 0)
 					weightedRandom.Add(new(weight, apology));
 			}
 			apology = weightedRandom.Next(rng);
 		}
 
-		int totalApologies = TimesApologyWasGiven.Values.Sum() - TimesApologyWasGiven.GetValueOrDefault(typeof(DualApologyCard));
+		int totalApologies = timesApologyWasGiven.Values.Sum() - timesApologyWasGiven.GetValueOrDefault(typeof(DualApologyCard).FullName!);
 		if (!forDual)
 			apology.ApologyFlavorText = $"<c=B79CE5>{string.Format(I18n.ApologyFlavorTexts[rng.NextInt() % I18n.ApologyFlavorTexts.Length], totalApologies)}</c>";
-		TimesApologyWasGiven[apology.GetType()] = TimesApologyWasGiven.GetValueOrDefault(apology.GetType()) + 1;
+		timesApologyWasGiven[apology.GetType().FullName!] = timesApologyWasGiven.GetValueOrDefault(apology.GetType().FullName!) + 1;
 		return apology;
 	}
 
@@ -330,9 +324,6 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			return;
 		n = Math.Clamp(n, Instance.Api.GetMinSmug(__instance), Instance.Api.GetMaxSmug(__instance) + 1);
 	}
-
-	private static void Combat_Make_Postfix()
-		=> TimesApologyWasGiven.Clear();
 
 	private static void Ship_OnBeginTurn_Postfix_Last(Ship __instance, State s, Combat c)
 	{
