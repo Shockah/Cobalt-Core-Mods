@@ -62,7 +62,7 @@ public sealed class BetterThanYouCard : Card, IRegisterableCard, IFrogproofCard
 		{
 			Upgrade.B => new()
 			{
-				new ASearchFromADeck
+				new ASpecificColorSearch
 				{
 					Deck = (Deck)Instance.SogginsDeck.Id!.Value,
 					Amount = 10,

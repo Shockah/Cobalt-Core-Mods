@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Shockah.Soggins;
 
-public sealed class ASearchFromADeck : CardAction
+public sealed class ASpecificColorSearch : CardAction
 {
 	public Deck Deck = Deck.colorless;
 	public int Amount = 1;
