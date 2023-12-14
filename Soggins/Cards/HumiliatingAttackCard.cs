@@ -53,8 +53,8 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 				Instance.KokoroApi.MakeConditionalAction(
 					Instance.KokoroApi.MakeConditionalActionEquation(
 						Instance.KokoroApi.MakeConditionalActionStatusExpression((Status)Instance.SmugStatus.Id!.Value),
-						ConditionalActionEquationOperator.LessThan,
-						Instance.KokoroApi.MakeConditionalActionIntConstant(-1)
+						ConditionalActionEquationOperator.LessThanOrEqual,
+						Instance.KokoroApi.MakeConditionalActionIntConstant(-2)
 					),
 					new AAttack
 					{
@@ -64,8 +64,8 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 				Instance.KokoroApi.MakeConditionalAction(
 					Instance.KokoroApi.MakeConditionalActionEquation(
 						Instance.KokoroApi.MakeConditionalActionStatusExpression((Status)Instance.SmugStatus.Id!.Value),
-						ConditionalActionEquationOperator.LessThan,
-						Instance.KokoroApi.MakeConditionalActionIntConstant(-2)
+						ConditionalActionEquationOperator.LessThanOrEqual,
+						Instance.KokoroApi.MakeConditionalActionIntConstant(-3)
 					),
 					new AAttack
 					{
@@ -78,8 +78,8 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 				Instance.KokoroApi.MakeConditionalAction(
 					Instance.KokoroApi.MakeConditionalActionEquation(
 						Instance.KokoroApi.MakeConditionalActionStatusExpression((Status)Instance.SmugStatus.Id!.Value),
-						ConditionalActionEquationOperator.LessThan,
-						Instance.KokoroApi.MakeConditionalActionIntConstant(-2)
+						ConditionalActionEquationOperator.LessThanOrEqual,
+						Instance.KokoroApi.MakeConditionalActionIntConstant(-3)
 					),
 					new AAttack
 					{

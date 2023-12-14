@@ -36,9 +36,9 @@ public sealed class BegForMercyCard : Card, IRegisterableCard, IFrogproofCard
 	private int GetRequiredSmug()
 		=> upgrade switch
 		{
-			Upgrade.A => -1,
-			Upgrade.B => 1,
-			_ => -2,
+			Upgrade.A => -2,
+			Upgrade.B => 0,
+			_ => -3,
 		};
 
 	public override CardData GetData(State state)
@@ -56,7 +56,7 @@ public sealed class BegForMercyCard : Card, IRegisterableCard, IFrogproofCard
 			Instance.KokoroApi.MakeConditionalAction(
 				Instance.KokoroApi.MakeConditionalActionEquation(
 					Instance.KokoroApi.MakeConditionalActionStatusExpression((Status)Instance.SmugStatus.Id!.Value),
-					ConditionalActionEquationOperator.LessThan,
+					ConditionalActionEquationOperator.LessThanOrEqual,
 					Instance.KokoroApi.MakeConditionalActionIntConstant(GetRequiredSmug())
 				),
 				new AHeal
