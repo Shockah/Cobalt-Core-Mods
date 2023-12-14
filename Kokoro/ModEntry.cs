@@ -9,18 +9,17 @@ using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
 public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IStatusManifest
 {
-	internal static readonly string ScorchingTag = $"{typeof(ModEntry).Namespace}.MidrowTag.Scorching";
+	internal const string ExtensionDataJsonKey = "KokoroModData";
+	internal const string ScorchingTag = "Scorching";
 
 	public static ModEntry Instance { get; private set; } = null!;
 	internal IProxyManager<string> ProxyManager { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = null!;
-	internal readonly ConditionalWeakTable<object, Dictionary<string, object>> ExtensionDataStorage = new();
 	private Harmony Harmony = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
@@ -31,6 +30,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	public ILogger? Logger { get; set; }
 
 	internal Content Content = new();
+	internal ExtensionDataManager ExtensionDataManager { get; private init; } = new();
 	public EvadeManager EvadeManager { get; private init; } = new();
 	public DroneShiftManager DroneShiftManager { get; private init; } = new();
 	public ArtifactIconManager ArtifactIconManager { get; private init; } = new();
@@ -51,7 +51,8 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		var perModModLoaderContactType = AccessTools.TypeByName("CobaltCoreModding.Components.Services.PerModModLoaderContact, CobaltCoreModding.Components");
 		var proxyManagerField = AccessTools.DeclaredField(perModModLoaderContactType, "proxyManager");
 		ProxyManager = (IProxyManager<string>)proxyManagerField.GetValue(contact)!;
-		Api = new();
+		Api = new(this);
+		Api.RegisterTypeForExtensionData(typeof(StuffBase));
 
 		Harmony = new(Name);
 
@@ -78,7 +79,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	}
 
 	public object? GetApi(IManifest requestingMod)
-		=> new ApiImplementation();
+		=> new ApiImplementation(requestingMod);
 
 	public void LoadManifest(ISpriteRegistry registry)
 		=> Content.RegisterArt(registry);
@@ -88,7 +89,17 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 	private void SetupSerializationChanges()
 	{
-		JSONSettings.indented.ContractResolver = new ConditionalWeakTableExtensionDataContractResolver(JSONSettings.indented.ContractResolver ?? new DefaultContractResolver(), ExtensionDataStorage);
-		JSONSettings.serializer.ContractResolver = new ConditionalWeakTableExtensionDataContractResolver(JSONSettings.serializer.ContractResolver ?? new DefaultContractResolver(), ExtensionDataStorage);
+		JSONSettings.indented.ContractResolver = new ConditionalWeakTableExtensionDataContractResolver(
+			JSONSettings.indented.ContractResolver ?? new DefaultContractResolver(),
+			ExtensionDataJsonKey,
+			ExtensionDataManager.ExtensionDataStorage,
+			ExtensionDataManager.IsTypeRegisteredForExtensionData
+		);
+		JSONSettings.serializer.ContractResolver = new ConditionalWeakTableExtensionDataContractResolver(
+			JSONSettings.serializer.ContractResolver ?? new DefaultContractResolver(),
+			ExtensionDataJsonKey,
+			ExtensionDataManager.ExtensionDataStorage,
+			ExtensionDataManager.IsTypeRegisteredForExtensionData
+		);
 	}
 }

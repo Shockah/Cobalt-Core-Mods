@@ -135,6 +135,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+		KokoroApi.RegisterTypeForExtensionData(typeof(Combat));
 		Config = ObtainConfig();
 		Api = new();
 

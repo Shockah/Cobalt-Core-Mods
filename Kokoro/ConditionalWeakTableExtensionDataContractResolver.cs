@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Serialization;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -8,12 +9,16 @@ namespace Shockah.Kokoro;
 internal sealed class ConditionalWeakTableExtensionDataContractResolver : IContractResolver
 {
 	private readonly IContractResolver Wrapped;
-	private readonly ConditionalWeakTable<object, Dictionary<string, object>> Storage = new();
+	private readonly string JsonKey;
+	private readonly ConditionalWeakTable<object, Dictionary<string, Dictionary<string, object>>> Storage;
+	private readonly Func<object, bool> ShouldStoreExtensionData;
 
-	public ConditionalWeakTableExtensionDataContractResolver(IContractResolver wrapped, ConditionalWeakTable<object, Dictionary<string, object>> storage)
+	public ConditionalWeakTableExtensionDataContractResolver(IContractResolver wrapped, string jsonKey, ConditionalWeakTable<object, Dictionary<string, Dictionary<string, object>>> storage, Func<object, bool> shouldStoreExtensionData)
 	{
 		this.Wrapped = wrapped;
+		this.JsonKey = jsonKey;
 		this.Storage = storage;
+		this.ShouldStoreExtensionData = shouldStoreExtensionData;
 	}
 
 	public JsonContract ResolveContract(Type type)
@@ -21,30 +26,45 @@ internal sealed class ConditionalWeakTableExtensionDataContractResolver : IContr
 		var contract = Wrapped.ResolveContract(type);
 		if (contract is JsonObjectContract objectContract)
 		{
-			objectContract.ExtensionDataGetter = ExtensionDataGetter;
-			objectContract.ExtensionDataSetter = ExtensionDataSetter;
+			var wrappedExtensionDataGetter = objectContract.ExtensionDataGetter;
+			var wrappedExtensionDataSetter = objectContract.ExtensionDataSetter;
+			objectContract.ExtensionDataGetter = o => ExtensionDataGetter(o, wrappedExtensionDataGetter);
+			objectContract.ExtensionDataSetter = (o, key, value) => ExtensionDataSetter(o, key, value, wrappedExtensionDataSetter);
 		}
 		return contract;
 	}
 
-	private IEnumerable<KeyValuePair<object, object>> ExtensionDataGetter(object o)
+	private IEnumerable<KeyValuePair<object, object>> ExtensionDataGetter(object o, ExtensionDataGetter? wrapped)
 	{
-		if (!Storage.TryGetValue(o, out var data))
+		if (o is null)
 			yield break;
-		foreach (var (key, value) in data)
-			yield return new(key, value);
+		if (ShouldStoreExtensionData(o) && Storage.TryGetValue(o, out var allObjectData))
+			yield return new(JsonKey, allObjectData);
+		if (wrapped is not null && wrapped.Invoke(o) is { } wrappedData)
+			foreach (var kvp in wrappedData)
+				if (!Equals(kvp.Key, JsonKey))
+					yield return kvp;
 	}
 
-	private void ExtensionDataSetter(object o, string key, object? value)
+	private void ExtensionDataSetter(object o, string key, object? value, ExtensionDataSetter? wrapped)
 	{
-		if (!Storage.TryGetValue(o, out var data))
+		if (key != JsonKey)
 		{
-			data = new();
-			Storage.AddOrUpdate(o, data);
+			wrapped?.Invoke(o, key, value);
+			return;
 		}
+		if (!ShouldStoreExtensionData(o))
+			return;
 		if (value is null)
-			data.Remove(key);
-		else
-			data[key] = value;
+		{
+			Storage.Remove(o);
+			return;
+		}
+		if (value is not Dictionary<string, Dictionary<string, object>> dictionary)
+		{
+			ModEntry.Instance.Logger!.LogError("Encountered invalid serialized mod data of type {Type}.", value.GetType().FullName!);
+			return;
+		}
+		Storage.AddOrUpdate(o, dictionary);
 	}
 }

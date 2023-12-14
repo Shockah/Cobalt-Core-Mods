@@ -5,6 +5,7 @@ namespace Shockah.Soggins;
 
 public partial interface IKokoroApi
 {
+	void RegisterTypeForExtensionData(Type type);
 	T GetExtensionData<T>(object o, string key) where T : notnull;
 	bool TryGetExtensionData<T>(object o, string key, [MaybeNullWhen(false)] out T data) where T : notnull;
 	T ObtainExtensionData<T>(object o, string key, Func<T> factory) where T : notnull;

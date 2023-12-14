@@ -1,4 +1,5 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
+using CobaltCoreModding.Definitions.ModManifests;
 using Nanoray.Pintail;
 using Shockah.Shared;
 using System;
@@ -13,7 +14,13 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
+	private readonly IManifest Manifest;
 	private readonly Dictionary<Type, ConditionalWeakTable<object, object?>> ProxyCache = new();
+
+	public ApiImplementation(IManifest manifest)
+	{
+		this.Manifest = manifest;
+	}
 
 	public IEvadeHook VanillaEvadeHook
 		=> Kokoro.VanillaEvadeHook.Instance;
@@ -71,91 +78,29 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 	#endregion
 
 	#region ExtensionData
-	private static T ConvertExtensionData<T>(object o) where T : notnull
-	{
-		if (typeof(T).IsInstanceOfType(o))
-			return (T)o;
-		if (typeof(T) == typeof(int))
-			return (T)(object)Convert.ToInt32(o);
-		else if (typeof(T) == typeof(long))
-			return (T)(object)Convert.ToInt64(o);
-		else if (typeof(T) == typeof(short))
-			return (T)(object)Convert.ToInt16(o);
-		else if (typeof(T) == typeof(byte))
-			return (T)(object)Convert.ToByte(o);
-		else if (typeof(T) == typeof(bool))
-			return (T)(object)Convert.ToBoolean(o);
-		else if (typeof(T) == typeof(float))
-			return (T)(object)Convert.ToSingle(o);
-		else if (typeof(T) == typeof(double))
-			return (T)(object)Convert.ToDouble(o);
-		else
-			return (T)o;
-	}
+	public void RegisterTypeForExtensionData(Type type)
+		=> Instance.ExtensionDataManager.RegisterTypeForExtensionData(type);
 
 	public T GetExtensionData<T>(object o, string key) where T : notnull
-	{
-		if (!Instance.ExtensionDataStorage.TryGetValue(o, out var extensionData))
-			throw new KeyNotFoundException($"Object {o} does not contain extension data with key `{key}`");
-		if (!extensionData.TryGetValue(key, out var data))
-			throw new KeyNotFoundException($"Object {o} does not contain extension data with key `{key}`");
-		return ConvertExtensionData<T>(data);
-	}
+		=> Instance.ExtensionDataManager.GetExtensionData<T>(Manifest, o, key);
 
 	public bool TryGetExtensionData<T>(object o, string key, [MaybeNullWhen(false)] out T data) where T : notnull
-	{
-		if (!Instance.ExtensionDataStorage.TryGetValue(o, out var extensionData))
-		{
-			data = default;
-			return false;
-		}
-		if (!extensionData.TryGetValue(key, out var rawData))
-		{
-			data = default;
-			return false;
-		}
-		data = ConvertExtensionData<T>(rawData);
-		return true;
-	}
+		=> Instance.ExtensionDataManager.TryGetExtensionData(Manifest, o, key, out data);
 
 	public T ObtainExtensionData<T>(object o, string key, Func<T> factory) where T : notnull
-	{
-		if (!TryGetExtensionData<T>(o, key, out var data))
-		{
-			data = factory();
-			SetExtensionData(o, key, data);
-		}
-		return data;
-	}
+		=> Instance.ExtensionDataManager.ObtainExtensionData(Manifest, o, key, factory);
 
 	public T ObtainExtensionData<T>(object o, string key) where T : notnull, new()
-		=> ObtainExtensionData(o, key, () => new T());
+		=> Instance.ExtensionDataManager.ObtainExtensionData<T>(Manifest, o, key);
 
 	public bool ContainsExtensionData(object o, string key)
-	{
-		if (!Instance.ExtensionDataStorage.TryGetValue(o, out var extensionData))
-			return false;
-		if (!extensionData.TryGetValue(key, out _))
-			return false;
-		return true;
-	}
+		=> Instance.ExtensionDataManager.ContainsExtensionData(Manifest, o, key);
 
 	public void SetExtensionData<T>(object o, string key, T data) where T : notnull
-	{
-		if (!Instance.ExtensionDataStorage.TryGetValue(o, out var extensionData))
-		{
-			extensionData = new();
-			Instance.ExtensionDataStorage.AddOrUpdate(o, extensionData);
-		}
-		extensionData[key] = data;
-	}
+		=> Instance.ExtensionDataManager.SetExtensionData(Manifest, o, key, data);
 
 	public void RemoveExtensionData(object o, string key)
-	{
-		if (!Instance.ExtensionDataStorage.TryGetValue(o, out var extensionData))
-			return;
-		extensionData.Remove(key);
-	}
+		=> Instance.ExtensionDataManager.RemoveExtensionData(Manifest, o, key);
 	#endregion
 
 	#region WormStatus
