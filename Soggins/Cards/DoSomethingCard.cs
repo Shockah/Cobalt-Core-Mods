@@ -1,12 +1,26 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
+using Shockah.Shared;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Shockah.Soggins;
 
 [CardMeta(rarity = Rarity.rare, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
 public sealed class DoSomethingCard : Card, IRegisterableCard
 {
+	private static ModEntry Instance => ModEntry.Instance;
+
+	private static ExternalSprite Art = null!;
+
+	public void RegisterArt(ISpriteRegistry registry)
+	{
+		Art = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.CardArt.DoSomething",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "CardArt", "DoSomething.png"))
+		);
+	}
+
 	public void RegisterCard(ICardRegistry registry)
 	{
 		ExternalCard card = new(
@@ -30,7 +44,7 @@ public sealed class DoSomethingCard : Card, IRegisterableCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = StableSpr.cards_colorless;
+		data.art = (Spr)Art.Id!.Value;
 		data.description = GetText();
 		data.cost = 2;
 		return data;

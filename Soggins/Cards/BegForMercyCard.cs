@@ -1,6 +1,8 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
+using Shockah.Shared;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Shockah.Soggins;
 
@@ -8,6 +10,16 @@ namespace Shockah.Soggins;
 public sealed class BegForMercyCard : Card, IRegisterableCard, IFrogproofCard
 {
 	private static ModEntry Instance => ModEntry.Instance;
+
+	private static ExternalSprite Art = null!;
+
+	public void RegisterArt(ISpriteRegistry registry)
+	{
+		Art = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.CardArt.BegForMercy",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "CardArt", "BegForMercy.png"))
+		);
+	}
 
 	public void RegisterCard(ICardRegistry registry)
 	{
@@ -32,7 +44,7 @@ public sealed class BegForMercyCard : Card, IRegisterableCard, IFrogproofCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = StableSpr.cards_Repairs;
+		data.art = (Spr)Art.Id!.Value;
 		data.cost = 1;
 		data.exhaust = upgrade == Upgrade.B;
 		return data;

@@ -4,6 +4,7 @@ using HarmonyLib;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Shockah.Soggins;
 
@@ -12,7 +13,17 @@ public sealed class ImTryingCard : Card, IRegisterableCard
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
+	private static ExternalSprite Art = null!;
+
 	private static bool IsDuringTryPlayCard = false;
+
+	public void RegisterArt(ISpriteRegistry registry)
+	{
+		Art = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.CardArt.ImTrying",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "CardArt", "ImTrying.png"))
+		);
+	}
 
 	public void RegisterCard(ICardRegistry registry)
 	{
@@ -54,7 +65,7 @@ public sealed class ImTryingCard : Card, IRegisterableCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = StableSpr.cards_ShuffleShot;
+		data.art = (Spr)Art.Id!.Value;
 		data.cost = GetCost();
 		data.retain = upgrade != Upgrade.None;
 		data.exhaust = upgrade == Upgrade.B;

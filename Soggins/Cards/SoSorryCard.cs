@@ -3,6 +3,7 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using HarmonyLib;
 using Shockah.Shared;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Shockah.Soggins;
 
@@ -11,7 +12,17 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
+	private static ExternalSprite Art = null!;
+
 	private static bool IsDuringTryPlayCard = false;
+
+	public void RegisterArt(ISpriteRegistry registry)
+	{
+		Art = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.CardArt.SoSorry",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "CardArt", "SoSorry.png"))
+		);
+	}
 
 	public void RegisterCard(ICardRegistry registry)
 	{
@@ -38,7 +49,7 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.art = StableSpr.cards_Reroute;
+		data.art = (Spr)Art.Id!.Value;
 		data.cost = 2;
 		return data;
 	}
