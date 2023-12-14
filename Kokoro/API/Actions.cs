@@ -1,4 +1,6 @@
-﻿namespace Shockah.Kokoro;
+﻿using System.Collections.Generic;
+
+namespace Shockah.Kokoro;
 
 public partial interface IKokoroApi
 {
@@ -7,14 +9,7 @@ public partial interface IKokoroApi
 	public partial interface IActionApi
 	{
 		CardAction MakeExhaustEntireHandImmediate();
-
 		CardAction MakePlaySpecificCardFromAnywhere(int cardId, bool showTheCardIfNotInHand = true);
-
-		CardAction MakePlayRandomCardsFromAnywhere(
-			Deck? deck = null,
-			int amount = 1,
-			bool fromHand = false, bool fromDrawPile = true, bool fromDiscardPile = false, bool fromExhaustPile = false,
-			int? ignoreCardId = null, string? ignoreCardType = null
-		);
+		CardAction MakePlayRandomCardsFromAnywhere(IEnumerable<int> cardIds, int amount = 1, bool showTheCardIfNotInHand = true);
 	}
 }

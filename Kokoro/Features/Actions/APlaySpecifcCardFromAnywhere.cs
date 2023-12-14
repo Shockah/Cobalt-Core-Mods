@@ -11,7 +11,7 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction
 
 	private static Card? CardToRemoveFromHand;
 
-	public int CardID;
+	public int CardId;
 	public bool ShowTheCardIfNotInHand = true;
 
 	[JsonProperty]
@@ -30,7 +30,7 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction
 	{
 		base.Begin(g, s, c);
 
-		Card? card = c.hand.Concat(s.deck).Concat(c.discard).Concat(c.exhausted).FirstOrDefault(c => c.uuid == CardID);
+		Card? card = c.hand.Concat(s.deck).Concat(c.discard).Concat(c.exhausted).FirstOrDefault(c => c.uuid == CardId);
 		if (card is null)
 			return;
 
@@ -61,9 +61,9 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction
 			return;
 		}
 
-		s.RemoveCardFromWhereverItIs(CardID);
+		s.RemoveCardFromWhereverItIs(CardId);
 		c.SendCardToHand(s, card);
-		c.QueueImmediate(new APlaySpecificCardFromAnywhere { CardID = card.uuid, Recursive = true });
+		c.QueueImmediate(new APlaySpecificCardFromAnywhere { CardId = card.uuid, Recursive = true });
 		c.QueueImmediate(new ADelay() { time = -0.2 });
 	}
 

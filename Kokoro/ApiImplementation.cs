@@ -4,6 +4,7 @@ using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
@@ -23,6 +24,25 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 	#region Generic
 	public TimeSpan TotalGameTime
 		=> Instance.TotalGameTime;
+
+	public IEnumerable<Card> GetCardsEverywhere(State state, bool hand = true, bool drawPile = true, bool discardPile = true, bool exhaustPile = true)
+	{
+		if (drawPile)
+			foreach (var card in state.deck)
+				yield return card;
+		if (state.route is Combat combat)
+		{
+			if (hand)
+				foreach (var card in combat.hand)
+					yield return card;
+			if (discardPile)
+				foreach (var card in combat.discard)
+					yield return card;
+			if (exhaustPile)
+				foreach (var card in combat.exhausted)
+					yield return card;
+		}
+	}
 
 	public bool TryProxy<T>(object @object, [MaybeNullWhen(false)] out T proxy) where T : class
 	{
@@ -240,21 +260,10 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 			=> new AExhaustEntireHandImmediate();
 
 		public CardAction MakePlaySpecificCardFromAnywhere(int cardId, bool showTheCardIfNotInHand = true)
-			=> new APlaySpecificCardFromAnywhere { CardID = cardId, ShowTheCardIfNotInHand = showTheCardIfNotInHand };
+			=> new APlaySpecificCardFromAnywhere { CardId = cardId, ShowTheCardIfNotInHand = showTheCardIfNotInHand };
 
-		public CardAction MakePlayRandomCardsFromAnywhere(
-			Deck? deck = null,
-			int amount = 1,
-			bool fromHand = false, bool fromDrawPile = true, bool fromDiscardPile = false, bool fromExhaustPile = false,
-			int? ignoreCardId = null, string? ignoreCardType = null
-		)
-			=> new APlayRandomCardsFromAnywhere
-			{
-				Deck = deck,
-				Amount = amount,
-				FromHand = fromHand, FromDrawPile = fromDrawPile, FromDiscardPile = fromDiscardPile, FromExhaustPile = fromExhaustPile,
-				IgnoreCardID = ignoreCardId, IgnoreCardType = ignoreCardType
-			};
+		public CardAction MakePlayRandomCardsFromAnywhere(IEnumerable<int> cardIds, int amount = 1, bool showTheCardIfNotInHand = true)
+			=> new APlayRandomCardsFromAnywhere { CardIds = cardIds.ToHashSet(), Amount = amount, ShowTheCardIfNotInHand = showTheCardIfNotInHand };
 	}
 	#endregion
 

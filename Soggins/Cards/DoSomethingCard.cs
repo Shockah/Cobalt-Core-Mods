@@ -3,6 +3,7 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Shockah.Soggins;
 
@@ -57,11 +58,14 @@ public sealed class DoSomethingCard : Card, IRegisterableCard
 				time = -0.5
 			},
 			Instance.KokoroApi.Actions.MakePlayRandomCardsFromAnywhere(
-				amount: upgrade == Upgrade.B ? 2 : 1,
-				fromDrawPile: upgrade != Upgrade.A,
-				fromDiscardPile: upgrade != Upgrade.None,
-				fromExhaustPile: upgrade == Upgrade.B,
-				ignoreCardType: Key()
+				cardIds: Instance.KokoroApi.GetCardsEverywhere(
+					state: s,
+					hand: false,
+					drawPile: upgrade != Upgrade.A,
+					discardPile: upgrade != Upgrade.None,
+					exhaustPile: upgrade == Upgrade.B
+				).Where(c => c.Key() != Key()).Select(c => c.uuid),
+				amount: upgrade == Upgrade.B ? 2 : 1
 			)
 		};
 }
