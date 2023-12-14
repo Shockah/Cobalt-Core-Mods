@@ -33,11 +33,19 @@ public sealed class StopItCard : Card, IRegisterableCard, IFrogproofCard
 		registry.RegisterCard(card);
 	}
 
+	private int GetCost()
+		=> upgrade switch
+		{
+			Upgrade.A => 1,
+			Upgrade.B => 0,
+			_ => 1,
+		};
+
 	private int GetFrogproofing()
 		=> upgrade switch
 		{
 			Upgrade.A => 3,
-			Upgrade.B => 5,
+			Upgrade.B => 2,
 			_ => 3,
 		};
 
@@ -45,32 +53,45 @@ public sealed class StopItCard : Card, IRegisterableCard, IFrogproofCard
 		=> upgrade switch
 		{
 			Upgrade.A => 2,
-			Upgrade.B => 1,
+			Upgrade.B => 0,
 			_ => 1,
 		};
 
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.cost = 1;
+		data.cost = GetCost();
 		return data;
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
+		=> upgrade switch
 		{
-			new AStatus
+			Upgrade.B => new()
 			{
-				status = (Status)Instance.FrogproofingStatus.Id!.Value,
-				statusAmount = GetFrogproofing(),
-				targetPlayer = true
+				new AStatus
+				{
+					status = (Status)Instance.FrogproofingStatus.Id!.Value,
+					statusAmount = GetFrogproofing(),
+					targetPlayer = true
+				},
+				new ADummyAction()
 			},
-			new AStatus
+			_ => new()
 			{
-				status = Status.shield,
-				statusAmount = GetShield(),
-				targetPlayer = true
-			},
-			new ADummyAction()
+				new AStatus
+				{
+					status = (Status)Instance.FrogproofingStatus.Id!.Value,
+					statusAmount = GetFrogproofing(),
+					targetPlayer = true
+				},
+				new AStatus
+				{
+					status = Status.shield,
+					statusAmount = GetShield(),
+					targetPlayer = true
+				},
+				new ADummyAction()
+			}
 		};
 }
