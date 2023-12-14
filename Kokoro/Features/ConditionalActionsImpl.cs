@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Shockah.Kokoro;
 
-internal sealed class ConditionalActionIntConstant : IConditionalActionIntExpression
+internal sealed class ConditionalActionIntConstant : IKokoroApi.IConditionalActionApi.IIntExpression
 {
 	[JsonProperty]
 	private readonly int Value;
@@ -28,7 +28,7 @@ internal sealed class ConditionalActionIntConstant : IConditionalActionIntExpres
 	}
 }
 
-internal sealed class ConditionalActionHandConstant : IConditionalActionIntExpression
+internal sealed class ConditionalActionHandConstant : IKokoroApi.IConditionalActionApi.IIntExpression
 {
 	[JsonProperty]
 	private readonly int Value;
@@ -50,7 +50,7 @@ internal sealed class ConditionalActionHandConstant : IConditionalActionIntExpre
 	}
 }
 
-internal sealed class ConditionalActionXConstant : IConditionalActionIntExpression
+internal sealed class ConditionalActionXConstant : IKokoroApi.IConditionalActionApi.IIntExpression
 {
 	[JsonProperty]
 	private readonly int Value;
@@ -72,16 +72,16 @@ internal sealed class ConditionalActionXConstant : IConditionalActionIntExpressi
 	}
 }
 
-internal sealed class ConditionalActionScalarMultiplier : IConditionalActionIntExpression
+internal sealed class ConditionalActionScalarMultiplier : IKokoroApi.IConditionalActionApi.IIntExpression
 {
 	[JsonProperty]
-	private readonly IConditionalActionIntExpression Expression;
+	private readonly IKokoroApi.IConditionalActionApi.IIntExpression Expression;
 
 	[JsonProperty]
 	private readonly int Scalar;
 
 	[JsonConstructor]
-	public ConditionalActionScalarMultiplier(IConditionalActionIntExpression expression, int scalar)
+	public ConditionalActionScalarMultiplier(IKokoroApi.IConditionalActionApi.IIntExpression expression, int scalar)
 	{
 		this.Expression = expression;
 		this.Scalar = scalar;
@@ -105,7 +105,7 @@ internal sealed class ConditionalActionScalarMultiplier : IConditionalActionIntE
 	}
 }
 
-internal sealed class ConditionalActionHasStatusExpression : IConditionalActionBoolExpression
+internal sealed class ConditionalActionHasStatusExpression : IKokoroApi.IConditionalActionApi.IBoolExpression
 {
 	[JsonProperty]
 	private readonly Status Status;
@@ -154,7 +154,7 @@ internal sealed class ConditionalActionHasStatusExpression : IConditionalActionB
 	}
 }
 
-internal sealed class ConditionalActionStatusExpression : IConditionalActionIntExpression
+internal sealed class ConditionalActionStatusExpression : IKokoroApi.IConditionalActionApi.IIntExpression
 {
 	[JsonProperty]
 	private readonly Status Status;
@@ -198,23 +198,23 @@ internal sealed class ConditionalActionStatusExpression : IConditionalActionIntE
 	}
 }
 
-internal sealed class ConditionalActionEquation : IConditionalActionBoolExpression
+internal sealed class ConditionalActionEquation : IKokoroApi.IConditionalActionApi.IBoolExpression
 {
 	[JsonProperty]
-	private readonly IConditionalActionIntExpression Lhs;
+	private readonly IKokoroApi.IConditionalActionApi.IIntExpression Lhs;
 
 	[JsonProperty]
 	[JsonConverter(typeof(StringEnumConverter))]
-	private readonly ConditionalActionEquationOperator Operator;
+	private readonly IKokoroApi.IConditionalActionApi.EquationOperator Operator;
 
 	[JsonProperty]
-	private readonly IConditionalActionIntExpression Rhs;
+	private readonly IKokoroApi.IConditionalActionApi.IIntExpression Rhs;
 
 	[JsonProperty]
 	private readonly bool HideOperator;
 
 	[JsonConstructor]
-	public ConditionalActionEquation(IConditionalActionIntExpression lhs, ConditionalActionEquationOperator @operator, IConditionalActionIntExpression rhs, bool hideOperator)
+	public ConditionalActionEquation(IKokoroApi.IConditionalActionApi.IIntExpression lhs, IKokoroApi.IConditionalActionApi.EquationOperator @operator, IKokoroApi.IConditionalActionApi.IIntExpression rhs, bool hideOperator)
 	{
 		this.Lhs = lhs;
 		this.Operator = @operator;
@@ -228,12 +228,12 @@ internal sealed class ConditionalActionEquation : IConditionalActionBoolExpressi
 		int rhs = Rhs.GetValue(state, combat);
 		return Operator switch
 		{
-			ConditionalActionEquationOperator.Equal => lhs == rhs,
-			ConditionalActionEquationOperator.NotEqual => lhs != rhs,
-			ConditionalActionEquationOperator.GreaterThan => lhs > rhs,
-			ConditionalActionEquationOperator.LessThan => lhs < rhs,
-			ConditionalActionEquationOperator.GreaterThanOrEqual => lhs >= rhs,
-			ConditionalActionEquationOperator.LessThanOrEqual => lhs <= rhs,
+			IKokoroApi.IConditionalActionApi.EquationOperator.Equal => lhs == rhs,
+			IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => lhs != rhs,
+			IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => lhs > rhs,
+			IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => lhs < rhs,
+			IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => lhs >= rhs,
+			IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => lhs <= rhs,
 			_ => throw new ArgumentException()
 		};
 	}
@@ -246,12 +246,12 @@ internal sealed class ConditionalActionEquation : IConditionalActionBoolExpressi
 		{
 			var operatorIcon = Operator switch
 			{
-				ConditionalActionEquationOperator.Equal => ModEntry.Instance.Content.EqualSprite,
-				ConditionalActionEquationOperator.NotEqual => ModEntry.Instance.Content.NotEqualSprite,
-				ConditionalActionEquationOperator.GreaterThan => ModEntry.Instance.Content.GreaterThanSprite,
-				ConditionalActionEquationOperator.LessThan => ModEntry.Instance.Content.LessThanSprite,
-				ConditionalActionEquationOperator.GreaterThanOrEqual => ModEntry.Instance.Content.GreaterThanOrEqualSprite,
-				ConditionalActionEquationOperator.LessThanOrEqual => ModEntry.Instance.Content.LessThanOrEqualSprite,
+				IKokoroApi.IConditionalActionApi.EquationOperator.Equal => ModEntry.Instance.Content.EqualSprite,
+				IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => ModEntry.Instance.Content.NotEqualSprite,
+				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => ModEntry.Instance.Content.GreaterThanSprite,
+				IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => ModEntry.Instance.Content.LessThanSprite,
+				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => ModEntry.Instance.Content.GreaterThanOrEqualSprite,
+				IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => ModEntry.Instance.Content.LessThanOrEqualSprite,
 				_ => throw new ArgumentException()
 			};
 			if (!dontRender)

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using static Shockah.Kokoro.IKokoroApi.IConditionalActionApi;
 
 namespace Shockah.Kokoro;
 
@@ -48,32 +49,6 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 		return newNullableProxy is not null;
 	}
 
-	#endregion
-
-	#region ConditionalActions
-	public IConditionalActionIntExpression MakeConditionalActionIntConstant(int value)
-		=> new ConditionalActionIntConstant(value);
-
-	public IConditionalActionIntExpression MakeConditionalActionHandConstant(int value)
-		=> new ConditionalActionHandConstant(value);
-
-	public IConditionalActionIntExpression MakeConditionalActionXConstant(int value)
-		=> new ConditionalActionXConstant(value);
-
-	public IConditionalActionIntExpression MakeConditionalActionScalarMultiplier(IConditionalActionIntExpression expression, int scalar)
-		=> new ConditionalActionScalarMultiplier(expression, scalar);
-
-	public IConditionalActionBoolExpression MakeConditionalActionHasStatusExpression(Status status, bool targetPlayer = true, bool countNegative = false)
-		=> new ConditionalActionHasStatusExpression(status, targetPlayer, countNegative);
-
-	public IConditionalActionIntExpression MakeConditionalActionStatusExpression(Status status, bool targetPlayer = true)
-		=> new ConditionalActionStatusExpression(status, targetPlayer);
-
-	public IConditionalActionBoolExpression MakeConditionalActionEquation(IConditionalActionIntExpression lhs, ConditionalActionEquationOperator @operator, IConditionalActionIntExpression rhs, bool hideOperator = false)
-		=> new ConditionalActionEquation(lhs, @operator, rhs, hideOperator);
-
-	public CardAction MakeConditionalAction(IConditionalActionBoolExpression expression, CardAction action)
-		=> new AConditional { Expression = expression, Action = action };
 	#endregion
 
 	#region ExtensionData
@@ -256,4 +231,35 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 	public void UnregisterStatusLogicHook(IStatusLogicHook hook)
 		=> Instance.StatusLogicManager.Unregister(hook);
 	#endregion
+
+	#region ComplexActions
+	public IKokoroApi.IConditionalActionApi ConditionalActions { get; } = new ConditionalActionApiImplementation();
+	#endregion
+
+	public sealed class ConditionalActionApiImplementation : IKokoroApi.IConditionalActionApi
+	{
+		public CardAction Make(IBoolExpression expression, CardAction action)
+			=> new AConditional { Expression = expression, Action = action };
+
+		public IIntExpression Constant(int value)
+			=> new ConditionalActionIntConstant(value);
+
+		public IIntExpression HandConstant(int value)
+			=> new ConditionalActionHandConstant(value);
+
+		public IIntExpression XConstant(int value)
+			=> new ConditionalActionXConstant(value);
+
+		public IIntExpression ScalarMultiplier(IIntExpression expression, int scalar)
+			=> new ConditionalActionScalarMultiplier(expression, scalar);
+
+		public IBoolExpression HasStatus(Status status, bool targetPlayer = true, bool countNegative = false)
+			=> new ConditionalActionHasStatusExpression(status, targetPlayer, countNegative);
+
+		public IIntExpression Status(Status status, bool targetPlayer = true)
+			=> new ConditionalActionStatusExpression(status, targetPlayer);
+
+		public IBoolExpression Equation(IIntExpression lhs, EquationOperator @operator, IIntExpression rhs, bool hideOperator = false)
+			=> new ConditionalActionEquation(lhs, @operator, rhs, hideOperator);
+	}
 }

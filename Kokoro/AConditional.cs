@@ -4,10 +4,8 @@ namespace Shockah.Kokoro;
 
 public sealed class AConditional : CardAction, ICardActionWrapper
 {
-	public IConditionalActionBoolExpression? Expression;
+	public IKokoroApi.IConditionalActionApi.IBoolExpression? Expression;
 	public CardAction? Action;
-
-	private bool WasSatisfied = false;
 
 	public override void Begin(G g, State s, Combat c)
 	{
@@ -19,19 +17,7 @@ public sealed class AConditional : CardAction, ICardActionWrapper
 		if (!Expression.GetValue(s, c))
 			return;
 
-		WasSatisfied = true;
-		Action.Begin(g, s, c);
-		timer = Action.timer;
-	}
-
-	public override void Update(G g, State s, Combat c)
-	{
-		base.Update(g, s, c);
-		if (!WasSatisfied || Action is null)
-			return;
-
-		Action.Update(g, s, c);
-		timer = Action.timer;
+		c.QueueImmediate(Action);
 	}
 
 	public override List<Tooltip> GetTooltips(State s)

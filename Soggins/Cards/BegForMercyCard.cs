@@ -53,11 +53,11 @@ public sealed class BegForMercyCard : Card, IRegisterableCard, IFrogproofCard
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> new()
 		{
-			Instance.KokoroApi.MakeConditionalAction(
-				Instance.KokoroApi.MakeConditionalActionEquation(
-					Instance.KokoroApi.MakeConditionalActionStatusExpression((Status)Instance.SmugStatus.Id!.Value),
-					ConditionalActionEquationOperator.LessThanOrEqual,
-					Instance.KokoroApi.MakeConditionalActionIntConstant(GetRequiredSmug()),
+			Instance.KokoroApi.ConditionalActions.Make(
+				Instance.KokoroApi.ConditionalActions.Equation(
+					Instance.KokoroApi.ConditionalActions.Status((Status)Instance.SmugStatus.Id!.Value),
+					IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual,
+					Instance.KokoroApi.ConditionalActions.Constant(GetRequiredSmug()),
 					hideOperator: GetRequiredSmug() == Instance.Api.GetMinSmug(s.ship)
 				),
 				new AHeal
