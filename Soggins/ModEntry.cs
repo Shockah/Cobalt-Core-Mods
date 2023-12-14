@@ -147,6 +147,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		FrogproofManager.ApplyPatches(Harmony);
 		SmugStatusManager.ApplyPatches(Harmony);
 		CustomTTGlossary.ApplyPatches(Harmony);
+		APlaySpecificCardFromAnywhere.ApplyPatches(Harmony);
 	}
 
 	public object? GetApi(IManifest requestingMod)
