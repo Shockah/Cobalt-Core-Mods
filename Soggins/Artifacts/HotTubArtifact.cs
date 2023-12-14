@@ -2,6 +2,7 @@
 using CobaltCoreModding.Definitions.ModContactPoints;
 using HarmonyLib;
 using Shockah.Shared;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -55,26 +56,24 @@ public sealed class HotTubArtifact : Artifact, IRegisterableArtifact
 		base.OnTurnEnd(state, combat);
 		if (combat.turn == 0)
 			return;
+
 		var smug = Instance.Api.GetSmug(state.ship);
 		if (smug is null)
 			return;
+		if (Instance.Api.IsOversmug(state.ship))
+			return;
 
-		if (smug == Instance.Api.GetMinSmug(state.ship))
-			combat.Queue(new AStatus
-			{
-				status = (Status)Instance.Api.SmugStatus.Id!.Value,
-				statusAmount = 1,
-				targetPlayer = true,
-				artifactPulse = Key()
-			});
-		else if (smug == Instance.Api.GetMaxSmug(state.ship))
-			combat.Queue(new AStatus
-			{
-				status = (Status)Instance.Api.SmugStatus.Id!.Value,
-				statusAmount = -1,
-				targetPlayer = true,
-				artifactPulse = Key()
-			});
+		int sign = Math.Sign(smug.Value - 0);
+		if (sign == 0)
+			return;
+
+		combat.Queue(new AStatus
+		{
+			status = (Status)Instance.Api.SmugStatus.Id!.Value,
+			statusAmount = -sign,
+			targetPlayer = true,
+			artifactPulse = Key()
+		});
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
