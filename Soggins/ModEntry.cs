@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace Shockah.Soggins;
 
-public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IStatusManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest
+public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IStatusManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal Config Config { get; private set; } = null!;
@@ -106,6 +106,8 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	};
 	internal static readonly Type[] RareCards = new Type[]
 	{
+		typeof(ClonedSeekerCard),
+		typeof(ClonedMissileMalwareCard),
 		typeof(ExtraApologyCard),
 		typeof(DoSomethingCard),
 		typeof(ImAlwaysRightCard),
@@ -145,11 +147,6 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		FrogproofManager.ApplyPatches(Harmony);
 		SmugStatusManager.ApplyPatches(Harmony);
 		CustomTTGlossary.ApplyPatches(Harmony);
-	}
-
-	public void FinalizePreperations(IPrelaunchContactPoint prelaunchManifest)
-	{
-		DBExtenderPatches.ApplyLatePatches(Harmony);
 	}
 
 	public object? GetApi(IManifest requestingMod)

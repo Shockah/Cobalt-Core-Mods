@@ -78,6 +78,8 @@ internal static class I18n
 	public static string DoSomethingCardTextA => "Play a random card from your <c=keyword>discard pile</c>.";
 	public static string DoSomethingCardTextB => "Play 2 random cards from your <c=keyword>draw, discard or exhaust pile</c>.";
 	public static string ImAlwaysRightCardName => "I'm Always Right!";
+	public static string SeekerCardName => "Seeker";
+	public static string MissileMalwareCardName => "Missile Malware";
 
 	public static readonly string[] ApologyFlavorTexts = new[]
 	{
