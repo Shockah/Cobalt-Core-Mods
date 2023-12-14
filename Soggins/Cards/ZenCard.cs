@@ -47,12 +47,17 @@ public sealed class ZenCard : Card, IRegisterableCard, IFrogproofCard
 		=> new()
 		{
 			new ADummyAction(),
+			new ADummyAction(),
 			new AStatus
 			{
 				status = (Status)Instance.SmugStatus.Id!.Value,
 				mode = AStatusMode.Set,
 				statusAmount = 0,
 				targetPlayer = true
+			},
+			new ADrawCard
+			{
+				count = 1
 			}
 		};
 }
