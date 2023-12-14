@@ -69,9 +69,8 @@ public sealed class TakeCoverCard : Card, IRegisterableCard
 		{
 			new AStatus
 			{
-				status = Status.shield,
-				mode = AStatusMode.Set,
-				statusAmount = GetShield(),
+				status = Status.tempShield,
+				statusAmount = GetTempShield(),
 				targetPlayer = true,
 				disabled = flipped
 			},
@@ -79,8 +78,9 @@ public sealed class TakeCoverCard : Card, IRegisterableCard
 			new ADummyAction(),
 			new AStatus
 			{
-				status = Status.tempShield,
-				statusAmount = GetTempShield(),
+				status = Status.shield,
+				mode = AStatusMode.Set,
+				statusAmount = GetShield(),
 				targetPlayer = true,
 				disabled = flipped
 			},
