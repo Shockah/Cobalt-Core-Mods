@@ -6,6 +6,8 @@ public partial interface IKokoroApi
 
 	public partial interface IActionApi
 	{
+		CardAction MakeExhaustEntireHandImmediate();
+
 		CardAction MakePlaySpecificCardFromAnywhere(int cardId, bool showTheCardIfNotInHand = true);
 
 		CardAction MakePlayRandomCardsFromAnywhere(

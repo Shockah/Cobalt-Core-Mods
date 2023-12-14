@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Shockah.Soggins;
+namespace Shockah.Kokoro;
 
-public sealed class AFixedExhaustEntireHand : AExhaustEntireHand
+public sealed class AExhaustEntireHandImmediate : AExhaustEntireHand
 {
 	public override void Begin(G g, State s, Combat c)
 	{

@@ -87,7 +87,7 @@ public sealed class ImTryingCard : Card, IRegisterableCard
 			hand = true,
 			handAmount = cardsInHandAfterPlaying
 		});
-		actions.Add(new AFixedExhaustEntireHand());
+		actions.Add(Instance.KokoroApi.Actions.MakeExhaustEntireHandImmediate());
 
 		if (IsDuringTryPlayCard)
 		{

@@ -236,6 +236,9 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 
 	public sealed class ActionApiImplementation : IKokoroApi.IActionApi
 	{
+		public CardAction MakeExhaustEntireHandImmediate()
+			=> new AExhaustEntireHandImmediate();
+
 		public CardAction MakePlaySpecificCardFromAnywhere(int cardId, bool showTheCardIfNotInHand = true)
 			=> new APlaySpecificCardFromAnywhere { CardID = cardId, ShowTheCardIfNotInHand = showTheCardIfNotInHand };
 
