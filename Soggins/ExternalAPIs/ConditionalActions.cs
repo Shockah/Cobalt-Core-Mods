@@ -10,7 +10,7 @@ public partial interface IKokoroApi
 	IConditionalActionIntExpression MakeConditionalActionScalarMultiplier(IConditionalActionIntExpression expression, int scalar);
 	IConditionalActionBoolExpression MakeConditionalActionHasStatusExpression(Status status, bool targetPlayer = true, bool countNegative = false);
 	IConditionalActionIntExpression MakeConditionalActionStatusExpression(Status status, bool targetPlayer = true);
-	IConditionalActionBoolExpression MakeConditionalActionEquation(IConditionalActionIntExpression lhs, ConditionalActionEquationOperator @operator, IConditionalActionIntExpression rhs);
+	IConditionalActionBoolExpression MakeConditionalActionEquation(IConditionalActionIntExpression lhs, ConditionalActionEquationOperator @operator, IConditionalActionIntExpression rhs, bool hideOperator = false);
 	CardAction MakeConditionalAction(IConditionalActionBoolExpression expression, CardAction action);
 }
 
@@ -28,6 +28,7 @@ public interface IConditionalActionExpression
 public interface IConditionalActionBoolExpression : IConditionalActionExpression
 {
 	bool GetValue(State state, Combat combat);
+	bool ShouldRenderQuestionMark(State state, Combat? combat) => true;
 }
 
 public interface IConditionalActionIntExpression : IConditionalActionExpression

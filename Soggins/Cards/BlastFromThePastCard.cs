@@ -63,7 +63,8 @@ public sealed class BlastFromThePastCard : Card, IRegisterableCard, IFrogproofCa
 				Instance.KokoroApi.MakeConditionalActionEquation(
 					Instance.KokoroApi.MakeConditionalActionStatusExpression((Status)Instance.SmugStatus.Id!.Value),
 					ConditionalActionEquationOperator.LessThanOrEqual,
-					Instance.KokoroApi.MakeConditionalActionIntConstant(-3)
+					Instance.KokoroApi.MakeConditionalActionIntConstant(-3),
+					hideOperator: -3 == Instance.Api.GetMinSmug(s.ship)
 				),
 				new AStatus
 				{

@@ -48,29 +48,31 @@ internal static class CardPatches
 	{
 		if (action is not AConditional conditional)
 			return true;
+		if (conditional.Action is not { } wrappedAction)
+			return false;
 
 		var position = g.Push(rect: new()).rect.xy;
 		int initialX = (int)position.x;
 
 		conditional.Expression?.Render(g, ref position, action.disabled, dontDraw);
-
-		if (!dontDraw)
-			Draw.Sprite((Spr)Instance.Content.QuestionMarkSprite.Id!.Value, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
-		position.x += SpriteLoader.Get((Spr)Instance.Content.QuestionMarkSprite.Id!.Value)?.Width ?? 0;
-		position.x += 1;
-
-		if (conditional.Action is { } wrappedAction)
+		if (conditional.Expression?.ShouldRenderQuestionMark(state, state.route as Combat) == true)
 		{
-			if (wrappedAction is AAttack attack)
-			{
-				var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
-				attack.stunEnemy = shouldStun;
-			}
-
-			g.Push(rect: new(position.x - initialX, 0));
-			position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
-			g.Pop();
+			if (!dontDraw)
+				Draw.Sprite((Spr)Instance.Content.QuestionMarkSprite.Id!.Value, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
+			position.x += SpriteLoader.Get((Spr)Instance.Content.QuestionMarkSprite.Id!.Value)?.Width ?? 0;
+			position.x -= 1;
 		}
+
+		position.x += 2;
+		if (wrappedAction is AAttack attack)
+		{
+			var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
+			attack.stunEnemy = shouldStun;
+		}
+
+		g.Push(rect: new(position.x - initialX, 0));
+		position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+		g.Pop();
 
 		__result = (int)position.x - initialX;
 		g.Pop();

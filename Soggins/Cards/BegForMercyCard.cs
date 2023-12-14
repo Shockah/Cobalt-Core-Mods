@@ -57,7 +57,8 @@ public sealed class BegForMercyCard : Card, IRegisterableCard, IFrogproofCard
 				Instance.KokoroApi.MakeConditionalActionEquation(
 					Instance.KokoroApi.MakeConditionalActionStatusExpression((Status)Instance.SmugStatus.Id!.Value),
 					ConditionalActionEquationOperator.LessThanOrEqual,
-					Instance.KokoroApi.MakeConditionalActionIntConstant(GetRequiredSmug())
+					Instance.KokoroApi.MakeConditionalActionIntConstant(GetRequiredSmug()),
+					hideOperator: GetRequiredSmug() == Instance.Api.GetMinSmug(s.ship)
 				),
 				new AHeal
 				{

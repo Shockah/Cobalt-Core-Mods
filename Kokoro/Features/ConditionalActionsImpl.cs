@@ -210,12 +210,16 @@ internal sealed class ConditionalActionEquation : IConditionalActionBoolExpressi
 	[JsonProperty]
 	private readonly IConditionalActionIntExpression Rhs;
 
+	[JsonProperty]
+	private readonly bool HideOperator;
+
 	[JsonConstructor]
-	public ConditionalActionEquation(IConditionalActionIntExpression lhs, ConditionalActionEquationOperator @operator, IConditionalActionIntExpression rhs)
+	public ConditionalActionEquation(IConditionalActionIntExpression lhs, ConditionalActionEquationOperator @operator, IConditionalActionIntExpression rhs, bool hideOperator)
 	{
 		this.Lhs = lhs;
 		this.Operator = @operator;
 		this.Rhs = rhs;
+		this.HideOperator = hideOperator;
 	}
 
 	public bool GetValue(State state, Combat combat)
@@ -238,19 +242,22 @@ internal sealed class ConditionalActionEquation : IConditionalActionBoolExpressi
 	{
 		Lhs.Render(g, ref position, isDisabled, dontRender);
 
-		var operatorIcon = Operator switch
+		if (!HideOperator)
 		{
-			ConditionalActionEquationOperator.Equal => ModEntry.Instance.Content.EqualSprite,
-			ConditionalActionEquationOperator.NotEqual => ModEntry.Instance.Content.NotEqualSprite,
-			ConditionalActionEquationOperator.GreaterThan => ModEntry.Instance.Content.GreaterThanSprite,
-			ConditionalActionEquationOperator.LessThan => ModEntry.Instance.Content.LessThanSprite,
-			ConditionalActionEquationOperator.GreaterThanOrEqual => ModEntry.Instance.Content.GreaterThanOrEqualSprite,
-			ConditionalActionEquationOperator.LessThanOrEqual => ModEntry.Instance.Content.LessThanOrEqualSprite,
-			_ => throw new ArgumentException()
-		};
-		if (!dontRender)
-			Draw.Sprite((Spr)operatorIcon.Id!.Value, position.x, position.y, color: isDisabled ? Colors.disabledIconTint : Colors.white);
-		position.x += SpriteLoader.Get((Spr)operatorIcon.Id!.Value)?.Width ?? 0;
+			var operatorIcon = Operator switch
+			{
+				ConditionalActionEquationOperator.Equal => ModEntry.Instance.Content.EqualSprite,
+				ConditionalActionEquationOperator.NotEqual => ModEntry.Instance.Content.NotEqualSprite,
+				ConditionalActionEquationOperator.GreaterThan => ModEntry.Instance.Content.GreaterThanSprite,
+				ConditionalActionEquationOperator.LessThan => ModEntry.Instance.Content.LessThanSprite,
+				ConditionalActionEquationOperator.GreaterThanOrEqual => ModEntry.Instance.Content.GreaterThanOrEqualSprite,
+				ConditionalActionEquationOperator.LessThanOrEqual => ModEntry.Instance.Content.LessThanOrEqualSprite,
+				_ => throw new ArgumentException()
+			};
+			if (!dontRender)
+				Draw.Sprite((Spr)operatorIcon.Id!.Value, position.x, position.y, color: isDisabled ? Colors.disabledIconTint : Colors.white);
+			position.x += SpriteLoader.Get((Spr)operatorIcon.Id!.Value)?.Width ?? 0;
+		}
 
 		Rhs.Render(g, ref position, isDisabled, dontRender);
 	}

@@ -54,7 +54,8 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 					Instance.KokoroApi.MakeConditionalActionEquation(
 						Instance.KokoroApi.MakeConditionalActionStatusExpression((Status)Instance.SmugStatus.Id!.Value),
 						ConditionalActionEquationOperator.LessThanOrEqual,
-						Instance.KokoroApi.MakeConditionalActionIntConstant(-2)
+						Instance.KokoroApi.MakeConditionalActionIntConstant(-2),
+						hideOperator: -2 == Instance.Api.GetMinSmug(s.ship)
 					),
 					new AAttack
 					{
@@ -65,7 +66,8 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 					Instance.KokoroApi.MakeConditionalActionEquation(
 						Instance.KokoroApi.MakeConditionalActionStatusExpression((Status)Instance.SmugStatus.Id!.Value),
 						ConditionalActionEquationOperator.LessThanOrEqual,
-						Instance.KokoroApi.MakeConditionalActionIntConstant(-3)
+						Instance.KokoroApi.MakeConditionalActionIntConstant(-3),
+						hideOperator: -3 == Instance.Api.GetMinSmug(s.ship)
 					),
 					new AAttack
 					{
@@ -81,13 +83,15 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 					Instance.KokoroApi.MakeConditionalActionEquation(
 						Instance.KokoroApi.MakeConditionalActionStatusExpression((Status)Instance.SmugStatus.Id!.Value),
 						ConditionalActionEquationOperator.LessThanOrEqual,
-						Instance.KokoroApi.MakeConditionalActionIntConstant(-3)
+						Instance.KokoroApi.MakeConditionalActionIntConstant(-3),
+						hideOperator: -3 == Instance.Api.GetMinSmug(s.ship)
 					),
 					new AAttack
 					{
 						damage = GetDmg(s, 5)
 					}
 				),
+				new ADummyAction(),
 				new ADummyAction()
 			}
 		};

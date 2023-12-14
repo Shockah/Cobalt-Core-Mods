@@ -69,8 +69,8 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 	public IConditionalActionIntExpression MakeConditionalActionStatusExpression(Status status, bool targetPlayer = true)
 		=> new ConditionalActionStatusExpression(status, targetPlayer);
 
-	public IConditionalActionBoolExpression MakeConditionalActionEquation(IConditionalActionIntExpression lhs, ConditionalActionEquationOperator @operator, IConditionalActionIntExpression rhs)
-		=> new ConditionalActionEquation(lhs, @operator, rhs);
+	public IConditionalActionBoolExpression MakeConditionalActionEquation(IConditionalActionIntExpression lhs, ConditionalActionEquationOperator @operator, IConditionalActionIntExpression rhs, bool hideOperator = false)
+		=> new ConditionalActionEquation(lhs, @operator, rhs, hideOperator);
 
 	public CardAction MakeConditionalAction(IConditionalActionBoolExpression expression, CardAction action)
 		=> new AConditional { Expression = expression, Action = action };
