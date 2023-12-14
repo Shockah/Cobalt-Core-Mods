@@ -33,6 +33,26 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			=> chance * (ship.Get((Status)Instance.DoublersLuckStatus.Id!.Value) + 1);
 	}
 
+	private sealed class SmugClampStatusLogicHook : IStatusLogicHook
+	{
+		public int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount)
+		{
+			if (status != (Status)Instance.SmugStatus.Id!.Value)
+				return newAmount;
+			return Math.Clamp(newAmount, Instance.Api.GetMinSmug(ship), Instance.Api.GetMaxSmug(ship) + 1);
+		}
+	}
+
+	private sealed class DoubleTimeSmugFreezeStatusLogicHook : IStatusLogicHook
+	{
+		public int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount)
+		{
+			if (status != (Status)Instance.SmugStatus.Id!.Value)
+				return newAmount;
+			return ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0 ? oldAmount : newAmount;
+		}
+	}
+
 	private static ModEntry Instance => ModEntry.Instance;
 
 	private static readonly Dictionary<Type, int> TimesApologyWasGiven = new();
@@ -41,6 +61,8 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 	{
 		Register(new ExtraApologiesSmugHook(), 0);
 		Register(new DoublersLuckSmugHook(), -100);
+		Instance.KokoroApi.RegisterStatusLogicHook(new SmugClampStatusLogicHook(), double.MinValue);
+		Instance.KokoroApi.RegisterStatusLogicHook(new DoubleTimeSmugFreezeStatusLogicHook(), -1000);
 	}
 
 	internal static void ApplyPatches(Harmony harmony)

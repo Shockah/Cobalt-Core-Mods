@@ -8,5 +8,6 @@ public partial interface IKokoroApi
 
 public interface IStatusLogicHook
 {
+	int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount) => newAmount;
 	bool? IsAffectedByBoost(State state, Combat combat, Ship ship, Status status) => null;
 }

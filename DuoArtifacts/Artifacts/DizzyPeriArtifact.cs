@@ -1,22 +1,9 @@
-﻿using HarmonyLib;
-using Shockah.Shared;
-using System;
-using System.Linq;
+﻿using System;
 
 namespace Shockah.DuoArtifacts;
 
-internal sealed class DizzyPeriArtifact : DuoArtifact
+public sealed class DizzyPeriArtifact : DuoArtifact, IStatusLogicHook, IHookPriority
 {
-	protected internal override void ApplyPatches(Harmony harmony)
-	{
-		base.ApplyPatches(harmony);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.Set)),
-			prefix: new HarmonyMethod(GetType(), nameof(Ship_Set_Prefix))
-		);
-	}
-
 	public override void OnTurnStart(State state, Combat combat)
 	{
 		base.OnTurnStart(state, combat);
@@ -40,32 +27,27 @@ internal sealed class DizzyPeriArtifact : DuoArtifact
 			});
 	}
 
-	private static void Ship_Set_Prefix(Ship __instance, Status status, ref int n)
+	public double HookPriority
+		=> double.MinValue;
+
+	public int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount)
 	{
 		if (status != Status.shield)
-			return;
-		if (StateExt.Instance?.ship != __instance)
-			return;
+			return newAmount;
 
-		var artifact = StateExt.Instance?.EnumerateAllArtifacts().FirstOrDefault(a => a is DizzyPeriArtifact);
-		if (artifact is null)
-			return;
-
-		if (StateExt.Instance?.route is not Combat combat)
-			return;
-
-		int maxShield = __instance.GetMaxShield();
-		int overshield = Math.Max(0, n - maxShield);
+		int maxShield = ship.GetMaxShield();
+		int overshield = Math.Max(0, newAmount - maxShield);
 		if (overshield <= 0)
-			return;
+			return newAmount;
 
-		n -= overshield;
+		newAmount -= overshield;
 		combat.QueueImmediate(new AStatus
 		{
 			status = Status.overdrive,
 			statusAmount = overshield,
 			targetPlayer = true
 		});
-		artifact.Pulse();
+		Pulse();
+		return newAmount;
 	}
 }

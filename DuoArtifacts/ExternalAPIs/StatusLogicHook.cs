@@ -1,4 +1,4 @@
-﻿namespace Shockah.Soggins;
+﻿namespace Shockah.DuoArtifacts;
 
 public partial interface IKokoroApi
 {

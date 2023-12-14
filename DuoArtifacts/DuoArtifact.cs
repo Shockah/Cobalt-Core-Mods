@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Shockah.DuoArtifacts;
 
-internal abstract class DuoArtifact : Artifact
+public abstract class DuoArtifact : Artifact
 {
 	protected static ModEntry Instance => ModEntry.Instance;
 

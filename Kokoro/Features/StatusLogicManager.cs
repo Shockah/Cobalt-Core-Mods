@@ -9,6 +9,13 @@ public sealed class StatusLogicManager : HookManager<IStatusLogicHook>
 		Register(VanillaStatusLogicBoostHook.Instance, 0);
 	}
 
+	public int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount)
+	{
+		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
+			newAmount = hook.ModifyStatusChange(state, combat, ship, status, oldAmount, newAmount);
+		return newAmount;
+	}
+
 	public bool IsAffectedByBoost(State state, Combat combat, Ship ship, Status status)
 	{
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))

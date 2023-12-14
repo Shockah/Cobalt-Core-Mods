@@ -82,6 +82,11 @@ internal static class ShipPatches
 			prefix: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatusRow_Postfix)),
 			transpiler: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatusRow_Transpiler))
 		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.Set)),
+			prefix: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_Set_Prefix))
+		);
 	}
 
 	private static void Ship_OnBeginTurn_Postfix_Last(Ship __instance, State s, Combat c)
@@ -253,5 +258,21 @@ internal static class ShipPatches
 		if (LastStatusBarRenderingOverride is null)
 			return color;
 		return LastStatusBarRenderingOverride.Value.Colors[barIndex];
+	}
+
+	private static bool Ship_Set_Prefix(Ship __instance, Status status, ref int n)
+	{
+		if (StateExt.Instance is not { } state)
+			return true;
+		if (state.route is not Combat combat)
+			return true;
+
+		int oldAmount = __instance.Get(status);
+		int newAmount = Instance.StatusLogicManager.ModifyStatusChange(state, combat, __instance, status, oldAmount, n);
+
+		if (newAmount == oldAmount)
+			return false;
+		n = newAmount;
+		return true;
 	}
 }

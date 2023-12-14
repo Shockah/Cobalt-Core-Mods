@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-internal sealed class DuoArtifactDefinition
+public sealed class DuoArtifactDefinition
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
