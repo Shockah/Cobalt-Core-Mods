@@ -58,7 +58,7 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard, IFrogproof
 	{
 		var data = base.GetData(state);
 		data.art = (Spr)Art.Id!.Value;
-		data.cost = upgrade == Upgrade.B ? 0 : 1;
+		data.cost = upgrade == Upgrade.B ? 1 : 2;
 		data.exhaust = upgrade == Upgrade.B;
 		data.buoyant = upgrade == Upgrade.B;
 		return data;

@@ -56,7 +56,7 @@ internal static class I18n
 	public static string MysteriousAmmoCardName => "Mysterious Ammo";
 	public static string RunningInCirclesCardName => "Running in Circles";
 	public static string BetterSpaceMineCardName => "Better Space Mine";
-	public static string ThoughtsAndPrayersCardName => "Thoughts and Prayers";
+	public static string ThoughtsAndPrayersCardName => "Thoughts & Prayers";
 	public static string StopItCardName => "Stop It!";
 
 	// uncommon cards
