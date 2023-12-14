@@ -38,7 +38,10 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal ExternalDeck SogginsDeck { get; private set; } = null!;
 	internal ExternalCharacter SogginsCharacter { get; private set; } = null!;
 
-	internal ExternalSprite SogginsMini { get; private set; } = null!;
+	internal ExternalSprite MiniPortraitSprite { get; private set; } = null!;
+	internal Dictionary<int, List<ExternalSprite>> SmugPortraitSprites { get; private init; } = new();
+	internal List<ExternalSprite> OversmugPortraitSprites { get; private init; } = new();
+
 	internal ExternalSprite SmugStatusSprite { get; private set; } = null!;
 	internal ExternalSprite FrogproofSprite { get; private set; } = null!;
 	internal ExternalSprite BotchesStatusSprite { get; private set; } = null!;
@@ -58,12 +61,12 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal ExternalStatus DoubleTimeStatus { get; private set; } = null!;
 	internal ExternalStatus DoublersLuckStatus { get; private set; } = null!;
 
-	internal ExternalAnimation SogginsMadAnimation { get; private set; } = null!;
-	internal ExternalAnimation SogginsMeekAnimation { get; private set; } = null!;
-	internal ExternalAnimation SogginsNeutralAnimation { get; private set; } = null!;
-	internal ExternalAnimation SogginsSmugAnimation { get; private set; } = null!;
-	internal ExternalAnimation SogginsTubAnimation { get; private set; } = null!;
-	internal ExternalAnimation SogginsMiniAnimation { get; private set; } = null!;
+	internal Dictionary<int, ExternalAnimation> SmugPortraitAnimations { get; private init; } = new();
+	internal ExternalAnimation OversmugPortraitAnimation { get; private set; } = null!;
+	internal ExternalAnimation NeutralPortraitAnimation { get; private set; } = null!;
+	internal ExternalAnimation SquintPortraitAnimation { get; private set; } = null!;
+	internal ExternalAnimation GameOverPortraitAnimation { get; private set; } = null!;
+	internal ExternalAnimation MiniPortraitAnimation { get; private set; } = null!;
 
 	internal static readonly Type[] ApologyCards = new Type[]
 	{
@@ -196,10 +199,51 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "CharacterBorder.png"))
 		);
 
-		SogginsMini = registry.RegisterArtOrThrow(
-			id: $"{GetType().Namespace}.Character.Soggins.Mini",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "SogginsMini.png"))
+		MiniPortraitSprite = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.Character.Soggins.Portrait.Mini",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Portrait", "Mini.png"))
 		);
+
+		List<ExternalSprite>? RegisterAllFrames(string path, string idFormat)
+		{
+			List<ExternalSprite> frames = new();
+			for (int frame = 0; frame < int.MaxValue; frame++)
+			{
+				var frameFileInfo = new FileInfo(Path.Combine(path, $"{frame}.png"));
+				if (!frameFileInfo.Exists)
+					break;
+				frames.Add(registry.RegisterArtOrThrow(
+					id: string.Format(idFormat, frame),
+					file: frameFileInfo
+				));
+			}
+			return frames.Count == 0 ? null : frames;
+		}
+
+		for (int smugOffset = 0; smugOffset <= Config.BotchChances.Count / 2; smugOffset++)
+		{
+			void ActualSmug(int smug)
+			{
+				var frames = RegisterAllFrames(
+					path: Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Portrait", $"Smug{smug}"),
+					idFormat: $"{GetType().Namespace}.Character.Soggins.Portrait.Smug.{smug}.Frame.{{0}}"
+				);
+				if (frames is not null)
+					SmugPortraitSprites[smug] = frames;
+			}
+
+			if (smugOffset != 0)
+				ActualSmug(-smugOffset);
+			ActualSmug(smugOffset);
+		}
+		{
+			var frames = RegisterAllFrames(
+				path: Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Portrait", "Oversmug"),
+				idFormat: $"{GetType().Namespace}.Character.Soggins.Portrait.Smug.Oversmug.Frame.{{0}}"
+			);
+			if (frames is not null)
+				OversmugPortraitSprites.AddRange(frames);
+		}
 
 		SmugStatusSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Status.Smug",
@@ -375,98 +419,70 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 
 	public void LoadManifest(IAnimationRegistry registry)
 	{
+		// all the animations
+		foreach (var kvp in SmugPortraitSprites)
 		{
-			SogginsMadAnimation = new(
-				$"{GetType().Namespace}.Animation.Soggins.Mad",
+			ExternalAnimation animation = new(
+				$"{GetType().Namespace}.Character.Soggins.Portrait.Smug.{kvp.Key}",
 				deck: SogginsDeck,
-				tag: "mad",
+				tag: $"Smug.{kvp.Key}",
 				intendedOverwrite: false,
-				frames: new Spr[]
-				{
-					StableSpr.characters_soggins_soggins_mad_0,
-					StableSpr.characters_soggins_soggins_mad_1,
-					StableSpr.characters_soggins_soggins_mad_2,
-				}.Select(s => ExternalSprite.GetRaw((int)s)).ToList()
+				frames: kvp.Value
 			);
-			registry.RegisterAnimation(SogginsMadAnimation);
+			registry.RegisterAnimation(animation);
+			SmugPortraitAnimations[kvp.Key] = animation;
 		}
 		{
-			SogginsMeekAnimation = new(
-				$"{GetType().Namespace}.Animation.Soggins.Meek",
+			OversmugPortraitAnimation = new(
+				$"{GetType().Namespace}.Character.Soggins.Portrait.Oversmug",
 				deck: SogginsDeck,
-				tag: "meek",
+				tag: "Smug.Oversmug",
 				intendedOverwrite: false,
-				frames: new Spr[]
-				{
-					StableSpr.characters_soggins_soggins_meek_0,
-					StableSpr.characters_soggins_soggins_meek_1,
-					StableSpr.characters_soggins_soggins_meek_2,
-					StableSpr.characters_soggins_soggins_meek_3,
-					StableSpr.characters_soggins_soggins_meek_4,
-				}.Select(s => ExternalSprite.GetRaw((int)s)).ToList()
+				frames: OversmugPortraitSprites
 			);
-			registry.RegisterAnimation(SogginsMeekAnimation);
+			registry.RegisterAnimation(OversmugPortraitAnimation);
 		}
 		{
-			SogginsNeutralAnimation = new(
-				$"{GetType().Namespace}.Animation.Soggins.Neutral",
-				deck: SogginsDeck,
-				tag: "neutral",
-				intendedOverwrite: false,
-				frames: new Spr[]
-				{
-					StableSpr.characters_soggins_soggins_neutral_0,
-					StableSpr.characters_soggins_soggins_neutral_1,
-					StableSpr.characters_soggins_soggins_neutral_2,
-					StableSpr.characters_soggins_soggins_neutral_3,
-					StableSpr.characters_soggins_soggins_neutral_4,
-				}.Select(s => ExternalSprite.GetRaw((int)s)).ToList()
-			);
-			registry.RegisterAnimation(SogginsNeutralAnimation);
-		}
-		{
-			SogginsSmugAnimation = new(
-				$"{GetType().Namespace}.Animation.Soggins.Smug",
-				deck: SogginsDeck,
-				tag: "smug",
-				intendedOverwrite: false,
-				frames: new Spr[]
-				{
-					StableSpr.characters_soggins_soggins_smug_0,
-					StableSpr.characters_soggins_soggins_smug_1,
-					StableSpr.characters_soggins_soggins_smug_2,
-					StableSpr.characters_soggins_soggins_smug_3,
-					StableSpr.characters_soggins_soggins_smug_4,
-				}.Select(s => ExternalSprite.GetRaw((int)s)).ToList()
-			);
-			registry.RegisterAnimation(SogginsSmugAnimation);
-		}
-		{
-			SogginsTubAnimation = new(
-				$"{GetType().Namespace}.Animation.Soggins.Tub",
-				deck: SogginsDeck,
-				tag: "tub",
-				intendedOverwrite: false,
-				frames: new Spr[]
-				{
-					StableSpr.characters_soggins_soggins_tub_0,
-					StableSpr.characters_soggins_soggins_tub_1,
-					StableSpr.characters_soggins_soggins_tub_2,
-					StableSpr.characters_soggins_soggins_tub_3,
-					StableSpr.characters_soggins_soggins_tub_4,
-				}.Select(s => ExternalSprite.GetRaw((int)s)).ToList()
-			);
-			registry.RegisterAnimation(SogginsTubAnimation);
-		}
-		{
-			SogginsMiniAnimation = new(
-				$"{GetType().Namespace}.Animation.Soggins.Mini",
+			MiniPortraitAnimation = new(
+				$"{GetType().Namespace}.Character.Soggins.Portrait.Mini",
 				deck: SogginsDeck,
 				tag: "mini",
 				intendedOverwrite: false,
-				frames: new ExternalSprite[] { SogginsMini }
+				frames: OversmugPortraitSprites
 			);
-			registry.RegisterAnimation(SogginsMiniAnimation);
+			registry.RegisterAnimation(OversmugPortraitAnimation);
+		}
+
+		// re-registering the important tags
+		{
+			NeutralPortraitAnimation = new(
+				$"{GetType().Namespace}.Character.Soggins.Portrait.Required.neutral",
+				deck: SogginsDeck,
+				tag: "neutral",
+				intendedOverwrite: false,
+				frames: SmugPortraitSprites[0]
+			);
+			registry.RegisterAnimation(NeutralPortraitAnimation);
+		}
+		{
+			SquintPortraitAnimation = new(
+				$"{GetType().Namespace}.Character.Soggins.Portrait.Required.squint",
+				deck: SogginsDeck,
+				tag: "squint",
+				intendedOverwrite: false,
+				frames: SmugPortraitSprites[-2]
+			);
+			registry.RegisterAnimation(SquintPortraitAnimation);
+		}
+		{
+			GameOverPortraitAnimation = new(
+				$"{GetType().Namespace}.Character.Soggins.Portrait.Required.gameover",
+				deck: SogginsDeck,
+				tag: "gameover",
+				intendedOverwrite: false,
+				frames: SmugPortraitSprites[-3]
+			);
+			registry.RegisterAnimation(GameOverPortraitAnimation);
 		}
 	}
 
@@ -500,8 +516,8 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 			charPanelSpr: SogginsCharacterBorder,
 			starterDeck: new Type[] { typeof(SmugnessControlCard), typeof(PressingButtonsCard) },
 			starterArtifacts: new Type[] { typeof(SmugArtifact) },
-			neutralAnimation: SogginsNeutralAnimation,
-			miniAnimation: SogginsMiniAnimation
+			neutralAnimation: NeutralPortraitAnimation,
+			miniAnimation: MiniPortraitAnimation
 		);
 		SogginsCharacter.AddNameLocalisation(I18n.SogginsName);
 		SogginsCharacter.AddDescLocalisation(I18n.SogginsDescription);
