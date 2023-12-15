@@ -164,10 +164,10 @@ internal static class ArtifactRewardPatches
 
 	private static Color ArtifactReward_Render_Transpiler_ModifyDeckColor(Color color, Artifact artifact)
 	{
-		if (artifact is not DuoArtifact duoArtifact)
+		if (!Instance.Database.IsDuoArtifact(artifact))
 			return color;
 
-		var colors = Instance.Database.GetDuoArtifactOwnership(duoArtifact)
+		var colors = Instance.Database.GetDuoArtifactOwnership(artifact)
 			?.OrderBy(c => c.Key())
 			.Select(key => DB.decks[key].color)
 			.ToList();
