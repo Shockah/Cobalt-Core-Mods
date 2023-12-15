@@ -25,10 +25,10 @@ public sealed class ApiImplementation : ISogginsApi
 		=> GetSmugTooltip();
 
 	public int GetMinSmug(Ship ship)
-		=> -Instance.Config.BotchChances.Count / 2;
+		=> -Constants.BotchChances.Length / 2;
 
 	public int GetMaxSmug(Ship ship)
-		=> Instance.Config.BotchChances.Count / 2;
+		=> Constants.BotchChances.Length / 2;
 
 	public int? GetSmug(Ship ship)
 	{

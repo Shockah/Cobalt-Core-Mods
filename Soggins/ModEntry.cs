@@ -4,7 +4,6 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using CobaltCoreModding.Definitions.ModManifests;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -16,7 +15,6 @@ namespace Shockah.Soggins;
 public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IStatusManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
-	internal Config Config { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = null!;
 	internal IKokoroApi KokoroApi { get; private set; } = null!;
 	internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; } = null!;
@@ -166,7 +164,6 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 		KokoroApi.RegisterTypeForExtensionData(typeof(Combat));
 		DuoArtifactsApi = contact.LoadedManifests.Any(m => m.Name == "Shockah.DuoArtifacts") ? contact.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts") : null;
-		Config = ObtainConfig();
 		Api = new();
 
 		SmugStatusManager = new();
@@ -183,38 +180,6 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 
 	public object? GetApi(IManifest requestingMod)
 		=> new ApiImplementation();
-
-	private Config ObtainConfig()
-	{
-		var serializer = JsonSerializer.Create(new JsonSerializerSettings
-		{
-			TypeNameHandling = TypeNameHandling.Auto,
-			Formatting = Formatting.Indented,
-			ObjectCreationHandling = ObjectCreationHandling.Replace
-		});
-		var path = Path.Combine(ModRootFolder!.FullName, "config.json");
-		Config? config = null;
-
-		if (File.Exists(path))
-			using (var fileStream = File.OpenRead(path))
-			{
-				using StreamReader streamReader = new(fileStream);
-				using JsonTextReader jsonReader = new(streamReader);
-				config = serializer.Deserialize<Config>(jsonReader);
-			}
-
-		if (config is not null)
-			return config;
-
-		config = new();
-		using (var fileStream = File.OpenWrite(path))
-		{
-			using StreamWriter streamWriter = new(fileStream);
-			serializer.Serialize(streamWriter, config);
-		}
-
-		return config;
-	}
 
 	public void LoadManifest(ISpriteRegistry registry)
 	{
@@ -248,7 +213,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 			return frames.Count == 0 ? null : frames;
 		}
 
-		for (int smugOffset = 0; smugOffset <= Config.BotchChances.Count / 2; smugOffset++)
+		for (int smugOffset = 0; smugOffset <= Constants.BotchChances.Length / 2; smugOffset++)
 		{
 			void ActualSmug(int smug)
 			{

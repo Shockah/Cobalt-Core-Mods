@@ -102,7 +102,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		else if (smug.Value > Instance.Api.GetMaxSmug(ship))
 			return 1; // oversmug
 
-		var chance = smug.Value < Instance.Api.GetMinSmug(ship) ? Instance.Config.BotchChances[0] : Instance.Config.BotchChances[smug.Value - Instance.Api.GetMinSmug(ship)];
+		var chance = smug.Value < Instance.Api.GetMinSmug(ship) ? Constants.BotchChances[0] : Constants.BotchChances[smug.Value - Instance.Api.GetMinSmug(ship)];
 		foreach (var hook in GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
 			chance = hook.ModifySmugBotchChance(state, ship, card, chance);
 		return chance;
@@ -118,7 +118,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		else if (smug.Value > Instance.Api.GetMaxSmug(ship))
 			return 0; // oversmug
 
-		var chance = smug.Value < Instance.Api.GetMinSmug(ship) ? Instance.Config.DoubleChances[0] : Instance.Config.DoubleChances[smug.Value - Instance.Api.GetMinSmug(ship)];
+		var chance = smug.Value < Instance.Api.GetMinSmug(ship) ? Constants.DoubleChances[0] : Constants.DoubleChances[smug.Value - Instance.Api.GetMinSmug(ship)];
 		foreach (var hook in GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
 			chance = hook.ModifySmugDoubleChance(state, ship, card, chance);
 		return chance;
