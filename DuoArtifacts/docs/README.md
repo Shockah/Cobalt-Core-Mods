@@ -1,6 +1,6 @@
 # Duo Artifacts
 
-**THE MOD REQUIRES [Kokoro](https://github.com/Shockah/Cobalt-Core-Mods/Kokoro).**
+**THE MOD REQUIRES [Kokoro](https://github.com/Shockah/Cobalt-Core-Mods/blob/master/Kokoro).**
 
 The mod adds a new artifact pool: duo artifacts, which are pretty powerful artifacts, synergizing between two different crew members.
 
