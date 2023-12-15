@@ -43,8 +43,7 @@ public sealed class SogginsIsaacArtifact : Artifact, IRegisterableArtifact
 	{
 		var tooltips = base.GetExtraTooltips() ?? new();
 		tooltips.Add(new TTGlossary("action.spawn"));
-		tooltips.Add(new TTGlossary("midrow.drone"));
-		tooltips.Add(new TTGlossary("midrow.attackDroneMk2"));
+		tooltips.Add(new TTGlossary("midrow.drone", 1));
 		tooltips.Add(Instance.Api.GetSmugTooltip());
 		return tooltips;
 	}
@@ -59,7 +58,9 @@ public sealed class SogginsIsaacArtifact : Artifact, IRegisterableArtifact
 
 		var smugResult = Instance.Api.RollSmugResult(state, state.ship, state.rngActions, null);
 		Pulse();
-		state.ship.PulseStatus((Status)Instance.Api.SmugStatus.Id!.Value);
+		if (smugResult != SmugResult.Normal)
+			state.ship.PulseStatus((Status)Instance.Api.SmugStatus.Id!.Value);
+
 		combat.Queue(new ASpawn
 		{
 			thing = new AttackDrone

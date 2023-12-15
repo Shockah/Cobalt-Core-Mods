@@ -24,7 +24,7 @@ public sealed class SogginsDrakeArtifact : Artifact, IRegisterableArtifact
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Artifact", "Duo", "Drake.png"))
 		);
 		InactiveSprite = registry.RegisterArtOrThrow(
-			id: $"{GetType().Namespace}.Artifact.Duo.Drake",
+			id: $"{GetType().Namespace}.Artifact.Duo.DrakeInactive",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Artifact", "Duo", "DrakeInactive.png"))
 		);
 	}

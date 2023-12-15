@@ -14,6 +14,8 @@ public sealed class SogginsMaxArtifact : Artifact, IRegisterableArtifact, ISmugH
 
 	private static ExternalSprite Sprite = null!;
 
+	private HashSet<Card> ModifiedCards = new();
+
 	public void RegisterArt(ISpriteRegistry registry)
 	{
 		Sprite = registry.RegisterArtOrThrow(
@@ -49,6 +51,12 @@ public sealed class SogginsMaxArtifact : Artifact, IRegisterableArtifact, ISmugH
 	public double HookPriority
 		=> -100;
 
+	public override void OnCombatEnd(State state)
+	{
+		base.OnCombatEnd(state);
+		ModifiedCards.Clear();
+	}
+
 	public double ModifySmugBotchChance(State state, Ship ship, Card? card, double chance)
 		=> ModifySmugChance(state, card, chance);
 
@@ -64,16 +72,14 @@ public sealed class SogginsMaxArtifact : Artifact, IRegisterableArtifact, ISmugH
 		if (handPosition != 0 && handPosition != combat.hand.Count - 1)
 			return chance;
 
+		ModifiedCards.Add(card);
 		return chance * 2;
 	}
 
 	public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
 	{
 		base.OnPlayerPlayCard(energyCost, deck, card, state, combat, handPosition, handCount);
-		if (combat.hand.Count < 2)
-			return;
-		if (handPosition != 0 && handPosition != combat.hand.Count - 1)
-			return;
-		Pulse();
+		if (ModifiedCards.Contains(card))
+			Pulse();
 	}
 }
