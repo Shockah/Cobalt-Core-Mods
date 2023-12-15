@@ -47,6 +47,16 @@ Adds a way to reroll artifact and card rewards.
 [![Artifact reward screenshot](Rerolls/docs/images/artifact-reward-thumb.png)](Rerolls/docs/images/artifact-reward.png)
 [![Shop screenshot](Rerolls/docs/images/shop-thumb.png)](Rerolls/docs/images/shop.png)
 
+# Soggins
+
+**Soggins** -- Unavoidable bumbling idiocy.  
+A completely disruptive crewmate, he makes most cards completely unreliable by just being aboard your ship, any single card played could turn out to work in unintended (but fun!) ways.  
+\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fsoggins-1.0.0)] \[[release notes](Soggins/docs/release-notes.md)] \[[README/source code](Soggins)]
+
+[![Preview screenshot](Soggins/docs/images/preview-thumb.gif)](Soggins/docs/images/preview.gif)
+[![Apologies screenshot](Soggins/docs/images/apologies-thumb.png)](Soggins/docs/images/apologies.png)
+[![Cards screenshot](Soggins/docs/images/cards-thumb.png)](Soggins/docs/images/cards.png)
+
 # Wormholes
 
 Is that... a wormhole? Adds a pair of wormholes on each map, which lets you traverse forward or backward, with some down/upsides.  
