@@ -20,28 +20,13 @@ internal static class I18n
 	public static string CharacterEligibleForDuoArtifactNoDuos => "Technically eligible for duo artifacts... but there are none for them!";
 	public static string CharacterEligibleForDuoArtifactNoMatchingDuos => "Technically eligible for duo artifacts... but there are none for them you can get with this crew!";
 
-	// can't use Loc.T, we're doing this too early
-	private static string GetCharacterName(Deck character)
-		=> character switch
-		{
-			Deck.colorless => "CAT",
-			Deck.dizzy => "Dizzy",
-			Deck.riggs => "Riggs",
-			Deck.peri => "Peri",
-			Deck.goat => "Isaac",
-			Deck.eunice => "Drake",
-			Deck.hacker => "Max",
-			Deck.shard => "Books",
-			_ => throw new ArgumentException()
-		};
-
 	public static string GetDuoArtifactTooltip(IEnumerable<Deck> characters)
 	{
 		var characterNamesWithColor = characters
 			.Distinct()
 			.Select(c => c == Deck.catartifact ? Deck.colorless : c)
 			.OrderBy(NewRunOptions.allChars.IndexOf)
-			.Select(c => $"<c={c.Key()}>{GetCharacterName(c)}</c>")
+			.Select(c => $"<c={c.Key()}>{Loc.T($"char.{c.Key()}")}</c>")
 			.ToList();
 
 		return characterNamesWithColor.Count switch
