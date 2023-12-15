@@ -147,6 +147,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	{
 		typeof(SogginsPeriArtifact),
 		typeof(SogginsDrakeArtifact),
+		typeof(SogginsMaxArtifact),
 	};
 
 	internal static IEnumerable<Type> AllArtifacts

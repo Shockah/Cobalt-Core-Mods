@@ -8,7 +8,7 @@ using System.IO;
 namespace Shockah.Soggins;
 
 [ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
-public sealed class SogginsDrakeArtifact : Artifact, IRegisterableArtifact, ISmugHook
+public sealed class SogginsDrakeArtifact : Artifact, IRegisterableArtifact
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
