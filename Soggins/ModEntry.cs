@@ -41,6 +41,8 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal ExternalSprite MiniPortraitSprite { get; private set; } = null!;
 	internal Dictionary<int, List<ExternalSprite>> SmugPortraitSprites { get; private init; } = new();
 	internal List<ExternalSprite> OversmugPortraitSprites { get; private init; } = new();
+	internal List<ExternalSprite> SquintPortraitSprites { get; private init; } = new();
+	internal List<ExternalSprite> MadPortraitSprites { get; private init; } = new();
 
 	internal ExternalSprite SmugStatusSprite { get; private set; } = null!;
 	internal ExternalSprite FrogproofSprite { get; private set; } = null!;
@@ -65,6 +67,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal ExternalAnimation OversmugPortraitAnimation { get; private set; } = null!;
 	internal ExternalAnimation NeutralPortraitAnimation { get; private set; } = null!;
 	internal ExternalAnimation SquintPortraitAnimation { get; private set; } = null!;
+	internal ExternalAnimation MadPortraitAnimation { get; private set; } = null!;
 	internal ExternalAnimation GameOverPortraitAnimation { get; private set; } = null!;
 	internal ExternalAnimation MiniPortraitAnimation { get; private set; } = null!;
 
@@ -192,16 +195,16 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	public void LoadManifest(ISpriteRegistry registry)
 	{
 		SogginsDeckBorder = registry.RegisterArtOrThrow(
-			id: $"{GetType().Namespace}.Character.Soggins.DeckBorder",
+			id: $"{GetType().Namespace}.Sprite.DeckBorder",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "DeckBorder.png"))
 		);
 		SogginsCharacterBorder = registry.RegisterArtOrThrow(
-			id: $"{GetType().Namespace}.Character.Soggins.CharacterBorder",
+			id: $"{GetType().Namespace}.Sprite.CharacterBorder",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "CharacterBorder.png"))
 		);
 
 		MiniPortraitSprite = registry.RegisterArtOrThrow(
-			id: $"{GetType().Namespace}.Character.Soggins.Portrait.Mini",
+			id: $"{GetType().Namespace}.Sprite.Portrait.Mini",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Portrait", "Mini.png"))
 		);
 
@@ -227,7 +230,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 			{
 				var frames = RegisterAllFrames(
 					path: Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Portrait", $"Smug{smug}"),
-					idFormat: $"{GetType().Namespace}.Character.Soggins.Portrait.Smug.{smug}.Frame.{{0}}"
+					idFormat: $"{GetType().Namespace}.Sprite.Portrait.Smug.{smug}.Frame.{{0}}"
 				);
 				if (frames is not null)
 					SmugPortraitSprites[smug] = frames;
@@ -240,10 +243,26 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		{
 			var frames = RegisterAllFrames(
 				path: Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Portrait", "Oversmug"),
-				idFormat: $"{GetType().Namespace}.Character.Soggins.Portrait.Smug.Oversmug.Frame.{{0}}"
+				idFormat: $"{GetType().Namespace}.Sprite.Portrait.Smug.Oversmug.Frame.{{0}}"
 			);
 			if (frames is not null)
 				OversmugPortraitSprites.AddRange(frames);
+		}
+		{
+			var frames = RegisterAllFrames(
+				path: Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Portrait", "Squint"),
+				idFormat: $"{GetType().Namespace}.Sprite.Portrait.Smug.Squint.Frame.{{0}}"
+			);
+			if (frames is not null)
+				SquintPortraitSprites.AddRange(frames);
+		}
+		{
+			var frames = RegisterAllFrames(
+				path: Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Portrait", "Mad"),
+				idFormat: $"{GetType().Namespace}.Sprite.Portrait.Smug.Mad.Frame.{{0}}"
+			);
+			if (frames is not null)
+				MadPortraitSprites.AddRange(frames);
 		}
 
 		SmugStatusSprite = registry.RegisterArtOrThrow(
@@ -424,7 +443,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		foreach (var kvp in SmugPortraitSprites)
 		{
 			ExternalAnimation animation = new(
-				$"{GetType().Namespace}.Character.Soggins.Portrait.Smug.{kvp.Key}",
+				$"{GetType().Namespace}.Animation.Portrait.Smug.{kvp.Key}",
 				deck: SogginsDeck,
 				tag: $"Smug.{kvp.Key}",
 				intendedOverwrite: false,
@@ -435,7 +454,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		}
 		{
 			OversmugPortraitAnimation = new(
-				$"{GetType().Namespace}.Character.Soggins.Portrait.Oversmug",
+				$"{GetType().Namespace}.Animation.Portrait.Oversmug",
 				deck: SogginsDeck,
 				tag: "Smug.Oversmug",
 				intendedOverwrite: false,
@@ -444,20 +463,40 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 			registry.RegisterAnimation(OversmugPortraitAnimation);
 		}
 		{
+			SquintPortraitAnimation = new(
+				$"{GetType().Namespace}.Animation.Portrait.Squint",
+				deck: SogginsDeck,
+				tag: "squint",
+				intendedOverwrite: false,
+				frames: SquintPortraitSprites
+			);
+			registry.RegisterAnimation(SquintPortraitAnimation);
+		}
+		{
+			MadPortraitAnimation = new(
+				$"{GetType().Namespace}.Animation.Portrait.Mad",
+				deck: SogginsDeck,
+				tag: "mad",
+				intendedOverwrite: false,
+				frames: MadPortraitSprites
+			);
+			registry.RegisterAnimation(MadPortraitAnimation);
+		}
+		{
 			MiniPortraitAnimation = new(
-				$"{GetType().Namespace}.Character.Soggins.Portrait.Mini",
+				$"{GetType().Namespace}.Animation.Portrait.Mini",
 				deck: SogginsDeck,
 				tag: "mini",
 				intendedOverwrite: false,
-				frames: OversmugPortraitSprites
+				frames: new[] { MiniPortraitSprite }
 			);
-			registry.RegisterAnimation(OversmugPortraitAnimation);
+			registry.RegisterAnimation(MiniPortraitAnimation);
 		}
 
 		// re-registering the important tags
 		{
 			NeutralPortraitAnimation = new(
-				$"{GetType().Namespace}.Character.Soggins.Portrait.Required.neutral",
+				$"{GetType().Namespace}.Animation.Portrait.Required.neutral",
 				deck: SogginsDeck,
 				tag: "neutral",
 				intendedOverwrite: false,
@@ -466,22 +505,12 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 			registry.RegisterAnimation(NeutralPortraitAnimation);
 		}
 		{
-			SquintPortraitAnimation = new(
-				$"{GetType().Namespace}.Character.Soggins.Portrait.Required.squint",
-				deck: SogginsDeck,
-				tag: "squint",
-				intendedOverwrite: false,
-				frames: SmugPortraitSprites[-2]
-			);
-			registry.RegisterAnimation(SquintPortraitAnimation);
-		}
-		{
 			GameOverPortraitAnimation = new(
-				$"{GetType().Namespace}.Character.Soggins.Portrait.Required.gameover",
+				$"{GetType().Namespace}.Animation.Portrait.Required.gameover",
 				deck: SogginsDeck,
 				tag: "gameover",
 				intendedOverwrite: false,
-				frames: SmugPortraitSprites[-3]
+				frames: SmugPortraitSprites[-2]
 			);
 			registry.RegisterAnimation(GameOverPortraitAnimation);
 		}
