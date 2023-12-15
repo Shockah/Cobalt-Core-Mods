@@ -4,6 +4,7 @@
 
 ## Future release
 
+* All non-character, non-ephemeral cards are now frogproof.
 * Fixed Single Use cards being gone when botched, instead of being discarded.
 
 ## 1.0.1

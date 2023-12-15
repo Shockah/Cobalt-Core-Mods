@@ -17,7 +17,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 	internal FrogproofManager() : base()
 	{
 		Register(FrogproofCardTraitFrogproofHook.Instance, 0);
-		Register(TrashCardFrogproofHook.Instance, 1);
+		Register(NonVanillaNonCharacterCardFrogproofHook.Instance, 1);
 		Register(FrogproofingFrogproofHook.Instance, -10);
 	}
 
@@ -147,14 +147,21 @@ public sealed class FrogproofCardTraitFrogproofHook : IFrogproofHook
 	public void PayForFrogproof(State state, Combat? combat, Card card) { }
 }
 
-public sealed class TrashCardFrogproofHook : IFrogproofHook
+public sealed class NonVanillaNonCharacterCardFrogproofHook : IFrogproofHook
 {
-	public static TrashCardFrogproofHook Instance { get; private set; } = new();
+	public static NonVanillaNonCharacterCardFrogproofHook Instance { get; private set; } = new();
 
-	private TrashCardFrogproofHook() { }
+	private NonVanillaNonCharacterCardFrogproofHook() { }
 
 	public FrogproofType? GetFrogproofType(State state, Combat? combat, Card card, FrogproofHookContext context)
-		=> card.GetMeta().deck == Deck.trash ? FrogproofType.Innate : null;
+	{
+		var meta = card.GetMeta();
+		if (NewRunOptions.allChars.Contains(meta.deck))
+			return null;
+		if (meta.deck is Deck.colorless or Deck.catartifact or Deck.soggins or Deck.dracula or Deck.tooth or Deck.ephemeral)
+			return null;
+		return FrogproofType.Innate;
+	}
 
 	public void PayForFrogproof(State state, Combat? combat, Card card) { }
 }
