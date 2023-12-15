@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Shockah.Soggins;
 
-[CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
+[CardMeta(rarity = Rarity.rare, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
 public sealed class ClonedSeekerCard : Card, IRegisterableCard
 {
 	private static ModEntry Instance => ModEntry.Instance;
