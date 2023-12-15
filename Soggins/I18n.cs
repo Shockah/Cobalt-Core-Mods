@@ -22,21 +22,21 @@ internal static class I18n
 	public static string RepeatedMistakesArtifactName => "Repeated Mistakes";
 	public static string RepeatedMistakesArtifactDescription => "Start each combat with 3 <c=status>MISSILE MALFUNCTION</c>. At the start of each turn, <c=action>LAUNCH</c> a <c=midrow>SEEKER</c>.";
 
-	public static string DizzyDuoArtifactName => "Soggins-Dizzy Duo Artifact";
+	public static string DizzyDuoArtifactName => "Cowardly Confidence";
 	public static string DizzyDuoArtifactDescription => "Gain 3% <c=downside>botch</c> chance for each missing <c=status>SHIELD</c>.\nGain 3% <c=cheevoGold>double</c> chance for each <c=status>SHIELD</c>.";
-	public static string RiggsDuoArtifactName => "Soggins-Riggs Duo Artifact";
+	public static string RiggsDuoArtifactName => "Ace Copilot";
 	public static string RiggsDuoArtifactDescription => "At the start of each turn, if you have less than 2 <c=status>EVADE</c>, gain 1.\nWhenever you are hit, lose 1 <c=status>SMUG</c>.";
-	public static string PeriDuoArtifactName => "Soggins-Peri Duo Artifact";
+	public static string PeriDuoArtifactName => "Tempting Button";
 	public static string PeriDuoArtifactDescription => "Whenever you <c=downside>botch</c> or <c=cheevoGold>double</c> a <c=peri>Peri</c> card, add a <c=card>Halfhearted Apology</c> to your hand.";
-	public static string IsaacDuoArtifactName => "Soggins-Isaac Duo Artifact";
+	public static string IsaacDuoArtifactName => "Dubious Drone";
 	public static string IsaacDuoArtifactDescription => "At the end of your turn, if you have any unspent <c=status>ENERGY</c>, <c=action>LAUNCH</c> an <c=midrow>Attack Drone</c>. <c=B79CE5>This action is affected by <c=status>SMUG</c></c>.\n<c=downside>Botch:</c> The drone is pointed backwards.\n<c=cheevoGold>Double:</c> The drone is upgraded to <c=midrow>Mk 2</c>.";
-	public static string DrakeDuoArtifactName => "Soggins-Drake Duo Artifact";
+	public static string DrakeDuoArtifactName => "Shifting Blame";
 	public static string DrakeDuoArtifactDescription => "After you <c=action>OVERHEAT</c> for the first time this combat, gain 1 <c=status>CONSTANT APOLOGIES</c>.";
-	public static string MaxDuoArtifactName => "Soggins-Max Duo Artifact";
+	public static string MaxDuoArtifactName => "Edge Case";
 	public static string MaxDuoArtifactDescription => "The <c=card>leftmost and rightmost cards in your hand</c> have doubled <c=downside>botch</c>/<c=cheevoGold>double</c> chances.";
-	public static string BooksDuoArtifactName => "Soggins-Books Duo Artifact";
+	public static string BooksDuoArtifactName => "Magic Words";
 	public static string BooksDuoArtifactDescription => "At the start of each turn, gain 1 <c=status>SHARD</c> for every 2 <c=card>Halfhearted Apologies</c> in your <c=keyword>draw and discard piles</c>.";
-	public static string CatDuoArtifactName => "Soggins-CAT Duo Artifact";
+	public static string CatDuoArtifactName => "Cryptolocker";
 	public static string CatDuoArtifactDescription => "Whenever you <c=downside>botch</c> a card, gain 1 <c=status>ENERGY</c> and 1 <c=status>CAT IS MISSING</c>.\nOnly triggers if you have at least 7 <c=comp>CAT</c> cards in your deck.";
 
 	public static string FrogproofCardTraitName => $"Frogproof";
