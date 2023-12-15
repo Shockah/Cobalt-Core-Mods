@@ -8,7 +8,11 @@ A completely disruptive crewmate, he makes most cards completely unreliable by j
 <u>Doubles and Botches:</u> Soggins passively grants a chance to completely fail to activate a card or double its effects, you have limited control over the odds, don't worry, he will try to apologize for a missed opportunity.
 <u>Frogproof:</u> A card trait, cards with it cannot be affected by either doubles or botches.
 
-[![Codex screenshot](images/cards-thumb.png)](images/cards.png)
+Code by Shockah
+Design and Art by Arin
+
+[![Preview screenshot](images/preview-thumb.gif)](images/preview.gif)
+[![Cards screenshot](images/cards-thumb.png)](images/cards.png)
 
 ## See also
 * [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fsoggins-1.0.0)
