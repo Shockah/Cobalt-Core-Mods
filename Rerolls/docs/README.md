@@ -10,5 +10,5 @@ Get one reroll token each zone. Additionally, you can ask for more rerolls at th
 [![Shop screenshot](images/shop-thumb.png)](images/shop.png)
 
 ## See also
-* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Frerolls-1.0.1)
+* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Frerolls-1.0.2)
 * [Release notes](release-notes.md)

@@ -2,6 +2,12 @@
 
 # Release notes
 
+## 1.0.2
+Released 15 December 2023.
+
+* Updated for Cobalt Core 1.0.6 beta.
+* The artifact name is now capitalized.
+
 ## 1.0.1
 Released 1 December 2023.
 
