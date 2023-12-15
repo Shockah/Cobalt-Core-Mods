@@ -13,12 +13,19 @@ public sealed class SogginsDrakeArtifact : Artifact, IRegisterableArtifact
 	private static ModEntry Instance => ModEntry.Instance;
 
 	private static ExternalSprite Sprite = null!;
+	private static ExternalSprite InactiveSprite = null!;
+
+	public bool TriggeredThisCombat = false;
 
 	public void RegisterArt(ISpriteRegistry registry)
 	{
 		Sprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Artifact.Duo.Drake",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Artifact", "Duo", "Drake.png"))
+		);
+		InactiveSprite = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.Artifact.Duo.Drake",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Artifact", "Duo", "DrakeInactive.png"))
 		);
 	}
 
@@ -39,6 +46,9 @@ public sealed class SogginsDrakeArtifact : Artifact, IRegisterableArtifact
 		Instance.DuoArtifactsApi!.RegisterDuoArtifact(GetType(), new[] { (Deck)Instance.SogginsDeck.Id!.Value, Deck.eunice });
 	}
 
+	public override Spr GetSprite()
+		=> (Spr)(TriggeredThisCombat ? InactiveSprite : Sprite).Id!.Value;
+
 	public override List<Tooltip>? GetExtraTooltips()
 	{
 		var tooltips = base.GetExtraTooltips() ?? new();
@@ -47,9 +57,18 @@ public sealed class SogginsDrakeArtifact : Artifact, IRegisterableArtifact
 		return tooltips;
 	}
 
+	public override void OnCombatStart(State state, Combat combat)
+	{
+		base.OnCombatStart(state, combat);
+		TriggeredThisCombat = false;
+	}
+
 	public override void AfterPlayerOverheat(State state, Combat combat)
 	{
 		base.AfterPlayerOverheat(state, combat);
+		if (TriggeredThisCombat)
+			return;
+
 		combat.Queue(new AStatus
 		{
 			status = (Status)Instance.ConstantApologiesStatus.Id!.Value,
