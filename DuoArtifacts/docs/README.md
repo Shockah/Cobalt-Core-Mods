@@ -23,5 +23,5 @@ Also thanks to everyone who helped brainstorm the duo artifact ideas and/or name
 [![Reward screenshot](images/reward-thumb.png)](images/reward.png)
 
 ## See also
-* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fduo-artifacts-1.0.0)
+* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fduo-artifacts-1.0.1)
 * [Release notes](release-notes.md)
