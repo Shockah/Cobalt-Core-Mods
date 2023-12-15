@@ -195,7 +195,9 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 					ILMatches.Instruction(OpCodes.Or),
 					ILMatches.Stloc<bool>(originalMethod.GetMethodBody()!.LocalVariables)
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.Last)
+				.PointerMatcher(SequenceMatcherRelativeElement.First)
+				.CreateLdlocaInstruction(out var ldlocaCardData)
+				.Advance(4)
 				.CreateLdlocaInstruction(out var ldlocaExhaust)
 				.Find(
 					ILMatches.Ldloc<List<CardAction>>(originalMethod.GetMethodBody()!.LocalVariables),
@@ -209,6 +211,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Ldarg_3),
 					ldlocaExhaust,
+					ldlocaCardData,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(SmugStatusManager), nameof(Combat_TryPlayCard_Transpiler_ModifyActions)))
 				)
 				.AllElements();
@@ -220,7 +223,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		}
 	}
 
-	private static List<CardAction> Combat_TryPlayCard_Transpiler_ModifyActions(List<CardAction> actions, State state, Combat combat, Card card, bool playNoMatterWhatForFree, ref bool exhaust)
+	private static List<CardAction> Combat_TryPlayCard_Transpiler_ModifyActions(List<CardAction> actions, State state, Combat combat, Card card, bool playNoMatterWhatForFree, ref bool exhaust, ref CardData data)
 	{
 		if (playNoMatterWhatForFree)
 			return actions;
@@ -244,6 +247,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		{
 			case SmugResult.Botch:
 				exhaust = false;
+				data.singleUse = false;
 
 				actions.Clear();
 				actions.Add(new AStatus

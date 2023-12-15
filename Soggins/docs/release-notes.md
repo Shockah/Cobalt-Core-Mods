@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Future release
+
+* Fixed Single Use cards being gone when botched, instead of being discarded.
+
 ## 1.0.1
 Released 15 December 2023.
 
