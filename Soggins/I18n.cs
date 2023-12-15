@@ -24,6 +24,8 @@ internal static class I18n
 
 	public static string DizzyDuoArtifactName => "Soggins-Dizzy Duo Artifact";
 	public static string DizzyDuoArtifactDescription => "Gain 3% <c=downside>botch</c> chance for each missing <c=status>SHIELD</c>.\nGain 3% <c=cheevoGold>double</c> chance for each <c=status>SHIELD</c>.";
+	public static string RiggsDuoArtifactName => "Soggins-Riggs Duo Artifact";
+	public static string RiggsDuoArtifactDescription => "At the start of each turn, if you have less than 2 <c=status>EVADE</c>, gain 1.\nWhenever you are hit, lose 1 <c=status>SMUG</c>.";
 	public static string PeriDuoArtifactName => "Soggins-Peri Duo Artifact";
 	public static string PeriDuoArtifactDescription => "Whenever you <c=downside>botch</c> or <c=cheevoGold>double</c> a <c=peri>Peri</c> card, add a <c=card>Halfhearted Apology</c> to your hand.";
 	public static string DrakeDuoArtifactName => "Soggins-Drake Duo Artifact";
