@@ -18,10 +18,11 @@ public interface ISogginsApi
 	bool IsOversmug(Ship ship);
 	double GetSmugBotchChance(State state, Ship ship, Card? card);
 	double GetSmugDoubleChance(State state, Ship ship, Card? card);
+	int GetTimesBotchedThisCombat(State state, Combat combat);
+	SmugResult RollSmugResult(State state, Ship ship, Rand rng, Card? card);
+
 	void RegisterSmugHook(ISmugHook hook, double priority);
 	void UnregisterSmugHook(ISmugHook hook);
-
-	int GetTimesBotchedThisCombat(State state, Combat combat);
 
 	Card GenerateAndTrackApology(State state, Combat combat, Rand rng);
 	Card MakePlaceholderApology();
@@ -29,6 +30,11 @@ public interface ISogginsApi
 	bool IsFrogproof(State state, Combat? combat, Card card, FrogproofHookContext context);
 	void RegisterFrogproofHook(IFrogproofHook hook, double priority);
 	void UnregisterFrogproofHook(IFrogproofHook hook);
+}
+
+public enum SmugResult
+{
+	Botch = -1, Normal = 0, Double = 1
 }
 
 public interface ISmugHook

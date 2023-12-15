@@ -13,11 +13,6 @@ namespace Shockah.Soggins;
 
 internal class SmugStatusManager : HookManager<ISmugHook>
 {
-	private enum SmugResult
-	{
-		Botch, Normal, Double
-	}
-
 	private sealed class ExtraApologiesSmugHook : ISmugHook
 	{
 		public int ModifyApologyAmountForBotchingBySmug(State state, Combat combat, Card card, int amount)
@@ -129,7 +124,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		return chance;
 	}
 
-	private static SmugResult GetSmugResult(Rand rng, double botchChance, double doubleChance)
+	internal static SmugResult GetSmugResult(Rand rng, double botchChance, double doubleChance)
 	{
 		if (botchChance >= 1)
 			return SmugResult.Botch;

@@ -148,6 +148,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		typeof(SogginsDizzyArtifact),
 		typeof(SogginsRiggsArtifact),
 		typeof(SogginsPeriArtifact),
+		typeof(SogginsIsaacArtifact),
 		typeof(SogginsDrakeArtifact),
 		typeof(SogginsMaxArtifact),
 		typeof(SogginsBooksArtifact),

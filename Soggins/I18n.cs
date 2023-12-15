@@ -28,6 +28,8 @@ internal static class I18n
 	public static string RiggsDuoArtifactDescription => "At the start of each turn, if you have less than 2 <c=status>EVADE</c>, gain 1.\nWhenever you are hit, lose 1 <c=status>SMUG</c>.";
 	public static string PeriDuoArtifactName => "Soggins-Peri Duo Artifact";
 	public static string PeriDuoArtifactDescription => "Whenever you <c=downside>botch</c> or <c=cheevoGold>double</c> a <c=peri>Peri</c> card, add a <c=card>Halfhearted Apology</c> to your hand.";
+	public static string IsaacDuoArtifactName => "Soggins-Isaac Duo Artifact";
+	public static string IsaacDuoArtifactDescription => "At the end of your turn, if you have any unspent <c=status>ENERGY</c>, <c=action>LAUNCH</c> a <c=midrow>Attack Drone</c>. <c=B79CE5>This action is affected by <c=status>SMUG</c></c>:\n<c=downside>Botch:</c> The drone is pointed backwards.\n<c=cheevoGold>Double:</c> The drone is upgraded to <c=midrow>Mk 2</c>.";
 	public static string DrakeDuoArtifactName => "Soggins-Drake Duo Artifact";
 	public static string DrakeDuoArtifactDescription => "After you <c=action>OVERHEAT</c> for the first time this combat, gain 1 <c=status>CONSTANT APOLOGIES</c>.";
 	public static string MaxDuoArtifactName => "Soggins-Max Duo Artifact";

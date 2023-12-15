@@ -52,6 +52,13 @@ public sealed class ApiImplementation : ISogginsApi
 	public int GetTimesBotchedThisCombat(State state, Combat combat)
 		=> state.ship.Get((Status)Instance.BotchesStatus.Id!.Value);
 
+	public SmugResult RollSmugResult(State state, Ship ship, Rand rng, Card? card)
+	{
+		var botchChance = GetSmugBotchChance(state, ship, card);
+		var doubleChance = GetSmugDoubleChance(state, ship, card);
+		return SmugStatusManager.GetSmugResult(rng, botchChance, doubleChance);
+	}
+
 	public Card GenerateAndTrackApology(State state, Combat combat, Rand rng)
 		=> SmugStatusManager.GenerateAndTrackApology(state, combat, rng);
 
