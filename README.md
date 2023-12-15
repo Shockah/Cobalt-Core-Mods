@@ -25,6 +25,11 @@ Introduces new difficulty levels to the game.
 
 [![Difficulty choice screenshot](CustomDifficulties/docs/images/difficulty-choice-thumb.png)](CustomDifficulties/docs/images/difficulty-choice.png)
 
+# Kokoro
+
+Kokoro is a utility/library mod - a little bit for players, and a lot for modders.  
+\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fkokoro-1.0.0)] \[[release notes](Kokoro/docs/release-notes.md)] \[[README/source code](Kokoro)]
+
 # Rerolls
 
 Adds a way to reroll artifact and card rewards.  
