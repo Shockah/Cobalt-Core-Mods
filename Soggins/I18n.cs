@@ -2,8 +2,9 @@
 
 internal static class I18n
 {
-	public static string SogginsName => "Soggins";
-	public static string SogginsDescription => "<c=B79CE5>SOGGINS</c>\nThis is that frog who keeps making mistakes. Why did we let him on the ship?";
+	public static string SogginsColor => "B79CE5";
+	public static string SogginsName => $"<c={SogginsColor}>Soggins</c>";
+	public static string SogginsDescription => $"<c={SogginsColor}>SOGGINS</c>\nThis is that frog who keeps making mistakes. Why did we let him on the ship?";
 
 	public static string SmugArtifactName => "Smug";
 	public static string SmugArtifactDescription => "Start each combat with <c=status>SMUG</c>.";
@@ -29,7 +30,7 @@ internal static class I18n
 	public static string PeriDuoArtifactName => "Tempting Button";
 	public static string PeriDuoArtifactDescription => "Whenever you <c=downside>botch</c> or <c=cheevoGold>double</c> a <c=peri>Peri</c> card, add a <c=card>Halfhearted Apology</c> to your hand.";
 	public static string IsaacDuoArtifactName => "Dubious Drone";
-	public static string IsaacDuoArtifactDescription => "At the end of your turn, if you have any unspent <c=status>ENERGY</c>, <c=action>LAUNCH</c> an <c=midrow>Attack Drone</c>. <c=B79CE5>This action is affected by <c=status>SMUG</c></c>.\n<c=downside>Botch:</c> The drone is pointed backwards.\n<c=cheevoGold>Double:</c> The drone is upgraded to <c=midrow>Mk 2</c>.";
+	public static string IsaacDuoArtifactDescription => $"At the end of your turn, if you have any unspent <c=status>ENERGY</c>, <c=action>LAUNCH</c> an <c=midrow>Attack Drone</c>. <c={SogginsColor}>This action is affected by <c=status>SMUG</c></c>.\n<c=downside>Botch:</c> The drone is pointed backwards.\n<c=cheevoGold>Double:</c> The drone is upgraded to <c=midrow>Mk 2</c>.";
 	public static string DrakeDuoArtifactName => "Shifting Blame";
 	public static string DrakeDuoArtifactDescription => "After you <c=action>OVERHEAT</c> for the first time this combat, gain 1 <c=status>CONSTANT APOLOGIES</c>.";
 	public static string MaxDuoArtifactName => "Edge Case";
@@ -80,9 +81,9 @@ internal static class I18n
 	public static string HarnessingSmugnessCardName => "Harnessing Smugness";
 	public static string SoSorryCardName => "So Sorry";
 	public static string BetterThanYouCardName => "Better Than You";
-	public static string BetterThanYouCardText0 => "Discard non <c=B79CE5>Soggins</c> cards. Draw as many <c=B79CE5>Soggins</c> cards.";
-	public static string BetterThanYouCardTextA => "Discard non <c=B79CE5>Soggins</c> cards. Draw as many <c=B79CE5>Soggins</c> cards.";
-	public static string BetterThanYouCardTextB => "Draw 10 <c=B79CE5>Soggins</c> cards.";
+	public static string BetterThanYouCardText0 => $"Discard non <c={SogginsColor}>Soggins</c> cards. Draw as many <c={SogginsColor}>Soggins</c> cards.";
+	public static string BetterThanYouCardTextA => $"Discard non <c={SogginsColor}>Soggins</c> cards. Draw as many <c={SogginsColor}>Soggins</c> cards.";
+	public static string BetterThanYouCardTextB => $"Draw 10 <c={SogginsColor}>Soggins</c> cards.";
 	public static string ImTryingCardName => "I'm Trying!";
 	public static string BlastFromThePastCardName => "Blast from the Past";
 	public static string HumiliatingAttackCardName => "Humiliating Attack";
