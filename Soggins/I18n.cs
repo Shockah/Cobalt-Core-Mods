@@ -22,6 +22,9 @@ internal static class I18n
 	public static string RepeatedMistakesArtifactName => "Repeated Mistakes";
 	public static string RepeatedMistakesArtifactDescription => "Start each combat with 3 <c=status>MISSILE MALFUNCTION</c>. At the start of each turn, <c=action>LAUNCH</c> a <c=midrow>SEEKER</c>.";
 
+	public static string PeriDuoArtifactName => "Soggins-Peri Duo Artifact";
+	public static string PeriDuoArtifactDescription => "Whenever you <c=downside>botch</c> or <c=cheevoGold>double</c> a <c=peri>Peri</c> card, add a <c=card>Halfhearted Apology</c> to your hand.";
+
 	public static string FrogproofCardTraitName => $"Frogproof";
 	public static string FrogproofCardTraitText => $"This card ignores <c=status>SMUG</c>.";
 

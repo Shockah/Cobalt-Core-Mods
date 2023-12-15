@@ -13,16 +13,21 @@ using System.Linq;
 
 namespace Shockah.Soggins;
 
-public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IStatusManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest
+public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IStatusManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal Config Config { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = null!;
 	internal IKokoroApi KokoroApi { get; private set; } = null!;
+	internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; } = null!;
 	private Harmony Harmony { get; set; } = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
-	public IEnumerable<DependencyEntry> Dependencies => new DependencyEntry[] { new DependencyEntry<IModManifest>("Shockah.Kokoro", ignoreIfMissing: false) };
+	public IEnumerable<DependencyEntry> Dependencies => new DependencyEntry[]
+	{
+		new DependencyEntry<IModManifest>("Shockah.Kokoro", ignoreIfMissing: false),
+		new DependencyEntry<IModManifest>("Shockah.DuoArtifacts", ignoreIfMissing: true)
+	};
 
 	public DirectoryInfo? GameRootFolder { get; set; }
 	public DirectoryInfo? ModRootFolder { get; set; }
@@ -122,18 +127,29 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	internal static IEnumerable<Type> AllCards
 		=> ApologyCards.Concat(CommonCards).Concat(UncommonCards).Concat(RareCards);
 
-	internal static readonly Type[] AllArtifacts = new Type[]
+	internal static readonly Type[] StarterArtifacts = new Type[]
 	{
 		typeof(SmugArtifact),
-
+	};
+	internal static readonly Type[] CommonArtifacts = new Type[]
+	{
 		typeof(VideoWillArtifact),
 		typeof(PiratedShipCadArtifact),
 		typeof(HotTubArtifact),
 		typeof(MisprintedApologyArtifact),
-
+	};
+	internal static readonly Type[] BossArtifacts = new Type[]
+	{
 		typeof(RepeatedMistakesArtifact),
 		typeof(HijinksArtifact),
 	};
+	internal static readonly Type[] DuoArtifacts = new Type[]
+	{
+		typeof(SogginsPeriArtifact),
+	};
+
+	internal static IEnumerable<Type> AllArtifacts
+		=> StarterArtifacts.Concat(CommonArtifacts).Concat(BossArtifacts).Concat(DuoArtifacts);
 
 	public void BootMod(IModLoaderContact contact)
 	{
@@ -142,6 +158,7 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 		KokoroApi.RegisterTypeForExtensionData(typeof(Combat));
+		DuoArtifactsApi = contact.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts")!;
 		Config = ObtainConfig();
 		Api = new();
 
@@ -155,22 +172,6 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 		SmugStatusManager.ApplyPatches(Harmony);
 		CustomTTGlossary.ApplyPatches(Harmony);
 		CombatPatches.Apply(Harmony);
-	}
-
-	public void FinalizePreperations(IPrelaunchContactPoint prelaunchManifest)
-	{
-		foreach (var artifactType in AllArtifacts)
-		{
-			if (Activator.CreateInstance(artifactType) is not IRegisterableArtifact artifact)
-				continue;
-			artifact.ApplyLatePatches(Harmony);
-		}
-		foreach (var cardType in AllCards)
-		{
-			if (Activator.CreateInstance(cardType) is not IRegisterableCard card)
-				continue;
-			card.ApplyLatePatches(Harmony);
-		}
 	}
 
 	public object? GetApi(IManifest requestingMod)
@@ -314,11 +315,13 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Status", "DoublersLuck.png"))
 		);
 
-		foreach (var cardType in AllArtifacts)
+		foreach (var artifactType in AllArtifacts)
 		{
-			if (Activator.CreateInstance(cardType) is not IRegisterableArtifact card)
+			if (DuoArtifacts.Contains(artifactType) && DuoArtifactsApi is null)
 				continue;
-			card.RegisterArt(registry);
+			if (Activator.CreateInstance(artifactType) is not IRegisterableArtifact artifact)
+				continue;
+			artifact.RegisterArt(registry);
 		}
 		foreach (var cardType in AllCards)
 		{
@@ -536,6 +539,8 @@ public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiPro
 	{
 		foreach (var artifactType in AllArtifacts)
 		{
+			if (DuoArtifacts.Contains(artifactType) && DuoArtifactsApi is null)
+				continue;
 			if (Activator.CreateInstance(artifactType) is not IRegisterableArtifact artifact)
 				continue;
 			artifact.RegisterArtifact(registry);

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Soggins;
 
-public interface IApi
+public interface IDuoArtifactsApi
 {
 	ExternalDeck DuoArtifactDeck { get; }
 

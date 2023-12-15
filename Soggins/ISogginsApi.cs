@@ -23,6 +23,9 @@ public interface ISogginsApi
 
 	int GetTimesBotchedThisCombat(State state, Combat combat);
 
+	Card GenerateAndTrackApology(State state, Combat combat, Rand rng);
+	Card MakePlaceholderApology();
+
 	bool IsFrogproof(State state, Combat? combat, Card card, FrogproofHookContext context);
 	void RegisterFrogproofHook(IFrogproofHook hook, double priority);
 	void UnregisterFrogproofHook(IFrogproofHook hook);
