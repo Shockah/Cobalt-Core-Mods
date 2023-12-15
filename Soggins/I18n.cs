@@ -24,6 +24,8 @@ internal static class I18n
 
 	public static string PeriDuoArtifactName => "Soggins-Peri Duo Artifact";
 	public static string PeriDuoArtifactDescription => "Whenever you <c=downside>botch</c> or <c=cheevoGold>double</c> a <c=peri>Peri</c> card, add a <c=card>Halfhearted Apology</c> to your hand.";
+	public static string DrakeDuoArtifactName => "Soggins-Drake Duo Artifact";
+	public static string DrakeDuoArtifactDescription => "After you <c=action>OVERHEAT</c> for the first time this combat, gain 1 <c=status>CONSTANT APOLOGIES</c>.";
 
 	public static string FrogproofCardTraitName => $"Frogproof";
 	public static string FrogproofCardTraitText => $"This card ignores <c=status>SMUG</c>.";
