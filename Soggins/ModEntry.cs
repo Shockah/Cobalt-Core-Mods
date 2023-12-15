@@ -165,7 +165,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 		KokoroApi.RegisterTypeForExtensionData(typeof(Combat));
-		DuoArtifactsApi = contact.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts")!;
+		DuoArtifactsApi = contact.LoadedManifests.Any(m => m.Name == "Shockah.DuoArtifacts") ? contact.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts") : null;
 		Config = ObtainConfig();
 		Api = new();
 
