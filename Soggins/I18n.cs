@@ -22,6 +22,8 @@ internal static class I18n
 	public static string RepeatedMistakesArtifactName => "Repeated Mistakes";
 	public static string RepeatedMistakesArtifactDescription => "Start each combat with 3 <c=status>MISSILE MALFUNCTION</c>. At the start of each turn, <c=action>LAUNCH</c> a <c=midrow>SEEKER</c>.";
 
+	public static string DizzyDuoArtifactName => "Soggins-Dizzy Duo Artifact";
+	public static string DizzyDuoArtifactDescription => "Gain 3% <c=downside>botch</c> chance for each missing <c=status>SHIELD</c>.\nGain 3% <c=cheevoGold>double</c> chance for each <c=status>SHIELD</c>.";
 	public static string PeriDuoArtifactName => "Soggins-Peri Duo Artifact";
 	public static string PeriDuoArtifactDescription => "Whenever you <c=downside>botch</c> or <c=cheevoGold>double</c> a <c=peri>Peri</c> card, add a <c=card>Halfhearted Apology</c> to your hand.";
 	public static string DrakeDuoArtifactName => "Soggins-Drake Duo Artifact";

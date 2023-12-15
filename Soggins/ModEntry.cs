@@ -145,6 +145,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	};
 	internal static readonly Type[] DuoArtifacts = new Type[]
 	{
+		typeof(SogginsDizzyArtifact),
 		typeof(SogginsPeriArtifact),
 		typeof(SogginsDrakeArtifact),
 		typeof(SogginsMaxArtifact),
