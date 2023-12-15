@@ -43,11 +43,11 @@ public sealed class ApiImplementation : ISogginsApi
 		return smug is not null && smug.Value > GetMaxSmug(ship);
 	}
 
-	public double GetSmugBotchChance(State state, Ship ship)
-		=> Instance.SmugStatusManager.GetSmugBotchChance(state, ship);
+	public double GetSmugBotchChance(State state, Ship ship, Card? card)
+		=> Instance.SmugStatusManager.GetSmugBotchChance(state, ship, card);
 
-	public double GetSmugDoubleChance(State state, Ship ship)
-		=> Instance.SmugStatusManager.GetSmugDoubleChance(state, ship);
+	public double GetSmugDoubleChance(State state, Ship ship, Card? card)
+		=> Instance.SmugStatusManager.GetSmugDoubleChance(state, ship, card);
 
 	public int GetTimesBotchedThisCombat(State state, Combat combat)
 		=> state.ship.Get((Status)Instance.BotchesStatus.Id!.Value);

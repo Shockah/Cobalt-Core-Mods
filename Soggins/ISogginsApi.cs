@@ -16,8 +16,8 @@ public interface ISogginsApi
 	int GetMaxSmug(Ship ship);
 	int? GetSmug(Ship ship);
 	bool IsOversmug(Ship ship);
-	double GetSmugBotchChance(State state, Ship ship);
-	double GetSmugDoubleChance(State state, Ship ship);
+	double GetSmugBotchChance(State state, Ship ship, Card? card);
+	double GetSmugDoubleChance(State state, Ship ship, Card? card);
 	void RegisterSmugHook(ISmugHook hook, double priority);
 	void UnregisterSmugHook(ISmugHook hook);
 
@@ -33,8 +33,8 @@ public interface ISmugHook
 	void OnCardBotchedBySmug(State state, Combat combat, Card card) { }
 	void OnCardDoubledBySmug(State state, Combat combat, Card card) { }
 
-	double ModifySmugBotchChance(State state, Ship ship, double chance) => chance;
-	double ModifySmugDoubleChance(State state, Ship ship, double chance) => chance;
+	double ModifySmugBotchChance(State state, Ship ship, Card? card, double chance) => chance;
+	double ModifySmugDoubleChance(State state, Ship ship, Card? card, double chance) => chance;
 	int ModifyApologyAmountForBotchingBySmug(State state, Combat combat, Card card, int amount) => amount;
 }
 

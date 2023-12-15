@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace Shockah.Soggins;
 
-public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IStatusManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest
+public sealed partial class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IStatusManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal Config Config { get; private set; } = null!;
@@ -155,6 +155,22 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		SmugStatusManager.ApplyPatches(Harmony);
 		CustomTTGlossary.ApplyPatches(Harmony);
 		CombatPatches.Apply(Harmony);
+	}
+
+	public void FinalizePreperations(IPrelaunchContactPoint prelaunchManifest)
+	{
+		foreach (var artifactType in AllArtifacts)
+		{
+			if (Activator.CreateInstance(artifactType) is not IRegisterableArtifact artifact)
+				continue;
+			artifact.ApplyLatePatches(Harmony);
+		}
+		foreach (var cardType in AllCards)
+		{
+			if (Activator.CreateInstance(cardType) is not IRegisterableCard card)
+				continue;
+			card.ApplyLatePatches(Harmony);
+		}
 	}
 
 	public object? GetApi(IManifest requestingMod)
@@ -518,12 +534,12 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 
 	public void LoadManifest(IArtifactRegistry registry)
 	{
-		foreach (var cardType in AllArtifacts)
+		foreach (var artifactType in AllArtifacts)
 		{
-			if (Activator.CreateInstance(cardType) is not IRegisterableArtifact card)
+			if (Activator.CreateInstance(artifactType) is not IRegisterableArtifact artifact)
 				continue;
-			card.RegisterArtifact(registry);
-			card.ApplyPatches(Harmony);
+			artifact.RegisterArtifact(registry);
+			artifact.ApplyPatches(Harmony);
 		}
 	}
 

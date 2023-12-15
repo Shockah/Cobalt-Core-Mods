@@ -8,6 +8,7 @@ internal interface IRegisterableArtifact
 	void RegisterArt(ISpriteRegistry registry);
 	void RegisterArtifact(IArtifactRegistry registry);
 	void ApplyPatches(Harmony harmony) { }
+	void ApplyLatePatches(Harmony harmony) { }
 }
 
 internal interface IRegisterableCard
@@ -15,6 +16,7 @@ internal interface IRegisterableCard
 	void RegisterArt(ISpriteRegistry registry) { }
 	void RegisterCard(ICardRegistry registry);
 	void ApplyPatches(Harmony harmony) { }
+	void ApplyLatePatches(Harmony harmony) { }
 }
 
 internal interface IFrogproofCard

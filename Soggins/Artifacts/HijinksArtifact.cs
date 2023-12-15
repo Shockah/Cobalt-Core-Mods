@@ -49,6 +49,6 @@ public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook
 	public double HookPriority
 		=> -100;
 
-	public double ModifySmugBotchChance(State state, Ship ship, double chance)
+	public double ModifySmugBotchChance(State state, Ship ship, Card? card, double chance)
 		=> chance * 2;
 }
