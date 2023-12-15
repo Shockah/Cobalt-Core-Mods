@@ -4,11 +4,12 @@ using HarmonyLib;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Shockah.Soggins;
 
 [ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
-public sealed class SogginsPeriArtifact : Artifact, IRegisterableArtifact, ISmugHook
+public sealed class SogginsCatArtifact : Artifact, IRegisterableArtifact, ISmugHook
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
@@ -17,50 +18,51 @@ public sealed class SogginsPeriArtifact : Artifact, IRegisterableArtifact, ISmug
 	public void RegisterArt(ISpriteRegistry registry)
 	{
 		Sprite = registry.RegisterArtOrThrow(
-			id: $"{GetType().Namespace}.Artifact.Duo.Peri",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Artifact", "Duo", "Peri.png"))
+			id: $"{GetType().Namespace}.Artifact.Duo.Cat",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Artifact", "Duo", "Cat.png"))
 		);
 	}
 
 	public void RegisterArtifact(IArtifactRegistry registry)
 	{
 		ExternalArtifact artifact = new(
-			globalName: $"{GetType().Namespace}.Artifact.Duo.Peri",
+			globalName: $"{GetType().Namespace}.Artifact.Duo.Cat",
 			artifactType: GetType(),
 			sprite: Sprite,
 			ownerDeck: Instance.DuoArtifactsApi!.DuoArtifactDeck
 		);
-		artifact.AddLocalisation(I18n.PeriDuoArtifactName.ToUpper(), I18n.PeriDuoArtifactDescription);
+		artifact.AddLocalisation(I18n.CatDuoArtifactName.ToUpper(), I18n.CatDuoArtifactDescription);
 		registry.RegisterArtifact(artifact);
 	}
 
 	public void ApplyPatches(Harmony harmony)
 	{
-		Instance.DuoArtifactsApi!.RegisterDuoArtifact(GetType(), new[] { (Deck)Instance.SogginsDeck.Id!.Value, Deck.peri });
+		Instance.DuoArtifactsApi!.RegisterDuoArtifact(GetType(), new[] { (Deck)Instance.SogginsDeck.Id!.Value, Deck.catartifact });
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
 		var tooltips = base.GetExtraTooltips() ?? new();
 		tooltips.Add(Instance.Api.GetSmugTooltip());
-		tooltips.Add(new TTCard { card = Instance.Api.MakePlaceholderApology() });
+		tooltips.Add(new TTGlossary("status.missingCat", 1));
 		return tooltips;
 	}
 
 	public void OnCardBotchedBySmug(State state, Combat combat, Card card)
-		=> Trigger(state, combat, card);
-
-	public void OnCardDoubledBySmug(State state, Combat combat, Card card)
-		=> Trigger(state, combat, card);
-
-	private void Trigger(State state, Combat combat, Card card)
 	{
-		if (card.GetMeta().deck != Deck.peri)
+		if (Instance.KokoroApi.GetCardsEverywhere(state).Where(c => c.GetMeta().deck == Deck.colorless).Count() < 7)
 			return;
-		combat.Queue(new AAddCard
+
+		combat.Queue(new AEnergy
 		{
-			card = Instance.Api.GenerateAndTrackApology(state, combat, state.rngActions),
-			destination = CardDestination.Hand,
+			changeAmount = 1,
+			artifactPulse = Key()
+		});
+		combat.Queue(new AStatus
+		{
+			status = Status.missingCat,
+			statusAmount = 1,
+			targetPlayer = true,
 			artifactPulse = Key()
 		});
 	}

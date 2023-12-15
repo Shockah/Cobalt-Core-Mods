@@ -66,4 +66,14 @@ public sealed class SogginsMaxArtifact : Artifact, IRegisterableArtifact, ISmugH
 
 		return chance * 2;
 	}
+
+	public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
+	{
+		base.OnPlayerPlayCard(energyCost, deck, card, state, combat, handPosition, handCount);
+		if (combat.hand.Count < 2)
+			return;
+		if (handPosition != 0 && handPosition != combat.hand.Count - 1)
+			return;
+		Pulse();
+	}
 }

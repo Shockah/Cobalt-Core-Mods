@@ -54,7 +54,8 @@ public sealed class SogginsDrakeArtifact : Artifact, IRegisterableArtifact
 		{
 			status = (Status)Instance.ConstantApologiesStatus.Id!.Value,
 			statusAmount = 1,
-			targetPlayer = true
+			targetPlayer = true,
+			artifactPulse = Key()
 		});
 	}
 }

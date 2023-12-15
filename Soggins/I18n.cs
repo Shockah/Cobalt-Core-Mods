@@ -28,6 +28,8 @@ internal static class I18n
 	public static string DrakeDuoArtifactDescription => "After you <c=action>OVERHEAT</c> for the first time this combat, gain 1 <c=status>CONSTANT APOLOGIES</c>.";
 	public static string MaxDuoArtifactName => "Soggins-Max Duo Artifact";
 	public static string MaxDuoArtifactDescription => "The <c=card>leftmost and rightmost cards in your hand</c> have doubled <c=downside>botch</c>/<c=cheevoGold>double</c> chances.";
+	public static string CatDuoArtifactName => "Soggins-CAT Duo Artifact";
+	public static string CatDuoArtifactDescription => "Whenever you <c=downside>botch</c> a card, gain 1 <c=status>ENERGY</c> and 1 <c=status>CAT IS MISSING</c>.\nOnly triggers if you have at least 7 <c=comp>CAT</c> cards in your deck.";
 
 	public static string FrogproofCardTraitName => $"Frogproof";
 	public static string FrogproofCardTraitText => $"This card ignores <c=status>SMUG</c>.";
