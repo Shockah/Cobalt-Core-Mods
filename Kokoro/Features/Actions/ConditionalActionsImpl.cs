@@ -2,14 +2,13 @@
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Shockah.Kokoro;
 
 internal sealed class ConditionalActionIntConstant : IKokoroApi.IConditionalActionApi.IIntExpression
 {
 	[JsonProperty]
-	private readonly int Value;
+	public readonly int Value;
 
 	[JsonConstructor]
 	public ConditionalActionIntConstant(int value)
@@ -26,12 +25,15 @@ internal sealed class ConditionalActionIntConstant : IKokoroApi.IConditionalActi
 			BigNumbers.Render(Value, position.x, position.y, isDisabled ? Colors.disabledText : Colors.textMain);
 		position.x += $"{Value}".Length * 6;
 	}
+
+	public string GetTooltipDescription(State state, Combat? combat)
+		=> $"<c=boldPink>{Value}</c>";
 }
 
 internal sealed class ConditionalActionHandConstant : IKokoroApi.IConditionalActionApi.IIntExpression
 {
 	[JsonProperty]
-	private readonly int Value;
+	public readonly int Value;
 
 	[JsonConstructor]
 	public ConditionalActionHandConstant(int value)
@@ -48,12 +50,15 @@ internal sealed class ConditionalActionHandConstant : IKokoroApi.IConditionalAct
 			Draw.Sprite(StableSpr.icons_dest_hand, position.x, position.y, color: isDisabled ? Colors.disabledIconTint : Colors.white);
 		position.x += 8;
 	}
+
+	public string GetTooltipDescription(State state, Combat? combat)
+		=> string.Format(I18n.ConditionalHandDescription, Value);
 }
 
 internal sealed class ConditionalActionXConstant : IKokoroApi.IConditionalActionApi.IIntExpression
 {
 	[JsonProperty]
-	private readonly int Value;
+	public readonly int Value;
 
 	[JsonConstructor]
 	public ConditionalActionXConstant(int value)
@@ -70,15 +75,35 @@ internal sealed class ConditionalActionXConstant : IKokoroApi.IConditionalAction
 			Draw.Sprite(StableSpr.icons_x, position.x, position.y, color: isDisabled ? Colors.disabledIconTint : Colors.white);
 		position.x += 8;
 	}
+
+	public string GetTooltipDescription(State state, Combat? combat)
+		=> I18n.ConditionalXDescription;
 }
 
 internal sealed class ConditionalActionScalarMultiplier : IKokoroApi.IConditionalActionApi.IIntExpression
 {
 	[JsonProperty]
-	private readonly IKokoroApi.IConditionalActionApi.IIntExpression Expression;
+	public readonly IKokoroApi.IConditionalActionApi.IIntExpression Expression;
 
 	[JsonProperty]
-	private readonly int Scalar;
+	public readonly int Scalar;
+
+	[JsonIgnore]
+	internal int? ConstantValue
+	{
+		get
+		{
+			if (Expression is ConditionalActionIntConstant constant)
+				return constant.Value;
+			if (Expression is ConditionalActionScalarMultiplier scalarMultiplier)
+			{
+				var scalarConstant = scalarMultiplier.ConstantValue;
+				if (scalarConstant is not null)
+					return scalarConstant.Value * Scalar;
+			}
+			return null;
+		}
+	}
 
 	[JsonConstructor]
 	public ConditionalActionScalarMultiplier(IKokoroApi.IConditionalActionApi.IIntExpression expression, int scalar)
@@ -92,9 +117,10 @@ internal sealed class ConditionalActionScalarMultiplier : IKokoroApi.IConditiona
 
 	public void Render(G g, ref Vec position, bool isDisabled, bool dontRender)
 	{
-		if (Expression is ConditionalActionIntConstant constant)
+		var constantValue = ConstantValue;
+		if (constantValue is not null)
 		{
-			new ConditionalActionIntConstant(constant.GetValue(g.state, DB.fakeCombat) * Scalar).Render(g, ref position, isDisabled, dontRender);
+			new ConditionalActionIntConstant(constantValue.Value).Render(g, ref position, isDisabled, dontRender);
 			return;
 		}
 
@@ -103,18 +129,26 @@ internal sealed class ConditionalActionScalarMultiplier : IKokoroApi.IConditiona
 		position.x += $"{Scalar}".Length * 6;
 		Expression.Render(g, ref position, isDisabled, dontRender);
 	}
+
+	public string GetTooltipDescription(State state, Combat? combat)
+	{
+		var constantValue = ConstantValue;
+		if (constantValue is not null)
+			return new ConditionalActionIntConstant(constantValue.Value).GetTooltipDescription(state, combat);
+		return $"<c=boldPink>{Scalar}</c>x {Expression.GetTooltipDescription(state, combat)}";
+	}
 }
 
 internal sealed class ConditionalActionHasStatusExpression : IKokoroApi.IConditionalActionApi.IBoolExpression
 {
 	[JsonProperty]
-	private readonly Status Status;
+	public readonly Status Status;
 
 	[JsonProperty]
-	private readonly bool TargetPlayer;
+	public readonly bool TargetPlayer;
 
 	[JsonProperty]
-	private readonly bool CountNegative;
+	public readonly bool CountNegative;
 
 	[JsonConstructor]
 	public ConditionalActionHasStatusExpression(Status status, bool targetPlayer, bool countNegative)
@@ -146,6 +180,9 @@ internal sealed class ConditionalActionHasStatusExpression : IKokoroApi.IConditi
 		position.x += 8;
 	}
 
+	public string GetTooltipDescription(State state, Combat? combat)
+		=> string.Format(I18n.ConditionalHasStatusDescription, $"<c=status>{Status.GetLocName().ToUpper()}</c>");
+
 	public List<Tooltip> GetTooltips(State state, Combat? combat)
 	{
 		var ship = TargetPlayer ? state.ship : combat?.otherShip;
@@ -157,10 +194,10 @@ internal sealed class ConditionalActionHasStatusExpression : IKokoroApi.IConditi
 internal sealed class ConditionalActionStatusExpression : IKokoroApi.IConditionalActionApi.IIntExpression
 {
 	[JsonProperty]
-	private readonly Status Status;
+	public readonly Status Status;
 
 	[JsonProperty]
-	private readonly bool TargetPlayer;
+	public readonly bool TargetPlayer;
 
 	[JsonConstructor]
 	public ConditionalActionStatusExpression(Status status, bool targetPlayer)
@@ -190,6 +227,9 @@ internal sealed class ConditionalActionStatusExpression : IKokoroApi.IConditiona
 		position.x += 8;
 	}
 
+	public string GetTooltipDescription(State state, Combat? combat)
+		=> $"<c=status>{Status.GetLocName().ToUpper()}</c>";
+
 	public List<Tooltip> GetTooltips(State state, Combat? combat)
 	{
 		var ship = TargetPlayer ? state.ship : combat?.otherShip;
@@ -201,24 +241,35 @@ internal sealed class ConditionalActionStatusExpression : IKokoroApi.IConditiona
 internal sealed class ConditionalActionEquation : IKokoroApi.IConditionalActionApi.IBoolExpression
 {
 	[JsonProperty]
-	private readonly IKokoroApi.IConditionalActionApi.IIntExpression Lhs;
+	public readonly IKokoroApi.IConditionalActionApi.IIntExpression Lhs;
 
 	[JsonProperty]
 	[JsonConverter(typeof(StringEnumConverter))]
-	private readonly IKokoroApi.IConditionalActionApi.EquationOperator Operator;
+	public readonly IKokoroApi.IConditionalActionApi.EquationOperator Operator;
 
 	[JsonProperty]
-	private readonly IKokoroApi.IConditionalActionApi.IIntExpression Rhs;
+	public readonly IKokoroApi.IConditionalActionApi.IIntExpression Rhs;
 
 	[JsonProperty]
-	private readonly bool HideOperator;
+	[JsonConverter(typeof(StringEnumConverter))]
+	public readonly IKokoroApi.IConditionalActionApi.EquationStyle Style;
+
+	[JsonProperty]
+	public readonly bool HideOperator;
 
 	[JsonConstructor]
-	public ConditionalActionEquation(IKokoroApi.IConditionalActionApi.IIntExpression lhs, IKokoroApi.IConditionalActionApi.EquationOperator @operator, IKokoroApi.IConditionalActionApi.IIntExpression rhs, bool hideOperator)
+	public ConditionalActionEquation(
+		IKokoroApi.IConditionalActionApi.IIntExpression lhs,
+		IKokoroApi.IConditionalActionApi.EquationOperator @operator,
+		IKokoroApi.IConditionalActionApi.IIntExpression rhs,
+		IKokoroApi.IConditionalActionApi.EquationStyle style,
+		bool hideOperator
+	)
 	{
 		this.Lhs = lhs;
 		this.Operator = @operator;
 		this.Rhs = rhs;
+		this.Style = style;
 		this.HideOperator = hideOperator;
 	}
 
@@ -262,6 +313,63 @@ internal sealed class ConditionalActionEquation : IKokoroApi.IConditionalActionA
 		Rhs.Render(g, ref position, isDisabled, dontRender);
 	}
 
+	private string GetTooltipDescriptionFormat()
+		=> Style switch
+		{
+			IKokoroApi.IConditionalActionApi.EquationStyle.Formal => Operator switch
+			{
+				IKokoroApi.IConditionalActionApi.EquationOperator.Equal => I18n.ConditionalEquationFormalEqualDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => I18n.ConditionalEquationFormalNotEqualDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => I18n.ConditionalEquationFormalGreaterThanDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => I18n.ConditionalEquationFormalLessThanDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => I18n.ConditionalEquationFormalGreaterThanOrEqualDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => I18n.ConditionalEquationFormalLessThanOrEqualDescription,
+				_ => throw new ArgumentException()
+			},
+			IKokoroApi.IConditionalActionApi.EquationStyle.State => Operator switch
+			{
+				IKokoroApi.IConditionalActionApi.EquationOperator.Equal => I18n.ConditionalEquationStateEqualDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => I18n.ConditionalEquationStateNotEqualDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => I18n.ConditionalEquationStateGreaterThanDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => I18n.ConditionalEquationStateLessThanDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => I18n.ConditionalEquationStateGreaterThanOrEqualDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => I18n.ConditionalEquationStateLessThanOrEqualDescription,
+				_ => throw new ArgumentException()
+			},
+			IKokoroApi.IConditionalActionApi.EquationStyle.Possession => Operator switch
+			{
+				IKokoroApi.IConditionalActionApi.EquationOperator.Equal => I18n.ConditionalEquationPossessionEqualDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => I18n.ConditionalEquationPossessionNotEqualDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => I18n.ConditionalEquationPossessionGreaterThanDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => I18n.ConditionalEquationPossessionLessThanDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => I18n.ConditionalEquationPossessionGreaterThanOrEqualDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => I18n.ConditionalEquationPossessionLessThanOrEqualDescription,
+				_ => throw new ArgumentException()
+			},
+			IKokoroApi.IConditionalActionApi.EquationStyle.PossessionComparison => Operator switch
+			{
+				IKokoroApi.IConditionalActionApi.EquationOperator.Equal => I18n.ConditionalEquationPossessionComparisonEqualDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => I18n.ConditionalEquationPossessionComparisonNotEqualDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => I18n.ConditionalEquationPossessionComparisonGreaterThanDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => I18n.ConditionalEquationPossessionComparisonLessThanDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => I18n.ConditionalEquationPossessionComparisonGreaterThanOrEqualDescription,
+				IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => I18n.ConditionalEquationPossessionComparisonLessThanOrEqualDescription,
+				_ => throw new ArgumentException()
+			},
+			_ => throw new ArgumentException()
+		};
+
+	public string GetTooltipDescription(State state, Combat? combat)
+		=> string.Format(
+			I18n.ConditionalActionDescription,
+			string.Format(GetTooltipDescriptionFormat(), Lhs.GetTooltipDescription(state, combat), Rhs.GetTooltipDescription(state, combat))
+		);
+
 	public List<Tooltip> GetTooltips(State state, Combat? combat)
-		=> Lhs.GetTooltips(state, combat).Concat(Rhs.GetTooltips(state, combat)).ToList();
+	{
+		List<Tooltip> tooltips = new();
+		tooltips.AddRange(Lhs.GetTooltips(state, combat));
+		tooltips.AddRange(Rhs.GetTooltips(state, combat));
+		return tooltips;
+	}
 }

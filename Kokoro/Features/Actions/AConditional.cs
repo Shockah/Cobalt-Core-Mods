@@ -25,7 +25,18 @@ public sealed class AConditional : CardAction, ICardActionWrapper
 	{
 		List<Tooltip> tooltips = new();
 		if (Expression is not null)
+		{
+			var description = Expression.GetTooltipDescription(s, s.route as Combat);
+
+			tooltips.Add(new CustomTTGlossary(
+				CustomTTGlossary.GlossaryType.action,
+				() => (Spr)ModEntry.Instance.Content.QuestionMarkSprite.Id!.Value,
+				() => I18n.ConditionalActionName,
+				() => description,
+				key: description
+			));
 			tooltips.AddRange(Expression.GetTooltips(s, s.route as Combat));
+		}
 		if (Action is not null)
 			tooltips.AddRange(Action.GetTooltips(s));
 		return tooltips;

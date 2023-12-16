@@ -52,9 +52,10 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 				Instance.KokoroApi.ConditionalActions.Make(
 					Instance.KokoroApi.ConditionalActions.Equation(
 						Instance.KokoroApi.ConditionalActions.Status((Status)Instance.SmugStatus.Id!.Value),
-						IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual,
+						Instance.Api.GetMinSmug(s.ship) == -2 ? IKokoroApi.IConditionalActionApi.EquationOperator.Equal : IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual,
 						Instance.KokoroApi.ConditionalActions.Constant(-2),
-						hideOperator: -2 == Instance.Api.GetMinSmug(s.ship)
+						IKokoroApi.IConditionalActionApi.EquationStyle.State,
+						hideOperator: Instance.Api.GetMinSmug(s.ship) == -2
 					),
 					new AAttack
 					{
@@ -64,9 +65,10 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 				Instance.KokoroApi.ConditionalActions.Make(
 					Instance.KokoroApi.ConditionalActions.Equation(
 						Instance.KokoroApi.ConditionalActions.Status((Status)Instance.SmugStatus.Id!.Value),
-						IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual,
+						Instance.Api.GetMinSmug(s.ship) == -3 ? IKokoroApi.IConditionalActionApi.EquationOperator.Equal : IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual,
 						Instance.KokoroApi.ConditionalActions.Constant(-3),
-						hideOperator: -3 == Instance.Api.GetMinSmug(s.ship)
+						IKokoroApi.IConditionalActionApi.EquationStyle.State,
+						hideOperator: Instance.Api.GetMinSmug(s.ship) == -3
 					),
 					new AAttack
 					{
@@ -81,9 +83,10 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 				Instance.KokoroApi.ConditionalActions.Make(
 					Instance.KokoroApi.ConditionalActions.Equation(
 						Instance.KokoroApi.ConditionalActions.Status((Status)Instance.SmugStatus.Id!.Value),
-						IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual,
+						Instance.Api.GetMinSmug(s.ship) == -3 ? IKokoroApi.IConditionalActionApi.EquationOperator.Equal : IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual,
 						Instance.KokoroApi.ConditionalActions.Constant(-3),
-						hideOperator: -3 == Instance.Api.GetMinSmug(s.ship)
+						IKokoroApi.IConditionalActionApi.EquationStyle.State,
+						hideOperator: Instance.Api.GetMinSmug(s.ship) == -3
 					),
 					new AAttack
 					{

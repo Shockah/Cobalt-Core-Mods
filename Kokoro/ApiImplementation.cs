@@ -251,8 +251,14 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 		public IKokoroApi.IConditionalActionApi.IIntExpression Status(Status status, bool targetPlayer = true)
 			=> new ConditionalActionStatusExpression(status, targetPlayer);
 
-		public IKokoroApi.IConditionalActionApi.IBoolExpression Equation(IKokoroApi.IConditionalActionApi.IIntExpression lhs, IKokoroApi.IConditionalActionApi.EquationOperator @operator, IKokoroApi.IConditionalActionApi.IIntExpression rhs, bool hideOperator = false)
-			=> new ConditionalActionEquation(lhs, @operator, rhs, hideOperator);
+		public IKokoroApi.IConditionalActionApi.IBoolExpression Equation(
+			IKokoroApi.IConditionalActionApi.IIntExpression lhs,
+			IKokoroApi.IConditionalActionApi.EquationOperator @operator,
+			IKokoroApi.IConditionalActionApi.IIntExpression rhs,
+			IKokoroApi.IConditionalActionApi.EquationStyle style,
+			bool hideOperator = false
+		)
+			=> new ConditionalActionEquation(lhs, @operator, rhs, style, hideOperator);
 	}
 	#endregion
 }

@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Future release
+
+* Added conditional action tooltips.
+
 ## 1.0.1
 Released 15 December 2023.
 

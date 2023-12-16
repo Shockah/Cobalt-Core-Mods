@@ -24,9 +24,9 @@ internal sealed class CustomTTGlossary : TTGlossary
 	private readonly Func<string> Description;
 	private readonly IReadOnlyList<Func<object>> Values;
 
-	public CustomTTGlossary(GlossaryType type, Func<string> title, Func<string> description, IEnumerable<Func<object>>? values = null) : this(type, () => null, title, description, values) { }
+	public CustomTTGlossary(GlossaryType type, Func<string> title, Func<string> description, IEnumerable<Func<object>>? values = null, string? key = null) : this(type, () => null, title, description, values, key) { }
 
-	public CustomTTGlossary(GlossaryType type, Func<Spr?> icon, Func<string> title, Func<string> description, IEnumerable<Func<object>>? values = null) : base($"{Enum.GetName(type)}.customttglossary.{NextID++}")
+	public CustomTTGlossary(GlossaryType type, Func<Spr?> icon, Func<string> title, Func<string> description, IEnumerable<Func<object>>? values = null, string? key = null) : base($"{Enum.GetName(type)}.customttglossary.{key ?? $"{NextID++}"}")
 	{
 		this.Type = type;
 		this.Icon = icon;

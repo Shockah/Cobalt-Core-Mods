@@ -12,4 +12,34 @@ internal static class I18n
 
 	public static string OxidationStatusName => "OXIDATION";
 	public static string OxidationStatusDescription => "If oxidation is {0} or more at end of turn, gain 1 <c=status>CORRODE</c> and set oxidation to 0.";
+
+	public static string ConditionalActionName => "CONDITIONAL";
+	public static string ConditionalActionDescription => "This action will only trigger if {0}.";
+	public static string ConditionalHandDescription => "<c=boldPink>{0}</c> cards in your hand";
+	public static string ConditionalXDescription => "<c=action>X</c>";
+	public static string ConditionalHasStatusDescription => "you have {0}";
+	public static string ConditionalEquationFormalEqualDescription => "{0} is {1}";
+	public static string ConditionalEquationFormalNotEqualDescription => "{0} is not {1}";
+	public static string ConditionalEquationFormalGreaterThanDescription => "{0} is greater than {1}";
+	public static string ConditionalEquationFormalLessThanDescription => "{0} is less than {1}";
+	public static string ConditionalEquationFormalGreaterThanOrEqualDescription => "{0} is greater than or equal to {1}";
+	public static string ConditionalEquationFormalLessThanOrEqualDescription => "{0} is less than or equal to {1}";
+	public static string ConditionalEquationStateEqualDescription => "you are at {1} {0}";
+	public static string ConditionalEquationStateNotEqualDescription => "you are not at {1} {0}";
+	public static string ConditionalEquationStateGreaterThanDescription => "you are higher than {1} {0}";
+	public static string ConditionalEquationStateLessThanDescription => "you are lower than {1} {0}";
+	public static string ConditionalEquationStateGreaterThanOrEqualDescription => "you are at least at {1} {0}";
+	public static string ConditionalEquationStateLessThanOrEqualDescription => "you are at most at {1} {0}";
+	public static string ConditionalEquationPossessionEqualDescription => "you have exactly {1} {0}";
+	public static string ConditionalEquationPossessionNotEqualDescription => "you do not have exactly {1} {0}";
+	public static string ConditionalEquationPossessionGreaterThanDescription => "you have more than {1} {0}";
+	public static string ConditionalEquationPossessionLessThanDescription => "you have less than {1} {0}";
+	public static string ConditionalEquationPossessionGreaterThanOrEqualDescription => "you have at least {1} {0}";
+	public static string ConditionalEquationPossessionLessThanOrEqualDescription => "you have at most {1} {0}";
+	public static string ConditionalEquationPossessionComparisonEqualDescription => "you have the same amount of {0} and {1}";
+	public static string ConditionalEquationPossessionComparisonNotEqualDescription => "you have a different amount of {0} and {1}";
+	public static string ConditionalEquationPossessionComparisonGreaterThanDescription => "you have more {0} than {1}";
+	public static string ConditionalEquationPossessionComparisonLessThanDescription => "you have less {0} than {1}";
+	public static string ConditionalEquationPossessionComparisonGreaterThanOrEqualDescription => "you have at least as much {0} as {1}";
+	public static string ConditionalEquationPossessionComparisonLessThanOrEqualDescription => "you have at most as much {0} as {1}";
 }
