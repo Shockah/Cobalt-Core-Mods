@@ -5,6 +5,7 @@
 ## Future release
 
 * Stop It! B has now retain.
+* Harnessing Smugness got rebalanced.
 * All non-character, non-ephemeral cards are now frogproof.
 * Changed Oversmug display to be more clear about the current state.
 * Fixed Single Use cards being gone when botched, instead of being discarded.
