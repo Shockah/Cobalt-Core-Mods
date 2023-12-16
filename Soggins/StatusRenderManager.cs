@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Shockah.Soggins;
 
@@ -69,8 +70,19 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 	{
 		if (status == (Status)Instance.SmugStatus.Id!.Value)
 		{
-			if (isForShipStatus && StateExt.Instance is { } state && state.ship.Get((Status)Instance.SmuggedStatus.Id!.Value) > 0)
-				tooltips.Add(new TTText(string.Format(I18n.SmugStatusCurrentChancesDescription, Instance.Api.GetSmugDoubleChance(state, state.ship, null) * 100, Instance.Api.GetSmugBotchChance(state, state.ship, null) * 100)));
+			if (isForShipStatus)
+			{
+				var glossary = tooltips.FirstOrDefault() as TTGlossary;
+				if (glossary is not null)
+					tooltips[0] = new CustomTTGlossary(
+						CustomTTGlossary.GlossaryType.status,
+						() => I18n.SmugStatusName,
+						() => I18n.SmugStatusLongDescription
+					);
+
+				if (StateExt.Instance is { } state && state.ship.Get((Status)Instance.SmuggedStatus.Id!.Value) > 0)
+					tooltips.Add(new TTText(string.Format(I18n.SmugStatusOddsDescription, Instance.Api.GetSmugDoubleChance(state, state.ship, null) * 100, Instance.Api.GetSmugBotchChance(state, state.ship, null) * 100)));
+			}
 		}
 		else if (status == (Status)Instance.BidingTimeStatus.Id!.Value)
 		{

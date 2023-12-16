@@ -340,7 +340,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 				SmugStatusSprite,
 				affectedByTimestop: false
 			);
-			SmugStatus.AddLocalisation(I18n.SmugStatusName, I18n.SmugStatusDescription);
+			SmugStatus.AddLocalisation(I18n.SmugStatusName, I18n.SmugStatusShortDescription);
 			registry.RegisterStatus(SmugStatus);
 		}
 		{

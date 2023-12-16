@@ -44,8 +44,9 @@ internal static class I18n
 	public static string FrogproofCardTraitText => $"This card ignores <c=status>SMUG</c>.";
 
 	public static string SmugStatusName => "Smug";
-	public static string SmugStatusDescription => "Affects the chance to <c=downside>botch</c> or <c=cheevoGold>double</c> cards.\nLow smug will <c=downside>botch</c> more often, while high smug will <c=cheevoGold>double</c> more often.\n<c=downside>Beware of oversmugging.</c>";
-	public static string SmugStatusCurrentChancesDescription => "<c=downside>Botch chance:</c> <c=boldPink>{1:N0}%</c>\n<c=cheevoGold>Double chance:</c> <c=boldPink>{0:N0}%</c>";
+	public static string SmugStatusShortDescription => "Affects the chance to <c=downside>botch</c> or <c=cheevoGold>double</c> cards.";
+	public static string SmugStatusLongDescription => "Affects the chance to <c=downside>botch</c> or <c=cheevoGold>double</c> cards.\nLow smug will <c=downside>botch</c> more often, while high smug will <c=cheevoGold>double</c> more often.\n<c=downside>Beware of oversmugging.</c>";
+	public static string SmugStatusOddsDescription => "<c=downside>Botch chance:</c> <c=boldPink>{1:N0}%</c>\n<c=cheevoGold>Double chance:</c> <c=boldPink>{0:N0}%</c>";
 	public static string FrogproofingStatusName => "Frogproofing";
 	public static string FrogproofingStatusDescription => "Whenever you play a card that is not <c=cardtrait>FROGPROOF</c>, temporarily give it <c=cardtrait>FROGPROOF</c> <c=downside>and decrease this by 1.</c>";
 	public static string BotchesStatusName => "Botches";
