@@ -54,7 +54,7 @@ public enum FrogproofHookContext
 
 public enum FrogproofType
 {
-	None, Innate, Paid
+	None, Innate, InnateHiddenIfNotNeeded, Paid
 }
 
 public interface IFrogproofHook
