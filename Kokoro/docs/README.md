@@ -3,6 +3,7 @@
 Kokoro is a utility/library mod - a little bit for players, and a lot for modders.
 
 Game issues fixed by the mod:
+* Second Opinions card not working with modded characters.
 * Scrolling in the Artifacts section of the Codex.
 * X actions not fading out properly when inactive (no vanilla cards do that though, only modded).
 * Statuses sometimes not fitting between Evade buttons.

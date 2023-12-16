@@ -63,6 +63,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		CombatPatches.Apply(Harmony);
 		MGPatches.Apply(Harmony);
 		RevengeDrivePatches.Apply(Harmony);
+		SecondOpinionsPatches.Apply(Harmony);
 		ShipPatches.Apply(Harmony);
 		StatusMetaPatches.Apply(Harmony);
 		StuffBasePatches.Apply(Harmony);
