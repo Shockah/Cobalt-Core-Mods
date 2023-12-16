@@ -61,6 +61,7 @@ public sealed class StopItCard : Card, IRegisterableCard, IFrogproofCard
 	{
 		var data = base.GetData(state);
 		data.cost = GetCost();
+		data.retain = upgrade == Upgrade.B;
 		return data;
 	}
 
