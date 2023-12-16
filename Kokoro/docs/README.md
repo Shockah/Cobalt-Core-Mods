@@ -8,6 +8,12 @@ Game issues fixed by the mod:
 * X actions not fading out properly when inactive (no vanilla cards do that though, only modded).
 * Statuses sometimes not fitting between Evade buttons.
 
+Modder features:
+* Dev menu now shows card/artifact/status names.
+* Dev menu search for cards/artifacts/statuses is now case-insensitive.
+* The Cards tab of the dev menu now allows choosing the card upgrade.
+* The Cards tab deck filtering now includes modded decks.
+
 APIs available to modders:
 * **Pre-made custom actions**: Immediately exhaust all cards in hand; play a specific card from anywhere; play random cards from anywhere.
 * **Conditional actions**: Actions based on statuses, cards in hand, X values, but also allows creating custom conditions.
@@ -21,7 +27,6 @@ APIs available to modders:
 * **Worm status**: Cancels enemy intents at random on turn start.
 * **Scorching midrow object status**: Scorching midrow objects take damage each turn.
 * Some other generic helpers.
-
 
 ## See also
 * [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fkokoro-1.0.1)
