@@ -2,9 +2,10 @@
 
 # Release notes
 
-## Future release
+## 1.0.1
+Released 15 December 2023.
 
-* Fixed a `StackOverflowException` in serialization after serializing the same type a lot (most likely through `Mutil.DeepCopy`).
+* Fixed a `StackOverflowException` after serializing the same type a lot (most likely through `Mutil.DeepCopy`).
 
 ## 1.0.0
 Released 15 December 2023.
