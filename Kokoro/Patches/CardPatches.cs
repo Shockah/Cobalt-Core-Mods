@@ -1,19 +1,26 @@
 ﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Nanoray.Shrike.Harmony;
+using Microsoft.Xna.Framework;
 using Nanoray.Shrike;
+using Nanoray.Shrike.Harmony;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Reflection;
+using System.Reflection.Emit;
+using static HarmonyLib.Code;
 
 namespace Shockah.Kokoro;
 
 internal static class CardPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
+
+	private static int MakeAllActionIconsCounter = 0;
+	private static int RenderActionCounter = 0;
+	private static int LastRenderActionWidth = 0;
+	private static readonly Stack<Matrix> CardRenderMatrixStack = new();
 
 	public static void Apply(Harmony harmony)
 	{
@@ -26,6 +33,23 @@ internal static class CardPatches
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(typeof(CardPatches), nameof(Card_RenderAction_Prefix))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
+			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_Render_Scale_Transpiler))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.MakeAllActionIcons)),
+			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Scale_Prefix)), priority: Priority.First),
+			finalizer: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Scale_Finalizer)), priority: Priority.Last)
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
+			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_RenderAction_Scale_Prefix)), priority: Priority.First),
+			finalizer: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_RenderAction_Scale_Finalizer)), priority: Priority.Last)
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
@@ -47,6 +71,147 @@ internal static class CardPatches
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetDataWithOverrides)),
 			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_GetDataWithOverrides_Transpiler))
 		);
+	}
+
+	private static void ResetSpriteBatch()
+	{
+		try
+		{
+			Draw.EndAutoBatchFrame();
+			Draw.StartAutoBatchFrame();
+		}
+		catch
+		{
+		}
+	}
+
+	private static IEnumerable<CodeInstruction> Card_Render_Scale_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(
+					ILMatches.Ldloc<CardData>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldfld("description"),
+					ILMatches.Brfalse
+				)
+				.PointerMatcher(SequenceMatcherRelativeElement.Last)
+				.ExtractBranchTarget(out var branchTarget)
+				.Insert(
+					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldarg_1),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_Render_Scale_Transpiler_PushMatrix)))
+				)
+				.ForEach(
+					SequenceMatcherRelativeBounds.After,
+					new[]
+					{
+						ILMatches.LdcI4(51),
+						ILMatches.Instruction(OpCodes.Conv_R8),
+						ILMatches.Instruction(OpCodes.Call)
+					},
+					matcher =>
+					{
+						return matcher
+							.PointerMatcher(SequenceMatcherRelativeElement.Last)
+							.Insert(
+								SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+								new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_Render_Scale_Transpiler_ModifyAvailableWidth)))
+							);
+					},
+					minExpectedOccurences: 2, maxExpectedOccurences: 2
+				)
+				.PointerMatcher(branchTarget)
+				.ExtractLabels(out var labels)
+				.Insert(
+					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_Render_Scale_Transpiler_PopMatrix))).WithLabels(labels)
+				)
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			return instructions;
+		}
+	}
+
+	private static void Card_Render_Scale_Transpiler_PushMatrix(G g)
+	{
+		var box = g.uiStack.TryPeek(out var existingRect) ? existingRect : new();
+		CardRenderMatrixStack.Push(g.mg.cameraMatrix);
+		Vector3 translation = new Vector3((float)box.rect.x + 2f, (float)box.rect.y + 31f, 0f) * g.mg.PIX_SCALE;
+		MG.inst.cameraMatrix *= Matrix.CreateTranslation(-translation);
+		MG.inst.cameraMatrix *= Matrix.CreateScale(1f, 1f, 1f);
+		MG.inst.cameraMatrix *= Matrix.CreateTranslation(translation);
+		ResetSpriteBatch();
+	}
+
+	private static void Card_Render_Scale_Transpiler_PopMatrix()
+	{
+		MG.inst.cameraMatrix = CardRenderMatrixStack.Pop();
+		ResetSpriteBatch();
+	}
+
+	private static double Card_Render_Scale_Transpiler_ModifyAvailableWidth(double width)
+	{
+		width *= 1f;
+		return width;
+	}
+
+	private static void Card_MakeAllActionIcons_Scale_Prefix(G g, ref Matrix __state)
+	{
+		MakeAllActionIconsCounter++;
+		if (MakeAllActionIconsCounter != 1)
+			return;
+		var box = g.uiStack.TryPeek(out var existingRect) ? existingRect : new();
+
+		__state = MG.inst.cameraMatrix;
+		Vector3 translation = new Vector3((float)box.rect.x + 30f, (float)box.rect.y + 50f, 0f) * g.mg.PIX_SCALE;
+		MG.inst.cameraMatrix *= Matrix.CreateTranslation(-translation);
+		MG.inst.cameraMatrix *= Matrix.CreateScale(1f, 1f, 1f);
+		MG.inst.cameraMatrix *= Matrix.CreateTranslation(translation);
+		ResetSpriteBatch();
+	}
+
+	private static void Card_MakeAllActionIcons_Scale_Finalizer(ref Matrix __state)
+	{
+		MakeAllActionIconsCounter--;
+		if (MakeAllActionIconsCounter != 0)
+			return;
+
+		MG.inst.cameraMatrix = __state;
+		ResetSpriteBatch();
+	}
+
+	private static void Card_RenderAction_Scale_Prefix(G g, bool dontDraw, ref Matrix __state)
+	{
+		if (dontDraw)
+			return;
+		RenderActionCounter++;
+		if (RenderActionCounter != 1)
+			return;
+		var box = g.uiStack.TryPeek(out var existingRect) ? existingRect : new();
+
+		__state = MG.inst.cameraMatrix;
+		Vector3 translation = new Vector3((float)box.rect.x + LastRenderActionWidth / 2f, (float)box.rect.y + 4f, 0f) * g.mg.PIX_SCALE;
+		MG.inst.cameraMatrix *= Matrix.CreateTranslation(-translation);
+		MG.inst.cameraMatrix *= Matrix.CreateScale(1f, 1f, 1f);
+		MG.inst.cameraMatrix *= Matrix.CreateTranslation(translation);
+		ResetSpriteBatch();
+	}
+
+	private static void Card_RenderAction_Scale_Finalizer(bool dontDraw, int __result, ref Matrix __state)
+	{
+		LastRenderActionWidth = __result;
+		if (dontDraw)
+			return;
+		RenderActionCounter--;
+		if (RenderActionCounter != 0)
+			return;
+
+		MG.inst.cameraMatrix = __state;
+		ResetSpriteBatch();
 	}
 
 	private static void Card_GetAllTooltips_Postfix(ref IEnumerable<Tooltip> __result)
@@ -91,6 +256,7 @@ internal static class CardPatches
 		__result = (int)position.x - initialX;
 		g.Pop();
 		wrappedAction.disabled = oldActionDisabled;
+
 		return false;
 	}
 
