@@ -81,7 +81,11 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 					);
 
 				if (StateExt.Instance is { } state && state.ship.Get((Status)Instance.SmuggedStatus.Id!.Value) > 0)
-					tooltips.Add(new TTText(string.Format(I18n.SmugStatusOddsDescription, Instance.Api.GetSmugDoubleChance(state, state.ship, null) * 100, Instance.Api.GetSmugBotchChance(state, state.ship, null) * 100)));
+				{
+					double botchChance = Math.Clamp(Instance.Api.GetSmugBotchChance(state, state.ship, null), 0, 1);
+					double doubleChance = Math.Clamp(Instance.Api.GetSmugDoubleChance(state, state.ship, null), 0, 1 - botchChance);
+					tooltips.Add(new TTText(string.Format(I18n.SmugStatusOddsDescription, doubleChance * 100, botchChance * 100)));
+				}
 			}
 		}
 		else if (status == (Status)Instance.BidingTimeStatus.Id!.Value)
