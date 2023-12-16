@@ -37,10 +37,12 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 			Array.Fill(colors, Colors.cheevoGold);
 			return (colors, null);
 		}
+
+		var goodColor = Colors.cheevoGold;
 		if (Instance.Api.IsOversmug(ship))
 		{
-			Array.Fill(colors, Colors.downside);
-			return (colors, null);
+			double f = Math.Sin(Instance.KokoroApi.TotalGameTime.TotalSeconds * Math.PI * 2) * 0.5 + 0.5;
+			goodColor = Color.Lerp(Colors.downside, Colors.white, f);
 		}
 
 		for (int barIndex = 0; barIndex < colors.Length; barIndex++)
@@ -56,7 +58,7 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 			if (smug < 0 && smugIndex >= smug && smugIndex < 0)
 				colors[barIndex] = Colors.downside;
 			else if (smug > 0 && smugIndex <= smug && smugIndex > 0)
-				colors[barIndex] = Colors.cheevoGold;
+				colors[barIndex] = goodColor;
 			else
 				colors[barIndex] = Instance.KokoroApi.DefaultInactiveStatusBarColor;
 		}
