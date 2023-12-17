@@ -4,9 +4,10 @@
 
 ## Future release
 
-* Stop It! B now has Retain.
+* Rebalanced Stop It! and made it uncommon.
+* Humiliating Attack is now common.
 * I'm Trying! now has Frogproof.
-* Harnessing Smugness got rebalanced.
+* Rebalanced Harnessing Smugness.
 * All non-character, non-ephemeral cards are now Frogproof.
 * Changed Oversmug display to be more clear about the current state.
 * Fixed Single Use cards being gone when botched, instead of being discarded.

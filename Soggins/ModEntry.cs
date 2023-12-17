@@ -90,17 +90,20 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		typeof(MineApologyCard),
 		typeof(HealApologyCard),
 	};
-	internal static readonly Type[] CommonCards = new Type[]
+	internal static readonly Type[] StarterCards = new Type[]
 	{
 		typeof(SmugnessControlCard),
 		typeof(PressingButtonsCard),
+	};
+	internal static readonly Type[] CommonCards = new Type[]
+	{
 		typeof(TakeCoverCard),
 		typeof(ZenCard),
 		typeof(MysteriousAmmoCard),
 		typeof(RunningInCirclesCard),
 		typeof(BetterSpaceMineCard),
 		typeof(ThoughtsAndPrayersCard),
-		typeof(StopItCard),
+		typeof(HumiliatingAttackCard),
 	};
 	internal static readonly Type[] UncommonCards = new Type[]
 	{
@@ -109,8 +112,8 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		typeof(BetterThanYouCard),
 		typeof(ImTryingCard),
 		typeof(BlastFromThePastCard),
-		typeof(HumiliatingAttackCard),
 		typeof(BegForMercyCard),
+		typeof(StopItCard),
 	};
 	internal static readonly Type[] RareCards = new Type[]
 	{
@@ -122,7 +125,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	};
 
 	internal static IEnumerable<Type> AllCards
-		=> ApologyCards.Concat(CommonCards).Concat(UncommonCards).Concat(RareCards);
+		=> ApologyCards.Concat(StarterCards).Concat(CommonCards).Concat(UncommonCards).Concat(RareCards);
 
 	internal static readonly Type[] StarterArtifacts = new Type[]
 	{
@@ -525,8 +528,8 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 			globalName: $"{GetType().Namespace}.Character.Soggins",
 			deck: SogginsDeck,
 			charPanelSpr: SogginsCharacterBorder,
-			starterDeck: new Type[] { typeof(SmugnessControlCard), typeof(PressingButtonsCard) },
-			starterArtifacts: new Type[] { typeof(SmugArtifact) },
+			starterDeck: StarterCards,
+			starterArtifacts: StarterArtifacts,
 			neutralAnimation: NeutralPortraitAnimation,
 			miniAnimation: MiniPortraitAnimation
 		);

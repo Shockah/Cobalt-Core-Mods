@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Shockah.Soggins;
 
-[CardMeta(rarity = Rarity.common, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
+[CardMeta(rarity = Rarity.uncommon, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
 public sealed class StopItCard : Card, IRegisterableCard, IFrogproofCard
 {
 	private static ModEntry Instance => ModEntry.Instance;
@@ -33,35 +33,20 @@ public sealed class StopItCard : Card, IRegisterableCard, IFrogproofCard
 		registry.RegisterCard(card);
 	}
 
-	private int GetCost()
-		=> upgrade switch
-		{
-			Upgrade.A => 1,
-			Upgrade.B => 0,
-			_ => 1,
-		};
-
 	private int GetFrogproofing()
 		=> upgrade switch
 		{
-			Upgrade.A => 3,
-			Upgrade.B => 2,
-			_ => 3,
-		};
-
-	private int GetShield()
-		=> upgrade switch
-		{
 			Upgrade.A => 2,
-			Upgrade.B => 0,
+			Upgrade.B => 3,
 			_ => 1,
 		};
 
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.cost = GetCost();
-		data.retain = upgrade == Upgrade.B;
+		data.cost = 0;
+		data.retain = true;
+		data.exhaust = upgrade == Upgrade.B;
 		return data;
 	}
 
@@ -70,12 +55,17 @@ public sealed class StopItCard : Card, IRegisterableCard, IFrogproofCard
 		{
 			Upgrade.B => new()
 			{
+				new ADrawCard
+				{
+					count = 2
+				},
 				new AStatus
 				{
 					status = (Status)Instance.FrogproofingStatus.Id!.Value,
 					statusAmount = GetFrogproofing(),
 					targetPlayer = true
 				},
+				new ADummyAction(),
 				new ADummyAction()
 			},
 			_ => new()
@@ -86,12 +76,7 @@ public sealed class StopItCard : Card, IRegisterableCard, IFrogproofCard
 					statusAmount = GetFrogproofing(),
 					targetPlayer = true
 				},
-				new AStatus
-				{
-					status = Status.shield,
-					statusAmount = GetShield(),
-					targetPlayer = true
-				},
+				new ADummyAction(),
 				new ADummyAction()
 			}
 		};

@@ -76,7 +76,7 @@ internal static class I18n
 	public static string RunningInCirclesCardName => "Running in Circles";
 	public static string BetterSpaceMineCardName => "Better Space Mine";
 	public static string ThoughtsAndPrayersCardName => "Thoughts & Prayers";
-	public static string StopItCardName => "Stop It!";
+	public static string HumiliatingAttackCardName => "Humiliating Attack";
 
 	// uncommon cards
 	public static string HarnessingSmugnessCardName => "Harnessing Smugness";
@@ -87,8 +87,8 @@ internal static class I18n
 	public static string BetterThanYouCardTextB => $"Draw 10 <c={SogginsColor}>Soggins</c> cards.";
 	public static string ImTryingCardName => "I'm Trying!";
 	public static string BlastFromThePastCardName => "Blast from the Past";
-	public static string HumiliatingAttackCardName => "Humiliating Attack";
 	public static string BegForMercyCardName => "Beg for Mercy";
+	public static string StopItCardName => "Stop It!";
 
 	// rare cards
 	public static string ExtraApologyCardName => "Extra Apology";
