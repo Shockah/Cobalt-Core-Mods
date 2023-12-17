@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Future release
+## 1.1.0
+Released 17 December 2023.
 
 * Rebalanced Stop It! and made it uncommon.
 * Humiliating Attack is now common.
