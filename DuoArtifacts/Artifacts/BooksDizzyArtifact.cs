@@ -445,15 +445,13 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			return;
 		if (__instance.upgrade == Upgrade.B)
 			return;
-
-		__result.Insert(0, new ADummyAction());
-		__result.Add(new AHiddenStatus
+		__result.Add(Instance.KokoroApi.Actions.MakeHidden(new AStatus
 		{
 			status = Status.shard,
 			statusAmount = 0,
 			mode = AStatusMode.Set,
 			targetPlayer = true
-		});
+		}));
 	}
 
 	private static void Inverter_GetShieldAmt_Postfix(State s, ref int __result)
@@ -467,15 +465,13 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	{
 		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
-
-		__result.Insert(0, new ADummyAction());
-		__result.Add(new AHiddenStatus
+		__result.Add(Instance.KokoroApi.Actions.MakeHidden(new AStatus
 		{
 			status = Status.shard,
 			statusAmount = 0,
 			mode = AStatusMode.Set,
 			targetPlayer = true
-		});
+		}));
 	}
 
 	private static void Glimmershot_GetShard_Postfix(State s, ref int __result)
@@ -489,14 +485,12 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	{
 		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
-
-		__result.Insert(0, new ADummyAction());
-		__result.Add(new AHiddenStatus
+		__result.Add(Instance.KokoroApi.Actions.MakeHidden(new AStatus
 		{
 			status = Status.shield,
 			statusAmount = 0,
 			mode = AStatusMode.Set,
 			targetPlayer = true
-		});
+		}));
 	}
 }
