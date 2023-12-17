@@ -2,6 +2,11 @@
 
 # Release notes
 
+## 1.1.1
+Released 17 December 2023.
+
+* Fixed a crash when creating a Halfhearted Apology card.
+
 ## 1.1.0
 Released 17 December 2023.
 
