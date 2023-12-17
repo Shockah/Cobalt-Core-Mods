@@ -9,7 +9,7 @@ using System.IO;
 namespace Shockah.Soggins;
 
 [CardMeta(rarity = Rarity.uncommon, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
-public sealed class ImTryingCard : Card, IRegisterableCard
+public sealed class ImTryingCard : Card, IRegisterableCard, IFrogproofCard
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
@@ -58,8 +58,8 @@ public sealed class ImTryingCard : Card, IRegisterableCard
 	private int GetCardsInHandAfterPlaying(Combat combat)
 		=> upgrade switch
 		{
-			Upgrade.B => Math.Min(combat.hand.Count + 1, 10),
-			_ => combat.hand.Count - 1,
+			Upgrade.B => Math.Clamp(combat.hand.Count + 1, 0, 10),
+			_ => Math.Clamp(combat.hand.Count - 1, 0, 10),
 		};
 
 	public override CardData GetData(State state)

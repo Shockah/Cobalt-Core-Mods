@@ -4,9 +4,10 @@
 
 ## Future release
 
-* Stop It! B has now retain.
+* Stop It! B now has Retain.
+* I'm Trying! now has Frogproof.
 * Harnessing Smugness got rebalanced.
-* All non-character, non-ephemeral cards are now frogproof.
+* All non-character, non-ephemeral cards are now Frogproof.
 * Changed Oversmug display to be more clear about the current state.
 * Fixed Single Use cards being gone when botched, instead of being discarded.
 * Frogproof no longer displays on cards in runs where it does not matter.
