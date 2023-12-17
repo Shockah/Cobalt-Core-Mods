@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Future release
+
+* Fixed Shard tooltips not appearing correctly on the latest game beta.
+
 ## 1.0.1
 Released 15 December 2023.
 

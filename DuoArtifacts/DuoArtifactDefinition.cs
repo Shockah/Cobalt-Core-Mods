@@ -10,13 +10,13 @@ public sealed class DuoArtifactDefinition
 
 	public static readonly IReadOnlyList<DuoArtifactDefinition> Definitions = new List<DuoArtifactDefinition>
 	{
-		new(typeof(BooksCatArtifact), new Deck[] { Deck.shard, Deck.catartifact }, I18n.BooksCatArtifactName, I18n.BooksCatArtifactTooltip, "BooksCat", "status.shard"),
-		new(typeof(BooksDizzyArtifact), new Deck[] { Deck.shard, Deck.dizzy }, I18n.BooksDizzyArtifactName, I18n.BooksDizzyArtifactTooltip, "BooksDizzy", "status.shieldAlt", "status.shard"),
-		new(typeof(BooksDrakeArtifact), new Deck[] { Deck.shard, Deck.eunice }, I18n.BooksDrakeArtifactName, I18n.BooksDrakeArtifactTooltip, "BooksDrake", "status.shard", "action.attackPiercing", "action.stun", "action.stunShip"),
-		new(typeof(BooksIsaacArtifact), new Deck[] { Deck.shard, Deck.goat }, I18n.BooksIsaacArtifactName, I18n.BooksIsaacArtifactTooltip, "BooksIsaac", "status.shard"),
-		new(typeof(BooksMaxArtifact), new Deck[] { Deck.shard, Deck.hacker }, I18n.BooksMaxArtifactName, I18n.BooksMaxArtifactTooltip, "BooksMax", "cardtrait.exhaust", "status.shard"),
-		new(typeof(BooksPeriArtifact), new Deck[] { Deck.shard, Deck.peri }, I18n.BooksPeriArtifactName, I18n.BooksPeriArtifactTooltip, "BooksPeri", "status.shard"),
-		new(typeof(BooksRiggsArtifact), new Deck[] { Deck.shard, Deck.riggs }, I18n.BooksRiggsArtifactName, I18n.BooksRiggsArtifactTooltip, "BooksRiggs", new TTGlossary("status.hermes", 1), "status.shard"),
+		new(typeof(BooksCatArtifact), new Deck[] { Deck.shard, Deck.catartifact }, I18n.BooksCatArtifactName, I18n.BooksCatArtifactTooltip, "BooksCat", DefinitionTooltip.Shard),
+		new(typeof(BooksDizzyArtifact), new Deck[] { Deck.shard, Deck.dizzy }, I18n.BooksDizzyArtifactName, I18n.BooksDizzyArtifactTooltip, "BooksDizzy", "status.shieldAlt", DefinitionTooltip.Shard),
+		new(typeof(BooksDrakeArtifact), new Deck[] { Deck.shard, Deck.eunice }, I18n.BooksDrakeArtifactName, I18n.BooksDrakeArtifactTooltip, "BooksDrake", DefinitionTooltip.Shard, "action.attackPiercing", "action.stun", "action.stunShip"),
+		new(typeof(BooksIsaacArtifact), new Deck[] { Deck.shard, Deck.goat }, I18n.BooksIsaacArtifactName, I18n.BooksIsaacArtifactTooltip, "BooksIsaac", DefinitionTooltip.Shard),
+		new(typeof(BooksMaxArtifact), new Deck[] { Deck.shard, Deck.hacker }, I18n.BooksMaxArtifactName, I18n.BooksMaxArtifactTooltip, "BooksMax", "cardtrait.exhaust", DefinitionTooltip.Shard),
+		new(typeof(BooksPeriArtifact), new Deck[] { Deck.shard, Deck.peri }, I18n.BooksPeriArtifactName, I18n.BooksPeriArtifactTooltip, "BooksPeri", DefinitionTooltip.Shard),
+		new(typeof(BooksRiggsArtifact), new Deck[] { Deck.shard, Deck.riggs }, I18n.BooksRiggsArtifactName, I18n.BooksRiggsArtifactTooltip, "BooksRiggs", new TTGlossary("status.hermes", 1), DefinitionTooltip.Shard),
 		new(typeof(CatDizzyArtifact), new Deck[] { Deck.catartifact, Deck.dizzy }, I18n.CatDizzyArtifactName, I18n.CatDizzyArtifactTooltip, "CatDizzy", "status.shieldAlt", "status.perfectShield", I18n.MaxShieldLowerAltGlossary),
 		new(typeof(CatDrakeArtifact), new Deck[] { Deck.catartifact, Deck.eunice }, I18n.CatDrakeArtifactName, I18n.CatDrakeArtifactTooltip, "CatDrake", "status.serenity", "status.timeStop"),
 		new(typeof(CatIsaacArtifact), new Deck[] { Deck.catartifact, Deck.goat }, I18n.CatIsaacArtifactName, I18n.CatIsaacArtifactTooltip, "CatIsaac", "action.spawn"),
@@ -76,6 +76,15 @@ public sealed class DuoArtifactDefinition
 
 	public sealed class DefinitionTooltip
 	{
+		public static DefinitionTooltip Shard
+			=> new(() =>
+			{
+				var maxAmount = (StateExt.Instance ?? DB.fakeState).ship.Get(Status.maxShard);
+				if (maxAmount == 0)
+					maxAmount = 3;
+				return new TTGlossary($"status.{Status.shard.Key()}", maxAmount);
+			});
+
 		private readonly Func<Tooltip> TooltipFactory;
 
 		public DefinitionTooltip(Func<DefinitionTooltip> lazyFunction)
@@ -86,6 +95,17 @@ public sealed class DuoArtifactDefinition
 		public DefinitionTooltip(Tooltip tooltip)
 		{
 			this.TooltipFactory = () => tooltip;
+		}
+
+		public DefinitionTooltip(Status status, int @default)
+		{
+			this.TooltipFactory = () =>
+			{
+				var amount = (StateExt.Instance ?? DB.fakeState).ship.Get(status);
+				if (amount == 0)
+					amount = @default;
+				return new TTGlossary($"status.{status.Key()}", amount);
+			};
 		}
 
 		public DefinitionTooltip(string glossaryKey) : this(new TTGlossary(glossaryKey)) { }
