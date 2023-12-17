@@ -131,7 +131,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 		if (frogproofType == FrogproofType.None)
 			return;
 		// state is usually DB.fakeState here; use g.state instead
-		if (frogproofType == FrogproofType.InnateHiddenIfNotNeeded && !Instance.KokoroApi.ObtainExtensionData<bool>(g.state, IsRunWithSmugKey))
+		if (frogproofType == FrogproofType.InnateHiddenIfNotNeeded && (g.state.IsOutsideRun() || !Instance.KokoroApi.ObtainExtensionData<bool>(g.state, IsRunWithSmugKey)))
 			return;
 		Draw.Sprite((Spr)Instance.FrogproofSprite.Id!.Value, vec.x, vec.y - 8 * cardTraitIndex++);
 	}
@@ -145,7 +145,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 		if (frogproofType == FrogproofType.None)
 			return;
 		// state is usually DB.fakeState here; use StateExt.Instance instead
-		if (frogproofType == FrogproofType.InnateHiddenIfNotNeeded && !Instance.KokoroApi.ObtainExtensionData<bool>(StateExt.Instance ?? s, IsRunWithSmugKey))
+		if (frogproofType == FrogproofType.InnateHiddenIfNotNeeded && ((StateExt.Instance ?? s).IsOutsideRun() || !Instance.KokoroApi.ObtainExtensionData<bool>(StateExt.Instance ?? s, IsRunWithSmugKey)))
 			return;
 
 		static IEnumerable<Tooltip> ModifyTooltips(IEnumerable<Tooltip> tooltips)
