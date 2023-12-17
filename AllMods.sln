@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DuoArtifacts", "DuoArtifact
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soggins", "Soggins\Soggins.csproj", "{E363F17F-C5F1-4594-AD2F-6204FCDDE6C5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatDiscordBotDataExport", "CatDiscordBotDataExport\CatDiscordBotDataExport.csproj", "{913C861C-F21E-4A8D-8651-EE96F97BFC60}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dracula", "Dracula\Dracula.csproj", "{5820F297-795C-414F-9D2D-6B401165828B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Johnson", "Johnson\Johnson.csproj", "{1455E3E8-CAF2-4CF5-ACFE-951CEC4D1EB4}"
@@ -92,6 +94,10 @@ Global
 		{E363F17F-C5F1-4594-AD2F-6204FCDDE6C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E363F17F-C5F1-4594-AD2F-6204FCDDE6C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E363F17F-C5F1-4594-AD2F-6204FCDDE6C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{913C861C-F21E-4A8D-8651-EE96F97BFC60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{913C861C-F21E-4A8D-8651-EE96F97BFC60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{913C861C-F21E-4A8D-8651-EE96F97BFC60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{913C861C-F21E-4A8D-8651-EE96F97BFC60}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5820F297-795C-414F-9D2D-6B401165828B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5820F297-795C-414F-9D2D-6B401165828B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5820F297-795C-414F-9D2D-6B401165828B}.Release|Any CPU.ActiveCfg = Release|Any CPU
