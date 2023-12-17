@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using static HarmonyLib.Code;
 
 namespace Shockah.Kokoro;
 
@@ -20,7 +19,8 @@ internal static class CardPatches
 	private static int MakeAllActionIconsCounter = 0;
 	private static int RenderActionCounter = 0;
 	private static int LastRenderActionWidth = 0;
-	private static readonly Stack<Matrix> CardRenderMatrixStack = new();
+	private static List<CardAction>? LastCardActions = null;
+	private static readonly Stack<Matrix?> CardRenderMatrixStack = new();
 
 	public static void Apply(Harmony harmony)
 	{
@@ -31,25 +31,25 @@ internal static class CardPatches
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
+			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_Render_Transpiler))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.MakeAllActionIcons)),
+			finalizer: new HarmonyMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Finalizer)),
+			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Transpiler))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(typeof(CardPatches), nameof(Card_RenderAction_Prefix))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
-			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_Render_Scale_Transpiler))
-		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.MakeAllActionIcons)),
-			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Scale_Prefix)), priority: Priority.First),
-			finalizer: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Scale_Finalizer)), priority: Priority.Last)
-		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
-			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_RenderAction_Scale_Prefix)), priority: Priority.First),
-			finalizer: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_RenderAction_Scale_Finalizer)), priority: Priority.Last)
+			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_RenderAction_Prefix_First)), priority: Priority.First),
+			finalizer: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_RenderAction_Finalizer_Last)), priority: Priority.Last)
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
@@ -85,10 +85,17 @@ internal static class CardPatches
 		}
 	}
 
-	private static IEnumerable<CodeInstruction> Card_Render_Scale_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	private static void Card_GetAllTooltips_Postfix(ref IEnumerable<Tooltip> __result)
+	{
+		__result = Instance.WormStatusManager.ModifyCardTooltips(__result);
+	}
+
+	private static IEnumerable<CodeInstruction> Card_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
 		try
 		{
+			var modifiedScaleLocal = il.DeclareLocal(typeof(Vec));
+
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
 					ILMatches.Ldloc<CardData>(originalMethod.GetMethodBody()!.LocalVariables),
@@ -99,8 +106,10 @@ internal static class CardPatches
 				.ExtractBranchTarget(out var branchTarget)
 				.Insert(
 					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Ldarg_1),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_Render_Scale_Transpiler_PushMatrix)))
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_Render_Transpiler_PushMatrix))),
+					new CodeInstruction(OpCodes.Stloc, modifiedScaleLocal)
 				)
 				.ForEach(
 					SequenceMatcherRelativeBounds.After,
@@ -116,7 +125,8 @@ internal static class CardPatches
 							.PointerMatcher(SequenceMatcherRelativeElement.Last)
 							.Insert(
 								SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-								new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_Render_Scale_Transpiler_ModifyAvailableWidth)))
+								new CodeInstruction(OpCodes.Ldloc, modifiedScaleLocal),
+								new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_Render_Transpiler_ModifyAvailableWidth)))
 							);
 					},
 					minExpectedOccurences: 2, maxExpectedOccurences: 2
@@ -125,7 +135,7 @@ internal static class CardPatches
 				.ExtractLabels(out var labels)
 				.Insert(
 					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_Render_Scale_Transpiler_PopMatrix))).WithLabels(labels)
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_Render_Transpiler_PopMatrix))).WithLabels(labels)
 				)
 				.AllElements();
 		}
@@ -136,87 +146,108 @@ internal static class CardPatches
 		}
 	}
 
-	private static void Card_Render_Scale_Transpiler_PushMatrix(G g)
+	private static Vec Card_Render_Transpiler_PushMatrix(Card card, G g)
 	{
-		var box = g.uiStack.TryPeek(out var existingRect) ? existingRect : new();
+		var modifiedScale = Instance.CardRenderManager.ModifyTextCardScale(g, card);
+		if (modifiedScale.x == 1 && modifiedScale.y == 1)
+		{
+			CardRenderMatrixStack.Push(null);
+			return modifiedScale;
+		}
+
 		CardRenderMatrixStack.Push(g.mg.cameraMatrix);
+		var box = g.uiStack.TryPeek(out var existingRect) ? existingRect : new();
 		Vector3 translation = new Vector3((float)box.rect.x + 2f, (float)box.rect.y + 31f, 0f) * g.mg.PIX_SCALE;
 		MG.inst.cameraMatrix *= Matrix.CreateTranslation(-translation);
-		MG.inst.cameraMatrix *= Matrix.CreateScale(1f, 1f, 1f);
+		MG.inst.cameraMatrix *= Matrix.CreateScale((float)modifiedScale.x, (float)modifiedScale.y, 1f);
 		MG.inst.cameraMatrix *= Matrix.CreateTranslation(translation);
 		ResetSpriteBatch();
+		return modifiedScale;
 	}
 
-	private static void Card_Render_Scale_Transpiler_PopMatrix()
+	private static void Card_Render_Transpiler_PopMatrix()
 	{
-		MG.inst.cameraMatrix = CardRenderMatrixStack.Pop();
+		var matrix = CardRenderMatrixStack.Pop();
+		if (matrix is null)
+			return;
+		MG.inst.cameraMatrix = matrix.Value;
 		ResetSpriteBatch();
 	}
 
-	private static double Card_Render_Scale_Transpiler_ModifyAvailableWidth(double width)
+	private static double Card_Render_Transpiler_ModifyAvailableWidth(double width, Vec modifiedScale)
+		=> width / modifiedScale.x;
+
+	private static IEnumerable<CodeInstruction> Card_MakeAllActionIcons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
-		width *= 1f;
-		return width;
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(
+					ILMatches.Call("GetActionsOverridden"),
+					ILMatches.Stloc<List<CardAction>>(originalMethod.GetMethodBody()!.LocalVariables)
+				)
+				.PointerMatcher(SequenceMatcherRelativeElement.Last)
+				.CreateLdlocInstruction(out var ldlocActions)
+				.Find(
+					ILMatches.Call("CharacterIsMissing"),
+					ILMatches.Brfalse,
+					ILMatches.Instruction(OpCodes.Ret)
+				)
+				.PointerMatcher(SequenceMatcherRelativeElement.AfterLast)
+				.ExtractLabels(out var labels)
+				.Insert(
+					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
+					new CodeInstruction(OpCodes.Ldarg_1),
+					ldlocActions,
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Transpiler_PushMatrix)))
+				)
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			return instructions;
+		}
 	}
 
-	private static void Card_MakeAllActionIcons_Scale_Prefix(G g, ref Matrix __state)
+	private static void Card_MakeAllActionIcons_Transpiler_PushMatrix(Card card, G g, List<CardAction> actions)
 	{
 		MakeAllActionIconsCounter++;
 		if (MakeAllActionIconsCounter != 1)
 			return;
-		var box = g.uiStack.TryPeek(out var existingRect) ? existingRect : new();
 
-		__state = MG.inst.cameraMatrix;
+		CardRenderMatrixStack.Push(g.mg.cameraMatrix);
+		LastCardActions = actions;
+
+		var modifiedMatrix = Instance.CardRenderManager.ModifyNonTextCardRenderMatrix(g, card, actions);
+		if (modifiedMatrix.Equals(Matrix.Identity))
+		{
+			CardRenderMatrixStack.Push(null);
+			return;
+		}
+
+		CardRenderMatrixStack.Push(g.mg.cameraMatrix);
+		var box = g.uiStack.TryPeek(out var existingRect) ? existingRect : new();
 		Vector3 translation = new Vector3((float)box.rect.x + 30f, (float)box.rect.y + 50f, 0f) * g.mg.PIX_SCALE;
 		MG.inst.cameraMatrix *= Matrix.CreateTranslation(-translation);
-		MG.inst.cameraMatrix *= Matrix.CreateScale(1f, 1f, 1f);
+		MG.inst.cameraMatrix *= modifiedMatrix;
 		MG.inst.cameraMatrix *= Matrix.CreateTranslation(translation);
 		ResetSpriteBatch();
 	}
 
-	private static void Card_MakeAllActionIcons_Scale_Finalizer(ref Matrix __state)
+	private static void Card_MakeAllActionIcons_Finalizer()
 	{
 		MakeAllActionIconsCounter--;
 		if (MakeAllActionIconsCounter != 0)
 			return;
+		LastCardActions = null;
 
-		MG.inst.cameraMatrix = __state;
+		var matrix = CardRenderMatrixStack.Pop();
+		if (matrix is null)
+			return;
+		MG.inst.cameraMatrix = matrix.Value;
 		ResetSpriteBatch();
-	}
-
-	private static void Card_RenderAction_Scale_Prefix(G g, bool dontDraw, ref Matrix __state)
-	{
-		if (dontDraw)
-			return;
-		RenderActionCounter++;
-		if (RenderActionCounter != 1)
-			return;
-		var box = g.uiStack.TryPeek(out var existingRect) ? existingRect : new();
-
-		__state = MG.inst.cameraMatrix;
-		Vector3 translation = new Vector3((float)box.rect.x + LastRenderActionWidth / 2f, (float)box.rect.y + 4f, 0f) * g.mg.PIX_SCALE;
-		MG.inst.cameraMatrix *= Matrix.CreateTranslation(-translation);
-		MG.inst.cameraMatrix *= Matrix.CreateScale(1f, 1f, 1f);
-		MG.inst.cameraMatrix *= Matrix.CreateTranslation(translation);
-		ResetSpriteBatch();
-	}
-
-	private static void Card_RenderAction_Scale_Finalizer(bool dontDraw, int __result, ref Matrix __state)
-	{
-		LastRenderActionWidth = __result;
-		if (dontDraw)
-			return;
-		RenderActionCounter--;
-		if (RenderActionCounter != 0)
-			return;
-
-		MG.inst.cameraMatrix = __state;
-		ResetSpriteBatch();
-	}
-
-	private static void Card_GetAllTooltips_Postfix(ref IEnumerable<Tooltip> __result)
-	{
-		__result = Instance.WormStatusManager.ModifyCardTooltips(__result);
 	}
 
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
@@ -258,6 +289,46 @@ internal static class CardPatches
 		wrappedAction.disabled = oldActionDisabled;
 
 		return false;
+	}
+
+	private static void Card_RenderAction_Prefix_First(Card __instance, G g, CardAction action, bool dontDraw)
+	{
+		if (dontDraw)
+			return;
+		RenderActionCounter++;
+		if (RenderActionCounter != 1)
+			return;
+
+		var modifiedMatrix = LastCardActions is null ? Matrix.Identity : Instance.CardRenderManager.ModifyCardActionRenderMatrix(g, __instance, LastCardActions, action, LastRenderActionWidth);
+		if (modifiedMatrix.Equals(Matrix.Identity))
+		{
+			CardRenderMatrixStack.Push(null);
+			return;
+		}
+
+		CardRenderMatrixStack.Push(modifiedMatrix);
+		var box = g.uiStack.TryPeek(out var existingRect) ? existingRect : new();
+		Vector3 translation = new Vector3((float)box.rect.x + LastRenderActionWidth / 2f, (float)box.rect.y + 4f, 0f) * g.mg.PIX_SCALE;
+		MG.inst.cameraMatrix *= Matrix.CreateTranslation(-translation);
+		MG.inst.cameraMatrix *= modifiedMatrix;
+		MG.inst.cameraMatrix *= Matrix.CreateTranslation(translation);
+		ResetSpriteBatch();
+	}
+
+	private static void Card_RenderAction_Finalizer_Last(bool dontDraw, int __result)
+	{
+		LastRenderActionWidth = __result;
+		if (dontDraw)
+			return;
+		RenderActionCounter--;
+		if (RenderActionCounter != 0)
+			return;
+
+		var matrix = CardRenderMatrixStack.Pop();
+		if (matrix is null)
+			return;
+		MG.inst.cameraMatrix = matrix.Value;
+		ResetSpriteBatch();
 	}
 
 	private static IEnumerable<CodeInstruction> Card_RenderAction_IconAndOrNumber_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)

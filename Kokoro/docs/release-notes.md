@@ -6,6 +6,7 @@
 
 * For players: Fixed the Second Opinions card not working with modded characters.
 * For players and modders: Added conditional action tooltips.
+* For modders: Added card rendering hooks: modify how cards are rendered -- scale card text, move/scale/rotate actions.
 
 ## 1.0.1
 Released 15 December 2023.

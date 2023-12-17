@@ -19,6 +19,7 @@ APIs available to modders:
 * **Conditional actions**: Actions based on statuses, cards in hand, X values, but also allows creating custom conditions.
 * **Extension data**: Allows storing and persisting arbitrary data on any game objects, including but not limited to `Combat`, `State` or `StuffBase`.
 * **API proxy extensions**: Allows proxying any object to any interface, which for example can be used to simulate custom artifact hooks.
+* **Card rendering hooks**: Modify how cards are rendered -- scale card text, move/scale/rotate actions.
 * **Status rendering hooks**: Show/hide statuses anytime, render a status as bars (like Shards), customize status bar rendering, override status tooltips.
 * **Status logic hooks**: Control status state modification -- freeze a status, clamp it to certain values, make a status not be affected by Boost, etc.
 * **Artifact icon rendering hook**: Allows custom overlays other than numbers.

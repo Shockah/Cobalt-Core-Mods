@@ -187,6 +187,14 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 		=> Instance.ArtifactIconManager.Unregister(hook);
 	#endregion
 
+	#region CardRenderHook
+	public void RegisterCardRenderHook(ICardRenderHook hook, double priority)
+		=> Instance.CardRenderManager.Register(hook, priority);
+
+	public void UnregisterCardRenderHook(ICardRenderHook hook)
+		=> Instance.CardRenderManager.Unregister(hook);
+	#endregion
+
 	#region StatusRenderHook
 	public void RegisterStatusRenderHook(IStatusRenderHook hook, double priority)
 		=> Instance.StatusRenderManager.Register(hook, priority);
