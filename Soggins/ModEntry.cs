@@ -56,7 +56,6 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal ExternalSprite DoubleTimeStatusSprite { get; private set; } = null!;
 	internal ExternalSprite DoublersLuckStatusSprite { get; private set; } = null!;
 
-	internal ExternalStatus SmuggedStatus { get; private set; } = null!;
 	internal ExternalStatus SmugStatus { get; private set; } = null!;
 	internal ExternalStatus FrogproofingStatus { get; private set; } = null!;
 	internal ExternalStatus BotchesStatus { get; private set; } = null!;
@@ -163,7 +162,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 		KokoroApi.RegisterTypeForExtensionData(typeof(State));
-		KokoroApi.RegisterTypeForExtensionData(typeof(Combat));
+		KokoroApi.RegisterTypeForExtensionData(typeof(Ship));
 		DuoArtifactsApi = contact.LoadedManifests.Any(m => m.Name == "Shockah.DuoArtifacts") ? contact.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts") : null;
 		Api = new();
 
@@ -319,18 +318,6 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 
 	public void LoadManifest(IStatusRegistry registry)
 	{
-		{
-			SmuggedStatus = new(
-				$"{typeof(ModEntry).Namespace}.Status.Smugged",
-				isGood: false,
-				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF000000)),
-				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF000000)),
-				SmugStatusSprite,
-				affectedByTimestop: false
-			);
-			SmuggedStatus.AddLocalisation("<implementation details>", "<implementation details>");
-			registry.RegisterStatus(SmuggedStatus);
-		}
 		{
 			SmugStatus = new(
 				$"{typeof(ModEntry).Namespace}.Status.Smug",

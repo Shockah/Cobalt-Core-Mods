@@ -19,9 +19,6 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 			yield return (Status: (Status)Instance.SmugStatus.Id!.Value, Priority: 10);
 	}
 
-	public bool? ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)
-		=> status == (Status)Instance.SmuggedStatus.Id!.Value ? false : null;
-
 	public bool? ShouldOverrideStatusRenderingAsBars(State state, Combat combat, Ship ship, Status status, int amount)
 		=> status == (Status)Instance.SmugStatus.Id!.Value || status == (Status)Instance.DoubleTimeStatus.Id!.Value ? true : null;
 
@@ -80,7 +77,7 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 						() => I18n.SmugStatusLongDescription
 					);
 
-				if (StateExt.Instance is { } state && state.ship.Get((Status)Instance.SmuggedStatus.Id!.Value) > 0)
+				if (StateExt.Instance is { } state)
 				{
 					double botchChance = Math.Clamp(Instance.Api.GetSmugBotchChance(state, state.ship, null), 0, 1);
 					double doubleChance = Math.Clamp(Instance.Api.GetSmugDoubleChance(state, state.ship, null), 0, 1 - botchChance);

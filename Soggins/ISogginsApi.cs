@@ -12,6 +12,8 @@ public interface ISogginsApi
 	ExternalStatus SmugStatus { get; }
 	Tooltip GetSmugTooltip();
 	Tooltip GetSmugTooltip(State state, Ship ship);
+	bool IsSmugEnabled(Ship ship);
+	void SetSmugEnabled(Ship ship, bool enabled = true);
 	int GetMinSmug(Ship ship);
 	int GetMaxSmug(Ship ship);
 	int? GetSmug(Ship ship);

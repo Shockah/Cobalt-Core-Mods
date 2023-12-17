@@ -4,6 +4,8 @@ namespace Shockah.Soggins;
 
 public sealed class ApiImplementation : ISogginsApi
 {
+	private const string IsSmugEnabledKey = "IsSmugEnabled";
+
 	private static ModEntry Instance => ModEntry.Instance;
 
 	public Tooltip FrogproofCardTraitTooltip
@@ -24,6 +26,12 @@ public sealed class ApiImplementation : ISogginsApi
 	public Tooltip GetSmugTooltip(State state, Ship ship)
 		=> GetSmugTooltip();
 
+	public bool IsSmugEnabled(Ship ship)
+		=> Instance.KokoroApi.TryGetExtensionData(ship, IsSmugEnabledKey, out bool value) && value;
+
+	public void SetSmugEnabled(Ship ship, bool enabled = true)
+		=> Instance.KokoroApi.SetExtensionData(ship, IsSmugEnabledKey, enabled);
+
 	public int GetMinSmug(Ship ship)
 		=> -Constants.BotchChances.Length / 2;
 
@@ -32,7 +40,7 @@ public sealed class ApiImplementation : ISogginsApi
 
 	public int? GetSmug(Ship ship)
 	{
-		if (ship.Get((Status)Instance.SmuggedStatus.Id!.Value) <= 0)
+		if (!IsSmugEnabled(ship))
 			return null;
 		return ship.Get((Status)Instance.SmugStatus.Id!.Value);
 	}

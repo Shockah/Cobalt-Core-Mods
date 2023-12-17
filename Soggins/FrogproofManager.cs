@@ -173,8 +173,9 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 	{
 		if (StateExt.Instance is not { } state || state.ship != __instance)
 			return;
-		if (status != (Status)Instance.SmuggedStatus.Id!.Value)
+		if (n == 0)
 			return;
+		Instance.Api.SetSmugEnabled(__instance);
 		Instance.KokoroApi.SetExtensionData(state, IsRunWithSmugKey, n > 0);
 	}
 
