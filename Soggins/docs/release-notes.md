@@ -11,6 +11,7 @@
 * Fixed Single Use cards being gone when botched, instead of being discarded.
 * Frogproof no longer displays on cards in runs where it does not matter.
 * The double odds now take into account botch odds (as botch can't be avoided by stacking the double chance).
+* Fixed Shard tooltip on the Books duo artifact not appearing correctly on the latest game beta.
 
 ## 1.0.1
 Released 15 December 2023.

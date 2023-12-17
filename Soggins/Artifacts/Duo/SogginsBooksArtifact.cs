@@ -42,8 +42,12 @@ public sealed class SogginsBooksArtifact : Artifact, IRegisterableArtifact
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
+		var maxShardAmount = (StateExt.Instance ?? DB.fakeState).ship.Get(Status.maxShard);
+		if (maxShardAmount == 0)
+			maxShardAmount = 3;
+
 		var tooltips = base.GetExtraTooltips() ?? new();
-		tooltips.Add(new TTGlossary("status.shard"));
+		tooltips.Add(new TTGlossary($"status.{Status.shard.Key()}", maxShardAmount));
 		tooltips.Add(new TTCard { card = Instance.Api.MakePlaceholderApology() });
 		return tooltips;
 	}
