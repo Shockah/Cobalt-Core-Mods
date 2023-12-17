@@ -7,6 +7,7 @@ Released 17 December 2023.
 
 * For players: Fixed the Second Opinions card not working with modded characters.
 * For players and modders: Added conditional action tooltips.
+* For modders: Dev menu improvements.
 * For modders: Wrapped action API, allowing the game to handle wrapped actions properly, for example flipping move actions correctly.
 * For modders: Added hidden actions.
 * For modders: Added card rendering hooks: modify how cards are rendered -- scale card text, move/scale/rotate actions.
