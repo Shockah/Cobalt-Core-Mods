@@ -432,7 +432,7 @@ internal static class CardPatches
 	}
 
 	private static List<CardAction> Card_GetActionsOverridden_Transpiler_UnwrapActions(List<CardAction> actions)
-		=> actions.SelectMany(a => a.GetWrappedCardActionsRecursively()).ToList();
+		=> actions.SelectMany(Instance.WrappedActionManager.GetWrappedCardActionsRecursively).ToList();
 
 	private static IEnumerable<CodeInstruction> Card_GetDataWithOverrides_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
@@ -459,5 +459,5 @@ internal static class CardPatches
 	}
 
 	private static List<CardAction> Card_GetDataWithOverrides_Transpiler_UnwrapActions(List<CardAction> actions)
-		=> actions.SelectMany(a => a.GetWrappedCardActionsRecursively()).ToList();
+		=> actions.SelectMany(Instance.WrappedActionManager.GetWrappedCardActionsRecursively).ToList();
 }

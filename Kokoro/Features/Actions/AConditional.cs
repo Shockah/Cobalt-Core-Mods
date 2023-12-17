@@ -2,7 +2,7 @@
 
 namespace Shockah.Kokoro;
 
-public sealed class AConditional : CardAction, ICardActionWrapper
+public sealed class AConditional : CardAction
 {
 	public IKokoroApi.IConditionalActionApi.IBoolExpression? Expression;
 	public CardAction? Action;
@@ -40,11 +40,5 @@ public sealed class AConditional : CardAction, ICardActionWrapper
 		if (Action is not null)
 			tooltips.AddRange(Action.GetTooltips(s));
 		return tooltips;
-	}
-
-	public IEnumerable<CardAction> GetWrappedCardActions()
-	{
-		if (Action is not null)
-			yield return Action;
 	}
 }

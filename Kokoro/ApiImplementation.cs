@@ -230,6 +230,18 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 
 		public CardAction MakePlayRandomCardsFromAnywhere(IEnumerable<int> cardIds, int amount = 1, bool showTheCardIfNotInHand = true)
 			=> new APlayRandomCardsFromAnywhere { CardIds = cardIds.ToHashSet(), Amount = amount, ShowTheCardIfNotInHand = showTheCardIfNotInHand };
+
+		public List<CardAction> GetWrappedCardActions(CardAction action)
+			=> Instance.WrappedActionManager.GetWrappedCardActions(action).ToList();
+
+		public List<CardAction> GetWrappedCardActionsRecursively(CardAction action)
+			=> Instance.WrappedActionManager.GetWrappedCardActionsRecursively(action).ToList();
+
+		public void RegisterWrappedActionHook(IWrappedActionHook hook, double priority)
+			=> Instance.WrappedActionManager.Register(hook, priority);
+
+		public void UnregisterWrappedActionHook(IWrappedActionHook hook)
+			=> Instance.WrappedActionManager.Unregister(hook);
 	}
 	#endregion
 

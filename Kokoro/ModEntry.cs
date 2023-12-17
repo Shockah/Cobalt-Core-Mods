@@ -37,6 +37,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	public StatusRenderManager StatusRenderManager { get; private init; } = new();
 	public StatusLogicManager StatusLogicManager { get; private init; } = new();
 	public CardRenderManager CardRenderManager { get; private init; } = new();
+	public WrappedActionManager WrappedActionManager { get; private init; } = new();
 	public MidrowScorchingManager MidrowScorchingManager { get; private init; } = new();
 	public WormStatusManager WormStatusManager { get; private init; } = new();
 	public OxidationStatusManager OxidationStatusManager { get; private init; } = new();

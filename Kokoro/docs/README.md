@@ -16,6 +16,7 @@ Modder features:
 
 APIs available to modders:
 * **Pre-made custom actions**: Immediately exhaust all cards in hand; play a specific card from anywhere; play random cards from anywhere.
+* **Wrapped action API**: Register wrapped actions, allowing the game to handle them properly, for example flipping move actions correctly.
 * **Conditional actions**: Actions based on statuses, cards in hand, X values, but also allows creating custom conditions.
 * **Extension data**: Allows storing and persisting arbitrary data on any game objects, including but not limited to `Combat`, `State` or `StuffBase`.
 * **API proxy extensions**: Allows proxying any object to any interface, which for example can be used to simulate custom artifact hooks.
