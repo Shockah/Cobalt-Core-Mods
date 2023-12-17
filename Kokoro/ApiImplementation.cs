@@ -231,6 +231,9 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 		public CardAction MakePlayRandomCardsFromAnywhere(IEnumerable<int> cardIds, int amount = 1, bool showTheCardIfNotInHand = true)
 			=> new APlayRandomCardsFromAnywhere { CardIds = cardIds.ToHashSet(), Amount = amount, ShowTheCardIfNotInHand = showTheCardIfNotInHand };
 
+		public CardAction MakeHidden(CardAction action, bool showTooltips = false)
+			=> new AHidden { Action = action, ShowTooltips = showTooltips };
+
 		public List<CardAction> GetWrappedCardActions(CardAction action)
 			=> Instance.WrappedActionManager.GetWrappedCardActions(action).ToList();
 

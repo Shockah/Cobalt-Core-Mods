@@ -8,6 +8,7 @@ public sealed class WrappedActionManager : HookManager<IWrappedActionHook>
 	internal WrappedActionManager() : base()
 	{
 		Register(ConditionalActionWrappedActionHook.Instance, 0);
+		Register(HiddenActionWrappedActionHook.Instance, 0);
 	}
 
 	public IEnumerable<CardAction> GetWrappedCardActions(CardAction action)
@@ -53,6 +54,22 @@ public sealed class ConditionalActionWrappedActionHook : IWrappedActionHook
 		if (action is not AConditional conditional)
 			return null;
 		if (conditional.Action is not { } wrappedAction)
+			return null;
+		return new() { wrappedAction };
+	}
+}
+
+public sealed class HiddenActionWrappedActionHook : IWrappedActionHook
+{
+	public static HiddenActionWrappedActionHook Instance { get; private set; } = new();
+
+	private HiddenActionWrappedActionHook() { }
+
+	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	{
+		if (action is not AHidden hidden)
+			return null;
+		if (hidden.Action is not { } wrappedAction)
 			return null;
 		return new() { wrappedAction };
 	}

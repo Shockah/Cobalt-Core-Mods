@@ -177,17 +177,20 @@ internal static class CardPatches
 	private static double Card_Render_Transpiler_ModifyAvailableWidth(double width, Vec modifiedScale)
 		=> width / modifiedScale.x;
 
-	private static IEnumerable<CodeInstruction> Card_MakeAllActionIcons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	private static IEnumerable<CodeInstruction> Card_MakeAllActionIcons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
 		try
 		{
+			var actionsOverriddenLocal = il.DeclareLocal(typeof(List<CardAction>));
+
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
-					ILMatches.Call("GetActionsOverridden"),
-					ILMatches.Stloc<List<CardAction>>(originalMethod.GetMethodBody()!.LocalVariables)
+				.Find(ILMatches.Call("GetActionsOverridden"))
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Transpiler_ModifyActions))),
+					new CodeInstruction(OpCodes.Dup),
+					new CodeInstruction(OpCodes.Stloc, actionsOverriddenLocal)
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.Last)
-				.CreateLdlocInstruction(out var ldlocActions)
 				.Find(
 					ILMatches.Call("CharacterIsMissing"),
 					ILMatches.Brfalse,
@@ -199,7 +202,7 @@ internal static class CardPatches
 					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
 					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
 					new CodeInstruction(OpCodes.Ldarg_1),
-					ldlocActions,
+					new CodeInstruction(OpCodes.Ldloc, actionsOverriddenLocal),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Transpiler_PushMatrix)))
 				)
 				.AllElements();
@@ -210,6 +213,9 @@ internal static class CardPatches
 			return instructions;
 		}
 	}
+
+	private static List<CardAction> Card_MakeAllActionIcons_Transpiler_ModifyActions(List<CardAction> actions)
+		=> actions.Where(a => a is not AHidden).ToList();
 
 	private static void Card_MakeAllActionIcons_Transpiler_PushMatrix(Card card, G g, List<CardAction> actions)
 	{
