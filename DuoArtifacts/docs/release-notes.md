@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Future release
+## 1.0.2
+Released 17 December 2023.
 
 * Fixed Shard tooltips not appearing correctly on the latest game beta.
 * Duo artifact-specific cards are now internally using their own deck, which should not matter for most things. It does make them Frogproof when played with the [Soggins](https://github.com/Shockah/Cobalt-Core-Mods/tree/master/Soggins) mod, though.
