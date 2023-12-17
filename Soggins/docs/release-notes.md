@@ -2,6 +2,11 @@
 
 # Release notes
 
+## 1.1.2
+Released 17 December 2023.
+
+* Fixed non-Soggins Frogproof cards not actually being Frogproof, even though they showed up as so.
+
 ## 1.1.1
 Released 17 December 2023.
 
