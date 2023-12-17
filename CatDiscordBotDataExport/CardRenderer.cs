@@ -28,7 +28,7 @@ internal sealed class CardRenderer
 
 		g.mg.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Transparent);
 		Draw.StartAutoBatchFrame();
-		card.Render(g, posOverride: new((imageSize.x - BaseCardSize.x) / 2, (imageSize.y - BaseCardSize.y) / 2), fakeState: DB.fakeState, ignoreAnim: true, ignoreHover: true);
+		card.Render(g, posOverride: new((imageSize.x - BaseCardSize.x) / 2 + 1, (imageSize.y - BaseCardSize.y) / 2 + 1), fakeState: DB.fakeState, ignoreAnim: true, ignoreHover: true);
 		Draw.EndAutoBatchFrame();
 
 		g.mg.GraphicsDevice.SetRenderTargets(oldRenderTargets);
