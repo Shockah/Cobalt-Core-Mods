@@ -85,30 +85,30 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		Database.DuoArtifactDeck = new(
 			globalName: $"{typeof(ModEntry).Namespace}.Deck.Duo",
 			deckColor: System.Drawing.Color.White,
-			titleColor: System.Drawing.Color.White,
-			cardArtDefault: ExternalDeck.GetRaw((int)Deck.ephemeral).CardArtDefault,
-			borderSprite: ExternalDeck.GetRaw((int)Deck.ephemeral).BorderSprite,
-			bordersOverSprite: ExternalDeck.GetRaw((int)Deck.ephemeral).BordersOverSprite
+			titleColor: System.Drawing.Color.Black,
+			cardArtDefault: ExternalSprite.GetRaw((int)StableSpr.cards_colorless),
+			borderSprite: ExternalSprite.GetRaw((int)StableSpr.cardShared_border_ephemeral),
+			bordersOverSprite: null
 		);
 		registry.RegisterDeck(Database.DuoArtifactDeck);
 
 		Database.TrioArtifactDeck = new(
 			globalName: $"{typeof(ModEntry).Namespace}.Deck.Trio",
 			deckColor: System.Drawing.Color.White,
-			titleColor: System.Drawing.Color.White,
-			cardArtDefault: ExternalDeck.GetRaw((int)Deck.ephemeral).CardArtDefault,
-			borderSprite: ExternalDeck.GetRaw((int)Deck.ephemeral).BorderSprite,
-			bordersOverSprite: ExternalDeck.GetRaw((int)Deck.ephemeral).BordersOverSprite
+			titleColor: System.Drawing.Color.Black,
+			cardArtDefault: ExternalSprite.GetRaw((int)StableSpr.cards_colorless),
+			borderSprite: ExternalSprite.GetRaw((int)StableSpr.cardShared_border_ephemeral),
+			bordersOverSprite: null
 		);
 		registry.RegisterDeck(Database.TrioArtifactDeck);
 
 		Database.ComboArtifactDeck = new(
 			globalName: $"{typeof(ModEntry).Namespace}.Deck.Combo",
 			deckColor: System.Drawing.Color.White,
-			titleColor: System.Drawing.Color.White,
-			cardArtDefault: ExternalDeck.GetRaw((int)Deck.ephemeral).CardArtDefault,
-			borderSprite: ExternalDeck.GetRaw((int)Deck.ephemeral).BorderSprite,
-			bordersOverSprite: ExternalDeck.GetRaw((int)Deck.ephemeral).BordersOverSprite
+			titleColor: System.Drawing.Color.Black,
+			cardArtDefault: ExternalSprite.GetRaw((int)StableSpr.cards_colorless),
+			borderSprite: ExternalSprite.GetRaw((int)StableSpr.cardShared_border_ephemeral),
+			bordersOverSprite: null
 		);
 		registry.RegisterDeck(Database.ComboArtifactDeck);
 	}

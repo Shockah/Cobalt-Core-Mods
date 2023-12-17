@@ -16,7 +16,7 @@ internal sealed class DizzyMaxArtifact : DuoArtifact
 			$"{namePrefix}.DizzyMaxArtifactCard",
 			typeof(DizzyMaxArtifactCard),
 			ExternalSprite.GetRaw((int)StableSpr.cards_Terminal),
-			ExternalDeck.GetRaw((int)Deck.ephemeral)
+			Instance.Database.DuoArtifactDeck
 		);
 		card.AddLocalisation(I18n.DizzyMaxArtifactCardName);
 		registry.RegisterCard(card);
