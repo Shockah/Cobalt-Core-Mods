@@ -61,6 +61,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		ArtifactBrowsePatches.Apply(Harmony);
 		ArtifactPatches.Apply(Harmony);
 		AStatusPatches.Apply(Harmony);
+		BigStatsPatches.Apply(Harmony);
 		CardPatches.Apply(Harmony);
 		CombatPatches.Apply(Harmony);
 		EditorPatches.Apply(Harmony);

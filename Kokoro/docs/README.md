@@ -7,6 +7,7 @@ Game issues fixed by the mod:
 * Scrolling in the Artifacts section of the Codex.
 * X actions not fading out properly when inactive (no vanilla cards do that though, only modded).
 * Statuses sometimes not fitting between Evade buttons.
+* Run history failing with custom characters.
 
 Modder features:
 * Dev menu now shows card/artifact/status names.
