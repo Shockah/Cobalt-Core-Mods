@@ -28,7 +28,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kokoro", "Kokoro\Kokoro.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DuoArtifacts", "DuoArtifacts\DuoArtifacts.csproj", "{E9A3D7BC-BD41-48DC-9ACB-56B9CAE5725B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Soggins", "Soggins\Soggins.csproj", "{E363F17F-C5F1-4594-AD2F-6204FCDDE6C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soggins", "Soggins\Soggins.csproj", "{E363F17F-C5F1-4594-AD2F-6204FCDDE6C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ABUpgrades", "ABUpgrades\ABUpgrades.csproj", "{AF4F8F73-F62C-494B-A169-A3F3EC76D53F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,6 +70,10 @@ Global
 		{E363F17F-C5F1-4594-AD2F-6204FCDDE6C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E363F17F-C5F1-4594-AD2F-6204FCDDE6C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E363F17F-C5F1-4594-AD2F-6204FCDDE6C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF4F8F73-F62C-494B-A169-A3F3EC76D53F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF4F8F73-F62C-494B-A169-A3F3EC76D53F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF4F8F73-F62C-494B-A169-A3F3EC76D53F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF4F8F73-F62C-494B-A169-A3F3EC76D53F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
