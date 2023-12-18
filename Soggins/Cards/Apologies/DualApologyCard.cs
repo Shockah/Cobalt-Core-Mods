@@ -51,7 +51,7 @@ public sealed class DualApologyCard : ApologyCard, IRegisterableCard
 		var data = base.GetData(state);
 		var firstData = FirstCard?.GetData(state);
 		var secondData = SecondCard?.GetData(state);
-		data.art = (Spr)(flipped ? BottomArt : TopArt).Id!.Value;
+		data.art = (Spr)(CustomFlopped ? BottomArt : TopArt).Id!.Value;
 		data.floppable = true;
 		data.flippable = firstData?.flippable == true || secondData?.flippable == true;
 		data.singleUse = firstData?.singleUse == true || secondData?.singleUse == true;
