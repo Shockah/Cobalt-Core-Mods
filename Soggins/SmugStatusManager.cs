@@ -94,7 +94,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 	public double GetSmugBotchChance(State state, Ship ship, Card? card)
 	{
-		var smug = Instance.Api.GetSmug(ship);
+		var smug = Instance.Api.GetSmug(state, ship);
 		if (smug is null)
 			return 0;
 		else if (ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0)
@@ -110,7 +110,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 	public double GetSmugDoubleChance(State state, Ship ship, Card? card)
 	{
-		var smug = Instance.Api.GetSmug(ship);
+		var smug = Instance.Api.GetSmug(state, ship);
 		if (smug is null)
 			return 0;
 		else if (ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0)
@@ -257,7 +257,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 					targetPlayer = true
 				});
 
-				bool isOversmug = Instance.Api.IsOversmug(state.ship);
+				bool isOversmug = Instance.Api.IsOversmug(state, state.ship);
 				actions.Add(new AStatus
 				{
 					status = (Status)Instance.SmugStatus.Id!.Value,

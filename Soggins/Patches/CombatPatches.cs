@@ -38,14 +38,14 @@ internal static class CombatPatches
 		if (character is null)
 			return;
 
-		var smug = Instance.Api.GetSmug(g.state.ship);
+		var smug = Instance.Api.GetSmug(g.state, g.state.ship);
 		if (smug is null)
 		{
 			character.loopTag = Instance.NeutralPortraitAnimation.Tag;
 			return;
 		}
 
-		if (Instance.Api.IsOversmug(g.state.ship))
+		if (Instance.Api.IsOversmug(g.state, g.state.ship))
 		{
 			character.loopTag = Instance.OversmugPortraitAnimation.Tag;
 			return;
@@ -63,11 +63,11 @@ internal static class CombatPatches
 		if (tag != "neutral")
 			return;
 
-		var smug = Instance.Api.GetSmug(state.ship);
+		var smug = Instance.Api.GetSmug(state, state.ship);
 		if (smug is null)
 			return;
 
-		if (Instance.Api.IsOversmug(state.ship))
+		if (Instance.Api.IsOversmug(state, state.ship))
 		{
 			tag = Instance.OversmugPortraitAnimation.Tag;
 			return;

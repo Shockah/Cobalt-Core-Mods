@@ -12,8 +12,6 @@ namespace Shockah.Soggins;
 
 public sealed class FrogproofManager : HookManager<IFrogproofHook>
 {
-	private const string IsRunWithSmugKey = "IsRunWithSmug";
-
 	private static ModEntry Instance => ModEntry.Instance;
 
 	internal FrogproofManager() : base()
@@ -131,7 +129,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 		if (frogproofType == FrogproofType.None)
 			return;
 		// state is usually DB.fakeState here; use g.state instead
-		if (frogproofType == FrogproofType.InnateHiddenIfNotNeeded && (g.state.IsOutsideRun() || !Instance.KokoroApi.ObtainExtensionData<bool>(g.state, IsRunWithSmugKey)))
+		if (frogproofType == FrogproofType.InnateHiddenIfNotNeeded && (g.state.IsOutsideRun() || !Instance.Api.IsRunWithSmug(g.state)))
 			return;
 		Draw.Sprite((Spr)Instance.FrogproofSprite.Id!.Value, vec.x, vec.y - 8 * cardTraitIndex++);
 	}
@@ -145,7 +143,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 		if (frogproofType == FrogproofType.None)
 			return;
 		// state is usually DB.fakeState here; use StateExt.Instance instead
-		if (frogproofType == FrogproofType.InnateHiddenIfNotNeeded && ((StateExt.Instance ?? s).IsOutsideRun() || !Instance.KokoroApi.ObtainExtensionData<bool>(StateExt.Instance ?? s, IsRunWithSmugKey)))
+		if (frogproofType == FrogproofType.InnateHiddenIfNotNeeded && ((StateExt.Instance ?? s).IsOutsideRun() || !Instance.Api.IsRunWithSmug(StateExt.Instance ?? s)))
 			return;
 
 		static IEnumerable<Tooltip> ModifyTooltips(IEnumerable<Tooltip> tooltips)
@@ -175,12 +173,11 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 			return;
 		if (n == 0)
 			return;
-		Instance.Api.SetSmugEnabled(__instance);
-		Instance.KokoroApi.SetExtensionData(state, IsRunWithSmugKey, n > 0);
+		Instance.Api.SetSmugEnabled(state, __instance);
 	}
 
 	private static void State_EndRun_Postfix(State __instance)
-		=> Instance.KokoroApi.RemoveExtensionData(__instance, IsRunWithSmugKey);
+		=> Instance.KokoroApi.RemoveExtensionData(__instance, ApiImplementation.IsRunWithSmugKey);
 }
 
 public sealed class FrogproofCardTraitFrogproofHook : IFrogproofHook

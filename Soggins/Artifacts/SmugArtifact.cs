@@ -45,11 +45,11 @@ public sealed class SmugArtifact : Artifact, IRegisterableArtifact
 		var state = StateExt.Instance ?? DB.fakeState;
 		if (state.route is not Combat)
 			return base.GetSprite();
-		var smug = Instance.Api.GetSmug(state.ship);
+		var smug = Instance.Api.GetSmug(state, state.ship);
 		if (smug is null)
 			return base.GetSprite();
 
-		if (Instance.Api.IsOversmug(state.ship))
+		if (Instance.Api.IsOversmug(state, state.ship))
 			return (Spr)OversmugSprite.Id!.Value;
 		var spriteIndex = Math.Clamp(smug.Value + Sprites.Length / 2, 0, Sprites.Length - 1);
 		return (Spr)Sprites[spriteIndex].Id!.Value;
@@ -65,7 +65,7 @@ public sealed class SmugArtifact : Artifact, IRegisterableArtifact
 	public override void OnCombatStart(State state, Combat combat)
 	{
 		base.OnCombatStart(state, combat);
-		Instance.Api.SetSmugEnabled(state.ship);
+		Instance.Api.SetSmugEnabled(state, state.ship);
 		state.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
 		Pulse();
 	}
@@ -73,6 +73,6 @@ public sealed class SmugArtifact : Artifact, IRegisterableArtifact
 	public override void OnCombatEnd(State state)
 	{
 		base.OnCombatEnd(state);
-		Instance.Api.SetSmugEnabled(state.ship, false);
+		Instance.Api.SetSmugEnabled(state, state.ship, false);
 	}
 }

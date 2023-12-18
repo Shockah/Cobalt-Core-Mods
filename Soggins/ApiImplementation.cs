@@ -5,6 +5,7 @@ namespace Shockah.Soggins;
 public sealed class ApiImplementation : ISogginsApi
 {
 	private const string IsSmugEnabledKey = "IsSmugEnabled";
+	internal const string IsRunWithSmugKey = "IsRunWithSmug";
 
 	private static ModEntry Instance => ModEntry.Instance;
 
@@ -26,11 +27,18 @@ public sealed class ApiImplementation : ISogginsApi
 	public Tooltip GetSmugTooltip(State state, Ship ship)
 		=> GetSmugTooltip();
 
-	public bool IsSmugEnabled(Ship ship)
+	public bool IsRunWithSmug(State state)
+		=> Instance.KokoroApi.TryGetExtensionData(state, IsRunWithSmugKey, out bool value) && value;
+
+	public bool IsSmugEnabled(State state, Ship ship)
 		=> Instance.KokoroApi.TryGetExtensionData(ship, IsSmugEnabledKey, out bool value) && value;
 
-	public void SetSmugEnabled(Ship ship, bool enabled = true)
-		=> Instance.KokoroApi.SetExtensionData(ship, IsSmugEnabledKey, enabled);
+	public void SetSmugEnabled(State state, Ship ship, bool enabled = true)
+	{
+		if (enabled && ship == state.ship)
+			Instance.KokoroApi.SetExtensionData(state, IsRunWithSmugKey, true);
+		Instance.KokoroApi.SetExtensionData(ship, IsSmugEnabledKey, enabled);
+	}
 
 	public int GetMinSmug(Ship ship)
 		=> -Constants.BotchChances.Length / 2;
@@ -38,16 +46,16 @@ public sealed class ApiImplementation : ISogginsApi
 	public int GetMaxSmug(Ship ship)
 		=> Constants.BotchChances.Length / 2;
 
-	public int? GetSmug(Ship ship)
+	public int? GetSmug(State state, Ship ship)
 	{
-		if (!IsSmugEnabled(ship))
+		if (!IsSmugEnabled(state, ship))
 			return null;
 		return ship.Get((Status)Instance.SmugStatus.Id!.Value);
 	}
 
-	public bool IsOversmug(Ship ship)
+	public bool IsOversmug(State state, Ship ship)
 	{
-		var smug = GetSmug(ship);
+		var smug = GetSmug(state, ship);
 		return smug is not null && smug.Value > GetMaxSmug(ship);
 	}
 

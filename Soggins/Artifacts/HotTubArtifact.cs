@@ -57,10 +57,10 @@ public sealed class HotTubArtifact : Artifact, IRegisterableArtifact
 		if (combat.turn == 0)
 			return;
 
-		var smug = Instance.Api.GetSmug(state.ship);
+		var smug = Instance.Api.GetSmug(state, state.ship);
 		if (smug is null)
 			return;
-		if (Instance.Api.IsOversmug(state.ship))
+		if (Instance.Api.IsOversmug(state, state.ship))
 			return;
 
 		int sign = Math.Sign(smug.Value - 0);

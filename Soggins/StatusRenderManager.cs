@@ -15,7 +15,7 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 
 	public IEnumerable<(Status Status, double Priority)> GetExtraStatusesToShow(State state, Combat combat, Ship ship)
 	{
-		if (Instance.Api.GetSmug(ship) is not null)
+		if (Instance.Api.GetSmug(state, ship) is not null)
 			yield return (Status: (Status)Instance.SmugStatus.Id!.Value, Priority: 10);
 	}
 
@@ -37,7 +37,7 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 		}
 
 		var goodColor = Colors.cheevoGold;
-		if (Instance.Api.IsOversmug(ship))
+		if (Instance.Api.IsOversmug(state, ship))
 		{
 			double f = Math.Sin(Instance.KokoroApi.TotalGameTime.TotalSeconds * Math.PI * 2) * 0.5 + 0.5;
 			goodColor = Color.Lerp(Colors.downside, Colors.white, f);
@@ -52,7 +52,7 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 				continue;
 			}
 
-			var smug = Instance.Api.GetSmug(ship) ?? 0;
+			var smug = Instance.Api.GetSmug(state, ship) ?? 0;
 			if (smug < 0 && smugIndex >= smug && smugIndex < 0)
 				colors[barIndex] = Colors.downside;
 			else if (smug > 0 && smugIndex <= smug && smugIndex > 0)

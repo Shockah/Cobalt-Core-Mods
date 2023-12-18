@@ -12,12 +12,13 @@ public interface ISogginsApi
 	ExternalStatus SmugStatus { get; }
 	Tooltip GetSmugTooltip();
 	Tooltip GetSmugTooltip(State state, Ship ship);
-	bool IsSmugEnabled(Ship ship);
-	void SetSmugEnabled(Ship ship, bool enabled = true);
+	bool IsRunWithSmug(State state);
+	bool IsSmugEnabled(State state, Ship ship);
+	void SetSmugEnabled(State state, Ship ship, bool enabled = true);
 	int GetMinSmug(Ship ship);
 	int GetMaxSmug(Ship ship);
-	int? GetSmug(Ship ship);
-	bool IsOversmug(Ship ship);
+	int? GetSmug(State state, Ship ship);
+	bool IsOversmug(State state, Ship ship);
 	double GetSmugBotchChance(State state, Ship ship, Card? card);
 	double GetSmugDoubleChance(State state, Ship ship, Card? card);
 	int GetTimesBotchedThisCombat(State state, Combat combat);
