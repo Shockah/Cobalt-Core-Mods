@@ -8,6 +8,7 @@
 	<!-- References -->
 	<Import Project="_Shared\_Shared.projitems" Label="Shared" />
 	<ItemGroup>
-		<PackageReference Include="Shockah.CobaltCoreModBuildConfig" Version="1.0.0" />
+		<PackageReference Include="Shockah.CobaltCoreModBuildConfig" Version="2.0.0" />
+		<PackageReference Include="EnumByNameSourceGenerator" Version="1.1.1" PrivateAssets="All" ExcludeAssets="runtime" />
 	</ItemGroup>
 </Project>
