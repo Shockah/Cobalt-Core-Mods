@@ -173,6 +173,8 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 			return;
 		if (n == 0)
 			return;
+		if (status != (Status)Instance.SmugStatus.Id!.Value)
+			return;
 		Instance.Api.SetSmugEnabled(state, __instance);
 	}
 

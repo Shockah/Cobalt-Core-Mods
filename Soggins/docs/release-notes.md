@@ -4,6 +4,7 @@
 
 ## Future release
 
+* Fixed Smug being active on ALL runs.
 * Fixed Frogproof randomly visually disappearing from non-Soggins cards (mechanically they were still affected).
 * Fixed top/bottom art swapping on dual Halfhearted Apology which include an instant move action.
 
