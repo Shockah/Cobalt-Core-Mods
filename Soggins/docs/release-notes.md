@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Future release
+## 1.1.3
+Released 18 December 2023.
 
 * Fixed Smug being active on ALL runs.
 * Fixed Frogproof randomly visually disappearing from non-Soggins cards (mechanically they were still affected).
