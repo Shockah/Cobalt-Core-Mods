@@ -2,6 +2,7 @@
 	<!-- General setup -->
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
+		<ModZipPath>$(MSBuildProjectDirectory)\.release\$(MSBuildProjectName)-$(Version).zip</ModZipPath>
 	</PropertyGroup>
 	<Import Project="Configuration.props" />
 
