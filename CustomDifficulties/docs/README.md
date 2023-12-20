@@ -1,5 +1,8 @@
 # Custom Difficulties
 
+> [!IMPORTANT]
+> Superseded by the [More Difficulty Options](https://github.com/TheJazMaster/MoreDifficulties) mod.
+
 Introduces new difficulty levels to the game.
 
 Currently implemented difficulty level:

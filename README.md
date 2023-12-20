@@ -18,13 +18,6 @@ Improves the user experience while having installed multiple new character mods.
 
 [![Crew selection screenshot](CrewSelectionHelper/docs/images/crew-selection-thumb.png)](CrewSelectionHelper/docs/images/crew-selection.png)
 
-# Custom Difficulties
-
-Introduces new difficulty levels to the game.  
-\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fcustom-difficulties-1.0.0)] \[[release notes](CustomDifficulties/docs/release-notes.md)] \[[README/source code](CustomDifficulties)]
-
-[![Difficulty choice screenshot](CustomDifficulties/docs/images/difficulty-choice-thumb.png)](CustomDifficulties/docs/images/difficulty-choice.png)
-
 # Duo Artifacts
 
 The mod adds a new artifact pool: duo artifacts, which are pretty powerful artifacts, synergizing between two different crew members.  
