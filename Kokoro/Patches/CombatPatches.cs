@@ -43,22 +43,17 @@ internal static class CombatPatches
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.AsGuidAnchorable()
 				.Find(
 					ILMatches.Ldfld("state"),
 					ILMatches.Ldfld("ship"),
 					ILMatches.LdcI4((int)Status.evade),
 					ILMatches.Call("Get"),
 					ILMatches.LdcI4(0),
-					ILMatches.Bgt
+					ILMatches.Bgt.GetBranchTarget(out var branchTarget)
 				)
-				.AnchorBlock(out Guid findAnchor)
-				.PointerMatcher(SequenceMatcherRelativeElement.Last)
-				.ExtractBranchTarget(out var branchTarget)
-				.BlockMatcher(findAnchor)
 				.Replace(
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderMoveButtons_Transpiler_ShouldRender))),
-					new CodeInstruction(OpCodes.Brtrue, branchTarget)
+					new CodeInstruction(OpCodes.Brtrue, branchTarget.Value)
 				)
 				.AllElements();
 		}
@@ -81,22 +76,17 @@ internal static class CombatPatches
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.AsGuidAnchorable()
 				.Find(
 					ILMatches.Ldfld("state"),
 					ILMatches.Ldfld("ship"),
 					ILMatches.LdcI4((int)Status.droneShift),
 					ILMatches.Call("Get"),
 					ILMatches.LdcI4(0),
-					ILMatches.Bgt
+					ILMatches.Bgt.GetBranchTarget(out var branchTarget)
 				)
-				.AnchorBlock(out Guid findAnchor)
-				.PointerMatcher(SequenceMatcherRelativeElement.Last)
-				.ExtractBranchTarget(out var branchTarget)
-				.BlockMatcher(findAnchor)
 				.Replace(
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderDroneShiftButtons_Transpiler_ShouldRender))),
-					new CodeInstruction(OpCodes.Brtrue, branchTarget)
+					new CodeInstruction(OpCodes.Brtrue, branchTarget.Value)
 				)
 				.AllElements();
 		}

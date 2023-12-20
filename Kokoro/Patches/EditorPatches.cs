@@ -84,18 +84,16 @@ internal static class EditorPatches
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
-					ILMatches.Ldloca<Status>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloca<Status>(originalMethod).CreateLdlocInstruction(out var ldlocStatus),
 					ILMatches.Instruction(OpCodes.Constrained),
 					ILMatches.Call("ToString"),
-					ILMatches.Ldloc<int>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloc<int>(originalMethod),
 					ILMatches.Ldarg(0),
 					ILMatches.Ldfld("cursorPosStatus"),
 					ILMatches.Instruction(OpCodes.Ceq),
 					ILMatches.Call("Selectable")
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.CreateLdlocInstruction(out var ldlocStatus)
-				.Advance(7)
+				.PointerMatcher(SequenceMatcherRelativeElement.Last)
 				.Replace(
 					ldlocStatus,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(EditorPatches), nameof(Editor_PanelStatuses_Transpiler_ImGuiSelectableHijack)))
@@ -121,17 +119,15 @@ internal static class EditorPatches
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
-					ILMatches.Ldloca<KeyValuePair<string, Type>>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloca<KeyValuePair<string, Type>>(originalMethod).CreateLdlocInstruction(out var ldlocKvp),
 					ILMatches.Call("get_Key"),
-					ILMatches.Ldloc<int>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloc<int>(originalMethod),
 					ILMatches.Ldarg(0),
 					ILMatches.Ldfld("cursorPosArtifact"),
 					ILMatches.Instruction(OpCodes.Ceq),
 					ILMatches.Call("Selectable")
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.CreateLdlocInstruction(out var ldlocKvp)
-				.Advance(6)
+				.PointerMatcher(SequenceMatcherRelativeElement.Last)
 				.Replace(
 					ldlocKvp,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(EditorPatches), nameof(Editor_PanelArtifacts_Transpiler_ImGuiSelectableHijack)))
@@ -157,29 +153,25 @@ internal static class EditorPatches
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
-					ILMatches.Ldstr("Cards"),
+					ILMatches.Ldstr("Cards").ExtractLabels(out var labels),
 					ILMatches.Call("GetContentRegionAvail"),
 					ILMatches.Call("BeginListBox"),
 					ILMatches.Brfalse
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.ExtractLabels(out var labels)
 				.Insert(
 					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(EditorPatches), nameof(Editor_PanelCards_Transpiler_AddUpgradeRadios))).WithLabels(labels)
 				)
 				.Find(
-					ILMatches.Ldloca<KeyValuePair<string, Type>>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloca<KeyValuePair<string, Type>>(originalMethod).CreateLdlocInstruction(out var ldlocKvp),
 					ILMatches.Call("get_Key"),
-					ILMatches.Ldloc<int>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloc<int>(originalMethod),
 					ILMatches.Ldarg(0),
 					ILMatches.Ldfld("cursorPosCards"),
 					ILMatches.Instruction(OpCodes.Ceq),
 					ILMatches.Call("Selectable")
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.CreateLdlocInstruction(out var ldlocKvp)
-				.Advance(6)
+				.PointerMatcher(SequenceMatcherRelativeElement.Last)
 				.Replace(
 					ldlocKvp,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(EditorPatches), nameof(Editor_PanelCards_Transpiler_ImGuiSelectableHijack)))
@@ -213,7 +205,7 @@ internal static class EditorPatches
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(ILMatches.Stloc<Card>(originalMethod.GetMethodBody()!.LocalVariables))
+				.Find(ILMatches.Stloc<Card>(originalMethod))
 				.Insert(
 					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(EditorPatches), nameof(Editor_PanelCards_SelectNodeDelegate_Transpiler_ModifyCard)))

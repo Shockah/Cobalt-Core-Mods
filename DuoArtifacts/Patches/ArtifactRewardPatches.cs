@@ -128,14 +128,11 @@ internal static class ArtifactRewardPatches
 					ILMatches.Ldfld("artifacts"),
 					ILMatches.AnyLdloc,
 					ILMatches.Call("get_Item"),
-					ILMatches.Stloc<Artifact>(originalMethod.GetMethodBody()!.LocalVariables)
+					ILMatches.Stloc<Artifact>(originalMethod).CreateLdlocInstruction(out var ldlocArtifact)
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.Last)
-				.CreateLdlocInstruction(out var ldlocArtifact)
-
 				.ForEach(
 					SequenceMatcherRelativeBounds.WholeSequence,
-					new IElementMatch<CodeInstruction>[]
+					new ElementMatch<CodeInstruction>[]
 					{
 						ILMatches.Ldfld(AccessTools.DeclaredField(typeof(DeckDef), nameof(DeckDef.color)))
 					},
@@ -151,8 +148,6 @@ internal static class ArtifactRewardPatches
 					minExpectedOccurences: 2,
 					maxExpectedOccurences: 2
 				)
-
-				.Find(ILMatches.Instruction(OpCodes.Ldflda, AccessTools.DeclaredField(typeof(DeckDef), nameof(DeckDef.color))))
 				.AllElements();
 		}
 		catch (Exception ex)

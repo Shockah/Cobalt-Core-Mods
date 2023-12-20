@@ -31,12 +31,10 @@ internal sealed class BooksDrakeArtifact : DuoArtifact
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
-					ILMatches.Ldarg(0),
+					ILMatches.Ldarg(0).ExtractLabels(out var labels),
 					ILMatches.Ldfld("stunEnemy"),
 					ILMatches.Brtrue
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.ExtractLabels(out var labels)
 				.Insert(
 					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
 					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),

@@ -218,30 +218,28 @@ internal static class ShipPatches
 				.Find(
 					SequenceBlockMatcherFindOccurence.Last, SequenceMatcherRelativeBounds.WholeSequence,
 					ILMatches.Call("get_Item"),
-					ILMatches.Stloc<KeyValuePair<Status, int>>(originalMethod.GetMethodBody()!.LocalVariables)
+					ILMatches.Stloc<KeyValuePair<Status, int>>(originalMethod)
 				)
 				.Find(
 					SequenceBlockMatcherFindOccurence.Last, SequenceMatcherRelativeBounds.WholeSequence,
-					ILMatches.Ldloc<int>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloc<int>(originalMethod).CreateLdlocInstruction(out var ldlocBarIndex),
 					ILMatches.AnyLdloc,
 					ILMatches.Ldfld("barMax"),
 					ILMatches.Blt
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.CreateLdlocInstruction(out var ldlocBarIndex)
 				.Find(
 					SequenceBlockMatcherFindOccurence.Last, SequenceMatcherRelativeBounds.Before,
-					ILMatches.Ldloca<Color>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloca<Color>(originalMethod),
 					ILMatches.Instruction(OpCodes.Ldc_R8),
 					ILMatches.Call("fadeAlpha"),
 					ILMatches.Br,
-					ILMatches.Ldloc<Color>(originalMethod.GetMethodBody()!.LocalVariables)
+					ILMatches.Ldloc<Color>(originalMethod)
 				)
 				.PointerMatcher(SequenceMatcherRelativeElement.AfterLast)
 				.ExtractLabels(out var labels)
 				.Insert(
 					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-					ldlocBarIndex.WithLabels(labels),
+					ldlocBarIndex.Value.WithLabels(labels),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_RenderStatusRow_Transpiler_ModifyColor)))
 				)
 				.AllElements();

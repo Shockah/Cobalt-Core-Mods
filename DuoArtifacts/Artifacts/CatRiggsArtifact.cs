@@ -54,9 +54,7 @@ internal sealed class CatRiggsArtifact : DuoArtifact
 					ILMatches.Call("get_Count"),
 					ILMatches.LdcI4(10)
 				)
-				.Find(ILMatches.Blt)
-				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.ExtractBranchTarget(out var branchTarget)
+				.Find(ILMatches.Blt.GetBranchTarget(out var branchTarget))
 				.PointerMatcher(branchTarget)
 				.ExtractLabels(out var labels)
 				.Insert(

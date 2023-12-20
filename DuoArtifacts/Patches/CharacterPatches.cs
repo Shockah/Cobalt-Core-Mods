@@ -46,11 +46,8 @@ internal static class CharacterPatches
 				.Find(
 					ILMatches.Ldarg(1),
 					ILMatches.Ldfld("tooltips"),
-					ILMatches.Ldloc<Vec>(originalMethod.GetMethodBody()!.LocalVariables)
+					ILMatches.Ldloc<Vec>(originalMethod).CreateLdlocInstruction(out var ldlocPos)
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.Last)
-				.CreateLdlocInstruction(out var ldlocPos)
-
 				.Find(
 					ILMatches.Call("AddGlossary"),
 					ILMatches.Ldarg(10),

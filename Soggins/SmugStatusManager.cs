@@ -189,16 +189,12 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
-					ILMatches.Ldloc<CardData>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloc<CardData>(originalMethod).CreateLdlocaInstruction(out var ldlocaCardData),
 					ILMatches.Ldfld("exhaust"),
 					ILMatches.Ldarg(4),
 					ILMatches.Instruction(OpCodes.Or),
-					ILMatches.Stloc<bool>(originalMethod.GetMethodBody()!.LocalVariables)
+					ILMatches.Stloc<bool>(originalMethod).CreateLdlocaInstruction(out var ldlocaExhaust)
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.CreateLdlocaInstruction(out var ldlocaCardData)
-				.Advance(4)
-				.CreateLdlocaInstruction(out var ldlocaExhaust)
 				.Find(
 					ILMatches.Ldloc<List<CardAction>>(originalMethod.GetMethodBody()!.LocalVariables),
 					ILMatches.Call("Queue")

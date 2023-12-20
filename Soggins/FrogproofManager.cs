@@ -79,30 +79,22 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.AsGuidAnchorable()
 				.Find(
-					ILMatches.Ldloc<CardData>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloc<CardData>(originalMethod).ExtractLabels(out var labels).Anchor(out var findAnchor),
 					ILMatches.Ldfld("buoyant"),
 					ILMatches.Brfalse
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.ExtractLabels(out var labels)
-				.AnchorPointer(out Guid findAnchor)
 				.Find(
-					ILMatches.Ldloc<Vec>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloc<Vec>(originalMethod).CreateLdlocInstruction(out var ldlocVec),
 					ILMatches.Ldfld("y"),
 					ILMatches.LdcI4(8),
-					ILMatches.Ldloc<int>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloc<int>(originalMethod).CreateLdlocaInstruction(out var ldlocaCardTraitIndex),
 					ILMatches.Instruction(OpCodes.Dup),
 					ILMatches.LdcI4(1),
 					ILMatches.Instruction(OpCodes.Add),
-					ILMatches.Stloc<int>(originalMethod.GetMethodBody()!.LocalVariables)
+					ILMatches.Stloc<int>(originalMethod)
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.CreateLdlocInstruction(out var ldlocVec)
-				.Advance(3)
-				.CreateLdlocaInstruction(out var ldlocaCardTraitIndex)
-				.PointerMatcher(findAnchor)
+				.Anchors().PointerMatcher(findAnchor)
 				.Insert(
 					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
 					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(labels),

@@ -32,10 +32,8 @@ internal static class ArtifactBrowsePatches
 				.Find(
 					ILMatches.LdcI4((int)Deck.colorless),
 					ILMatches.Call("Contains"),
-					ILMatches.Brfalse
+					ILMatches.Brfalse.GetBranchTarget(out var branchTarget)
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.Last)
-				.ExtractBranchTarget(out var branchTarget)
 				.PointerMatcher(branchTarget)
 				.ExtractLabels(out var labels)
 				.Insert(

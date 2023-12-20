@@ -34,11 +34,8 @@ internal static class ArtifactRewardPatches
 					ILMatches.Ldfld("artifacts"),
 					ILMatches.AnyLdloc,
 					ILMatches.Call("get_Item"),
-					ILMatches.Stloc<Artifact>(originalMethod.GetMethodBody()!.LocalVariables)
+					ILMatches.Stloc<Artifact>(originalMethod).CreateLdlocInstruction(out var ldlocArtifact)
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.Last)
-				.CreateLdlocInstruction(out var ldlocArtifact)
-
 				.Find(
 					ILMatches.Ldstr("artifactReward.bossArtifactSuffix"),
 					ILMatches.Instruction(OpCodes.Ldstr),
@@ -51,10 +48,8 @@ internal static class ArtifactRewardPatches
 					new CodeInstruction(OpCodes.Ldarg_1),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(ArtifactRewardPatches), nameof(ArtifactReward_Render_Transpiler_ModifySubtitleIfNeeded)))
 				)
-
 				.Find(ILMatches.Call("Text"))
 				.Replace(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(ArtifactRewardPatches), nameof(ArtifactReward_Render_Transpiler_UnforceColorText))))
-
 				.AllElements();
 		}
 		catch (Exception ex)

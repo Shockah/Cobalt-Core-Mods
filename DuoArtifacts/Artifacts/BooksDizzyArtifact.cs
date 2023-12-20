@@ -312,28 +312,19 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
-					ILMatches.Ldarg(4),
-					ILMatches.Ldloc<int>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldarg(4).ExtractLabels(out var labels),
+					ILMatches.Ldloc<int>(originalMethod).CreateLdlocInstruction(out var ldlocLoopIterator),
 					ILMatches.Instruction(OpCodes.Clt),
 					ILMatches.LdcI4(0),
 					ILMatches.Instruction(OpCodes.Ceq),
 					ILMatches.AnyLdloca,
 					ILMatches.Instruction(OpCodes.Call)
 				)
-
-				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.ExtractLabels(out var labels)
-
-				.Advance()
-				.CreateLdlocInstruction(out var ldlocLoopIterator)
-
-				.Advance(-1)
 				.Insert(
 					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.JustInsertion,
-					ldlocLoopIterator.WithLabels(labels),
+					ldlocLoopIterator.Value.WithLabels(labels),
 					new CodeInstruction(OpCodes.Stsfld, AccessTools.DeclaredField(typeof(BooksDizzyArtifact), nameof(ShardCostIconIndex)))
 				)
-
 				.AllElements();
 		}
 		catch (Exception ex)
@@ -394,7 +385,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 					ILMatches.Ldarg(1),
 					ILMatches.Ldfld("ship"),
 					ILMatches.Ldarg(0),
-					ILMatches.Instruction(OpCodes.Ldflda, AccessTools.DeclaredField(typeof(AVariableHint), nameof(AVariableHint.status))),
+					ILMatches.Ldflda("status"),
 					ILMatches.Call("get_Value"),
 					ILMatches.Call("Get")
 				)

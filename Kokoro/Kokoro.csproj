@@ -6,8 +6,6 @@
 	</PropertyGroup>
 	<Import Project="..\Configuration.Mod.props" />
 	<ItemGroup>
-		<PackageReference Include="Shrike" Version="2.1.0" />
-		<PackageReference Include="Shrike.Harmony" Version="2.0.2" />
 		<Reference Include="Pintail" Private="False" HintPath="$(ModLoaderPath)\Pintail.dll" />
 		<PackageReference Include="ImGui.NET" Version="1.89.5.0" IncludeAssets="compile" PrivateAssets="all" />
 	</ItemGroup>

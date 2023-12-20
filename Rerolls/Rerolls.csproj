@@ -5,8 +5,4 @@
 		<IncludedModProjectPaths>assets</IncludedModProjectPaths>
 	</PropertyGroup>
 	<Import Project="..\Configuration.Mod.props" />
-	<ItemGroup>
-		<PackageReference Include="Shrike" Version="2.1.0" />
-		<PackageReference Include="Shrike.Harmony" Version="2.0.2" />
-	</ItemGroup>
 </Project>

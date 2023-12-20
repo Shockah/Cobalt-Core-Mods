@@ -33,22 +33,17 @@ internal static class NewRunOptionsPatches
 					ILMatches.Ldsfld("difficulties"),
 					ILMatches.AnyLdloc,
 					ILMatches.Call("get_Item"),
-					ILMatches.Stloc<NewRunOptions.DifficultyLevel>(originalMethod.GetMethodBody()!.LocalVariables)
+					ILMatches.Stloc<NewRunOptions.DifficultyLevel>(originalMethod).CreateLdlocInstruction(out var ldlocDifficulty)
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.Last)
-				.CreateLdlocInstruction(out var ldlocDifficulty)
-
 				.Find(ILMatches.Call("SelectButtonText"))
 				.Insert(
 					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-
 					new CodeInstruction(OpCodes.Dup),
 					ldlocDifficulty,
 					new CodeInstruction(OpCodes.Ldarg_1),
 					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(NewRunOptionsPatches), nameof(NewRunOptions_DifficultyOptions_Transpiler_DrawCompletionStarAndAddTooltip)))
 				)
-
 				.AllElements();
 		}
 		catch (Exception ex)

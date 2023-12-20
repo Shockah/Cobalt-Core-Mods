@@ -28,31 +28,28 @@ internal static class AStatusPatches
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.AsGuidAnchorable()
 				.Find(
-					ILMatches.Ldloc<Ship>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloc<Ship>(originalMethod),
 					ILMatches.LdcI4((int)Status.boost),
 					ILMatches.Call("Get"),
 					ILMatches.LdcI4(0),
 					ILMatches.Ble,
-					ILMatches.Ldarg(0),
+					ILMatches.Ldarg(0).Anchor(out var replaceStartAnchor),
 					ILMatches.Ldfld("status"),
 					ILMatches.LdcI4((int)Status.shield),
 					ILMatches.Beq,
 					ILMatches.Ldarg(0),
 					ILMatches.Ldfld("status"),
 					ILMatches.LdcI4((int)Status.tempShield),
-					ILMatches.Beq
+					ILMatches.Beq.GetBranchTarget(out var branchTarget)
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.Last)
-				.ExtractBranchTarget(out var branchTarget)
-				.Encompass(SequenceMatcherEncompassDirection.Before, 7)
+				.Anchors().EncompassUntil(replaceStartAnchor)
 				.Replace(
 					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Ldarg_3),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(AStatusPatches), nameof(AStatus_Begin_Transpiler_ShouldApplyBoost))),
-					new CodeInstruction(OpCodes.Brfalse, branchTarget)
+					new CodeInstruction(OpCodes.Brfalse, branchTarget.Value)
 				)
 				.AllElements();
 		}

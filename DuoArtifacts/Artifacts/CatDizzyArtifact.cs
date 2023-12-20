@@ -73,11 +73,8 @@ internal sealed class CatDizzyArtifact : DuoArtifact
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
 					ILMatches.Ldarg(3),
-					ILMatches.Stloc<int>(originalMethod.GetMethodBody()!.LocalVariables)
+					ILMatches.Stloc<int>(originalMethod).CreateLdlocInstruction(out var ldlocRemainingDamage)
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.Last)
-				.CreateLdlocInstruction(out var ldlocRemainingDamage)
-
 				.Find(
 					ILMatches.Ldarg(5),
 					ILMatches.Brtrue

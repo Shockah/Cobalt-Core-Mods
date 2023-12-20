@@ -30,10 +30,8 @@ internal static class ArtifactPatches
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
 					ILMatches.Call("round"),
-					ILMatches.Stloc<Vec>(originalMethod.GetMethodBody()!.LocalVariables)
+					ILMatches.Stloc<Vec>(originalMethod).CreateLdlocInstruction(out var ldlocPosition)
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.Last)
-				.CreateLdlocInstruction(out var ldlocPosition)
 				.Find(
 					ILMatches.Ldarg(5),
 					ILMatches.Brfalse

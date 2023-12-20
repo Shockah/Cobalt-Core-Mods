@@ -98,12 +98,11 @@ internal static class CardPatches
 
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
-					ILMatches.Ldloc<CardData>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloc<CardData>(originalMethod),
 					ILMatches.Ldfld("description"),
-					ILMatches.Brfalse
+					ILMatches.Brfalse.GetBranchTarget(out var branchTarget)
 				)
 				.PointerMatcher(SequenceMatcherRelativeElement.Last)
-				.ExtractBranchTarget(out var branchTarget)
 				.Insert(
 					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
 					new CodeInstruction(OpCodes.Ldarg_0),
@@ -422,11 +421,10 @@ internal static class CardPatches
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_GetActionsOverridden_Transpiler_UnwrapActions)))
 				)
 				.Find(
-					ILMatches.AnyLdloc,
+					ILMatches.AnyLdloc.ExtractLabels(out var labels),
 					ILMatches.Instruction(OpCodes.Ret)
 				)
 				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.ExtractLabels(out var labels)
 				.Replace(new CodeInstruction(OpCodes.Ldloc, wrappedActionsLocal).WithLabels(labels))
 				.AllElements();
 		}
@@ -448,7 +446,7 @@ internal static class CardPatches
 				.Find(
 					ILMatches.Ldarg(0),
 					ILMatches.Ldarg(1),
-					ILMatches.Ldloc<Combat>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloc<Combat>(originalMethod),
 					ILMatches.Call("GetActions")
 				)
 				.Insert(

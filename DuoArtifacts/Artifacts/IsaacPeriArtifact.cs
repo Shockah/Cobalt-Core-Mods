@@ -102,19 +102,14 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
-					ILMatches.Ldloc<Ship>(originalMethod.GetMethodBody()!.LocalVariables),
+					ILMatches.Ldloc<Ship>(originalMethod),
 					ILMatches.LdcI4((int)Status.libra),
 					ILMatches.Call("Get"),
 					ILMatches.LdcI4(0),
-					ILMatches.Ble
+					ILMatches.Ble.GetBranchTarget(out var branchTarget)
 				)
-				.PointerMatcher(SequenceMatcherRelativeElement.Last)
-				.ExtractBranchTarget(out var branchTarget)
 				.PointerMatcher(branchTarget)
-				.Find(ILMatches.Stloc<bool>(originalMethod.GetMethodBody()!.LocalVariables))
-				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.CreateLdlocInstruction(out var ldlocLibraFlag)
-				.CreateStlocInstruction(out var stlocLibraFlag)
+				.Find(ILMatches.Stloc<bool>(originalMethod).CreateLdlocInstruction(out var ldlocLibraFlag).CreateStlocInstruction(out var stlocLibraFlag))
 				.Insert(
 					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
 					new CodeInstruction(OpCodes.Ldarg_0),
@@ -226,7 +221,7 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.ForEach(
 					SequenceMatcherRelativeBounds.WholeSequence,
-					new IElementMatch<CodeInstruction>[]
+					new ElementMatch<CodeInstruction>[]
 					{
 						ILMatches.Call("AttackDamage")
 					},
