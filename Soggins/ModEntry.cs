@@ -180,6 +180,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		SmugStatusManager.ApplyPatches(Harmony);
 		CustomTTGlossary.ApplyPatches(Harmony);
 		CombatPatches.Apply(Harmony);
+		MGPatches.Apply(Harmony);
 	}
 
 	public object? GetApi(IManifest requestingMod)
