@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Future version
+
+* For modders: Added an API to get Soggins' `ExternalDeck`.
+
 ## 1.1.3
 Released 18 December 2023.
 

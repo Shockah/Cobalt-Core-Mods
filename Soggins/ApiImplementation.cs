@@ -9,6 +9,9 @@ public sealed class ApiImplementation : ISogginsApi
 
 	private static ModEntry Instance => ModEntry.Instance;
 
+	public ExternalDeck SogginsDeck
+		=> Instance.SogginsDeck;
+
 	public Tooltip FrogproofCardTraitTooltip
 		=> new CustomTTGlossary(CustomTTGlossary.GlossaryType.cardtrait, () => (Spr)Instance.FrogproofSprite.Id!.Value, () => I18n.FrogproofCardTraitName, () => I18n.FrogproofCardTraitText);
 

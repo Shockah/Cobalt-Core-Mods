@@ -4,6 +4,8 @@ namespace Shockah.Soggins;
 
 public interface ISogginsApi
 {
+	ExternalDeck SogginsDeck { get; }
+
 	Tooltip FrogproofCardTraitTooltip { get; }
 
 	ExternalStatus FrogproofingStatus { get; }
