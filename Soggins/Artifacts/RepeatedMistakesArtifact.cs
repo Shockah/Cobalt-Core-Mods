@@ -33,6 +33,45 @@ public sealed class RepeatedMistakesArtifact : Artifact, IRegisterableArtifact
 		registry.RegisterArtifact(artifact);
 	}
 
+	public void InjectDialogue()
+	{
+		DB.story.all[$"Artifact{Key()}"] = new()
+		{
+			type = NodeType.combat,
+			oncePerRun = true,
+			lookup = new() { $"{Key()}Trigger" },
+			allPresent = new() { Instance.SogginsDeck.GlobalName },
+			hasArtifacts = new() { Key() },
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = Instance.SogginsDeck.GlobalName,
+					Text = "Oh no! I made another mistake",
+					loopTag = Instance.SmugPortraitAnimations[-2].Tag
+				},
+				new SaySwitch()
+				{
+					lines = new()
+					{
+						new CustomSay()
+						{
+							who = Deck.hacker.Key(),
+							Text = "...",
+							loopTag = "mad"
+						},
+						new CustomSay()
+						{
+							who = Deck.goat.Key(),
+							Text = "How will I launch drones now?",
+							loopTag = "squint"
+						}
+					}
+				}
+			}
+		};
+	}
+
 	public override void OnCombatStart(State state, Combat combat)
 	{
 		base.OnCombatStart(state, combat);
@@ -41,7 +80,8 @@ public sealed class RepeatedMistakesArtifact : Artifact, IRegisterableArtifact
 			status = Status.backwardsMissiles,
 			statusAmount = 3,
 			targetPlayer = true,
-			artifactPulse = Key()
+			artifactPulse = Key(),
+			dialogueSelector = $".{Key()}Trigger"
 		});
 	}
 

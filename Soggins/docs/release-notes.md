@@ -4,7 +4,7 @@
 
 ## Future version
 
-* Added event dialogue.
+* Added dialogue.
 * For modders: Added an API to get Soggins' `ExternalDeck`.
 
 ## 1.1.3

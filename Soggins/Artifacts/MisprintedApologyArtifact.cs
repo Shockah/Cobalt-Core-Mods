@@ -40,6 +40,45 @@ public sealed class MisprintedApologyArtifact : Artifact, IRegisterableArtifact
 		registry.RegisterArtifact(artifact);
 	}
 
+	public void InjectDialogue()
+	{
+		DB.story.all[$"Artifact{Key()}"] = new()
+		{
+			type = NodeType.combat,
+			oncePerRun = true,
+			lookup = new() { $"{Key()}Trigger" },
+			allPresent = new() { Instance.SogginsDeck.GlobalName },
+			hasArtifacts = new() { Key() },
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = Instance.SogginsDeck.GlobalName,
+					Text = "Can we fix the printer?",
+					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
+				},
+				new SaySwitch()
+				{
+					lines = new()
+					{
+						new CustomSay()
+						{
+							who = Deck.dizzy.Key(),
+							Text = "These apology cards are all messed up.",
+							loopTag = "neutral"
+						},
+						new CustomSay()
+						{
+							who = Deck.hacker.Key(),
+							Text = "You've been spending all the paper on these?",
+							loopTag = "mad"
+						}
+					}
+				}
+			}
+		};
+	}
+
 	public override Spr GetSprite()
 		=> (Spr)(TriggeredThisTurn ? InactiveSprite : Sprite).Id!.Value;
 

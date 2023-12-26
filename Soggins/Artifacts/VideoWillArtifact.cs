@@ -33,6 +33,45 @@ public sealed class VideoWillArtifact : Artifact, IRegisterableArtifact
 		registry.RegisterArtifact(artifact);
 	}
 
+	public void InjectDialogue()
+	{
+		DB.story.all[$"Artifact{Key()}"] = new()
+		{
+			type = NodeType.combat,
+			oncePerRun = true,
+			lookup = new() { $"{Key()}Trigger" },
+			allPresent = new() { Instance.SogginsDeck.GlobalName },
+			hasArtifacts = new() { Key() },
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = Instance.SogginsDeck.GlobalName,
+					Text = "I look so handsome in this recording.",
+					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
+				},
+				new SaySwitch()
+				{
+					lines = new()
+					{
+						new CustomSay()
+						{
+							who = Deck.riggs.Key(),
+							Text = "Handsome?",
+							loopTag = "neutral"
+						},
+						new CustomSay()
+						{
+							who = Deck.shard.Key(),
+							Text = "Is it your prince form?",
+							loopTag = "stoked"
+						}
+					}
+				}
+			}
+		};
+	}
+
 	public override void OnCombatStart(State state, Combat combat)
 	{
 		base.OnCombatStart(state, combat);
@@ -41,7 +80,8 @@ public sealed class VideoWillArtifact : Artifact, IRegisterableArtifact
 			status = (Status)Instance.FrogproofingStatus.Id!.Value,
 			statusAmount = 3,
 			targetPlayer = true,
-			artifactPulse = Key()
+			artifactPulse = Key(),
+			dialogueSelector = $".{Key()}Trigger"
 		});
 	}
 

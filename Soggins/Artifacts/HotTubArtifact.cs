@@ -44,6 +44,39 @@ public sealed class HotTubArtifact : Artifact, IRegisterableArtifact
 		);
 	}
 
+	public void InjectDialogue()
+	{
+		DB.story.all[$"Artifact{Key()}"] = new()
+		{
+			type = NodeType.combat,
+			oncePerRun = true,
+			lookup = new() { $"{Key()}Trigger" },
+			allPresent = new() { Instance.SogginsDeck.GlobalName },
+			hasArtifacts = new() { Key() },
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = Instance.SogginsDeck.GlobalName,
+					Text = "The bridge is the best place to install one of these.",
+					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
+				},
+				new SaySwitch()
+				{
+					lines = new()
+					{
+						new CustomSay()
+						{
+							who = Deck.eunice.Key(),
+							Text = "I can make it much hotter if you want.",
+							loopTag = "sly"
+						}
+					}
+				}
+			}
+		};
+	}
+
 	public override string Description()
 	{
 		if (StateExt.Instance is not { } state)
@@ -72,7 +105,8 @@ public sealed class HotTubArtifact : Artifact, IRegisterableArtifact
 			status = (Status)Instance.Api.SmugStatus.Id!.Value,
 			statusAmount = -sign,
 			targetPlayer = true,
-			artifactPulse = Key()
+			artifactPulse = Key(),
+			dialogueSelector = $".{Key()}Trigger"
 		});
 	}
 

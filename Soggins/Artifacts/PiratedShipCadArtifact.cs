@@ -33,6 +33,45 @@ public sealed class PiratedShipCadArtifact : Artifact, IRegisterableArtifact, IS
 		registry.RegisterArtifact(artifact);
 	}
 
+	public void InjectDialogue()
+	{
+		DB.story.all[$"Artifact{Key()}"] = new()
+		{
+			type = NodeType.combat,
+			oncePerRun = true,
+			lookup = new() { $"{Key()}Trigger" },
+			allPresent = new() { Instance.SogginsDeck.GlobalName },
+			hasArtifacts = new() { Key() },
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = Instance.SogginsDeck.GlobalName,
+					Text = "I downloaded this from the interwebs.",
+					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
+				},
+				new SaySwitch()
+				{
+					lines = new()
+					{
+						new CustomSay()
+						{
+							who = "comp",
+							Text = "Put that thing away from me.",
+							loopTag = "squint"
+						},
+						new CustomSay()
+						{
+							who = Deck.hacker.Key(),
+							Text = "That's a malware risk.",
+							loopTag = "mad"
+						}
+					}
+				}
+			}
+		};
+	}
+
 	public override List<Tooltip>? GetExtraTooltips()
 	{
 		var tooltips = base.GetExtraTooltips() ?? new();
@@ -48,7 +87,8 @@ public sealed class PiratedShipCadArtifact : Artifact, IRegisterableArtifact, IS
 			status = Status.tempShield,
 			statusAmount = 1,
 			targetPlayer = true,
-			artifactPulse = Key()
+			artifactPulse = Key(),
+			dialogueSelector = $".{Key()}Trigger"
 		});
 	}
 }

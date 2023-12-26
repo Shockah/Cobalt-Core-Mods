@@ -26,6 +26,6 @@ internal static class MGPatches
 			return;
 		if ((__instance.loadingQueue?.Count ?? 0) > 0)
 			return;
-		EventDialogue.Inject();
+		Dialogue.Inject();
 	}
 }

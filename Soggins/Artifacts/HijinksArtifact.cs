@@ -33,11 +33,62 @@ public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook
 		registry.RegisterArtifact(artifact);
 	}
 
+	public void InjectDialogue()
+	{
+		DB.story.all[$"Artifact{Key()}"] = new()
+		{
+			type = NodeType.combat,
+			oncePerRun = true,
+			lookup = new() { $"{Key()}Trigger" },
+			allPresent = new() { Instance.SogginsDeck.GlobalName },
+			hasArtifacts = new() { Key() },
+			lines = new()
+			{
+				new CustomSay()
+				{
+					who = Instance.SogginsDeck.GlobalName,
+					Text = "I connected a few loose wires, we have extra energy now.",
+					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
+				},
+				new SaySwitch()
+				{
+					lines = new()
+					{
+						new CustomSay()
+						{
+							who = "comp",
+							Text = "Wow! I hope nothing bad will happen.",
+							loopTag = "neutral"
+						},
+						new CustomSay()
+						{
+							who = Deck.hacker.Key(),
+							Text = "I have a bad feeling about this.",
+							loopTag = "squint"
+						},
+						new CustomSay()
+						{
+							who = Deck.dizzy.Key(),
+							Text = "All these readings are wrong.",
+							loopTag = "neutral"
+						}
+					}
+				}
+			}
+		};
+	}
+
 	public override void OnReceiveArtifact(State state)
 		=> state.ship.baseEnergy++;
 
 	public override void OnRemoveArtifact(State state)
 		=> state.ship.baseEnergy--;
+
+	public override void OnCombatStart(State state, Combat combat)
+	{
+		base.OnCombatStart(state, combat);
+		Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, $".{Key()}Trigger");
+	}
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{

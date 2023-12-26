@@ -8,6 +8,7 @@ internal interface IRegisterableArtifact
 	void RegisterArt(ISpriteRegistry registry);
 	void RegisterArtifact(IArtifactRegistry registry);
 	void ApplyPatches(Harmony harmony) { }
+	void InjectDialogue() { }
 }
 
 internal interface IRegisterableCard
