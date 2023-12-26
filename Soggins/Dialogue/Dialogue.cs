@@ -11,6 +11,7 @@ internal static class Dialogue
 		CustomSay.RegisteredDynamicLoopTags[CurrentSmugLoopTag] = CurrentSmugLoopTagFunction;
 
 		EventDialogue.Inject();
+		SmugDialogue.Inject();
 		ArtifactDialogue.Inject();
 	}
 

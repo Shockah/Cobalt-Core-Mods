@@ -278,6 +278,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
 					hook.OnCardBotchedBySmug(state, combat, card);
+				Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, $".{Instance.SogginsDeck.GlobalName}_Botch");
 				break;
 			case SmugResult.Double:
 				var toAdd = card.GetActionsOverridden(state, combat)
@@ -303,6 +304,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
 					hook.OnCardDoubledBySmug(state, combat, card);
+				Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, $".{Instance.SogginsDeck.GlobalName}_Double");
 				break;
 		}
 		return actions;
