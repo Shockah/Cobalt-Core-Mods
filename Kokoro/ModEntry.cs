@@ -9,6 +9,8 @@ using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection.Emit;
+using System.Reflection;
 
 namespace Shockah.Kokoro;
 
@@ -49,10 +51,15 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		Instance = this;
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
+		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Pintail.dll"));
 
-		var perModModLoaderContactType = AccessTools.TypeByName("CobaltCoreModding.Components.Services.PerModModLoaderContact, CobaltCoreModding.Components");
-		var proxyManagerField = AccessTools.DeclaredField(perModModLoaderContactType, "proxyManager");
-		ProxyManager = (IProxyManager<string>)proxyManagerField.GetValue(contact)!;
+		AssemblyBuilder assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName($"CobaltCoreModding.Proxies, Version={this.GetType().Assembly.GetName().Version}, Culture=neutral"), AssemblyBuilderAccess.Run);
+		ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule("CobaltCoreModding.Proxies");
+		ProxyManager = new ProxyManager<string>(moduleBuilder, new ProxyManagerConfiguration<string>(
+			proxyPrepareBehavior: ProxyManagerProxyPrepareBehavior.Eager,
+			proxyObjectInterfaceMarking: ProxyObjectInterfaceMarking.Disabled,
+			accessLevelChecking: AccessLevelChecking.DisabledButOnlyAllowPublicMembers
+		));
 		Api = new(this);
 		Api.RegisterTypeForExtensionData(typeof(StuffBase));
 
