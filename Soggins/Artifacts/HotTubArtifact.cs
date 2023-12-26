@@ -50,9 +50,10 @@ public sealed class HotTubArtifact : Artifact, IRegisterableArtifact
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			lookup = new() { $"{Key()}Trigger" },
 			allPresent = new() { Instance.SogginsDeck.GlobalName },
 			hasArtifacts = new() { Key() },
+			turnStart = true,
+			maxTurnsThisCombat = 1,
 			lines = new()
 			{
 				new CustomSay()
@@ -105,8 +106,7 @@ public sealed class HotTubArtifact : Artifact, IRegisterableArtifact
 			status = (Status)Instance.Api.SmugStatus.Id!.Value,
 			statusAmount = -sign,
 			targetPlayer = true,
-			artifactPulse = Key(),
-			dialogueSelector = $".{Key()}Trigger"
+			artifactPulse = Key()
 		});
 	}
 
