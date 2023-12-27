@@ -13,6 +13,7 @@ internal static class Dialogue
 		EventDialogue.Inject();
 		SmugDialogue.Inject();
 		ArtifactDialogue.Inject();
+		CombatDialogue.Inject();
 	}
 
 	private static string CurrentSmugLoopTagFunction(G g)
