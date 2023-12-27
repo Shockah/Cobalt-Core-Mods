@@ -1,4 +1,6 @@
-﻿namespace Shockah.Soggins;
+﻿using System;
+
+namespace Shockah.Soggins;
 
 internal static class Dialogue
 {
@@ -14,6 +16,13 @@ internal static class Dialogue
 		SmugDialogue.Inject();
 		ArtifactDialogue.Inject();
 		CombatDialogue.Inject();
+
+		foreach (var cardType in ModEntry.AllCards)
+		{
+			if (Activator.CreateInstance(cardType) is not IRegisterableCard card)
+				continue;
+			card.InjectDialogue();
+		}
 	}
 
 	private static string CurrentSmugLoopTagFunction(G g)

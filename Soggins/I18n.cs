@@ -100,6 +100,12 @@ internal static class I18n
 	public static string SeekerCardName => "Seeker";
 	public static string MissileMalwareCardName => "Missile Malware";
 
+	// EXE card
+	public static string ExeCardName => "Soggins.EXE";
+	public static string ExeCardText0 => $"Get <c=status>SMUG</c>. Add 1 of 2 <c=cardtrait>discnt, temp</c> {SogginsName} cards to your hand.";
+	public static string ExeCardTextA => $"Get 1 <c=status>SMUG</c>. Add 1 of 2 <c=cardtrait>discnt, temp</c> {SogginsName} cards to your hand.";
+	public static string ExeCardTextB => $"<c=status>SMUG</c> = 0. Add 1 of 3 <c=cardtrait>discnt, temp</c> {SogginsName} cards to your hand.";
+
 	public static readonly string[] ApologyFlavorTexts = new[]
 	{
 		"I'm sorry you feel that way",

@@ -1145,8 +1145,8 @@ internal static class CombatDialogue
 				new CustomSay()
 				{
 					who = "comp",
-					Text = "Translator's note: keikaku means plan.",
-					loopTag = "neutral"
+					Text = "Keikaku means... How do you even know that word?",
+					loopTag = "squint"
 				}
 			}
 		};

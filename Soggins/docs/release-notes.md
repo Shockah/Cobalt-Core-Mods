@@ -5,6 +5,7 @@
 ## Future version
 
 * Added dialogue.
+* Added Soggins.EXE.
 * For modders: Added an API to get Soggins' `ExternalDeck`.
 
 ## 1.1.3

@@ -105,8 +105,8 @@ internal static class SmugDialogue
 		{
 			Deck.colorless, new (string LoopTag, string Text)[]
 			{
-				("glitch", "Error 404."),
-				("glitch", "Null exception."),
+				("squint", "Error 404."),
+				("squint", "Null exception."),
 				("lean", "Could you stop?"),
 			}
 		},
@@ -172,8 +172,8 @@ internal static class SmugDialogue
 		{
 			Deck.colorless, new (string LoopTag, string Text)[]
 			{
-				("glitch", "What are you even doing?"),
-				("glitch", "Stop bashing the console!"),
+				("squint", "What are you even doing?"),
+				("squint", "Stop bashing the console!"),
 				("squint", "Huuuh."),
 			}
 		},

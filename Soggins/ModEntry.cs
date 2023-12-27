@@ -125,7 +125,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	};
 
 	internal static IEnumerable<Type> AllCards
-		=> ApologyCards.Concat(StarterCards).Concat(CommonCards).Concat(UncommonCards).Concat(RareCards);
+		=> ApologyCards.Concat(StarterCards).Concat(CommonCards).Concat(UncommonCards).Concat(RareCards).Append(typeof(SogginsExeCard));
 
 	internal static readonly Type[] StarterArtifacts = new Type[]
 	{
