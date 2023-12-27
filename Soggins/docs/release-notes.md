@@ -6,6 +6,7 @@
 
 * Added dialogue.
 * Added Soggins.EXE.
+* Changed apology card weighting to be more chaotic.
 * For modders: Added an API to get Soggins' `ExternalDeck`.
 
 ## 1.1.3
