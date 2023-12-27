@@ -32,8 +32,10 @@ internal static class CombatPatches
 		}
 	}
 
-	private static void Combat_Update_Postfix(G g)
+	private static void Combat_Update_Postfix(Combat __instance, G g)
 	{
+		QueuedAction.Tick(__instance);
+
 		var character = g.state.characters.FirstOrDefault(c => c.deckType == (Deck)Instance.SogginsDeck.Id!.Value);
 		if (character is null)
 			return;

@@ -11,5 +11,7 @@ public partial interface IKokoroApi
 		CardAction MakeExhaustEntireHandImmediate();
 		CardAction MakePlaySpecificCardFromAnywhere(int cardId, bool showTheCardIfNotInHand = true);
 		CardAction MakePlayRandomCardsFromAnywhere(IEnumerable<int> cardIds, int amount = 1, bool showTheCardIfNotInHand = true);
+
+		List<CardAction> GetWrappedCardActionsRecursively(CardAction action);
 	}
 }

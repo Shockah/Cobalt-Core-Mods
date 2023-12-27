@@ -204,6 +204,7 @@ internal static class EventDialogue
 			type = NodeType.@event,
 			lookup = new() { "zone_first" },
 			allPresent = new() { soggins },
+			once = true,
 			bg = "BGRunStart",
 			lines = new()
 			{
