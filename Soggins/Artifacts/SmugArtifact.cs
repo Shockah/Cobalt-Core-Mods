@@ -65,14 +65,10 @@ public sealed class SmugArtifact : Artifact, IRegisterableArtifact
 	public override void OnCombatStart(State state, Combat combat)
 	{
 		base.OnCombatStart(state, combat);
-		Instance.Api.SetSmugEnabled(state, state.ship);
-		state.ship.PulseStatus((Status)Instance.SmugStatus.Id!.Value);
-		Pulse();
-	}
-
-	public override void OnCombatEnd(State state)
-	{
-		base.OnCombatEnd(state);
-		Instance.Api.SetSmugEnabled(state, state.ship, false);
+		combat.Queue(new AEnableSmug()
+		{
+			artifactPulse = Key(),
+			statusPulse = (Status)Instance.SmugStatus.Id!.Value
+		});
 	}
 }

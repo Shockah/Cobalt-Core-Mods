@@ -286,10 +286,11 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 					WaitForCombatQueueDrain = true,
 					Action = () =>
 					{
+						double? responseDelay = DB.story.QuickLookup(state, $".{Instance.SogginsDeck.GlobalName}_Botch") is null ? null : 1.25;
 						Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, $".{Instance.SogginsDeck.GlobalName}_Botch");
 						QueuedAction.Queue(new QueuedAction()
 						{
-							WaitForTotalGameTime = Instance.KokoroApi.TotalGameTime.TotalSeconds + 1.25,
+							WaitForTotalGameTime = responseDelay is null ? null : Instance.KokoroApi.TotalGameTime.TotalSeconds + responseDelay.Value,
 							Action = () => Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, $".{Instance.SogginsDeck.GlobalName}_BotchResponse_{deckKey}")
 						});
 					}
@@ -333,10 +334,11 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 					WaitForCombatQueueDrain = true,
 					Action = () =>
 					{
+						double? responseDelay = DB.story.QuickLookup(state, $".{Instance.SogginsDeck.GlobalName}_Double") is null ? null : 1.25;
 						Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, $".{Instance.SogginsDeck.GlobalName}_Double");
 						QueuedAction.Queue(new QueuedAction()
 						{
-							WaitForTotalGameTime = Instance.KokoroApi.TotalGameTime.TotalSeconds + 1.25,
+							WaitForTotalGameTime = responseDelay is null ? null : Instance.KokoroApi.TotalGameTime.TotalSeconds + responseDelay.Value,
 							Action = () =>
 							{
 								string storyKey = $".{Instance.SogginsDeck.GlobalName}_Double{(isSpawnAction ? "Launch" : "")}Response";

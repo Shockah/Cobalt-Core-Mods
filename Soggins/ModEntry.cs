@@ -181,6 +181,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		CustomTTGlossary.ApplyPatches(Harmony);
 		CombatPatches.Apply(Harmony);
 		MGPatches.Apply(Harmony);
+		ShipPatches.Apply(Harmony);
 		StatePatches.Apply(Harmony);
 	}
 
