@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Future version
+## 1.2.0
+Released 28 December 2023.
 
 * Added dialogue.
 * Added Soggins.EXE.
