@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Future release
+## 1.1.1
+Released 28 December 2023.
 
 * For players: Fixed run history failing with custom characters, causing problems with mods like [Codex Helper](https://github.com/Shockah/Cobalt-Core-Mods/tree/master/CodexHelper).
 * For modders: Fixed proxying of private types with public methods when using hooks.

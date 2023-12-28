@@ -26,7 +26,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kokoro", "Kokoro\Kokoro.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DuoArtifacts", "DuoArtifacts\DuoArtifacts.csproj", "{E9A3D7BC-BD41-48DC-9ACB-56B9CAE5725B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Soggins", "Soggins\Soggins.csproj", "{E363F17F-C5F1-4594-AD2F-6204FCDDE6C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soggins", "Soggins\Soggins.csproj", "{E363F17F-C5F1-4594-AD2F-6204FCDDE6C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,6 +70,13 @@ Global
 		SolutionGuid = {FF46E3B8-7CC8-4A40-BAB2-AC7A870A2AA5}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		_Shared\_Shared.projitems*{26f4b3c4-c636-4358-8e4f-ed592e2629bb}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{a0276a09-5fdf-4352-adf4-ed072da21953}*SharedItemsImports = 13
+		_Shared\_Shared.projitems*{ad25e0f4-175f-4fb8-927f-f07433bce6b3}*SharedItemsImports = 5
+		_Shared\_Shared.projitems*{c649604d-9e77-42e4-b0a8-173a7c4d2af3}*SharedItemsImports = 5
+		_Shared\_Shared.projitems*{caa4f9f1-1ba1-40b9-ac8c-520469f1e7a2}*SharedItemsImports = 5
+		_Shared\_Shared.projitems*{e363f17f-c5f1-4594-ad2f-6204fcdde6c5}*SharedItemsImports = 5
+		_Shared\_Shared.projitems*{e9a3d7bc-bd41-48dc-9acb-56b9cae5725b}*SharedItemsImports = 5
+		_Shared\_Shared.projitems*{f02cba30-8c1f-4192-89be-63874084d16d}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
