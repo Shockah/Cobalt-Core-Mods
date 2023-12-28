@@ -89,6 +89,7 @@ internal sealed class NarrativeManager
 		}
 		if (manager.DidDoubleCard)
 		{
+			bool wasLaunchAction = manager.DidDoubleLaunchAction;
 			double? responseDelay = DB.story.QuickLookup(g.state, $".{Instance.SogginsDeck.GlobalName}_Double") is null ? null : 1.25;
 			Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, $".{Instance.SogginsDeck.GlobalName}_Double");
 			QueuedAction.Queue(new QueuedAction()
@@ -96,8 +97,8 @@ internal sealed class NarrativeManager
 				WaitForTotalGameTime = responseDelay is null ? null : Instance.KokoroApi.TotalGameTime.TotalSeconds + responseDelay.Value,
 				Action = () =>
 				{
-					string storyKey = $".{Instance.SogginsDeck.GlobalName}_Double{(manager.DidDoubleLaunchAction ? "Launch" : "")}Response";
-					if (manager.DidDoubleLaunchAction && DB.story.QuickLookup(g.state, storyKey) is null)
+					string storyKey = $".{Instance.SogginsDeck.GlobalName}_Double{(wasLaunchAction ? "Launch" : "")}Response";
+					if (wasLaunchAction && DB.story.QuickLookup(g.state, storyKey) is null)
 						storyKey = $".{Instance.SogginsDeck.GlobalName}_DoubleResponse";
 					Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, storyKey);
 				}

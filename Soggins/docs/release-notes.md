@@ -2,6 +2,11 @@
 
 # Release notes
 
+## 1.2.1
+
+* Fixed Isaac-specific launch action doubling dialogue not being triggered.
+* Fixed Cleo dialogue.
+
 ## 1.2.0
 Released 28 December 2023.
 

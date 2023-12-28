@@ -127,7 +127,8 @@ internal static class EventDialogue
 				{
 					who = "nerd",
 					Text = "Missiles again?",
-					loopTag = "neutral"
+					loopTag = "neutral",
+					flipped = true
 				},
 				new CustomSay()
 				{
@@ -153,7 +154,8 @@ internal static class EventDialogue
 				{
 					who = "nerd",
 					Text = "I'm surprised you all made it this far.",
-					loopTag = "neutral"
+					loopTag = "neutral",
+					flipped = true
 				},
 				new CustomSay()
 				{
@@ -179,7 +181,8 @@ internal static class EventDialogue
 				{
 					who = "nerd",
 					Text = "Hello!",
-					loopTag = "neutral"
+					loopTag = "neutral",
+					flipped = true
 				},
 				new CustomSay()
 				{
