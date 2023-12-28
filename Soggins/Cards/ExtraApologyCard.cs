@@ -1,5 +1,6 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
+using HarmonyLib;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +13,8 @@ public sealed class ExtraApologyCard : Card, IRegisterableCard
 	private static ModEntry Instance => ModEntry.Instance;
 
 	private static ExternalSprite Art = null!;
+
+	private static bool IsDuringTryPlayCard = false;
 
 	public void RegisterArt(ISpriteRegistry registry)
 	{
@@ -33,12 +36,22 @@ public sealed class ExtraApologyCard : Card, IRegisterableCard
 		registry.RegisterCard(card);
 	}
 
+	public void ApplyPatches(Harmony harmony)
+	{
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
+			prefix: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Prefix)),
+			finalizer: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Finalizer))
+		);
+	}
+
 	private int GetCost()
 		=> upgrade switch
 		{
-			Upgrade.A => 1,
-			Upgrade.B => 2,
-			_ => 2
+			Upgrade.A => 2,
+			Upgrade.B => 3,
+			_ => 3
 		};
 
 	private Status GetStatus()
@@ -65,6 +78,17 @@ public sealed class ExtraApologyCard : Card, IRegisterableCard
 				status = GetStatus(),
 				statusAmount = 1,
 				targetPlayer = true
+			},
+			new AAddCard
+			{
+				card = IsDuringTryPlayCard ? SmugStatusManager.GenerateAndTrackApology(s, c, s.rngActions) : new RandomPlaceholderApologyCard(),
+				destination = CardDestination.Hand
 			}
 		};
+
+	private static void Combat_TryPlayCard_Prefix()
+		=> IsDuringTryPlayCard = true;
+
+	private static void Combat_TryPlayCard_Finalizer()
+		=> IsDuringTryPlayCard = false;
 }
