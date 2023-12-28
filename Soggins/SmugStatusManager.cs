@@ -281,34 +281,14 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
 					hook.OnCardBotchedBySmug(state, combat, card);
-				QueuedAction.Queue(new QueuedAction()
-				{
-					WaitForCombatQueueDrain = true,
-					Action = () =>
-					{
-						double? responseDelay = DB.story.QuickLookup(state, $".{Instance.SogginsDeck.GlobalName}_Botch") is null ? null : 1.25;
-						Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, $".{Instance.SogginsDeck.GlobalName}_Botch");
-						QueuedAction.Queue(new QueuedAction()
-						{
-							WaitForTotalGameTime = responseDelay is null ? null : Instance.KokoroApi.TotalGameTime.TotalSeconds + responseDelay.Value,
-							Action = () => Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, $".{Instance.SogginsDeck.GlobalName}_BotchResponse_{deckKey}")
-						});
-					}
-				});
+				Instance.NarrativeManager.DidBotchCard = true;
 				break;
 			case SmugResult.Double:
 				var toAdd = card.GetActionsOverridden(state, combat)
 					.Where(a => a is not AEndTurn)
 					.ToList();
 
-				var isSpawnAction = actions.SelectMany(Instance.KokoroApi.Actions.GetWrappedCardActionsRecursively)
-					.OfType<ASpawn>()
-					.Select(a =>
-					{
-						a.isaacNamesIt = false;
-						return a;
-					})
-					.Any();
+				var isSpawnAction = actions.SelectMany(Instance.KokoroApi.Actions.GetWrappedCardActionsRecursively).Any(a => a is ASpawn);
 				if (isSpawnAction)
 					toAdd.Add(new ADroneMove { dir = 1 });
 
@@ -329,26 +309,8 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
 					hook.OnCardDoubledBySmug(state, combat, card);
-				QueuedAction.Queue(new QueuedAction()
-				{
-					WaitForCombatQueueDrain = true,
-					Action = () =>
-					{
-						double? responseDelay = DB.story.QuickLookup(state, $".{Instance.SogginsDeck.GlobalName}_Double") is null ? null : 1.25;
-						Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, $".{Instance.SogginsDeck.GlobalName}_Double");
-						QueuedAction.Queue(new QueuedAction()
-						{
-							WaitForTotalGameTime = responseDelay is null ? null : Instance.KokoroApi.TotalGameTime.TotalSeconds + responseDelay.Value,
-							Action = () =>
-							{
-								string storyKey = $".{Instance.SogginsDeck.GlobalName}_Double{(isSpawnAction ? "Launch" : "")}Response";
-								if (isSpawnAction && DB.story.QuickLookup(state, storyKey) is null)
-									storyKey = $".{Instance.SogginsDeck.GlobalName}_DoubleResponse";
-								Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, storyKey);
-							}
-						});
-					}
-				});
+				Instance.NarrativeManager.DidDoubleCard = true;
+				Instance.NarrativeManager.DidDoubleLaunchAction = isSpawnAction;
 				break;
 		}
 		return actions;

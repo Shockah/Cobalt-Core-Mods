@@ -33,6 +33,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 
 	internal SmugStatusManager SmugStatusManager { get; private set; } = null!;
 	internal FrogproofManager FrogproofManager { get; private set; } = null!;
+	internal NarrativeManager NarrativeManager { get; private set; } = null!;
 	internal StatusRenderManager StatusRenderManager { get; private set; } = null!;
 	internal StatusLogicManager StatusLogicManager { get; private set; } = null!;
 
@@ -172,12 +173,14 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 
 		SmugStatusManager = new();
 		FrogproofManager = new();
+		NarrativeManager = new();
 		StatusRenderManager = new();
 		StatusLogicManager = new();
 
 		Harmony = new(Name);
 		FrogproofManager.ApplyPatches(Harmony);
 		SmugStatusManager.ApplyPatches(Harmony);
+		NarrativeManager.ApplyPatches(Harmony);
 		CustomTTGlossary.ApplyPatches(Harmony);
 		CombatPatches.Apply(Harmony);
 		MGPatches.Apply(Harmony);
