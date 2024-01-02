@@ -2,7 +2,7 @@
 
 namespace Shockah.DuoArtifacts;
 
-internal sealed class CatPeriArtifact : DuoArtifact
+internal sealed class CatPeriArtifact : DuoArtifact, IStatusLogicHook
 {
 	public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
 	{
@@ -22,13 +22,11 @@ internal sealed class CatPeriArtifact : DuoArtifact
 		Pulse();
 	}
 
-	public override void OnTurnEnd(State state, Combat combat)
+	public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
 	{
-		base.OnTurnEnd(state, combat);
-		if (state.ship.Get(Status.overdrive) <= 0 || state.ship.Get(Status.timeStop) > 0)
-			return;
-
-		state.ship.Add(Status.overdrive, -1);
+		if (timing == StatusTurnTriggerTiming.TurnEnd && status == Status.overdrive && amount > 0)
+			amount--;
 		Pulse();
+		return false;
 	}
 }

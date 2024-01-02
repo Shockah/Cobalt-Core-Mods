@@ -1,13 +1,13 @@
 ﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Nanoray.Shrike.Harmony;
 using Nanoray.Shrike;
+using Nanoray.Shrike.Harmony;
 using Shockah.Shared;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Reflection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Shockah.Kokoro;
 
@@ -58,12 +58,15 @@ internal static class ShipPatches
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.OnBeginTurn)),
-			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_OnBeginTurn_Postfix_Last)), Priority.Last)
+			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_OnBeginTurn_Prefix_First)), Priority.First),
+			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_OnBeginTurn_Postfix_Last)), Priority.Last),
+			transpiler: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_OnBeginTurn_Transpiler_Last)), Priority.Last)
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.OnAfterTurn)),
-			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_OnAfterTurn_Prefix_First)), Priority.First)
+			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_OnAfterTurn_Prefix_First)), Priority.First),
+			transpiler: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_OnAfterTurn_Transpiler_Last)), Priority.Last)
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
@@ -89,18 +92,69 @@ internal static class ShipPatches
 		);
 	}
 
-	private static void Ship_OnBeginTurn_Postfix_Last(Ship __instance, State s, Combat c)
+	private static void Ship_OnBeginTurn_Prefix_First(Ship __instance, State s, Combat c)
 	{
-		if (__instance != s.ship)
-			return;
-
-		Instance.MidrowScorchingManager.OnPlayerTurnStart(s, c);
-		Instance.WormStatusManager.OnPlayerTurnStart(s, c);
+		Instance.StatusLogicManager.OnTurnStart(s, c, __instance);
 	}
 
-	private static void Ship_OnAfterTurn_Prefix_First(Ship __instance, State s)
+	private static void Ship_OnBeginTurn_Postfix_Last(Ship __instance, State s, Combat c)
 	{
-		Instance.OxidationStatusManager.OnTurnEnd(s, __instance);
+		if (!__instance.isPlayerShip)
+			return;
+		Instance.MidrowScorchingManager.OnPlayerTurnStart(s, c);
+	}
+
+	private static IEnumerable<CodeInstruction> Ship_OnBeginTurn_Transpiler_Last(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(
+					ILMatches.Ldarg(0),
+					ILMatches.LdcI4((int)Status.timeStop),
+					ILMatches.Call("Get")
+				)
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Pop),
+					new CodeInstruction(OpCodes.Ldc_I4_1)
+				)
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			return instructions;
+		}
+	}
+
+	private static void Ship_OnAfterTurn_Prefix_First(Ship __instance, State s, Combat c)
+	{
+		Instance.StatusLogicManager.OnTurnEnd(s, c, __instance);
+	}
+
+	private static IEnumerable<CodeInstruction> Ship_OnAfterTurn_Transpiler_Last(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(
+					ILMatches.Ldarg(0),
+					ILMatches.LdcI4((int)Status.timeStop),
+					ILMatches.Call("Get")
+				)
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Pop),
+					new CodeInstruction(OpCodes.Ldc_I4_1)
+				)
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			return instructions;
+		}
 	}
 
 	private static void Ship_GetStatusSize_Postfix(Ship __instance, Status status, int amount, ref object __result)

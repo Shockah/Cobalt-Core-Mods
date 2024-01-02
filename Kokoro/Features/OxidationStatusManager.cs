@@ -2,7 +2,7 @@
 
 namespace Shockah.Kokoro;
 
-public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>
+public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>, IStatusLogicHook
 {
 	private const int BaseOxidationStatusMaxValue = 7;
 
@@ -16,15 +16,6 @@ public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>
 		return value;
 	}
 
-	internal void OnTurnEnd(State state, Ship ship)
-	{
-		if (ship.Get((Status)Instance.Content.OxidationStatus.Id!.Value) < GetOxidationStatusMaxValue(state, ship))
-			return;
-
-		ship.Add(Status.corrode);
-		ship.Set((Status)Instance.Content.OxidationStatus.Id!.Value, 0);
-	}
-
 	internal void ModifyStatusTooltips(Ship ship, G g)
 	{
 		for (int i = 0; i < g.tooltips.tooltips.Count; i++)
@@ -33,5 +24,26 @@ public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>
 			if (tooltip is TTGlossary glossary && glossary.key == $"status.{Instance.Content.OxidationStatus.Id!.Value}")
 				glossary.vals = new object[] { $"<c=boldPink>{GetOxidationStatusMaxValue(g.state, ship)}</c>" };
 		}
+	}
+
+	public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
+	{
+		if (timing != StatusTurnTriggerTiming.TurnEnd)
+			return false;
+
+		if (status == Status.corrode && ship.Get((Status)Instance.Content.OxidationStatus.Id!.Value) >= GetOxidationStatusMaxValue(state, ship))
+		{
+			amount++;
+			setStrategy = StatusTurnAutoStepSetStrategy.Direct;
+			return false;
+		}
+		if (status == (Status)Instance.Content.OxidationStatus.Id!.Value && amount >= GetOxidationStatusMaxValue(state, ship))
+		{
+			amount = 0;
+			setStrategy = StatusTurnAutoStepSetStrategy.QueueSet;
+			return false;
+		}
+
+		return false;
 	}
 }

@@ -72,7 +72,7 @@ internal sealed class Content
 				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF009900)),
 				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF879900)),
 				WormSprite,
-				affectedByTimestop: true
+				affectedByTimestop: false
 			);
 			WormStatus.AddLocalisation(I18n.WormStatusName, I18n.WormStatusDescription);
 			registry.RegisterStatus(WormStatus);

@@ -63,6 +63,9 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		Api = new(this);
 		Api.RegisterTypeForExtensionData(typeof(StuffBase));
 
+		StatusLogicManager.Register(WormStatusManager, 0);
+		StatusLogicManager.Register(OxidationStatusManager, 0);
+
 		Harmony = new(Name);
 
 		ArtifactBrowsePatches.Apply(Harmony);
