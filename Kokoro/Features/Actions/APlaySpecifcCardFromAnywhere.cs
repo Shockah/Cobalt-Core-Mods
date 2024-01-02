@@ -62,7 +62,12 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction
 		}
 
 		s.RemoveCardFromWhereverItIs(CardId);
+
+		var handCopy = c.hand.ToList();
+		c.hand.Clear();
 		c.SendCardToHand(s, card);
+		c.hand.InsertRange(0, handCopy);
+
 		c.QueueImmediate(new APlaySpecificCardFromAnywhere { CardId = card.uuid, Recursive = true });
 		c.QueueImmediate(new ADelay() { time = -0.2 });
 	}
