@@ -5,6 +5,7 @@
 ## Upcoming version
 
 * Updated to the latest Kokoro.
+* Infinite and Recycle card traits now obey botches (the card goes to the discard pile).
 
 ## 1.2.1
 Released 28 December 2023.

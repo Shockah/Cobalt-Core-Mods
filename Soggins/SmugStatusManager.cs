@@ -190,11 +190,22 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
-					ILMatches.Ldloc<CardData>(originalMethod).CreateLdlocaInstruction(out var ldlocaCardData),
+					ILMatches.Ldloc<CardData>(originalMethod).CreateLdlocaInstruction(out var ldlocaData),
 					ILMatches.Ldfld("exhaust"),
 					ILMatches.Ldarg(4),
 					ILMatches.Instruction(OpCodes.Or),
-					ILMatches.Stloc<bool>(originalMethod).CreateLdlocaInstruction(out var ldlocaExhaust)
+					ILMatches.Stloc<bool>(originalMethod).CreateLdlocaInstruction(out var ldlocaActuallyExhaust)
+				)
+				.Find(
+					ILMatches.Ldloc<CardData>(originalMethod),
+					ILMatches.Ldfld("infinite"),
+					ILMatches.Brfalse,
+					ILMatches.Ldloc<bool>(originalMethod),
+					ILMatches.LdcI4(0),
+					ILMatches.Instruction(OpCodes.Ceq),
+					ILMatches.Br,
+					ILMatches.LdcI4(0),
+					ILMatches.Stloc<bool>(originalMethod).CreateLdlocaInstruction(out var ldlocaActuallyInfinite)
 				)
 				.Find(
 					ILMatches.Ldloc<List<CardAction>>(originalMethod.GetMethodBody()!.LocalVariables),
@@ -207,8 +218,9 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Ldarg_3),
-					ldlocaExhaust,
-					ldlocaCardData,
+					ldlocaActuallyExhaust,
+					ldlocaActuallyInfinite,
+					ldlocaData,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(SmugStatusManager), nameof(Combat_TryPlayCard_Transpiler_ModifyActions)))
 				)
 				.AllElements();
@@ -220,7 +232,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		}
 	}
 
-	private static List<CardAction> Combat_TryPlayCard_Transpiler_ModifyActions(List<CardAction> actions, State state, Combat combat, Card card, bool playNoMatterWhatForFree, ref bool exhaust, ref CardData data)
+	private static List<CardAction> Combat_TryPlayCard_Transpiler_ModifyActions(List<CardAction> actions, State state, Combat combat, Card card, bool playNoMatterWhatForFree, ref bool actuallyExhaust, ref bool actuallyInfinite, ref CardData data)
 	{
 		if (playNoMatterWhatForFree)
 			return actions;
@@ -246,8 +258,10 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		switch (result)
 		{
 			case SmugResult.Botch:
-				exhaust = false;
+				actuallyExhaust = false;
+				actuallyInfinite = false;
 				data.singleUse = false;
+				data.recycle = false;
 
 				actions.Clear();
 				actions.Add(new AStatus
