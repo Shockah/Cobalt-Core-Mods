@@ -53,11 +53,13 @@ public partial interface IKokoroApi
 		CardAction Make(IActionCost cost, CardAction action);
 		CardAction Make(IReadOnlyList<IActionCost> costs, CardAction action);
 
-		IActionCost Cost(IReadOnlyList<IResource> potentialResources, int amount = 1, Spr? costUnsatisfiedIcon = null, Spr? costSatisfiedIcon = null);
-		IActionCost Cost(IResource resource, int amount = 1);
+		IActionCost Cost(IReadOnlyList<IResource> potentialResources, int amount = 1, int? iconOverlap = null, Spr? costUnsatisfiedIcon = null, Spr? costSatisfiedIcon = null, int? iconWidth = null, CustomCostTooltipProvider? customTooltipProvider = null);
+		IActionCost Cost(IResource resource, int amount = 1, int? iconOverlap = null, CustomCostTooltipProvider? customTooltipProvider = null);
 
-		IResource StatusResource(Status status, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon);
-		IResource StatusResource(Status status, StatusResourceTarget target, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon);
+		IResource StatusResource(Status status, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon, int? iconWidth = null);
+		IResource StatusResource(Status status, StatusResourceTarget target, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon, int? iconWidth = null);
+
+		public delegate List<Tooltip> CustomCostTooltipProvider(State state, Combat? combat, IReadOnlyList<IResource> potentialResources, int amount);
 
 		public interface IActionCost
 		{
@@ -87,6 +89,7 @@ public partial interface IKokoroApi
 			void RenderPrefix(G g, ref Vec position, bool isDisabled, bool dontRender) { }
 			void RenderSuffix(G g, ref Vec position, bool isDisabled, bool dontRender) { }
 			void Render(G g, ref Vec position, bool isSatisfied, bool isDisabled, bool dontRender);
+			List<Tooltip> GetTooltips(State state, Combat? combat, int amount) => new();
 		}
 
 		public enum StatusResourceTarget

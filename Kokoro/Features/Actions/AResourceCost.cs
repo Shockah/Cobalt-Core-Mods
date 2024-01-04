@@ -60,6 +60,11 @@ public sealed class AResourceCost : CardAction
 	public override List<Tooltip> GetTooltips(State s)
 	{
 		List<Tooltip> tooltips = new();
+		if (Costs is not null)
+			foreach (var cost in Costs)
+				tooltips.AddRange(cost.GetTooltips(s, s.route as Combat));
+		if (Action is not null)
+			tooltips.AddRange(Action.GetTooltips(s));
 		return tooltips;
 	}
 

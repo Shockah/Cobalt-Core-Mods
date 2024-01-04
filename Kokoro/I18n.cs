@@ -42,4 +42,9 @@ internal static class I18n
 	public static string ConditionalEquationPossessionComparisonLessThanDescription => "you have less {0} than {1}";
 	public static string ConditionalEquationPossessionComparisonGreaterThanOrEqualDescription => "you have at least as much {0} as {1}";
 	public static string ConditionalEquationPossessionComparisonLessThanOrEqualDescription => "you have at most as much {0} as {1}";
+
+	public static string StatusCostActionName => "{0} COST";
+	public static string StatusCostActionDescription => "Lose {0} <c=status>{1}</c>. If you don't have enough, this action does not happen.";
+	public static string StatusProfitActionName => "{0} PROFIT";
+	public static string StatusProfitActionDescription => "Remove {0} <c=status>{1}</c> from the enemy. If they don't have enough, this action does not happen.";
 }

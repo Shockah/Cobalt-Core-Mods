@@ -296,17 +296,17 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 		public CardAction Make(IReadOnlyList<IKokoroApi.IActionCostApi.IActionCost> costs, CardAction action)
 			=> new AResourceCost { Costs = costs.ToList(), Action = action };
 
-		public IKokoroApi.IActionCostApi.IActionCost Cost(IReadOnlyList<IKokoroApi.IActionCostApi.IResource> potentialResources, int amount = 1, Spr? costUnsatisfiedIcon = null, Spr? costSatisfiedIcon = null)
-			=> new ActionCostImpl(potentialResources, amount, costUnsatisfiedIcon, costSatisfiedIcon);
+		public IKokoroApi.IActionCostApi.IActionCost Cost(IReadOnlyList<IKokoroApi.IActionCostApi.IResource> potentialResources, int amount = 1, int? iconOverlap = null, Spr? costUnsatisfiedIcon = null, Spr? costSatisfiedIcon = null, int? iconWidth = null, IKokoroApi.IActionCostApi.CustomCostTooltipProvider? customTooltipProvider = null)
+			=> new ActionCostImpl(potentialResources, amount, iconOverlap, costUnsatisfiedIcon, costSatisfiedIcon, iconWidth, customTooltipProvider);
 
-		public IKokoroApi.IActionCostApi.IActionCost Cost(IKokoroApi.IActionCostApi.IResource resource, int amount = 1)
-			=> new ActionCostImpl(new List<IKokoroApi.IActionCostApi.IResource> () { resource }, amount);
+		public IKokoroApi.IActionCostApi.IActionCost Cost(IKokoroApi.IActionCostApi.IResource resource, int amount = 1, int? iconOverlap = null, IKokoroApi.IActionCostApi.CustomCostTooltipProvider? customTooltipProvider = null)
+			=> new ActionCostImpl(new List<IKokoroApi.IActionCostApi.IResource> () { resource }, amount, iconOverlap, null, null, null, customTooltipProvider);
 
-		public IKokoroApi.IActionCostApi.IResource StatusResource(Status status, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon)
-			=> new ActionCostStatusResource(status, target: IKokoroApi.IActionCostApi.StatusResourceTarget.Player, costUnsatisfiedIcon, costSatisfiedIcon);
+		public IKokoroApi.IActionCostApi.IResource StatusResource(Status status, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon, int? iconWidth = null)
+			=> new ActionCostStatusResource(status, target: IKokoroApi.IActionCostApi.StatusResourceTarget.Player, costUnsatisfiedIcon, costSatisfiedIcon, iconWidth);
 
-		public IKokoroApi.IActionCostApi.IResource StatusResource(Status status, IKokoroApi.IActionCostApi.StatusResourceTarget target, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon)
-			=> new ActionCostStatusResource(status, target, costUnsatisfiedIcon, costSatisfiedIcon);
+		public IKokoroApi.IActionCostApi.IResource StatusResource(Status status, IKokoroApi.IActionCostApi.StatusResourceTarget target, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon, int? iconWidth = null)
+			=> new ActionCostStatusResource(status, target, costUnsatisfiedIcon, costSatisfiedIcon, iconWidth);
 	}
 	#endregion
 }
