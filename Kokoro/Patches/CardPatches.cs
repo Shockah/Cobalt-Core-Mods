@@ -326,8 +326,9 @@ internal static class CardPatches
 
 			var (payment, groupedPayment, _) = AResourceCost.GetResourcePayment(resourceState, resourceCostAction.Costs ?? new());
 			resourceCostAction.RenderCosts(g, ref position, action.disabled, dontDraw, payment);
-			foreach (var (resourceKey, resourceAmount) in groupedPayment)
-				resourceState[resourceKey] = resourceState.GetValueOrDefault(resourceKey) - resourceAmount;
+			if (!action.disabled)
+				foreach (var (resourceKey, resourceAmount) in groupedPayment)
+					resourceState[resourceKey] = resourceState.GetValueOrDefault(resourceKey) - resourceAmount;
 
 			position.x += 2;
 			if (wrappedAction is AAttack attack)
