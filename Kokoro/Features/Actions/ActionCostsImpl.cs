@@ -74,9 +74,9 @@ internal sealed class ActionCostStatusResource : IKokoroApi.IActionCostApi.IReso
 	public List<Tooltip> GetTooltips(State state, Combat? combat, int amount)
 	{
 		string nameFormat = Target == IKokoroApi.IActionCostApi.StatusResourceTarget.Player
-			? I18n.StatusCostActionName : I18n.StatusProfitActionName;
+			? I18n.StatusPlayerCostActionName : I18n.StatusEnemyCostActionName;
 		string descriptionFormat = Target == IKokoroApi.IActionCostApi.StatusResourceTarget.Player
-			? I18n.StatusCostActionDescription : I18n.StatusProfitActionDescription;
+			? I18n.StatusPlayerCostActionDescription : I18n.StatusEnemyCostActionDescription;
 
 		var icon = CostSatisfiedIcon ?? CostUnsatisfiedIcon ?? DB.statuses[Status].icon;
 		string name = string.Format(nameFormat, Status.GetLocName().ToUpper());
