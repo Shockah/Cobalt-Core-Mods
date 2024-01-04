@@ -65,6 +65,11 @@ internal static class CardPatches
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
+			original: () => typeof(Card).GetMethods(AccessTools.all).First(m => m.Name.StartsWith("<RenderAction>g__VarAssignment") && m.ReturnType == typeof(void)),
+			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_RenderAction_VarAssignment_Transpiler))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
 			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_GetActionsOverridden_Transpiler))
 		);
@@ -454,6 +459,55 @@ internal static class CardPatches
 			return currentColor;
 		Color fadeColor = new(Colors.disabledText.r / Colors.textMain.r, Colors.disabledText.g / Colors.textMain.g, Colors.disabledText.b / Colors.textMain.b, Colors.disabledText.a / Colors.textMain.a);
 		return currentColor * fadeColor;
+	}
+
+	private static IEnumerable<CodeInstruction> Card_RenderAction_VarAssignment_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(ILMatches.Instruction(OpCodes.Ret))
+				.Insert(
+					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(originalMethod.GetParameters()[0].ParameterType.GetElementType(), "g")),
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(originalMethod.GetParameters()[0].ParameterType.GetElementType(), "action")),
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(originalMethod.GetParameters()[0].ParameterType.GetElementType(), "dontDraw")),
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(originalMethod.GetParameters()[0].ParameterType.GetElementType(), "w")),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_RenderAction_VarAssignment_Transpiler_Outgoing))),
+					new CodeInstruction(OpCodes.Stfld, AccessTools.DeclaredField(originalMethod.GetParameters()[0].ParameterType.GetElementType(), "w"))
+				)
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			return instructions;
+		}
+	}
+
+	private static int Card_RenderAction_VarAssignment_Transpiler_Outgoing(G g, CardAction action, bool dontDraw, int w)
+	{
+		if (action is not AVariableHint variableHint)
+			return w;
+		if (variableHint.hand)
+			return w;
+		if (Instance.Api.ObtainExtensionData(variableHint, "targetPlayer", () => true))
+			return w;
+
+		if (!dontDraw)
+		{
+			Vec v = g.Push(null, new Rect(w)).rect.xy;
+			Color spriteColor = variableHint.disabled ? Colors.disabledIconTint : new Color("ffffff");
+			Draw.Sprite(StableSpr.icons_outgoing, v.x, v.y, color: spriteColor);
+			g.Pop();
+		}
+		w += 8;
+		return w;
 	}
 
 	private static IEnumerable<CodeInstruction> Card_GetActionsOverridden_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)

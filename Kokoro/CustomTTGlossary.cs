@@ -80,7 +80,8 @@ internal sealed class CustomTTGlossary : TTGlossary
 		if (!ContextStack.TryPeek(out var glossary) || glossary is not CustomTTGlossary custom)
 			return true;
 
-		__result = $"<c={nameColor}>{custom.Title().ToUpper()}</c>\n{BuildString(custom.Description(), custom.Values.Select(v => v()).ToArray())}";
+		var title = custom.Title();
+		__result = $"{(string.IsNullOrEmpty(title) ? "" : $"<c={nameColor}>{custom.Title().ToUpper()}</c>\n")}{BuildString(custom.Description(), custom.Values.Select(v => v()).ToArray())}";
 		return false;
 	}
 

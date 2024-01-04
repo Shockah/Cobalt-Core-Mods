@@ -62,6 +62,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		));
 		Api = new(this);
 		Api.RegisterTypeForExtensionData(typeof(StuffBase));
+		Api.RegisterTypeForExtensionData(typeof(AVariableHint));
 
 		StatusLogicManager.Register(WormStatusManager, 0);
 		StatusLogicManager.Register(OxidationStatusManager, 0);
@@ -71,6 +72,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		ArtifactBrowsePatches.Apply(Harmony);
 		ArtifactPatches.Apply(Harmony);
 		AStatusPatches.Apply(Harmony);
+		AVariableHintPatches.Apply(Harmony);
 		BigStatsPatches.Apply(Harmony);
 		CardPatches.Apply(Harmony);
 		CombatPatches.Apply(Harmony);

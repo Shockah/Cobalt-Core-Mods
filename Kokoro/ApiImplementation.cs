@@ -234,6 +234,13 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 		public CardAction MakeHidden(CardAction action, bool showTooltips = false)
 			=> new AHidden { Action = action, ShowTooltips = showTooltips };
 
+		public AVariableHint SetTargetPlayer(AVariableHint action, bool targetPlayer)
+		{
+			var copy = Mutil.DeepCopy(action);
+			Instance.Api.SetExtensionData(copy, "targetPlayer", targetPlayer);
+			return copy;
+		}
+
 		public List<CardAction> GetWrappedCardActions(CardAction action)
 			=> Instance.WrappedActionManager.GetWrappedCardActions(action).ToList();
 
