@@ -238,7 +238,10 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 			=> Instance.WrappedActionManager.GetWrappedCardActions(action).ToList();
 
 		public List<CardAction> GetWrappedCardActionsRecursively(CardAction action)
-			=> Instance.WrappedActionManager.GetWrappedCardActionsRecursively(action).ToList();
+			=> Instance.WrappedActionManager.GetWrappedCardActionsRecursively(action, includingWrapperActions: false).ToList();
+
+		public List<CardAction> GetWrappedCardActionsRecursively(CardAction action, bool includingWrapperActions)
+			=> Instance.WrappedActionManager.GetWrappedCardActionsRecursively(action, includingWrapperActions).ToList();
 
 		public void RegisterWrappedActionHook(IWrappedActionHook hook, double priority)
 			=> Instance.WrappedActionManager.Register(hook, priority);
@@ -250,6 +253,7 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 
 	#region ComplexActions
 	public IKokoroApi.IConditionalActionApi ConditionalActions { get; } = new ConditionalActionApiImplementation();
+	public IKokoroApi.IActionCostApi ActionCosts { get; } = new ActionCostApiImplementation();
 
 	public sealed class ConditionalActionApiImplementation : IKokoroApi.IConditionalActionApi
 	{
@@ -282,6 +286,27 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 			bool hideOperator = false
 		)
 			=> new ConditionalActionEquation(lhs, @operator, rhs, style, hideOperator);
+	}
+
+	public sealed class ActionCostApiImplementation : IKokoroApi.IActionCostApi
+	{
+		public CardAction Make(IKokoroApi.IActionCostApi.IActionCost cost, CardAction action)
+			=> new AResourceCost { Costs = new() { cost }, Action = action };
+
+		public CardAction Make(IReadOnlyList<IKokoroApi.IActionCostApi.IActionCost> costs, CardAction action)
+			=> new AResourceCost { Costs = costs.ToList(), Action = action };
+
+		public IKokoroApi.IActionCostApi.IActionCost Cost(IReadOnlyList<IKokoroApi.IActionCostApi.IResource> potentialResources, int amount = 1, Spr? costUnsatisfiedIcon = null, Spr? costSatisfiedIcon = null)
+			=> new ActionCostImpl(potentialResources, amount, costUnsatisfiedIcon, costSatisfiedIcon);
+
+		public IKokoroApi.IActionCostApi.IActionCost Cost(IKokoroApi.IActionCostApi.IResource resource, int amount = 1)
+			=> new ActionCostImpl(new List<IKokoroApi.IActionCostApi.IResource> () { resource }, amount);
+
+		public IKokoroApi.IActionCostApi.IResource StatusResource(Status status, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon)
+			=> new ActionCostStatusResource(status, targetPlayer: true, costUnsatisfiedIcon, costSatisfiedIcon);
+
+		public IKokoroApi.IActionCostApi.IResource StatusResource(Status status, bool targetPlayer, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon)
+			=> new ActionCostStatusResource(status, targetPlayer, costUnsatisfiedIcon, costSatisfiedIcon);
 	}
 	#endregion
 }

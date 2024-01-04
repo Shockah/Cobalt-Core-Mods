@@ -20,6 +20,8 @@ internal static class CardPatches
 	private static int RenderActionCounter = 0;
 	private static int LastRenderActionWidth = 0;
 	private static List<CardAction>? LastCardActions = null;
+	private static Dictionary<string, int>? CurrentResourceState = null;
+	private static Dictionary<string, int>? CurrentNonDrawingResourceState = null;
 	private static readonly Stack<Matrix?> CardRenderMatrixStack = new();
 
 	public static void Apply(Harmony harmony)
@@ -186,6 +188,7 @@ internal static class CardPatches
 				.Find(ILMatches.Call("GetActionsOverridden"))
 				.Insert(
 					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Transpiler_ModifyActions))),
 					new CodeInstruction(OpCodes.Dup),
 					new CodeInstruction(OpCodes.Stloc, actionsOverriddenLocal)
@@ -213,8 +216,19 @@ internal static class CardPatches
 		}
 	}
 
-	private static List<CardAction> Card_MakeAllActionIcons_Transpiler_ModifyActions(List<CardAction> actions)
-		=> actions.Where(a => a is not AHidden).ToList();
+	private static List<CardAction> Card_MakeAllActionIcons_Transpiler_ModifyActions(List<CardAction> actions, State state)
+	{
+		var resources = actions
+			.SelectMany(a => Instance.WrappedActionManager.GetWrappedCardActionsRecursively(a, includingWrapperActions: true))
+			.OfType<AResourceCost>()
+			.SelectMany(a => a.Costs ?? new())
+			.SelectMany(c => c.PotentialResources)
+			.ToList();
+
+		CurrentResourceState = resources.Count == 0 ? new() : AResourceCost.GetCurrentResourceState(state, state.route as Combat ?? DB.fakeCombat, resources);
+		CurrentNonDrawingResourceState = new(CurrentResourceState);
+		return actions.Where(a => a is not AHidden).ToList();
+	}
 
 	private static void Card_MakeAllActionIcons_Transpiler_PushMatrix(Card card, G g, List<CardAction> actions)
 	{
@@ -243,6 +257,9 @@ internal static class CardPatches
 
 	private static void Card_MakeAllActionIcons_Finalizer()
 	{
+		CurrentResourceState = null;
+		CurrentNonDrawingResourceState = null;
+
 		MakeAllActionIconsCounter--;
 		if (MakeAllActionIconsCounter != 0)
 			return;
@@ -257,43 +274,80 @@ internal static class CardPatches
 
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
 	{
-		if (action is not AConditional conditional)
-			return true;
-		if (conditional.Action is not { } wrappedAction)
+		if (action is AConditional conditional)
+		{
+			if (conditional.Action is not { } wrappedAction)
+				return false;
+
+			bool oldActionDisabled = wrappedAction.disabled;
+			bool faded = action.disabled || (conditional.FadeUnsatisfied && state.route is Combat combat && conditional.Expression?.GetValue(state, combat) == false);
+			wrappedAction.disabled = faded;
+
+			var position = g.Push(rect: new()).rect.xy;
+			int initialX = (int)position.x;
+
+			conditional.Expression?.Render(g, ref position, faded, dontDraw);
+			if (conditional.Expression?.ShouldRenderQuestionMark(state, state.route as Combat) == true)
+			{
+				if (!dontDraw)
+					Draw.Sprite((Spr)Instance.Content.QuestionMarkSprite.Id!.Value, position.x, position.y, color: faded ? Colors.disabledIconTint : Colors.white);
+				position.x += SpriteLoader.Get((Spr)Instance.Content.QuestionMarkSprite.Id!.Value)?.Width ?? 0;
+				position.x -= 1;
+			}
+
+			position.x += 2;
+			if (wrappedAction is AAttack attack)
+			{
+				var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
+				attack.stunEnemy = shouldStun;
+			}
+
+			g.Push(rect: new(position.x - initialX, 0));
+			position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+			g.Pop();
+
+			__result = (int)position.x - initialX;
+			g.Pop();
+			wrappedAction.disabled = oldActionDisabled;
+
 			return false;
-
-		bool oldActionDisabled = wrappedAction.disabled;
-		bool faded = action.disabled || (conditional.FadeUnsatisfied && state.route is Combat combat && conditional.Expression?.GetValue(state, combat) == false);
-		wrappedAction.disabled = faded;
-
-		var position = g.Push(rect: new()).rect.xy;
-		int initialX = (int)position.x;
-
-		conditional.Expression?.Render(g, ref position, faded, dontDraw);
-		if (conditional.Expression?.ShouldRenderQuestionMark(state, state.route as Combat) == true)
+		}
+		else if (action is AResourceCost resourceCostAction)
 		{
-			if (!dontDraw)
-				Draw.Sprite((Spr)Instance.Content.QuestionMarkSprite.Id!.Value, position.x, position.y, color: faded ? Colors.disabledIconTint : Colors.white);
-			position.x += SpriteLoader.Get((Spr)Instance.Content.QuestionMarkSprite.Id!.Value)?.Width ?? 0;
-			position.x -= 1;
+			if (resourceCostAction.Action is not { } wrappedAction)
+				return false;
+			var resourceState = (dontDraw ? CurrentNonDrawingResourceState : CurrentResourceState) ?? new();
+
+			bool oldActionDisabled = wrappedAction.disabled;
+			wrappedAction.disabled = action.disabled;
+
+			var position = g.Push(rect: new()).rect.xy;
+			int initialX = (int)position.x;
+
+			var (payment, groupedPayment, _) = AResourceCost.GetResourcePayment(resourceState, resourceCostAction.Costs ?? new());
+			resourceCostAction.RenderCosts(g, ref position, action.disabled, dontDraw, payment);
+			foreach (var (resourceKey, resourceAmount) in groupedPayment)
+				resourceState[resourceKey] = resourceState.GetValueOrDefault(resourceKey) - resourceAmount;
+
+			position.x += 2;
+			if (wrappedAction is AAttack attack)
+			{
+				var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
+				attack.stunEnemy = shouldStun;
+			}
+
+			g.Push(rect: new(position.x - initialX, 0));
+			position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+			g.Pop();
+
+			__result = (int)position.x - initialX;
+			g.Pop();
+			wrappedAction.disabled = oldActionDisabled;
+
+			return false;
 		}
 
-		position.x += 2;
-		if (wrappedAction is AAttack attack)
-		{
-			var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
-			attack.stunEnemy = shouldStun;
-		}
-
-		g.Push(rect: new(position.x - initialX, 0));
-		position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
-		g.Pop();
-
-		__result = (int)position.x - initialX;
-		g.Pop();
-		wrappedAction.disabled = oldActionDisabled;
-
-		return false;
+		return true;
 	}
 
 	private static void Card_RenderAction_Prefix_First(Card __instance, G g, CardAction action, bool dontDraw)
@@ -436,7 +490,7 @@ internal static class CardPatches
 	}
 
 	private static List<CardAction> Card_GetActionsOverridden_Transpiler_UnwrapActions(List<CardAction> actions)
-		=> actions.SelectMany(Instance.WrappedActionManager.GetWrappedCardActionsRecursively).ToList();
+		=> actions.SelectMany(a => Instance.WrappedActionManager.GetWrappedCardActionsRecursively(a, includingWrapperActions: false)).ToList();
 
 	private static IEnumerable<CodeInstruction> Card_GetDataWithOverrides_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
@@ -463,5 +517,5 @@ internal static class CardPatches
 	}
 
 	private static List<CardAction> Card_GetDataWithOverrides_Transpiler_UnwrapActions(List<CardAction> actions)
-		=> actions.SelectMany(Instance.WrappedActionManager.GetWrappedCardActionsRecursively).ToList();
+		=> actions.SelectMany(a => Instance.WrappedActionManager.GetWrappedCardActionsRecursively(a, includingWrapperActions: false)).ToList();
 }

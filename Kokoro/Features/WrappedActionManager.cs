@@ -8,6 +8,7 @@ public sealed class WrappedActionManager : HookManager<IWrappedActionHook>
 	internal WrappedActionManager() : base()
 	{
 		Register(ConditionalActionWrappedActionHook.Instance, 0);
+		Register(ResourceCostActionWrappedActionHook.Instance, 0);
 		Register(HiddenActionWrappedActionHook.Instance, 0);
 	}
 
@@ -26,7 +27,7 @@ public sealed class WrappedActionManager : HookManager<IWrappedActionHook>
 		yield return action;
 	}
 
-	public IEnumerable<CardAction> GetWrappedCardActionsRecursively(CardAction action)
+	public IEnumerable<CardAction> GetWrappedCardActionsRecursively(CardAction action, bool includingWrapperActions)
 	{
 		foreach (var hook in Hooks)
 		{
@@ -34,8 +35,10 @@ public sealed class WrappedActionManager : HookManager<IWrappedActionHook>
 			if (wrappedActions is not null)
 			{
 				foreach (var wrappedAction in wrappedActions)
-					foreach (var nestedWrappedAction in GetWrappedCardActionsRecursively(wrappedAction))
+					foreach (var nestedWrappedAction in GetWrappedCardActionsRecursively(wrappedAction, includingWrapperActions))
 						yield return nestedWrappedAction;
+				if (includingWrapperActions)
+					yield return action;
 				yield break;
 			}
 		}
@@ -54,6 +57,22 @@ public sealed class ConditionalActionWrappedActionHook : IWrappedActionHook
 		if (action is not AConditional conditional)
 			return null;
 		if (conditional.Action is not { } wrappedAction)
+			return null;
+		return new() { wrappedAction };
+	}
+}
+
+public sealed class ResourceCostActionWrappedActionHook : IWrappedActionHook
+{
+	public static ResourceCostActionWrappedActionHook Instance { get; private set; } = new();
+
+	private ResourceCostActionWrappedActionHook() { }
+
+	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	{
+		if (action is not AResourceCost resourceCostAction)
+			return null;
+		if (resourceCostAction.Action is not { } wrappedAction)
 			return null;
 		return new() { wrappedAction };
 	}

@@ -16,6 +16,7 @@ public partial interface IKokoroApi
 
 		List<CardAction> GetWrappedCardActions(CardAction action);
 		List<CardAction> GetWrappedCardActionsRecursively(CardAction action);
+		List<CardAction> GetWrappedCardActionsRecursively(CardAction action, bool includingWrapperActions);
 
 		void RegisterWrappedActionHook(IWrappedActionHook hook, double priority);
 		void UnregisterWrappedActionHook(IWrappedActionHook hook);
