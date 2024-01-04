@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,11 +11,12 @@ internal sealed class ActionCostStatusResource : IKokoroApi.IActionCostApi.IReso
 	public readonly Status Status;
 
 	[JsonProperty]
-	public readonly bool TargetPlayer;
+	[JsonConverter(typeof(StringEnumConverter))]
+	public readonly IKokoroApi.IActionCostApi.StatusResourceTarget Target;
 
 	[JsonIgnore]
 	public string ResourceKey
-		=> $"Status.{(TargetPlayer ? "Player" : "Enemy")}.{Status.Key()}";
+		=> $"Status.{(Target == IKokoroApi.IActionCostApi.StatusResourceTarget.Player ? "Player" : "Enemy")}.{Status.Key()}";
 
 	[JsonIgnore]
 	public Spr? CostUnsatisfiedIcon { get; }
@@ -23,13 +25,13 @@ internal sealed class ActionCostStatusResource : IKokoroApi.IActionCostApi.IReso
 	public Spr? CostSatisfiedIcon { get; }
 
 	[JsonConstructor]
-	public ActionCostStatusResource(Status status, bool targetPlayer)
+	public ActionCostStatusResource(Status status, IKokoroApi.IActionCostApi.StatusResourceTarget target)
 	{
 		this.Status = status;
-		this.TargetPlayer = targetPlayer;
+		this.Target = target;
 	}
 
-	public ActionCostStatusResource(Status status, bool targetPlayer, Spr? costUnsatisfiedIcon, Spr? costSatisfiedIcon) : this(status, targetPlayer)
+	public ActionCostStatusResource(Status status, IKokoroApi.IActionCostApi.StatusResourceTarget target, Spr? costUnsatisfiedIcon, Spr? costSatisfiedIcon) : this(status, target)
 	{
 		this.CostUnsatisfiedIcon = costUnsatisfiedIcon;
 		this.CostSatisfiedIcon = costSatisfiedIcon;
@@ -37,14 +39,24 @@ internal sealed class ActionCostStatusResource : IKokoroApi.IActionCostApi.IReso
 
 	public int GetCurrentResourceAmount(State state, Combat combat)
 	{
-		var ship = TargetPlayer ? state.ship : combat.otherShip;
+		var ship = Target == IKokoroApi.IActionCostApi.StatusResourceTarget.Player ? state.ship : combat.otherShip;
 		return ship.Get(Status);
 	}
 
 	public void PayResource(State state, Combat combat, int amount)
 	{
-		var ship = TargetPlayer ? state.ship : combat.otherShip;
+		var ship = Target == IKokoroApi.IActionCostApi.StatusResourceTarget.Player ? state.ship : combat.otherShip;
 		ship.Add(Status, -amount);
+	}
+
+	public void RenderPrefix(G g, ref Vec position, bool isDisabled, bool dontRender)
+	{
+		if (Target != IKokoroApi.IActionCostApi.StatusResourceTarget.EnemyWithOutgoingArrow)
+			return;
+
+		if (!dontRender)
+			Draw.Sprite(StableSpr.icons_outgoing, position.x, position.y, color: isDisabled ? Colors.disabledIconTint : Colors.white);
+		position.x += 8;
 	}
 
 	public void Render(G g, ref Vec position, bool isSatisfied, bool isDisabled, bool dontRender)
@@ -83,7 +95,7 @@ internal sealed class ActionCostImpl : IKokoroApi.IActionCostApi.IActionCost
 		this.CostSatisfiedIcon = costSatisfiedIcon;
 	}
 
-	public void Render(G g, ref Vec position, IKokoroApi.IActionCostApi.IResource? satisfiedResource, bool isDisabled, bool dontRender)
+	public void RenderSingle(G g, ref Vec position, IKokoroApi.IActionCostApi.IResource? satisfiedResource, bool isDisabled, bool dontRender)
 	{
 		if ((satisfiedResource is null ? CostUnsatisfiedIcon : CostSatisfiedIcon) is { } overriddenIcon)
 		{

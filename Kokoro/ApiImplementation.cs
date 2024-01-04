@@ -303,10 +303,10 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 			=> new ActionCostImpl(new List<IKokoroApi.IActionCostApi.IResource> () { resource }, amount);
 
 		public IKokoroApi.IActionCostApi.IResource StatusResource(Status status, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon)
-			=> new ActionCostStatusResource(status, targetPlayer: true, costUnsatisfiedIcon, costSatisfiedIcon);
+			=> new ActionCostStatusResource(status, target: IKokoroApi.IActionCostApi.StatusResourceTarget.Player, costUnsatisfiedIcon, costSatisfiedIcon);
 
-		public IKokoroApi.IActionCostApi.IResource StatusResource(Status status, bool targetPlayer, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon)
-			=> new ActionCostStatusResource(status, targetPlayer, costUnsatisfiedIcon, costSatisfiedIcon);
+		public IKokoroApi.IActionCostApi.IResource StatusResource(Status status, IKokoroApi.IActionCostApi.StatusResourceTarget target, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon)
+			=> new ActionCostStatusResource(status, target, costUnsatisfiedIcon, costSatisfiedIcon);
 	}
 	#endregion
 }

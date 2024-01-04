@@ -41,18 +41,20 @@ public sealed class AResourceCost : CardAction
 			return;
 
 		int resourceIndex = 0;
+		Costs.FirstOrDefault()?.RenderPrefix(g, ref position, isDisabled, dontRender);
 		foreach (var cost in Costs)
 		{
 			for (int i = 0; i < cost.ResourceAmount; i++)
 			{
 				var (resourceKey, isResourceSatisfied) = payment[resourceIndex];
 				var resource = cost.PotentialResources.FirstOrDefault(r => r.ResourceKey == resourceKey);
-				cost.Render(g, ref position, isResourceSatisfied ? resource : null, isDisabled, dontRender);
+				cost.RenderSingle(g, ref position, isResourceSatisfied ? resource : null, isDisabled, dontRender);
 				position.x -= 2;
 				resourceIndex++;
 			}
 		}
 		position.x += 2;
+		Costs.LastOrDefault()?.RenderSuffix(g, ref position, isDisabled, dontRender);
 	}
 
 	public override List<Tooltip> GetTooltips(State s)

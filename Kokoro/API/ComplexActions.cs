@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Shockah.Kokoro;
 
@@ -56,7 +57,7 @@ public partial interface IKokoroApi
 		IActionCost Cost(IResource resource, int amount = 1);
 
 		IResource StatusResource(Status status, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon);
-		IResource StatusResource(Status status, bool targetPlayer, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon);
+		IResource StatusResource(Status status, StatusResourceTarget target, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon);
 
 		public interface IActionCost
 		{
@@ -65,7 +66,13 @@ public partial interface IKokoroApi
 			Spr? CostUnsatisfiedIcon { get; }
 			Spr? CostSatisfiedIcon { get; }
 
-			void Render(G g, ref Vec position, IResource? satisfiedResource, bool isDisabled, bool dontRender);
+			void RenderPrefix(G g, ref Vec position, bool isDisabled, bool dontRender)
+				=> PotentialResources.FirstOrDefault()?.RenderPrefix(g, ref position, isDisabled, dontRender);
+
+			void RenderSuffix(G g, ref Vec position, bool isDisabled, bool dontRender)
+				=> PotentialResources.FirstOrDefault()?.RenderSuffix(g, ref position, isDisabled, dontRender);
+
+			void RenderSingle(G g, ref Vec position, IResource? satisfiedResource, bool isDisabled, bool dontRender);
 			List<Tooltip> GetTooltips(State state, Combat? combat) => new();
 		}
 
@@ -77,7 +84,16 @@ public partial interface IKokoroApi
 
 			int GetCurrentResourceAmount(State state, Combat combat);
 			void PayResource(State state, Combat combat, int amount);
+			void RenderPrefix(G g, ref Vec position, bool isDisabled, bool dontRender) { }
+			void RenderSuffix(G g, ref Vec position, bool isDisabled, bool dontRender) { }
 			void Render(G g, ref Vec position, bool isSatisfied, bool isDisabled, bool dontRender);
+		}
+
+		public enum StatusResourceTarget
+		{
+			Player,
+			Enemy,
+			EnemyWithOutgoingArrow
 		}
 	}
 }
