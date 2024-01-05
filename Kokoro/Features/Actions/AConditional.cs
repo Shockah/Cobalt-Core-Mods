@@ -27,13 +27,13 @@ public sealed class AConditional : CardAction
 		if (Expression is not null)
 		{
 			var description = Expression.GetTooltipDescription(s, s.route as Combat);
-
+			var formattedDescription = string.Format(I18n.ConditionalActionDescription, description);
 			tooltips.Add(new CustomTTGlossary(
 				CustomTTGlossary.GlossaryType.action,
 				() => (Spr)ModEntry.Instance.Content.QuestionMarkSprite.Id!.Value,
 				() => I18n.ConditionalActionName,
-				() => description,
-				key: description
+				() => formattedDescription,
+				key: $"AConditional::{formattedDescription}"
 			));
 			tooltips.AddRange(Expression.GetTooltips(s, s.route as Combat));
 		}
