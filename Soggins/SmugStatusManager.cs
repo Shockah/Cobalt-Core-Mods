@@ -268,7 +268,8 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 				{
 					status = (Status)Instance.BotchesStatus.Id!.Value,
 					statusAmount = 1,
-					targetPlayer = true
+					targetPlayer = true,
+					whoDidThis = deck
 				});
 
 				bool isOversmug = Instance.Api.IsOversmug(state, state.ship);
