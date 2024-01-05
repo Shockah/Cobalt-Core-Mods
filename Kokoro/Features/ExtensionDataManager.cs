@@ -8,10 +8,10 @@ namespace Shockah.Kokoro;
 
 internal sealed class ExtensionDataManager
 {
-	internal readonly ConditionalWeakTable<object, Dictionary<string, Dictionary<string, object>>> ExtensionDataStorage = new();
+	internal readonly ConditionalWeakTable<object, Dictionary<string, Dictionary<string, object?>>> ExtensionDataStorage = new();
 	private readonly HashSet<Type> TypesRegisteredForExtensionData = new();
 
-	private static T ConvertExtensionData<T>(object o) where T : notnull
+	private static T ConvertExtensionData<T>(object? o)
 	{
 		if (typeof(T).IsInstanceOfType(o))
 			return (T)o;
@@ -29,8 +29,10 @@ internal sealed class ExtensionDataManager
 			return (T)(object)Convert.ToSingle(o);
 		else if (typeof(T) == typeof(double))
 			return (T)(object)Convert.ToDouble(o);
+		else if (o is null && (!typeof(T).IsValueType || (typeof(T).IsGenericType) && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>)))
+			return default!;
 		else
-			return (T)o;
+			throw new ArgumentException($"Cannot convert {o} to extension data type {typeof(T)}", nameof(T));
 	}
 
 	internal bool IsTypeRegisteredForExtensionData(object o)
@@ -50,7 +52,7 @@ internal sealed class ExtensionDataManager
 	public void RegisterTypeForExtensionData(Type type)
 		=> TypesRegisteredForExtensionData.Add(type);
 
-	public T GetExtensionData<T>(IManifest manifest, object o, string key) where T : notnull
+	public T GetExtensionData<T>(IManifest manifest, object o, string key)
 	{
 		if (!IsTypeRegisteredForExtensionData(o))
 			throw new InvalidOperationException($"Type {o.GetType().FullName} is not registered for storing extension data.");
@@ -63,7 +65,7 @@ internal sealed class ExtensionDataManager
 		return ConvertExtensionData<T>(data);
 	}
 
-	public bool TryGetExtensionData<T>(IManifest manifest, object o, string key, [MaybeNullWhen(false)] out T data) where T : notnull
+	public bool TryGetExtensionData<T>(IManifest manifest, object o, string key, [MaybeNullWhen(false)] out T data)
 	{
 		if (!IsTypeRegisteredForExtensionData(o))
 			throw new InvalidOperationException($"Type {o.GetType().FullName} is not registered for storing extension data.");
@@ -86,7 +88,7 @@ internal sealed class ExtensionDataManager
 		return true;
 	}
 
-	public T ObtainExtensionData<T>(IManifest manifest, object o, string key, Func<T> factory) where T : notnull
+	public T ObtainExtensionData<T>(IManifest manifest, object o, string key, Func<T> factory)
 	{
 		if (!TryGetExtensionData<T>(manifest, o, key, out var data))
 		{
@@ -96,7 +98,7 @@ internal sealed class ExtensionDataManager
 		return data;
 	}
 
-	public T ObtainExtensionData<T>(IManifest manifest, object o, string key) where T : notnull, new()
+	public T ObtainExtensionData<T>(IManifest manifest, object o, string key) where T : new()
 		=> ObtainExtensionData(manifest, o, key, () => new T());
 
 	public bool ContainsExtensionData(IManifest manifest, object o, string key)
@@ -112,7 +114,7 @@ internal sealed class ExtensionDataManager
 		return true;
 	}
 
-	public void SetExtensionData<T>(IManifest manifest, object o, string key, T data) where T : notnull
+	public void SetExtensionData<T>(IManifest manifest, object o, string key, T data)
 	{
 		if (!IsTypeRegisteredForExtensionData(o))
 			throw new InvalidOperationException($"Type {o.GetType().FullName} is not registered for storing extension data.");

@@ -81,22 +81,22 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 	public void RegisterTypeForExtensionData(Type type)
 		=> Instance.ExtensionDataManager.RegisterTypeForExtensionData(type);
 
-	public T GetExtensionData<T>(object o, string key) where T : notnull
+	public T GetExtensionData<T>(object o, string key)
 		=> Instance.ExtensionDataManager.GetExtensionData<T>(Manifest, o, key);
 
-	public bool TryGetExtensionData<T>(object o, string key, [MaybeNullWhen(false)] out T data) where T : notnull
+	public bool TryGetExtensionData<T>(object o, string key, [MaybeNullWhen(false)] out T data)
 		=> Instance.ExtensionDataManager.TryGetExtensionData(Manifest, o, key, out data);
 
-	public T ObtainExtensionData<T>(object o, string key, Func<T> factory) where T : notnull
+	public T ObtainExtensionData<T>(object o, string key, Func<T> factory)
 		=> Instance.ExtensionDataManager.ObtainExtensionData(Manifest, o, key, factory);
 
-	public T ObtainExtensionData<T>(object o, string key) where T : notnull, new()
+	public T ObtainExtensionData<T>(object o, string key) where T : new()
 		=> Instance.ExtensionDataManager.ObtainExtensionData<T>(Manifest, o, key);
 
 	public bool ContainsExtensionData(object o, string key)
 		=> Instance.ExtensionDataManager.ContainsExtensionData(Manifest, o, key);
 
-	public void SetExtensionData<T>(object o, string key, T data) where T : notnull
+	public void SetExtensionData<T>(object o, string key, T data)
 		=> Instance.ExtensionDataManager.SetExtensionData(Manifest, o, key, data);
 
 	public void RemoveExtensionData(object o, string key)
