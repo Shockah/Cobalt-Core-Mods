@@ -188,14 +188,14 @@ public sealed class VanillaTurnEndStatusAutoStepLogicHook : IStatusLogicHook
 		if (amount == 0)
 			return false;
 
-		bool shouldDecrement = status is Status.overdrive or Status.temporaryCheap or Status.libra or Status.lockdown;
+		bool shouldDecrement = status is Status.overdrive or Status.temporaryCheap or Status.libra or Status.lockdown or Status.backwardsMissiles;
 		if (shouldDecrement)
 		{
 			amount -= Math.Sign(amount);
 			return false;
 		}
 
-		bool shouldZeroOut = status is Status.autopilot or Status.hermes or Status.backwardsMissiles or Status.engineStall;
+		bool shouldZeroOut = status is Status.autopilot or Status.hermes or Status.engineStall;
 		if (shouldZeroOut)
 		{
 			amount = 0;
