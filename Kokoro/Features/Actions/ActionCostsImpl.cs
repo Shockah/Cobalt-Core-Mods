@@ -5,6 +5,67 @@ using System.Linq;
 
 namespace Shockah.Kokoro;
 
+internal sealed class ActionCostImpl : IKokoroApi.IActionCostApi.IActionCost
+{
+	[JsonProperty]
+	public IReadOnlyList<IKokoroApi.IActionCostApi.IResource> PotentialResources { get; }
+
+	[JsonProperty]
+	public int ResourceAmount { get; }
+
+	[JsonProperty]
+	public int? IconOverlap { get; }
+
+	[JsonIgnore]
+	public Spr? CostUnsatisfiedIcon { get; }
+
+	[JsonIgnore]
+	public Spr? CostSatisfiedIcon { get; }
+
+	[JsonIgnore]
+	public int? IconWidth { get; }
+
+	[JsonIgnore]
+	public IKokoroApi.IActionCostApi.CustomCostTooltipProvider? CustomTooltipProvider { get; }
+
+	[JsonConstructor]
+	public ActionCostImpl(IReadOnlyList<IKokoroApi.IActionCostApi.IResource> potentialResources, int resourceAmount, int? iconOverlap)
+	{
+		this.PotentialResources = potentialResources;
+		this.ResourceAmount = resourceAmount;
+		this.IconOverlap = iconOverlap;
+	}
+
+	public ActionCostImpl(IReadOnlyList<IKokoroApi.IActionCostApi.IResource> potentialResources, int resourceAmount, int? iconOverlap, Spr? costUnsatisfiedIcon, Spr? costSatisfiedIcon, int? iconWidth, IKokoroApi.IActionCostApi.CustomCostTooltipProvider? customTooltipProvider) : this(potentialResources, resourceAmount, iconOverlap)
+	{
+		this.CostUnsatisfiedIcon = costUnsatisfiedIcon;
+		this.CostSatisfiedIcon = costSatisfiedIcon;
+		this.IconWidth = iconWidth;
+		this.CustomTooltipProvider = customTooltipProvider;
+	}
+
+	public void RenderSingle(G g, ref Vec position, IKokoroApi.IActionCostApi.IResource? satisfiedResource, bool isDisabled, bool dontRender)
+	{
+		if ((satisfiedResource is null ? CostUnsatisfiedIcon : CostSatisfiedIcon) is { } overriddenIcon)
+		{
+			if (!dontRender)
+				Draw.Sprite(overriddenIcon, position.x, position.y, color: isDisabled ? Colors.disabledIconTint : Colors.white);
+			position.x += IconWidth ?? 8;
+		}
+		else
+		{
+			(satisfiedResource ?? PotentialResources.FirstOrDefault())?.Render(g, ref position, isSatisfied: satisfiedResource is not null, isDisabled, dontRender);
+		}
+	}
+
+	public List<Tooltip> GetTooltips(State state, Combat? combat)
+	{
+		if (CustomTooltipProvider is not null)
+			return CustomTooltipProvider(state, combat, PotentialResources, ResourceAmount);
+		return PotentialResources.FirstOrDefault()?.GetTooltips(state, combat, ResourceAmount) ?? new();
+	}
+}
+
 internal sealed class ActionCostStatusResource : IKokoroApi.IActionCostApi.IResource
 {
 	[JsonProperty]
@@ -95,63 +156,48 @@ internal sealed class ActionCostStatusResource : IKokoroApi.IActionCostApi.IReso
 	}
 }
 
-internal sealed class ActionCostImpl : IKokoroApi.IActionCostApi.IActionCost
+internal sealed class ActionCostEnergyResource : IKokoroApi.IActionCostApi.IResource
 {
-	[JsonProperty]
-	public IReadOnlyList<IKokoroApi.IActionCostApi.IResource> PotentialResources { get; }
-
-	[JsonProperty]
-	public int ResourceAmount { get; }
-
-	[JsonProperty]
-	public int? IconOverlap { get; }
+	[JsonIgnore]
+	public string ResourceKey
+		=> "Energy";
 
 	[JsonIgnore]
-	public Spr? CostUnsatisfiedIcon { get; }
+	public Spr? CostUnsatisfiedIcon
+		=> (Spr)ModEntry.Instance.Content.EnergyCostUnsatisfiedSprite.Id!.Value;
 
 	[JsonIgnore]
-	public Spr? CostSatisfiedIcon { get; }
-
-	[JsonIgnore]
-	public int? IconWidth { get; }
-
-	[JsonIgnore]
-	public IKokoroApi.IActionCostApi.CustomCostTooltipProvider? CustomTooltipProvider { get; }
+	public Spr? CostSatisfiedIcon
+		=> (Spr)ModEntry.Instance.Content.EnergyCostSatisfiedSprite.Id!.Value;
 
 	[JsonConstructor]
-	public ActionCostImpl(IReadOnlyList<IKokoroApi.IActionCostApi.IResource> potentialResources, int resourceAmount, int? iconOverlap)
+	public ActionCostEnergyResource()
 	{
-		this.PotentialResources = potentialResources;
-		this.ResourceAmount = resourceAmount;
-		this.IconOverlap = iconOverlap;
 	}
 
-	public ActionCostImpl(IReadOnlyList<IKokoroApi.IActionCostApi.IResource> potentialResources, int resourceAmount, int? iconOverlap, Spr? costUnsatisfiedIcon, Spr? costSatisfiedIcon, int? iconWidth, IKokoroApi.IActionCostApi.CustomCostTooltipProvider? customTooltipProvider) : this(potentialResources, resourceAmount, iconOverlap)
+	public int GetCurrentResourceAmount(State state, Combat combat)
+		=> combat.energy;
+
+	public void PayResource(State state, Combat combat, int amount)
+		=> combat.energy -= amount;
+
+	public void Render(G g, ref Vec position, bool isSatisfied, bool isDisabled, bool dontRender)
 	{
-		this.CostUnsatisfiedIcon = costUnsatisfiedIcon;
-		this.CostSatisfiedIcon = costSatisfiedIcon;
-		this.IconWidth = iconWidth;
-		this.CustomTooltipProvider = customTooltipProvider;
+		var icon = (isSatisfied ? CostSatisfiedIcon : CostUnsatisfiedIcon) ?? (isSatisfied ? CostUnsatisfiedIcon : CostSatisfiedIcon) ?? StableSpr.icons_energy;
+		if (!dontRender)
+			Draw.Sprite(icon, position.x, position.y, color: isDisabled ? Colors.disabledIconTint : Colors.white);
+		position.x += 8;
 	}
 
-	public void RenderSingle(G g, ref Vec position, IKokoroApi.IActionCostApi.IResource? satisfiedResource, bool isDisabled, bool dontRender)
-	{
-		if ((satisfiedResource is null ? CostUnsatisfiedIcon : CostSatisfiedIcon) is { } overriddenIcon)
+	public List<Tooltip> GetTooltips(State state, Combat? combat, int amount)
+		=> new()
 		{
-			if (!dontRender)
-				Draw.Sprite(overriddenIcon, position.x, position.y, color: isDisabled ? Colors.disabledIconTint : Colors.white);
-			position.x += IconWidth ?? 8;
-		}
-		else
-		{
-			(satisfiedResource ?? PotentialResources.FirstOrDefault())?.Render(g, ref position, isSatisfied: satisfiedResource is not null, isDisabled, dontRender);
-		}
-	}
-
-	public List<Tooltip> GetTooltips(State state, Combat? combat)
-	{
-		if (CustomTooltipProvider is not null)
-			return CustomTooltipProvider(state, combat, PotentialResources, ResourceAmount);
-		return PotentialResources.FirstOrDefault()?.GetTooltips(state, combat, ResourceAmount) ?? new();
-	}
+			new CustomTTGlossary(
+				CustomTTGlossary.GlossaryType.action,
+				() => CostSatisfiedIcon ?? CostUnsatisfiedIcon,
+				() => I18n.EnergyCostActionName,
+				() => string.Format(I18n.EnergyCostActionDescription, amount),
+				key: $"{I18n.EnergyCostActionName}\n{I18n.EnergyCostActionDescription}"
+			)
+		};
 }

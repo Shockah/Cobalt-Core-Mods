@@ -24,6 +24,9 @@ internal sealed class Content
 	internal ExternalSprite LessThanOrEqualSprite { get; private set; } = null!;
 
 	internal ExternalSprite EnergySprite { get; private set; } = null!;
+	internal ExternalSprite EnergyCostSatisfiedSprite { get; private set; } = null!;
+	internal ExternalSprite EnergyCostUnsatisfiedSprite { get; private set; } = null!;
+
 	internal ExternalSprite ContinueSprite { get; private set; } = null!;
 	internal ExternalSprite StopSprite { get; private set; } = null!;
 
@@ -68,6 +71,14 @@ internal sealed class Content
 		EnergySprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Energy",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Energy.png"))
+		);
+		EnergyCostSatisfiedSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.EnergyCostSatisfied",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "EnergyCostSatisfied.png"))
+		);
+		EnergyCostUnsatisfiedSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.EnergyCostUnsatisfied",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "EnergyCostUnsatisfied.png"))
 		);
 		ContinueSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Continue",

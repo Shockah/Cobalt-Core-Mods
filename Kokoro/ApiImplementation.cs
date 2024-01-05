@@ -355,6 +355,9 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 
 		public IKokoroApi.IActionCostApi.IResource StatusResource(Status status, IKokoroApi.IActionCostApi.StatusResourceTarget target, Spr costUnsatisfiedIcon, Spr costSatisfiedIcon, int? iconWidth = null)
 			=> new ActionCostStatusResource(status, target, costUnsatisfiedIcon, costSatisfiedIcon, iconWidth);
+
+		public IKokoroApi.IActionCostApi.IResource EnergyResource()
+			=> new ActionCostEnergyResource();
 	}
 	#endregion
 }

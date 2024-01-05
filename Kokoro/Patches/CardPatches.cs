@@ -193,6 +193,7 @@ internal static class CardPatches
 				.Find(ILMatches.Call("GetActionsOverridden"))
 				.Insert(
 					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Transpiler_ModifyActions))),
 					new CodeInstruction(OpCodes.Dup),
@@ -221,7 +222,7 @@ internal static class CardPatches
 		}
 	}
 
-	private static List<CardAction> Card_MakeAllActionIcons_Transpiler_ModifyActions(List<CardAction> actions, State state)
+	private static List<CardAction> Card_MakeAllActionIcons_Transpiler_ModifyActions(List<CardAction> actions, Card card, State state)
 	{
 		var resources = actions
 			.SelectMany(a => Instance.WrappedActionManager.GetWrappedCardActionsRecursively(a, includingWrapperActions: true))
@@ -231,7 +232,10 @@ internal static class CardPatches
 			.ToList();
 
 		CurrentResourceState = resources.Count == 0 ? new() : AResourceCost.GetCurrentResourceState(state, state.route as Combat ?? DB.fakeCombat, resources);
+		if (CurrentResourceState.ContainsKey("Energy"))
+			CurrentResourceState["Energy"] -= card.GetDataWithOverrides(state).cost;
 		CurrentNonDrawingResourceState = new(CurrentResourceState);
+
 		return actions.Where(a => a is not AHidden).ToList();
 	}
 

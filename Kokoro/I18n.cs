@@ -44,9 +44,11 @@ internal static class I18n
 	public static string ConditionalEquationPossessionComparisonLessThanOrEqualDescription => "you have at most as much {0} as {1}";
 
 	public static string StatusPlayerCostActionName => "{0} COST";
-	public static string StatusPlayerCostActionDescription => "Lose {0} <c=status>{1}</c>. If you don't have enough, this action does not happen.";
+	public static string StatusPlayerCostActionDescription => "Lose <c=keyword>{0}</c> <c=status>{1}</c>. If you don't have enough, this action does not happen.";
 	public static string StatusEnemyCostActionName => "EXPLOIT {0}";
-	public static string StatusEnemyCostActionDescription => "Remove {0} <c=status>{1}</c> from the enemy. If they don't have enough, this action does not happen.";
+	public static string StatusEnemyCostActionDescription => "Remove <c=keyword>{0}</c> <c=status>{1}</c> from the enemy. If they don't have enough, this action does not happen.";
+	public static string EnergyCostActionName => "ENERGY COST";
+	public static string EnergyCostActionDescription => "Lose <c=keyword>{0}</c> extra <c=status>ENERGY</c>. If you don't have enough, this action does not happen.";
 
 	public static string EnemyVariableHint => "<c=action>X</c> = The enemy's {0}{1}{2}{3}.";
 	public static string EnergyVariableHint => "<c=action>X</c> = Your <c=status>ENERGY</c> after paying for this card{0}.";
