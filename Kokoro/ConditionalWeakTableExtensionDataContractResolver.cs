@@ -10,12 +10,12 @@ internal sealed class ConditionalWeakTableExtensionDataContractResolver : IContr
 {
 	private readonly IContractResolver Wrapped;
 	private readonly string JsonKey;
-	private readonly ConditionalWeakTable<object, Dictionary<string, Dictionary<string, object>>> Storage;
+	private readonly ConditionalWeakTable<object, Dictionary<string, Dictionary<string, object?>>> Storage;
 	private readonly Func<object, bool> ShouldStoreExtensionData;
 
 	private readonly Dictionary<Type, JsonContract> ContractCache = new();
 
-	public ConditionalWeakTableExtensionDataContractResolver(IContractResolver wrapped, string jsonKey, ConditionalWeakTable<object, Dictionary<string, Dictionary<string, object>>> storage, Func<object, bool> shouldStoreExtensionData)
+	public ConditionalWeakTableExtensionDataContractResolver(IContractResolver wrapped, string jsonKey, ConditionalWeakTable<object, Dictionary<string, Dictionary<string, object?>>> storage, Func<object, bool> shouldStoreExtensionData)
 	{
 		this.Wrapped = wrapped;
 		this.JsonKey = jsonKey;
@@ -66,7 +66,7 @@ internal sealed class ConditionalWeakTableExtensionDataContractResolver : IContr
 			Storage.Remove(o);
 			return;
 		}
-		if (value is not Dictionary<string, Dictionary<string, object>> dictionary)
+		if (value is not Dictionary<string, Dictionary<string, object?>> dictionary)
 		{
 			ModEntry.Instance.Logger!.LogError("Encountered invalid serialized mod data of type {Type}.", value.GetType().FullName!);
 			return;
