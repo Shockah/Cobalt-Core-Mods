@@ -61,8 +61,9 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 			accessLevelChecking: AccessLevelChecking.DisabledButOnlyAllowPublicMembers
 		));
 		Api = new(this);
-		Api.RegisterTypeForExtensionData(typeof(StuffBase));
 		Api.RegisterTypeForExtensionData(typeof(AVariableHint));
+		Api.RegisterTypeForExtensionData(typeof(Combat));
+		Api.RegisterTypeForExtensionData(typeof(StuffBase));
 
 		StatusLogicManager.Register(WormStatusManager, 0);
 		StatusLogicManager.Register(OxidationStatusManager, 0);

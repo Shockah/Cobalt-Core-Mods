@@ -352,6 +352,32 @@ internal static class CardPatches
 
 			return false;
 		}
+		else if (action is AContinued continuedAction)
+		{
+			if (continuedAction.Action is not { } wrappedAction)
+				return false;
+
+			bool oldActionDisabled = wrappedAction.disabled;
+			wrappedAction.disabled = action.disabled;
+
+			var position = g.Push(rect: new()).rect.xy;
+			int initialX = (int)position.x;
+			if (wrappedAction is AAttack attack)
+			{
+				var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
+				attack.stunEnemy = shouldStun;
+			}
+
+			g.Push(rect: new(position.x - initialX, 0));
+			position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+			g.Pop();
+
+			__result = (int)position.x - initialX;
+			g.Pop();
+			wrappedAction.disabled = oldActionDisabled;
+
+			return false;
+		}
 
 		return true;
 	}

@@ -9,6 +9,7 @@ public sealed class WrappedActionManager : HookManager<IWrappedActionHook>
 	{
 		Register(ConditionalActionWrappedActionHook.Instance, 0);
 		Register(ResourceCostActionWrappedActionHook.Instance, 0);
+		Register(ContinuedActionWrappedActionHook.Instance, 0);
 		Register(HiddenActionWrappedActionHook.Instance, 0);
 	}
 
@@ -73,6 +74,22 @@ public sealed class ResourceCostActionWrappedActionHook : IWrappedActionHook
 		if (action is not AResourceCost resourceCostAction)
 			return null;
 		if (resourceCostAction.Action is not { } wrappedAction)
+			return null;
+		return new() { wrappedAction };
+	}
+}
+
+public sealed class ContinuedActionWrappedActionHook : IWrappedActionHook
+{
+	public static ContinuedActionWrappedActionHook Instance { get; private set; } = new();
+
+	private ContinuedActionWrappedActionHook() { }
+
+	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	{
+		if (action is not AContinued continued)
+			return null;
+		if (continued.Action is not { } wrappedAction)
 			return null;
 		return new() { wrappedAction };
 	}

@@ -231,6 +231,30 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 		public CardAction MakePlayRandomCardsFromAnywhere(IEnumerable<int> cardIds, int amount = 1, bool showTheCardIfNotInHand = true)
 			=> new APlayRandomCardsFromAnywhere { CardIds = cardIds.ToHashSet(), Amount = amount, ShowTheCardIfNotInHand = showTheCardIfNotInHand };
 
+		public CardAction MakeContinue(out Guid id)
+		{
+			id = Guid.NewGuid();
+			return new AContinue { Id = id, Continue = true };
+		}
+
+		public CardAction MakeContinued(Guid id, CardAction action)
+			=> new AContinued { Id = id, Continue = true, Action = action };
+
+		public IEnumerable<CardAction> MakeContinued(Guid id, IEnumerable<CardAction> action)
+			=> action.Select(a => MakeContinued(id, a));
+
+		public CardAction MakeStop(out Guid id)
+		{
+			id = Guid.NewGuid();
+			return new AContinue { Id = id, Continue = false };
+		}
+
+		public CardAction MakeStopped(Guid id, CardAction action)
+			=> new AContinued { Id = id, Continue = false, Action = action };
+
+		public IEnumerable<CardAction> MakeStopped(Guid id, IEnumerable<CardAction> action)
+			=> action.Select(a => MakeStopped(id, a));
+
 		public CardAction MakeHidden(CardAction action, bool showTooltips = false)
 			=> new AHidden { Action = action, ShowTooltips = showTooltips };
 

@@ -36,6 +36,12 @@ internal static class CombatPatches
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), "DoDroneShift"),
 			prefix: new HarmonyMethod(typeof(CombatPatches), nameof(Combat_DoDroneShift_Prefix))
 		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
+			prefix: new HarmonyMethod(typeof(CombatPatches), nameof(Combat_DrainCardActions_Prefix)),
+			postfix: new HarmonyMethod(typeof(CombatPatches), nameof(Combat_DrainCardActions_Postfix))
+		);
 	}
 
 	private static IEnumerable<CodeInstruction> Combat_RenderMoveButtons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
@@ -142,5 +148,18 @@ internal static class CombatPatches
 				hooks.AfterDroneShift(g.state, combat, dir, hook);
 		}
 		return false;
+	}
+
+	private static void Combat_DrainCardActions_Prefix(Combat __instance, ref bool __state)
+		=> __state = __instance.currentCardAction is not null || __instance.cardActions.Count != 0;
+
+	private static void Combat_DrainCardActions_Postfix(Combat __instance, ref bool __state)
+	{
+		var isWorkingOnActions = __instance.currentCardAction is not null || __instance.cardActions.Count != 0;
+		if (isWorkingOnActions || !__state)
+			return;
+
+		Instance.Api.ObtainExtensionData(__instance, "ContinueFlags", () => new HashSet<Guid>()).Clear();
+		Instance.Api.ObtainExtensionData(__instance, "StopFlags", () => new HashSet<Guid>()).Clear();
 	}
 }

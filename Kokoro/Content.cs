@@ -23,6 +23,9 @@ internal sealed class Content
 	internal ExternalSprite GreaterThanOrEqualSprite { get; private set; } = null!;
 	internal ExternalSprite LessThanOrEqualSprite { get; private set; } = null!;
 
+	internal ExternalSprite ContinueSprite { get; private set; } = null!;
+	internal ExternalSprite StopSprite { get; private set; } = null!;
+
 	internal void RegisterArt(ISpriteRegistry registry)
 	{
 		WormSprite = registry.RegisterArtOrThrow(
@@ -60,6 +63,14 @@ internal sealed class Content
 		LessThanOrEqualSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Conditional.LessThanOrEqual",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Conditional", "LessThanOrEqual.png"))
+		);
+		ContinueSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Continue",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Continue.png"))
+		);
+		StopSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Stop",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Stop.png"))
 		);
 	}
 
