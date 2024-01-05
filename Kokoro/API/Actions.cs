@@ -22,6 +22,8 @@ public partial interface IKokoroApi
 
 		CardAction MakeHidden(CardAction action, bool showTooltips = false);
 		AVariableHint SetTargetPlayer(AVariableHint action, bool targetPlayer);
+		AVariableHint MakeEnergyX(AVariableHint? action = null, bool energy = true, int? tooltipOverride = null);
+		AStatus MakeEnergy(AStatus action, bool energy = true);
 
 		List<CardAction> GetWrappedCardActions(CardAction action);
 		List<CardAction> GetWrappedCardActionsRecursively(CardAction action);

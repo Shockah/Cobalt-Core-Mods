@@ -49,6 +49,9 @@ internal static class I18n
 	public static string StatusEnemyCostActionDescription => "Remove {0} <c=status>{1}</c> from the enemy. If they don't have enough, this action does not happen.";
 
 	public static string EnemyVariableHint => "<c=action>X</c> = The enemy's {0}{1}{2}{3}.";
+	public static string EnergyVariableHint => "<c=action>X</c> = Your <c=status>ENERGY</c> after paying for this card{0}.";
+	public static string EnergyGlossaryName => "ENERGY";
+	public static string EnergyGlossaryDescription => "How much <c=energy>ENERGY</c> you have remaining this turn.";
 
 	public static string ContinueActionName => "CONTINUE";
 	public static string ContinueActionDescription => "Trigger the next actions. If this is not triggered, the next actions will not be either.";

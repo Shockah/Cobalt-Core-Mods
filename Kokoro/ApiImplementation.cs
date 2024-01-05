@@ -265,6 +265,23 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 			return copy;
 		}
 
+		public AVariableHint MakeEnergyX(AVariableHint? action = null, bool energy = true, int? tooltipOverride = null)
+		{
+			var copy = action is null ? new() : Mutil.DeepCopy(action);
+			copy.status = Status.tempShield; // it doesn't matter, but it has to be *anything*
+			Instance.Api.SetExtensionData(copy, "energy", energy);
+			Instance.Api.SetExtensionData(copy, "energyTooltipOverride", tooltipOverride);
+			return copy;
+		}
+
+		public AStatus MakeEnergy(AStatus action, bool energy = true)
+		{
+			var copy = Mutil.DeepCopy(action);
+			copy.targetPlayer = true;
+			Instance.Api.SetExtensionData(copy, "energy", energy);
+			return copy;
+		}
+
 		public List<CardAction> GetWrappedCardActions(CardAction action)
 			=> Instance.WrappedActionManager.GetWrappedCardActions(action).ToList();
 

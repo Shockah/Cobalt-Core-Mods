@@ -10,6 +10,7 @@
 * For modders: Added resource cost action APIs.
 * For modders: Added continue/stop action APIs
 * For modders: Added an API to make outgoing X assignment actions.
+* For modders: Added APIs to make energy X assignment and energy modification actions.
 * For modders: Removed the `notnull` constraint from extension data.
 
 ## 1.1.1

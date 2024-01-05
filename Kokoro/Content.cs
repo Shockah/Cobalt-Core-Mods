@@ -23,6 +23,7 @@ internal sealed class Content
 	internal ExternalSprite GreaterThanOrEqualSprite { get; private set; } = null!;
 	internal ExternalSprite LessThanOrEqualSprite { get; private set; } = null!;
 
+	internal ExternalSprite EnergySprite { get; private set; } = null!;
 	internal ExternalSprite ContinueSprite { get; private set; } = null!;
 	internal ExternalSprite StopSprite { get; private set; } = null!;
 
@@ -63,6 +64,10 @@ internal sealed class Content
 		LessThanOrEqualSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Conditional.LessThanOrEqual",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Conditional", "LessThanOrEqual.png"))
+		);
+		EnergySprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Energy",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Energy.png"))
 		);
 		ContinueSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Continue",

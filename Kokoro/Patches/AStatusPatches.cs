@@ -21,6 +21,16 @@ internal static class AStatusPatches
 			original: () => AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.Begin)),
 			transpiler: new HarmonyMethod(typeof(AStatusPatches), nameof(AStatus_Begin_Transpiler))
 		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.GetTooltips)),
+			postfix: new HarmonyMethod(typeof(AStatusPatches), nameof(AStatus_GetTooltips_Postfix))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.GetIcon)),
+			postfix: new HarmonyMethod(typeof(AStatusPatches), nameof(AStatus_GetIcon_Postfix))
+		);
 	}
 
 	private static IEnumerable<CodeInstruction> AStatus_Begin_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
@@ -64,5 +74,31 @@ internal static class AStatusPatches
 	{
 		var ship = status.targetPlayer ? state.ship : combat.otherShip;
 		return Instance.StatusLogicManager.IsAffectedByBoost(state, combat, ship, status.status);
+	}
+
+	private static void AStatus_GetTooltips_Postfix(AStatus __instance, State s, ref List<Tooltip> __result)
+	{
+		if (!Instance.Api.ObtainExtensionData(__instance, "energy", () => false))
+			return;
+
+		__result.Clear();
+		__result.Add(new CustomTTGlossary(
+			CustomTTGlossary.GlossaryType.status,
+			() => (Spr)Instance.Content.EnergySprite.Id!.Value,
+			() => I18n.EnergyGlossaryName,
+			() => I18n.EnergyGlossaryDescription,
+			key: "AStatus.Energy"
+		));
+	}
+
+	private static void AStatus_GetIcon_Postfix(AStatus __instance, ref Icon? __result)
+	{
+		if (!Instance.Api.ObtainExtensionData(__instance, "energy", () => false))
+			return;
+		__result = new(
+			path: (Spr)Instance.Content.EnergySprite.Id!.Value,
+			number: __instance.mode == AStatusMode.Set ? null : __instance.statusAmount,
+			color: Colors.white
+		);
 	}
 }

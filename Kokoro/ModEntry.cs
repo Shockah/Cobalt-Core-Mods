@@ -61,6 +61,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 			accessLevelChecking: AccessLevelChecking.DisabledButOnlyAllowPublicMembers
 		));
 		Api = new(this);
+		Api.RegisterTypeForExtensionData(typeof(AStatus));
 		Api.RegisterTypeForExtensionData(typeof(AVariableHint));
 		Api.RegisterTypeForExtensionData(typeof(Combat));
 		Api.RegisterTypeForExtensionData(typeof(StuffBase));
