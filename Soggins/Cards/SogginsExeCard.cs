@@ -134,7 +134,7 @@ public sealed class SogginsExeCard : Card, IRegisterableCard, IFrogproofCard
 				break;
 		}
 
-		actions.Add(new ACardOffering
+		actions.Add(new ASogginsExe
 		{
 			amount = GetChoiceCount(),
 			limitDeck = (Deck)Instance.SogginsDeck.Id!.Value,

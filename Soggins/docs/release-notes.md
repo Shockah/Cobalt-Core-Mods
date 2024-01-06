@@ -4,8 +4,9 @@
 
 ## Upcoming version
 
-* Updated to the latest Kokoro.
+* Soggins.EXE now guarantees either a Smugness Control or Harnessing Smugness as one of the choices.
 * Infinite and Recycle card traits now obey botches (the card goes to the discard pile).
+* Updated to the latest Kokoro.
 
 ## 1.2.1
 Released 28 December 2023.
