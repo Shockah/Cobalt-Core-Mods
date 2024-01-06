@@ -2,13 +2,14 @@
 
 # Release notes
 
-## Upcoming version
+## 1.2.0
+Released 6 January 2024.
 
 * Fixed conditional actions having wrong tooltips if used to check if the player just has a status at all.
 * For players and modders: Fixed `APlaySpecificCardFromAnywhere` (and in turn `APlayRandomCardsFromAnywhere`) getting into an endless loop if the hand ends up being full in between cards being played (apparent in the Soggins' Do Something! card).
 * For modders: Added `IStatusLogicHook.OnStatusTurnTrigger` and `IStatusLogicHook.HandleStatusTurnAutoStep` APIs.
 * For modders: Added resource cost action APIs.
-* For modders: Added continue/stop action APIs
+* For modders: Added continue/stop action APIs.
 * For modders: Added an API to make outgoing X assignment actions.
 * For modders: Added APIs to make energy X assignment and energy modification actions.
 * For modders: Removed the `notnull` constraint from extension data.

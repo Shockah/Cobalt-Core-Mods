@@ -29,7 +29,7 @@ The mod adds a new artifact pool: duo artifacts, which are pretty powerful artif
 # Kokoro
 
 Kokoro is a utility/library mod - a little bit for players, and a lot for modders.  
-\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fkokoro-1.1.1)] \[[release notes](Kokoro/docs/release-notes.md)] \[[README/source code](Kokoro)]
+\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fkokoro-1.2.0)] \[[release notes](Kokoro/docs/release-notes.md)] \[[README/source code](Kokoro)]
 
 # Rerolls
 
