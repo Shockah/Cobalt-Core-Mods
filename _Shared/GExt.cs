@@ -1,3 +1,4 @@
+#if !IS_NICKEL_MOD
 using HarmonyLib;
 using System;
 
@@ -10,3 +11,4 @@ internal static class GExt
 	public static G? Instance
 		=> GGetter.Value(MG.inst);
 }
+#endif

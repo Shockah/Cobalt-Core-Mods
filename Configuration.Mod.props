@@ -3,15 +3,18 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<ModZipPath>$(MSBuildProjectDirectory)\.release\$(MSBuildProjectName)-$(Version).zip</ModZipPath>
+		<IsNickelMod Condition="'$(IsNickelMod)' == ''">False</IsNickelMod>
+		<DefineConstants Condition="$(IsNickelMod)">$(DefineConstants);IS_NICKEL_MOD</DefineConstants>
 	</PropertyGroup>
 	<Import Project="Configuration.props" />
 
 	<!-- References -->
 	<Import Project="_Shared\_Shared.projitems" Label="Shared" />
 	<ItemGroup>
-		<PackageReference Include="Shockah.CobaltCoreModBuildConfig" Version="2.0.0" />
+		<PackageReference Condition="$(IsNickelMod)" Include="Nickel.ModBuildConfig" Version="0.1.2" />
+		<PackageReference Condition="!$(IsNickelMod)" Include="Shockah.CobaltCoreModBuildConfig" Version="2.0.0" />
+		<PackageReference Condition="!$(IsNickelMod)" Include="Shrike" Version="3.0.0" />
+		<PackageReference Condition="!$(IsNickelMod)" Include="Shrike.Harmony" Version="3.0.0" />
 		<PackageReference Include="EnumByNameSourceGenerator" Version="1.1.1" PrivateAssets="All" ExcludeAssets="runtime" />
-		<PackageReference Include="Shrike" Version="3.0.0" />
-		<PackageReference Include="Shrike.Harmony" Version="3.0.0" />
 	</ItemGroup>
 </Project>

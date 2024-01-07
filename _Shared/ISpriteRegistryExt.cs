@@ -1,3 +1,4 @@
+#if !IS_NICKEL_MOD
 using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
 using System;
@@ -23,3 +24,4 @@ internal static class ISpriteRegistryExt
 		return result ?? throw new NullReferenceException($"Failed to load asset {file.FullName}.");
 	}
 }
+#endif
