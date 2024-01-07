@@ -21,6 +21,15 @@
         },
         "DrainEssence": {
             "name": "Drain Essence"
+        },
+        "AuraOfDarkness": {
+            "name": "Aura of Darkness"
+        },
+        "Heartbreak": {
+            "name": "Heartbreak"
+        },
+        "Screech": {
+            "name": "Screech"
         }
     }
 }

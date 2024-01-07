@@ -33,8 +33,17 @@ public sealed class ModEntry : SimpleMod
 		typeof(DrainEssenceCard),
 	];
 
+	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
+		typeof(AuraOfDarknessCard),
+		typeof(HeartbreakCard),
+	];
+
+	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
+		typeof(ScreechCard),
+	];
+
 	internal static IEnumerable<Type> AllCardTypes
-		=> StarterCardTypes.Concat(CommonCardTypes);
+		=> StarterCardTypes.Concat(CommonCardTypes).Concat(UncommonCardTypes).Concat(RareCardTypes);
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
