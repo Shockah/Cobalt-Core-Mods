@@ -1,0 +1,26 @@
+{
+    "character": {
+        "name": "Dracula",
+        "description": "<c=E81B16>DRACULA</c>\nJust running a pile of miserable errands."
+    },
+    "status": {
+        "Bleeding": {
+            "name": "Bleeding",
+            "description": "At the end of turn, <c=downside>take 1 damage</c> and decrease this by 1."
+        }
+    },
+    "card": {
+        "Bite": {
+            "name": "Bite"
+        },
+        "BloodShield": {
+            "name": "Blood Shield"
+        },
+        "Leech": {
+            "name": "Leech"
+        },
+        "DrainEssence": {
+            "name": "Drain Essence"
+        }
+    }
+}

@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+#if IS_NICKEL_MOD
+using Nickel;
+#endif
 
 namespace Shockah.Shared;
 

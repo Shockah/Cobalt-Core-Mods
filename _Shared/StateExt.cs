@@ -4,8 +4,10 @@ using System.Linq;
 
 internal static class StateExt
 {
+#if !IS_NICKEL_MOD
 	public static State? Instance
 		=> GExt.Instance?.state;
+#endif
 
 	public static IEnumerable<Card> GetAllCards(this State state)
 	{

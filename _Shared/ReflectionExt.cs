@@ -9,11 +9,12 @@ namespace Shockah.Shared;
 
 internal static class ReflectionExt
 {
-	public static AssemblyLoadContext CurrentAssemblyLoadContext
-		=> AssemblyLoadContext.GetLoadContext(typeof(ReflectionExt).Assembly) ?? AssemblyLoadContext.CurrentContextualReflectionContext ?? AssemblyLoadContext.Default;
-
 	public static bool IsBuiltInDebugConfiguration(this Assembly assembly)
 		=> assembly.GetCustomAttributes(false).OfType<DebuggableAttribute>().Any(attr => attr.IsJITTrackingEnabled);
+
+#if !IS_NICKEL_MOD
+	public static AssemblyLoadContext CurrentAssemblyLoadContext
+		=> AssemblyLoadContext.GetLoadContext(typeof(ReflectionExt).Assembly) ?? AssemblyLoadContext.CurrentContextualReflectionContext ?? AssemblyLoadContext.Default;
 
 	public static Func<TValue> EmitStaticGetter<TValue>(this PropertyInfo property)
 	{
@@ -94,4 +95,5 @@ internal static class ReflectionExt
 		il.Emit(OpCodes.Ret);
 		return method.CreateDelegate<Action<TOwner, TValue>>();
 	}
+#endif
 }

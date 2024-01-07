@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !IS_NICKEL_MOD
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -72,3 +73,4 @@ public sealed class OrderedList<TElement, TOrderingValue> : IReadOnlyList<TEleme
 		return false;
 	}
 }
+#endif
