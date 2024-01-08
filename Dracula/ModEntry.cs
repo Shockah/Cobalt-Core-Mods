@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using HarmonyLib;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using System;
@@ -11,12 +12,14 @@ public sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 
+	internal Harmony Harmony { get; }
 	internal IKokoroApi KokoroApi { get; }
 	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
 	internal IDeckEntry DraculaDeck { get; }
 	internal IStatusEntry BleedingStatus { get; }
+	internal IStatusEntry BloodMirrorStatus { get; }
 
 	internal ISpriteEntry ShieldCostOff { get; }
 	internal ISpriteEntry ShieldCostOn { get; }
@@ -32,6 +35,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(ClonedLeechCard),
 		typeof(DrainEssenceCard),
 		typeof(BatFormCard),
+		typeof(BloodMirrorCard),
 	];
 
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
@@ -42,6 +46,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
 		typeof(ScreechCard),
+		typeof(RedThirstCard),
 	];
 
 	internal static IEnumerable<Type> AllCardTypes
@@ -50,9 +55,12 @@ public sealed class ModEntry : SimpleMod
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
+		Harmony = new(package.Manifest.UniqueName);
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
-		KokoroApi.RegisterStatusLogicHook(new BleedingManager(), 0);
-		KokoroApi.RegisterCardRenderHook(new SpacingCardRenderHook(), 0);
+		KokoroApi.RegisterTypeForExtensionData(typeof(AHurt));
+		_ = new BleedingManager();
+		_ = new BloodMirrorManager();
+		//KokoroApi.RegisterCardRenderHook(new SpacingCardRenderHook(), 0);
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -70,20 +78,30 @@ public sealed class ModEntry : SimpleMod
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize
 		});
 
-		ShieldCostOff = Helper.Content.Sprites.RegisterSprite(() => package.PackageRoot.GetRelativeFile("assets/Icons/ShieldCostOff.png").OpenRead());
-		ShieldCostOn = Helper.Content.Sprites.RegisterSprite(() => package.PackageRoot.GetRelativeFile("assets/Icons/ShieldCostOn.png").OpenRead());
-		BleedingCostOff = Helper.Content.Sprites.RegisterSprite(() => package.PackageRoot.GetRelativeFile("assets/Icons/BleedingCostOff.png").OpenRead());
-		BleedingCostOn = Helper.Content.Sprites.RegisterSprite(() => package.PackageRoot.GetRelativeFile("assets/Icons/BleedingCostOn.png").OpenRead());
+		ShieldCostOff = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/ShieldCostOff.png"));
+		ShieldCostOn = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/ShieldCostOn.png"));
+		BleedingCostOff = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/BleedingCostOff.png"));
+		BleedingCostOn = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/BleedingCostOn.png"));
 
 		BleedingStatus = Helper.Content.Statuses.RegisterStatus("Bleeding", new()
 		{
 			Definition = new()
 			{
-				icon = Helper.Content.Sprites.RegisterSprite(() => package.PackageRoot.GetRelativeFile("assets/Status/Bleeding.png").OpenRead()).Sprite,
+				icon = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/Bleeding.png")).Sprite,
 				color = new("BE0000")
 			},
 			Name = this.AnyLocalizations.Bind(["status", "Bleeding", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["status", "Bleeding", "description"]).Localize
+		});
+		BloodMirrorStatus = Helper.Content.Statuses.RegisterStatus("BloodMirror", new()
+		{
+			Definition = new()
+			{
+				icon = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/BloodMirror.png")).Sprite,
+				color = new("BE0000")
+			},
+			Name = this.AnyLocalizations.Bind(["status", "BloodMirror", "name"]).Localize,
+			Description = this.AnyLocalizations.Bind(["status", "BloodMirror", "description"]).Localize
 		});
 
 		foreach (var cardType in AllCardTypes)
@@ -113,7 +131,7 @@ public sealed class ModEntry : SimpleMod
 				Deck = DraculaDeck.Deck,
 				LoopTag = "mini",
 				Frames = [
-					helper.Content.Sprites.RegisterSprite(() => package.PackageRoot.GetRelativeFile("assets/Character/Mini/0.png").OpenRead()).Sprite
+					helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Character/Mini/0.png")).Sprite
 				]
 			}
 		});
