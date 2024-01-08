@@ -14,7 +14,14 @@
         },
         "Transfusion": {
             "name": "Transfusion",
-            "description": "At the start of turn, <c=heal>heal for {0}</c> and lose all stacks. <c=downside>Decrease by 1 for each damage you take.</c>"
+            "description": "At the start of turn, gain 1 <c=status>TRANSFUSING</c>. <c=downside>Decrease by 1 for each hull damage taken.</c>"
+        },
+        "Transfusing": {
+            "name": "Transfusing",
+            "description": [
+                "When <c=status>TRANSFUSING</c> reaches the amount of <c=status>TRANSFUSION</c> on this ship, <c=heal>heal for that amount</c> and remove both.",
+                "If you still have <c=status>TRANSFUSING</c> at the end of combat, <c=heal>heal for its amount</c>."
+            ]
         }
     },
     "card": {
@@ -29,6 +36,9 @@
         },
         "DrainEssence": {
             "name": "Drain Essence"
+        },
+        "Dispersion": {
+            "name": "Dispersion"
         },
         "BatForm": {
             "name": "Bat Form"
