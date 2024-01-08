@@ -4,6 +4,11 @@ namespace Shockah.Dracula;
 
 internal sealed class BleedingManager : IStatusLogicHook
 {
+	public BleedingManager()
+	{
+		ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(this, 0);
+	}
+
 	public void OnStatusTurnTrigger(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)
 	{
 		if (status != ModEntry.Instance.BleedingStatus.Status)
