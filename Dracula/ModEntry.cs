@@ -37,6 +37,7 @@ public sealed class ModEntry : SimpleMod
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
 		typeof(AuraOfDarknessCard),
 		typeof(HeartbreakCard),
+		typeof(BloodScentCard),
 	];
 
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
