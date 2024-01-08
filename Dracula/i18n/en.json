@@ -11,6 +11,10 @@
         "BloodMirror": {
             "name": "Blood Mirror",
             "description": "Whenever you take hull damage, your enemy also takes as much. <c=downside>Decreases by 1 at the start of each turn.</c>"
+        },
+        "Transfusion": {
+            "name": "Transfusion",
+            "description": "At the start of turn, <c=heal>heal for {0}</c> and lose all stacks. <c=downside>Decrease by 1 for each damage you take.</c>"
         }
     },
     "card": {
@@ -82,6 +86,9 @@
             },
             "Vigorous": {
                 "name": "Vigorous Spell"
+            },
+            "Restorative": {
+                "name": "Restorative Spell"
             }
         }
     }

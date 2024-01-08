@@ -21,6 +21,7 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry DraculaDeck { get; }
 	internal IStatusEntry BleedingStatus { get; }
 	internal IStatusEntry BloodMirrorStatus { get; }
+	internal IStatusEntry TransfusionStatus { get; }
 
 	internal ISpriteEntry ShieldCostOff { get; }
 	internal ISpriteEntry ShieldCostOn { get; }
@@ -61,6 +62,7 @@ public sealed class ModEntry : SimpleMod
 	internal static IReadOnlyList<Type> SecretNonAttackCardTypes { get; } = [
 		typeof(SecretProtectiveCard),
 		typeof(SecretVigorousCard),
+		typeof(SecretRestorativeCard),
 	];
 
 	internal static IEnumerable<Type> AllCardTypes
@@ -82,6 +84,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new BleedingManager();
 		_ = new BloodMirrorManager();
 		_ = new LifestealManager();
+		_ = new TransfusionManager();
 		//KokoroApi.RegisterCardRenderHook(new SpacingCardRenderHook(), 0);
 
 		ASpecificCardOffering.ApplyPatches(Harmony, logger);
@@ -122,10 +125,20 @@ public sealed class ModEntry : SimpleMod
 			Definition = new()
 			{
 				icon = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/BloodMirror.png")).Sprite,
-				color = new("BE0000")
+				color = new("FF7F7F")
 			},
 			Name = this.AnyLocalizations.Bind(["status", "BloodMirror", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["status", "BloodMirror", "description"]).Localize
+		});
+		TransfusionStatus = Helper.Content.Statuses.RegisterStatus("Transfusion", new()
+		{
+			Definition = new()
+			{
+				icon = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/Transfusion.png")).Sprite,
+				color = new("267F00")
+			},
+			Name = this.AnyLocalizations.Bind(["status", "Transfusion", "name"]).Localize,
+			Description = this.AnyLocalizations.Bind(["status", "Transfusion", "description"]).Localize
 		});
 
 		foreach (var cardType in AllCardTypes)

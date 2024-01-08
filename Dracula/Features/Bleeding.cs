@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Shockah.Dracula;
+﻿namespace Shockah.Dracula;
 
 internal sealed class BleedingManager : IStatusLogicHook
 {
@@ -33,7 +31,8 @@ internal sealed class BleedingManager : IStatusLogicHook
 		if (timing != StatusTurnTriggerTiming.TurnEnd)
 			return false;
 
-		amount = Math.Max(amount - 1, 0);
+		if (amount > 0)
+			amount--;
 		return false;
 	}
 }
