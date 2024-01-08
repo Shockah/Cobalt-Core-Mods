@@ -8,14 +8,9 @@ namespace Shockah.Dracula;
 
 public sealed class ASpecificCardOffering : CardAction
 {
-	public enum CardTargetLocation
-	{
-		Hand, Deck, Discard, Exhaust
-	}
-
 	public List<Card> Cards { get; set; } = [];
 	public bool CanSkip { get; set; } = false;
-	public CardTargetLocation TargetLocation { get; set; } = CardTargetLocation.Hand;
+	public CardDestination Destination { get; set; } = CardDestination.Hand;
 
 	internal static void ApplyPatches(Harmony harmony, ILogger logger)
 	{
@@ -38,7 +33,7 @@ public sealed class ASpecificCardOffering : CardAction
 				return c;
 			}).ToList(),
 			canSkip = CanSkip,
-			TargetLocation = TargetLocation
+			Destination = Destination
 		};
 	}
 
@@ -55,18 +50,18 @@ public sealed class ASpecificCardOffering : CardAction
 			return;
 
 		g.state.RemoveCardFromWhereverItIs(card.uuid);
-		switch (custom.TargetLocation)
+		switch (custom.Destination)
 		{
-			case CardTargetLocation.Hand:
+			case CardDestination.Hand:
 				combat.SendCardToHand(g.state, card);
 				break;
-			case CardTargetLocation.Deck:
+			case CardDestination.Deck:
 				g.state.SendCardToDeck(card);
 				break;
-			case CardTargetLocation.Discard:
+			case CardDestination.Discard:
 				combat.SendCardToDiscard(g.state, card);
 				break;
-			case CardTargetLocation.Exhaust:
+			case CardDestination.Exhaust:
 				combat.SendCardToExhaust(g.state, card);
 				break;
 		}
@@ -74,6 +69,6 @@ public sealed class ASpecificCardOffering : CardAction
 
 	public sealed class CustomCardReward : CardReward
 	{
-		public CardTargetLocation TargetLocation { get; set; } = CardTargetLocation.Hand;
+		public CardDestination Destination { get; set; } = CardDestination.Hand;
 	}
 }
