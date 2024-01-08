@@ -22,6 +22,7 @@ public sealed class ModEntry : SimpleMod
 	internal IStatusEntry BleedingStatus { get; }
 	internal IStatusEntry BloodMirrorStatus { get; }
 	internal IStatusEntry TransfusionStatus { get; }
+	internal IStatusEntry TransfusingStatus { get; }
 
 	internal ISpriteEntry ShieldCostOff { get; }
 	internal ISpriteEntry ShieldCostOn { get; }
@@ -45,6 +46,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(AuraOfDarknessCard),
 		typeof(HeartbreakCard),
 		typeof(BloodScentCard),
+		typeof(DispersionCard),
 	];
 
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
@@ -139,6 +141,16 @@ public sealed class ModEntry : SimpleMod
 			},
 			Name = this.AnyLocalizations.Bind(["status", "Transfusion", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["status", "Transfusion", "description"]).Localize
+		});
+		TransfusingStatus = Helper.Content.Statuses.RegisterStatus("Transfusing", new()
+		{
+			Definition = new()
+			{
+				icon = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/Transfusing.png")).Sprite,
+				color = new("267F00")
+			},
+			Name = this.AnyLocalizations.Bind(["status", "Transfusing", "name"]).Localize,
+			Description = this.AnyLocalizations.Bind(["status", "Transfusing", "description"]).Localize
 		});
 
 		foreach (var cardType in AllCardTypes)
