@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Dracula;
 
-internal sealed class BiteCard : Card, IRegisterableCard
+internal sealed class BiteCard : Card, IDraculaCard
 {
 	public void Register(IModHelper helper)
 	{
@@ -20,14 +20,6 @@ internal sealed class BiteCard : Card, IRegisterableCard
 		});
 	}
 
-	private int Bleeding
-		=> upgrade switch
-		{
-			Upgrade.A => 2,
-			Upgrade.B => 1,
-			_ => 1,
-		};
-
 	public override CardData GetData(State state)
 		=> new()
 		{
@@ -41,7 +33,7 @@ internal sealed class BiteCard : Card, IRegisterableCard
 			{
 				damage = 1,
 				status = ModEntry.Instance.BleedingStatus.Status,
-				statusAmount = Bleeding
+				statusAmount = upgrade == Upgrade.A ? 2 : 1
 			}
 		];
 }

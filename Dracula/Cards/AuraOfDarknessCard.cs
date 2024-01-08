@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Dracula;
 
-internal sealed class AuraOfDarknessCard : Card, IRegisterableCard
+internal sealed class AuraOfDarknessCard : Card, IDraculaCard
 {
 	public void Register(IModHelper helper)
 	{

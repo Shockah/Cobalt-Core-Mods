@@ -2,7 +2,10 @@
 
 namespace Shockah.Dracula;
 
-internal interface IRegisterableCard
+internal interface IDraculaCard
 {
 	void Register(IModHelper helper);
+
+	float ActionRenderingSpacing
+		=> 1;
 }
