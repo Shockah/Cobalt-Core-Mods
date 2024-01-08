@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Shockah.Shared;
-using System;
 
 namespace Shockah.Dracula;
 
@@ -33,7 +32,8 @@ internal sealed class BloodMirrorManager : IStatusLogicHook
 		if (timing != StatusTurnTriggerTiming.TurnStart)
 			return false;
 
-		amount = Math.Max(amount - 1, 0);
+		if (amount > 0)
+			amount--;
 		return false;
 	}
 

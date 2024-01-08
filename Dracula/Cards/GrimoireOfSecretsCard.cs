@@ -59,7 +59,8 @@ internal sealed class GrimoireOfSecretsCard : Card, IDraculaCard
 				foreach (var cardType in GenerateCards(s.rngActions))
 					actions.Add(new AAddCard
 					{
-						card = (Card)Activator.CreateInstance(cardType)!
+						card = (Card)Activator.CreateInstance(cardType)!,
+						destination = CardDestination.Hand
 					});
 			}
 			else
