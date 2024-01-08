@@ -15,7 +15,7 @@ internal sealed class BatFormCard : Card, IDraculaCard
 
 	public void Register(IModHelper helper)
 	{
-		helper.Content.Cards.RegisterCard("Bite", new()
+		helper.Content.Cards.RegisterCard("BatForm", new()
 		{
 			CardType = GetType(),
 			Meta = new()
