@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Dracula;
 
-internal sealed class ClonedLeechCard : Card, IRegisterableCard
+internal sealed class ClonedLeechCard : Card, IDraculaCard
 {
 	public void Register(IModHelper helper)
 	{

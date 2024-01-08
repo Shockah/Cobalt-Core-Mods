@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Dracula;
 
-internal sealed class BloodShieldCard : Card, IRegisterableCard
+internal sealed class BloodShieldCard : Card, IDraculaCard
 {
 	public void Register(IModHelper helper)
 	{

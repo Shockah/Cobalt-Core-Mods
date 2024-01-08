@@ -31,6 +31,7 @@ public sealed class ModEntry : SimpleMod
 	internal static IReadOnlyList<Type> CommonCardTypes { get; } = [
 		typeof(ClonedLeechCard),
 		typeof(DrainEssenceCard),
+		typeof(BatFormCard),
 	];
 
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
@@ -50,6 +51,7 @@ public sealed class ModEntry : SimpleMod
 		Instance = this;
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 		KokoroApi.RegisterStatusLogicHook(new BleedingManager(), 0);
+		KokoroApi.RegisterCardRenderHook(new SpacingCardRenderHook(), 0);
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -84,7 +86,7 @@ public sealed class ModEntry : SimpleMod
 		});
 
 		foreach (var cardType in AllCardTypes)
-			if (Activator.CreateInstance(cardType) is IRegisterableCard registerable)
+			if (Activator.CreateInstance(cardType) is IDraculaCard registerable)
 				registerable.Register(helper);
 
 		Helper.Content.Characters.RegisterCharacter("Dracula", new()

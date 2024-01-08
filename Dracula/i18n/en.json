@@ -22,6 +22,9 @@
         "DrainEssence": {
             "name": "Drain Essence"
         },
+        "BatForm": {
+            "name": "Bat Form"
+        },
         "AuraOfDarkness": {
             "name": "Aura of Darkness"
         },
