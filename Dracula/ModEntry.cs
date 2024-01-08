@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework.Graphics;
 using Nanoray.PluginManager;
 using Nickel;
 using System;
@@ -20,6 +21,7 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry DraculaDeck { get; }
 	internal IStatusEntry BleedingStatus { get; }
 	internal IStatusEntry BloodMirrorStatus { get; }
+	internal IStatusEntry LifestealStatus { get; }
 
 	internal ISpriteEntry ShieldCostOff { get; }
 	internal ISpriteEntry ShieldCostOn { get; }
@@ -47,6 +49,7 @@ public sealed class ModEntry : SimpleMod
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
 		typeof(ScreechCard),
 		typeof(RedThirstCard),
+		typeof(CrimsonWaveCard),
 	];
 
 	internal static IEnumerable<Type> AllCardTypes
@@ -60,6 +63,7 @@ public sealed class ModEntry : SimpleMod
 		KokoroApi.RegisterTypeForExtensionData(typeof(AHurt));
 		_ = new BleedingManager();
 		_ = new BloodMirrorManager();
+		_ = new LifestealManager();
 		//KokoroApi.RegisterCardRenderHook(new SpacingCardRenderHook(), 0);
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
@@ -102,6 +106,16 @@ public sealed class ModEntry : SimpleMod
 			},
 			Name = this.AnyLocalizations.Bind(["status", "BloodMirror", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["status", "BloodMirror", "description"]).Localize
+		});
+		LifestealStatus = Helper.Content.Statuses.RegisterStatus("Lifesteal", new()
+		{
+			Definition = new()
+			{
+				icon = Helper.Content.Sprites.RegisterSprite(() => new Texture2D(MG.inst.graphics.GraphicsDevice, 1, 1)).Sprite,
+				color = Colors.black
+			},
+			Name = this.AnyLocalizations.Bind(["status", "Lifesteal", "name"]).Localize,
+			Description = this.AnyLocalizations.Bind(["status", "Lifesteal", "description"]).Localize
 		});
 
 		foreach (var cardType in AllCardTypes)
