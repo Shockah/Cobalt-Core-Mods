@@ -48,12 +48,10 @@ internal sealed class CrimsonWaveCard : Card, IDraculaCard
 				multiCannonVolley = true,
 				fast = true,
 				damage = GetDmg(s, 1),
-				stunEnemy = true,
-				status = upgrade == Upgrade.B ? ModEntry.Instance.LifestealStatus.Status : null,
-				statusAmount = upgrade == Upgrade.B ? GetDmg(s, 1) : 0
-			});
+				stunEnemy = true
+			}.SetLifesteal(multiplier: upgrade == Upgrade.B ? 1 : 0));
 		}
-		actions.Add(new AHealFromLifesteal());
+		actions.Add(new LifestealManager.AApplyLifesteal());
 		return actions;
 	}
 }
