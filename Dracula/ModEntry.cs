@@ -38,6 +38,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(DrainEssenceCard),
 		typeof(BatFormCard),
 		typeof(BloodMirrorCard),
+		typeof(GrimoireOfSecretsCard),
 	];
 
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
@@ -52,8 +53,25 @@ public sealed class ModEntry : SimpleMod
 		typeof(CrimsonWaveCard),
 	];
 
+	internal static IReadOnlyList<Type> SecretAttackCardTypes { get; } = [
+		typeof(SecretViolentCard),
+		typeof(SecretPerforatingCard),
+		typeof(SecretPiercingCard),
+	];
+
+	internal static IReadOnlyList<Type> SecretNonAttackCardTypes { get; } = [
+		typeof(SecretProtectiveCard),
+		typeof(SecretVigorousCard),
+	];
+
 	internal static IEnumerable<Type> AllCardTypes
-		=> StarterCardTypes.Concat(CommonCardTypes).Concat(UncommonCardTypes).Concat(RareCardTypes);
+		=> StarterCardTypes
+			.Concat(CommonCardTypes)
+			.Concat(UncommonCardTypes)
+			.Concat(RareCardTypes)
+			.Append(typeof(PlaceholderSecretCard))
+			.Concat(SecretAttackCardTypes)
+			.Concat(SecretNonAttackCardTypes);
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
@@ -65,6 +83,8 @@ public sealed class ModEntry : SimpleMod
 		_ = new BloodMirrorManager();
 		_ = new LifestealManager();
 		//KokoroApi.RegisterCardRenderHook(new SpacingCardRenderHook(), 0);
+
+		ASpecificCardOffering.ApplyPatches(Harmony, logger);
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),

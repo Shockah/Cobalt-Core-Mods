@@ -14,7 +14,7 @@
         },
         "Lifesteal": {
             "name": "Lifesteal",
-            "description": "<c=action>HEAL</c> for all damage done."
+            "description": "<c=heal>HEAL</c> for all damage done."
         }
     },
     "card": {
@@ -35,6 +35,14 @@
         },
         "BloodMirror": {
             "name": "Blood Mirror"
+        },
+        "GrimoireOfSecrets": {
+            "name": "Grimoire of Secrets",
+            "description": {
+                "None": "Choose 1 of {{Count}} Spell cards to add to your hand.",
+                "A": "Choose 1 of {{Count}} Spell cards to add to your hand.",
+                "B": "Add {{Count}} different random Spell cards to your hand."
+            }
         },
         "AuraOfDarkness": {
             "name": "Aura of Darkness"
@@ -57,6 +65,27 @@
                 "None": "All your ship parts <c=action>attack</c> for {{Damage}} and <c=action>stun</c>.",
                 "A": "All your ship parts <c=action>attack</c> for {{Damage}} and <c=action>stun</c>.",
                 "B": "All your ship parts <c=action>attack</c> for {{Damage}} and <c=action>stun</c>. <c=heal>Heal</c> for damage done."
+            }
+        },
+        "Secret": {
+            "Placeholder": {
+                "name": "Secret Spell",
+                "description": "*a random Spell*"
+            },
+            "Violent": {
+                "name": "Violent Spell"
+            },
+            "Perforating": {
+                "name": "Perforating Spell"
+            },
+            "Piercing": {
+                "name": "Piercing Spell"
+            },
+            "Protective": {
+                "name": "Protective Spell"
+            },
+            "Vigorous": {
+                "name": "Vigorous Spell"
             }
         }
     }
