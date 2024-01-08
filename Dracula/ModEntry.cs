@@ -21,7 +21,6 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry DraculaDeck { get; }
 	internal IStatusEntry BleedingStatus { get; }
 	internal IStatusEntry BloodMirrorStatus { get; }
-	internal IStatusEntry LifestealStatus { get; }
 
 	internal ISpriteEntry ShieldCostOff { get; }
 	internal ISpriteEntry ShieldCostOn { get; }
@@ -79,6 +78,7 @@ public sealed class ModEntry : SimpleMod
 		Harmony = new(package.Manifest.UniqueName);
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 		KokoroApi.RegisterTypeForExtensionData(typeof(AHurt));
+		KokoroApi.RegisterTypeForExtensionData(typeof(AAttack));
 		_ = new BleedingManager();
 		_ = new BloodMirrorManager();
 		_ = new LifestealManager();
@@ -126,16 +126,6 @@ public sealed class ModEntry : SimpleMod
 			},
 			Name = this.AnyLocalizations.Bind(["status", "BloodMirror", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["status", "BloodMirror", "description"]).Localize
-		});
-		LifestealStatus = Helper.Content.Statuses.RegisterStatus("Lifesteal", new()
-		{
-			Definition = new()
-			{
-				icon = Helper.Content.Sprites.RegisterSprite(() => new Texture2D(MG.inst.graphics.GraphicsDevice, 1, 1)).Sprite,
-				color = Colors.black
-			},
-			Name = this.AnyLocalizations.Bind(["status", "Lifesteal", "name"]).Localize,
-			Description = this.AnyLocalizations.Bind(["status", "Lifesteal", "description"]).Localize
 		});
 
 		foreach (var cardType in AllCardTypes)
