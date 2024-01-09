@@ -1,10 +1,11 @@
 <Project>
 	<!-- General setup -->
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
-		<ModZipPath>$(MSBuildProjectDirectory)\.release\$(MSBuildProjectName)-$(Version).zip</ModZipPath>
 		<IsNickelMod Condition="'$(IsNickelMod)' == ''">False</IsNickelMod>
 		<DefineConstants Condition="$(IsNickelMod)">$(DefineConstants);IS_NICKEL_MOD</DefineConstants>
+		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework Condition="$(IsNickelMod)">net8.0</TargetFramework>
+		<ModZipPath>$(MSBuildProjectDirectory)\.release\$(MSBuildProjectName)-$(Version).zip</ModZipPath>
 	</PropertyGroup>
 	<Import Project="Configuration.props" />
 

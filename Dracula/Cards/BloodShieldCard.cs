@@ -1,16 +1,17 @@
 ﻿using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Shockah.Dracula;
 
 internal sealed class BloodShieldCard : Card, IDraculaCard
 {
-	public void Register(IModHelper helper)
+	public static void Register(IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("BloodShield", new()
 		{
-			CardType = GetType(),
+			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
 			{
 				deck = ModEntry.Instance.DraculaDeck.Deck,

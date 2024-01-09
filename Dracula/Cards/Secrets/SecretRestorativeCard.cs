@@ -1,15 +1,16 @@
 ﻿using Nickel;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Shockah.Dracula;
 
 internal sealed class SecretRestorativeCard : SecretCard, IDraculaCard
 {
-	public override void Register(IModHelper helper)
+	public static void Register(IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("Secret.Restorative", new()
 		{
-			CardType = GetType(),
+			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
 			{
 				deck = ModEntry.Instance.DraculaDeck.Deck,

@@ -1,14 +1,15 @@
 ﻿using Nickel;
+using System.Reflection;
 
 namespace Shockah.Dracula;
 
 internal sealed class PlaceholderSecretCard : SecretCard, IDraculaCard
 {
-	public override void Register(IModHelper helper)
+	public static void Register(IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("Secret.Placeholder", new()
 		{
-			CardType = GetType(),
+			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
 			{
 				deck = ModEntry.Instance.DraculaDeck.Deck,

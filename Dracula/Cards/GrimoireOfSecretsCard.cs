@@ -4,6 +4,7 @@ using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace Shockah.Dracula;
@@ -12,11 +13,11 @@ internal sealed class GrimoireOfSecretsCard : Card, IDraculaCard
 {
 	private static bool IsDuringTryPlayCard { get; set; } = false;
 
-	public void Register(IModHelper helper)
+	public static void Register(IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("GrimoireOfSecrets", new()
 		{
-			CardType = GetType(),
+			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
 			{
 				deck = ModEntry.Instance.DraculaDeck.Deck,
@@ -29,8 +30,8 @@ internal sealed class GrimoireOfSecretsCard : Card, IDraculaCard
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
-			prefix: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Prefix)),
-			finalizer: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Finalizer))
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Prefix)),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Finalizer))
 		);
 	}
 

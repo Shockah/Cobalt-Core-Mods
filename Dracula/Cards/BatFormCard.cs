@@ -2,6 +2,7 @@
 using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Shockah.Dracula;
 
@@ -13,11 +14,11 @@ internal sealed class BatFormCard : Card, IDraculaCard
 	[JsonProperty]
 	public int FlipIndex { get; private set; } = 0;
 
-	public void Register(IModHelper helper)
+	public static void Register(IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("BatForm", new()
 		{
-			CardType = GetType(),
+			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
 			{
 				deck = ModEntry.Instance.DraculaDeck.Deck,

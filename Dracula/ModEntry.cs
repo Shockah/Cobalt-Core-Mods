@@ -154,8 +154,7 @@ public sealed class ModEntry : SimpleMod
 		});
 
 		foreach (var cardType in AllCardTypes)
-			if (Activator.CreateInstance(cardType) is IDraculaCard registerable)
-				registerable.Register(helper);
+			AccessTools.DeclaredMethod(cardType, nameof(IDraculaCard.Register))?.Invoke(null, [helper]);
 
 		Helper.Content.Characters.RegisterCharacter("Dracula", new()
 		{

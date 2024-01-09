@@ -1,11 +1,7 @@
-﻿using Nickel;
+﻿namespace Shockah.Dracula;
 
-namespace Shockah.Dracula;
-
-internal abstract class SecretCard : Card, IDraculaCard
+internal abstract class SecretCard : Card
 {
-	public abstract void Register(IModHelper helper);
-
 	public override CardData GetData(State state)
 		=> new()
 		{
