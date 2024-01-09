@@ -8,11 +8,11 @@ namespace Shockah.Dracula;
 
 internal sealed class BatFormCard : Card, IDraculaCard
 {
-	public float ActionRenderingSpacing
-		=> 0.75f;
-
 	[JsonProperty]
 	public int FlipIndex { get; private set; } = 0;
+
+	[JsonProperty]
+	private bool LastFlipped { get; set; }
 
 	public static void Register(IModHelper helper)
 	{
@@ -36,8 +36,15 @@ internal sealed class BatFormCard : Card, IDraculaCard
 			floppable = true
 		};
 
-	public override void OnFlip(G g)
-		=> FlipIndex = (FlipIndex + 1) % (upgrade == Upgrade.B ? 3 : 4);
+	public override void ExtraRender(G g, Vec v)
+	{
+		base.ExtraRender(g, v);
+		if (LastFlipped != flipped)
+		{
+			LastFlipped = flipped;
+			FlipIndex = (FlipIndex + 1) % (upgrade == Upgrade.B ? 3 : 4);
+		}
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
