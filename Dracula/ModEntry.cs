@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Microsoft.Xna.Framework.Graphics;
 using Nanoray.PluginManager;
 using Nickel;
 using System;
@@ -87,6 +86,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new BloodMirrorManager();
 		_ = new LifestealManager();
 		_ = new TransfusionManager();
+		_ = new NegativeOverdriveManager();
 		//KokoroApi.RegisterCardRenderHook(new SpacingCardRenderHook(), 0);
 
 		ASpecificCardOffering.ApplyPatches(Harmony, logger);
