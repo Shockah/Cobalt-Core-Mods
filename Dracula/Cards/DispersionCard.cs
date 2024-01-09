@@ -32,19 +32,15 @@ internal sealed class DispersionCard : Card, IDraculaCard
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AHurt
-				{
-					targetPlayer = true,
-					hurtAmount = 2
-				},
-				new AHeal
-				{
-					targetPlayer = true,
-					healAmount = 1
-				},
 				new AStatus
 				{
 					targetPlayer = true,
+					status = ModEntry.Instance.TransfusionStatus.Status,
+					statusAmount = 3
+				},
+				new AStatus
+				{
+					targetPlayer = false,
 					status = ModEntry.Instance.TransfusionStatus.Status,
 					statusAmount = 3
 				}
@@ -53,23 +49,14 @@ internal sealed class DispersionCard : Card, IDraculaCard
 				new AHurt
 				{
 					targetPlayer = true,
-					hurtAmount = upgrade == Upgrade.A ? 1 : 2
+					hurtAmount = upgrade == Upgrade.A ? 2 : 1
 				},
-				ModEntry.Instance.KokoroApi.Actions.MakeEnergyX(
-					tooltipOverride: GetDataWithOverrides(s).cost
-				),
-				new AHeal
+				new AStatus
 				{
 					targetPlayer = true,
-					healAmount = c.energy - GetDataWithOverrides(s).cost,
-					xHint = 1
-				},
-				ModEntry.Instance.KokoroApi.Actions.MakeEnergy(new AStatus
-				{
-					targetPlayer = true,
-					mode = AStatusMode.Set,
-					statusAmount = upgrade == Upgrade.A ? 1 : 0
-				})
+					status = ModEntry.Instance.TransfusionStatus.Status,
+					statusAmount = upgrade == Upgrade.A ? 4 : 2
+				}
 			]
 		};
 }
