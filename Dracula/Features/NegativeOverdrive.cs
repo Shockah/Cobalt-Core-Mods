@@ -11,7 +11,7 @@ internal sealed class NegativeOverdriveManager : IStatusLogicHook
 
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), "CanBeNegative"),
+			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.CanBeNegative)),
 			postfix: new HarmonyMethod(GetType(), nameof(Ship_CanBeNegative_Postfix))
 		);
 	}
