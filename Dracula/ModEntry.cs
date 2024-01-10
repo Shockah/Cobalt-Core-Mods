@@ -18,6 +18,7 @@ public sealed class ModEntry : SimpleMod
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
 	internal IDeckEntry DraculaDeck { get; }
+
 	internal IStatusEntry BleedingStatus { get; }
 	internal IStatusEntry BloodMirrorStatus { get; }
 	internal IStatusEntry TransfusionStatus { get; }
@@ -27,6 +28,9 @@ public sealed class ModEntry : SimpleMod
 	internal ISpriteEntry ShieldCostOn { get; }
 	internal ISpriteEntry BleedingCostOff { get; }
 	internal ISpriteEntry BleedingCostOn { get; }
+
+	internal ISpriteEntry BatIcon { get; }
+	internal ISpriteEntry BatSprite { get; }
 
 	internal static IReadOnlyList<Type> StarterCardTypes { get; } = [
 		typeof(BiteCard),
@@ -39,6 +43,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(BatFormCard),
 		typeof(BloodMirrorCard),
 		typeof(GrimoireOfSecretsCard),
+		typeof(SummonBatCard),
 	];
 
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
@@ -64,6 +69,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(SecretProtectiveCard),
 		typeof(SecretVigorousCard),
 		typeof(SecretRestorativeCard),
+		typeof(SecretWingedCard),
 	];
 
 	internal static IEnumerable<Type> AllCardTypes
@@ -87,6 +93,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new LifestealManager();
 		_ = new TransfusionManager();
 		_ = new NegativeOverdriveManager();
+		CustomTTGlossary.ApplyPatches(Harmony);
 		//KokoroApi.RegisterCardRenderHook(new SpacingCardRenderHook(), 0);
 
 		ASpecificCardOffering.ApplyPatches(Harmony, logger);
@@ -111,6 +118,9 @@ public sealed class ModEntry : SimpleMod
 		ShieldCostOn = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/ShieldCostOn.png"));
 		BleedingCostOff = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/BleedingCostOff.png"));
 		BleedingCostOn = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/BleedingCostOn.png"));
+
+		BatIcon = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/Bat.png"));
+		BatSprite = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Bat.png"));
 
 		BleedingStatus = Helper.Content.Statuses.RegisterStatus("Bleeding", new()
 		{

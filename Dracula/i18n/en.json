@@ -24,50 +24,30 @@
             ]
         }
     },
+    "midrow": {
+        "Bat": {
+            "name": "Bat",
+            "description": "Applies 1 <c=status>BLEEDING</c> in front of it. Applies 1 <c=status>TRANSFUSION</c> to the ship behind it (wherever it is) if it hit, or 1 <c=status>BLEEDING</c> otherwise."
+        }
+    },
     "card": {
-        "Bite": {
-            "name": "Bite"
-        },
-        "BloodShield": {
-            "name": "Blood Shield"
-        },
-        "Leech": {
-            "name": "Leech"
-        },
-        "DrainEssence": {
-            "name": "Drain Essence"
-        },
-        "Dispersion": {
-            "name": "Dispersion"
+        "AuraOfDarkness": {
+            "name": "Aura of Darkness"
         },
         "BatForm": {
             "name": "Bat Form"
         },
+        "Bite": {
+            "name": "Bite"
+        },
         "BloodMirror": {
             "name": "Blood Mirror"
-        },
-        "GrimoireOfSecrets": {
-            "name": "Grimoire of Secrets",
-            "description": {
-                "None": "Choose 1 of {{Count}} Spell cards to add to your hand.",
-                "A": "Choose 1 of {{Count}} Spell cards to add to your hand.",
-                "B": "Add {{Count}} different random Spell cards to your hand."
-            }
-        },
-        "AuraOfDarkness": {
-            "name": "Aura of Darkness"
-        },
-        "Heartbreak": {
-            "name": "Heartbreak"
         },
         "BloodScent": {
             "name": "Blood Scent"
         },
-        "Screech": {
-            "name": "Screech"
-        },
-        "RedThirst": {
-            "name": "Red Thirst"
+        "BloodShield": {
+            "name": "Blood Shield"
         },
         "CrimsonWave": {
             "name": "Crimson Wave",
@@ -77,14 +57,43 @@
                 "B": "All your ship parts <c=action>attack</c> for {{Damage}} and <c=action>stun</c>. <c=heal>Heal</c> for damage done."
             }
         },
+        "Dispersion": {
+            "name": "Dispersion"
+        },
+        "DrainEssence": {
+            "name": "Drain Essence"
+        },
+        "GrimoireOfSecrets": {
+            "name": "Grimoire of Secrets",
+            "description": {
+                "None": "Choose 1 of {{Count}} Spell cards to add to your hand.",
+                "A": "Choose 1 of {{Count}} Spell cards to add to your hand.",
+                "B": "Add {{Count}} different random Spell cards to your hand."
+            }
+        },
+        "Heartbreak": {
+            "name": "Heartbreak"
+        },
+        "RedThirst": {
+            "name": "Red Thirst"
+        },
+        "Screech": {
+            "name": "Screech"
+        },
+        "SummonBat": {
+            "name": "Summon Bat"
+        },
+
+        "Leech": {
+            "name": "Leech"
+        },
+
         "Secret": {
             "Placeholder": {
                 "name": "Secret Spell",
                 "description": "*a random Spell*"
             },
-            "Violent": {
-                "name": "Violent Spell"
-            },
+
             "Perforating": {
                 "name": "Perforating Spell"
             },
@@ -94,11 +103,17 @@
             "Protective": {
                 "name": "Protective Spell"
             },
+            "Restorative": {
+                "name": "Restorative Spell"
+            },
             "Vigorous": {
                 "name": "Vigorous Spell"
             },
-            "Restorative": {
-                "name": "Restorative Spell"
+            "Violent": {
+                "name": "Violent Spell"
+            },
+            "Winged": {
+                "name": "Winged Spell"
             }
         }
     }
