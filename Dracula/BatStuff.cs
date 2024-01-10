@@ -30,7 +30,7 @@ internal sealed class BatStuff : StuffBase
 
 		void ReallyRender(G g, Vec v)
 		{
-			DrawWithHilight(g, ModEntry.Instance.BatSprite.Sprite, v + GetOffset(g, doRound: true));
+			DrawWithHilight(g, ModEntry.Instance.BatSprite.Sprite, v + GetOffset(g, doRound: true), flipY: targetPlayer);
 		}
 
 		int? ClosestShipPart(Ship ship)
@@ -62,31 +62,37 @@ internal sealed class BatStuff : StuffBase
 			return;
 		}
 
+		float playerShipOffset = 32;
+		float enemyShipOffset = 40;
 		Vec normalPosition = v;
-		Vec attackedPosition = new(v.x, v.y - 40);
-		Vec ownerPosition = new(v.x + (closestShipPart - x) * 16, v.y + 32);
+		Vec attackedPosition = new(v.x, v.y + (targetPlayer ? playerShipOffset : -enemyShipOffset));
+		Vec ownerPosition = new(v.x + (closestShipPart - x) * 16, v.y + (targetPlayer ? -enemyShipOffset : playerShipOffset));
 
 		Vec oldPosition;
 		Vec targetPosition;
 		double f;
+		double xOffset;
 
 		if (AnimationProgress >= 2.5)
 		{
 			oldPosition = normalPosition;
 			targetPosition = attackedPosition;
 			f = 1 - (AnimationProgress - 2.5);
+			xOffset = -(1 - Math.Abs(f - 0.5) * 2) * 24;
 		}
 		else if (AnimationProgress >= 1)
 		{
 			oldPosition = attackedPosition;
 			targetPosition = ownerPosition;
 			f = 1 - (AnimationProgress - 1) / 1.5;
+			xOffset = (1 - Math.Abs(f - 0.5) * 2) * 24;
 		}
 		else
 		{
 			oldPosition = ownerPosition;
 			targetPosition = normalPosition;
 			f = 1 - AnimationProgress;
+			xOffset = 0;
 		}
 
 		f = Math.Clamp(f, 0, 1);
@@ -94,7 +100,7 @@ internal sealed class BatStuff : StuffBase
 		ReallyRender(
 			g,
 			new Vec(
-				oldPosition.x + (targetPosition.x - oldPosition.x) * f,
+				oldPosition.x + (targetPosition.x - oldPosition.x) * f + xOffset,
 				oldPosition.y + (targetPosition.y - oldPosition.y) * f
 			)
 		);
