@@ -26,7 +26,7 @@ internal sealed class SecretPiercingCard : SecretCard, IDraculaCard
 		=> [
 			new AAttack
 			{
-				damage = 1,
+				damage = GetDmg(s, 1),
 				piercing = true,
 				status = ModEntry.Instance.BleedingStatus.Status,
 				statusAmount = 1

@@ -32,7 +32,7 @@ internal sealed class BiteCard : Card, IDraculaCard
 		=> [
 			new AAttack
 			{
-				damage = 1,
+				damage = GetDmg(s, 1),
 				status = ModEntry.Instance.BleedingStatus.Status,
 				statusAmount = upgrade == Upgrade.A ? 2 : 1
 			}

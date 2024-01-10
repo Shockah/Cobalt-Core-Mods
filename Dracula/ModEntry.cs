@@ -72,6 +72,10 @@ public sealed class ModEntry : SimpleMod
 		typeof(SecretWingedCard),
 	];
 
+	internal static IReadOnlyList<Type> ShipCards { get; } = [
+		typeof(BatDebitCard),
+	];
+
 	internal static IEnumerable<Type> AllCardTypes
 		=> StarterCardTypes
 			.Concat(CommonCardTypes)
@@ -79,7 +83,16 @@ public sealed class ModEntry : SimpleMod
 			.Concat(RareCardTypes)
 			.Append(typeof(PlaceholderSecretCard))
 			.Concat(SecretAttackCardTypes)
-			.Concat(SecretNonAttackCardTypes);
+			.Concat(SecretNonAttackCardTypes)
+			.Concat(ShipCards);
+
+	internal static IReadOnlyList<Type> ShipArtifacts { get; } = [
+		typeof(BatmobileArtifact),
+		typeof(BloodBankArtifact),
+	];
+
+	internal static IEnumerable<Type> AllArtifactTypes
+		=> ShipArtifacts;
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
@@ -94,7 +107,6 @@ public sealed class ModEntry : SimpleMod
 		_ = new TransfusionManager();
 		_ = new NegativeOverdriveManager();
 		CustomTTGlossary.ApplyPatches(Harmony);
-		//KokoroApi.RegisterCardRenderHook(new SpacingCardRenderHook(), 0);
 
 		ASpecificCardOffering.ApplyPatches(Harmony, logger);
 
@@ -165,6 +177,8 @@ public sealed class ModEntry : SimpleMod
 
 		foreach (var cardType in AllCardTypes)
 			AccessTools.DeclaredMethod(cardType, nameof(IDraculaCard.Register))?.Invoke(null, [helper]);
+		foreach (var artifactType in AllArtifactTypes)
+			AccessTools.DeclaredMethod(artifactType, nameof(IDraculaCard.Register))?.Invoke(null, [helper]);
 
 		Helper.Content.Characters.RegisterCharacter("Dracula", new()
 		{
@@ -192,6 +206,71 @@ public sealed class ModEntry : SimpleMod
 					helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Character/Mini/0.png")).Sprite
 				]
 			}
+		});
+
+		Helper.Content.Ships.RegisterShip("Batmobile", new()
+		{
+			Ship = new()
+			{
+				ship = new Ship
+				{
+					hull = 12,
+					hullMax = 12,
+					shieldMaxBase = 3,
+					chassisUnder = "chassis_boxy",
+					parts =
+					{
+						new Part
+						{
+							type = PType.wing,
+							skin = "wing_player",
+							damageModifier = PDamMod.weak
+						},
+						new Part
+						{
+							type = PType.cockpit,
+							skin = "cockpit_artemis"
+						},
+						new Part
+						{
+							type = PType.cannon,
+							skin = "cannon_artemis"
+						},
+						new Part
+						{
+							type = PType.missiles,
+							skin = "missiles_artemis"
+						},
+						new Part
+						{
+							type = PType.wing,
+							skin = "wing_player",
+							damageModifier = PDamMod.weak,
+							flip = true
+						}
+					}
+				},
+				artifacts =
+				{
+					new ShieldPrep(),
+					new BatmobileArtifact(),
+					new BloodBankArtifact(),
+				},
+				cards =
+				{
+					new CannonColorless(),
+					new CannonColorless(),
+					new DodgeColorless(),
+					new BasicShieldColorless(),
+				}
+			},
+			ExclusiveArtifactTypes = new HashSet<Type>()
+			{
+				typeof(BatmobileArtifact),
+				typeof(BloodBankArtifact),
+			},
+			Name = this.AnyLocalizations.Bind(["ship", "name"]).Localize,
+			Description = this.AnyLocalizations.Bind(["ship", "description"]).Localize,
 		});
 	}
 }

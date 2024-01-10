@@ -26,7 +26,7 @@ internal sealed class SecretViolentCard : SecretCard, IDraculaCard
 		=> [
 			new AAttack
 			{
-				damage = 2
+				damage = GetDmg(s, 2)
 			}
 		];
 }
