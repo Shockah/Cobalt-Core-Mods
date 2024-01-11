@@ -66,7 +66,7 @@
             "BloodBank": {
                 "name": "BLOOD BANK",
                 "description": [
-                    "Whenever you don't have a <c=card>Bat Credit Card</c> in your hand, gain one.",
+                    "Whenever you don't have a <c=card>Bat Debit Card</c> in your hand, gain one.",
                     "Whenever you <c=heal>heal any amount of hull</c>, add 1 <c=status>blood</c> to the <c=artifact>Blood Bank</c>.",
                     "Starts with 3 <c=status>blood</c> stored."
                 ]
@@ -76,7 +76,7 @@
     "card": {
         "ship": {
             "BatDebit": {
-                "name": "Bat Credit Card",
+                "name": "Bat Debit Card",
                 "description": {
                     "normal": "Withdraw 1 blood.\n<c=5f5f5f>Deposit 1 blood.</c>",
                     "flipped": "<c=5f5f5f>Withdraw 1 blood.</c>\nDeposit 1 blood."
