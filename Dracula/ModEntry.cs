@@ -32,6 +32,10 @@ public sealed class ModEntry : SimpleMod
 	internal ISpriteEntry BatIcon { get; }
 	internal ISpriteEntry BatSprite { get; }
 
+	internal IShipEntry Ship { get; }
+	internal IPartEntry ShipWing { get; }
+	internal IPartEntry ShipArmoredWing { get; }
+
 	internal static IReadOnlyList<Type> StarterCardTypes { get; } = [
 		typeof(BiteCard),
 		typeof(BloodShieldCard),
@@ -118,7 +122,7 @@ public sealed class ModEntry : SimpleMod
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
 		);
 
-		DraculaDeck = Helper.Content.Decks.RegisterDeck("Dracula", new()
+		DraculaDeck = helper.Content.Decks.RegisterDeck("Dracula", new()
 		{
 			Definition = new() { color = DB.decks[Deck.dracula].color, titleColor = DB.decks[Deck.dracula].titleColor },
 			DefaultCardArt = StableSpr.cards_colorless,
@@ -126,49 +130,49 @@ public sealed class ModEntry : SimpleMod
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize
 		});
 
-		ShieldCostOff = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/ShieldCostOff.png"));
-		ShieldCostOn = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/ShieldCostOn.png"));
-		BleedingCostOff = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/BleedingCostOff.png"));
-		BleedingCostOn = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/BleedingCostOn.png"));
+		ShieldCostOff = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/ShieldCostOff.png"));
+		ShieldCostOn = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/ShieldCostOn.png"));
+		BleedingCostOff = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/BleedingCostOff.png"));
+		BleedingCostOn = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/BleedingCostOn.png"));
 
-		BatIcon = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/Bat.png"));
-		BatSprite = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Bat.png"));
+		BatIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/Bat.png"));
+		BatSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Bat.png"));
 
-		BleedingStatus = Helper.Content.Statuses.RegisterStatus("Bleeding", new()
+		BleedingStatus = helper.Content.Statuses.RegisterStatus("Bleeding", new()
 		{
 			Definition = new()
 			{
-				icon = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/Bleeding.png")).Sprite,
+				icon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/Bleeding.png")).Sprite,
 				color = new("BE0000")
 			},
 			Name = this.AnyLocalizations.Bind(["status", "Bleeding", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["status", "Bleeding", "description"]).Localize
 		});
-		BloodMirrorStatus = Helper.Content.Statuses.RegisterStatus("BloodMirror", new()
+		BloodMirrorStatus = helper.Content.Statuses.RegisterStatus("BloodMirror", new()
 		{
 			Definition = new()
 			{
-				icon = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/BloodMirror.png")).Sprite,
+				icon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/BloodMirror.png")).Sprite,
 				color = new("FF7F7F")
 			},
 			Name = this.AnyLocalizations.Bind(["status", "BloodMirror", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["status", "BloodMirror", "description"]).Localize
 		});
-		TransfusionStatus = Helper.Content.Statuses.RegisterStatus("Transfusion", new()
+		TransfusionStatus = helper.Content.Statuses.RegisterStatus("Transfusion", new()
 		{
 			Definition = new()
 			{
-				icon = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/Transfusion.png")).Sprite,
+				icon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/Transfusion.png")).Sprite,
 				color = new("267F00")
 			},
 			Name = this.AnyLocalizations.Bind(["status", "Transfusion", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["status", "Transfusion", "description"]).Localize
 		});
-		TransfusingStatus = Helper.Content.Statuses.RegisterStatus("Transfusing", new()
+		TransfusingStatus = helper.Content.Statuses.RegisterStatus("Transfusing", new()
 		{
 			Definition = new()
 			{
-				icon = Helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/Transfusing.png")).Sprite,
+				icon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/Transfusing.png")).Sprite,
 				color = new("267F00")
 			},
 			Name = this.AnyLocalizations.Bind(["status", "Transfusing", "name"]).Localize,
@@ -180,7 +184,7 @@ public sealed class ModEntry : SimpleMod
 		foreach (var artifactType in AllArtifactTypes)
 			AccessTools.DeclaredMethod(artifactType, nameof(IDraculaCard.Register))?.Invoke(null, [helper]);
 
-		Helper.Content.Characters.RegisterCharacter("Dracula", new()
+		helper.Content.Characters.RegisterCharacter("Dracula", new()
 		{
 			Deck = DraculaDeck.Deck,
 			Description = this.AnyLocalizations.Bind(["character", "description"]).Localize,
@@ -203,12 +207,50 @@ public sealed class ModEntry : SimpleMod
 				Deck = DraculaDeck.Deck,
 				LoopTag = "mini",
 				Frames = [
-					helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Character/Mini/0.png")).Sprite
+					helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Character/Mini.png")).Sprite
 				]
 			}
 		});
 
-		Helper.Content.Ships.RegisterShip("Batmobile", new()
+		helper.Content.Characters.RegisterCharacterAnimation("GameOver", new()
+		{
+			Deck = DraculaDeck.Deck,
+			LoopTag = "gameover",
+			Frames = Enumerable.Range(0, 1)
+				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/GameOver/{i}.png")).Sprite)
+				.ToList()
+		});
+		helper.Content.Characters.RegisterCharacterAnimation("Squint", new()
+		{
+			Deck = DraculaDeck.Deck,
+			LoopTag = "squint",
+			Frames = Enumerable.Range(0, 5)
+				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Squint/{i}.png")).Sprite)
+				.ToList()
+		});
+
+		ShipWing = helper.Content.Ships.RegisterPart("Batmobile.Wing", new()
+		{
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Ship/Wing.png")).Sprite
+		});
+		ShipArmoredWing = helper.Content.Ships.RegisterPart("Batmobile.Wing.Armored", new()
+		{
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Ship/WingArmored.png")).Sprite
+		});
+		var shipCockpit = helper.Content.Ships.RegisterPart("Batmobile.Cockpit", new()
+		{
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Ship/Cockpit.png")).Sprite
+		});
+		var shipCannon = helper.Content.Ships.RegisterPart("Batmobile.Cannon", new()
+		{
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Ship/Cannon.png")).Sprite
+		});
+		var shipBay = helper.Content.Ships.RegisterPart("Batmobile.Bay", new()
+		{
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Ship/Bay.png")).Sprite
+		});
+
+		Ship = helper.Content.Ships.RegisterShip("Batmobile", new()
 		{
 			Ship = new()
 			{
@@ -217,34 +259,33 @@ public sealed class ModEntry : SimpleMod
 					hull = 12,
 					hullMax = 12,
 					shieldMaxBase = 3,
-					chassisUnder = "chassis_boxy",
 					parts =
 					{
 						new Part
 						{
 							type = PType.wing,
-							skin = "wing_player",
+							skin = ShipWing.UniqueName,
 							damageModifier = PDamMod.weak
 						},
 						new Part
 						{
 							type = PType.cockpit,
-							skin = "cockpit_artemis"
+							skin = shipCockpit.UniqueName
 						},
 						new Part
 						{
 							type = PType.cannon,
-							skin = "cannon_artemis"
+							skin = shipCannon.UniqueName
 						},
 						new Part
 						{
 							type = PType.missiles,
-							skin = "missiles_artemis"
+							skin = shipBay.UniqueName
 						},
 						new Part
 						{
 							type = PType.wing,
-							skin = "wing_player",
+							skin = ShipWing.UniqueName,
 							damageModifier = PDamMod.weak,
 							flip = true
 						}
@@ -264,6 +305,7 @@ public sealed class ModEntry : SimpleMod
 					new BasicShieldColorless(),
 				}
 			},
+			UnderChassisSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Ship/Chassis.png")).Sprite,
 			ExclusiveArtifactTypes = new HashSet<Type>()
 			{
 				typeof(BatmobileArtifact),

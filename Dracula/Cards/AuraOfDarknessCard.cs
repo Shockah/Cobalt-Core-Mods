@@ -46,9 +46,11 @@ internal sealed class AuraOfDarknessCard : Card, IDraculaCard
 			}
 		];
 		if (upgrade == Upgrade.A)
-			actions.Add(new ADrawCard
+			actions.Add(new AStatus
 			{
-				count = 1
+				targetPlayer = true,
+				status = Status.drawNextTurn,
+				statusAmount = 1
 			});
 
 		return actions;

@@ -62,7 +62,11 @@ internal sealed class BatmobileArtifact : Artifact, IDraculaArtifact
 		=> this.InCombat = true;
 
 	public override void OnCombatEnd(State state)
-		=> this.InCombat = false;
+	{
+		this.InCombat = false;
+		if (MG.inst.g is { } g)
+			this.UnapplyWingArmor(g);
+	}
 
 	public override int ModifyBaseDamage(int baseDamage, Card? card, State state, Combat? combat, bool fromPlayer)
 		=> fromPlayer && state.ship.hull == 1 ? 1 : 0;
@@ -76,7 +80,7 @@ internal sealed class BatmobileArtifact : Artifact, IDraculaArtifact
 		if (textTooltip is null)
 			return;
 
-		if (MG.inst.g?.state is not { } state || state.route is not Combat)
+		if (MG.inst.g?.state is not { } state || state.IsOutsideRun())
 			return;
 		textTooltip.text = DB.Join(
 			"<c=artifact>{0}</c>\n".FF(__instance.GetLocName()),
@@ -143,67 +147,60 @@ internal sealed class BatmobileArtifact : Artifact, IDraculaArtifact
 				var worldX = g.state.ship.x + i;
 				if (g.state.ship.parts[i].type != PType.wing)
 					continue;
-
-				if (isBelow25)
-					__instance.QueueImmediate(new ARemovePartArmorMod
-					{
-						TargetPlayer = true,
-						WorldX = worldX,
-						canRunAfterKill = true,
-						artifactPulse = artifact.Key()
-					});
-				else
-					__instance.QueueImmediate(new AWeaken
-					{
-						targetPlayer = true,
-						worldX = worldX,
-						canRunAfterKill = true,
-						artifactPulse = artifact.Key()
-					});
+				__instance.QueueImmediate(new ABatmobileArmor
+				{
+					TargetPlayer = true,
+					Weaken = !isBelow25,
+					WorldX = worldX,
+					canRunAfterKill = true,
+					artifactPulse = artifact.Key()
+				});
 			}
 			artifact.WasBelow25 = isBelow25;
 		}
 	}
 
-	public sealed class ARemovePartArmorMod : CardAction
+	private void UnapplyWingArmor(G g)
+	{
+		for (var i = g.state.ship.parts.Count - 1; i >= 0; i--)
+		{
+			var worldX = g.state.ship.x + i;
+			if (g.state.ship.parts[i].type != PType.wing)
+				continue;
+			new ABatmobileArmor
+			{
+				TargetPlayer = true,
+				Weaken = true,
+				WorldX = worldX,
+				canRunAfterKill = true,
+				artifactPulse = Key()
+			}.Begin(g, g.state, g.state.route as Combat ?? DB.fakeCombat);
+		}
+		WasBelow25 = false;
+	}
+
+	public sealed class ABatmobileArmor : CardAction
 	{
 		public int WorldX { get; init; }
 
 		public bool TargetPlayer { get; init; }
 
-		public bool JustTheActiveOverride { get; init; }
+		public bool Weaken { get; init; }
 
 		public override void Begin(G g, State s, Combat c)
 		{
+			var newDamageModifier = Weaken ? PDamMod.weak : PDamMod.none;
 			var partAtWorldX = (TargetPlayer ? s.ship : c.otherShip).GetPartAtWorldX(WorldX);
-			if (partAtWorldX is null)
+			if (partAtWorldX is null || partAtWorldX.damageModifier == newDamageModifier)
 			{
 				timer = 0;
 				return;
 			}
 
-			timer *= 0.5;
-			bool isGood;
-			if (JustTheActiveOverride)
-			{
-				if (partAtWorldX.damageModifierOverrideWhileActive == PDamMod.none)
-				{
-					timer = 0;
-					return;
-				}
-				isGood = partAtWorldX.damageModifierOverrideWhileActive != PDamMod.armor;
-				partAtWorldX.damageModifierOverrideWhileActive = PDamMod.none;
-			}
-			else
-			{
-				if (partAtWorldX.damageModifier == PDamMod.none)
-				{
-					timer = 0;
-					return;
-				}
-				isGood = partAtWorldX.damageModifier != PDamMod.armor;
-				partAtWorldX.damageModifier = PDamMod.none;
-			}
+			var isGood = newDamageModifier != PDamMod.armor && partAtWorldX.damageModifier == PDamMod.weak;
+			partAtWorldX.damageModifier = newDamageModifier;
+			if (s.ship.key == ModEntry.Instance.Ship.UniqueName)
+				partAtWorldX.skin = Weaken ? ModEntry.Instance.ShipWing.UniqueName : ModEntry.Instance.ShipArmoredWing.UniqueName;
 			Audio.Play(isGood ? Event.Status_PowerUp : Event.Status_PowerDown);
 		}
 	}
