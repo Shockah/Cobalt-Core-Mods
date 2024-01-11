@@ -96,6 +96,8 @@ public sealed class ModEntry : SimpleMod
 	internal static IReadOnlyList<Type> ShipArtifacts { get; } = [
 		typeof(BatmobileArtifact),
 		typeof(BloodBankArtifact),
+		typeof(ABTypeArtifact),
+		typeof(OTypeArtifact),
 	];
 
 	internal static IEnumerable<Type> AllArtifactTypes
@@ -315,6 +317,8 @@ public sealed class ModEntry : SimpleMod
 			{
 				typeof(BatmobileArtifact),
 				typeof(BloodBankArtifact),
+				typeof(ABTypeArtifact),
+				typeof(OTypeArtifact),
 			},
 			Name = this.AnyLocalizations.Bind(["ship", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["ship", "description"]).Localize,

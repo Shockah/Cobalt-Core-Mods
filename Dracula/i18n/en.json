@@ -70,6 +70,20 @@
                     "Whenever you <c=heal>heal any amount of hull</c>, add 1 <c=status>blood</c> to the <c=artifact>Blood Bank</c>.",
                     "Starts with 3 <c=status>blood</c> stored."
                 ]
+            },
+            "ABType": {
+                "name": "AB Type",
+                "description": [
+                    "(Batmobile-exclusive artifact!)",
+                    "Gain 1 extra <c=energy>ENERGY</c> every turn if you are at max hull."
+                ]
+            },
+            "OType": {
+                "name": "O Type",
+                "description": [
+                    "(Batmobile-exclusive artifact!)",
+                    "At the start of combat, the <c=artifact>Blood Bank</c> recharges up to 3 charges."
+                ]
             }
         }
     },
