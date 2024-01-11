@@ -28,6 +28,18 @@
             ]
         }
     },
+    "condition": {
+        "hull": {
+            "below": {
+                "stateless": "you are at or below half hull",
+                "stateful": "you are at or below half (<c=boldPink>{{Hull}}</c>) hull"
+            },
+            "above": {
+                "stateless": "you are above half hull",
+                "stateful": "you are above half (<c=boldPink>{{Hull}}</c>) hull"
+            }
+        }
+    },
     "midrow": {
         "Bat": {
             "name": "Bat",
@@ -97,6 +109,9 @@
                 "A": "All your ship parts <c=action>attack</c> for {{Damage}} and <c=action>stun</c>.",
                 "B": "All your ship parts <c=action>attack</c> for {{Damage}} and <c=action>stun</c>. <c=heal>Heal</c> for damage done."
             }
+        },
+        "DeathCoil": {
+            "name": "Death Coil"
         },
         "Dispersion": {
             "name": "Dispersion"

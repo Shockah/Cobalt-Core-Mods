@@ -28,6 +28,8 @@ public sealed class ModEntry : SimpleMod
 	internal ISpriteEntry ShieldCostOn { get; }
 	internal ISpriteEntry BleedingCostOff { get; }
 	internal ISpriteEntry BleedingCostOn { get; }
+	internal ISpriteEntry HullBelowHalf { get; }
+	internal ISpriteEntry HullAboveHalf { get; }
 
 	internal ISpriteEntry BatIcon { get; }
 	internal ISpriteEntry BatSprite { get; }
@@ -48,6 +50,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(BloodMirrorCard),
 		typeof(GrimoireOfSecretsCard),
 		typeof(SummonBatCard),
+		typeof(DeathCoilCard),
 	];
 
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
@@ -134,6 +137,8 @@ public sealed class ModEntry : SimpleMod
 		ShieldCostOn = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/ShieldCostOn.png"));
 		BleedingCostOff = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/BleedingCostOff.png"));
 		BleedingCostOn = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/BleedingCostOn.png"));
+		HullBelowHalf = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/HullBelowHalf.png"));
+		HullAboveHalf = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/HullAboveHalf.png"));
 
 		BatIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/Bat.png"));
 		BatSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Bat.png"));
