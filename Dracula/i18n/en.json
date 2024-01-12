@@ -5,7 +5,7 @@
     },
     "ship": {
         "name": "Batmobile",
-        "description": "Lorem ipsum dolor sit amet..."
+        "description": "Dracula's new ride. A bit fragile but can stock and recover hull points with ease."
     },
     "status": {
         "Bleeding": {
@@ -95,6 +95,10 @@
                     "normal": "Withdraw 1 blood.\n<c=5f5f5f>Deposit 1 blood.</c>",
                     "flipped": "<c=5f5f5f>Withdraw 1 blood.</c>\nDeposit 1 blood."
                 }
+            },
+            "BasicRepairs": {
+                "name": "Basic Repairs",
+                "descriptionB": "Add 3 <c=status>blood</c> to the <c=artifact>Blood Bank</c>."
             }
         },
 

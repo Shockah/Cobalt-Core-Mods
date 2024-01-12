@@ -80,6 +80,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static IReadOnlyList<Type> ShipCards { get; } = [
+		typeof(BatmobileBasicRepairsCard),
 		typeof(BatDebitCard),
 	];
 
@@ -307,9 +308,9 @@ public sealed class ModEntry : SimpleMod
 				cards =
 				{
 					new CannonColorless(),
-					new CannonColorless(),
 					new DodgeColorless(),
 					new BasicShieldColorless(),
+					new BatmobileBasicRepairsCard(),
 				}
 			},
 			UnderChassisSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Ship/Chassis.png")).Sprite,
