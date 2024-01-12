@@ -35,7 +35,7 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 		=> [
 			new ABloodTap
 			{
-				Statuses = ModEntry.Instance.BloodTapManager.GetStatuses(includeEnemy: upgrade == Upgrade.B),
+				Statuses = ModEntry.Instance.BloodTapManager.GetStatuses(c, includeEnemy: upgrade == Upgrade.B),
 				Choices = ModEntry.Instance.BloodTapManager.MakeChoices(s, c, includeEnemy: upgrade == Upgrade.B)
 			}
 		];

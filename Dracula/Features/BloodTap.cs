@@ -8,18 +8,10 @@ namespace Shockah.Dracula;
 
 internal sealed class BloodTapManager : IStatusLogicHook
 {
-	public HashSet<Status> PlayerOwnedStatuses { get; } = [];
-	public HashSet<Status> EnemyOwnedStatuses { get; } = [];
 	private readonly Dictionary<Status, Func<State, Combat, Status, List<CardAction>>> Statuses = [];
 
 	public BloodTapManager()
 	{
-		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatStart), () =>
-		{
-			PlayerOwnedStatuses.Clear();
-			EnemyOwnedStatuses.Clear();
-		}, double.MaxValue);
-
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Update)),
@@ -134,16 +126,16 @@ internal sealed class BloodTapManager : IStatusLogicHook
 	public void RegisterStatus(Status status, Func<State, Combat, Status, List<CardAction>> actions)
 		=> Statuses[status] = actions;
 
-	public List<Status> GetStatuses(bool includeEnemy)
+	public List<Status> GetStatuses(Combat combat, bool includeEnemy)
 	{
-		IEnumerable<Status> allStatuses = PlayerOwnedStatuses;
+		IEnumerable<Status> allStatuses = ModEntry.Instance.KokoroApi.ObtainExtensionData<HashSet<Status>>(combat, "BloodTapPlayerStatuses");
 		if (includeEnemy)
-			allStatuses = allStatuses.Concat(EnemyOwnedStatuses).Distinct();
+			allStatuses = allStatuses.Concat(ModEntry.Instance.KokoroApi.ObtainExtensionData<HashSet<Status>>(combat, "BloodTapEnemyStatuses")).Distinct();
 		return allStatuses.Where(Statuses.ContainsKey).ToList();
 	}
 
 	public List<List<CardAction>> MakeChoices(State state, Combat combat, bool includeEnemy)
-		=> GetStatuses(includeEnemy)
+		=> GetStatuses(combat, includeEnemy)
 			.Select(s => (Status: s, Actions: Statuses[s]))
 			.Select(e => e.Actions(state, combat, e.Status))
 			.ToList();
@@ -162,7 +154,7 @@ internal sealed class BloodTapManager : IStatusLogicHook
 
 	private static void Combat_Update_Postfix(Combat __instance, G g)
 	{
-		UpdateStatuses(ModEntry.Instance.BloodTapManager.PlayerOwnedStatuses, g.state.ship);
-		UpdateStatuses(ModEntry.Instance.BloodTapManager.EnemyOwnedStatuses, __instance.otherShip);
+		UpdateStatuses(ModEntry.Instance.KokoroApi.ObtainExtensionData<HashSet<Status>>(__instance, "BloodTapPlayerStatuses"), g.state.ship);
+		UpdateStatuses(ModEntry.Instance.KokoroApi.ObtainExtensionData<HashSet<Status>>(__instance, "BloodTapEnemyStatuses"), __instance.otherShip);
 	}
 }
