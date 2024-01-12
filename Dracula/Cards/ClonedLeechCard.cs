@@ -48,7 +48,7 @@ internal sealed class ClonedLeechCard : Card, IDraculaCard
 		=> [
 			new AAttack
 			{
-				damage = Damage,
+				damage = GetDmg(s, Damage),
 				piercing = true,
 				stunEnemy = true
 			},
