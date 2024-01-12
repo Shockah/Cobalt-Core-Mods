@@ -163,6 +163,14 @@
         "DrainEssence": {
             "name": "Drain Essence"
         },
+        "Enshroud": {
+            "name": "Enshroud",
+            "description": {
+                "None": "All your ship parts get armor until the start of the next turn.",
+                "A": "All your ship parts get armor until the start of the next turn.",
+                "B": "ALL ship parts get armor until the start of the next turn."
+            }
+        },
         "GrimoireOfSecrets": {
             "name": "Grimoire of Secrets",
             "description": {

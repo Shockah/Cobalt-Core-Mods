@@ -64,6 +64,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(HeartbreakCard),
 		typeof(BloodScentCard),
 		typeof(DispersionCard),
+		typeof(EnshroudCard),
 	];
 
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
@@ -118,6 +119,8 @@ public sealed class ModEntry : SimpleMod
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 		KokoroApi.RegisterTypeForExtensionData(typeof(AHurt));
 		KokoroApi.RegisterTypeForExtensionData(typeof(AAttack));
+		KokoroApi.RegisterTypeForExtensionData(typeof(Combat));
+		KokoroApi.RegisterTypeForExtensionData(typeof(Part));
 		_ = new BleedingManager();
 		_ = new BloodMirrorManager();
 		_ = new LifestealManager();
