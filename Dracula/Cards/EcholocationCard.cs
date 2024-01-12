@@ -16,7 +16,7 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 			Meta = new()
 			{
 				deck = ModEntry.Instance.DraculaDeck.Deck,
-				rarity = Rarity.rare,
+				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Echolocation", "name"]).Localize
