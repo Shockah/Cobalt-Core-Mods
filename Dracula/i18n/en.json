@@ -22,7 +22,8 @@
         },
         "Transfusing": {
             "name": "Transfusing",
-            "description": [
+            "description": "When <c=status>TRANSFUSING</c> reaches the amount of <c=status>TRANSFUSION</c> on this ship, <c=heal>heal for that amount</c> and remove both.",
+            "descriptionLong": [
                 "When <c=status>TRANSFUSING</c> reaches the amount of <c=status>TRANSFUSION</c> on this ship, <c=heal>heal for that amount</c> and remove both.",
                 "If you still have <c=status>TRANSFUSING</c> at the end of combat, <c=heal>heal for its amount</c>."
             ]
@@ -42,8 +43,18 @@
     },
     "midrow": {
         "Bat": {
-            "name": "Bat",
-            "description": "Applies 1 <c=status>BLEEDING</c> in front of it. Applies 1 <c=status>TRANSFUSION</c> to the ship behind it (wherever it is) if it hit, or 1 <c=status>BLEEDING</c> otherwise."
+            "Normal": {
+                "name": "Bat",
+                "description": "Applies 1 <c=status>BLEEDING</c> to a ship in front of it, or to the owner. If the enemy was hit, the owner gains 1 <c=status>TRANSFUSION</c>."
+            },
+            "Bloodthirsty": {
+                "name": "Bloodthirsty Bat",
+                "description": "Deals 1 damage and applies 1 <c=status>BLEEDING</c> to a ship in front of it, or to the owner. If the enemy was hit, <c=heal>the owner gets healed</c> for 1 and gains 1 <c=status>TRANSFUSION</c>."
+            },
+            "Protective": {
+                "name": "Protective Bat",
+                "description": "Applies 1 <c=status>BLEEDING</c> to a ship in front of it, or to the owner. If the enemy was hit, the bat gains <c=midrow>BUBBLE</c>, or if it already has one, the owner gains 1 <c=status>TRANSFUSION</c>."
+            }
         }
     },
     "artifact": {

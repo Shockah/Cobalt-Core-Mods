@@ -34,7 +34,11 @@ public sealed class ModEntry : SimpleMod
 	internal ISpriteEntry HullAboveHalf { get; }
 
 	internal ISpriteEntry BatIcon { get; }
+	internal ISpriteEntry BatAIcon { get; }
+	internal ISpriteEntry BatBIcon { get; }
 	internal ISpriteEntry BatSprite { get; }
+	internal ISpriteEntry BatASprite { get; }
+	internal ISpriteEntry BatBSprite { get; }
 
 	internal IShipEntry Ship { get; }
 	internal IPartEntry ShipWing { get; }
@@ -148,7 +152,11 @@ public sealed class ModEntry : SimpleMod
 		HullAboveHalf = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/HullAboveHalf.png"));
 
 		BatIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/Bat.png"));
+		BatAIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/BatA.png"));
+		BatBIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/BatB.png"));
 		BatSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Bat.png"));
+		BatASprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/BatA.png"));
+		BatBSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/BatB.png"));
 
 		BleedingStatus = helper.Content.Statuses.RegisterStatus("Bleeding", new()
 		{

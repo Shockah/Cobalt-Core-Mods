@@ -1,22 +1,42 @@
 ﻿using HarmonyLib;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Shockah.Dracula;
 
 internal sealed class BatStuff : StuffBase
 {
-	private const double Duration = 1.5;
+	[JsonConverter(typeof(StringEnumConverter))]
+	public enum BatType
+	{
+		Normal, Bloodthirsty, Protective
+	}
+
+	[JsonConverter(typeof(StringEnumConverter))]
+	private enum AnimationDestination
+	{
+		Rest, Enemy, Owner
+	}
 
 	[JsonProperty]
-	private double AnimationProgress { get; set; }
+	public BatType Type = BatType.Normal;
+
+	[JsonProperty]
+	private (AnimationDestination From, AnimationDestination To, double Progress)? Animation;
 
 	public override bool IsHostile()
 		=> this.targetPlayer;
 
 	public override Spr? GetIcon()
-		=> ModEntry.Instance.BatIcon.Sprite;
+		=> (Type switch
+		{
+			BatType.Bloodthirsty => ModEntry.Instance.BatAIcon,
+			BatType.Protective => ModEntry.Instance.BatBIcon,
+			_ => ModEntry.Instance.BatIcon,
+		}).Sprite;
 
 	public override double GetWiggleAmount()
 		=> 1;
@@ -24,14 +44,12 @@ internal sealed class BatStuff : StuffBase
 	public override double GetWiggleRate()
 		=> 7;
 
-	public override void Render(G g, Vec v)
+	public override Vec GetOffset(G g, bool doRound = false)
 	{
-		base.Render(g, v);
+		var offset = base.GetOffset(g, doRound);
 
-		void ReallyRender(G g, Vec v)
-		{
-			DrawWithHilight(g, ModEntry.Instance.BatSprite.Sprite, v + GetOffset(g, doRound: true), flipY: targetPlayer);
-		}
+		if (g.state.route is not Combat combat)
+			return offset;
 
 		int? ClosestShipPart(Ship ship)
 		{
@@ -49,92 +67,110 @@ internal sealed class BatStuff : StuffBase
 		static double Ease(double f)
 			=> -(Math.Cos(Math.PI * f) - 1) / 2;
 
-		if (g.state.route is not Combat combat)
-		{
-			ReallyRender(g, v);
-			return;
-		}
-
 		var ownerShip = targetPlayer ? combat.otherShip : g.state.ship;
-		if (ClosestShipPart(ownerShip) is not { } closestShipPart)
-		{
-			ReallyRender(g, v);
-			return;
-		}
+		if (ClosestShipPart(ownerShip) is not { } closestShipPart || Animation is not { } animation)
+			return offset;
 
 		float playerShipOffset = 32;
 		float enemyShipOffset = 40;
-		Vec normalPosition = v;
-		Vec attackedPosition = new(v.x, v.y + (targetPlayer ? playerShipOffset : -enemyShipOffset));
-		Vec ownerPosition = new(v.x + (closestShipPart - x) * 16, v.y + (targetPlayer ? -enemyShipOffset : playerShipOffset));
+		Vec normalPosition = offset;
+		Vec attackedPosition = new(offset.x, offset.y + (targetPlayer ? playerShipOffset : -enemyShipOffset));
+		Vec ownerPosition = new(offset.x + (closestShipPart - x) * 16, offset.y + (targetPlayer ? -enemyShipOffset : playerShipOffset));
 
 		Vec oldPosition;
 		Vec targetPosition;
-		double f;
 		double xOffset;
 
-		if (AnimationProgress >= 2.5)
+		oldPosition = animation.From switch
 		{
-			oldPosition = normalPosition;
-			targetPosition = attackedPosition;
-			f = 1 - (AnimationProgress - 2.5);
-			xOffset = -(1 - Math.Abs(f - 0.5) * 2) * 24;
-		}
-		else if (AnimationProgress >= 1)
+			AnimationDestination.Enemy => attackedPosition,
+			AnimationDestination.Owner => ownerPosition,
+			_ => normalPosition
+		};
+		targetPosition = animation.To switch
 		{
-			oldPosition = attackedPosition;
-			targetPosition = ownerPosition;
-			f = 1 - (AnimationProgress - 1) / 1.5;
-			xOffset = (1 - Math.Abs(f - 0.5) * 2) * 24;
-		}
-		else
-		{
-			oldPosition = ownerPosition;
-			targetPosition = normalPosition;
-			f = 1 - AnimationProgress;
-			xOffset = 0;
-		}
+			AnimationDestination.Enemy => attackedPosition,
+			AnimationDestination.Owner => ownerPosition,
+			_ => normalPosition
+		};
 
+		if (animation.From == AnimationDestination.Rest)
+			xOffset = -(1 - Math.Abs(animation.Progress - 0.5) * 2) * 24;
+		else if (animation.From == AnimationDestination.Enemy)
+			xOffset = (1 - Math.Abs(animation.Progress - 0.5) * 2) * 24;
+		else
+			xOffset = 0;
+
+		var f = animation.Progress;
 		f = Math.Clamp(f, 0, 1);
 		f = Ease(f);
-		ReallyRender(
-			g,
-			new Vec(
-				oldPosition.x + (targetPosition.x - oldPosition.x) * f + xOffset,
-				oldPosition.y + (targetPosition.y - oldPosition.y) * f
-			)
+		return new Vec(
+			oldPosition.x + (targetPosition.x - oldPosition.x) * f + xOffset,
+			oldPosition.y + (targetPosition.y - oldPosition.y) * f
 		);
+	}
+
+	public override void Render(G g, Vec v)
+	{
+		base.Render(g, v);
+
+		var sprite = Type switch
+		{
+			BatType.Bloodthirsty => ModEntry.Instance.BatASprite,
+			BatType.Protective => ModEntry.Instance.BatBSprite,
+			_ => ModEntry.Instance.BatSprite,
+		};
+		DrawWithHilight(g, sprite.Sprite, v + GetOffset(g, doRound: false), flipY: targetPlayer);
 	}
 
 	public override List<CardAction>? GetActions(State s, Combat c)
 		=> [
 			new ABatAttack
 			{
-				TargetPlayer = this.targetPlayer,
+				Type = Type,
+				TargetPlayer = targetPlayer,
 				FromX = x
 			}
 		];
 
 	public override List<Tooltip> GetTooltips()
-		=> [
+	{
+		List<Tooltip> tooltips = [
 			new CustomTTGlossary(
 				CustomTTGlossary.GlossaryType.midrow,
-				() => ModEntry.Instance.BatIcon.Sprite,
-				() => ModEntry.Instance.Localizations.Localize(["midrow", "Bat", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["midrow", "Bat", "description"])
+				() => GetIcon()!,
+				() => ModEntry.Instance.Localizations.Localize(["midrow", "Bat", Type.ToString(), "name"]),
+				() => ModEntry.Instance.Localizations.Localize(["midrow", "Bat", Type.ToString(), "description"])
 			),
 			new TTGlossary($"status.{ModEntry.Instance.BleedingStatus.Status.Key()}"),
 			new TTGlossary($"status.{ModEntry.Instance.TransfusionStatus.Status.Key()}"),
-			new TTGlossary($"status.{ModEntry.Instance.TransfusingStatus.Status.Key()}"),
 		];
+
+		if (Type == BatType.Normal)
+			tooltips.Add(new TTGlossary($"status.{ModEntry.Instance.TransfusingStatus.Status.Key()}"));
+		return tooltips;
+	}
 
 	private sealed class ABatAttack : CardAction
 	{
+		[JsonConverter(typeof(StringEnumConverter))]
+		private enum AnimationAction
+		{
+			None, HitEnemy, HitOwner
+		}
+
+		private const double ShortDistanceDuration = 0.4;
+		private const double LongDistanceDuration = 0.7;
+
+		public required BatType Type { get; init; }
 		public required bool TargetPlayer { get; init; }
 		public required int FromX { get; init; }
 
 		[JsonProperty]
 		private bool HasValidTarget { get; set; }
+
+		[JsonProperty]
+		private readonly List<(AnimationDestination From, AnimationDestination To, double Duration, AnimationAction Action)> Animation = [];
 
 		[JsonProperty]
 		private CardAction? CurrentSubAction { get; set; }
@@ -144,9 +180,22 @@ internal sealed class BatStuff : StuffBase
 
 		public override void Begin(G g, State s, Combat c)
 		{
-			timer = Duration;
 			var attackedShip = TargetPlayer ? s.ship : c.otherShip;
 			HasValidTarget = attackedShip.GetPartAtWorldX(FromX) is not null;
+
+			var bat = c.stuff.TryGetValue(FromX, out var existingBat) ? existingBat : null;
+
+			Animation.Add((From: AnimationDestination.Rest, To: AnimationDestination.Enemy, ShortDistanceDuration, Action: AnimationAction.HitEnemy));
+			if (Type == BatType.Protective && bat?.bubbleShield == false)
+			{
+				Animation.Add((From: AnimationDestination.Enemy, To: AnimationDestination.Rest, ShortDistanceDuration, Action: AnimationAction.None));
+			}
+			else
+			{
+				Animation.Add((From: AnimationDestination.Enemy, To: AnimationDestination.Owner, LongDistanceDuration, Action: AnimationAction.HitOwner));
+				Animation.Add((From: AnimationDestination.Owner, To: AnimationDestination.Rest, ShortDistanceDuration, Action: AnimationAction.None));
+			}
+			timer = Animation.Sum(a => a.Duration);
 		}
 
 		public override void Update(G g, State s, Combat c)
@@ -171,27 +220,101 @@ internal sealed class BatStuff : StuffBase
 			base.Update(g, s, c);
 			if (!c.stuff.TryGetValue(FromX, out var @object) || @object is not BatStuff bat)
 				return;
-			bat.AnimationProgress = timer / Duration * 3.5;
 
 			var ownerShip = TargetPlayer ? c.otherShip : s.ship;
 			var attackedShip = TargetPlayer ? s.ship : c.otherShip;
 
-			if (oldTimer / Duration * 3.5 > 2.5 && timer / Duration * 3.5 <= 2.5)
+			var totalTimer = Animation.Sum(a => a.Duration);
+			var summedUpTimer = 0.0;
+			var oldElapsedTimer = totalTimer - oldTimer;
+			var newElapsedTimer = totalTimer - timer;
+
+			foreach (var animation in Animation)
+			{
+				if (newElapsedTimer - summedUpTimer < 0)
+					continue;
+
+				if (newElapsedTimer - summedUpTimer < animation.Duration)
+				{
+					bat.Animation = (From: animation.From, To: animation.To, Progress: (newElapsedTimer - summedUpTimer) / animation.Duration);
+				}
+				else if (oldElapsedTimer - summedUpTimer < animation.Duration && newElapsedTimer - summedUpTimer > animation.Duration)
+				{
+					bat.Animation = (From: animation.From, To: animation.To, Progress: 1);
+					timer = totalTimer - summedUpTimer - animation.Duration - 0.01;
+					switch (animation.Action)
+					{
+						case AnimationAction.None:
+							break;
+						case AnimationAction.HitEnemy:
+							HitEnemy(s, c, attackedShip);
+							break;
+						case AnimationAction.HitOwner:
+							HitOwner(s, c, ownerShip);
+							break;
+					}
+				}
+				else
+				{
+					summedUpTimer += animation.Duration;
+					continue;
+				}
+				break;
+			}
+
+			if (timer <= 0)
+				bat.Animation = null;
+		}
+
+		private void HitEnemy(State state, Combat combat, Ship ship)
+		{
+			if (!HasValidTarget)
+				return;
+			if (!combat.stuff.TryGetValue(FromX, out var bat))
+				return;
+
+			if (Type == BatType.Bloodthirsty)
+				ship.NormalDamage(state, combat, 1, FromX);
+			else if (Type == BatType.Protective && !bat.bubbleShield)
+				bat.bubbleShield = true;
+
+			QueuedSubActions.Add(new AStatus
+			{
+				targetPlayer = ship.isPlayerShip,
+				status = ModEntry.Instance.BleedingStatus.Status,
+				statusAmount = 1
+			});
+		}
+
+		private void HitOwner(State state, Combat combat, Ship ship)
+		{
+			if (Type == BatType.Bloodthirsty)
 			{
 				if (HasValidTarget)
-					QueuedSubActions.Add(new AStatus
+					QueuedSubActions.Add(new AHeal
 					{
-						targetPlayer = attackedShip.isPlayerShip,
-						status = ModEntry.Instance.BleedingStatus.Status,
-						statusAmount = 1
+						targetPlayer = ship.isPlayerShip,
+						healAmount = 1
 					});
+				else
+					ship.NormalDamage(state, combat, 1, FromX);
 			}
-			else if (oldTimer / Duration * 3.5 > 1 && timer / Duration * 3.5 <= 1)
+
+			if (HasValidTarget)
 			{
 				QueuedSubActions.Add(new AStatus
 				{
-					targetPlayer = ownerShip.isPlayerShip,
-					status = HasValidTarget ? ModEntry.Instance.TransfusionStatus.Status : ModEntry.Instance.BleedingStatus.Status,
+					targetPlayer = ship.isPlayerShip,
+					status = ModEntry.Instance.TransfusionStatus.Status,
+					statusAmount = 1
+				});
+			}
+			else
+			{
+				QueuedSubActions.Add(new AStatus
+				{
+					targetPlayer = ship.isPlayerShip,
+					status = ModEntry.Instance.BleedingStatus.Status,
 					statusAmount = 1
 				});
 			}

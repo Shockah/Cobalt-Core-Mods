@@ -24,7 +24,8 @@ internal sealed class SummonBatCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = upgrade == Upgrade.B ? 3 : 1
+			cost = 2,
+			exhaust = upgrade == Upgrade.B
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
@@ -34,7 +35,14 @@ internal sealed class SummonBatCard : Card, IDraculaCard
 				thing = new BatStuff
 				{
 					targetPlayer = false,
-					yAnimation = 1
+					yAnimation = 1,
+					Type = upgrade switch
+					{
+						Upgrade.A => BatStuff.BatType.Bloodthirsty,
+						Upgrade.B => BatStuff.BatType.Protective,
+						_ => BatStuff.BatType.Normal
+					},
+					bubbleShield = upgrade == Upgrade.B
 				}
 			}
 		];
