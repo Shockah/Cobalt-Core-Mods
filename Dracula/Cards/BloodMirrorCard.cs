@@ -24,7 +24,7 @@ internal sealed class BloodMirrorCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = upgrade == Upgrade.B ? 3 : 2,
+			cost = upgrade == Upgrade.B ? 2 : 1,
 			exhaust = upgrade == Upgrade.B
 		};
 
