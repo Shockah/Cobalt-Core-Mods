@@ -120,6 +120,17 @@
         "BloodShield": {
             "name": "Blood Shield"
         },
+        "BloodTap": {
+            "name": "Blood Tap",
+            "description": {
+                "None": "Choose a status you have or had. Gain it for a hull price.",
+                "A": "Choose a status you have or had. Gain it for a hull price.",
+                "B": "Choose a status you or the enemy have or had. Gain it for a hull price."
+            },
+            "ui": {
+                "title": "PICK A STATUS"
+            }
+        },
         "CrimsonWave": {
             "name": "Crimson Wave",
             "description": {

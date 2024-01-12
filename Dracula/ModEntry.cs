@@ -17,6 +17,8 @@ public sealed class ModEntry : SimpleMod
 	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
+	internal BloodTapManager BloodTapManager { get; }
+
 	internal IDeckEntry DraculaDeck { get; }
 
 	internal IStatusEntry BleedingStatus { get; }
@@ -64,6 +66,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(ScreechCard),
 		typeof(RedThirstCard),
 		typeof(CrimsonWaveCard),
+		typeof(BloodTapCard),
 	];
 
 	internal static IReadOnlyList<Type> SecretAttackCardTypes { get; } = [
@@ -116,6 +119,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new LifestealManager();
 		_ = new TransfusionManager();
 		_ = new NegativeOverdriveManager();
+		BloodTapManager = new();
 		CustomTTGlossary.ApplyPatches(Harmony);
 
 		ASpecificCardOffering.ApplyPatches(Harmony, logger);
@@ -324,5 +328,14 @@ public sealed class ModEntry : SimpleMod
 			Name = this.AnyLocalizations.Bind(["ship", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["ship", "description"]).Localize,
 		});
+
+		BloodTapManager.RegisterStatus(BloodMirrorStatus.Status, (_, _, status) => [
+			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+			new AHurt { targetPlayer = true, hurtAmount = 1 },
+		]);
+		BloodTapManager.RegisterStatus(TransfusionStatus.Status, (_, _, status) => [
+			new AHurt { targetPlayer = true, hurtAmount = 1 },
+			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+		]);
 	}
 }
