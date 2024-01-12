@@ -134,18 +134,19 @@ internal sealed class BloodTapManager : IStatusLogicHook
 	public void RegisterStatus(Status status, Func<State, Combat, Status, List<CardAction>> actions)
 		=> Statuses[status] = actions;
 
-	public List<List<CardAction>> MakeChoices(State state, Combat combat, bool includeEnemy)
+	public List<Status> GetStatuses(bool includeEnemy)
 	{
 		IEnumerable<Status> allStatuses = PlayerOwnedStatuses;
 		if (includeEnemy)
 			allStatuses = allStatuses.Concat(EnemyOwnedStatuses).Distinct();
+		return allStatuses.Where(Statuses.ContainsKey).ToList();
+	}
 
-		return allStatuses
-			.Where(Statuses.ContainsKey)
+	public List<List<CardAction>> MakeChoices(State state, Combat combat, bool includeEnemy)
+		=> GetStatuses(includeEnemy)
 			.Select(s => (Status: s, Actions: Statuses[s]))
 			.Select(e => e.Actions(state, combat, e.Status))
 			.ToList();
-	}
 
 	private static void UpdateStatuses(HashSet<Status> statuses, Ship ship)
 	{

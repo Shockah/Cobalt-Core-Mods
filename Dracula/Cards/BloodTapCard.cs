@@ -32,5 +32,11 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [new ABloodTap { Choices = ModEntry.Instance.BloodTapManager.MakeChoices(s, c, includeEnemy: upgrade == Upgrade.B) }];
+		=> [
+			new ABloodTap
+			{
+				Statuses = ModEntry.Instance.BloodTapManager.GetStatuses(includeEnemy: upgrade == Upgrade.B),
+				Choices = ModEntry.Instance.BloodTapManager.MakeChoices(s, c, includeEnemy: upgrade == Upgrade.B)
+			}
+		];
 }

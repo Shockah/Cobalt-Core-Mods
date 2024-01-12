@@ -127,6 +127,10 @@
                 "A": "Choose a status you have or had. Gain it for a hull price.",
                 "B": "Choose a status you or the enemy have or had. Gain it for a hull price."
             },
+            "tooltip": {
+                "title": "<c=action>Applicable statuses:</c>",
+                "none": "<c=7f7f7f>-- none --</c>"
+            },
             "ui": {
                 "title": "PICK A STATUS"
             }
