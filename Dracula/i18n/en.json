@@ -163,6 +163,14 @@
         "DrainEssence": {
             "name": "Drain Essence"
         },
+        "Echolocation": {
+            "name": "Echolocation",
+            "description": {
+                "None": "Align your cannon with the closest weak part.",
+                "A": "Align your cannon with the closest weak part.",
+                "B": "Align your cannon with the closest weak part. Move back on turn end."
+            }
+        },
         "Enshroud": {
             "name": "Enshroud",
             "description": {

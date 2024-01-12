@@ -65,6 +65,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(BloodScentCard),
 		typeof(DispersionCard),
 		typeof(EnshroudCard),
+		typeof(EcholocationCard),
 	];
 
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
