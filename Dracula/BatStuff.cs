@@ -148,6 +148,8 @@ internal sealed class BatStuff : StuffBase
 
 		if (Type == BatType.Normal)
 			tooltips.Add(new TTGlossary($"status.{ModEntry.Instance.TransfusingStatus.Status.Key()}"));
+		if (Type == BatType.Protective)
+			tooltips.Add(new TTGlossary("midrow.bubbleShield"));
 		return tooltips;
 	}
 
