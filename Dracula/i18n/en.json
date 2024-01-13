@@ -123,6 +123,10 @@
         "ThinBlood": {
             "name": "THIN BLOOD",
             "description": "<c=status>BLEEDING</c> and <c=status>TRANSFUSION</c> triggers twice per turn."
+        },
+        "WingsOfNight": {
+            "name": "WINGS OF NIGHT",
+            "description": "Every turn add a <c=cardtrait>temporary</c> <c=card>Bat Form</c> with <c=cardtrait>exhaust</c> to your hand and <c=downside>lose 1 <c=status>EVADE</c></c>."
         }
     },
     "card": {

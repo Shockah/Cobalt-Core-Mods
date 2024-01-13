@@ -109,6 +109,7 @@ public sealed class ModEntry : SimpleMod
 	internal static IReadOnlyList<Type> CommonArtifacts { get; } = [
 		typeof(MasochismArtifact),
 		typeof(ThinBloodArtifact),
+		typeof(WingsOfNightArtifact),
 	];
 
 	internal static IReadOnlyList<Type> BossArtifacts { get; } = [

@@ -19,12 +19,12 @@ internal sealed class CardScalingManager : ICardRenderHook
 	public Matrix ModifyNonTextCardRenderMatrix(G g, Card card, List<CardAction> actions)
 	{
 		var scale = (card as IDraculaCard)?.ActionSpacingScaling ?? 1f;
-		return scale == 1f ? Matrix.Identity : Matrix.CreateScale(1f / scale);
+		return scale == 1f ? Matrix.Identity : Matrix.CreateScale(scale);
 	}
 
 	public Matrix ModifyCardActionRenderMatrix(G g, Card card, List<CardAction> actions, CardAction action, int actionWidth)
 	{
 		var scale = (card as IDraculaCard)?.ActionSpacingScaling ?? 1f;
-		return scale == 1f ? Matrix.Identity : Matrix.CreateScale(1f);
+		return scale == 1f ? Matrix.Identity : Matrix.CreateScale(1f / scale);
 	}
 }

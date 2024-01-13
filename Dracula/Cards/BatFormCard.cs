@@ -15,7 +15,7 @@ internal sealed class BatFormCard : Card, IDraculaCard
 	private bool LastFlipped { get; set; }
 
 	public float ActionSpacingScaling
-		=> 2f;
+		=> 1.5f;
 
 	public static void Register(IModHelper helper)
 	{
