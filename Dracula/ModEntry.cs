@@ -130,6 +130,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new LifestealManager();
 		_ = new TransfusionManager();
 		_ = new NegativeOverdriveManager();
+		_ = new CardScalingManager();
 		BloodTapManager = new();
 		CustomTTGlossary.ApplyPatches(Harmony);
 

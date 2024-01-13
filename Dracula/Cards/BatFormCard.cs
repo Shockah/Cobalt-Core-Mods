@@ -14,6 +14,9 @@ internal sealed class BatFormCard : Card, IDraculaCard
 	[JsonProperty]
 	private bool LastFlipped { get; set; }
 
+	public float ActionSpacingScaling
+		=> 2f;
+
 	public static void Register(IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("BatForm", new()
