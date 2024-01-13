@@ -207,7 +207,7 @@
             "description": {
                 "None": "Exhaust card in hand. Play an exhausted card.",
                 "A": "Exhaust any card. Play an exhausted card.",
-                "B": "Hand: Exhst a card, add ANY removed from combat card."
+                "B": "Exhaust card in hand. Add an exhausted or removed one to hand."
             },
             "ui": {
                 "exhaustOrSingleUse": "Exhaust Pile and Single Use: {{Count}} Cards",

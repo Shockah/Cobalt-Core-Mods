@@ -26,12 +26,12 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Sacrifice", "name"]).Localize
 		});
 
-		//helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnPlayerPlayCard), ([MappedParameterName("energyCost")] int _1, Deck _2, Card card, State state, Combat combat, [MappedParameterName("handPosition")] int _3, [MappedParameterName("handCount")] int _4) =>
-		//{
-		//	if (!card.GetDataWithOverrides(state).singleUse)
-		//		return;
-		//	ModEntry.Instance.KokoroApi.ObtainExtensionData<HashSet<Card>>(combat, "SingleUseCardsPlayed").Add(card);
-		//}, 0);
+		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (Card card, State state, Combat combat) =>
+		{
+			if (!card.GetDataWithOverrides(state).singleUse)
+				return;
+			ModEntry.Instance.KokoroApi.ObtainExtensionData<HashSet<Card>>(combat, "SingleUseCardsPlayed").Add(card);
+		}, 0);
 
 		CustomCardBrowse.RegisterCustomCardSource(
 			ExhaustOrSingleUseNonSacrificeBrowseSource,
@@ -76,6 +76,14 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 						}
 					]
 				},
+				omitFromTooltips = true
+			},
+			new ATooltipAction
+			{
+				Tooltips = upgrade == Upgrade.B
+					? [
+						new TTGlossary("cardtrait.singleUse")
+					] : null
 			}
 		];
 
