@@ -116,6 +116,10 @@
             "name": "MASOCHISM",
             "description": "Every 5 hull lost during your turn, add a <c=cardtrait>discounted, temporary</c> <c=card>Blood Tap</c> with <c=cardtrait>exhaust</c> to your hand."
         },
+        "Purgatory": {
+            "name": "PURGATORY",
+            "description": "Whenever you are about to receive fatal damage, gain 1 <c=status>PERFECT SHIELD</c>. Can only trigger once per combat."
+        },
         "ThinBlood": {
             "name": "THIN BLOOD",
             "description": "<c=status>BLEEDING</c> and <c=status>TRANSFUSION</c> triggers twice per turn."
