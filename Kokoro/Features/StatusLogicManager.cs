@@ -17,12 +17,7 @@ public sealed class StatusLogicManager : HookManager<IStatusLogicHook>
 		{ Status.autopilot, StatusTurnAutoStepSetStrategy.Direct },
 		{ Status.hermes, StatusTurnAutoStepSetStrategy.Direct },
 		{ Status.engineStall, StatusTurnAutoStepSetStrategy.Direct },
-
-		{ Status.overdrive, StatusTurnAutoStepSetStrategy.QueueImmediateAdd },
-		{ Status.temporaryCheap, StatusTurnAutoStepSetStrategy.QueueImmediateAdd },
-		{ Status.libra, StatusTurnAutoStepSetStrategy.QueueImmediateAdd },
-		{ Status.lockdown, StatusTurnAutoStepSetStrategy.QueueImmediateAdd },
-		{ Status.backwardsMissiles, StatusTurnAutoStepSetStrategy.QueueImmediateAdd },
+		{ Status.lockdown, StatusTurnAutoStepSetStrategy.QueueAdd },
 	};
 
 	internal StatusLogicManager() : base()

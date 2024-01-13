@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection.Emit;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace Shockah.Kokoro;
 
@@ -48,6 +49,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 	public void BootMod(IModLoaderContact contact)
 	{
+		Debugger.Launch();
 		Instance = this;
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
 		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));

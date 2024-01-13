@@ -401,7 +401,7 @@ internal static class CardPatches
 			return;
 		}
 
-		CardRenderMatrixStack.Push(modifiedMatrix);
+		CardRenderMatrixStack.Push(g.mg.cameraMatrix);
 		var box = g.uiStack.TryPeek(out var existingRect) ? existingRect : new();
 		Vector3 translation = new Vector3((float)box.rect.x + LastRenderActionWidth / 2f, (float)box.rect.y + 4f, 0f) * g.mg.PIX_SCALE;
 		MG.inst.cameraMatrix *= Matrix.CreateTranslation(-translation);

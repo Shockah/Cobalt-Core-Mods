@@ -2,6 +2,11 @@
 
 # Release notes
 
+# Upcoming release
+
+* Fixed Engine Lock being decremented too early.
+* Fixed card action scaling hooks.
+
 ## 1.2.0
 Released 6 January 2024.
 
