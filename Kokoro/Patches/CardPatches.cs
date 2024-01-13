@@ -19,6 +19,7 @@ internal static class CardPatches
 	private static int MakeAllActionIconsCounter = 0;
 	private static int RenderActionCounter = 0;
 	private static int LastRenderActionWidth = 0;
+	private static Card? LastCard = null;
 	private static List<CardAction>? LastCardActions = null;
 	private static Dictionary<string, int>? CurrentResourceState = null;
 	private static Dictionary<string, int>? CurrentNonDrawingResourceState = null;
@@ -39,6 +40,7 @@ internal static class CardPatches
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.MakeAllActionIcons)),
+			prefix: new HarmonyMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Prefix)),
 			finalizer: new HarmonyMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Finalizer)),
 			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Transpiler))
 		);
@@ -264,8 +266,14 @@ internal static class CardPatches
 		ResetSpriteBatch();
 	}
 
+	private static void Card_MakeAllActionIcons_Prefix(Card __instance)
+	{
+		LastCard = __instance;
+	}
+
 	private static void Card_MakeAllActionIcons_Finalizer()
 	{
+		LastCard = null;
 		CurrentResourceState = null;
 		CurrentNonDrawingResourceState = null;
 
@@ -386,7 +394,7 @@ internal static class CardPatches
 		return true;
 	}
 
-	private static void Card_RenderAction_Prefix_First(Card __instance, G g, CardAction action, bool dontDraw)
+	private static void Card_RenderAction_Prefix_First(G g, CardAction action, bool dontDraw)
 	{
 		if (dontDraw)
 			return;
@@ -394,7 +402,13 @@ internal static class CardPatches
 		if (RenderActionCounter != 1)
 			return;
 
-		var modifiedMatrix = LastCardActions is null ? Matrix.Identity : Instance.CardRenderManager.ModifyCardActionRenderMatrix(g, __instance, LastCardActions, action, LastRenderActionWidth);
+		if (LastCard is null)
+		{
+			CardRenderMatrixStack.Push(null);
+			return;
+		}
+
+		var modifiedMatrix = LastCardActions is null ? Matrix.Identity : Instance.CardRenderManager.ModifyCardActionRenderMatrix(g, LastCard, LastCardActions, action, LastRenderActionWidth);
 		if (modifiedMatrix.Equals(Matrix.Identity))
 		{
 			CardRenderMatrixStack.Push(null);
