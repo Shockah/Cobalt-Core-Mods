@@ -89,19 +89,36 @@
                 ]
             },
             "ABType": {
-                "name": "AB Type",
+                "name": "AB TYPE",
                 "description": [
                     "(Batmobile-exclusive artifact!)",
                     "Gain 1 extra <c=energy>ENERGY</c> every turn if you are at max hull."
                 ]
             },
             "OType": {
-                "name": "O Type",
+                "name": "O TYPE",
                 "description": [
                     "(Batmobile-exclusive artifact!)",
                     "At the start of combat, the <c=artifact>Blood Bank</c> recharges up to 3 charges."
                 ]
             }
+        },
+
+        "DanseMacabre": {
+            "name": "DANSE MACABRE",
+            "description": {
+                "stateless": "Every even turn gain <c=status>BLOOD MIRROR</c>. Every odd turn your enemy gains <c=status>BLOOD MIRROR</c>.",
+                "even": "Every even turn (like this one) gain <c=status>BLOOD MIRROR</c>. Every odd turn your enemy gains <c=status>BLOOD MIRROR</c>.",
+                "odd": "Every even turn gain <c=status>BLOOD MIRROR</c>. Every odd turn (like this one) your enemy gains <c=status>BLOOD MIRROR</c>."
+            }
+        },
+        "Masochism": {
+            "name": "MASOCHISM",
+            "description": "Every 5 hull lost during your turn, add a <c=cardtrait>discounted, temporary</c> <c=card>Blood Tap</c> with <c=cardtrait>exhaust</c> to your hand."
+        },
+        "ThinBlood": {
+            "name": "THIN BLOOD",
+            "description": "<c=status>BLEEDING</c> and <c=status>TRANSFUSION</c> triggers twice per turn."
         }
     },
     "card": {

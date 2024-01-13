@@ -106,6 +106,15 @@ public sealed class ModEntry : SimpleMod
 			.Concat(SecretNonAttackCardTypes)
 			.Concat(ShipCards);
 
+	internal static IReadOnlyList<Type> CommonArtifacts { get; } = [
+		typeof(MasochismArtifact),
+		typeof(ThinBloodArtifact),
+	];
+
+	internal static IReadOnlyList<Type> BossArtifacts { get; } = [
+		typeof(DanseMacabreArtifact),
+	];
+
 	internal static IReadOnlyList<Type> ShipArtifacts { get; } = [
 		typeof(BatmobileArtifact),
 		typeof(BloodBankArtifact),
@@ -114,7 +123,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static IEnumerable<Type> AllArtifactTypes
-		=> ShipArtifacts;
+		=> CommonArtifacts.Concat(BossArtifacts).Concat(ShipArtifacts);
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
@@ -124,6 +133,7 @@ public sealed class ModEntry : SimpleMod
 		KokoroApi.RegisterTypeForExtensionData(typeof(AHurt));
 		KokoroApi.RegisterTypeForExtensionData(typeof(AAttack));
 		KokoroApi.RegisterTypeForExtensionData(typeof(Combat));
+		KokoroApi.RegisterTypeForExtensionData(typeof(Ship));
 		KokoroApi.RegisterTypeForExtensionData(typeof(Part));
 		_ = new BleedingManager();
 		_ = new BloodMirrorManager();

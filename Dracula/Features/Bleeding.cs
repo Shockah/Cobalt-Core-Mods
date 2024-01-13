@@ -1,4 +1,7 @@
-﻿namespace Shockah.Dracula;
+﻿using System;
+using System.Linq;
+
+namespace Shockah.Dracula;
 
 internal sealed class BleedingManager : IStatusLogicHook
 {
@@ -16,12 +19,15 @@ internal sealed class BleedingManager : IStatusLogicHook
 		if (oldAmount <= 0)
 			return;
 
-		combat.QueueImmediate(new AHurt
+		var thinBloodArtifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is ThinBloodArtifact);
+		var triggers = thinBloodArtifact is null ? 1 : Math.Min(2, oldAmount);
+		combat.QueueImmediate(Enumerable.Range(0, triggers).Select(i => new AHurt
 		{
 			targetPlayer = ship.isPlayerShip,
 			hurtAmount = 1,
-			hurtShieldsFirst = true
-		});
+			hurtShieldsFirst = true,
+			artifactPulse = i == 1 ? thinBloodArtifact?.Key() : null
+		}));
 	}
 
 	public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
@@ -31,8 +37,9 @@ internal sealed class BleedingManager : IStatusLogicHook
 		if (timing != StatusTurnTriggerTiming.TurnEnd)
 			return false;
 
+		var triggers = state.EnumerateAllArtifacts().Any(a => a is ThinBloodArtifact) ? 2 : 1;
 		if (amount > 0)
-			amount--;
+			amount = Math.Max(amount - triggers, 0);
 		return false;
 	}
 }

@@ -1,4 +1,6 @@
 ﻿using HarmonyLib;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -28,13 +30,14 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
+			ModEntry.Instance.KokoroApi.SetExtensionData(state.ship, "IsTransfusionDisabled", false);
 			var transfusion = state.ship.Get(ModEntry.Instance.TransfusionStatus.Status);
 			var transfusing = state.ship.Get(ModEntry.Instance.TransfusingStatus.Status);
 			var toHeal = Math.Min(transfusion, transfusing);
 			if (toHeal <= 0)
 				return;
 
-			(state.route as Combat)?.QueueImmediate(new AHeal
+			state.rewardsQueue.QueueImmediate(new AHeal
 			{
 				targetPlayer = true,
 				healAmount = toHeal,
@@ -52,11 +55,14 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 		if (oldAmount <= 0)
 			return;
 
+		var thinBloodArtifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is ThinBloodArtifact);
+		var triggers = thinBloodArtifact is null ? 1 : 2;
 		combat.QueueImmediate(new AStatus
 		{
 			targetPlayer = ship.isPlayerShip,
 			status = ModEntry.Instance.TransfusingStatus.Status,
-			statusAmount = 1
+			statusAmount = triggers,
+			artifactPulse = thinBloodArtifact?.Key()
 		});
 	}
 
@@ -134,13 +140,22 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 		{
 			if (!(newState.Progress >= newState.Total && (newState.Progress != oldState.Progress || newState.Total != oldState.Total)))
 				return;
+			if (ModEntry.Instance.KokoroApi.ObtainExtensionData(ship, "IsTransfusionDisabled", () => false))
+				return;
 
+			ModEntry.Instance.KokoroApi.SetExtensionData(ship, "IsTransfusionDisabled", true);
+			__instance.QueueImmediate(new AReenableTransfusion
+			{
+				TargetPlayer = ship.isPlayerShip
+			});
 			if (newState.Total > 0)
+			{
 				__instance.QueueImmediate(new AHeal
 				{
 					targetPlayer = ship.isPlayerShip,
 					healAmount = newState.Total
 				});
+			}
 			__instance.QueueImmediate(new AStatus
 			{
 				targetPlayer = ship.isPlayerShip,
@@ -159,5 +174,19 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 
 		DoForShip(g.state.ship, __state.Player, newState.Player);
 		DoForShip(__instance.otherShip, __state.Enemy, newState.Enemy);
+	}
+
+	public sealed class AReenableTransfusion : CardAction
+	{
+		[JsonProperty]
+		public bool TargetPlayer = false;
+
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+			timer = 0;
+			var ship = TargetPlayer ? s.ship : c.otherShip;
+			ModEntry.Instance.KokoroApi.SetExtensionData(ship, "IsTransfusionDisabled", false);
+		}
 	}
 }

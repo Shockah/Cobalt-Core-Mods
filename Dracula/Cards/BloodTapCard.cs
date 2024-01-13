@@ -56,6 +56,8 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 		{
 			Statuses ??= [];
 			List<Tooltip> tooltips = [];
+			if (s == DB.fakeState)
+				return tooltips;
 
 			tooltips.Add(new TTText(ModEntry.Instance.Localizations.Localize(["card", "BloodTap", "tooltip", "title"])));
 			if (Statuses.Count == 0)
