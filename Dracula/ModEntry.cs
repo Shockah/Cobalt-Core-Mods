@@ -75,6 +75,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(RedThirstCard),
 		typeof(CrimsonWaveCard),
 		typeof(BloodTapCard),
+		typeof(SacrificeCard),
 	];
 
 	internal static IReadOnlyList<Type> SecretAttackCardTypes { get; } = [
@@ -352,5 +353,7 @@ public sealed class ModEntry : SimpleMod
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
+
+		CustomCardBrowse.ApplyPatches();
 	}
 }
