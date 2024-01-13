@@ -39,6 +39,7 @@ public sealed class ModEntry : SimpleMod
 	internal ISpriteEntry BatSprite { get; }
 	internal ISpriteEntry BatASprite { get; }
 	internal ISpriteEntry BatBSprite { get; }
+	internal ISpriteEntry DroneTriggerIcon { get; }
 
 	internal IShipEntry Ship { get; }
 	internal IPartEntry ShipWing { get; }
@@ -66,6 +67,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(DispersionCard),
 		typeof(EnshroudCard),
 		typeof(EcholocationCard),
+		typeof(DominateCard),
 	];
 
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
@@ -161,6 +163,7 @@ public sealed class ModEntry : SimpleMod
 		BatSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Bat.png"));
 		BatASprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/BatA.png"));
 		BatBSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/BatB.png"));
+		DroneTriggerIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/DroneTrigger.png"));
 
 		BleedingStatus = helper.Content.Statuses.RegisterStatus("Bleeding", new()
 		{

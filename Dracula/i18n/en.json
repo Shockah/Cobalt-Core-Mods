@@ -7,6 +7,12 @@
         "name": "Batmobile",
         "description": "Dracula's new ride. A bit fragile but can stock and recover hull points with ease."
     },
+    "action": {
+        "droneTrigger": {
+            "name": "Drone Trigger",
+            "description": "<c=midrow>Drones</c> and <c=midrow>missiles</c> in front of your missile bays instantly take a turn."
+        }
+    },
     "status": {
         "Bleeding": {
             "name": "Bleeding",
@@ -159,6 +165,9 @@
         },
         "Dispersion": {
             "name": "Dispersion"
+        },
+        "Dominate": {
+            "name": "Dominate"
         },
         "DrainEssence": {
             "name": "Drain Essence"

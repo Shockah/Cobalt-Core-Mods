@@ -180,6 +180,9 @@ internal sealed class BatStuff : StuffBase
 		[JsonProperty]
 		private List<CardAction> QueuedSubActions { get; } = [];
 
+		public override bool CanSkipTimerIfLastEvent()
+			=> false;
+
 		public override void Begin(G g, State s, Combat c)
 		{
 			var attackedShip = TargetPlayer ? s.ship : c.otherShip;
@@ -214,7 +217,7 @@ internal sealed class BatStuff : StuffBase
 				var queuedSubAction = QueuedSubActions[0];
 				QueuedSubActions.RemoveAt(0);
 				CurrentSubAction = queuedSubAction;
-				AccessTools.DeclaredMethod(typeof(Combat), "BeginCardAction").Invoke(c, [g, queuedSubAction]);
+				c.BeginCardAction(g, queuedSubAction);
 				return;
 			}
 
