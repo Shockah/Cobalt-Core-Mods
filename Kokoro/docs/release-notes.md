@@ -2,8 +2,10 @@
 
 # Release notes
 
-# Upcoming release
+## 1.2.1
+Released 13 January 2024.
 
+* Now comes with a `nickel.json` file.
 * Fixed Engine Lock being decremented too early.
 * Fixed card action scaling hooks.
 

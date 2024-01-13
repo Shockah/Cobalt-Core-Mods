@@ -36,5 +36,5 @@ APIs available to modders:
 * Some other generic helpers.
 
 ## See also
-* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fkokoro-1.2.0)
+* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fkokoro-1.2.1)
 * [Release notes](release-notes.md)
