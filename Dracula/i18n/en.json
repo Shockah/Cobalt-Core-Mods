@@ -107,9 +107,9 @@
         "DanseMacabre": {
             "name": "DANSE MACABRE",
             "description": {
-                "stateless": "Every even turn gain <c=status>BLOOD MIRROR</c>. Every odd turn your enemy gains <c=status>BLOOD MIRROR</c>.",
-                "even": "Every even turn (like this one) gain <c=status>BLOOD MIRROR</c>. Every odd turn your enemy gains <c=status>BLOOD MIRROR</c>.",
-                "odd": "Every even turn gain <c=status>BLOOD MIRROR</c>. Every odd turn (like this one) your enemy gains <c=status>BLOOD MIRROR</c>."
+                "stateless": "Every odd turn gain <c=status>BLOOD MIRROR</c>. Every even turn your enemy gains <c=status>BLOOD MIRROR</c>.",
+                "even": "Every odd turn gain <c=status>BLOOD MIRROR</c>. Every even turn (like this one) your enemy gains <c=status>BLOOD MIRROR</c>.",
+                "odd": "Every odd turn (like this one) gain <c=status>BLOOD MIRROR</c>. Every even turn your enemy gains <c=status>BLOOD MIRROR</c>."
             }
         },
         "Masochism": {

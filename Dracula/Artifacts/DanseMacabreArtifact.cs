@@ -40,7 +40,7 @@ internal sealed class DanseMacabreArtifact : Artifact, IDraculaArtifact
 			return;
 		combat.QueueImmediate(new AStatus
 		{
-			targetPlayer = combat.turn % 2 == 0,
+			targetPlayer = combat.turn % 2 != 0,
 			status = ModEntry.Instance.BloodMirrorStatus.Status,
 			statusAmount = 1
 		});
