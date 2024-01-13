@@ -54,7 +54,7 @@ internal sealed class BloodScentCard : Card, IDraculaCard
 							costUnsatisfiedIcon: ModEntry.Instance.BleedingCostOff.Sprite,
 							costSatisfiedIcon: ModEntry.Instance.BleedingCostOn.Sprite
 						),
-						amount: 4
+						amount: 3
 					),
 					action: new AStatus
 					{
@@ -79,7 +79,7 @@ internal sealed class BloodScentCard : Card, IDraculaCard
 							costUnsatisfiedIcon: ModEntry.Instance.BleedingCostOff.Sprite,
 							costSatisfiedIcon: ModEntry.Instance.BleedingCostOn.Sprite
 						),
-						amount: 4
+						amount: 3
 					),
 					action: new AStatus
 					{
@@ -104,7 +104,7 @@ internal sealed class BloodScentCard : Card, IDraculaCard
 							costUnsatisfiedIcon: ModEntry.Instance.BleedingCostOff.Sprite,
 							costSatisfiedIcon: ModEntry.Instance.BleedingCostOn.Sprite
 						),
-						amount: 4
+						amount: 3
 					),
 					action: new AStatus
 					{
