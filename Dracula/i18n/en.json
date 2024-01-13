@@ -205,9 +205,13 @@
         "Sacrifice": {
             "name": "Sacrifice",
             "description": {
-                "None": "Exhaust card in hand. Play an exhausted card.",
-                "A": "Exhaust any card. Play an exhausted card.",
-                "B": "Exhaust card in hand. Add an exhausted or removed one to hand."
+                "None": "<c=cardtrait>Exhaust</c> card in hand. Play an <c=cardtrait>exhausted</c> card.",
+                "A": "<c=cardtrait>Exhaust</c> any card. Play an <c=cardtrait>exhausted</c> card.",
+                "B": "<c=cardtrait>Exhaust</c> card in hand. Add a <c=cardtrait>card removed from play</c> to hand."
+            },
+            "removedFromPlay": {
+                "name": "Card removed from play",
+                "description": "<c=cardtrait>Exhausted</c> and played <c=cardtrait>single use</c> cards are considered removed from play."
             },
             "ui": {
                 "exhaustOrSingleUse": "Exhaust Pile and Single Use: {{Count}} Cards",

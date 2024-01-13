@@ -82,6 +82,12 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 			{
 				Tooltips = upgrade == Upgrade.B
 					? [
+						new CustomTTGlossary(
+							CustomTTGlossary.GlossaryType.cardtrait,
+							() => StableSpr.icons_singleUse,
+							() => ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "removedFromPlay", "name"]),
+							() => ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "removedFromPlay", "description"])
+						),
 						new TTGlossary("cardtrait.singleUse")
 					] : null
 			}
