@@ -1,25 +1,23 @@
 ﻿using Newtonsoft.Json;
 using Nickel;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dracula;
 
 internal sealed class TheCountArtifact : Artifact, IDraculaArtifact
 {
-	private static ISpriteEntry ActiveSprite = null!;
-	private static ISpriteEntry InactiveSprite = null!;
+	private static List<ISpriteEntry> Sprites = null!;
 
 	[JsonProperty]
-	public bool TriggeredThisCombat { get; set; } = false;
-
-	[JsonProperty]
-	public int NextTrigger { get; set; } = 1;
+	public int NextTrigger { get; set; } = 3;
 
 	public static void Register(IModHelper helper)
 	{
-		ActiveSprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/TheCount.png"));
-		InactiveSprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/TheCountInactive.png"));
+		Sprites = Enumerable.Range(0, 4)
+			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Artifacts/TheCount{i}.png")))
+			.ToList();
 
 		helper.Content.Artifacts.RegisterArtifact("TheCount", new()
 		{
@@ -29,17 +27,14 @@ internal sealed class TheCountArtifact : Artifact, IDraculaArtifact
 				owner = ModEntry.Instance.DraculaDeck.Deck,
 				pools = [ArtifactPool.Common]
 			},
-			Sprite = ActiveSprite.Sprite,
+			Sprite = Sprites.Last().Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "TheCount", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "TheCount", "description"]).Localize
 		});
 	}
 
 	public override Spr GetSprite()
-		=> (TriggeredThisCombat ? InactiveSprite : ActiveSprite).Sprite;
-
-	public override int? GetDisplayNumber(State s)
-		=> TriggeredThisCombat ? null : NextTrigger;
+		=> Sprites[NextTrigger].Sprite;
 
 	public override List<Tooltip>? GetExtraTooltips()
 		=> [
@@ -50,14 +45,13 @@ internal sealed class TheCountArtifact : Artifact, IDraculaArtifact
 	public override void OnCombatStart(State state, Combat combat)
 	{
 		base.OnCombatStart(state, combat);
-		TriggeredThisCombat = false;
 		NextTrigger = 1;
 	}
 
 	public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
 	{
 		base.OnPlayerPlayCard(energyCost, deck, card, state, combat, handPosition, handCount);
-		if (TriggeredThisCombat)
+		if (NextTrigger <= 0)
 			return;
 
 		if (energyCost != NextTrigger)
@@ -74,7 +68,7 @@ internal sealed class TheCountArtifact : Artifact, IDraculaArtifact
 		if (NextTrigger < 4)
 			return;
 
-		TriggeredThisCombat = true;
+		NextTrigger = 0;
 		combat.Queue([
 			new AStunShip
 			{
