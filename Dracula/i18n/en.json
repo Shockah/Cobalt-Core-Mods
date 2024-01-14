@@ -120,6 +120,10 @@
             "name": "PURGATORY",
             "description": "Whenever you are about to receive fatal damage, gain 1 <c=status>PERFECT SHIELD</c>. Can only trigger once per combat."
         },
+        "TheCount": {
+            "name": "THE COUNT",
+            "description": "After you play a 1-cost, then 2-cost, then 3-cost card in a row, <c=action>TOTAL STUN</c> the enemy, then <c=action>END TURN</c>. Can only trigger once per combat."
+        },
         "ThinBlood": {
             "name": "THIN BLOOD",
             "description": "<c=status>BLEEDING</c> and <c=status>TRANSFUSION</c> triggers twice per turn."
