@@ -1,7 +1,10 @@
 {
     "character": {
         "name": "Dracula",
-        "description": "<c=E81B16>DRACULA</c>\nJust running a pile of miserable errands."
+        "description": [
+            "<c=E81B16>DRACULA</c>",
+            "A so-called \"last living human\". His cards often <c=downside>self-hurt</c>, but they also often <c=heal>heal</c>."
+        ]
     },
     "ship": {
         "name": "Batmobile",
