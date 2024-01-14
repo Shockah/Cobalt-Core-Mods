@@ -33,6 +33,11 @@ internal sealed class LifestealManager
 
 	public sealed class AApplyLifesteal : CardAction
 	{
+		public AApplyLifesteal()
+		{
+			canRunAfterKill = true;
+		}
+
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
@@ -46,7 +51,8 @@ internal sealed class LifestealManager
 			c.QueueImmediate(new AHeal
 			{
 				targetPlayer = true,
-				healAmount = TotalLifesteal
+				healAmount = TotalLifesteal,
+				canRunAfterKill = true
 			});
 			TotalLifesteal = 0;
 		}

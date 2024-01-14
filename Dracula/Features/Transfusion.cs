@@ -153,7 +153,8 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 				__instance.QueueImmediate(new AHeal
 				{
 					targetPlayer = ship.isPlayerShip,
-					healAmount = newState.Total
+					healAmount = newState.Total,
+					canRunAfterKill = true
 				});
 			}
 			__instance.QueueImmediate(new AStatus

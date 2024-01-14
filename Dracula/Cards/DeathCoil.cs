@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Nickel;
+using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -42,7 +43,8 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 				new AHeal
 				{
 					targetPlayer = true,
-					healAmount = 2
+					healAmount = 2,
+					canRunAfterKill = true
 				},
 				new AHurt
 				{
@@ -60,9 +62,10 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 					action: new AHeal
 					{
 						targetPlayer = true,
-						healAmount = 2
+						healAmount = 2,
+						canRunAfterKill = true
 					}
-				),
+				).CanRunAfterKill(),
 				new AHurt
 				{
 					targetPlayer = true,
@@ -82,9 +85,10 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 					action: new AHeal
 					{
 						targetPlayer = true,
-						healAmount = 2
+						healAmount = 2,
+						canRunAfterKill = true
 					}
-				),
+				).CanRunAfterKill(),
 				new AHurt
 				{
 					targetPlayer = true,

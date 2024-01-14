@@ -21,22 +21,6 @@ internal sealed class ClonedLeechCard : Card, IDraculaCard
 		});
 	}
 
-	private int Damage
-		=> upgrade switch
-		{
-			Upgrade.A => 3,
-			Upgrade.B => 2,
-			_ => 2,
-		};
-
-	private int Heal
-		=> upgrade switch
-		{
-			Upgrade.A => 2,
-			Upgrade.B => 1,
-			_ => 1,
-		};
-
 	public override CardData GetData(State state)
 		=> new()
 		{
@@ -48,14 +32,15 @@ internal sealed class ClonedLeechCard : Card, IDraculaCard
 		=> [
 			new AAttack
 			{
-				damage = GetDmg(s, Damage),
+				damage = GetDmg(s, upgrade == Upgrade.A ? 3 : 2),
 				piercing = true,
 				stunEnemy = true
 			},
 			new AHeal
 			{
 				targetPlayer = true,
-				healAmount = Heal
+				healAmount = upgrade == Upgrade.A ? 2 : 1,
+				canRunAfterKill = true
 			}
 		];
 }

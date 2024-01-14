@@ -46,7 +46,8 @@ internal sealed class BloodMirrorCard : Card, IDraculaCard
 				new AHeal
 				{
 					targetPlayer = true,
-					healAmount = 1
+					healAmount = 1,
+					canRunAfterKill = true
 				}
 			],
 			Upgrade.B => [

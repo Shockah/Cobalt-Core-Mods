@@ -56,6 +56,7 @@ internal sealed class BatDebitCard : Card, IDraculaCard
 			{
 				targetPlayer = true,
 				healAmount = 1,
+				canRunAfterKill = true,
 				artifactPulse = artifact.Key()
 			});
 		}
