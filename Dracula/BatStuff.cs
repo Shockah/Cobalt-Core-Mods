@@ -185,7 +185,7 @@ internal sealed class BatStuff : StuffBase
 		public override void Begin(G g, State s, Combat c)
 		{
 			var attackedShip = TargetPlayer ? s.ship : c.otherShip;
-			HasValidTarget = attackedShip.GetPartAtWorldX(FromX) is not null;
+			HasValidTarget = attackedShip.GetPartAtWorldX(FromX) is { } part && part.type != PType.empty;
 
 			var bat = c.stuff.TryGetValue(FromX, out var existingBat) ? existingBat : null;
 
