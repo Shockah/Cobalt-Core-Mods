@@ -84,14 +84,24 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 		nullableAlignment ??= FindClosestAlignment(inactiveCannons: true, nonArmored: false);
 		nullableAlignment ??= FindClosestAlignment(inactiveCannons: true, nonArmored: true);
 
-		return nullableAlignment is { } alignment
-			? [new AEcholocationMove
+		List<CardAction> actions = [];
+		if (nullableAlignment is { } alignment)
+			actions.Add(new AEcholocationMove
 			{
 				Dir = alignment,
 				Return = upgrade == Upgrade.B,
 				omitFromTooltips = true,
-			}]
-			: [];
+			});
+		actions.Add(
+			new ATooltipAction
+			{
+				Tooltips = [
+					new TTGlossary("parttrait.weak"),
+					new TTGlossary("parttrait.brittle"),
+				]
+			}
+		);
+		return actions;
 	}
 
 	public sealed class AEcholocationMove : CardAction
