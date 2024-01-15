@@ -54,17 +54,14 @@ internal sealed class TheCountArtifact : Artifact, IDraculaArtifact
 		if (NextTrigger <= 0)
 			return;
 
-		if (energyCost != NextTrigger)
-		{
-			if (NextTrigger != 1)
-				Pulse();
-			NextTrigger = 1;
-			if (energyCost != 1)
-				return;
-		}
+		var oldNextTrigger = NextTrigger;
+		if (energyCost == NextTrigger)
+			NextTrigger++;
+		else
+			NextTrigger = energyCost == 1 ? 2 : 1;
 
-		NextTrigger++;
-		Pulse();
+		if (NextTrigger != oldNextTrigger)
+			Pulse();
 		if (NextTrigger < 4)
 			return;
 
