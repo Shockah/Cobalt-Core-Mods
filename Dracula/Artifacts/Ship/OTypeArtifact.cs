@@ -1,14 +1,11 @@
-﻿using Newtonsoft.Json;
-using Nickel;
+﻿using Nickel;
+using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dracula;
 
 internal sealed class OTypeArtifact : Artifact, IDraculaArtifact
 {
-	[JsonProperty]
-	public int Charges { get; set; } = 3;
-
 	public static void Register(IModHelper helper)
 	{
 		helper.Content.Artifacts.RegisterArtifact("OType", new()
@@ -28,10 +25,15 @@ internal sealed class OTypeArtifact : Artifact, IDraculaArtifact
 	public override void OnCombatStart(State state, Combat combat)
 	{
 		base.OnCombatStart(state, combat);
-		if (Charges >= 3)
+
+		var artifact = state.EnumerateAllArtifacts().OfType<BloodBankArtifact>().FirstOrDefault();
+		if (artifact is null)
+			return;
+		if (artifact.Charges >= 3)
 			return;
 
-		Charges = 3;
+		artifact.Charges = 3;
+		artifact.Pulse();
 		Pulse();
 	}
 }
