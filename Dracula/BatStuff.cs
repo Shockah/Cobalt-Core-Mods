@@ -1,5 +1,4 @@
-﻿using HarmonyLib;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
@@ -191,7 +190,7 @@ internal sealed class BatStuff : StuffBase
 			var bat = c.stuff.TryGetValue(FromX, out var existingBat) ? existingBat : null;
 
 			Animation.Add((From: AnimationDestination.Rest, To: AnimationDestination.Enemy, ShortDistanceDuration, Action: AnimationAction.HitEnemy));
-			if (Type == BatType.Protective && bat?.bubbleShield == false)
+			if (Type == BatType.Protective && bat?.bubbleShield == false && HasValidTarget)
 			{
 				Animation.Add((From: AnimationDestination.Enemy, To: AnimationDestination.Rest, ShortDistanceDuration, Action: AnimationAction.None));
 			}
