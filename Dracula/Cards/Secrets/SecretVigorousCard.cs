@@ -15,7 +15,7 @@ internal sealed class SecretVigorousCard : SecretCard, IDraculaCard
 			{
 				deck = ModEntry.Instance.DraculaDeck.Deck,
 				rarity = Rarity.common,
-				upgradesTo = [Upgrade.A],
+				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Secret", "Vigorous", "name"]).Localize

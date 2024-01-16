@@ -14,7 +14,6 @@ internal sealed class PlaceholderSecretCard : SecretCard, IDraculaCard
 			{
 				deck = ModEntry.Instance.DraculaDeck.Deck,
 				rarity = Rarity.common,
-				upgradesTo = [Upgrade.A],
 				dontOffer = true,
 				unreleased = true
 			},
