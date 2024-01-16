@@ -24,6 +24,9 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 
 		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnStart), (State s, Combat c) =>
 		{
+			if (!c.isPlayerTurn)
+				return;
+
 			List<Ship> ships = [s.ship, c.otherShip];
 			foreach (var ship in ships)
 			{
