@@ -12,7 +12,9 @@
 	<!-- References -->
 	<Import Project="_Shared\_Shared.projitems" Label="Shared" />
 	<ItemGroup>
-		<PackageReference Condition="$(IsNickelMod)" Include="Nickel.ModBuildConfig" Version="0.2.0" />
+		<PackageReference Condition="$(IsNickelMod)" Include="Nickel.ModBuildConfig" Version="0.4.0-prerelease1" />
+		<PackageReference Condition="$(IsNickelMod)" Include="Nanoray.ExtractSingleFileApplicationResourceTask" Version="1.0.0" PrivateAssets="All" ExcludeAssets="runtime" />
+		<PackageReference Condition="$(IsNickelMod)" Include="MakeTypesPublic" Version="1.0.3" PrivateAssets="All" ExcludeAssets="runtime" />
 		<PackageReference Condition="!$(IsNickelMod)" Include="Shockah.CobaltCoreModBuildConfig" Version="2.0.0" />
 		<PackageReference Condition="!$(IsNickelMod)" Include="Shrike" Version="3.0.0" />
 		<PackageReference Condition="!$(IsNickelMod)" Include="Shrike.Harmony" Version="3.0.0" />
