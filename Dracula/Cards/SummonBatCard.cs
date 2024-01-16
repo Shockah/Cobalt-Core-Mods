@@ -24,7 +24,7 @@ internal sealed class SummonBatCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = upgrade == Upgrade.B ? 2 : 1,
+			cost = 2,
 			exhaust = upgrade == Upgrade.B
 		};
 
