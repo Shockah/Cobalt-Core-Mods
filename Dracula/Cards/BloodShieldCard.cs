@@ -22,28 +22,12 @@ internal sealed class BloodShieldCard : Card, IDraculaCard
 		});
 	}
 
-	private int Shield
-		=> upgrade switch
-		{
-			Upgrade.A => 4,
-			Upgrade.B => 3,
-			_ => 3,
-		};
-
-	private int ShieldCost
-		=> upgrade switch
-		{
-			Upgrade.A => 2,
-			Upgrade.B => 3,
-			_ => 3,
-		};
-
 	public override CardData GetData(State state)
 		=> new()
 		{
 			cost = 1,
 			floppable = true,
-			infinite = upgrade == Upgrade.B
+			infinite = upgrade == Upgrade.A
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
@@ -58,7 +42,7 @@ internal sealed class BloodShieldCard : Card, IDraculaCard
 			{
 				targetPlayer = true,
 				status = Status.shield,
-				statusAmount = Shield,
+				statusAmount = upgrade == Upgrade.B ? 4 : 3,
 				disabled = flipped
 			},
 			new ADummyAction(),
@@ -69,12 +53,12 @@ internal sealed class BloodShieldCard : Card, IDraculaCard
 						costUnsatisfiedIcon: ModEntry.Instance.ShieldCostOff.Sprite,
 						costSatisfiedIcon: ModEntry.Instance.ShieldCostOn.Sprite
 					),
-					amount: ShieldCost
+					amount: upgrade == Upgrade.B ? 3 : 2
 				),
 				action: new AHeal
 				{
 					targetPlayer = true,
-					healAmount = 1
+					healAmount = upgrade == Upgrade.B ? 2 : 1
 				}
 			).Disabled(!flipped)
 		];
