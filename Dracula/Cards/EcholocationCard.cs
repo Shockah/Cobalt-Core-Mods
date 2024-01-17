@@ -9,15 +9,10 @@ namespace Shockah.Dracula;
 internal static class EcholocationExt
 {
 	public static int? GetEcholocationReturnPosition(this Combat self)
-		=> ModEntry.Instance.Helper.ModData.TryGetModData(self, "EcholocationReturnPosition", out int value) ? value : null;
+		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<int>(self, "EcholocationReturnPosition");
 
 	public static void SetEcholocationReturnPosition(this Combat self, int? value)
-	{
-		if (value is { } nonNull)
-			ModEntry.Instance.Helper.ModData.SetModData(self, "EcholocationReturnPosition", nonNull);
-		else
-			ModEntry.Instance.Helper.ModData.RemoveModData(self, "EcholocationReturnPosition");
-	}
+		=> ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "EcholocationReturnPosition", value);
 }
 
 internal sealed class EcholocationCard : Card, IDraculaCard

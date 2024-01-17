@@ -14,12 +14,17 @@ internal static class LifestealExt
 		ModEntry.Instance.Helper.ModData.SetModData(self, "LifestealMultiplier", value);
 		return self;
 	}
+
+	public static int GetPendingLifesteal(this Ship self)
+		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(self, "PendingLifesteal");
+
+	public static void SetPendingLifesteal(this Ship self, int value)
+		=> ModEntry.Instance.Helper.ModData.SetModData(self, "PendingLifesteal", value);
 }
 
 internal sealed class LifestealManager
 {
 	private static AAttack? AttackContext { get; set; }
-	private static int TotalLifesteal = 0;
 
 	public LifestealManager()
 	{
@@ -45,6 +50,8 @@ internal sealed class LifestealManager
 
 	public sealed class AApplyLifesteal : CardAction
 	{
+		public required bool TargetPlayer;
+
 		public AApplyLifesteal()
 		{
 			canRunAfterKill = true;
@@ -53,8 +60,10 @@ internal sealed class LifestealManager
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
+			var ship = TargetPlayer ? s.ship : c.otherShip;
+			var lifesteal = ship.GetPendingLifesteal();
 
-			if (TotalLifesteal <= 0)
+			if (lifesteal <= 0)
 			{
 				timer = 0;
 				return;
@@ -63,17 +72,17 @@ internal sealed class LifestealManager
 			c.QueueImmediate(new AHeal
 			{
 				targetPlayer = true,
-				healAmount = TotalLifesteal,
+				healAmount = lifesteal,
 				canRunAfterKill = true
 			});
-			TotalLifesteal = 0;
+			ship.SetPendingLifesteal(0);
 		}
 	}
 
 	private static void Ship_NormalDamage_Prefix(Ship __instance, ref (int Shield, int TempShield) __state)
 		=> __state = (Shield: __instance.Get(Status.shield), TempShield: __instance.Get(Status.tempShield));
 
-	private static void Ship_NormalDamage_Postfix(Ship __instance, DamageDone __result, ref (int Shield, int TempShield) __state)
+	private static void Ship_NormalDamage_Postfix(Ship __instance, State s, Combat c, DamageDone __result, ref (int Shield, int TempShield) __state)
 	{
 		if (AttackContext is not { } attack)
 			return;
@@ -88,6 +97,7 @@ internal sealed class LifestealManager
 		if (totalDamage <= 0)
 			return;
 
-		TotalLifesteal += totalDamage * lifestealMultiplier;
+		var lifestealShip = __instance.isPlayerShip ? c.otherShip : s.ship;
+		lifestealShip.SetPendingLifesteal(lifestealShip.GetPendingLifesteal() + totalDamage * lifestealMultiplier);
 	}
 }

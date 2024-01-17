@@ -9,15 +9,16 @@ namespace Shockah.Dracula;
 internal static class EnshroudExt
 {
 	public static PDamMod? GetDamageModifierBeforeEnshroud(this Part self)
-		=> ModEntry.Instance.Helper.ModData.TryGetModData(self, "DamageModifierBeforeEnshroud", out PDamMod value) ? value : null;
+		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<PDamMod>(self, "DamageModifierBeforeEnshroud");
 
 	public static void SetDamageModifierBeforeEnshroud(this Part self, PDamMod? value)
-	{
-		if (value is { } nonNull)
-			ModEntry.Instance.Helper.ModData.SetModData(self, "DamageModifierBeforeEnshroud", nonNull);
-		else
-			ModEntry.Instance.Helper.ModData.RemoveModData(self, "DamageModifierBeforeEnshroud");
-	}
+		=> ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "DamageModifierBeforeEnshroud", value);
+
+	public static PDamMod? GetDamageModifierOverrideWhileActiveBeforeEnshroud(this Part self)
+		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<PDamMod>(self, "DamageModifierOverrideWhileActiveBeforeEnshroud");
+
+	public static void SetDamageModifierOverrideWhileActiveBeforeEnshroud(this Part self, PDamMod? value)
+		=> ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "DamageModifierOverrideWhileActiveBeforeEnshroud", value);
 }
 
 internal sealed class EnshroudCard : Card, IDraculaCard
@@ -44,13 +45,18 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 			List<Ship> ships = [s.ship, c.otherShip];
 			foreach (var ship in ships)
 			{
-				foreach (var part in ((IEnumerable<Part>)ship.parts).Reverse())
+				foreach (var part in ship.parts)
 				{
-					if (part.GetDamageModifierBeforeEnshroud() is not { } damageModifierBeforeEnshroud)
-						continue;
-					part.SetDamageModifierBeforeEnshroud(null);
-					if (part.damageModifier == PDamMod.armor)
+					if (part.GetDamageModifierBeforeEnshroud() is { } damageModifierBeforeEnshroud)
+					{
 						part.damageModifier = damageModifierBeforeEnshroud;
+						part.SetDamageModifierBeforeEnshroud(null);
+					}
+					if (part.GetDamageModifierOverrideWhileActiveBeforeEnshroud() is { } damageModifierOverrideWhileActiveBeforeEnshroud)
+					{
+						part.damageModifierOverrideWhileActive = damageModifierOverrideWhileActiveBeforeEnshroud;
+						part.SetDamageModifierOverrideWhileActiveBeforeEnshroud(null);
+					}
 				}
 			}
 		}, 0);
@@ -101,15 +107,28 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 			timer = 0;
 
 			var ship = TargetPlayer ? s.ship : c.otherShip;
-			if (ship.GetPartAtWorldX(WorldX) is not { } part || part.damageModifier == PDamMod.armor)
+			if (ship.GetPartAtWorldX(WorldX) is not { } part)
 				return;
 
-			part.SetDamageModifierBeforeEnshroud(part.damageModifier);
-			c.QueueImmediate(new AArmor
+			if (part.damageModifier != PDamMod.armor)
 			{
-				targetPlayer = TargetPlayer,
-				worldX = WorldX
-			});
+				part.SetDamageModifierBeforeEnshroud(part.damageModifier);
+				c.QueueImmediate(new AArmor
+				{
+					targetPlayer = TargetPlayer,
+					worldX = WorldX
+				});
+			}
+			if (part.damageModifierOverrideWhileActive is not null && part.damageModifierOverrideWhileActive != PDamMod.armor)
+			{
+				part.SetDamageModifierOverrideWhileActiveBeforeEnshroud(part.damageModifierOverrideWhileActive);
+				c.QueueImmediate(new AArmor
+				{
+					targetPlayer = TargetPlayer,
+					worldX = WorldX,
+					justTheActiveOverride = true
+				});
+			}
 		}
 	}
 }
