@@ -3,6 +3,15 @@ using Shockah.Shared;
 
 namespace Shockah.Dracula;
 
+internal static class BloodMirrorExt
+{
+	public static int GetBloodMirrorDepth(this AHurt self)
+		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(self, "BloodMirrorDepth");
+
+	public static void SetBloodMirrorDepth(this AHurt self, int value)
+		=> ModEntry.Instance.Helper.ModData.SetModData(self, "BloodMirrorDepth", value);
+}
+
 internal sealed class BloodMirrorManager : IStatusLogicHook
 {
 	private static int BloodMirrorDepth { get; set; } = 0;
@@ -57,15 +66,12 @@ internal sealed class BloodMirrorManager : IStatusLogicHook
 			hurtAmount = damageTaken,
 			statusPulse = ModEntry.Instance.BloodMirrorStatus.Status
 		};
-		ModEntry.Instance.KokoroApi.SetExtensionData(action, "BloodMirrorDepth", BloodMirrorDepth + 1);
+		action.SetBloodMirrorDepth(BloodMirrorDepth + 1);
 		c.QueueImmediate(action);
 	}
 
 	private static void AHurt_Begin_Prefix(AHurt __instance)
-	{
-		if (ModEntry.Instance.KokoroApi.TryGetExtensionData(__instance, "BloodMirrorDepth", out int bloodMirrorDepth))
-			BloodMirrorDepth = bloodMirrorDepth;
-	}
+		=> BloodMirrorDepth = __instance.GetBloodMirrorDepth();
 
 	private static void AHurt_Begin_Finalizer()
 		=> BloodMirrorDepth = 0;

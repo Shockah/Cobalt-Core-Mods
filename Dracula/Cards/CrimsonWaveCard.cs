@@ -50,7 +50,7 @@ internal sealed class CrimsonWaveCard : Card, IDraculaCard
 				fast = true,
 				damage = GetDmg(s, 1),
 				stunEnemy = true
-			}.SetLifesteal(multiplier: upgrade == Upgrade.B ? 1 : 0));
+			}.SetLifestealMultiplier(upgrade == Upgrade.B ? 1 : 0));
 		}
 		actions.Add(new LifestealManager.AApplyLifesteal());
 		return actions;

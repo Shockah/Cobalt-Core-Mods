@@ -6,6 +6,20 @@ using System.Reflection;
 
 namespace Shockah.Dracula;
 
+internal static class EnshroudExt
+{
+	public static PDamMod? GetDamageModifierBeforeEnshroud(this Part self)
+		=> ModEntry.Instance.Helper.ModData.TryGetModData(self, "DamageModifierBeforeEnshroud", out PDamMod value) ? value : null;
+
+	public static void SetDamageModifierBeforeEnshroud(this Part self, PDamMod? value)
+	{
+		if (value is { } nonNull)
+			ModEntry.Instance.Helper.ModData.SetModData(self, "DamageModifierBeforeEnshroud", nonNull);
+		else
+			ModEntry.Instance.Helper.ModData.RemoveModData(self, "DamageModifierBeforeEnshroud");
+	}
+}
+
 internal sealed class EnshroudCard : Card, IDraculaCard
 {
 	public static void Register(IModHelper helper)
@@ -32,9 +46,9 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 			{
 				foreach (var part in ((IEnumerable<Part>)ship.parts).Reverse())
 				{
-					if (!ModEntry.Instance.KokoroApi.TryGetExtensionData(part, "DamageModifierBeforeEnshroud", out PDamMod damageModifierBeforeEnshroud))
+					if (part.GetDamageModifierBeforeEnshroud() is not { } damageModifierBeforeEnshroud)
 						continue;
-					ModEntry.Instance.KokoroApi.RemoveExtensionData(part, "DamageModifierBeforeEnshroud");
+					part.SetDamageModifierBeforeEnshroud(null);
 					if (part.damageModifier == PDamMod.armor)
 						part.damageModifier = damageModifierBeforeEnshroud;
 				}
@@ -90,7 +104,7 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 			if (ship.GetPartAtWorldX(WorldX) is not { } part || part.damageModifier == PDamMod.armor)
 				return;
 
-			ModEntry.Instance.KokoroApi.SetExtensionData(part, "DamageModifierBeforeEnshroud", part.damageModifier);
+			part.SetDamageModifierBeforeEnshroud(part.damageModifier);
 			c.QueueImmediate(new AArmor
 			{
 				targetPlayer = TargetPlayer,

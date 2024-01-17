@@ -5,6 +5,12 @@ using System.Reflection;
 
 namespace Shockah.Dracula;
 
+internal static class SacrificeExt
+{
+	public static HashSet<Card> GetSingleUseCardsPlayed(this Combat self)
+		=> ModEntry.Instance.Helper.ModData.ObtainModData<HashSet<Card>>(self, "SingleUseCardsPlayed");
+}
+
 internal sealed class SacrificeCard : Card, IDraculaCard
 {
 	private const CardBrowse.Source ExhaustOrSingleUseNonSacrificeBrowseSource = (CardBrowse.Source)2137201;
@@ -30,14 +36,14 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 		{
 			if (!card.GetDataWithOverrides(state).singleUse)
 				return;
-			ModEntry.Instance.KokoroApi.ObtainExtensionData<HashSet<Card>>(combat, "SingleUseCardsPlayed").Add(card);
+			combat.GetSingleUseCardsPlayed().Add(card);
 		}, 0);
 
 		CustomCardBrowse.RegisterCustomCardSource(
 			ExhaustOrSingleUseNonSacrificeBrowseSource,
 			new(
 				(_, _, cards) => ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "ui", "exhaustOrSingleUse"], new { Count = cards.Count }),
-				(_, c) => c.exhausted.Concat(ModEntry.Instance.KokoroApi.ObtainExtensionData<HashSet<Card>>(c, "SingleUseCardsPlayed")).Where(c => c is not SacrificeCard).ToList()
+				(_, c) => c.exhausted.Concat(c.GetSingleUseCardsPlayed()).Where(c => c is not SacrificeCard).ToList()
 			)
 		);
 		CustomCardBrowse.RegisterCustomCardSource(
@@ -132,7 +138,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 				return;
 
 			if (selectedCard.GetDataWithOverrides(s).singleUse)
-				ModEntry.Instance.KokoroApi.ObtainExtensionData<HashSet<Card>>(c, "SingleUseCardsPlayed").Remove(selectedCard);
+				c.GetSingleUseCardsPlayed().Remove(selectedCard);
 			s.RemoveCardFromWhereverItIs(selectedCard.uuid);
 			c.SendCardToHand(s, selectedCard);
 		}

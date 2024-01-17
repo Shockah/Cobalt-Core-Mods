@@ -6,6 +6,15 @@ using System.Linq;
 
 namespace Shockah.Dracula;
 
+internal static class BloodTapExt
+{
+	public static HashSet<Status> GetBloodTapPlayerStatuses(this Combat self)
+		=> ModEntry.Instance.Helper.ModData.ObtainModData<HashSet<Status>>(self, "BloodTapPlayerStatuses");
+
+	public static HashSet<Status> GetBloodTapEnemyStatuses(this Combat self)
+		=> ModEntry.Instance.Helper.ModData.ObtainModData<HashSet<Status>>(self, "BloodTapEnemyStatuses");
+}
+
 internal sealed class BloodTapManager : IStatusLogicHook
 {
 	private readonly Dictionary<Status, Func<State, Combat, Status, List<CardAction>>> Statuses = [];
@@ -128,9 +137,9 @@ internal sealed class BloodTapManager : IStatusLogicHook
 
 	public List<Status> GetStatuses(Combat combat, bool includeEnemy)
 	{
-		IEnumerable<Status> allStatuses = ModEntry.Instance.KokoroApi.ObtainExtensionData<HashSet<Status>>(combat, "BloodTapPlayerStatuses");
+		IEnumerable<Status> allStatuses = combat.GetBloodTapPlayerStatuses();
 		if (includeEnemy)
-			allStatuses = allStatuses.Concat(ModEntry.Instance.KokoroApi.ObtainExtensionData<HashSet<Status>>(combat, "BloodTapEnemyStatuses")).Distinct();
+			allStatuses = allStatuses.Concat(combat.GetBloodTapEnemyStatuses()).Distinct();
 		return allStatuses.Where(Statuses.ContainsKey).ToList();
 	}
 
@@ -154,7 +163,7 @@ internal sealed class BloodTapManager : IStatusLogicHook
 
 	private static void Combat_Update_Postfix(Combat __instance, G g)
 	{
-		UpdateStatuses(ModEntry.Instance.KokoroApi.ObtainExtensionData<HashSet<Status>>(__instance, "BloodTapPlayerStatuses"), g.state.ship);
-		UpdateStatuses(ModEntry.Instance.KokoroApi.ObtainExtensionData<HashSet<Status>>(__instance, "BloodTapEnemyStatuses"), __instance.otherShip);
+		UpdateStatuses(__instance.GetBloodTapPlayerStatuses(), g.state.ship);
+		UpdateStatuses(__instance.GetBloodTapEnemyStatuses(), __instance.otherShip);
 	}
 }

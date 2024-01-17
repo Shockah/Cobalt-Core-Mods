@@ -6,6 +6,20 @@ using System.Reflection;
 
 namespace Shockah.Dracula;
 
+internal static class EcholocationExt
+{
+	public static int? GetEcholocationReturnPosition(this Combat self)
+		=> ModEntry.Instance.Helper.ModData.TryGetModData(self, "EcholocationReturnPosition", out int value) ? value : null;
+
+	public static void SetEcholocationReturnPosition(this Combat self, int? value)
+	{
+		if (value is { } nonNull)
+			ModEntry.Instance.Helper.ModData.SetModData(self, "EcholocationReturnPosition", nonNull);
+		else
+			ModEntry.Instance.Helper.ModData.RemoveModData(self, "EcholocationReturnPosition");
+	}
+}
+
 internal sealed class EcholocationCard : Card, IDraculaCard
 {
 	public static void Register(IModHelper helper)
@@ -24,8 +38,9 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 
 		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnEnd), (State s, Combat c) =>
 		{
-			if (!ModEntry.Instance.KokoroApi.TryGetExtensionData(c, "EcholocationReturnPosition", out int echolocationReturnPosition))
+			if (c.GetEcholocationReturnPosition() is not { } echolocationReturnPosition)
 				return;
+			c.SetEcholocationReturnPosition(null);
 			c.QueueImmediate(new AMove
 			{
 				targetPlayer = true,
@@ -118,7 +133,7 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 			timer = 0;
 
 			if (Return)
-				ModEntry.Instance.KokoroApi.SetExtensionData(c, "EcholocationReturnPosition", s.ship.x);
+				c.SetEcholocationReturnPosition(s.ship.x);
 			c.QueueImmediate(new AMove
 			{
 				targetPlayer = true,

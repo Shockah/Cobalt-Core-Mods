@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Shockah.Shared;
 using System;
@@ -7,6 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.Dracula;
+
+internal static class TransfusionExt
+{
+	public static bool IsTransfusionDisabled(this Ship self)
+		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(self, "IsTransfusionDisabled");
+
+	public static void SetTransfusionDisabled(this Ship self, bool value)
+		=> ModEntry.Instance.Helper.ModData.SetModData(self, "IsTransfusionDisabled", value);
+}
 
 internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 {
@@ -30,7 +38,7 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
-			ModEntry.Instance.KokoroApi.SetExtensionData(state.ship, "IsTransfusionDisabled", false);
+			state.ship.SetTransfusionDisabled(true);
 			var transfusion = state.ship.Get(ModEntry.Instance.TransfusionStatus.Status);
 			var transfusing = state.ship.Get(ModEntry.Instance.TransfusingStatus.Status);
 			var toHeal = Math.Min(transfusion, transfusing);
@@ -140,10 +148,10 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 		{
 			if (!(newState.Progress >= newState.Total && (newState.Progress != oldState.Progress || newState.Total != oldState.Total)))
 				return;
-			if (ModEntry.Instance.KokoroApi.ObtainExtensionData(ship, "IsTransfusionDisabled", () => false))
+			if (ship.IsTransfusionDisabled())
 				return;
 
-			ModEntry.Instance.KokoroApi.SetExtensionData(ship, "IsTransfusionDisabled", true);
+			ship.SetTransfusionDisabled(true);
 			__instance.QueueImmediate(new AReenableTransfusion
 			{
 				TargetPlayer = ship.isPlayerShip
@@ -187,7 +195,7 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 			base.Begin(g, s, c);
 			timer = 0;
 			var ship = TargetPlayer ? s.ship : c.otherShip;
-			ModEntry.Instance.KokoroApi.SetExtensionData(ship, "IsTransfusionDisabled", false);
+			ship.SetTransfusionDisabled(false);
 		}
 	}
 }

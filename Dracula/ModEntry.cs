@@ -133,11 +133,6 @@ public sealed class ModEntry : SimpleMod
 		Instance = this;
 		Harmony = new(package.Manifest.UniqueName);
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
-		KokoroApi.RegisterTypeForExtensionData(typeof(AHurt));
-		KokoroApi.RegisterTypeForExtensionData(typeof(AAttack));
-		KokoroApi.RegisterTypeForExtensionData(typeof(Combat));
-		KokoroApi.RegisterTypeForExtensionData(typeof(Ship));
-		KokoroApi.RegisterTypeForExtensionData(typeof(Part));
 		_ = new BleedingManager();
 		_ = new BloodMirrorManager();
 		_ = new LifestealManager();

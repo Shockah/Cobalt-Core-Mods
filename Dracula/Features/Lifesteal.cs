@@ -4,6 +4,18 @@ using System;
 
 namespace Shockah.Dracula;
 
+internal static class LifestealExt
+{
+	public static int GetLifestealMultiplier(this AAttack self)
+		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(self, "LifestealMultiplier");
+
+	public static AAttack SetLifestealMultiplier(this AAttack self, int value)
+	{
+		ModEntry.Instance.Helper.ModData.SetModData(self, "LifestealMultiplier", value);
+		return self;
+	}
+}
+
 internal sealed class LifestealManager
 {
 	private static AAttack? AttackContext { get; set; }
@@ -65,7 +77,9 @@ internal sealed class LifestealManager
 	{
 		if (AttackContext is not { } attack)
 			return;
-		if (!ModEntry.Instance.KokoroApi.TryGetExtensionData(attack, "LifestealMultiplier", out int lifestealMltiplier) || lifestealMltiplier <= 0)
+
+		int lifestealMultiplier = attack.GetLifestealMultiplier();
+		if (lifestealMultiplier <= 0)
 			return;
 
 		var totalDamage = __result.hullAmt
@@ -74,18 +88,6 @@ internal sealed class LifestealManager
 		if (totalDamage <= 0)
 			return;
 
-		TotalLifesteal += totalDamage * lifestealMltiplier;
-	}
-}
-
-internal static class LifestealExt
-{
-	public static AAttack SetLifesteal(this AAttack self, int multiplier = 1)
-	{
-		if (multiplier >= 1)
-			ModEntry.Instance.KokoroApi.SetExtensionData(self, "LifestealMultiplier", multiplier);
-		else
-			ModEntry.Instance.KokoroApi.RemoveExtensionData(self, "LifestealMultiplier");
-		return self;
+		TotalLifesteal += totalDamage * lifestealMultiplier;
 	}
 }
