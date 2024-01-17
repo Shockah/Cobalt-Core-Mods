@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Nickel;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dracula;
@@ -47,12 +46,12 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 			{
 				foreach (var part in ship.parts)
 				{
-					if (part.GetDamageModifierBeforeEnshroud() is { } damageModifierBeforeEnshroud)
+					if (part.damageModifier == PDamMod.armor && part.GetDamageModifierBeforeEnshroud() is { } damageModifierBeforeEnshroud)
 					{
 						part.damageModifier = damageModifierBeforeEnshroud;
 						part.SetDamageModifierBeforeEnshroud(null);
 					}
-					if (part.GetDamageModifierOverrideWhileActiveBeforeEnshroud() is { } damageModifierOverrideWhileActiveBeforeEnshroud)
+					if (part.damageModifierOverrideWhileActive == PDamMod.armor && part.GetDamageModifierOverrideWhileActiveBeforeEnshroud() is { } damageModifierOverrideWhileActiveBeforeEnshroud)
 					{
 						part.damageModifierOverrideWhileActive = damageModifierOverrideWhileActiveBeforeEnshroud;
 						part.SetDamageModifierOverrideWhileActiveBeforeEnshroud(null);
