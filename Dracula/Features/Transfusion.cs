@@ -32,13 +32,12 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Update)),
-			prefix: new HarmonyMethod(GetType(), nameof(Combat_Update_Prefix)),
 			postfix: new HarmonyMethod(GetType(), nameof(Combat_Update_Postfix))
 		);
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
-			state.ship.SetTransfusionDisabled(true);
+			state.ship.SetTransfusionDisabled(false);
 			var transfusion = state.ship.Get(ModEntry.Instance.TransfusionStatus.Status);
 			var transfusing = state.ship.Get(ModEntry.Instance.TransfusingStatus.Status);
 			var toHeal = Math.Min(transfusion, transfusing);
@@ -48,8 +47,7 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 			state.rewardsQueue.QueueImmediate(new AHeal
 			{
 				targetPlayer = true,
-				healAmount = toHeal,
-				canRunAfterKill = true
+				healAmount = toHeal
 			});
 		}, priority: 0);
 	}
@@ -119,34 +117,14 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 		});
 	}
 
-	private static void Combat_Update_Prefix(Combat __instance, G g, ref ((int Progress, int Total) Player, (int Progress, int Total) Enemy) __state)
-		=> __state = (
-			Player: (
-				Progress: g.state.ship.Get(ModEntry.Instance.TransfusingStatus.Status),
-				Total: g.state.ship.Get(ModEntry.Instance.TransfusionStatus.Status)
-			),
-			Enemy: (
-				Progress: __instance.otherShip.Get(ModEntry.Instance.TransfusingStatus.Status),
-				Total: __instance.otherShip.Get(ModEntry.Instance.TransfusionStatus.Status)
-			)
-		);
-
-	private static void Combat_Update_Postfix(Combat __instance, G g, ref ((int Progress, int Total) Player, (int Progress, int Total) Enemy) __state)
+	private static void Combat_Update_Postfix(Combat __instance, G g)
 	{
-		var newState = (
-			Player: (
-				Progress: g.state.ship.Get(ModEntry.Instance.TransfusingStatus.Status),
-				Total: g.state.ship.Get(ModEntry.Instance.TransfusionStatus.Status)
-			),
-			Enemy: (
-				Progress: __instance.otherShip.Get(ModEntry.Instance.TransfusingStatus.Status),
-				Total: __instance.otherShip.Get(ModEntry.Instance.TransfusionStatus.Status)
-			)
-		);
-
-		void DoForShip(Ship ship, (int Progress, int Total) oldState, (int Progress, int Total) newState)
+		void DoForShip(Ship ship)
 		{
-			if (!(newState.Progress >= newState.Total && (newState.Progress != oldState.Progress || newState.Total != oldState.Total)))
+			var progress = ship.Get(ModEntry.Instance.TransfusingStatus.Status);
+			var total = ship.Get(ModEntry.Instance.TransfusionStatus.Status);
+
+			if (progress <= 0 || total <= 0 || progress < total)
 				return;
 			if (ship.IsTransfusionDisabled())
 				return;
@@ -154,14 +132,15 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 			ship.SetTransfusionDisabled(true);
 			__instance.QueueImmediate(new AReenableTransfusion
 			{
-				TargetPlayer = ship.isPlayerShip
+				TargetPlayer = ship.isPlayerShip,
+				canRunAfterKill = true
 			});
-			if (newState.Total > 0)
+			if (total > 0)
 			{
 				__instance.QueueImmediate(new AHeal
 				{
 					targetPlayer = ship.isPlayerShip,
-					healAmount = newState.Total,
+					healAmount = total,
 					canRunAfterKill = true
 				});
 			}
@@ -181,8 +160,8 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 			});
 		}
 
-		DoForShip(g.state.ship, __state.Player, newState.Player);
-		DoForShip(__instance.otherShip, __state.Enemy, newState.Enemy);
+		DoForShip(g.state.ship);
+		DoForShip(__instance.otherShip);
 	}
 
 	public sealed class AReenableTransfusion : CardAction

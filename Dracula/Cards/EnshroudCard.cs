@@ -36,12 +36,12 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Enshroud", "name"]).Localize
 		});
 
-		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnStart), (State s, Combat c) =>
+		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnStart), (State state, Combat combat) =>
 		{
-			if (!c.isPlayerTurn)
+			if (!combat.isPlayerTurn)
 				return;
 
-			List<Ship> ships = [s.ship, c.otherShip];
+			List<Ship> ships = [state.ship, combat.otherShip];
 			foreach (var ship in ships)
 			{
 				foreach (var part in ship.parts)
