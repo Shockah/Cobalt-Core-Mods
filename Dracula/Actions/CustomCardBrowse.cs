@@ -79,7 +79,7 @@ internal sealed class CustomCardBrowse
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
 					ILMatches.Stloc<string>(originalMethod).CreateStlocInstruction(out var stlocText),
-					ILMatches.Br.GetBranchTarget(out var branchTarget),
+					ILMatches.Br,
 					ILMatches.Ldloc<CardBrowse.Source>(originalMethod).Anchor(out var replaceAnchorStart).ExtractLabels(out var labels),
 					ILMatches.Instruction(OpCodes.Box),
 					ILMatches.Call("ThrowSwitchExpressionException").Anchor(out var replaceAnchorEnd)
