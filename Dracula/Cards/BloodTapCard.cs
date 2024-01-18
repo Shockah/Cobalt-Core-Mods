@@ -1,4 +1,5 @@
-﻿using Nickel;
+﻿using Nanoray.PluginManager;
+using Nickel;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -6,7 +7,7 @@ namespace Shockah.Dracula;
 
 internal sealed class BloodTapCard : Card, IDraculaCard
 {
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("BloodTap", new()
 		{

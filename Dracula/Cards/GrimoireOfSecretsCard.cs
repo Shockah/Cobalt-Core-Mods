@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
 using System;
@@ -13,7 +14,7 @@ internal sealed class GrimoireOfSecretsCard : Card, IDraculaCard
 {
 	private static bool IsDuringTryPlayCard { get; set; } = false;
 
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("GrimoireOfSecrets", new()
 		{
@@ -24,6 +25,7 @@ internal sealed class GrimoireOfSecretsCard : Card, IDraculaCard
 				rarity = Rarity.common,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/GrimoireOfSecrets.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "GrimoireOfSecrets", "name"]).Localize
 		});
 

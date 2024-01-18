@@ -1,4 +1,5 @@
-﻿using Nickel;
+﻿using Nanoray.PluginManager;
+using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
@@ -7,7 +8,7 @@ namespace Shockah.Dracula;
 
 internal sealed class DrainEssenceCard : Card, IDraculaCard
 {
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("DrainEssence", new()
 		{

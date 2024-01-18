@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Nanoray.PluginManager;
+using Newtonsoft.Json;
 using Nickel;
 using System.Collections.Generic;
 using System.Reflection;
@@ -22,7 +23,7 @@ internal static class EnshroudExt
 
 internal sealed class EnshroudCard : Card, IDraculaCard
 {
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("Enshroud", new()
 		{

@@ -1,4 +1,5 @@
-﻿using Nickel;
+﻿using Nanoray.PluginManager;
+using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
@@ -7,8 +8,17 @@ namespace Shockah.Dracula;
 
 internal sealed class BloodShieldCard : Card, IDraculaCard
 {
-	public static void Register(IModHelper helper)
+	private static ISpriteEntry TopArt = null!;
+	private static ISpriteEntry BottomArt = null!;
+
+	public float ActionSpacingScaling
+		=> 0.652f;
+
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
+		TopArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/BloodShieldTop.png"));
+		BottomArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/BloodShieldBottom.png"));
+
 		helper.Content.Cards.RegisterCard("BloodShield", new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
@@ -25,6 +35,7 @@ internal sealed class BloodShieldCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
+			art = (flipped ? BottomArt : TopArt).Sprite,
 			cost = 1,
 			floppable = true,
 			infinite = upgrade == Upgrade.A
@@ -32,12 +43,14 @@ internal sealed class BloodShieldCard : Card, IDraculaCard
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
+			new ADummyAction(),
 			new AHurt
 			{
 				targetPlayer = true,
 				hurtAmount = 1,
 				disabled = flipped
 			},
+			new ADummyAction(),
 			new AStatus
 			{
 				targetPlayer = true,
@@ -45,6 +58,9 @@ internal sealed class BloodShieldCard : Card, IDraculaCard
 				statusAmount = upgrade == Upgrade.B ? 4 : 3,
 				disabled = flipped
 			},
+			new ADummyAction(),
+			new ADummyAction(),
+			new ADummyAction(),
 			new ADummyAction(),
 			ModEntry.Instance.KokoroApi.ActionCosts.Make(
 				cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
@@ -60,6 +76,8 @@ internal sealed class BloodShieldCard : Card, IDraculaCard
 					targetPlayer = true,
 					healAmount = upgrade == Upgrade.B ? 2 : 1
 				}
-			).Disabled(!flipped)
+			).Disabled(!flipped),
+			new ADummyAction(),
+			new ADummyAction(),
 		];
 }

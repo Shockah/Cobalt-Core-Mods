@@ -155,7 +155,7 @@ public sealed class ModEntry : SimpleMod
 		DraculaDeck = helper.Content.Decks.RegisterDeck("Dracula", new()
 		{
 			Definition = new() { color = DB.decks[Deck.dracula].color, titleColor = DB.decks[Deck.dracula].titleColor },
-			DefaultCardArt = StableSpr.cards_colorless,
+			DefaultCardArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Default.png")).Sprite,
 			BorderSprite = DB.deckBorders[Deck.dracula],
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize
 		});
@@ -217,7 +217,7 @@ public sealed class ModEntry : SimpleMod
 		});
 
 		foreach (var cardType in AllCardTypes)
-			AccessTools.DeclaredMethod(cardType, nameof(IDraculaCard.Register))?.Invoke(null, [helper]);
+			AccessTools.DeclaredMethod(cardType, nameof(IDraculaCard.Register))?.Invoke(null, [package, helper]);
 		foreach (var artifactType in AllArtifactTypes)
 			AccessTools.DeclaredMethod(artifactType, nameof(IDraculaCard.Register))?.Invoke(null, [helper]);
 

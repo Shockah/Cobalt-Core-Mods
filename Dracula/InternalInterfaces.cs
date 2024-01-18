@@ -1,10 +1,11 @@
-﻿using Nickel;
+﻿using Nanoray.PluginManager;
+using Nickel;
 
 namespace Shockah.Dracula;
 
 internal interface IDraculaCard
 {
-	static abstract void Register(IModHelper helper);
+	static abstract void Register(IPluginPackage<IModManifest> package, IModHelper helper);
 
 	float TextScaling
 		=> 1f;

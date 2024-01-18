@@ -1,4 +1,5 @@
-﻿using Nickel;
+﻿using Nanoray.PluginManager;
+using Nickel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -18,7 +19,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 
 	private static bool IsDuringTryPlayCard { get; set; } = false;
 
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("Sacrifice", new()
 		{
@@ -29,6 +30,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 				rarity = Rarity.rare,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Sacrifice.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Sacrifice", "name"]).Localize
 		});
 

@@ -1,4 +1,5 @@
-﻿using Nickel;
+﻿using Nanoray.PluginManager;
+using Nickel;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -6,7 +7,7 @@ namespace Shockah.Dracula;
 
 internal sealed class BloodMirrorCard : Card, IDraculaCard
 {
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("BloodMirror", new()
 		{
@@ -17,6 +18,7 @@ internal sealed class BloodMirrorCard : Card, IDraculaCard
 				rarity = Rarity.common,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/BloodMirror.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BloodMirror", "name"]).Localize
 		});
 	}

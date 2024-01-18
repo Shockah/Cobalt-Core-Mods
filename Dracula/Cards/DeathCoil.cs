@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Nanoray.PluginManager;
+using Newtonsoft.Json;
 using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ namespace Shockah.Dracula;
 
 internal sealed class DeathCoilCard : Card, IDraculaCard
 {
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("DeathCoil", new()
 		{

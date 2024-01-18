@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Nanoray.PluginManager;
+using Newtonsoft.Json;
 using Nickel;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ internal static class EcholocationExt
 
 internal sealed class EcholocationCard : Card, IDraculaCard
 {
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("Echolocation", new()
 		{
