@@ -249,7 +249,7 @@ public sealed class ModEntry : SimpleMod
 			}
 		});
 
-		helper.Content.Characters.RegisterCharacterAnimation("GameOver", new()
+		helper.Content.Characters.RegisterCharacterAnimation(new()
 		{
 			Deck = DraculaDeck.Deck,
 			LoopTag = "gameover",
@@ -257,7 +257,7 @@ public sealed class ModEntry : SimpleMod
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/GameOver/{i}.png")).Sprite)
 				.ToList()
 		});
-		helper.Content.Characters.RegisterCharacterAnimation("Squint", new()
+		helper.Content.Characters.RegisterCharacterAnimation(new()
 		{
 			Deck = DraculaDeck.Deck,
 			LoopTag = "squint",
