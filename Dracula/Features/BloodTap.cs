@@ -92,6 +92,10 @@ internal sealed class BloodTapManager : IStatusLogicHook
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
+		RegisterStatus(Status.bubbleJuice, (_, _, status) => [
+			new AHurt { targetPlayer = true, hurtAmount = 1 },
+			new AStatus { targetPlayer = true, status = status, statusAmount = 2 },
+		]);
 		RegisterStatus(Status.autododgeRight, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
