@@ -20,6 +20,7 @@ public sealed class ModEntry : SimpleMod
 	internal BloodTapManager BloodTapManager { get; }
 
 	internal IDeckEntry DraculaDeck { get; }
+	internal IDeckEntry BatmobileDeck { get; }
 
 	internal IStatusEntry BleedingStatus { get; }
 	internal IStatusEntry BloodMirrorStatus { get; }
@@ -152,12 +153,20 @@ public sealed class ModEntry : SimpleMod
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
 		);
 
+		var defaultCardArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Default.png")).Sprite;
 		DraculaDeck = helper.Content.Decks.RegisterDeck("Dracula", new()
 		{
 			Definition = new() { color = DB.decks[Deck.dracula].color, titleColor = DB.decks[Deck.dracula].titleColor },
-			DefaultCardArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Default.png")).Sprite,
+			DefaultCardArt = defaultCardArt,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize
+		});
+		BatmobileDeck = helper.Content.Decks.RegisterDeck("Batmobile", new()
+		{
+			Definition = new() { color = DB.decks[Deck.dracula].color, titleColor = DB.decks[Deck.dracula].titleColor },
+			DefaultCardArt = defaultCardArt,
+			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/BatmobileCardFrame.png")).Sprite,
+			Name = this.AnyLocalizations.Bind(["ship", "name"]).Localize
 		});
 
 		ShieldCostOff = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/ShieldCostOff.png"));

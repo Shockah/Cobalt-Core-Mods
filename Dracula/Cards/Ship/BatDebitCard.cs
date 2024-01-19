@@ -15,7 +15,7 @@ internal sealed class BatDebitCard : Card, IDraculaCard
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
 			{
-				deck = ModEntry.Instance.DraculaDeck.Deck,
+				deck = ModEntry.Instance.BatmobileDeck.Deck,
 				rarity = Rarity.common,
 				dontOffer = true
 			},

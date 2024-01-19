@@ -16,11 +16,12 @@ internal sealed class BatmobileBasicRepairsCard : Card, IDraculaCard
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
 			{
-				deck = ModEntry.Instance.DraculaDeck.Deck,
+				deck = Deck.colorless,
 				rarity = Rarity.common,
 				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true
 			},
+			Art = StableSpr.cards_Repairs,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "ship", "BasicRepairs", "name"]).Localize
 		});
 	}
@@ -28,6 +29,7 @@ internal sealed class BatmobileBasicRepairsCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
+			artTint = "77ff85",
 			cost = upgrade == Upgrade.None ? 3 : 2,
 			exhaust = true,
 			description = upgrade == Upgrade.B ? ModEntry.Instance.Localizations.Localize(["card", "ship", "BasicRepairs", "descriptionB"]) : null
