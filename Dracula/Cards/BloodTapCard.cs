@@ -18,6 +18,7 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 				rarity = Rarity.rare,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = StableSpr.cards_Corrode,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BloodTap", "name"]).Localize
 		});
 	}

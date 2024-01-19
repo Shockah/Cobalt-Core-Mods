@@ -18,6 +18,7 @@ internal sealed class RedThirstCard : Card, IDraculaCard
 				rarity = Rarity.rare,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = StableSpr.cards_ExtraBattery,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "RedThirst", "name"]).Localize
 		});
 	}

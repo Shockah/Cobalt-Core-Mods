@@ -26,6 +26,7 @@ internal sealed class BatDebitCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
+			art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top,
 			cost = 1,
 			floppable = true,
 			singleUse = true,

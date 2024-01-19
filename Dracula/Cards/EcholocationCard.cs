@@ -29,6 +29,7 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = StableSpr.cards_ScootRight,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Echolocation", "name"]).Localize
 		});
 

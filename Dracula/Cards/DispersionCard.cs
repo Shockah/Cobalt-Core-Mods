@@ -18,6 +18,7 @@ internal sealed class DispersionCard : Card, IDraculaCard
 				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = StableSpr.cards_CloudSave,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dispersion", "name"]).Localize
 		});
 	}

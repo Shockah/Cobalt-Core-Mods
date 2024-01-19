@@ -44,6 +44,7 @@ internal sealed class DrainEssenceCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
+			art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top,
 			cost = 1,
 			floppable = upgrade != Upgrade.B,
 			recycle = upgrade == Upgrade.A

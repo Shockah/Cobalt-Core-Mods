@@ -37,6 +37,7 @@ internal sealed class BloodScentCard : Card, IDraculaCard
 				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/BloodScent.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BloodScent", "name"]).Localize
 		});
 	}
@@ -44,6 +45,11 @@ internal sealed class BloodScentCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
+			art = upgrade switch
+			{
+				Upgrade.A => flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top,
+				_ => null
+			},
 			cost = 1,
 			floppable = upgrade == Upgrade.A
 		};

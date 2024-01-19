@@ -18,6 +18,7 @@ internal sealed class ClonedLeechCard : Card, IDraculaCard
 				rarity = Rarity.common,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = Spr.cards_Cannon,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Leech", "name"]).Localize
 		});
 	}

@@ -19,6 +19,7 @@ internal sealed class SecretPerforatingCard : SecretCard, IDraculaCard
 				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true
 			},
+			Art = Spr.cards_Cannon,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Secret", "Perforating", "name"]).Localize
 		});
 	}

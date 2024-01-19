@@ -18,6 +18,7 @@ internal sealed class CrimsonWaveCard : Card, IDraculaCard
 				rarity = Rarity.rare,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = StableSpr.cards_eunice,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "CrimsonWave", "name"]).Localize
 		});
 	}

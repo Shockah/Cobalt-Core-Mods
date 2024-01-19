@@ -141,8 +141,16 @@
             "BatDebit": {
                 "name": "Bat Debit Card",
                 "description": {
-                    "normal": "Withdraw 1 blood.\n<c=5f5f5f>Deposit 1 blood.</c>",
-                    "flipped": "<c=5f5f5f>Withdraw 1 blood.</c>\nDeposit 1 blood."
+                    "normal": [
+                        "Withdraw 1 blood.",
+                        "",
+                        "<c=5f5f5f>Deposit 1 blood.</c>"
+                    ],
+                    "flipped": [
+                        "<c=5f5f5f>Withdraw 1 blood.</c>",
+                        "",
+                        "Deposit 1 blood."
+                    ]
                 }
             },
             "BasicRepairs": {

@@ -20,6 +20,7 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 				rarity = Rarity.common,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = StableSpr.cards_HandCannon,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "DeathCoil", "name"]).Localize
 		});
 	}

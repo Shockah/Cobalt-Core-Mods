@@ -19,6 +19,7 @@ internal sealed class SecretProtectiveCard : SecretCard, IDraculaCard
 				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true
 			},
+			Art = Spr.cards_Shield,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Secret", "Protective", "name"]).Localize
 		});
 	}

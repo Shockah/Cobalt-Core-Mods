@@ -18,6 +18,7 @@ internal sealed class HeartbreakCard : Card, IDraculaCard
 				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = StableSpr.cards_WeakenHull,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Heartbreak", "name"]).Localize
 		});
 	}
