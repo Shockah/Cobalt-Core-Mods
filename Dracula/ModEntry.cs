@@ -209,7 +209,7 @@ public sealed class ModEntry : SimpleMod
 			Definition = new()
 			{
 				icon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/Transfusion.png")).Sprite,
-				color = new("267F00")
+				color = new("FFAFAF")
 			},
 			Name = this.AnyLocalizations.Bind(["status", "Transfusion", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["status", "Transfusion", "description"]).Localize
@@ -219,7 +219,7 @@ public sealed class ModEntry : SimpleMod
 			Definition = new()
 			{
 				icon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/Transfusing.png")).Sprite,
-				color = new("267F00")
+				color = new("FFAFAF")
 			},
 			Name = this.AnyLocalizations.Bind(["status", "Transfusing", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["status", "Transfusing", "description"]).Localize
