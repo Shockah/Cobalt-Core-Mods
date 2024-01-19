@@ -32,9 +32,9 @@ internal sealed class BatFormCard : Card, IDraculaCard
 		if (upgrade == Upgrade.B)
 			return Matrix.CreateScale(1f / 1.5f);
 
-		var spacing = 48;
-		var newXOffset = 48;
-		var newYOffset = 40;
+		var spacing = 12 * g.mg.PIX_SCALE;
+		var newXOffset = 12 * g.mg.PIX_SCALE;
+		var newYOffset = 10 * g.mg.PIX_SCALE;
 		var index = actions.IndexOf(action);
 		return index switch
 		{

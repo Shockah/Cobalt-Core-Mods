@@ -19,6 +19,7 @@ internal sealed class SecretWingedCard : SecretCard, IDraculaCard
 				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true
 			},
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Spells/Winged.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Secret", "Winged", "name"]).Localize
 		});
 	}

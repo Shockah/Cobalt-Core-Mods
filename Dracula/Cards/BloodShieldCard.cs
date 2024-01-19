@@ -14,8 +14,8 @@ internal sealed class BloodShieldCard : Card, IDraculaCard
 
 	public Matrix ModifyCardActionRenderMatrix(G g, List<CardAction> actions, CardAction action, int actionWidth)
 	{
-		var spacing = 48;
-		var halfYCenterOffset = 64;
+		var spacing = 12 * g.mg.PIX_SCALE;
+		var halfYCenterOffset = 16 * g.mg.PIX_SCALE;
 		var index = actions.IndexOf(action);
 		var recenterY = -(int)((index - actions.Count / 2.0 + 0.5) * spacing);
 		return index switch

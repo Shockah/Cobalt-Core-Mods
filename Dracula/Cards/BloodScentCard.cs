@@ -1,4 +1,5 @@
-﻿using Nanoray.PluginManager;
+﻿using Microsoft.Xna.Framework;
+using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
@@ -8,6 +9,23 @@ namespace Shockah.Dracula;
 
 internal sealed class BloodScentCard : Card, IDraculaCard
 {
+	public Matrix ModifyCardActionRenderMatrix(G g, List<CardAction> actions, CardAction action, int actionWidth)
+	{
+		if (upgrade != Upgrade.A)
+			return Matrix.Identity;
+
+		var spacing = 12 * g.mg.PIX_SCALE;
+		var halfYCenterOffset = 16 * g.mg.PIX_SCALE;
+		var index = actions.IndexOf(action);
+		var recenterY = -(int)((index - actions.Count / 2.0 + 0.5) * spacing);
+		return index switch
+		{
+			0 or 1 => Matrix.CreateTranslation(0, recenterY - halfYCenterOffset - spacing / 2 + spacing * index, 0),
+			2 => Matrix.CreateTranslation(0, recenterY + halfYCenterOffset, 0),
+			_ => Matrix.Identity
+		};
+	}
+
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("BloodScent", new()
@@ -38,15 +56,8 @@ internal sealed class BloodScentCard : Card, IDraculaCard
 				{
 					targetPlayer = false,
 					status = ModEntry.Instance.BleedingStatus.Status,
-					statusAmount = 2
-				}.Disabled(flipped),
-				new ADummyAction(),
-				new AStatus
-				{
-					targetPlayer = false,
-					status = ModEntry.Instance.BleedingStatus.Status,
 					statusAmount = 1
-				}.Disabled(!flipped),
+				}.Disabled(flipped),
 				ModEntry.Instance.KokoroApi.ActionCosts.Make(
 					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
 						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
@@ -63,7 +74,13 @@ internal sealed class BloodScentCard : Card, IDraculaCard
 						status = Status.overdrive,
 						statusAmount = 2
 					}
-				).Disabled(!flipped)
+				).Disabled(flipped),
+				new AStatus
+				{
+					targetPlayer = false,
+					status = ModEntry.Instance.BleedingStatus.Status,
+					statusAmount = 2
+				}.Disabled(!flipped),
 			],
 			Upgrade.B => [
 				new AStatus
