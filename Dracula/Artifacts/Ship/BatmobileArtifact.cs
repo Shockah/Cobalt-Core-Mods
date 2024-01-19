@@ -11,6 +11,12 @@ namespace Shockah.Dracula;
 
 internal sealed class BatmobileArtifact : Artifact, IDraculaArtifact
 {
+	private static ISpriteEntry Sprite100 = null!;
+	private static ISpriteEntry Sprite75 = null!;
+	private static ISpriteEntry Sprite50 = null!;
+	private static ISpriteEntry Sprite25 = null!;
+	private static ISpriteEntry Sprite1 = null!;
+
 	[JsonProperty]
 	private bool WasBelow75 = false;
 
@@ -25,6 +31,12 @@ internal sealed class BatmobileArtifact : Artifact, IDraculaArtifact
 
 	public static void Register(IModHelper helper)
 	{
+		Sprite100 = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile100.png"));
+		Sprite75 = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile75.png"));
+		Sprite50 = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile50.png"));
+		Sprite25 = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile25.png"));
+		Sprite1 = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile1.png"));
+
 		helper.Content.Artifacts.RegisterArtifact("Batmobile", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
@@ -49,6 +61,21 @@ internal sealed class BatmobileArtifact : Artifact, IDraculaArtifact
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Update)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_Update_Postfix))
 		);
+	}
+
+	public override Spr GetSprite()
+	{
+		if (!InCombat || MG.inst.g?.state is not { } state)
+			return base.GetSprite();
+		if (state.ship.hull == 1)
+			return Sprite1.Sprite;
+		return ((1.0 * state.ship.hull / state.ship.hullMax) switch
+		{
+			<= 0.25 => Sprite25,
+			<= 0.5 => Sprite50,
+			<= 0.75 => Sprite75,
+			_ => Sprite100
+		}).Sprite;
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
