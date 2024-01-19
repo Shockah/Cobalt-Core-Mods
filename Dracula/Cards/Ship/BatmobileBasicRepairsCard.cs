@@ -30,7 +30,7 @@ internal sealed class BatmobileBasicRepairsCard : Card, IDraculaCard
 		=> new()
 		{
 			artTint = "77ff85",
-			cost = upgrade == Upgrade.None ? 3 : 2,
+			cost = 2,
 			exhaust = true,
 			description = upgrade == Upgrade.B ? ModEntry.Instance.Localizations.Localize(["card", "ship", "BasicRepairs", "descriptionB"]) : null
 		};
@@ -38,6 +38,13 @@ internal sealed class BatmobileBasicRepairsCard : Card, IDraculaCard
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
+			Upgrade.A => [
+				new AHeal
+				{
+					targetPlayer = true,
+					healAmount = 1
+				}
+			],
 			Upgrade.B => [
 				new ABatDebitCharge
 				{
@@ -49,6 +56,12 @@ internal sealed class BatmobileBasicRepairsCard : Card, IDraculaCard
 				{
 					targetPlayer = true,
 					healAmount = 1
+				},
+				new AStatus
+				{
+					targetPlayer = true,
+					status = Status.energyLessNextTurn,
+					statusAmount = 1
 				}
 			]
 		};
