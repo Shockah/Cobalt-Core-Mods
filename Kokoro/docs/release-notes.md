@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming version
+
+* Added a way to temporarily stop card rendering transformations.
+* Fixed card rendering transformations randomly stopping working.
+
 ## 1.2.1
 Released 13 January 2024.
 

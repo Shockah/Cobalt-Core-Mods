@@ -7,6 +7,9 @@ namespace Shockah.Kokoro;
 
 public sealed class CardRenderManager : HookManager<ICardRenderHook>
 {
+	public bool ShouldDisableCardRenderingTransformations(G g, Card card)
+		=> Hooks.Any(h => h.ShouldDisableCardRenderingTransformations(g, card));
+
 	public Vec ModifyTextCardScale(G g, Card card)
 		=> Hooks.Aggregate(Vec.One, (v, hook) => v * hook.ModifyTextCardScale(g, card));
 

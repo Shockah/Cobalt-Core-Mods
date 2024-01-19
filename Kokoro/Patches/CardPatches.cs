@@ -80,6 +80,11 @@ internal static class CardPatches
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetDataWithOverrides)),
 			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_GetDataWithOverrides_Transpiler))
 		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(State), nameof(State.Render)),
+			postfix: new HarmonyMethod(typeof(CardPatches), nameof(State_Render_Postfix))
+		);
 	}
 
 	private static void ResetSpriteBatch()
@@ -156,11 +161,16 @@ internal static class CardPatches
 
 	private static Vec Card_Render_Transpiler_PushMatrix(Card card, G g)
 	{
+		if (Instance.CardRenderManager.ShouldDisableCardRenderingTransformations(g, card))
+		{
+			CardRenderMatrixStack.Push(null);
+			return Vec.One;
+		}
 		var modifiedScale = Instance.CardRenderManager.ModifyTextCardScale(g, card);
 		if (modifiedScale.x == 1 && modifiedScale.y == 1)
 		{
 			CardRenderMatrixStack.Push(null);
-			return modifiedScale;
+			return Vec.One;
 		}
 
 		CardRenderMatrixStack.Push(g.mg.cameraMatrix);
@@ -247,9 +257,13 @@ internal static class CardPatches
 		if (MakeAllActionIconsCounter != 1)
 			return;
 
-		CardRenderMatrixStack.Push(g.mg.cameraMatrix);
 		LastCardActions = actions;
 
+		if (Instance.CardRenderManager.ShouldDisableCardRenderingTransformations(g, card))
+		{
+			CardRenderMatrixStack.Push(null);
+			return;
+		}
 		var modifiedMatrix = Instance.CardRenderManager.ModifyNonTextCardRenderMatrix(g, card, actions);
 		if (modifiedMatrix.Equals(Matrix.Identity))
 		{
@@ -407,7 +421,11 @@ internal static class CardPatches
 			CardRenderMatrixStack.Push(null);
 			return;
 		}
-
+		if (Instance.CardRenderManager.ShouldDisableCardRenderingTransformations(g, LastCard))
+		{
+			CardRenderMatrixStack.Push(null);
+			return;
+		}
 		var modifiedMatrix = LastCardActions is null ? Matrix.Identity : Instance.CardRenderManager.ModifyCardActionRenderMatrix(g, LastCard, LastCardActions, action, LastRenderActionWidth);
 		if (modifiedMatrix.Equals(Matrix.Identity))
 		{
@@ -617,4 +635,16 @@ internal static class CardPatches
 
 	private static List<CardAction> Card_GetDataWithOverrides_Transpiler_UnwrapActions(List<CardAction> actions)
 		=> actions.SelectMany(a => Instance.WrappedActionManager.GetWrappedCardActionsRecursively(a, includingWrapperActions: false)).ToList();
+
+	private static void State_Render_Postfix()
+	{
+		MakeAllActionIconsCounter = 0;
+		RenderActionCounter = 0;
+		LastRenderActionWidth = 0;
+		LastCard = null;
+		LastCardActions = null;
+		CurrentResourceState = null;
+		CurrentNonDrawingResourceState = null;
+		CardRenderMatrixStack.Clear();
+	}
 }
