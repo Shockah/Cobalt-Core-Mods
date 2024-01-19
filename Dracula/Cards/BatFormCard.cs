@@ -1,4 +1,5 @@
-﻿using Nanoray.PluginManager;
+﻿using Microsoft.Xna.Framework;
+using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
 using Shockah.Shared;
@@ -17,6 +18,33 @@ internal sealed class BatFormCard : Card, IDraculaCard
 
 	public float ActionSpacingScaling
 		=> 1.5f;
+
+	public Matrix ModifyNonTextCardRenderMatrix(G g, List<CardAction> actions)
+	{
+		if (upgrade == Upgrade.B)
+			return Matrix.CreateScale(1.5f);
+		else
+			return Matrix.Identity;
+	}
+
+	public Matrix ModifyCardActionRenderMatrix(G g, List<CardAction> actions, CardAction action, int actionWidth)
+	{
+		if (upgrade == Upgrade.B)
+			return Matrix.CreateScale(1f / 1.5f);
+
+		var spacing = 48;
+		var newXOffset = 48;
+		var newYOffset = 40;
+		var index = actions.IndexOf(action);
+		return index switch
+		{
+			0 => Matrix.CreateTranslation(-newXOffset, -newYOffset - (int)((index - actions.Count / 2.0 + 0.5) * spacing), 0),
+			1 => Matrix.CreateTranslation(newXOffset, -newYOffset - (int)((index - actions.Count / 2.0 + 0.5) * spacing), 0),
+			2 => Matrix.CreateTranslation(newXOffset, newYOffset - (int)((index - actions.Count / 2.0 + 0.5) * spacing), 0),
+			3 => Matrix.CreateTranslation(-newXOffset, newYOffset - (int)((index - actions.Count / 2.0 + 0.5) * spacing), 0),
+			_ => Matrix.Identity
+		};
+	}
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -58,7 +86,7 @@ internal sealed class BatFormCard : Card, IDraculaCard
 				{
 					targetPlayer = true,
 					dir = 1,
-					isRandom = true
+					isRandom = true,
 				}.Disabled(FlipIndex % 3 != 0),
 				new AMove
 				{
@@ -77,25 +105,25 @@ internal sealed class BatFormCard : Card, IDraculaCard
 				new AMove
 				{
 					targetPlayer = true,
-					dir = 1,
+					dir = -1,
 					ignoreFlipped = true
 				}.Disabled(FlipIndex % 4 != 0),
 				new AMove
 				{
 					targetPlayer = true,
-					dir = 2,
+					dir = 1,
 					ignoreFlipped = true
 				}.Disabled(FlipIndex % 4 != 1),
 				new AMove
 				{
 					targetPlayer = true,
-					dir = -2,
+					dir = 2,
 					ignoreFlipped = true
 				}.Disabled(FlipIndex % 4 != 2),
 				new AMove
 				{
 					targetPlayer = true,
-					dir = -1,
+					dir = -2,
 					ignoreFlipped = true
 				}.Disabled(FlipIndex % 4 != 3)
 			]

@@ -1,4 +1,5 @@
-﻿using Nanoray.PluginManager;
+﻿using Microsoft.Xna.Framework;
+using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
@@ -11,8 +12,19 @@ internal sealed class BloodShieldCard : Card, IDraculaCard
 	private static ISpriteEntry TopArt = null!;
 	private static ISpriteEntry BottomArt = null!;
 
-	public float ActionSpacingScaling
-		=> 0.652f;
+	public Matrix ModifyCardActionRenderMatrix(G g, List<CardAction> actions, CardAction action, int actionWidth)
+	{
+		var spacing = 48;
+		var halfYCenterOffset = 64;
+		var index = actions.IndexOf(action);
+		var recenterY = -(int)((index - actions.Count / 2.0 + 0.5) * spacing);
+		return index switch
+		{
+			0 or 1 => Matrix.CreateTranslation(0, recenterY - halfYCenterOffset - spacing / 2 + spacing * index, 0),
+			2 => Matrix.CreateTranslation(0, recenterY + halfYCenterOffset, 0),
+			_ => Matrix.Identity
+		};
+	}
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -43,14 +55,12 @@ internal sealed class BloodShieldCard : Card, IDraculaCard
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new ADummyAction(),
 			new AHurt
 			{
 				targetPlayer = true,
 				hurtAmount = 1,
 				disabled = flipped
 			},
-			new ADummyAction(),
 			new AStatus
 			{
 				targetPlayer = true,
@@ -58,10 +68,6 @@ internal sealed class BloodShieldCard : Card, IDraculaCard
 				statusAmount = upgrade == Upgrade.B ? 4 : 3,
 				disabled = flipped
 			},
-			new ADummyAction(),
-			new ADummyAction(),
-			new ADummyAction(),
-			new ADummyAction(),
 			ModEntry.Instance.KokoroApi.ActionCosts.Make(
 				cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
 					resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
@@ -76,8 +82,6 @@ internal sealed class BloodShieldCard : Card, IDraculaCard
 					targetPlayer = true,
 					healAmount = upgrade == Upgrade.B ? 2 : 1
 				}
-			).Disabled(!flipped),
-			new ADummyAction(),
-			new ADummyAction(),
+			).Disabled(!flipped)
 		];
 }

@@ -1,5 +1,7 @@
-﻿using Nanoray.PluginManager;
+﻿using Microsoft.Xna.Framework;
+using Nanoray.PluginManager;
 using Nickel;
+using System.Collections.Generic;
 
 namespace Shockah.Dracula;
 
@@ -7,11 +9,14 @@ internal interface IDraculaCard
 {
 	static abstract void Register(IPluginPackage<IModManifest> package, IModHelper helper);
 
-	float TextScaling
-		=> 1f;
+	Vec ModifyTextCardScale(G g)
+		=> Vec.One;
 
-	float ActionSpacingScaling
-		=> 1f;
+	Matrix ModifyNonTextCardRenderMatrix(G g, List<CardAction> actions)
+		=> Matrix.Identity;
+
+	Matrix ModifyCardActionRenderMatrix(G g, List<CardAction> actions, CardAction action, int actionWidth)
+		=> Matrix.Identity;
 }
 
 internal interface IDraculaArtifact
