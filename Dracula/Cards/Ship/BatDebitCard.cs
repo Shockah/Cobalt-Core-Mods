@@ -75,8 +75,12 @@ internal sealed class BatDebitCard : Card, IDraculaCard
 				return;
 			}
 
-			artifact.Charges++;
-			artifact.Pulse();
+			if (artifact.Charges < 5)
+			{
+				artifact.Charges++;
+				artifact.Pulse();
+			}
+			
 			if (s.ship.Get(Status.perfectShield) > 0)
 				c.QueueImmediate(new AStatus
 				{

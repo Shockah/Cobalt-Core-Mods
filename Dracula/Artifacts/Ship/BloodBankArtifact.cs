@@ -65,6 +65,8 @@ internal sealed class BloodBankArtifact : Artifact, IDraculaArtifact
 		var artifact = g.state.EnumerateAllArtifacts().OfType<BloodBankArtifact>().FirstOrDefault();
 		if (artifact is null)
 			return;
+		if (artifact.Charges >= 5)
+			return;
 
 		artifact.Charges++;
 		artifact.Pulse();

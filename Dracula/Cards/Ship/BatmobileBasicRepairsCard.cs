@@ -1,6 +1,7 @@
 ﻿using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -81,7 +82,10 @@ internal sealed class BatmobileBasicRepairsCard : Card, IDraculaCard
 				return;
 			}
 
-			artifact.Charges += Charges;
+			if (artifact.Charges >= 5)
+				return;
+
+			artifact.Charges = Math.Min(artifact.Charges + 3, 5);
 			artifact.Pulse();
 		}
 	}
