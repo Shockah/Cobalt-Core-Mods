@@ -82,7 +82,6 @@ internal static class ShipPatches
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), "RenderStatusRow"),
-			prefix: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatusRow_Postfix)),
 			transpiler: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatusRow_Transpiler))
 		);
 		harmony.TryPatch(
@@ -191,7 +190,7 @@ internal static class ShipPatches
 
 	private static bool Ship_RenderStatuses_Prefix(Ship __instance, G g, string keyPrefix)
 	{
-		Instance.StatusRenderManager.IsDuringShipStatusRendering = true;
+		Instance.StatusRenderManager.RenderingStatusForShip = __instance;
 
 		var combat = g.state.route as Combat ?? DB.fakeCombat;
 		var toRender = __instance.statusEffects
@@ -237,7 +236,7 @@ internal static class ShipPatches
 	}
 
 	private static void Ship_RenderStatuses_Finalizer()
-		=> Instance.StatusRenderManager.IsDuringShipStatusRendering = false;
+		=> Instance.StatusRenderManager.RenderingStatusForShip = null;
 
 	private static Dictionary<Status, int> Ship_RenderStatuses_Transpiler_ModifyStatusesToShow(Dictionary<Status, int> statusEffects, Ship ship)
 	{
@@ -257,11 +256,6 @@ internal static class ShipPatches
 			.DistinctBy(e => e.Status)
 			.Where(e => Instance.StatusRenderManager.ShouldShowStatus(state, combat, ship, e.Status, e.Amount))
 			.ToDictionary(e => e.Status, e => e.Amount);
-	}
-
-	private static void Ship_RenderStatusRow_Postfix(Ship __instance, G g)
-	{
-		Instance.OxidationStatusManager.ModifyStatusTooltips(__instance, g);
 	}
 
 	private static IEnumerable<CodeInstruction> Ship_RenderStatusRow_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)

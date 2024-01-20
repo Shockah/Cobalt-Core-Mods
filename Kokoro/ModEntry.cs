@@ -68,6 +68,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 		StatusLogicManager.Register(WormStatusManager, 0);
 		StatusLogicManager.Register(OxidationStatusManager, 0);
+		StatusRenderManager.Register(OxidationStatusManager, 0);
 
 		Harmony = new(Name);
 

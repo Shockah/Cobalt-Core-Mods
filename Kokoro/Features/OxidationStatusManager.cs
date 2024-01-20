@@ -1,8 +1,9 @@
 ﻿using Shockah.Shared;
+using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
 
-public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>, IStatusLogicHook
+public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>, IStatusLogicHook, IStatusRenderHook
 {
 	private const int BaseOxidationStatusMaxValue = 7;
 
@@ -16,14 +17,16 @@ public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>, 
 		return value;
 	}
 
-	internal void ModifyStatusTooltips(Ship ship, G g)
+	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
 	{
-		for (int i = 0; i < g.tooltips.tooltips.Count; i++)
+		var oxidationMaxValue = ship is null ? BaseOxidationStatusMaxValue : GetOxidationStatusMaxValue(StateExt.Instance ?? DB.fakeState, ship);
+		for (int i = 0; i < tooltips.Count; i++)
 		{
-			var tooltip = g.tooltips.tooltips[i];
+			var tooltip = tooltips[i];
 			if (tooltip is TTGlossary glossary && glossary.key == $"status.{Instance.Content.OxidationStatus.Id!.Value}")
-				glossary.vals = new object[] { $"<c=boldPink>{GetOxidationStatusMaxValue(g.state, ship)}</c>" };
+				glossary.vals = new object[] { $"<c=boldPink>{oxidationMaxValue}</c>" };
 		}
+		return tooltips;
 	}
 
 	public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)

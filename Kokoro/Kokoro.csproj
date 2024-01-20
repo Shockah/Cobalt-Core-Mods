@@ -6,7 +6,7 @@
 	</PropertyGroup>
 	<Import Project="..\Configuration.Mod.props" />
 	<ItemGroup>
-		<PackageReference Include="Pintail" Version="2.4.0" />
+		<PackageReference Include="Pintail" Version="2.4.2" />
 		<PackageReference Include="ImGui.NET" Version="1.89.5.0" IncludeAssets="compile" PrivateAssets="all" />
 	</ItemGroup>
 </Project>

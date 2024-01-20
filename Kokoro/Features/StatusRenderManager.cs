@@ -7,7 +7,7 @@ public sealed class StatusRenderManager : HookManager<IStatusRenderHook>
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	internal bool IsDuringShipStatusRendering = false;
+	internal Ship? RenderingStatusForShip;
 
 	public bool ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)
 	{
@@ -38,7 +38,10 @@ public sealed class StatusRenderManager : HookManager<IStatusRenderHook>
 	internal List<Tooltip> OverrideStatusTooltips(Status status, int amount, List<Tooltip> tooltips)
 	{
 		foreach (var hook in GetHooksWithProxies(Instance.Api, (StateExt.Instance ?? DB.fakeState).EnumerateAllArtifacts()))
-			tooltips = hook.OverrideStatusTooltips(status, amount, IsDuringShipStatusRendering, tooltips);
+		{
+			tooltips = hook.OverrideStatusTooltips(status, amount, RenderingStatusForShip, tooltips);
+			tooltips = hook.OverrideStatusTooltips(status, amount, RenderingStatusForShip is not null, tooltips);
+		}
 		return tooltips;
 	}
 }

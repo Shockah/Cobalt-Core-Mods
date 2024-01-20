@@ -4,8 +4,10 @@
 
 ## Upcoming version
 
+* Added an extra overload to `IStatusRenderHook.OverrideStatusTooltips`, passing in the `Ship` the status is on.
 * Added a way to temporarily stop card rendering transformations.
 * Fixed card rendering transformations randomly stopping working.
+* Fixed Oxidation status tooltip.
 
 ## 1.2.1
 Released 13 January 2024.
