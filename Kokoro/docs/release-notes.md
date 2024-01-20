@@ -2,8 +2,10 @@
 
 # Release notes
 
-## Upcoming version
+## 1.3.0
+Released 20 January 2024.
 
+* **SOME MODS USING THIS VERSION CANNOT WORK IN THE LEGACY MOD LOADER VERSION ANYMORE, UNLESS THEY FIX THEIR COPIED API DECLARATIONS. IT'S RECOMMENDED TO SWITCH TO NICKEL.**
 * Added an extra overload to `IStatusRenderHook.OverrideStatusTooltips`, passing in the `Ship` the status is on.
 * Added a way to temporarily stop card rendering transformations.
 * Fixed card rendering transformations randomly stopping working.
