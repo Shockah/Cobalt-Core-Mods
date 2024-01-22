@@ -2,6 +2,10 @@
 
 # Release notes
 
+## 1.3.1
+
+* Ported Nickel's fix for deserializing non-primitive `ModData` to `ExtensionData`.
+
 ## 1.3.0
 Released 20 January 2024.
 

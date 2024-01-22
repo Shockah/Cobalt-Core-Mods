@@ -1,7 +1,9 @@
 ﻿using CobaltCoreModding.Definitions.ModManifests;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
@@ -29,10 +31,15 @@ internal sealed class ExtensionDataManager
 			return (T)(object)Convert.ToSingle(o);
 		else if (typeof(T) == typeof(double))
 			return (T)(object)Convert.ToDouble(o);
-		else if (o is null && (!typeof(T).IsValueType || (typeof(T).IsGenericType) && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>)))
+		else if (o is null && (!typeof(T).IsValueType || (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>))))
 			return default!;
-		else
-			throw new ArgumentException($"Cannot convert {o} to extension data type {typeof(T)}", nameof(T));
+
+		var stringWriter = new StringWriter();
+		JSONSettings.serializer.Serialize(new JsonTextWriter(stringWriter), o);
+		if (JSONSettings.serializer.Deserialize<T>(new JsonTextReader(new StringReader(stringWriter.ToString()))) is { } deserialized)
+			return deserialized;
+
+		throw new ArgumentException($"Cannot convert {o} to extension data type {typeof(T)}", nameof(T));
 	}
 
 	internal bool IsTypeRegisteredForExtensionData(object o)
