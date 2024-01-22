@@ -3,6 +3,7 @@
 # Release notes
 
 ## 1.3.1
+Released 22 January 2024.
 
 * Ported Nickel's fix for deserializing non-primitive `ModData` to `ExtensionData`.
 * Fixed Timestop trying to decrease even at 0, and decreasing twice per turn.
