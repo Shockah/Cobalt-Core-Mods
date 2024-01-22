@@ -118,6 +118,11 @@ internal static class ShipPatches
 					new CodeInstruction(OpCodes.Pop),
 					new CodeInstruction(OpCodes.Ldc_I4_1)
 				)
+				.Find(ILMatches.Call("QueueImmediate"))
+				.Replace(
+					new CodeInstruction(OpCodes.Pop),
+					new CodeInstruction(OpCodes.Pop)
+				)
 				.AllElements();
 		}
 		catch (Exception ex)
