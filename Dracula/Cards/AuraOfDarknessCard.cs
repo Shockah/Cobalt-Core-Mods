@@ -18,7 +18,7 @@ internal sealed class AuraOfDarknessCard : Card, IDraculaCard
 				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_BlockerBurnout,
+			Art = StableSpr.cards_Corrode,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "AuraOfDarkness", "name"]).Localize
 		});
 	}

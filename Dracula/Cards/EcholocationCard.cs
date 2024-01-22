@@ -33,15 +33,15 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Echolocation", "name"]).Localize
 		});
 
-		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnEnd), (State s, Combat c) =>
+		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnEnd), (State state, Combat combat) =>
 		{
-			if (c.GetEcholocationReturnPosition() is not { } echolocationReturnPosition)
+			if (combat.GetEcholocationReturnPosition() is not { } echolocationReturnPosition)
 				return;
-			c.SetEcholocationReturnPosition(null);
-			c.QueueImmediate(new AMove
+			combat.SetEcholocationReturnPosition(null);
+			combat.QueueImmediate(new AMove
 			{
 				targetPlayer = true,
-				dir = echolocationReturnPosition - s.ship.x,
+				dir = echolocationReturnPosition - state.ship.x,
 				ignoreFlipped = true,
 				ignoreHermes = true,
 				isTeleport = true
