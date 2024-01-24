@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Shockah.Dracula</RootNamespace>
-		<Version>0.1.0</Version>
+		<Version>0.1.1</Version>
 		<IsNickelMod>True</IsNickelMod>
 		<IncludedModProjectPaths>i18n;assets</IncludedModProjectPaths>
 	</PropertyGroup>
