@@ -30,6 +30,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soggins", "Soggins\Soggins.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dracula", "Dracula\Dracula.csproj", "{5820F297-795C-414F-9D2D-6B401165828B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Johnson", "Johnson\Johnson.csproj", "{1455E3E8-CAF2-4CF5-ACFE-951CEC4D1EB4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,10 @@ Global
 		{5820F297-795C-414F-9D2D-6B401165828B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5820F297-795C-414F-9D2D-6B401165828B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5820F297-795C-414F-9D2D-6B401165828B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1455E3E8-CAF2-4CF5-ACFE-951CEC4D1EB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1455E3E8-CAF2-4CF5-ACFE-951CEC4D1EB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1455E3E8-CAF2-4CF5-ACFE-951CEC4D1EB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1455E3E8-CAF2-4CF5-ACFE-951CEC4D1EB4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,6 +82,7 @@ Global
 		SolutionGuid = {FF46E3B8-7CC8-4A40-BAB2-AC7A870A2AA5}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		_Shared\_Shared.projitems*{1455e3e8-caf2-4cf5-acfe-951cec4d1eb4}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{26f4b3c4-c636-4358-8e4f-ed592e2629bb}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{5820f297-795c-414f-9d2d-6b401165828b}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{a0276a09-5fdf-4352-adf4-ed072da21953}*SharedItemsImports = 13

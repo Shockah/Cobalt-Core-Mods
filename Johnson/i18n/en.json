@@ -1,0 +1,35 @@
+{
+    "character": {
+        "name": "Johnson",
+        "description": [
+            "<c=2D3F61>JOHNSON</c>",
+            "Your coworker.",
+            "Capable of <c=keyword>creating</c> and <c=keyword>improving</c> cards."
+        ]
+    },
+    "card": {
+        "Layout": {
+            "name": "Layout",
+            "description": {
+                "None": "Add either a <c=card>Bullet Point</c> or a <c=card>Slide Transition</c> to your <c=keyword>hand</c>.",
+                "A": "Add either a <c=card>Bullet Point</c> or a <c=card>Slide Transition</c> to your <c=keyword>hand</c>.",
+                "B": "Add either a <c=card>Bullet Point</c> or a <c=card>Slide Transition</c> to your <c=keyword>draw pile</c>."
+            }
+        },
+        "Promote": {
+            "name": "Promote",
+            "description": {
+                "None": "Choose a card in your hand to temporarily upgrade.",
+                "A": "Choose a card in your hand to temporarily upgrade.",
+                "B": "Draw 2, then choose a card in your hand to temporarily upgrade."
+            }
+        },
+
+        "BulletPoint": {
+            "name": "Bullet Point"
+        },
+        "SlideTransition": {
+            "name": "Slide Transition"
+        }
+    }
+}
