@@ -9,6 +9,9 @@ namespace Shockah.Dracula;
 
 internal sealed class DrainEssenceCard : Card, IDraculaCard
 {
+	private static ISpriteEntry TopArt = null!;
+	private static ISpriteEntry BottomArt = null!;
+
 	public Matrix ModifyCardActionRenderMatrix(G g, List<CardAction> actions, CardAction action, int actionWidth)
 	{
 		if (upgrade == Upgrade.B)
@@ -28,6 +31,9 @@ internal sealed class DrainEssenceCard : Card, IDraculaCard
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
+		TopArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/DrainEssenceTop.png"));
+		BottomArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/DrainEssenceBottom.png"));
+
 		helper.Content.Cards.RegisterCard("DrainEssence", new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
@@ -37,6 +43,7 @@ internal sealed class DrainEssenceCard : Card, IDraculaCard
 				rarity = Rarity.common,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/DrainEssence.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "DrainEssence", "name"]).Localize
 		});
 	}
@@ -44,7 +51,11 @@ internal sealed class DrainEssenceCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
-			art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top,
+			art = upgrade switch
+			{
+				Upgrade.B => null,
+				_ => (flipped ? BottomArt : TopArt).Sprite
+			},
 			cost = 1,
 			floppable = upgrade != Upgrade.B,
 			recycle = upgrade == Upgrade.A

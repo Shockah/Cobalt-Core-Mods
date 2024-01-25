@@ -9,6 +9,9 @@ namespace Shockah.Dracula;
 
 internal sealed class BloodScentCard : Card, IDraculaCard
 {
+	private static ISpriteEntry TopArt = null!;
+	private static ISpriteEntry BottomArt = null!;
+
 	public Matrix ModifyCardActionRenderMatrix(G g, List<CardAction> actions, CardAction action, int actionWidth)
 	{
 		if (upgrade != Upgrade.A)
@@ -28,6 +31,9 @@ internal sealed class BloodScentCard : Card, IDraculaCard
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
+		TopArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/BloodScentTop.png"));
+		BottomArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/BloodScentBottom.png"));
+
 		helper.Content.Cards.RegisterCard("BloodScent", new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
@@ -47,7 +53,7 @@ internal sealed class BloodScentCard : Card, IDraculaCard
 		{
 			art = upgrade switch
 			{
-				Upgrade.A => flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top,
+				Upgrade.A => (flipped ? BottomArt : TopArt).Sprite,
 				_ => null
 			},
 			cost = 1,

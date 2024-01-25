@@ -4,12 +4,16 @@ using Newtonsoft.Json;
 using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dracula;
 
 internal sealed class BatFormCard : Card, IDraculaCard
 {
+	private static List<ISpriteEntry> TriadArt = null!;
+	private static List<ISpriteEntry> QuadArt = null!;
+
 	[JsonProperty]
 	public int FlipIndex { get; private set; } = 0;
 
@@ -48,6 +52,13 @@ internal sealed class BatFormCard : Card, IDraculaCard
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
+		TriadArt = Enumerable.Range(0, 3)
+			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Cards/BatFormTriad{i}.png")))
+			.ToList();
+		QuadArt = Enumerable.Range(0, 4)
+			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Cards/BatFormQuad{i}.png")))
+			.ToList();
+
 		helper.Content.Cards.RegisterCard("BatForm", new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
@@ -65,6 +76,9 @@ internal sealed class BatFormCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
+			art = upgrade == Upgrade.B
+				? TriadArt[FlipIndex].Sprite
+				: QuadArt[FlipIndex].Sprite,
 			cost = upgrade == Upgrade.A ? 0 : 1,
 			floppable = true
 		};

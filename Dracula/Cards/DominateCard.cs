@@ -10,6 +10,8 @@ namespace Shockah.Dracula;
 
 internal sealed class DominateCard : Card, IDraculaCard
 {
+	private static ISpriteEntry NonFlipArt = null!;
+
 	private static bool IsDuringTryPlayCard = false;
 
 	public Matrix ModifyCardActionRenderMatrix(G g, List<CardAction> actions, CardAction action, int actionWidth)
@@ -31,6 +33,8 @@ internal sealed class DominateCard : Card, IDraculaCard
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
+		NonFlipArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/DominateNonFlip.png"));
+
 		helper.Content.Cards.RegisterCard("Dominate", new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
@@ -40,7 +44,7 @@ internal sealed class DominateCard : Card, IDraculaCard
 				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_shard,
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Dominate.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dominate", "name"]).Localize
 		});
 
@@ -55,6 +59,7 @@ internal sealed class DominateCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
+			art = upgrade != Upgrade.None && flipped ? NonFlipArt.Sprite : null,
 			cost = 1,
 			floppable = upgrade != Upgrade.None
 		};
@@ -77,7 +82,8 @@ internal sealed class DominateCard : Card, IDraculaCard
 		{
 			actions.Add(new APositionalDroneFlip
 			{
-				WorldX = s.ship.x
+				WorldX = s.ship.x,
+				disabled = upgrade != Upgrade.None && flipped
 			});
 		}
 

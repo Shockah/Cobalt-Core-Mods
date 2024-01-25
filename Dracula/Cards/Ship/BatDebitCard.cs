@@ -8,8 +8,14 @@ namespace Shockah.Dracula;
 
 internal sealed class BatDebitCard : Card, IDraculaCard
 {
+	private static ISpriteEntry TopArt = null!;
+	private static ISpriteEntry BottomArt = null!;
+
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
+		TopArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Ship/BatDebitTop.png"));
+		BottomArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Ship/BatDebitBottom.png"));
+
 		helper.Content.Cards.RegisterCard("BatDebit", new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
@@ -26,7 +32,7 @@ internal sealed class BatDebitCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
-			art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top,
+			art = (flipped ? BottomArt : TopArt).Sprite,
 			cost = 1,
 			floppable = true,
 			singleUse = true,
