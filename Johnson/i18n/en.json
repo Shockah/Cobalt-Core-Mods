@@ -19,9 +19,9 @@
         "Promote": {
             "name": "Promote",
             "description": {
-                "None": "Choose a card in your hand to temporarily upgrade.",
-                "A": "Choose a card in your hand to temporarily upgrade.",
-                "B": "Draw 2, then choose a card in your hand to temporarily upgrade."
+                "None": "Choose a card in your <c=keyword>hand</c> to <c=action>temporarily upgrade</c>.",
+                "A": "Choose a card in your <c=keyword>hand</c> to <c=action>temporarily upgrade</c>.",
+                "B": "Draw 2, then choose a card in your <c=keyword>hand</c> to <c=action>temporarily upgrade</c>."
             }
         },
 

@@ -27,7 +27,8 @@ internal sealed class BulletPointCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = 1
+			cost = 1,
+			temporary = true
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)

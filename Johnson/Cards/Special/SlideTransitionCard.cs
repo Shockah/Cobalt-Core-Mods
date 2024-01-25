@@ -28,7 +28,8 @@ internal sealed class SlideTransitionCard : Card, IRegisterable
 		=> new()
 		{
 			cost = upgrade == Upgrade.B ? 0 : 1,
-			exhaust = upgrade == Upgrade.B
+			exhaust = upgrade == Upgrade.B,
+			temporary = true
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)

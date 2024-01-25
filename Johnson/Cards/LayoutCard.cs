@@ -37,15 +37,15 @@ internal sealed class LayoutCard : Card, IRegisterable
 			{
 				Destination = upgrade == Upgrade.A ? CardDestination.Hand : CardDestination.Deck,
 				Cards = [
-					new BulletPointCard { temporaryOverride = true },
-					new SlideTransitionCard() { temporaryOverride = true },
+					new BulletPointCard(),
+					new SlideTransitionCard(),
 				],
 			},
 			new ATooltipAction
 			{
 				Tooltips = [
-					new TTCard { card = new BulletPointCard { temporaryOverride = true } },
-					new TTCard { card = new SlideTransitionCard() { temporaryOverride = true } },
+					new TTCard { card = new BulletPointCard() },
+					new TTCard { card = new SlideTransitionCard() },
 				]
 			}
 		];
