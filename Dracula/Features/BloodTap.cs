@@ -17,7 +17,8 @@ internal static class BloodTapExt
 
 internal sealed class BloodTapManager : IStatusLogicHook
 {
-	private readonly Dictionary<Status, Func<State, Combat, Status, List<CardAction>>> Statuses = [];
+	private readonly Dictionary<Status, Func<State, Combat, Status, List<CardAction>>> StatusOptions = [];
+	private readonly HookManager<IBloodTapOptionProvider> StatusOptionProviders = [];
 
 	public BloodTapManager()
 	{
@@ -27,131 +28,155 @@ internal sealed class BloodTapManager : IStatusLogicHook
 			postfix: new HarmonyMethod(GetType(), nameof(Combat_Update_Postfix))
 		);
 
-		RegisterStatus(Status.evade, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.evade, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatus(Status.droneShift, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.droneShift, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatus(Status.hermes, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.hermes, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 },
 		]);
-		RegisterStatus(Status.payback, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.payback, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
-		RegisterStatus(Status.tempPayback, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.tempPayback, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatus(Status.mitosis, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.mitosis, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 2 },
 		]);
-		RegisterStatus(Status.stunCharge, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.stunCharge, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatus(Status.stunSource, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.stunSource, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 2 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AStatus { targetPlayer = true, status = Status.stunCharge, statusAmount = 1 },
 		]);
-		RegisterStatus(Status.serenity, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.serenity, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatus(Status.ace, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.ace, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 2 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 1 },
 		]);
-		RegisterStatus(Status.strafe, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.strafe, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 2 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 },
 		]);
-		RegisterStatus(Status.libra, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.libra, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 2 },
 		]);
-		RegisterStatus(Status.overdrive, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.overdrive, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 2 },
 		]);
-		RegisterStatus(Status.powerdrive, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.powerdrive, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
-		RegisterStatus(Status.endlessMagazine, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.endlessMagazine, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
-		RegisterStatus(Status.bubbleJuice, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.bubbleJuice, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 2 },
 		]);
-		RegisterStatus(Status.autododgeRight, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.autododgeRight, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatus(Status.autododgeLeft, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.autododgeLeft, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 2 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
-		RegisterStatus(Status.autopilot, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.autopilot, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AEnergy { changeAmount = 1 }
 		]);
-		RegisterStatus(Status.boost, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.boost, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 2 },
 		]);
-		RegisterStatus(Status.temporaryCheap, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.temporaryCheap, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatus(Status.timeStop, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.timeStop, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 2 },
 		]);
-		RegisterStatus(Status.shard, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.shard, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatus(Status.maxShard, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.maxShard, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AStatus { targetPlayer = true, status = Status.shard, statusAmount = 1 },
 		]);
-		RegisterStatus(Status.quarry, (_, _, status) => [
+		RegisterStatusOptionProvider(Status.quarry, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
 	}
 
-	public void RegisterStatus(Status status, Func<State, Combat, Status, List<CardAction>> actions)
-		=> Statuses[status] = actions;
+	public void RegisterStatusOptionProvider(Status status, Func<State, Combat, Status, List<CardAction>> actions)
+		=> StatusOptions[status] = actions;
 
-	public List<Status> GetStatuses(Combat combat, bool includeEnemy)
+	public void RegisterStatusOptionProvider(IBloodTapOptionProvider provider, double priority = 0)
+		=> StatusOptionProviders.Register(provider, priority);
+
+	public HashSet<Status> GetAllOwnedStatuses(Combat combat, bool includeEnemy)
 	{
 		IEnumerable<Status> allStatuses = combat.GetBloodTapPlayerStatuses();
 		if (includeEnemy)
 			allStatuses = allStatuses.Concat(combat.GetBloodTapEnemyStatuses()).Distinct();
-		return allStatuses.Where(Statuses.ContainsKey).ToList();
+		return allStatuses.ToHashSet();
 	}
 
-	public List<List<CardAction>> MakeChoices(State state, Combat combat, bool includeEnemy)
-		=> GetStatuses(combat, includeEnemy)
-			.Select(s => (Status: s, Actions: Statuses[s]))
-			.Select(e => e.Actions(state, combat, e.Status))
-			.ToList();
+	public List<Status> GetApplicableStatuses(State state, Combat combat, bool includeEnemy)
+	{
+		var allOwnedStatues = GetAllOwnedStatuses(combat, includeEnemy);
+		var applicableStatuses = allOwnedStatues.Where(StatusOptions.ContainsKey).ToList();
+		foreach (var provider in StatusOptionProviders)
+			foreach (var providerApplicableStatus in provider.GetBloodTapApplicableStatuses(state, combat, allOwnedStatues))
+				if (!applicableStatuses.Contains(providerApplicableStatus))
+					applicableStatuses.Add(providerApplicableStatus);
+		return applicableStatuses;
+	}
+
+	public IEnumerable<List<CardAction>> MakeChoices(State state, Combat combat, bool includeEnemy)
+	{
+		var allOwnedStatues = GetAllOwnedStatuses(combat, includeEnemy);
+		foreach (var (status, provider) in StatusOptions)
+		{
+			if (!allOwnedStatues.Contains(status))
+				continue;
+			var actions = provider(state, combat, status);
+			if (actions.Count != 0)
+				yield return actions;
+		}
+		foreach (var provider in StatusOptionProviders)
+			foreach (var option in provider.GetBloodTapOptionsActions(state, combat, allOwnedStatues))
+				yield return option;
+	}
 
 	private static void UpdateStatuses(HashSet<Status> statuses, Ship ship)
 	{

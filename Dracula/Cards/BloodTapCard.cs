@@ -1,6 +1,7 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dracula;
@@ -37,8 +38,8 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 		=> [
 			new ABloodTap
 			{
-				Statuses = ModEntry.Instance.BloodTapManager.GetStatuses(c, includeEnemy: upgrade == Upgrade.B),
-				Choices = ModEntry.Instance.BloodTapManager.MakeChoices(s, c, includeEnemy: upgrade == Upgrade.B)
+				Statuses = ModEntry.Instance.BloodTapManager.GetApplicableStatuses(s, c, includeEnemy: upgrade == Upgrade.B),
+				Choices = ModEntry.Instance.BloodTapManager.MakeChoices(s, c, includeEnemy: upgrade == Upgrade.B).ToList()
 			}
 		];
 
@@ -51,7 +52,7 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 			=> new ActionChoiceRoute
 			{
 				Title = ModEntry.Instance.Localizations.Localize(["card", "BloodTap", "ui", "title"]),
-				Choices = Choices ?? ModEntry.Instance.BloodTapManager.MakeChoices(s, c, includeEnemy: false)
+				Choices = Choices ?? ModEntry.Instance.BloodTapManager.MakeChoices(s, c, includeEnemy: false).ToList()
 			};
 
 		public override List<Tooltip> GetTooltips(State s)

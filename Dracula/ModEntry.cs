@@ -363,15 +363,18 @@ public sealed class ModEntry : SimpleMod
 			Description = this.AnyLocalizations.Bind(["ship", "description"]).Localize,
 		});
 
-		BloodTapManager.RegisterStatus(BloodMirrorStatus.Status, (_, _, status) => [
+		BloodTapManager.RegisterStatusOptionProvider(BloodMirrorStatus.Status, (_, _, status) => [
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 		]);
-		BloodTapManager.RegisterStatus(TransfusionStatus.Status, (_, _, status) => [
+		BloodTapManager.RegisterStatusOptionProvider(TransfusionStatus.Status, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
 
 		CustomCardBrowse.ApplyPatches();
 	}
+
+	public override object? GetApi(IModManifest requestingMod)
+		=> new ApiImplementation();
 }
