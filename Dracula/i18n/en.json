@@ -16,6 +16,34 @@
             "description": "<c=midrow>Drones</c> and <c=midrow>missiles</c> in front of your missile bays instantly take a turn."
         }
     },
+    "cardTrait": {
+        "triad": {
+            "name": "Triad Card",
+            "description": {
+                "m&k": [
+                    "This card has three separate sets of actions.",
+                    "In combat, <c=keyword>right click or ctrl-click</c> this card to switch between them."
+                ],
+                "controller": [
+                    "This card has three separate sets of actions.",
+                    "In combat, press {{Button}} on this card to switch between them."
+                ]
+            }
+        },
+        "quad": {
+            "name": "Quad Card",
+            "description": {
+                "m&k": [
+                    "This card has four separate sets of actions.",
+                    "In combat, <c=keyword>right click or ctrl-click</c> this card to switch between them."
+                ],
+                "controller": [
+                    "This card has four separate sets of actions.",
+                    "In combat, press {{Button}} on this card to switch between them."
+                ]
+            }
+        }
+    },
     "status": {
         "Bleeding": {
             "name": "Bleeding",
