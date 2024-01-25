@@ -1,11 +1,8 @@
-﻿using CobaltCoreModding.Definitions;
-using CobaltCoreModding.Definitions.ModContactPoints;
-using CobaltCoreModding.Definitions.ModManifests;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
+using Nanoray.PluginManager;
 using Newtonsoft.Json;
-using Shockah.Shared;
+using Nickel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,32 +10,28 @@ using System.Linq;
 
 namespace Shockah.CatDiscordBotDataExport;
 
-public sealed class ModEntry : IModManifest
+internal sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 
-	public string Name { get; init; } = typeof(ModEntry).Namespace!;
-	public IEnumerable<DependencyEntry> Dependencies => Array.Empty<DependencyEntry>();
-
-	public DirectoryInfo? GameRootFolder { get; set; }
-	public DirectoryInfo? ModRootFolder { get; set; }
-	public ILogger? Logger { get; set; }
-
 	private readonly Queue<Action<G>> QueuedTasks = new();
-	internal CardRenderer CardRenderer { get; private set; } = null!;
+	internal readonly CardRenderer CardRenderer;
 
-	public void BootMod(IModLoaderContact contact)
+	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
-		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
-		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
+		helper.Events.OnModLoadPhaseFinished += OnModLoadPhaseFinished;
 
 		CardRenderer = new();
 
-		Harmony harmony = new(Name);
-		DeckRegistryPatches.Apply(harmony);
+		var harmony = new Harmony(package.Manifest.UniqueName);
 		GPatches.Apply(harmony);
+	}
 
+	private void OnModLoadPhaseFinished(object? sender, ModLoadPhase e)
+	{
+		if (e != ModLoadPhase.AfterDbInit)
+			return;
 		QueueTask(AllCardExportTask);
 	}
 
@@ -59,6 +52,8 @@ public sealed class ModEntry : IModManifest
 
 	private void AllCardExportTask(G g)
 	{
+		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
+
 		static string GetUpgradePathAffix(Upgrade upgrade)
 			=> upgrade switch
 			{
@@ -67,7 +62,7 @@ public sealed class ModEntry : IModManifest
 				_ => ""
 			};
 
-		List<Upgrade> noUpgrades = new() { Upgrade.None };
+		List<Upgrade> noUpgrades = [Upgrade.None];
 
 		var groupedCards = DB.cards
 			.Select(kvp => (Key: kvp.Key, Type: kvp.Value, Meta: DB.cardMetas.GetValueOrDefault(kvp.Key)))
@@ -93,7 +88,7 @@ public sealed class ModEntry : IModManifest
 					)).ToList()
 			)).ToList();
 
-		var exportableDataPath = Path.Combine(ModRootFolder!.FullName, "export", "cards");
+		var exportableDataPath = Path.Combine(modloaderFolder, "CatDiscordBotDataExport", "cards");
 		Directory.CreateDirectory(exportableDataPath);
 		File.WriteAllText(Path.Combine(exportableDataPath, "data.json"), JsonConvert.SerializeObject(exportableData, new JsonSerializerSettings
 		{
@@ -102,7 +97,11 @@ public sealed class ModEntry : IModManifest
 
 		foreach (var group in groupedCards)
 		{
-			var deckExportPath = Path.Combine(ModRootFolder!.FullName, "export", "cards", group.Deck.Key());
+			var fileSafeDeckKey = group.Deck.Key();
+			foreach (var unsafeChar in Path.GetInvalidFileNameChars())
+				fileSafeDeckKey = fileSafeDeckKey.Replace(unsafeChar, '_');
+
+			var deckExportPath = Path.Combine(modloaderFolder, "CatDiscordBotDataExport", "cards", fileSafeDeckKey);
 			var unreleasedCardsExportPath = Path.Combine(deckExportPath, "unreleased");
 
 			Directory.CreateDirectory(deckExportPath);
@@ -111,12 +110,16 @@ public sealed class ModEntry : IModManifest
 
 			foreach (var entry in group.Entries)
 			{
-				List<Upgrade> upgrades = new() { Upgrade.None };
+				var fileSafeCardKey = entry.Key;
+				foreach (var unsafeChar in Path.GetInvalidFileNameChars())
+					fileSafeCardKey = fileSafeCardKey.Replace(unsafeChar, '_');
+
+				List<Upgrade> upgrades = [Upgrade.None];
 				upgrades.AddRange(entry.Meta.upgradesTo);
 
 				foreach (var upgrade in upgrades)
 				{
-					var exportPath = Path.Combine(entry.Meta.unreleased ? unreleasedCardsExportPath : deckExportPath, $"{entry.Key}{GetUpgradePathAffix(upgrade)}.png");
+					var exportPath = Path.Combine(entry.Meta.unreleased ? unreleasedCardsExportPath : deckExportPath, $"{fileSafeCardKey}{GetUpgradePathAffix(upgrade)}.png");
 					var card = (Card)Activator.CreateInstance(entry.Type)!;
 					card.upgrade = upgrade;
 					QueueTask(g => CardExportTask(g, card, exportPath));
