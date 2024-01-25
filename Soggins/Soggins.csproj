@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<RootNamespace>Shockah.Soggins</RootNamespace>
 		<Version>1.2.2</Version>
+		<IsLegacyMod>True</IsLegacyMod>
 		<IncludedModProjectPaths>assets</IncludedModProjectPaths>
 	</PropertyGroup>
 	<Import Project="..\Configuration.Mod.props" />

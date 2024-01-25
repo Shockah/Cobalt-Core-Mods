@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<RootNamespace>Shockah.CrewSelectionHelper</RootNamespace>
 		<Version>1.0.0</Version>
+		<IsLegacyMod>True</IsLegacyMod>
 		<IncludedModProjectPaths>assets</IncludedModProjectPaths>
 	</PropertyGroup>
 	<Import Project="..\Configuration.Mod.props" />
