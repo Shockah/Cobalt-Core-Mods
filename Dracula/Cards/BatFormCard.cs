@@ -245,8 +245,7 @@ internal sealed class BatFormCard : Card, IDraculaCard
 						batFormCard.upgrade == Upgrade.B ? "triad" : "quad",
 						"description",
 						PlatformIcons.GetPlatform() == Platform.MouseKeyboard ? "m&k" : "controller"
-					], new { Button = buttonText }),
-					key: "cardtrait.floppable"
+					], new { Button = buttonText })
 				);
 			});
 	}

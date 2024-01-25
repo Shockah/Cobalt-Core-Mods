@@ -42,6 +42,19 @@
                     "In combat, press {{Button}} on this card to switch between them."
                 ]
             }
+        },
+        "optional": {
+            "name": "Optional",
+            "description": {
+                "m&k": [
+                    "This card has an optional set of actions.",
+                    "In combat, <c=keyword>right click or ctrl-click</c> this card to toggle it off or on."
+                ],
+                "controller": [
+                    "This card has an optional set of actions.",
+                    "In combat, press {{Button}} on this card to toggle it off or on."
+                ]
+            }
         }
     },
     "status": {
