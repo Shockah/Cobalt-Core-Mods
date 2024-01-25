@@ -33,6 +33,7 @@ internal sealed class BatDebitCard : Card, IDraculaCard
 		=> new()
 		{
 			art = (flipped ? BottomArt : TopArt).Sprite,
+			artTint = "FFFFFF",
 			cost = 1,
 			floppable = true,
 			singleUse = true,
