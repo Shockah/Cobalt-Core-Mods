@@ -19,7 +19,7 @@ internal sealed class BulletPointCard : Card, IRegisterable
 				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true,
 			},
-			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/BulletPoint.png")).Sprite,
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Special/BulletPoint.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BulletPoint", "name"]).Localize
 		});
 	}
@@ -27,6 +27,7 @@ internal sealed class BulletPointCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> new()
 		{
+			artTint = "FFFFFF",
 			cost = 1,
 			temporary = true
 		};

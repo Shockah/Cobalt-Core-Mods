@@ -11,7 +11,7 @@
         "Layout": {
             "name": "Layout",
             "description": {
-                "None": "Add either a <c=card>Bullet Point</c> or a <c=card>Slide Transition</c> to your <c=keyword>hand</c>.",
+                "None": "Add either a <c=card>Bullet Point</c> or a <c=card>Slide Transition</c> to your <c=keyword>draw pile</c>.",
                 "A": "Add either a <c=card>Bullet Point</c> or a <c=card>Slide Transition</c> to your <c=keyword>hand</c>.",
                 "B": "Add either a <c=card>Bullet Point</c> or a <c=card>Slide Transition</c> to your <c=keyword>draw pile</c>."
             }

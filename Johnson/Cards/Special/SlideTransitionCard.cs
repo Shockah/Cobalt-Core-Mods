@@ -19,7 +19,7 @@ internal sealed class SlideTransitionCard : Card, IRegisterable
 				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true,
 			},
-			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/SlideTransition.png")).Sprite,
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Special/SlideTransition.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "SlideTransition", "name"]).Localize
 		});
 	}
@@ -27,6 +27,7 @@ internal sealed class SlideTransitionCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> new()
 		{
+			artTint = "FFFFFF",
 			cost = upgrade == Upgrade.B ? 0 : 1,
 			exhaust = upgrade == Upgrade.B,
 			temporary = true

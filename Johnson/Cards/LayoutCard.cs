@@ -18,7 +18,7 @@ internal sealed class LayoutCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Layout.png")).Sprite,
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Layout.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Layout", "name"]).Localize
 		});
 	}
@@ -26,6 +26,7 @@ internal sealed class LayoutCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> new()
 		{
+			artTint = "FFFFFF",
 			cost = 1,
 			exhaust = upgrade != Upgrade.B,
 			description = ModEntry.Instance.Localizations.Localize(["card", "Layout", "description", upgrade.ToString()])
