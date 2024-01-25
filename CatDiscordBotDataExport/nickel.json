@@ -1,0 +1,7 @@
+{
+    "UniqueName": "Shockah.CatDiscordBotDataExport",
+    "Version": "0.1.0",
+    "RequiredApiVersion": "0.4.3",
+    "EntryPointAssembly": "CatDiscordBotDataExport.dll",
+    "LoadPhase": "AfterDbInit"
+}

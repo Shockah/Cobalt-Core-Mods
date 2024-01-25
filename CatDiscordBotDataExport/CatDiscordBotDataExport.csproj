@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Shockah.CatDiscordBotDataExport</RootNamespace>
-		<Version>1.0.0</Version>
+		<Version>0.1.0</Version>
 	</PropertyGroup>
 	<Import Project="..\Configuration.Mod.props" />
 </Project>
