@@ -11,7 +11,7 @@ internal sealed class CardRenderer
 
 	private RenderTarget2D? CurrentRenderTarget;
 
-	public void Render(G g, Card card, Stream stream)
+	public void Render(G g, bool withScreenFilter, Card card, Stream stream)
 	{
 		var imageSize = GetImageSize(card);
 		if (CurrentRenderTarget is null || CurrentRenderTarget.Width != (int)(imageSize.x * g.mg.PIX_SCALE) || CurrentRenderTarget.Height != (int)(imageSize.y * g.mg.PIX_SCALE))
@@ -34,6 +34,15 @@ internal sealed class CardRenderer
 		{
 			ModEntry.Instance.Logger.LogError("There was an error exporting card {Card}.", card.Key());
 		}
+		if (withScreenFilter)
+			Draw.Rect(0, 0, (int)(imageSize.x * g.mg.PIX_SCALE), (int)(imageSize.y * g.mg.PIX_SCALE), Colors.screenOverlay, new BlendState
+			{
+				ColorBlendFunction = BlendFunction.Add,
+				ColorSourceBlend = Blend.One,
+				ColorDestinationBlend = Blend.InverseSourceColor,
+				AlphaSourceBlend = Blend.DestinationAlpha,
+				AlphaDestinationBlend = Blend.DestinationAlpha
+			});
 		Draw.EndAutoBatchFrame();
 
 		g.mg.GraphicsDevice.SetRenderTargets(oldRenderTargets);

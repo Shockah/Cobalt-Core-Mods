@@ -41,7 +41,7 @@ internal sealed class ModEntry : SimpleMod
 			Logger!.LogInformation("Tasks left in the queue: {TaskCount}", QueuedTasks.Count);
 	}
 
-	internal void AllCardExportTask(G g)
+	internal void AllCardExportTask(G g, bool withScreenFilter)
 	{
 		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
 
@@ -113,15 +113,15 @@ internal sealed class ModEntry : SimpleMod
 					var exportPath = Path.Combine(entry.Meta.unreleased ? unreleasedCardsExportPath : deckExportPath, $"{fileSafeCardKey}{GetUpgradePathAffix(upgrade)}.png");
 					var card = (Card)Activator.CreateInstance(entry.Type)!;
 					card.upgrade = upgrade;
-					QueueTask(g => CardExportTask(g, card, exportPath));
+					QueueTask(g => CardExportTask(g, withScreenFilter, card, exportPath));
 				}
 			}
 		}
 	}
 
-	private void CardExportTask(G g, Card card, string path)
+	private void CardExportTask(G g, bool withScreenFilter, Card card, string path)
 	{
 		using var stream = new FileStream(path, FileMode.Create);
-		CardRenderer.Render(g, card, stream);
+		CardRenderer.Render(g, withScreenFilter, card, stream);
 	}
 }

@@ -39,7 +39,7 @@ internal static class EditorPatches
 				.ExtractLabels(out var labels)
 				.Insert(
 					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(EditorPatches), nameof(Editor_PanelTools_Transpiler_AddButton))).WithLabels(labels)
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(EditorPatches), nameof(Editor_PanelTools_Transpiler_AddButtons))).WithLabels(labels)
 				)
 				.AllElements();
 		}
@@ -50,11 +50,14 @@ internal static class EditorPatches
 		}
 	}
 
-	private static void Editor_PanelTools_Transpiler_AddButton()
+	private static void Editor_PanelTools_Transpiler_AddButtons()
 	{
 		ImGui.SameLine();
-		if (!ImGui.Button("CAT card export"))
-			return;
-		Instance.QueueTask(Instance.AllCardExportTask);
+		if (ImGui.Button("CAT card export"))
+			Instance.QueueTask(g => Instance.AllCardExportTask(g, withScreenFilter: false));
+
+		ImGui.SameLine();
+		if (ImGui.Button("(bluish)"))
+			Instance.QueueTask(g => Instance.AllCardExportTask(g, withScreenFilter: true));
 	}
 }
