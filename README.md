@@ -18,6 +18,16 @@ Improves the user experience while having installed multiple new character mods.
 
 [![Crew selection screenshot](CrewSelectionHelper/docs/images/crew-selection-thumb.png)](CrewSelectionHelper/docs/images/crew-selection.png)
 
+# Dracula
+
+**Dracula** -- A so-called "last living human". His cards often *self-hurt*, but they also often *heal*.  
+Dracula also comes with his own ride -- the **Batmobile**.  
+\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fdracula-1.0.0)] \[[release notes](Dracula/docs/release-notes.md)] \[[README/source code](Dracula)]
+
+[![Card preview screenshot](Dracula/docs/images/preview-none-thumb.png)](Dracula/docs/images/preview.png)
+[![Card A upgrade preview screenshot](Dracula/docs/images/preview-a-thumb.png)](Dracula/docs/images/preview-a.png)
+[![Card B upgrade preview screenshot](Dracula/docs/images/preview-b-thumb.png)](Dracula/docs/images/preview-b.png)
+
 # Duo Artifacts
 
 The mod adds a new artifact pool: duo artifacts, which are pretty powerful artifacts, synergizing between two different crew members.  
