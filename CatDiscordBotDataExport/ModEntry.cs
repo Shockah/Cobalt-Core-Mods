@@ -15,24 +15,15 @@ internal sealed class ModEntry : SimpleMod
 	internal static ModEntry Instance { get; private set; } = null!;
 
 	private readonly Queue<Action<G>> QueuedTasks = new();
-	internal readonly CardRenderer CardRenderer;
+	internal readonly CardRenderer CardRenderer = new();
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
-		helper.Events.OnModLoadPhaseFinished += OnModLoadPhaseFinished;
-
-		CardRenderer = new();
 
 		var harmony = new Harmony(package.Manifest.UniqueName);
+		EditorPatches.Apply(harmony);
 		GPatches.Apply(harmony);
-	}
-
-	private void OnModLoadPhaseFinished(object? sender, ModLoadPhase e)
-	{
-		if (e != ModLoadPhase.AfterDbInit)
-			return;
-		QueueTask(AllCardExportTask);
 	}
 
 	internal void QueueTask(Action<G> task)
@@ -50,7 +41,7 @@ internal sealed class ModEntry : SimpleMod
 			Logger!.LogInformation("Tasks left in the queue: {TaskCount}", QueuedTasks.Count);
 	}
 
-	private void AllCardExportTask(G g)
+	internal void AllCardExportTask(G g)
 	{
 		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
 
