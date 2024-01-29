@@ -84,6 +84,14 @@
                 "B": "Draw 2, then choose a card in your <c=keyword>hand</c> to <c=action>temporarily upgrade</c>."
             }
         },
+        "Revamp": {
+            "name": "Revamp",
+            "description": {
+                "None": "Your left and rightmost card <c=cardtrait>temp upgrade</c> to type A and B respectively.",
+                "A": "Your left and rightmost card <c=cardtrait>temp upgrade</c> to type A and B respectively.",
+                "B": "<c=cardtrait>Temporarily upgrade</c> your left and rightmost card."
+            }
+        },
         "Strategize": {
             "name": "Strategize",
             "description": {

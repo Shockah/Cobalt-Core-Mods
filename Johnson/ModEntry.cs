@@ -35,6 +35,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(CaffeineBuzzCard),
 		typeof(InvestmentCard),
 		typeof(ProfitMarginCard),
+		typeof(RevampCard),
 		typeof(StrategizeCard),
 		typeof(SupplimentCard),
 	];

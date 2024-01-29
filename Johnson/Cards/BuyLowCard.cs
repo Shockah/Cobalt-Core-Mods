@@ -40,12 +40,7 @@ internal sealed class BuyLowCard : Card, IRegisterable
 				{
 					discount = upgrade == Upgrade.B ? -1 : 0
 				},
-				amount = upgrade switch
-				{
-					Upgrade.A => 3,
-					Upgrade.B => 4,
-					_ => 2
-				}
+				amount = upgrade == Upgrade.A ? 3 : 2
 			}
 		];
 }
