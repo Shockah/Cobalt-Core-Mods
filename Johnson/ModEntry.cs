@@ -11,6 +11,7 @@ namespace Shockah.Johnson;
 public sealed class ModEntry : SimpleMod
 {
 	internal const CardBrowse.Source UpgradableCardsInHandBrowseSource = (CardBrowse.Source)2137301;
+	internal const CardBrowse.Source UpgradableCardsAnywhereBrowseSource = (CardBrowse.Source)2137302;
 
 	internal static ModEntry Instance { get; private set; } = null!;
 
@@ -39,6 +40,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
 		typeof(ComboAttackCard),
+		typeof(KickstartCard),
 		typeof(NumberCruncherCard),
 		typeof(TheWorksCard),
 	];
@@ -96,12 +98,20 @@ public sealed class ModEntry : SimpleMod
 		ASpecificCardOffering.ApplyPatches(Harmony, logger);
 		CustomCardBrowse.ApplyPatches(Harmony, logger);
 		CustomTTGlossary.ApplyPatches(Harmony);
+		InPlaceCardUpgrade.ApplyPatches(Harmony, logger);
 
 		CustomCardBrowse.RegisterCustomCardSource(
 			UpgradableCardsInHandBrowseSource,
 			new CustomCardBrowse.CustomCardSource(
 				(_, _, _) => Loc.T("cardBrowse.title.upgrade"),
 				(_, combat) => combat.hand.Where(c => c.IsUpgradable()).ToList()
+			)
+		);
+		CustomCardBrowse.RegisterCustomCardSource(
+			UpgradableCardsAnywhereBrowseSource,
+			new CustomCardBrowse.CustomCardSource(
+				(_, _, _) => Loc.T("cardBrowse.title.upgrade"),
+				(state, combat) => state.GetAllCards().Where(c => c.IsUpgradable()).ToList()
 			)
 		);
 

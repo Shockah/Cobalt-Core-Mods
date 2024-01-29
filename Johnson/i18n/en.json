@@ -54,6 +54,14 @@
         "Investment": {
             "name": "Investment"
         },
+        "Kickstart": {
+            "name": "Kickstart",
+            "description": {
+                "None": "Choose a card in your <c=keyword>deck</c> to <c=action>temporarily upgrade</c>.",
+                "A": "Choose 2 cards in your <c=keyword>deck</c> to <c=action>temporarily upgrade</c>.",
+                "B": "Choose a card in your <c=keyword>deck</c> to <c=action>temporarily upgrade</c>."
+            }
+        },
         "Layout": {
             "name": "Layout",
             "description": {

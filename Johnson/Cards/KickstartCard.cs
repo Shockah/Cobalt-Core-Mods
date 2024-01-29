@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Shockah.Johnson;
 
-internal sealed class PromoteCard : Card, IRegisterable
+internal sealed class KickstartCard : Card, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -18,8 +18,8 @@ internal sealed class PromoteCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Promote.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Promote", "name"]).Localize
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Kickstart.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Kickstart", "name"]).Localize
 		});
 	}
 
@@ -27,24 +27,23 @@ internal sealed class PromoteCard : Card, IRegisterable
 		=> new()
 		{
 			artTint = "FFFFFF",
-			cost = upgrade == Upgrade.A ? 0 : 1,
-			description = ModEntry.Instance.Localizations.Localize(["card", "Promote", "description", upgrade.ToString()])
+			cost = upgrade == Upgrade.B ? 1 : 0,
+			buoyant = true,
+			exhaust = upgrade != Upgrade.B,
+			description = ModEntry.Instance.Localizations.Localize(["card", "Kickstart", "description", upgrade.ToString()])
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
 		List<CardAction> actions = [];
-		if (upgrade == Upgrade.B)
-			actions.Add(new ADrawCard
+		var cardCount = upgrade == Upgrade.A ? 2 : 1;
+		for (var i = 0; i < cardCount; i++)
+			actions.Add(new ACardSelect
 			{
-				count = 2
+				browseSource = ModEntry.UpgradableCardsAnywhereBrowseSource,
+				browseAction = new TemporarilyUpgradeBrowseAction(),
+				omitFromTooltips = true
 			});
-		actions.Add(new ACardSelect
-		{
-			browseSource = ModEntry.UpgradableCardsInHandBrowseSource,
-			browseAction = new TemporarilyUpgradeBrowseAction(),
-			omitFromTooltips = true
-		});
 		return actions;
 	}
 }

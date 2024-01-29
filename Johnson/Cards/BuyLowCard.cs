@@ -36,7 +36,7 @@ internal sealed class BuyLowCard : Card, IRegisterable
 			new AAddCard
 			{
 				destination = upgrade == Upgrade.B ? CardDestination.Deck : CardDestination.Hand,
-				card = new BurnOutCard
+				card = new SellHighCard
 				{
 					discount = upgrade == Upgrade.B ? -1 : 0
 				},
