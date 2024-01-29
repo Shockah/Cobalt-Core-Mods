@@ -76,6 +76,22 @@
                 "B": "Draw 2, then choose a card in your <c=keyword>hand</c> to <c=action>temporarily upgrade</c>."
             }
         },
+        "Strategize": {
+            "name": "Strategize",
+            "description": {
+                "None": "Add either a <c=card>Leverage</c> or a <c=card>Brainstorm</c> to your <c=keyword>draw pile</c>.",
+                "A": "Add either a <c=card>Leverage</c> or a <c=card>Brainstorm</c> to your <c=keyword>draw pile</c>.",
+                "B": "Add a <c=card>Leverage</c> and a <c=card>Brainstorm</c> to your <c=keyword>discard pile</c>."
+            }
+        },
+        "TheWorks": {
+            "name": "The Works",
+            "description": {
+                "None": "Add either a <c=cardtrait>temp</c> <c=card>Layout</c> or a <c=cardtrait>temp</c> <c=card>Strategize</c> to your <c=keyword>hand</c>.",
+                "A": "Add a <c=cardtrait>temp</c> <c=card>Layout</c> and a <c=cardtrait>temp</c> <c=card>Strategize</c> to your <c=keyword>hand</c>.",
+                "B": "Add either a <c=cardtrait>temp</c> <c=card>Layout</c> or a <c=cardtrait>temp</c> <c=card>Strategize</c> to your <c=keyword>draw pile</c>."
+            }
+        },
 
         "Quarter1": {
             "name": "First Quarter",
@@ -105,11 +121,17 @@
             "name": "Deadline"
         },
 
+        "Brainstorm": {
+            "name": "Brainstorm"
+        },
         "BulletPoint": {
             "name": "Bullet Point"
         },
         "BurnOut": {
             "name": "Burn Out"
+        },
+        "Leverage": {
+            "name": "Leverage"
         },
         "SellHigh": {
             "name": "Sell High"

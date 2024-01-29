@@ -34,11 +34,13 @@ public sealed class ModEntry : SimpleMod
 		typeof(CaffeineBuzzCard),
 		typeof(InvestmentCard),
 		typeof(ProfitMarginCard),
+		typeof(StrategizeCard),
 	];
 
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
 		typeof(ComboAttackCard),
 		typeof(NumberCruncherCard),
+		typeof(TheWorksCard),
 	];
 
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
@@ -47,9 +49,11 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static IReadOnlyList<Type> SpecialCardTypes { get; } = [
+		typeof(BrainstormCard),
 		typeof(BulletPointCard),
 		typeof(BurnOutCard),
 		typeof(DeadlineCard),
+		typeof(LeverageCard),
 		typeof(Quarter2Card),
 		typeof(Quarter3Card),
 		typeof(SellHighCard),

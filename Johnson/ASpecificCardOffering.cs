@@ -50,21 +50,11 @@ public sealed class ASpecificCardOffering : CardAction
 			return;
 
 		g.state.RemoveCardFromWhereverItIs(card.uuid);
-		switch (custom.Destination)
+		combat.QueueImmediate(new AAddCard
 		{
-			case CardDestination.Hand:
-				combat.SendCardToHand(g.state, card);
-				break;
-			case CardDestination.Deck:
-				g.state.SendCardToDeck(card);
-				break;
-			case CardDestination.Discard:
-				combat.SendCardToDiscard(g.state, card);
-				break;
-			case CardDestination.Exhaust:
-				combat.SendCardToExhaust(g.state, card);
-				break;
-		}
+			card = card,
+			destination = custom.Destination
+		});
 	}
 
 	public sealed class CustomCardReward : CardReward
