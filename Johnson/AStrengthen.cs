@@ -10,6 +10,7 @@ public sealed class AStrengthen : CardAction
 	public override void Begin(G g, State s, Combat c)
 	{
 		base.Begin(g, s, c);
+		timer = 0;
 		if (s.FindCard(CardId) is not { } card)
 			return;
 		card.AddStrengthen(Amount);

@@ -42,6 +42,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
+		typeof(DownsizeCard),
 		typeof(Quarter1Card),
 	];
 

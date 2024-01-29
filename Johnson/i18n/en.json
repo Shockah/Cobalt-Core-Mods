@@ -43,6 +43,14 @@
         "ComboAttack": {
             "name": "Combo Attack"
         },
+        "Downsize": {
+            "name": "Downsize",
+            "description": {
+                "None": "Your rightmost card becomes <c=cardtrait>temporary</c>.",
+                "A": "Your rightmost card becomes <c=cardtrait>temporary</c>.",
+                "B": "All cards in your <c=keyword>hand</c> become <c=cardtrait>temporary</c>."
+            }
+        },
         "Investment": {
             "name": "Investment"
         },
