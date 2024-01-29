@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Shockah.Dracula;
+namespace Shockah.Johnson;
 
 internal sealed class CustomCardBrowse
 {

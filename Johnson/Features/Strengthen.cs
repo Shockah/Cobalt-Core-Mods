@@ -11,18 +11,21 @@ using System.Reflection.Emit;
 
 namespace Shockah.Johnson;
 
-internal static class TemporaryUpgradesExt
+internal static class StrengthenExt
 {
-	public static bool IsTemporarilyUpgraded(this Card self)
-		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(self, "IsTemporarilyUpgraded");
+	public static int GetStrengthen(this Card self)
+		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(self, "Strengthen");
 
-	public static void SetTemporarilyUpgraded(this Card self, bool value)
-		=> ModEntry.Instance.Helper.ModData.SetModData(self, "IsTemporarilyUpgraded", value);
+	public static void SetStrengthen(this Card self, int value)
+		=> ModEntry.Instance.Helper.ModData.SetModData(self, "Strengthen", value);
+
+	public static void AddStrengthen(this Card self, int value)
+		=> self.SetStrengthen(self.GetStrengthen() + value);
 }
 
-internal sealed class TemporaryUpgradeManager
+internal sealed class StrengthenManager
 {
-	public TemporaryUpgradeManager()
+	public StrengthenManager()
 	{
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
@@ -34,15 +37,19 @@ internal sealed class TemporaryUpgradeManager
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
 			postfix: new HarmonyMethod(GetType(), nameof(Card_GetAllTooltips_Postfix))
 		);
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
+			postfix: new HarmonyMethod(GetType(), nameof(Card_GetActionsOverridden_Postfix))
+		);
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
 			foreach (var card in state.deck)
 			{
-				if (!card.IsTemporarilyUpgraded())
+				if (card.GetStrengthen() == 0)
 					continue;
-				card.SetTemporarilyUpgraded(false);
-				card.upgrade = Upgrade.None;
+				card.SetStrengthen(0);
 			}
 		}, 0);
 	}
@@ -86,27 +93,30 @@ internal sealed class TemporaryUpgradeManager
 
 	private static void Card_Render_Transpiler_RenderCardTraitIfNeeded(Card card, ref int cardTraitIndex, Vec vec)
 	{
-		if (card.upgrade == Upgrade.None || !card.IsTemporarilyUpgraded())
+		if (card.GetStrengthen() <= 0)
 			return;
-		Draw.Sprite(ModEntry.Instance.TemporaryUpgradeIcon.Sprite, vec.x, vec.y - 8 * cardTraitIndex++);
+		Draw.Sprite(ModEntry.Instance.StrengthenIcon.Sprite, vec.x, vec.y - 8 * cardTraitIndex++);
 	}
 
 	private static void Card_GetAllTooltips_Postfix(Card __instance, State s, bool showCardTraits, ref IEnumerable<Tooltip> __result)
 	{
 		if (!showCardTraits)
 			return;
-		if (__instance.upgrade == Upgrade.None || !__instance.IsTemporarilyUpgraded())
+
+		var strengthen = __instance.GetStrengthen();
+		if (strengthen <= 0)
 			return;
 
-		static CustomTTGlossary MakeTooltip()
+		CustomTTGlossary MakeTooltip()
 			=> new(
 				CustomTTGlossary.GlossaryType.cardtrait,
-				() => ModEntry.Instance.TemporaryUpgradeIcon.Sprite,
-				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "temporaryUpgrade", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "temporaryUpgrade", "description"])
+				() => ModEntry.Instance.StrengthenIcon.Sprite,
+				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "strengthen", "name"]),
+				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "strengthen", "description"], new { Damage = strengthen }),
+				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::Strengthen"
 			);
 
-		static IEnumerable<Tooltip> ModifyTooltips(IEnumerable<Tooltip> tooltips)
+		IEnumerable<Tooltip> ModifyTooltips(IEnumerable<Tooltip> tooltips)
 		{
 			bool yieldedCardTrait = false;
 
@@ -125,5 +135,17 @@ internal sealed class TemporaryUpgradeManager
 		}
 
 		__result = ModifyTooltips(__result);
+	}
+
+	private static void Card_GetActionsOverridden_Postfix(Card __instance, ref List<CardAction> __result)
+	{
+		var strengthen = __instance.GetStrengthen();
+		if (strengthen <= 0)
+			return;
+
+		foreach (var baseAction in __result)
+			foreach (var wrappedAction in ModEntry.Instance.KokoroApi.Actions.GetWrappedCardActionsRecursively(baseAction))
+				if (wrappedAction is AAttack attack)
+					attack.damage += strengthen;
 	}
 }

@@ -41,7 +41,7 @@ internal sealed class PromoteCard : Card, IRegisterable
 			});
 		actions.Add(new ACardSelect
 		{
-			browseSource = CardBrowse.Source.Hand,
+			browseSource = ModEntry.UpgradableCardsInHandBrowseSource,
 			browseAction = new TemporarilyUpgradeBrowseAction(),
 			omitFromTooltips = true
 		});

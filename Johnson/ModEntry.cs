@@ -10,15 +10,19 @@ namespace Shockah.Johnson;
 
 public sealed class ModEntry : SimpleMod
 {
+	internal const CardBrowse.Source UpgradableCardsInHandBrowseSource = (CardBrowse.Source)2137301;
+
 	internal static ModEntry Instance { get; private set; } = null!;
 
 	internal Harmony Harmony { get; }
+	internal IKokoroApi KokoroApi { get; }
 	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
 	internal IDeckEntry JohnsonDeck { get; }
 
 	internal ISpriteEntry TemporaryUpgradeIcon { get; }
+	internal ISpriteEntry StrengthenIcon { get; }
 
 	internal static IReadOnlyList<Type> StarterCardTypes { get; } = [
 		typeof(LayoutCard),
@@ -26,16 +30,26 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static IReadOnlyList<Type> CommonCardTypes { get; } = [
+		typeof(BuyLowCard),
+		typeof(CaffeineBuzzCard),
+		typeof(InvestmentCard),
+		typeof(ProfitMarginCard),
 	];
 
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
 	];
 
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
+		typeof(Quarter1Card),
 	];
 
 	internal static IReadOnlyList<Type> SpecialCardTypes { get; } = [
 		typeof(BulletPointCard),
+		typeof(BurnOutCard),
+		typeof(DeadlineCard),
+		typeof(Quarter2Card),
+		typeof(Quarter3Card),
+		typeof(SellHighCard),
 		typeof(SlideTransitionCard),
 	];
 
@@ -59,6 +73,7 @@ public sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = new(package.Manifest.UniqueName);
+		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -69,8 +84,19 @@ public sealed class ModEntry : SimpleMod
 		);
 
 		_ = new TemporaryUpgradeManager();
-		CustomTTGlossary.ApplyPatches(Harmony);
+		_ = new StrengthenManager();
+
 		ASpecificCardOffering.ApplyPatches(Harmony, logger);
+		CustomCardBrowse.ApplyPatches(Harmony, logger);
+		CustomTTGlossary.ApplyPatches(Harmony);
+
+		CustomCardBrowse.RegisterCustomCardSource(
+			UpgradableCardsInHandBrowseSource,
+			new CustomCardBrowse.CustomCardSource(
+				(_, _, _) => Loc.T("cardBrowse.title.upgrade"),
+				(_, combat) => combat.hand.Where(c => c.IsUpgradable()).ToList()
+			)
+		);
 
 		JohnsonDeck = helper.Content.Decks.RegisterDeck("Johnson", new()
 		{
@@ -127,6 +153,7 @@ public sealed class ModEntry : SimpleMod
 		});
 
 		TemporaryUpgradeIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/TemporaryUpgrade.png"));
+		StrengthenIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/Strengthen.png"));
 	}
 
 	internal static Rarity GetCardRarity(Type type)

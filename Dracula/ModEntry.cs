@@ -141,8 +141,9 @@ public sealed class ModEntry : SimpleMod
 		_ = new NegativeOverdriveManager();
 		_ = new CardScalingManager();
 		BloodTapManager = new();
-		CustomTTGlossary.ApplyPatches(Harmony);
 
+		CustomCardBrowse.ApplyPatches(Harmony, logger);
+		CustomTTGlossary.ApplyPatches(Harmony);
 		ASpecificCardOffering.ApplyPatches(Harmony, logger);
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
@@ -371,8 +372,6 @@ public sealed class ModEntry : SimpleMod
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
-
-		CustomCardBrowse.ApplyPatches();
 	}
 
 	public override object? GetApi(IModManifest requestingMod)

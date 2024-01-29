@@ -7,7 +7,42 @@
             "Capable of <c=keyword>creating</c> and <c=keyword>improving</c> cards."
         ]
     },
+    "action": {
+        "strengthen": {
+            "name": "Strengthen",
+            "description": "This card deals <c=boldPink>{{Damage}}</c> extra damage for the rest of combat."
+        }
+    },
+    "cardTrait": {
+        "temporaryUpgrade": {
+            "name": "Temp Upgrade",
+            "description": "This card becomes unupgraded at the end of combat."
+        },
+        "strengthen": {
+            "name": "Strengthen",
+            "description": "This card deals <c=boldPink>{{Damage}}</c> extra damage for the rest of combat."
+        }
+    },
     "card": {
+        "BuyLow": {
+            "name": "Buy Low",
+            "description": {
+                "None": "Add 2 <c=card>Sell Highs</c> to your <c=keyword>hand</c>.",
+                "A": "Add 3 <c=card>Sell Highs</c> to your <c=keyword>hand</c>.",
+                "B": "Add 2 <c=cardtrait>discount</c> <c=card>Sell Highs</c> to your <c=keyword>draw pile</c>."
+            }
+        },
+        "CaffeineBuzz": {
+            "name": "Caffeine Buzz",
+            "description": {
+                "None": "Add 2 <c=card>Burn Outs</c> to your <c=keyword>hand</c>.",
+                "A": "Add 3 <c=card>Burn Outs</c> to your <c=keyword>hand</c>.",
+                "B": "Add 4 <c=card>Burn Outs</c> to your <c=keyword>hand</c>."
+            }
+        },
+        "Investment": {
+            "name": "Investment"
+        },
         "Layout": {
             "name": "Layout",
             "description": {
@@ -15,6 +50,9 @@
                 "A": "Add either a <c=card>Bullet Point</c> or a <c=card>Slide Transition</c> to your <c=keyword>hand</c>.",
                 "B": "Add either a <c=card>Bullet Point</c> or a <c=card>Slide Transition</c> to your <c=keyword>draw pile</c>."
             }
+        },
+        "ProfitMargin": {
+            "name": "Profit Margin"
         },
         "Promote": {
             "name": "Promote",
@@ -25,8 +63,42 @@
             }
         },
 
+        "Quarter1": {
+            "name": "First Quarter",
+            "description": {
+                "None": "Add a <c=card>Second Quarter</c> to your <c=keyword>draw pile</c>.",
+                "A": "Add a <c=card>Second Quarter</c> to the top of your <c=keyword>draw pile</c>.",
+                "B": "Add a <c=card>Second Quarter</c> to your <c=keyword>draw and discard pile</c>."
+            }
+        },
+        "Quarter2": {
+            "name": "Second Quarter",
+            "description": {
+                "None": "Add a <c=card>Third Quarter</c> to your <c=keyword>draw pile</c>.",
+                "A": "Add a <c=card>Third Quarter</c> to the top of your <c=keyword>draw pile</c>.",
+                "B": "Add a <c=card>Third Quarter</c> to your <c=keyword>draw and discard pile</c>."
+            }
+        },
+        "Quarter3": {
+            "name": "Third Quarter",
+            "description": {
+                "None": "Add a <c=card>Deadline</c> to your <c=keyword>draw pile</c>.",
+                "A": "Add a <c=card>Deadline</c> to the top of your <c=keyword>draw pile</c>.",
+                "B": "Add a <c=card>Deadline</c> to your <c=keyword>draw and discard pile</c>."
+            }
+        },
+        "Deadline": {
+            "name": "Deadline"
+        },
+
         "BulletPoint": {
             "name": "Bullet Point"
+        },
+        "BurnOut": {
+            "name": "Burn Out"
+        },
+        "SellHigh": {
+            "name": "Sell High"
         },
         "SlideTransition": {
             "name": "Slide Transition"
