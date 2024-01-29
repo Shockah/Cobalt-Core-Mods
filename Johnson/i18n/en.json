@@ -92,6 +92,14 @@
                 "B": "Add a <c=card>Leverage</c> and a <c=card>Brainstorm</c> to your <c=keyword>discard pile</c>."
             }
         },
+        "Suppliment": {
+            "name": "Suppliment",
+            "description": {
+                "None": "Gain 1 <c=status>shield</c>. <c=cardtrait>Discount</c> your rightmost card.",
+                "A": "Gain 2 <c=status>shield</c>. <c=cardtrait>Discount</c> your rightmost card.",
+                "B": "Gain 1 <c=status>shield</c>. <c=cardtrait>Discount</c> your left and rightmost card."
+            }
+        },
         "TheWorks": {
             "name": "The Works",
             "description": {

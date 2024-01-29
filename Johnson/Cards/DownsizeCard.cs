@@ -46,7 +46,7 @@ internal sealed class DownsizeCard : Card, IRegisterable
 		}
 		else
 		{
-			var card = ((IEnumerable<Card>)c.hand).Reverse().FirstOrDefault(card => card.uuid != uuid && !card.GetDataWithOverrides(s).temporary);
+			var card = c.hand.LastOrDefault(card => card.uuid != uuid && !card.GetDataWithOverrides(s).temporary);
 			if (card is not null)
 				actions.Add(new ATemporarify { CardId = card.uuid });
 		}

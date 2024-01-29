@@ -36,6 +36,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(InvestmentCard),
 		typeof(ProfitMarginCard),
 		typeof(StrategizeCard),
+		typeof(SupplimentCard),
 	];
 
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
