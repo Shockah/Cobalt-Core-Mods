@@ -37,6 +37,8 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
+		typeof(ComboAttackCard),
+		typeof(NumberCruncherCard),
 	];
 
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [

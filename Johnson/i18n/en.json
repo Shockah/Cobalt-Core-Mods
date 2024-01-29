@@ -40,6 +40,9 @@
                 "B": "Add 4 <c=card>Burn Outs</c> to your <c=keyword>hand</c>."
             }
         },
+        "ComboAttack": {
+            "name": "Combo Attack"
+        },
         "Investment": {
             "name": "Investment"
         },
@@ -50,6 +53,9 @@
                 "A": "Add either a <c=card>Bullet Point</c> or a <c=card>Slide Transition</c> to your <c=keyword>hand</c>.",
                 "B": "Add either a <c=card>Bullet Point</c> or a <c=card>Slide Transition</c> to your <c=keyword>draw pile</c>."
             }
+        },
+        "NumberCruncher": {
+            "name": "Number Cruncher"
         },
         "ProfitMargin": {
             "name": "Profit Margin"
