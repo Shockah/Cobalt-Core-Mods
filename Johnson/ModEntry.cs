@@ -78,6 +78,8 @@ public sealed class ModEntry : SimpleMod
 			.Concat(SpecialCardTypes);
 
 	internal static IReadOnlyList<Type> CommonArtifacts { get; } = [
+		typeof(BriefcaseArtifact),
+		typeof(EspressoShotArtifact),
 	];
 
 	internal static IReadOnlyList<Type> BossArtifacts { get; } = [

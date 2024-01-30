@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.Johnson;
 
-internal sealed class CrunchTimeManager
+internal sealed class CrunchTimeManager : IStatusRenderHook
 {
 	public CrunchTimeManager()
 	{
+		ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(this, 0);
+
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnStart), (State state, Combat combat) =>
 		{
 			if (!combat.isPlayerTurn)
@@ -28,5 +31,14 @@ internal sealed class CrunchTimeManager
 				statusPulse = ModEntry.Instance.CrunchTimeStatus.Status
 			});
 		}, 0);
+	}
+
+	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
+	{
+		if (status != ModEntry.Instance.CrunchTimeStatus.Status)
+			return tooltips;
+		return tooltips
+			.Concat(new BurnOutCard().GetAllTooltips(MG.inst.g, DB.fakeState))
+			.ToList();
 	}
 }
