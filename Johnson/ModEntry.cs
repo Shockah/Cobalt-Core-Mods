@@ -43,6 +43,7 @@ public sealed class ModEntry : SimpleMod
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
 		typeof(ComboAttackCard),
 		typeof(KickstartCard),
+		typeof(MergerCard),
 		typeof(NumberCruncherCard),
 		typeof(OutsourceCard),
 		typeof(TheWorksCard),
