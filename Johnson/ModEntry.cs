@@ -21,6 +21,7 @@ public sealed class ModEntry : SimpleMod
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
 	internal IDeckEntry JohnsonDeck { get; }
+	internal IStatusEntry CrunchTimeStatus { get; }
 
 	internal ISpriteEntry TemporaryUpgradeIcon { get; }
 	internal ISpriteEntry StrengthenIcon { get; }
@@ -50,6 +51,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
+		typeof(CrunchTimeCard),
 		typeof(DownsizeCard),
 		typeof(Quarter1Card),
 	];
@@ -96,8 +98,9 @@ public sealed class ModEntry : SimpleMod
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
 		);
 
-		_ = new TemporaryUpgradeManager();
+		_ = new CrunchTimeManager();
 		_ = new StrengthenManager();
+		_ = new TemporaryUpgradeManager();
 
 		ASpecificCardOffering.ApplyPatches(Harmony, logger);
 		CustomCardBrowse.ApplyPatches(Harmony, logger);
@@ -115,9 +118,21 @@ public sealed class ModEntry : SimpleMod
 			UpgradableCardsAnywhereBrowseSource,
 			new CustomCardBrowse.CustomCardSource(
 				(_, _, _) => Loc.T("cardBrowse.title.upgrade"),
-				(state, combat) => state.GetAllCards().Where(c => c.IsUpgradable()).ToList()
+				(state, combat) => state.deck.Concat(combat.discard).Concat(combat.hand).Where(c => c.IsUpgradable()).ToList()
 			)
 		);
+
+		CrunchTimeStatus = helper.Content.Statuses.RegisterStatus("CrunchTime", new()
+		{
+			Definition = new()
+			{
+				icon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/CrunchTime.png")).Sprite,
+				color = new("F7883E"),
+				isGood = true
+			},
+			Name = this.AnyLocalizations.Bind(["status", "CrunchTime", "name"]).Localize,
+			Description = this.AnyLocalizations.Bind(["status", "CrunchTime", "description"]).Localize
+		});
 
 		JohnsonDeck = helper.Content.Decks.RegisterDeck("Johnson", new()
 		{
