@@ -29,6 +29,12 @@
             "description": "Each turn, if you have less than 3 <c=card>Burn Outs</c> in hand, gain {0} <c=card>Burn Out(s)</c>."
         }
     },
+    "artifact": {
+        "RAndD": {
+            "name": "R&D",
+            "description": "Each turn, add 1 of 2 <c=cardtrait>temp</c> cards from any of the current crewmates to your <c=keyword>hand</c>."
+        }
+    },
     "card": {
         "BuyLow": {
             "name": "Buy Low",
@@ -85,9 +91,9 @@
         "Mint": {
             "name": "Mint",
             "description": {
-                "None": "Attack for {{Damage}} damage. On kill, make a <c=cardtrait>temp upgrade</c> permanent.",
-                "A": "Attack for {{Damage}} damage. On kill, choose a card in your deck to upgrade.",
-                "B": "Attack for {{Damage}} damage. On kill, make a <c=cardtrait>temp</c> card permanent."
+                "None": "Attack for {{Damage}} dmg. On kill, make a <c=cardtrait>temp upgrade</c> permanent.",
+                "A": "Attack for {{Damage}} dmg. On kill, choose a card in your deck to upgrade.",
+                "B": "Attack for {{Damage}} dmg. On kill, make a <c=cardtrait>temp</c> card permanent."
             }
         },
         "NumberCruncher": {
