@@ -82,6 +82,14 @@
         "Merger": {
             "name": "Merger"
         },
+        "Mint": {
+            "name": "Mint",
+            "description": {
+                "None": "Attack for {{Damage}} damage. On kill, make a <c=cardtrait>temp upgrade</c> permanent.",
+                "A": "Attack for {{Damage}} damage. On kill, choose a card in your deck to upgrade.",
+                "B": "Attack for {{Damage}} damage. On kill, make a <c=cardtrait>temp</c> card permanent."
+            }
+        },
         "NumberCruncher": {
             "name": "Number Cruncher"
         },

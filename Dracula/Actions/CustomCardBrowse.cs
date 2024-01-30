@@ -14,8 +14,8 @@ namespace Shockah.Dracula;
 internal sealed class CustomCardBrowse
 {
 	internal record CustomCardSource(
-		Func<State, Combat, List<Card>, string> TitleProvider,
-		Func<State, Combat, List<Card>> CardProvider
+		Func<State, Combat?, List<Card>, string> TitleProvider,
+		Func<State, Combat?, List<Card>> CardProvider
 	);
 
 	private static readonly Dictionary<CardBrowse.Source, CustomCardSource> CustomCardSources = [];
@@ -70,9 +70,7 @@ internal sealed class CustomCardBrowse
 	{
 		if (!CustomCardSources.TryGetValue(self.browseSource, out var customCardSource))
 			return actions;
-		if (g.state.route is not Combat combat)
-			return actions;
-		return customCardSource.CardProvider(g.state, combat);
+		return customCardSource.CardProvider(g.state, g.state.route as Combat);
 	}
 
 	private static IEnumerable<CodeInstruction> CardBrowse_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
@@ -116,11 +114,9 @@ internal sealed class CustomCardBrowse
 	{
 		if (!CustomCardSources.TryGetValue(self.browseSource, out var customCardSource))
 			return false;
-		if (g.state.route is not Combat combat)
-			return false;
 
-		var cards = customCardSource.CardProvider(g.state, combat);
-		title = customCardSource.TitleProvider(g.state, combat, cards);
+		var cards = customCardSource.CardProvider(g.state, g.state.route as Combat);
+		title = customCardSource.TitleProvider(g.state, g.state.route as Combat, cards);
 		return true;
 	}
 }

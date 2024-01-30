@@ -45,14 +45,14 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 			ExhaustOrSingleUseNonSacrificeBrowseSource,
 			new(
 				(_, _, cards) => ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "ui", "exhaustOrSingleUse"], new { Count = cards.Count }),
-				(_, c) => c.exhausted.Concat(c.GetSingleUseCardsPlayed()).Where(c => c is not SacrificeCard).ToList()
+				(_, c) => (c?.exhausted ?? []).Concat(c?.GetSingleUseCardsPlayed() ?? []).Where(c => c is not SacrificeCard).ToList()
 			)
 		);
 		CustomCardBrowse.RegisterCustomCardSource(
 			HandDrawDiscardNonSacrificeBrowseSource,
 			new(
 				(_, _, cards) => ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "ui", "handDrawDiscard"], new { Count = cards.Count }),
-				(s, c) => s.deck.Concat(c.hand).Concat(c.discard).Where(c => c is not SacrificeCard).ToList()
+				(s, c) => s.deck.Concat(c?.hand ?? []).Concat(c?.discard ?? []).Where(c => c is not SacrificeCard).ToList()
 			)
 		);
 	}

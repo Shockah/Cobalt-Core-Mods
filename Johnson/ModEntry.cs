@@ -12,6 +12,7 @@ public sealed class ModEntry : SimpleMod
 {
 	internal const CardBrowse.Source UpgradableCardsInHandBrowseSource = (CardBrowse.Source)2137301;
 	internal const CardBrowse.Source UpgradableCardsAnywhereBrowseSource = (CardBrowse.Source)2137302;
+	internal const CardBrowse.Source TemporarilyUpgradedCardsBrowseSource = (CardBrowse.Source)2137303;
 
 	internal static ModEntry Instance { get; private set; } = null!;
 
@@ -53,6 +54,7 @@ public sealed class ModEntry : SimpleMod
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
 		typeof(CrunchTimeCard),
 		typeof(DownsizeCard),
+		typeof(MintCard),
 		typeof(Quarter1Card),
 	];
 
@@ -111,14 +113,21 @@ public sealed class ModEntry : SimpleMod
 			UpgradableCardsInHandBrowseSource,
 			new CustomCardBrowse.CustomCardSource(
 				(_, _, _) => Loc.T("cardBrowse.title.upgrade"),
-				(_, combat) => combat.hand.Where(c => c.IsUpgradable()).ToList()
+				(_, combat) => (combat?.hand ?? []).Where(c => c.IsUpgradable()).ToList()
 			)
 		);
 		CustomCardBrowse.RegisterCustomCardSource(
 			UpgradableCardsAnywhereBrowseSource,
 			new CustomCardBrowse.CustomCardSource(
 				(_, _, _) => Loc.T("cardBrowse.title.upgrade"),
-				(state, combat) => state.deck.Concat(combat.discard).Concat(combat.hand).Where(c => c.IsUpgradable()).ToList()
+				(state, combat) => state.deck.Concat(combat?.discard ?? []).Concat(combat?.hand ?? []).Where(c => c.IsUpgradable()).ToList()
+			)
+		);
+		CustomCardBrowse.RegisterCustomCardSource(
+			TemporarilyUpgradedCardsBrowseSource,
+			new CustomCardBrowse.CustomCardSource(
+				(_, _, _) => Loc.T("cardBrowse.title.upgrade"),
+				(state, combat) => state.GetAllCards().Where(c => c.upgrade != Upgrade.None && c.IsTemporarilyUpgraded()).ToList()
 			)
 		);
 

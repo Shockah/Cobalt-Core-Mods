@@ -37,13 +37,7 @@ internal sealed class TemporaryUpgradeManager
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
-			foreach (var card in state.deck)
-			{
-				if (!card.IsTemporarilyUpgraded())
-					continue;
-				card.SetTemporarilyUpgraded(false);
-				card.upgrade = Upgrade.None;
-			}
+			state.rewardsQueue.Queue(new ARemoveTemporaryUpgrades());
 		}, 0);
 	}
 
@@ -125,5 +119,20 @@ internal sealed class TemporaryUpgradeManager
 		}
 
 		__result = ModifyTooltips(__result);
+	}
+
+	public sealed class ARemoveTemporaryUpgrades : CardAction
+	{
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+			foreach (var card in s.GetAllCards())
+			{
+				if (!card.IsTemporarilyUpgraded())
+					continue;
+				card.SetTemporarilyUpgraded(false);
+				card.upgrade = Upgrade.None;
+			}
+		}
 	}
 }
