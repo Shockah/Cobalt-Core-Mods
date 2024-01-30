@@ -44,6 +44,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(ComboAttackCard),
 		typeof(KickstartCard),
 		typeof(NumberCruncherCard),
+		typeof(OutsourceCard),
 		typeof(TheWorksCard),
 	];
 

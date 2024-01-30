@@ -73,6 +73,10 @@
         "NumberCruncher": {
             "name": "Number Cruncher"
         },
+        "Outsource": {
+            "name": "Outsource",
+            "description": "Add 1 of {{Count}} <c=cardtrait>temp</c> cards from any of the current crewmates to <c=keyword>hand</c>."
+        },
         "ProfitMargin": {
             "name": "Profit Margin"
         },
@@ -87,8 +91,8 @@
         "Revamp": {
             "name": "Revamp",
             "description": {
-                "None": "Your left and rightmost card <c=cardtrait>temp upgrade</c> to type A and B respectively.",
-                "A": "Your left and rightmost card <c=cardtrait>temp upgrade</c> to type A and B respectively.",
+                "None": "Your left & rightmost card <c=cardtrait>temp upgrade</c> to type A and B respectively.",
+                "A": "Your left & rightmost card <c=cardtrait>temp upgrade</c> to type A and B respectively.",
                 "B": "<c=cardtrait>Temporarily upgrade</c> your left and rightmost card."
             }
         },
