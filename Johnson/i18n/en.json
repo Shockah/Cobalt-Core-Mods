@@ -46,6 +46,10 @@
             "name": "ESPRESSO SHOT",
             "description": "On your first turn, put a <c=card>Burn Out</c> into your <c=keyword>hand</c>."
         },
+        "JumpTheCurve": {
+            "name": "JUMP THE CURVE",
+            "description": "When a card is added to your deck outside of combat, <c=cardtrait>discount</c> and <c=cardtrait>temporarily upgrade</c> it."
+        },
         "RAndD": {
             "name": "R&D",
             "description": "Each turn, add 1 of 2 <c=cardtrait>temp</c> cards from any of the current crewmates to your <c=keyword>hand</c>."
