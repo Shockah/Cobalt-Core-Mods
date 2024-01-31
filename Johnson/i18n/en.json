@@ -13,6 +13,10 @@
             "description": "This card deals <c=boldPink>{{Damage}}</c> extra damage for the rest of combat."
         }
     },
+    "browseSource": {
+        "UpgradableCardsAnywhereToTypeABrowseSource": "Upgrade a Card to type A",
+        "UpgradableCardsAnywhereToTypeBBrowseSource": "Upgrade a Card to type B"
+    },
     "cardTrait": {
         "temporaryUpgrade": {
             "name": "Temp Upgrade",
@@ -33,6 +37,10 @@
         "Briefcase": {
             "name": "BRIEFCASE",
             "description": "On your first turn, put a <c=card>Bullet Point</c>, <c=card>Slide Transition</c>, <c=card>Leverage</c>, or <c=card>Brainstorm</c> into your <c=keyword>hand</c>."
+        },
+        "Candy": {
+            "name": "CANDY",
+            "description": "Choose 2 unupgraded cards in your deck. Upgrade the first one to type A, and the second to type B."
         },
         "EspressoShot": {
             "name": "ESPRESSO SHOT",

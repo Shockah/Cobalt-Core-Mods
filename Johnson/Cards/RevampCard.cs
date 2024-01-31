@@ -98,6 +98,7 @@ internal sealed class RevampCard : Card, IRegisterable
 			timer = 0;
 			if (s.FindCard(CardId) is not { } card)
 				return;
+			card.SetTemporarilyUpgraded(true);
 			card.upgrade = Upgrade;
 		}
 	}
