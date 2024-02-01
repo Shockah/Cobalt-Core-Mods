@@ -42,17 +42,13 @@ internal sealed class MergerCard : Card, IRegisterable
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		List<CardAction> actions = [
-			new AVariableHint
-			{
-				status = Status.shield,
-			}
-		];
-
-		if (upgrade == Upgrade.A)
+		=> upgrade switch
 		{
-			actions.AddRange([
+			Upgrade.A => [
+				new AVariableHint
+				{
+					status = Status.shield,
+				},
 				new AStrengthen
 				{
 					CardId = uuid,
@@ -62,34 +58,39 @@ internal sealed class MergerCard : Card, IRegisterable
 				new AAttack
 				{
 					damage = GetDmg(s, 1 + (IsDuringTryPlayCard ? s.ship.Get(Status.shield) : 0))
+				},
+				new AStatus
+				{
+					targetPlayer = true,
+					mode = AStatusMode.Set,
+					status = Status.shield,
+					statusAmount = 0
 				}
-			]);
-		}
-		else
-		{
-			actions.AddRange([
+			],
+			_ => [
 				new AAttack
 				{
 					damage = GetDmg(s, 1)
+				},
+				new AVariableHint
+				{
+					status = Status.shield,
 				},
 				new AStrengthen
 				{
 					CardId = uuid,
 					Amount = s.ship.Get(Status.shield),
 					xHint = 1
+				},
+				new AStatus
+				{
+					targetPlayer = true,
+					mode = AStatusMode.Set,
+					status = Status.shield,
+					statusAmount = upgrade == Upgrade.B ? 1 : 0
 				}
-			]);
-		}
-
-		actions.Add(new AStatus
-		{
-			targetPlayer = true,
-			mode = AStatusMode.Set,
-			status = Status.shield,
-			statusAmount = upgrade == Upgrade.B ? 1 : 0
-		});
-		return actions;
-	}
+			]
+		};
 
 	private static void Combat_TryPlayCard_Prefix()
 		=> IsDuringTryPlayCard = true;
