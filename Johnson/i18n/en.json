@@ -165,9 +165,9 @@
         "Revamp": {
             "name": "Revamp",
             "description": {
-                "None": "Your left & rightmost card <c=cardtrait>temp upgrade</c> to type A and B respectively.",
-                "A": "Your left & rightmost card <c=cardtrait>temp upgrade</c> to type A and B respectively.",
-                "B": "<c=cardtrait>Temporarily upgrade</c> your left and rightmost card."
+                "None": "Your left & rightmost card <c=action>temp upgrade</c> to type A and B respectively.",
+                "A": "Your left & rightmost card <c=action>temp upgrade</c> to type A and B respectively.",
+                "B": "<c=action>Temporarily upgrade</c> your left and rightmost card."
             }
         },
         "Strategize": {

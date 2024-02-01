@@ -27,22 +27,23 @@ internal sealed class InvestmentCard : Card, IRegisterable
 		{
 			artTint = "FFFFFF",
 			art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top,
-			cost = upgrade == Upgrade.B ? 1 : 0,
-			floppable = true
+			cost = upgrade == Upgrade.B ? 0 : 1,
+			floppable = true,
+			recycle = upgrade == Upgrade.A
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
 			new AAttack
 			{
-				damage = GetDmg(s, upgrade == Upgrade.None ? 0 : 1),
+				damage = GetDmg(s, upgrade == Upgrade.B ? 0 : 1),
 				disabled = flipped
 			},
 			new ADummyAction(),
 			new AStrengthen
 			{
 				CardId = uuid,
-				Amount = upgrade == Upgrade.B ? 2 : 1,
+				Amount = 2,
 				disabled = !flipped
 			}
 		];

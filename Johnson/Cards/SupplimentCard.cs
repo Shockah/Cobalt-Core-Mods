@@ -66,5 +66,10 @@ internal sealed class SupplimentCard : Card, IRegisterable
 				return;
 			card.discount--;
 		}
+
+		public override List<Tooltip> GetTooltips(State s)
+			=> [
+				new TTGlossary("cardtrait.discount", 1)
+			];
 	}
 }

@@ -66,6 +66,12 @@ internal sealed class RevampCard : Card, IRegisterable
 					Upgrade = Upgrade.B
 				});
 		}
+		actions.Add(new ATooltipAction
+		{
+			Tooltips = [
+				ModEntry.Instance.Api.TemporaryUpgradeTooltip
+			]
+		});
 		return actions;
 	}
 

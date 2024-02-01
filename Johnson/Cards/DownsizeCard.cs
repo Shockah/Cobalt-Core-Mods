@@ -50,6 +50,12 @@ internal sealed class DownsizeCard : Card, IRegisterable
 			if (card is not null)
 				actions.Add(new ATemporarify { CardId = card.uuid });
 		}
+		actions.Add(new ATooltipAction
+		{
+			Tooltips = [
+				new TTGlossary("cardtrait.temporary")
+			]
+		});
 		return actions;
 	}
 

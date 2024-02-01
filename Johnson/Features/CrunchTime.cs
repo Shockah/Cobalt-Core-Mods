@@ -38,7 +38,7 @@ internal sealed class CrunchTimeManager : IStatusRenderHook
 		if (status != ModEntry.Instance.CrunchTimeStatus.Status)
 			return tooltips;
 		return tooltips
-			.Concat(new BurnOutCard().GetAllTooltips(MG.inst.g, DB.fakeState))
+			.Append(new TTCard { card = new BurnOutCard() })
 			.ToList();
 	}
 }
