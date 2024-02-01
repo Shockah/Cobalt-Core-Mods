@@ -23,7 +23,8 @@
     },
     "browseSource": {
         "UpgradableCardsAnywhereToTypeABrowseSource": "Upgrade a Card to type A",
-        "UpgradableCardsAnywhereToTypeBBrowseSource": "Upgrade a Card to type B"
+        "UpgradableCardsAnywhereToTypeBBrowseSource": "Upgrade a Card to type B",
+        "DiscountCardAnywhereBrowseSource": "Discount a Card"
     },
     "cardTrait": {
         "TemporaryUpgrade": {
@@ -49,6 +50,10 @@
         "Candy": {
             "name": "CANDY",
             "description": "Choose 2 unupgraded cards in your deck. Upgrade the first one to type A, and the second to type B."
+        },
+        "Coupon": {
+            "name": "COUPON",
+            "description": "On your first turn, choose a card in your deck. <c=cardtrait>Discount</c> it."
         },
         "EspressoShot": {
             "name": "ESPRESSO SHOT",

@@ -15,6 +15,7 @@ public sealed class ModEntry : SimpleMod
 	internal const CardBrowse.Source TemporarilyUpgradedCardsBrowseSource = (CardBrowse.Source)2137303;
 	internal const CardBrowse.Source UpgradableCardsAnywhereToTypeABrowseSource = (CardBrowse.Source)2137304;
 	internal const CardBrowse.Source UpgradableCardsAnywhereToTypeBBrowseSource = (CardBrowse.Source)2137305;
+	internal const CardBrowse.Source DiscountCardAnywhereBrowseSource = (CardBrowse.Source)2137306;
 
 	internal static ModEntry Instance { get; private set; } = null!;
 
@@ -86,6 +87,7 @@ public sealed class ModEntry : SimpleMod
 	internal static IReadOnlyList<Type> CommonArtifacts { get; } = [
 		typeof(BriefcaseArtifact),
 		typeof(CandyArtifact),
+		typeof(CouponArtifact),
 		typeof(EspressoShotArtifact),
 		typeof(JumpTheCurveArtifact),
 	];
@@ -154,6 +156,13 @@ public sealed class ModEntry : SimpleMod
 			new CustomCardBrowse.CustomCardSource(
 				(_, _, _) => Localizations.Localize(["browseSource", nameof(UpgradableCardsAnywhereToTypeBBrowseSource)]),
 				(state, combat) => state.deck.Concat(combat?.discard ?? []).Concat(combat?.hand ?? []).Where(c => c.IsUpgradable()).ToList()
+			)
+		);
+		CustomCardBrowse.RegisterCustomCardSource(
+			DiscountCardAnywhereBrowseSource,
+			new CustomCardBrowse.CustomCardSource(
+				(_, _, _) => Localizations.Localize(["browseSource", nameof(DiscountCardAnywhereBrowseSource)]),
+				(state, combat) => state.deck.Concat(combat?.discard ?? []).Concat(combat?.hand ?? []).ToList()
 			)
 		);
 
