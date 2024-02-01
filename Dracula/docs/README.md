@@ -17,10 +17,10 @@ Dracula also comes with his own ride -- the **Batmobile**. The Batmobile is an a
 Code and Design by Shockah  
 Art by Arin
 
-[![Card preview screenshot](images/preview-none-thumb.png)](images/preview.png)
+[![Card preview screenshot](images/preview-none-thumb.png)](images/preview-none.png)
 [![Card A upgrade preview screenshot](images/preview-a-thumb.png)](images/preview-a.png)
 [![Card B upgrade preview screenshot](images/preview-b-thumb.png)](images/preview-b.png)
 
 ## See also
-* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fdracula-1.0.0)
+* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fdracula-1.0.1)
 * [Release notes](release-notes.md)
