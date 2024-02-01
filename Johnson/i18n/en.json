@@ -117,9 +117,9 @@
         "Kickstart": {
             "name": "Kickstart",
             "description": {
-                "None": "Choose a card in your <c=keyword>deck</c> to <c=cardtrait>temporarily upgrade</c>.",
-                "A": "Choose 2 cards in your <c=keyword>deck</c> to <c=cardtrait>temporarily upgrade</c>.",
-                "B": "Choose a card in your <c=keyword>deck</c> to <c=cardtrait>discount</c> and <c=cardtrait>temporarily upgrade</c>."
+                "None": "Choose a card in your <c=keyword>deck</c> to <c=cardtrait>temp upgrade</c>.",
+                "A": "Choose a card in your <c=keyword>deck</c> to <c=cardtrait>discount</c> and <c=cardtrait>temp upgrade</c>.",
+                "B": "Choose a card in your <c=keyword>deck</c> to <c=cardtrait>strengthen</c> and <c=cardtrait>temp upgrade</c>."
             }
         },
         "Layout": {

@@ -20,7 +20,10 @@ internal static class StrengthenExt
 		=> ModEntry.Instance.Helper.ModData.SetModData(self, "Strengthen", value);
 
 	public static void AddStrengthen(this Card self, int value)
-		=> self.SetStrengthen(self.GetStrengthen() + value);
+	{
+		if (value != 0)
+			self.SetStrengthen(self.GetStrengthen() + value);
+	}
 }
 
 internal sealed class StrengthenManager
@@ -107,15 +110,6 @@ internal sealed class StrengthenManager
 		if (strengthen <= 0)
 			return;
 
-		CustomTTGlossary MakeTooltip()
-			=> new(
-				CustomTTGlossary.GlossaryType.cardtrait,
-				() => ModEntry.Instance.StrengthenIcon.Sprite,
-				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "Strengthen", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "Strengthen", "description"], new { Damage = strengthen }),
-				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::Strengthen"
-			);
-
 		IEnumerable<Tooltip> ModifyTooltips(IEnumerable<Tooltip> tooltips)
 		{
 			bool yieldedCardTrait = false;
@@ -124,14 +118,14 @@ internal sealed class StrengthenManager
 			{
 				if (!yieldedCardTrait && tooltip is TTGlossary glossary && glossary.key.StartsWith("cardtrait.") && glossary.key != "cardtrait.unplayable")
 				{
-					yield return MakeTooltip();
+					yield return ModEntry.Instance.Api.GetStrengthenTooltip(strengthen);
 					yieldedCardTrait = true;
 				}
 				yield return tooltip;
 			}
 
 			if (!yieldedCardTrait)
-				yield return MakeTooltip();
+				yield return ModEntry.Instance.Api.GetStrengthenTooltip(strengthen);
 		}
 
 		__result = ModifyTooltips(__result);

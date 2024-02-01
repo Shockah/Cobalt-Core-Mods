@@ -11,6 +11,7 @@ public interface IJohnsonApi
 	bool IsTemporarilyUpgraded(Card card);
 	void SetTemporarilyUpgraded(Card card, bool value);
 
+	Tooltip GetStrengthenTooltip(int amount);
 	int GetStrengthen(Card card);
 	void SetStrengthen(Card card, int value);
 	void AddStrengthen(Card card, int value);

@@ -36,22 +36,28 @@ internal sealed class KickstartCard : Card, IRegisterable
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
 		List<CardAction> actions = [];
-		var cardCount = upgrade == Upgrade.A ? 2 : 1;
-		for (var i = 0; i < cardCount; i++)
-			actions.Add(new ACardSelect
+		actions.Add(new ACardSelect
+		{
+			browseSource = ModEntry.UpgradableCardsAnywhereBrowseSource,
+			browseAction = new TemporarilyUpgradeBrowseAction
 			{
-				browseSource = ModEntry.UpgradableCardsAnywhereBrowseSource,
-				browseAction = new TemporarilyUpgradeBrowseAction
-				{
-					Discount = upgrade == Upgrade.B ? -1 : 0
-				},
-				omitFromTooltips = true
+				Discount = upgrade == Upgrade.A ? -1 : 0,
+				Strengthen = upgrade == Upgrade.B ? 1 : 0
+			},
+			omitFromTooltips = true
+		});
+		if (upgrade == Upgrade.A)
+			actions.Add(new ATooltipAction
+			{
+				Tooltips = [
+					new TTGlossary("cardtrait.discount", 1)
+				]
 			});
 		if (upgrade == Upgrade.B)
 			actions.Add(new ATooltipAction
 			{
 				Tooltips = [
-					new TTGlossary("cardtrait.discount", 1)
+					ModEntry.Instance.Api.GetStrengthenTooltip(1)
 				]
 			});
 		actions.Add(new ATooltipAction

@@ -24,6 +24,15 @@ public sealed class ApiImplementation : IJohnsonApi
 	public void SetTemporarilyUpgraded(Card card, bool value)
 		=> card.SetTemporarilyUpgraded(value);
 
+	public Tooltip GetStrengthenTooltip(int amount)
+		=> new CustomTTGlossary(
+			CustomTTGlossary.GlossaryType.cardtrait,
+			() => ModEntry.Instance.StrengthenIcon.Sprite,
+			() => ModEntry.Instance.Localizations.Localize(["cardTrait", "Strengthen", "name"]),
+			() => ModEntry.Instance.Localizations.Localize(["cardTrait", "Strengthen", "description"], new { Damage = amount }),
+			key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::Strengthen"
+		);
+
 	public int GetStrengthen(Card card)
 		=> card.GetStrengthen();
 
