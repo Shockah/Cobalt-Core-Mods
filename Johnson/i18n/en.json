@@ -179,7 +179,7 @@
             }
         },
         "Suppliment": {
-            "name": "Suppliment",
+            "name": "Supplement",
             "description": {
                 "None": "Gain 1 <c=status>shield</c>. <c=cardtrait>Discount</c> your rightmost card.",
                 "A": "Gain 2 <c=status>shield</c>. <c=cardtrait>Discount</c> your rightmost card.",

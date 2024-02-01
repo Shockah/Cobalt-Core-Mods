@@ -248,6 +248,9 @@ public sealed class ModEntry : SimpleMod
 		DiscountHandIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/DiscountHand.png"));
 	}
 
+	public override object? GetApi(IModManifest requestingMod)
+		=> new ApiImplementation();
+
 	internal static Rarity GetCardRarity(Type type)
 	{
 		if (RareCardTypes.Contains(type))
