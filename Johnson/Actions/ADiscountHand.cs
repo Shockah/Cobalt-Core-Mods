@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using FSPRO;
+using System.Collections.Generic;
 
 namespace Shockah.Johnson;
 
@@ -11,6 +12,7 @@ public sealed class ADiscountHand : DynamicWidthCardAction
 		base.Begin(g, s, c);
 		foreach (var card in c.hand)
 			card.discount += Amount;
+		Audio.Play(Event.CardHandling);
 	}
 
 	public override Icon? GetIcon(State s)
@@ -22,7 +24,7 @@ public sealed class ADiscountHand : DynamicWidthCardAction
 				CustomTTGlossary.GlossaryType.action,
 				() => ModEntry.Instance.DiscountHandIcon.Sprite,
 				() => ModEntry.Instance.Localizations.Localize(["action", "DiscountHand", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["action", "DiscountHand", "description"], new { Discount = Amount }),
+				() => ModEntry.Instance.Localizations.Localize(["action", "DiscountHand", "description"], new { Discount = -Amount }),
 				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::DiscountHand"
 			)
 		];

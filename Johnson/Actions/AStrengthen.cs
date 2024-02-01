@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using FSPRO;
+using System.Collections.Generic;
 
 namespace Shockah.Johnson;
 
@@ -14,6 +15,7 @@ public sealed class AStrengthen : CardAction
 		if (s.FindCard(CardId) is not { } card)
 			return;
 		card.AddStrengthen(Amount);
+		Audio.Play(Event.Status_PowerUp);
 	}
 
 	public override Icon? GetIcon(State s)

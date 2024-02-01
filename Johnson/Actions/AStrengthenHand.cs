@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using FSPRO;
+using System.Collections.Generic;
 
 namespace Shockah.Johnson;
 
@@ -11,6 +12,7 @@ public sealed class AStrengthenHand : DynamicWidthCardAction
 		base.Begin(g, s, c);
 		foreach (var card in c.hand)
 			card.AddStrengthen(Amount);
+		Audio.Play(Event.Status_PowerUp);
 	}
 
 	public override Icon? GetIcon(State s)

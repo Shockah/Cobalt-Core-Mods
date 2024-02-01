@@ -10,7 +10,7 @@
     "action": {
         "DiscountHand": {
             "name": "     Discount Hand",
-            "description": "All cards in your hand cost {{Discount}} less energy until played, or until combat ends."
+            "description": "All cards in your hand cost <c=boldPink>{{Discount}}</c> less energy until played, or until combat ends."
         },
         "Strengthen": {
             "name": "Strengthen",

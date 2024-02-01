@@ -35,10 +35,13 @@ internal sealed class PromoteCard : Card, IRegisterable
 	{
 		List<CardAction> actions = [];
 		if (upgrade == Upgrade.B)
-			actions.Add(new ADrawCard
-			{
-				count = 2
-			});
+			actions.AddRange([
+				new ADrawCard
+				{
+					count = 2
+				},
+				new ADelay()
+			]);
 		actions.Add(new ACardSelect
 		{
 			browseSource = ModEntry.UpgradableCardsInHandBrowseSource,
