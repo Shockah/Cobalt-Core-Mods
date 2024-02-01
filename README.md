@@ -36,6 +36,15 @@ The mod adds a new artifact pool: duo artifacts, which are pretty powerful artif
 [![Codex screenshot](DuoArtifacts/docs/images/codex-thumb.png)](DuoArtifacts/docs/images/codex.png)
 [![Reward screenshot](DuoArtifacts/docs/images/reward-thumb.png)](DuoArtifacts/docs/images/reward.png)
 
+# Johnson
+
+**Johnson** -- Your coworker. Capable of *creating* and *improving* cards.  
+\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fjohnson-1.0.0)] \[[release notes](Johnson/docs/release-notes.md)] \[[README/source code](Johnson)]
+
+[![Card preview screenshot](Johnson/docs/images/preview-none-thumb.png)](Johnson/docs/images/preview-none.png)
+[![Card A upgrade preview screenshot](Johnson/docs/images/preview-a-thumb.png)](Johnson/docs/images/preview-a.png)
+[![Card B upgrade preview screenshot](Johnson/docs/images/preview-b-thumb.png)](Johnson/docs/images/preview-b.png)
+
 # Kokoro
 
 Kokoro is a utility/library mod - a little bit for players, and a lot for modders.  
