@@ -29,6 +29,7 @@ public sealed class ModEntry : SimpleMod
 	internal ISpriteEntry TemporaryUpgradeIcon { get; }
 	internal ISpriteEntry StrengthenIcon { get; }
 	internal ISpriteEntry StrengthenHandIcon { get; }
+	internal ISpriteEntry DiscountHandIcon { get; }
 
 	internal static IReadOnlyList<Type> StarterCardTypes { get; } = [
 		typeof(LayoutCard),
@@ -51,6 +52,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(MergerCard),
 		typeof(NumberCruncherCard),
 		typeof(OutsourceCard),
+		typeof(OvertimeCard),
 		typeof(TheWorksCard),
 	];
 
@@ -224,6 +226,7 @@ public sealed class ModEntry : SimpleMod
 		TemporaryUpgradeIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/TemporaryUpgrade.png"));
 		StrengthenIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/Strengthen.png"));
 		StrengthenHandIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/StrengthenHand.png"));
+		DiscountHandIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/DiscountHand.png"));
 	}
 
 	internal static Rarity GetCardRarity(Type type)

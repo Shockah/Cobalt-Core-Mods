@@ -8,6 +8,10 @@
         ]
     },
     "action": {
+        "DiscountHand": {
+            "name": "     Discount Hand",
+            "description": "All cards in your hand cost {{Discount}} less energy until played, or until combat ends."
+        },
         "Strengthen": {
             "name": "Strengthen",
             "description": "This card deals <c=boldPink>{{Damage}}</c> extra damage for the rest of combat."
@@ -129,6 +133,9 @@
         "Outsource": {
             "name": "Outsource",
             "description": "Add 1 of {{Count}} <c=cardtrait>temp</c> cards from any of the current crewmates to <c=keyword>hand</c>."
+        },
+        "Overtime": {
+            "name": "Overtime"
         },
         "ProfitMargin": {
             "name": "Profit Margin"
