@@ -24,8 +24,8 @@ public sealed class AStrengthen : CardAction
 			new CustomTTGlossary(
 				CustomTTGlossary.GlossaryType.action,
 				() => ModEntry.Instance.StrengthenIcon.Sprite,
-				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "strengthen", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "strengthen", "description"], new { Damage = Amount }),
+				() => ModEntry.Instance.Localizations.Localize(["action", "Strengthen", "name"]),
+				() => ModEntry.Instance.Localizations.Localize(["action", "Strengthen", "description"], new { Damage = Amount }),
 				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::Strengthen"
 			)
 		];

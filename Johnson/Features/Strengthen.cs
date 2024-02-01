@@ -111,8 +111,8 @@ internal sealed class StrengthenManager
 			=> new(
 				CustomTTGlossary.GlossaryType.cardtrait,
 				() => ModEntry.Instance.StrengthenIcon.Sprite,
-				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "strengthen", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "strengthen", "description"], new { Damage = strengthen }),
+				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "Strengthen", "name"]),
+				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "Strengthen", "description"], new { Damage = strengthen }),
 				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::Strengthen"
 			);
 

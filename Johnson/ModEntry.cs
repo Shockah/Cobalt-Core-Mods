@@ -28,6 +28,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal ISpriteEntry TemporaryUpgradeIcon { get; }
 	internal ISpriteEntry StrengthenIcon { get; }
+	internal ISpriteEntry StrengthenHandIcon { get; }
 
 	internal static IReadOnlyList<Type> StarterCardTypes { get; } = [
 		typeof(LayoutCard),
@@ -54,6 +55,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
+		typeof(CapitalGainCard),
 		typeof(CrunchTimeCard),
 		typeof(DownsizeCard),
 		typeof(MintCard),
@@ -111,6 +113,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new StrengthenManager();
 		_ = new TemporaryUpgradeManager();
 
+		DynamicWidthCardAction.ApplyPatches(Harmony, logger);
 		ASpecificCardOffering.ApplyPatches(Harmony, logger);
 		CustomCardBrowse.ApplyPatches(Harmony, logger);
 		CustomTTGlossary.ApplyPatches(Harmony);
@@ -220,6 +223,7 @@ public sealed class ModEntry : SimpleMod
 
 		TemporaryUpgradeIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/TemporaryUpgrade.png"));
 		StrengthenIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/Strengthen.png"));
+		StrengthenHandIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/StrengthenHand.png"));
 	}
 
 	internal static Rarity GetCardRarity(Type type)

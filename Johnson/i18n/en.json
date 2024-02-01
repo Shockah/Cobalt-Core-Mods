@@ -8,9 +8,13 @@
         ]
     },
     "action": {
-        "strengthen": {
+        "Strengthen": {
             "name": "Strengthen",
             "description": "This card deals <c=boldPink>{{Damage}}</c> extra damage for the rest of combat."
+        },
+        "StrengthenHand": {
+            "name": "     Strengthen Hand",
+            "description": "All cards in your hand deal <c=boldPink>{{Damage}}</c> extra damage for the rest of combat."
         }
     },
     "browseSource": {
@@ -18,11 +22,11 @@
         "UpgradableCardsAnywhereToTypeBBrowseSource": "Upgrade a Card to type B"
     },
     "cardTrait": {
-        "temporaryUpgrade": {
+        "TemporaryUpgrade": {
             "name": "Temp Upgrade",
             "description": "This card becomes unupgraded at the end of combat."
         },
-        "strengthen": {
+        "Strengthen": {
             "name": "Strengthen",
             "description": "This card deals <c=boldPink>{{Damage}}</c> extra damage for the rest of combat."
         }
@@ -71,6 +75,9 @@
                 "A": "Add 3 <c=card>Burn Outs</c> to your <c=keyword>hand</c>.",
                 "B": "Add 4 <c=card>Burn Outs</c> to your <c=keyword>hand</c>."
             }
+        },
+        "CapitalGain": {
+            "name": "Capital Gain"
         },
         "ComboAttack": {
             "name": "Combo Attack"

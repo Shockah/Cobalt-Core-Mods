@@ -96,8 +96,8 @@ internal sealed class TemporaryUpgradeManager
 			=> new(
 				CustomTTGlossary.GlossaryType.cardtrait,
 				() => ModEntry.Instance.TemporaryUpgradeIcon.Sprite,
-				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "temporaryUpgrade", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "temporaryUpgrade", "description"])
+				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "TemporaryUpgrade", "name"]),
+				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "TemporaryUpgrade", "description"])
 			);
 
 		static IEnumerable<Tooltip> ModifyTooltips(IEnumerable<Tooltip> tooltips)
