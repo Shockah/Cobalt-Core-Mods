@@ -1,7 +1,7 @@
 {
     "UniqueName": "Shockah.Johnson",
-    "Version": "0.1.0",
-    "RequiredApiVersion": "0.4.3",
+    "Version": "1.0.0",
+    "RequiredApiVersion": "0.5.0",
     "EntryPointAssembly": "Johnson.dll",
     "LoadPhase": "AfterDbInit",
     "Dependencies": [
