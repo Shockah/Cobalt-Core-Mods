@@ -33,6 +33,8 @@ internal sealed class JumpTheCurveArtifact : Artifact, IRegisterable
 
 	private static void State_SendCardToDeck_Postfix(State __instance, Card card)
 	{
+		if (__instance.IsOutsideRun())
+			return;
 		if (__instance.route is Combat combat && !combat.EitherShipIsDead(__instance))
 			return;
 
