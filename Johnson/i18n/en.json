@@ -59,6 +59,15 @@
             "name": "ESPRESSO SHOT",
             "description": "On your first turn, put a <c=card>Burn Out</c> into your <c=keyword>hand</c>."
         },
+        "Frugality": {
+            "name": "FRUGALITY",
+            "description": "Gain 1 extra energy every turn. <c=downside>You can no longer visit repair yards.</c>",
+            "dialogue": [
+                "A penny saved is a penny earned.",
+                "No time to stop, we're very busy.",
+                "I'd rather not."
+            ]
+        },
         "JumpTheCurve": {
             "name": "JUMP THE CURVE",
             "description": "When a card is added to your deck outside of combat, <c=cardtrait>discount</c> and <c=cardtrait>temporarily upgrade</c> it."
