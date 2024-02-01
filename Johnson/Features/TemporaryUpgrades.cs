@@ -92,14 +92,6 @@ internal sealed class TemporaryUpgradeManager
 		if (__instance.upgrade == Upgrade.None || !__instance.IsTemporarilyUpgraded())
 			return;
 
-		static CustomTTGlossary MakeTooltip()
-			=> new(
-				CustomTTGlossary.GlossaryType.cardtrait,
-				() => ModEntry.Instance.TemporaryUpgradeIcon.Sprite,
-				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "TemporaryUpgrade", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["cardTrait", "TemporaryUpgrade", "description"])
-			);
-
 		static IEnumerable<Tooltip> ModifyTooltips(IEnumerable<Tooltip> tooltips)
 		{
 			bool yieldedCardTrait = false;
@@ -108,14 +100,14 @@ internal sealed class TemporaryUpgradeManager
 			{
 				if (!yieldedCardTrait && tooltip is TTGlossary glossary && glossary.key.StartsWith("cardtrait.") && glossary.key != "cardtrait.unplayable")
 				{
-					yield return MakeTooltip();
+					yield return ModEntry.Instance.Api.TemporaryUpgradeTooltip;
 					yieldedCardTrait = true;
 				}
 				yield return tooltip;
 			}
 
 			if (!yieldedCardTrait)
-				yield return MakeTooltip();
+				yield return ModEntry.Instance.Api.TemporaryUpgradeTooltip;
 		}
 
 		__result = ModifyTooltips(__result);

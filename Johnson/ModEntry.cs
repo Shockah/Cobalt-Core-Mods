@@ -18,6 +18,7 @@ public sealed class ModEntry : SimpleMod
 	internal const CardBrowse.Source DiscountCardAnywhereBrowseSource = (CardBrowse.Source)2137306;
 
 	internal static ModEntry Instance { get; private set; } = null!;
+	internal readonly IJohnsonApi Api = new ApiImplementation();
 
 	internal Harmony Harmony { get; }
 	internal IKokoroApi KokoroApi { get; }
@@ -33,8 +34,8 @@ public sealed class ModEntry : SimpleMod
 	internal ISpriteEntry DiscountHandIcon { get; }
 
 	internal static IReadOnlyList<Type> StarterCardTypes { get; } = [
+		typeof(KickstartCard),
 		typeof(LayoutCard),
-		typeof(PromoteCard),
 	];
 
 	internal static IReadOnlyList<Type> CommonCardTypes { get; } = [
@@ -49,11 +50,11 @@ public sealed class ModEntry : SimpleMod
 
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
 		typeof(ComboAttackCard),
-		typeof(KickstartCard),
 		typeof(MergerCard),
 		typeof(NumberCruncherCard),
 		typeof(OutsourceCard),
 		typeof(OvertimeCard),
+		typeof(PromoteCard),
 		typeof(TheWorksCard),
 	];
 

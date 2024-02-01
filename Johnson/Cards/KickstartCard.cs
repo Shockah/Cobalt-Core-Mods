@@ -27,9 +27,9 @@ internal sealed class KickstartCard : Card, IRegisterable
 		=> new()
 		{
 			artTint = "FFFFFF",
-			cost = upgrade == Upgrade.B ? 1 : 0,
+			cost = 0,
 			buoyant = true,
-			exhaust = upgrade != Upgrade.B,
+			exhaust = true,
 			description = ModEntry.Instance.Localizations.Localize(["card", "Kickstart", "description", upgrade.ToString()])
 		};
 
@@ -41,9 +41,25 @@ internal sealed class KickstartCard : Card, IRegisterable
 			actions.Add(new ACardSelect
 			{
 				browseSource = ModEntry.UpgradableCardsAnywhereBrowseSource,
-				browseAction = new TemporarilyUpgradeBrowseAction(),
+				browseAction = new TemporarilyUpgradeBrowseAction
+				{
+					Discount = upgrade == Upgrade.B ? -1 : 0
+				},
 				omitFromTooltips = true
 			});
+		if (upgrade == Upgrade.B)
+			actions.Add(new ATooltipAction
+			{
+				Tooltips = [
+					new TTGlossary("cardtrait.discount", 1)
+				]
+			});
+		actions.Add(new ATooltipAction
+		{
+			Tooltips = [
+				ModEntry.Instance.Api.TemporaryUpgradeTooltip
+			]
+		});
 		return actions;
 	}
 }

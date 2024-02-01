@@ -48,6 +48,12 @@ internal sealed class PromoteCard : Card, IRegisterable
 			browseAction = new TemporarilyUpgradeBrowseAction(),
 			omitFromTooltips = true
 		});
+		actions.Add(new ATooltipAction
+		{
+			Tooltips = [
+				ModEntry.Instance.Api.TemporaryUpgradeTooltip
+			]
+		});
 		return actions;
 	}
 }
