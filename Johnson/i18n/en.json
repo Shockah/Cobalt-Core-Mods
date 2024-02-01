@@ -117,9 +117,9 @@
         "Kickstart": {
             "name": "Kickstart",
             "description": {
-                "None": "Choose a card in your <c=keyword>deck</c> to <c=action>temporarily upgrade</c>.",
-                "A": "Choose 2 cards in your <c=keyword>deck</c> to <c=action>temporarily upgrade</c>.",
-                "B": "Choose a card in your <c=keyword>deck</c> to <c=cardtrait>discount</c> and <c=action>temporarily upgrade</c>."
+                "None": "Choose a card in your <c=keyword>deck</c> to <c=cardtrait>temporarily upgrade</c>.",
+                "A": "Choose 2 cards in your <c=keyword>deck</c> to <c=cardtrait>temporarily upgrade</c>.",
+                "B": "Choose a card in your <c=keyword>deck</c> to <c=cardtrait>discount</c> and <c=cardtrait>temporarily upgrade</c>."
             }
         },
         "Layout": {
@@ -157,17 +157,17 @@
         "Promote": {
             "name": "Promote",
             "description": {
-                "None": "Choose a card in your <c=keyword>hand</c> to <c=action>temporarily upgrade</c>.",
-                "A": "Choose a card in your <c=keyword>hand</c> to <c=action>temporarily upgrade</c>.",
-                "B": "Draw 2, then choose a card in your <c=keyword>hand</c> to <c=action>temporarily upgrade</c>."
+                "None": "Choose a card in your <c=keyword>hand</c> to <c=cardtrait>temporarily upgrade</c>.",
+                "A": "Choose a card in your <c=keyword>hand</c> to <c=cardtrait>temporarily upgrade</c>.",
+                "B": "Draw 2, then choose a card in your <c=keyword>hand</c> to <c=cardtrait>temporarily upgrade</c>."
             }
         },
         "Revamp": {
             "name": "Revamp",
             "description": {
-                "None": "Your left & rightmost card <c=action>temp upgrade</c> to type A and B respectively.",
-                "A": "Your left & rightmost card <c=action>temp upgrade</c> to type A and B respectively.",
-                "B": "<c=action>Temporarily upgrade</c> your left and rightmost card."
+                "None": "Your left & rightmost card <c=cardtrait>temp upgrade</c> to type A and B respectively.",
+                "A": "Your left & rightmost card <c=cardtrait>temp upgrade</c> to type A and B respectively.",
+                "B": "<c=cardtrait>Temporarily upgrade</c> your left and rightmost card."
             }
         },
         "Strategize": {

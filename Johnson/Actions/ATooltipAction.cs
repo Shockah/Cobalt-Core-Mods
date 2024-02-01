@@ -5,7 +5,7 @@ namespace Shockah.Johnson;
 
 internal sealed class ATooltipAction : ADummyAction
 {
-	[JsonProperty]
+	[JsonIgnore]
 	public List<Tooltip>? Tooltips;
 
 	public override void Begin(G g, State s, Combat c)
