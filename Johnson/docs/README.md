@@ -17,5 +17,5 @@ Art and Design by Soggoru Waffle
 [![Card B upgrade preview screenshot](images/preview-b-thumb.png)](images/preview-b.png)
 
 ## See also
-* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fjohnson-1.0.0)
+* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fjohnson-1.0.1)
 * [Release notes](release-notes.md)
