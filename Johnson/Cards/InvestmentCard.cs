@@ -28,15 +28,19 @@ internal sealed class InvestmentCard : Card, IRegisterable
 			artTint = "FFFFFF",
 			art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top,
 			cost = upgrade == Upgrade.B ? 0 : 1,
-			floppable = true,
-			recycle = upgrade == Upgrade.A
+			floppable = true
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
 			new AAttack
 			{
-				damage = GetDmg(s, upgrade == Upgrade.B ? 0 : 1),
+				damage = GetDmg(s, upgrade switch
+				{
+					Upgrade.A => 2,
+					Upgrade.B => 0,
+					_ => 1
+				}),
 				disabled = flipped
 			},
 			new ADummyAction(),

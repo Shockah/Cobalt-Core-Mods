@@ -44,7 +44,8 @@ internal sealed class Quarter1Card : Card, IRegisterable
 				new AAddCard
 				{
 					destination = CardDestination.Discard,
-					card = new Quarter2Card()
+					card = new Quarter2Card(),
+					omitFromTooltips = true
 				}
 			],
 			_ => [

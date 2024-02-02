@@ -42,8 +42,10 @@ internal sealed class MintCard : Card, IRegisterable
 					{
 						Action = upgrade switch
 						{
-							Upgrade.A => new AUpgradeCardSelect
+							Upgrade.A => new ACardSelect
 							{
+								browseSource = ModEntry.NonPermanentlyUpgradedCardsBrowseSource,
+								browseAction = new UpgradeNonPermanentlyUpgradedCardBrowseAction(),
 								allowCancel = true
 							},
 							Upgrade.B => new ACardSelect
@@ -51,18 +53,37 @@ internal sealed class MintCard : Card, IRegisterable
 								browseSource = CardBrowse.Source.Deck,
 								browseAction = new ChooseACardToMakePermanent(),
 								filterTemporary = true,
-								allowCloseOverride = true
+								allowCloseOverride = true,
+								allowCancel = true
 							},
 							_ => new ACardSelect
 							{
 								browseSource = ModEntry.TemporarilyUpgradedCardsBrowseSource,
-								browseAction = new MakeUpgradePermanentBrowseAction()
+								browseAction = new MakeUpgradePermanentBrowseAction(),
+								allowCancel = true
 							},
 						}
 					}
 				]
 			}
 		];
+
+	public sealed class UpgradeNonPermanentlyUpgradedCardBrowseAction : CardAction
+	{
+		public override Route? BeginWithRoute(G g, State s, Combat c)
+		{
+			timer = 0;
+			var baseResult = base.BeginWithRoute(g, s, c);
+			if (selectedCard is null)
+				return baseResult;
+
+			selectedCard.SetTemporarilyUpgraded(false);
+			return new CardUpgrade
+			{
+				cardCopy = Mutil.DeepCopy(selectedCard)
+			};
+		}
+	}
 
 	public sealed class MakeUpgradePermanentBrowseAction : CardAction
 	{

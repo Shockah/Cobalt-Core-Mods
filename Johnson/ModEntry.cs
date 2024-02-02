@@ -16,6 +16,7 @@ public sealed class ModEntry : SimpleMod
 	internal const CardBrowse.Source UpgradableCardsAnywhereToTypeABrowseSource = (CardBrowse.Source)2137304;
 	internal const CardBrowse.Source UpgradableCardsAnywhereToTypeBBrowseSource = (CardBrowse.Source)2137305;
 	internal const CardBrowse.Source DiscountCardAnywhereBrowseSource = (CardBrowse.Source)2137306;
+	internal const CardBrowse.Source NonPermanentlyUpgradedCardsBrowseSource = (CardBrowse.Source)2137307;
 
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly IJohnsonApi Api = new ApiImplementation();
@@ -165,6 +166,13 @@ public sealed class ModEntry : SimpleMod
 			new CustomCardBrowse.CustomCardSource(
 				(_, _, _) => Localizations.Localize(["browseSource", nameof(DiscountCardAnywhereBrowseSource)]),
 				(state, combat) => state.deck.Concat(combat?.discard ?? []).Concat(combat?.hand ?? []).ToList()
+			)
+		);
+		CustomCardBrowse.RegisterCustomCardSource(
+			NonPermanentlyUpgradedCardsBrowseSource,
+			new CustomCardBrowse.CustomCardSource(
+				(_, _, _) => Loc.T("cardBrowse.title.upgrade"),
+				(state, combat) => state.deck.Concat(combat?.discard ?? []).Concat(combat?.hand ?? []).Where(c => c.upgrade == Upgrade.None || c.IsTemporarilyUpgraded()).ToList()
 			)
 		);
 
