@@ -61,7 +61,7 @@
         },
         "Frugality": {
             "name": "FRUGALITY",
-            "description": "Gain 1 extra energy every turn. <c=downside>You can no longer visit repair yards.</c>",
+            "description": "Gain 1 extra <c=energy>ENERGY</c> every turn. <c=downside>You can no longer visit repair yards.</c>",
             "dialogue": [
                 "A penny saved is a penny earned.",
                 "No time to stop, we're very busy.",
