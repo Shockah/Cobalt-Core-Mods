@@ -22,5 +22,5 @@ Art by Arin
 [![Card B upgrade preview screenshot](images/preview-b-thumb.png)](images/preview-b.png)
 
 ## See also
-* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fdracula-1.0.1)
+* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fdracula-1.0.2)
 * [Release notes](release-notes.md)
