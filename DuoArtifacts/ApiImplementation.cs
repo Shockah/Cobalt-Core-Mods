@@ -22,6 +22,15 @@ public sealed class ApiImplementation : IApi
 	public ExternalDeck ComboArtifactDeck
 		=> Database.ComboArtifactDeck;
 
+	public Deck DuoArtifactVanillaDeck
+		=> (Deck)Database.DuoArtifactDeck.Id!.Value;
+
+	public Deck TrioArtifactVanillaDeck
+		=> (Deck)Database.TrioArtifactDeck.Id!.Value;
+
+	public Deck ComboArtifactVanillaDeck
+		=> (Deck)Database.ComboArtifactDeck.Id!.Value;
+
 	public DuoArtifactEligibity GetDuoArtifactEligibity(Deck deck, State state)
 		=> ModEntry.Instance.GetDuoArtifactEligibity(deck, state);
 

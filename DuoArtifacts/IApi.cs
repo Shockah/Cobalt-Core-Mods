@@ -10,6 +10,10 @@ public interface IApi
 	ExternalDeck TrioArtifactDeck { get; }
 	ExternalDeck ComboArtifactDeck { get; }
 
+	Deck DuoArtifactVanillaDeck { get; }
+	Deck TrioArtifactVanillaDeck { get; }
+	Deck ComboArtifactVanillaDeck { get; }
+
 	DuoArtifactEligibity GetDuoArtifactEligibity(Deck deck, State state);
 
 	bool IsDuoArtifactType(Type type);
