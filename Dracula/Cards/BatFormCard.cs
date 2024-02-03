@@ -104,7 +104,7 @@ internal sealed class BatFormCard : Card, IDraculaCard
 			art = upgrade == Upgrade.B
 				? TriadArt[FlipIndex].Sprite
 				: QuadArt[FlipIndex].Sprite,
-			cost = upgrade == Upgrade.A ? 0 : 1,
+			cost = upgrade == Upgrade.None ? 1 : 0,
 			floppable = true
 		};
 

@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Alternative starters for the [More Difficulty Options](https://github.com/TheJazMaster/MoreDifficulties) mod.
+* Bat Form B now costs 0.
 
 ## 1.0.1
 Released 1 February 2024.
