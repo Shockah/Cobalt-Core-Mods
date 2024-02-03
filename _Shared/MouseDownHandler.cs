@@ -2,14 +2,9 @@ using System;
 
 namespace Shockah.Shared;
 
-internal sealed class MouseDownHandler : OnMouseDown
+internal sealed class MouseDownHandler(Action @delegate) : OnMouseDown
 {
-	private readonly Action Delegate;
-
-	public MouseDownHandler(Action @delegate)
-	{
-		this.Delegate = @delegate;
-	}
+	private readonly Action Delegate = @delegate;
 
 	public void OnMouseDown(G g, Box b)
 		=> Delegate();

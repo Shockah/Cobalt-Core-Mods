@@ -10,7 +10,7 @@ internal static class ArtifactRewardPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private static readonly List<Artifact> RerolledArtifacts = new();
+	private static readonly List<Artifact> RerolledArtifacts = [];
 
 	public static void Apply(Harmony harmony)
 	{
@@ -64,6 +64,20 @@ internal static class ArtifactRewardPatches
 		if (artifact is null || artifact.RerollsLeft <= 0)
 			return;
 
-		SharedArt.ButtonText(g, new Vec(210, 228), (UIKey)(UK)21370001, I18n.RerollButton, null, null, inactive: artifact.RerollsLeft <= 0, new MouseDownHandler(() => Reroll(__instance, g)), platformButtonHint: Btn.Y);
+		SharedArt.ButtonText(
+			g,
+			new Vec(210, 228),
+			(UIKey)(UK)21370001,
+			I18n.RerollButton,
+			inactive: artifact.RerollsLeft <= 0,
+			onMouseDown: new MouseDownHandler(() => Reroll(__instance, g)),
+			platformButtonHint: Btn.Y
+		);
+		if (g.boxes.FirstOrDefault(b => b.key == new UIKey((UK)21370001)) is { } box)
+			box.onInputPhase = new InputPhaseHandler(() =>
+			{
+				if (Input.GetGpDown(Btn.Y))
+					Reroll(__instance, g);
+			});
 	}
 }

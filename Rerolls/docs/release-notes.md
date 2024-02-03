@@ -2,6 +2,10 @@
 
 # Release notes
 
+## 1.0.3
+
+* The Y controller button now correctly does the Reroll functionality.
+
 ## 1.0.2
 Released 15 December 2023.
 
