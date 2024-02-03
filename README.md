@@ -31,7 +31,7 @@ Dracula also comes with his own ride -- the **Batmobile**.
 # Duo Artifacts
 
 The mod adds a new artifact pool: duo artifacts, which are pretty powerful artifacts, synergizing between two different crew members.  
-\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fduo-artifacts-1.0.3)] \[[release notes](DuoArtifacts/docs/release-notes.md)] \[[README/source code](DuoArtifacts)]
+\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fduo-artifacts-1.0.4)] \[[release notes](DuoArtifacts/docs/release-notes.md)] \[[README/source code](DuoArtifacts)]
 
 [![Codex screenshot](DuoArtifacts/docs/images/codex-thumb.png)](DuoArtifacts/docs/images/codex.png)
 [![Reward screenshot](DuoArtifacts/docs/images/reward-thumb.png)](DuoArtifacts/docs/images/reward.png)
