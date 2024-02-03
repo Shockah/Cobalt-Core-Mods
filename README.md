@@ -11,13 +11,6 @@ Displays a "NEW!" indicator next to cards and artifacts you've never picked (whi
 [![Artifact reward screenshot](CodexHelper/docs/images/artifact-reward-thumb.png)](CodexHelper/docs/images/artifact-reward.png)
 [![New run difficulties screenshot](CodexHelper/docs/images/new-run-difficulties-thumb.png)](CodexHelper/docs/images/new-run-difficulties.png)
 
-# Crew Selection Helper
-
-Improves the user experience while having installed multiple new character mods.  
-\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fcrew-selection-helper-1.0.0)] \[[release notes](CrewSelectionHelper/docs/release-notes.md)] \[[README/source code](CrewSelectionHelper)]
-
-[![Crew selection screenshot](CrewSelectionHelper/docs/images/crew-selection-thumb.png)](CrewSelectionHelper/docs/images/crew-selection.png)
-
 # Dracula
 
 **Dracula** -- A so-called "last living human". His cards often *self-hurt*, but they also often *heal*.  
