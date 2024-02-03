@@ -40,11 +40,11 @@ internal sealed class StrengthenManager
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
 			postfix: new HarmonyMethod(GetType(), nameof(Card_GetAllTooltips_Postfix))
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
-			postfix: new HarmonyMethod(GetType(), nameof(Card_GetActionsOverridden_Postfix))
-		);
+
+		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.ModifyBaseDamage), (Card? card) =>
+		{
+			return card?.GetStrengthen() ?? 0;
+		}, 0);
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
@@ -129,17 +129,5 @@ internal sealed class StrengthenManager
 		}
 
 		__result = ModifyTooltips(__result);
-	}
-
-	private static void Card_GetActionsOverridden_Postfix(Card __instance, ref List<CardAction> __result)
-	{
-		var strengthen = __instance.GetStrengthen();
-		if (strengthen <= 0)
-			return;
-
-		foreach (var baseAction in __result)
-			foreach (var wrappedAction in ModEntry.Instance.KokoroApi.Actions.GetWrappedCardActionsRecursively(baseAction))
-				if (wrappedAction is AAttack attack)
-					attack.damage += strengthen;
 	}
 }

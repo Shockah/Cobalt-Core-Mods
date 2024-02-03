@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming version
+
+* Fixed Strengthen not updating text card attacks visually.
+
 ## 1.0.2
 Released 2 February 2024.
 
