@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming release
+
+* Now comes with a `nickel.json` file.
+* Compatibility with the [More Difficulty Options](https://github.com/TheJazMaster/MoreDifficulties) mod.
+
 ## 1.0.3
 Released 6 January 2024.
 

@@ -189,7 +189,7 @@ internal static class ArtifactRewardPatches
 
 	private static void ArtifactReward_OnMouseDown_Postfix(ArtifactReward __instance, G g, Box b)
 	{
-		var index = b.key?.ValueFor(StableUKs.artifactReward_artifact);
+		var index = b.key?.ValueFor(StableUK.artifactReward_artifact);
 		if (index is null)
 			return;
 

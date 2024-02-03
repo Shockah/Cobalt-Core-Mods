@@ -1,12 +1,6 @@
 ﻿using HarmonyLib;
-using Microsoft.Extensions.Logging;
-using Nanoray.Shrike.Harmony;
-using Nanoray.Shrike;
 using Shockah.Shared;
-using System;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Reflection;
+using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
@@ -18,13 +12,13 @@ internal static class CharacterPatches
 	{
 		harmony.TryPatch(
 			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Character), nameof(Character.GetDisplayName), new Type[] { typeof(string), typeof(State) }),
+			original: () => AccessTools.DeclaredMethod(typeof(Character), nameof(Character.GetDisplayName), [typeof(string), typeof(State)]),
 			postfix: new HarmonyMethod(typeof(CharacterPatches), nameof(Character_GetDisplayName_Postfix))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Character), nameof(Character.Render)),
-			transpiler: new HarmonyMethod(typeof(CharacterPatches), nameof(Character_Render_Transpiler))
+			postfix: new HarmonyMethod(typeof(CharacterPatches), nameof(Character_Render_Postfix))
 		);
 	}
 
@@ -38,41 +32,15 @@ internal static class CharacterPatches
 			__result = I18n.ComboArtifactDeckName;
 	}
 
-	private static IEnumerable<CodeInstruction> Character_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	private static void Character_Render_Postfix(Character __instance, G g, bool mini, bool renderLocked, bool canFocus, bool showTooltips)
 	{
-		try
-		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
-					ILMatches.Ldarg(1),
-					ILMatches.Ldfld("tooltips"),
-					ILMatches.Ldloc<Vec>(originalMethod).CreateLdlocInstruction(out var ldlocPos)
-				)
-				.Find(
-					ILMatches.Call("AddGlossary"),
-					ILMatches.Ldarg(10),
-					ILMatches.Brfalse
-				)
-				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Ldarg_1),
-					ldlocPos,
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CharacterPatches), nameof(Character_Render_Transpiler_AddDuoTooltips)))
-				)
-				.AllElements();
-		}
-		catch (Exception ex)
-		{
-			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
-			return instructions;
-		}
-	}
+		if (!showTooltips || !canFocus || renderLocked || __instance.deckType is not { } deck)
+			return;
 
-	private static void Character_Render_Transpiler_AddDuoTooltips(Character character, G g, Vec pos)
-	{
-		if (character.deckType is not { } deck)
+		var key = new UIKey(mini ? StableUK.char_mini : StableUK.character, (int)deck, __instance.type);
+		if (g.boxes.FirstOrDefault(b => b.key == key) is not { } box)
+			return;
+		if (!box.IsHover())
 			return;
 
 		switch (ModEntry.Instance.GetDuoArtifactEligibity(deck, g.state))
@@ -81,13 +49,13 @@ internal static class CharacterPatches
 			case DuoArtifactEligibity.RequirementsNotSatisfied:
 				break;
 			case DuoArtifactEligibity.NoDuosForThisCharacter:
-				g.tooltips.AddText(pos, I18n.CharacterEligibleForDuoArtifactNoDuos);
+				g.tooltips.AddText(g.tooltips.pos, I18n.CharacterEligibleForDuoArtifactNoDuos);
 				break;
 			case DuoArtifactEligibity.NoDuosForThisCrew:
-				g.tooltips.AddText(pos, I18n.CharacterEligibleForDuoArtifactNoMatchingDuos);
+				g.tooltips.AddText(g.tooltips.pos, I18n.CharacterEligibleForDuoArtifactNoMatchingDuos);
 				break;
 			case DuoArtifactEligibity.Eligible:
-				g.tooltips.AddText(pos, I18n.CharacterEligibleForDuoArtifact);
+				g.tooltips.AddText(g.tooltips.pos, I18n.CharacterEligibleForDuoArtifact);
 				break;
 		}
 	}
