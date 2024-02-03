@@ -18,8 +18,8 @@
 		<PackageReference Condition="!$(IsLegacyMod)" Include="MakeTypesPublic" Version="1.0.3" PrivateAssets="All" ExcludeAssets="runtime" />
 		<PackageReference Condition="$(IsLegacyMod)" Include="Shrike" Version="3.0.0" />
 		<PackageReference Condition="$(IsLegacyMod)" Include="Shrike.Harmony" Version="3.0.0" />
-		<PackageReference Condition="$(IsLegacyMod)" Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" PrivateAssets="all" />
-		<PackageReference Condition="$(IsLegacyMod)" Include="Lib.Harmony" Version="2.2.2" PrivateAssets="all" />
+		<PackageReference Condition="$(IsLegacyMod)" Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" PrivateAssets="all" ExcludeAssets="runtime" />
+		<PackageReference Condition="$(IsLegacyMod)" Include="Lib.Harmony" Version="2.2.2" PrivateAssets="all" ExcludeAssets="runtime" />
 		<PackageReference Include="EnumByNameSourceGenerator" Version="1.1.1" PrivateAssets="All" ExcludeAssets="runtime" />
 	</ItemGroup>
 </Project>
