@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
+using Nickel.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -372,6 +373,17 @@ public sealed class ModEntry : SimpleMod
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
+
+		helper.ModRegistry.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", new SemanticVersion(1, 3, 0))?.RegisterAltStarters(
+			deck: DraculaDeck.Deck,
+			starterDeck: new StarterDeck
+			{
+				cards = [
+					new SummonBatCard(),
+					new BatFormCard()
+				]
+			}
+		);
 	}
 
 	public override object? GetApi(IModManifest requestingMod)
