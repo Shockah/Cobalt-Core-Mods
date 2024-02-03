@@ -1,0 +1,24 @@
+{
+    "UniqueName": "Shockah.Rerolls",
+    "Version": "1.0.2",
+    "DisplayName": "Rerolls",
+    "Description": "Adds a way to reroll artifact and card rewards.",
+    "Author": "Shockah",
+    "RequiredApiVersion": "0.6.0",
+    "ModType": "Nickel.Legacy",
+    "EntryPointAssembly": "Rerolls.dll",
+    "AssemblyReferences": [
+        {
+            "Name": "Shrike"
+        },
+        {
+            "Name": "Shrike.Harmony"
+        }
+    ],
+    "Dependencies": [
+        {
+            "UniqueName": "Nickel.Legacy",
+            "Version": "0.4.0"
+        }
+    ]
+}

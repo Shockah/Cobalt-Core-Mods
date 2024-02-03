@@ -4,6 +4,7 @@
 
 ## 1.0.3
 
+* Now comes with a `nickel.json` file.
 * The Y controller button now correctly does the Reroll functionality.
 
 ## 1.0.2
