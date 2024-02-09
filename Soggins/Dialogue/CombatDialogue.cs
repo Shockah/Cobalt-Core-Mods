@@ -13,156 +13,147 @@ internal static class CombatDialogue
 		DB.story.all[$"BlockedALotOfAttacksWithArmor_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			oncePerRun = true,
-			oncePerCombatTags = new() { "YowzaThatWasALOTofArmorBlock" },
+			oncePerCombatTags = ["YowzaThatWasALOTofArmorBlock"],
 			enemyShotJustHit = true,
 			minDamageBlockedByPlayerArmorThisTurn = 3,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "All of that was planned.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"DizzyWentMissing_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
-			oncePerCombatTags = new() { "dizzyWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingDizzy },
+			allPresent = [soggins],
+			oncePerCombatTags = ["dizzyWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingDizzy],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "Better him than me.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"RiggsWentMissing_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
-			oncePerCombatTags = new() { "riggsWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingRiggs },
+			allPresent = [soggins],
+			oncePerCombatTags = ["riggsWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingRiggs],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "Bring me a drink when you come back.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"PeriWentMissing_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
-			oncePerCombatTags = new() { "periWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingPeri },
+			allPresent = [soggins],
+			oncePerCombatTags = ["periWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingPeri],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "She was scary anyway.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"IsaacWentMissing_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
-			oncePerCombatTags = new() { "isaacWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingIsaac },
+			allPresent = [soggins],
+			oncePerCombatTags = ["isaacWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingIsaac],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "He's coming back, it'll be fine.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"DrakeWentMissing_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
-			oncePerCombatTags = new() { "drakeWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingDrake },
+			allPresent = [soggins],
+			oncePerCombatTags = ["drakeWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingDrake],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "She was scary anyway.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"MaxWentMissing_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
-			oncePerCombatTags = new() { "maxWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingMax },
+			allPresent = [soggins],
+			oncePerCombatTags = ["maxWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingMax],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "Mortimer?",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"BooksWentMissing_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
-			oncePerCombatTags = new() { "booksWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingBooks },
+			allPresent = [soggins],
+			oncePerCombatTags = ["booksWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingBooks],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "Nice magic trick, kid.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"CatWentMissing_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
-			oncePerCombatTags = new() { "CatWentMissing" },
-			lastTurnPlayerStatuses = new() { Status.missingCat },
+			allPresent = [soggins],
+			oncePerCombatTags = ["CatWentMissing"],
+			lastTurnPlayerStatuses = [Status.missingCat],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "How do you reboot the computer?",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.GetNode("CrabFacts1_Multi_0")?.lines.OfType<SaySwitch>().LastOrDefault()?.lines.Insert(0, new CustomSay()
 		{
@@ -185,12 +176,11 @@ internal static class CombatDialogue
 		DB.story.all[$"{soggins}JustHit_0"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			whoDidThat = (Deck)Instance.SogginsDeck.Id!.Value,
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
@@ -199,8 +189,7 @@ internal static class CombatDialogue
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = Deck.peri.Key(),
@@ -213,19 +202,18 @@ internal static class CombatDialogue
 							Text = "!",
 							loopTag = "stoked"
 						}
-					}
+					]
 				}
-			}
+			]
 		};
 		DB.story.all[$"{soggins}JustHit_1"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			whoDidThat = (Deck)Instance.SogginsDeck.Id!.Value,
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
@@ -234,8 +222,7 @@ internal static class CombatDialogue
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = Deck.eunice.Key(),
@@ -248,19 +235,18 @@ internal static class CombatDialogue
 							Text = "Wow!",
 							loopTag = "neutral"
 						}
-					}
+					]
 				}
-			}
+			]
 		};
 		DB.story.all[$"{soggins}JustHit_2"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			whoDidThat = (Deck)Instance.SogginsDeck.Id!.Value,
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
@@ -269,8 +255,7 @@ internal static class CombatDialogue
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = "comp",
@@ -283,19 +268,18 @@ internal static class CombatDialogue
 							Text = "I have to log the successes.",
 							loopTag = "writing"
 						}
-					}
+					]
 				}
-			}
+			]
 		};
 		DB.story.all[$"{soggins}JustHit_3"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			whoDidThat = (Deck)Instance.SogginsDeck.Id!.Value,
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
@@ -304,8 +288,7 @@ internal static class CombatDialogue
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = Deck.dizzy.Key(),
@@ -318,99 +301,93 @@ internal static class CombatDialogue
 							Text = "Huh, good job.",
 							loopTag = "neutral"
 						}
-					}
+					]
 				}
-			}
+			]
 		};
 		DB.story.all[$"JustHitGeneric_{soggins}_0"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "I helped.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"JustHitGeneric_{soggins}_1"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "All me.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"JustHitGeneric_{soggins}_2"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "I'm so good at this.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"JustHitGeneric_{soggins}_3"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "I did it!",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"JustHitGeneric_{soggins}_4"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "All according to plan.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"Duo_AboutToDieAndLoop_{soggins}0"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
@@ -419,8 +396,7 @@ internal static class CombatDialogue
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = Deck.dizzy.Key(),
@@ -457,19 +433,18 @@ internal static class CombatDialogue
 							Text = "I still want to know how you got in here.",
 							loopTag = "squint"
 						}
-					}
+					]
 				}
-			}
+			]
 		};
 		DB.story.all[$"Duo_AboutToDieAndLoop_{soggins}1"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins, "comp" },
+			allPresent = [soggins, "comp"],
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = "comp",
@@ -482,17 +457,16 @@ internal static class CombatDialogue
 					Text = "I wonder who that is.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"Duo_AboutToDieAndLoop_{soggins}2"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins, Deck.dizzy.Key() },
+			allPresent = [soggins, Deck.dizzy.Key()],
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.dizzy.Key(),
@@ -505,17 +479,16 @@ internal static class CombatDialogue
 					Text = "What do you mean I don't look pretty.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"Duo_AboutToDieAndLoop_{soggins}3"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins, Deck.riggs.Key() },
+			allPresent = [soggins, Deck.riggs.Key()],
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.riggs.Key(),
@@ -528,17 +501,16 @@ internal static class CombatDialogue
 					Text = "I'll press some buttons!",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"Duo_AboutToDieAndLoop_{soggins}4"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins, Deck.peri.Key() },
+			allPresent = [soggins, Deck.peri.Key()],
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.peri.Key(),
@@ -551,17 +523,16 @@ internal static class CombatDialogue
 					Text = "Don't worry, I'm here with you all.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"Duo_AboutToDieAndLoop_{soggins}5"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins, Deck.goat.Key() },
+			allPresent = [soggins, Deck.goat.Key()],
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.goat.Key(),
@@ -574,17 +545,16 @@ internal static class CombatDialogue
 					Text = "Trust me, it's fine.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"Duo_AboutToDieAndLoop_{soggins}6"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins, Deck.eunice.Key() },
+			allPresent = [soggins, Deck.eunice.Key()],
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.eunice.Key(),
@@ -597,17 +567,16 @@ internal static class CombatDialogue
 					Text = "I haven't done anything wrong!",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"Duo_AboutToDieAndLoop_{soggins}7"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins, Deck.hacker.Key() },
+			allPresent = [soggins, Deck.hacker.Key()],
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.hacker.Key(),
@@ -620,17 +589,16 @@ internal static class CombatDialogue
 					Text = "You still have games on your phone.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"Duo_AboutToDieAndLoop_{soggins}8"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins, Deck.shard.Key() },
+			allPresent = [soggins, Deck.shard.Key()],
 			maxHull = 2,
-			oncePerCombatTags = new() { "aboutToDie" },
+			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.shard.Key(),
@@ -643,138 +611,130 @@ internal static class CombatDialogue
 					Text = "Yes, magic powers.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"EmptyHandWithEnergy_{soggins}_0"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			handEmpty = true,
 			minEnergy = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "That extra energy could heat up the hot tub.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"EmptyHandWithEnergy_{soggins}_1"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			handEmpty = true,
 			minEnergy = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "Yep, that was planned.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"EnemyArmorHitLots_{soggins}_0"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustHit = true,
 			minDamageBlockedByEnemyArmorThisTurn = 3,
 			oncePerCombat = true,
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "That sound is funny.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"EnemyArmorHitLots_{soggins}_1"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustHit = true,
 			minDamageBlockedByEnemyArmorThisTurn = 3,
 			oncePerCombat = true,
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "We're doing big damage now.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"ExpensiveCardPlayed_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			minCostOfCardJustPlayed = 4,
-			oncePerCombatTags = new() { "ExpensiveCardPlayed" },
+			oncePerCombatTags = ["ExpensiveCardPlayed"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "My game just shut itself off.",
 					loopTag = Instance.MadPortraitAnimation.Tag
 				}
-			}
+			]
 		};
 		DB.story.all[$"HandOnlyHasTrashCards_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			handFullOfTrash = true,
-			oncePerCombatTags = new() { "handOnlyHasTrashCards" },
+			oncePerCombatTags = ["handOnlyHasTrashCards"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "This is just fine.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"HandOnlyHasUnplayableCards_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			handFullOfUnplayableCards = true,
-			oncePerCombatTags = new() { "handFullOfUnplayableCards" },
+			oncePerCombatTags = ["handFullOfUnplayableCards"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "Do the buttons do anything?",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"WeDontOverlapWithEnemyAtAllButWeDoHaveASeekerToDealWith_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			shipsDontOverlapAtAll = true,
-			oncePerCombatTags = new() { "NoOverlapBetweenShipsSeeker" },
-			anyDronesHostile = new() { "missile_seeker" },
-			nonePresent = new() { "crab" },
+			oncePerCombatTags = ["NoOverlapBetweenShipsSeeker"],
+			anyDronesHostile = ["missile_seeker"],
+			nonePresent = ["crab"],
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
@@ -783,160 +743,150 @@ internal static class CombatDialogue
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = Deck.riggs.Key(),
 							Text = "I don't think asking it will solve anything.",
 							loopTag = "neutral"
 						}
-					}
+					]
 				}
-			}
+			]
 		};
 		DB.story.all[$"ManyTurns_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			minTurnsThisCombat = 9,
-			oncePerCombatTags = new() { "manyTurns" },
+			oncePerCombatTags = ["manyTurns"],
 			oncePerRun = true,
 			turnStart = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "Mind if I just play a game on the side?",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"OverheatCatFix_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins, "comp" },
+			allPresent = [soggins, "comp"],
 			wasGoingToOverheatButStopped = true,
 			whoDidThat = Deck.colorless,
-			oncePerCombatTags = new() { "OverheatCatFix" },
-			lines = new()
-			{
+			oncePerCombatTags = ["OverheatCatFix"],
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "My hot tub is getting cold.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"OverheatDrakeFix_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins, Deck.eunice.Key() },
+			allPresent = [soggins, Deck.eunice.Key()],
 			wasGoingToOverheatButStopped = true,
 			whoDidThat = Deck.eunice,
-			oncePerCombatTags = new() { "OverheatDrakeFix" },
-			lines = new()
-			{
+			oncePerCombatTags = ["OverheatDrakeFix"],
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "My hot tub is getting cold.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"OverheatGeneric_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			goingToOverheat = true,
-			oncePerCombatTags = new() { "OverheatGeneric" },
-			lines = new()
-			{
+			oncePerCombatTags = ["OverheatGeneric"],
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "Is it getting hot here?",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"ThatsALotOfDamageToThem_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 10,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "You can all thank me later.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"ThatsALotOfDamageToUs_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			enemyShotJustHit = true,
 			minDamageDealtToPlayerThisTurn = 3,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "Oh no!",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"TookZeroDamageAtLowHealth_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			enemyShotJustHit = true,
 			maxDamageDealtToPlayerThisTurn = 0,
 			maxHull = 2,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "Yup, perfectly fine.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"WeAreCorroded_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
-			lastTurnPlayerStatuses = new() { Status.corrode },
+			allPresent = [soggins],
+			lastTurnPlayerStatuses = [Status.corrode],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "The walls are looking green, I like green.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"WeMissedOopsie_{soggins}_0"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustMissed = true,
 			oncePerCombat = true,
-			doesNotHaveArtifacts = new() { "Recalibrator", "GrazerBeam" },
-			lines = new()
-			{
+			doesNotHaveArtifacts = ["Recalibrator", "GrazerBeam"],
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
@@ -945,8 +895,7 @@ internal static class CombatDialogue
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = Deck.peri.Key(),
@@ -959,23 +908,21 @@ internal static class CombatDialogue
 							Text = "It would be cute if it wasn't losing our time.",
 							loopTag = "squint"
 						}
-					}
+					]
 				}
-			}
+			]
 		};
 		DB.story.all[$"WeMissedOopsie_{soggins}_1"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustMissed = true,
 			oncePerCombat = true,
-			doesNotHaveArtifacts = new() { "Recalibrator", "GrazerBeam" },
-			lines = new()
-			{
+			doesNotHaveArtifacts = ["Recalibrator", "GrazerBeam"],
+			lines = [
 				new SaySwitch()
 				{
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = Deck.peri.Key(),
@@ -988,7 +935,7 @@ internal static class CombatDialogue
 							Text = "Drat.",
 							loopTag = "mad"
 						}
-					}
+					]
 				},
 				new CustomSay()
 				{
@@ -996,146 +943,137 @@ internal static class CombatDialogue
 					Text = "Let me fire instead.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"WeGotHurtButNotTooBad_{soggins}_0"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			enemyShotJustHit = true,
 			minDamageDealtToPlayerThisTurn = 1,
 			maxDamageDealtToPlayerThisTurn = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "We'll be fine.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"WeGotHurtButNotTooBad_{soggins}_1"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			enemyShotJustHit = true,
 			minDamageDealtToPlayerThisTurn = 1,
 			maxDamageDealtToPlayerThisTurn = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "I know a place we can go for repairs.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"WeDidOverThreeDamage_{soggins}_0"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 4,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "That was a bazillion damage.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"WeDidOverThreeDamage_{soggins}_1"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 4,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "Winning!",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"WeDidOverThreeDamage_{soggins}_2"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 4,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "Dealing damage.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"WeDidOverFiveDamage_{soggins}_0"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 6,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "I'm so good.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"WeDidOverFiveDamage_{soggins}_1"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 6,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "That was a thousand bazillion damage.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"WeDidOverFiveDamage_{soggins}_2"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 6,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "One more win for me.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"WeDidOverFiveDamage_{soggins}_3"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins, "comp" },
+			allPresent = [soggins, "comp"],
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 6,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
@@ -1148,7 +1086,7 @@ internal static class CombatDialogue
 					Text = "Keikaku means... How do you even know that word?",
 					loopTag = "squint"
 				}
-			}
+			]
 		};
 	}
 }

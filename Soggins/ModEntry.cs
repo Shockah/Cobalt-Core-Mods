@@ -74,8 +74,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal ExternalAnimation GameOverPortraitAnimation { get; private set; } = null!;
 	internal ExternalAnimation MiniPortraitAnimation { get; private set; } = null!;
 
-	internal static readonly Type[] ApologyCards =
-	[
+	internal static readonly Type[] ApologyCards = [
 		typeof(RandomPlaceholderApologyCard),
 		typeof(DualApologyCard),
 		typeof(AttackApologyCard),
@@ -91,13 +90,11 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		typeof(MineApologyCard),
 		typeof(HealApologyCard),
 	];
-	internal static readonly Type[] StarterCards =
-	[
+	internal static readonly Type[] StarterCards = [
 		typeof(SmugnessControlCard),
 		typeof(PressingButtonsCard),
 	];
-	internal static readonly Type[] CommonCards =
-	[
+	internal static readonly Type[] CommonCards = [
 		typeof(TakeCoverCard),
 		typeof(ZenCard),
 		typeof(MysteriousAmmoCard),
@@ -106,8 +103,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		typeof(ThoughtsAndPrayersCard),
 		typeof(HumiliatingAttackCard),
 	];
-	internal static readonly Type[] UncommonCards =
-	[
+	internal static readonly Type[] UncommonCards = [
 		typeof(HarnessingSmugnessCard),
 		typeof(SoSorryCard),
 		typeof(BetterThanYouCard),
@@ -116,8 +112,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		typeof(BegForMercyCard),
 		typeof(StopItCard),
 	];
-	internal static readonly Type[] RareCards =
-	[
+	internal static readonly Type[] RareCards = [
 		typeof(ClonedSeekerCard),
 		typeof(ClonedMissileMalwareCard),
 		typeof(ExtraApologyCard),
@@ -128,24 +123,20 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal static IEnumerable<Type> AllCards
 		=> ApologyCards.Concat(StarterCards).Concat(CommonCards).Concat(UncommonCards).Concat(RareCards).Append(typeof(SogginsExeCard));
 
-	internal static readonly Type[] StarterArtifacts =
-	[
+	internal static readonly Type[] StarterArtifacts = [
 		typeof(SmugArtifact),
 	];
-	internal static readonly Type[] CommonArtifacts =
-	[
+	internal static readonly Type[] CommonArtifacts = [
 		typeof(VideoWillArtifact),
 		typeof(PiratedShipCadArtifact),
 		typeof(HotTubArtifact),
 		typeof(MisprintedApologyArtifact),
 	];
-	internal static readonly Type[] BossArtifacts =
-	[
+	internal static readonly Type[] BossArtifacts = [
 		typeof(RepeatedMistakesArtifact),
 		typeof(HijinksArtifact),
 	];
-	internal static readonly Type[] DuoArtifacts =
-	[
+	internal static readonly Type[] DuoArtifacts = [
 		typeof(SogginsDizzyArtifact),
 		typeof(SogginsRiggsArtifact),
 		typeof(SogginsPeriArtifact),

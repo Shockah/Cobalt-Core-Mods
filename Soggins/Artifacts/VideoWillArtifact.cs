@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Shockah.Soggins;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
+[ArtifactMeta(pools = [ArtifactPool.Common])]
 public sealed class VideoWillArtifact : Artifact, IRegisterableArtifact
 {
 	private static ModEntry Instance => ModEntry.Instance;

@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Shockah.Soggins;
 
-[CardMeta(rarity = Rarity.rare, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
+[CardMeta(rarity = Rarity.rare, upgradesTo = [Upgrade.A, Upgrade.B])]
 public sealed class DoSomethingCard : Card, IRegisterableCard
 {
 	private static ModEntry Instance => ModEntry.Instance;

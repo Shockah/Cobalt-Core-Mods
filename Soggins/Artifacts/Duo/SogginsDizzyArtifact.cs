@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Shockah.Soggins;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
+[ArtifactMeta(pools = [ArtifactPool.Common])]
 public sealed class SogginsDizzyArtifact : Artifact, IRegisterableArtifact, ISmugHook
 {
 	private static ModEntry Instance => ModEntry.Instance;

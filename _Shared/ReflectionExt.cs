@@ -36,7 +36,7 @@ internal static class ReflectionExt
 
 	public static Action<TValue> EmitStaticSetter<TValue>(this PropertyInfo property)
 	{
-		DynamicMethod method = new($"set_{property.Name}", typeof(void), new Type[] { typeof(TValue) });
+		DynamicMethod method = new($"set_{property.Name}", typeof(void), [typeof(TValue)]);
 		var il = method.GetILGenerator();
 		il.Emit(OpCodes.Ldarg_0);
 		il.Emit(OpCodes.Call, property.GetSetMethod(true)!);
@@ -46,7 +46,7 @@ internal static class ReflectionExt
 
 	public static Action<TValue> EmitStaticSetter<TValue>(this FieldInfo field)
 	{
-		DynamicMethod method = new($"set_{field.Name}", typeof(void), new Type[] { typeof(TValue) });
+		DynamicMethod method = new($"set_{field.Name}", typeof(void), [typeof(TValue)]);
 		var il = method.GetILGenerator();
 		il.Emit(OpCodes.Ldarg_0);
 		il.Emit(OpCodes.Stsfld, field);
@@ -56,7 +56,7 @@ internal static class ReflectionExt
 
 	public static Func<TOwner, TValue> EmitInstanceGetter<TOwner, TValue>(this PropertyInfo property)
 	{
-		DynamicMethod method = new($"get_{property.Name}", typeof(TValue), new Type[] { typeof(TOwner) });
+		DynamicMethod method = new($"get_{property.Name}", typeof(TValue), [typeof(TOwner)]);
 		var il = method.GetILGenerator();
 		il.Emit(OpCodes.Ldarg_0);
 		il.Emit(OpCodes.Call, property.GetGetMethod(true)!);
@@ -66,7 +66,7 @@ internal static class ReflectionExt
 
 	public static Func<TOwner, TValue> EmitInstanceGetter<TOwner, TValue>(this FieldInfo field)
 	{
-		DynamicMethod method = new($"get_{field.Name}", typeof(TValue), new Type[] { typeof(TOwner) });
+		DynamicMethod method = new($"get_{field.Name}", typeof(TValue), [typeof(TOwner)]);
 		var il = method.GetILGenerator();
 		il.Emit(OpCodes.Ldarg_0);
 		il.Emit(OpCodes.Ldfld, field);
@@ -76,7 +76,7 @@ internal static class ReflectionExt
 
 	public static Action<TOwner, TValue> EmitInstanceSetter<TOwner, TValue>(this PropertyInfo property)
 	{
-		DynamicMethod method = new($"set_{property.Name}", typeof(void), new Type[] { typeof(TOwner), typeof(TValue) });
+		DynamicMethod method = new($"set_{property.Name}", typeof(void), [typeof(TOwner), typeof(TValue)]);
 		var il = method.GetILGenerator();
 		il.Emit(OpCodes.Ldarg_0);
 		il.Emit(OpCodes.Ldarg_1);
@@ -87,7 +87,7 @@ internal static class ReflectionExt
 
 	public static Action<TOwner, TValue> EmitInstanceSetter<TOwner, TValue>(this FieldInfo field)
 	{
-		DynamicMethod method = new($"set_{field.Name}", typeof(void), new Type[] { typeof(TOwner), typeof(TValue) });
+		DynamicMethod method = new($"set_{field.Name}", typeof(void), [typeof(TOwner), typeof(TValue)]);
 		var il = method.GetILGenerator();
 		il.Emit(OpCodes.Ldarg_0);
 		il.Emit(OpCodes.Ldarg_1);

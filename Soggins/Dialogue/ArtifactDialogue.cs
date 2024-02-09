@@ -21,115 +21,108 @@ internal static class ArtifactDialogue
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			allPresent = new() { soggins },
-			hasArtifacts = new() { "EnergyPrep" },
-			lines = new()
-			{
+			allPresent = [soggins],
+			hasArtifacts = ["EnergyPrep"],
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "I just got zapped by static.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"ArtifactEnergyRefund_{soggins}"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { "EnergyRefund" },
-			allPresent = new() { soggins },
-			hasArtifacts = new() { "EnergyRefund" },
+			oncePerCombatTags = ["EnergyRefund"],
+			allPresent = [soggins],
+			hasArtifacts = ["EnergyRefund"],
 			minCostOfCardJustPlayed = 3,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "There's free energy laying around.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"ArtifactFractureDetection_{soggins}"] = new()
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			oncePerCombatTags = new() { "FractureDetectionBarks" },
-			allPresent = new() { soggins },
-			hasArtifacts = new() { "FractureDetection" },
+			oncePerCombatTags = ["FractureDetectionBarks"],
+			allPresent = [soggins],
+			hasArtifacts = ["FractureDetection"],
 			maxTurnsThisCombat = 1,
 			turnStart = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "Computer, find weak spot.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"ArtifactGeminiCoreBooster_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			oncePerRunTags = new() { "GeminiCoreBooster" },
-			allPresent = new() { soggins },
-			hasArtifacts = new() { "GeminiCoreBooster" },
-			lines = new()
-			{
+			oncePerRunTags = ["GeminiCoreBooster"],
+			allPresent = [soggins],
+			hasArtifacts = ["GeminiCoreBooster"],
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "Don't worry! This is very simple.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"ArtifactGeminiCore_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			oncePerRunTags = new() { "GeminiCore" },
-			allPresent = new() { soggins },
-			hasArtifacts = new() { "GeminiCore" },
-			lines = new()
-			{
+			oncePerRunTags = ["GeminiCore"],
+			allPresent = [soggins],
+			hasArtifacts = ["GeminiCore"],
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "This ship is simple for a smart person like me.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"ArtifactJumperCables_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			oncePerRunTags = new() { "ArtifactJumperCablesReady" },
-			allPresent = new() { soggins },
-			hasArtifacts = new() { "JumperCables" },
+			oncePerRunTags = ["ArtifactJumperCablesReady"],
+			allPresent = [soggins],
+			hasArtifacts = ["JumperCables"],
 			maxTurnsThisCombat = 1,
 			maxHullPercent = 0.5,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "I feel really safe right now.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"ArtifactPowerDiversionMade{soggins}AttackFail"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins, Deck.peri.Key() },
-			hasArtifacts = new() { "PowerDiversion" },
+			allPresent = [soggins, Deck.peri.Key()],
+			hasArtifacts = ["PowerDiversion"],
 			playerShotJustHit = true,
 			maxDamageDealtToEnemyThisAction = 0,
 			whoDidThat = (Deck)Instance.SogginsDeck.Id!.Value,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
@@ -142,51 +135,48 @@ internal static class ArtifactDialogue
 					Text = "I'm keeping an eye on you.",
 					loopTag = "neutral"
 				}
-			}
+			]
 		};
 		DB.story.all[$"ArtifactRecalibrator_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
-			hasArtifacts = new() { "ArtifactRecalibrator" },
+			allPresent = [soggins],
+			hasArtifacts = ["ArtifactRecalibrator"],
 			playerShotJustMissed = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "No misses, only happy accidents.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"ArtifactSimplicity_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
-			hasArtifacts = new() { "Simplicity" },
-			oncePerRunTags = new() { "SimplicityShouts" },
-			lines = new()
-			{
+			allPresent = [soggins],
+			hasArtifacts = ["Simplicity"],
+			oncePerRunTags = ["SimplicityShouts"],
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
 					Text = "No thoughts, head empty.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				}
-			}
+			]
 		};
 		DB.story.all[$"ArtifactTridimensionalCockpit_{soggins}"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { soggins },
-			hasArtifacts = new() { "TridimensionalCockpit" },
+			allPresent = [soggins],
+			hasArtifacts = ["TridimensionalCockpit"],
 			turnStart = true,
 			maxTurnsThisCombat = 1,
-			oncePerCombatTags = new() { "TridimensionalCockpit" },
+			oncePerCombatTags = ["TridimensionalCockpit"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
@@ -195,17 +185,16 @@ internal static class ArtifactDialogue
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = Deck.hacker.Key(),
 							Text = "It's better that way.",
 							loopTag = "neutral"
 						}
-					}
+					]
 				}
-			}
+			]
 		};
 	}
 }

@@ -6,8 +6,7 @@ internal static class SmugDialogue
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private static readonly string[] BotchLines = new string[]
-	{
+	private static readonly string[] BotchLines = [
 		"I'm helping!",
 		"That was good, right?",
 		"Did that do anything?",
@@ -23,10 +22,9 @@ internal static class SmugDialogue
 		"This looked so easy.",
 		"Sowwee.",
 		"Pwease?",
-	};
+	];
 
-	private static readonly string[] DoubleLines = new string[]
-	{
+	private static readonly string[] DoubleLines = [
 		"I'm helping!",
 		"That was good.",
 		"I'm so good at this.",
@@ -42,7 +40,7 @@ internal static class SmugDialogue
 		"That was easy.",
 		"What happened? I was distracted.",
 		"That was planned.",
-	};
+	];
 
 	private static readonly Dictionary<Deck, (string LoopTag, string Text)[]> BotchResponseLines = new()
 	{
@@ -187,36 +185,34 @@ internal static class SmugDialogue
 			DB.story.all[$"{soggins}_Botch_{i}"] = new()
 			{
 				type = NodeType.combat,
-				lookup = new() { $"{soggins}_Botch" },
-				allPresent = new() { soggins },
+				lookup = [$"{soggins}_Botch"],
+				allPresent = [soggins],
 				oncePerCombat = true,
-				lines = new()
-				{
+				lines = [
 					new CustomSay()
 					{
 						who = soggins,
 						Text = BotchLines[i],
 						DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 					}
-				}
+				]
 			};
 
 		for (int i = 0; i < DoubleLines.Length; i++)
 			DB.story.all[$"{soggins}_Double_{i}"] = new()
 			{
 				type = NodeType.combat,
-				lookup = new() { $"{soggins}_Double" },
-				allPresent = new() { soggins },
+				lookup = [$"{soggins}_Double"],
+				allPresent = [soggins],
 				oncePerCombat = true,
-				lines = new()
-				{
+				lines = [
 					new CustomSay()
 					{
 						who = soggins,
 						Text = DoubleLines[i],
 						DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 					}
-				}
+				]
 			};
 
 		foreach (var (deck, entries) in BotchResponseLines)
@@ -226,18 +222,17 @@ internal static class SmugDialogue
 				DB.story.all[$"{soggins}_BotchResponse_{deckKey}_{i}"] = new()
 				{
 					type = NodeType.combat,
-					lookup = new() { $"{soggins}_BotchResponse_{deckKey}" },
-					allPresent = new() { deckKey },
+					lookup = [$"{soggins}_BotchResponse_{deckKey}"],
+					allPresent = [deckKey],
 					oncePerCombat = true,
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = deckKey,
 							Text = entries[i].Text,
 							loopTag = entries[i].LoopTag
 						}
-					}
+					]
 				};
 		}
 
@@ -248,54 +243,51 @@ internal static class SmugDialogue
 				DB.story.all[$"{soggins}_DoubleResponse_{deckKey}_{i}"] = new()
 				{
 					type = NodeType.combat,
-					lookup = new() { $"{soggins}_DoubleResponse" },
-					allPresent = new() { deckKey },
+					lookup = [$"{soggins}_DoubleResponse"],
+					allPresent = [deckKey],
 					oncePerCombat = true,
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = deckKey,
 							Text = entries[i].Text,
 							loopTag = entries[i].LoopTag
 						}
-					}
+					]
 				};
 		}
 
 		DB.story.all[$"{soggins}_DoubleLaunchResponse_0"] = new()
 		{
 			type = NodeType.combat,
-			lookup = new() { $"{soggins}_DoubleLaunchResponse" },
-			allPresent = new() { Deck.goat.Key() },
+			lookup = [$"{soggins}_DoubleLaunchResponse"],
+			allPresent = [Deck.goat.Key()],
 			oncePerCombat = true,
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.goat.Key(),
 					Text = "That's not how things normally work.",
 					loopTag = "panic"
 				}
-			}
+			]
 		};
 		DB.story.all[$"{soggins}_DoubleLaunchResponse_1"] = new()
 		{
 			type = NodeType.combat,
-			lookup = new() { $"{soggins}_DoubleLaunchResponse" },
-			allPresent = new() { Deck.goat.Key() },
+			lookup = [$"{soggins}_DoubleLaunchResponse"],
+			allPresent = [Deck.goat.Key()],
 			oncePerCombat = true,
 			priority = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Deck.goat.Key(),
 					Text = "It moved out of the way, huh?",
 					loopTag = "squint"
 				}
-			}
+			]
 		};
 	}
 }

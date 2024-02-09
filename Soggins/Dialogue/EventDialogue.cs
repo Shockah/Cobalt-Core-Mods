@@ -26,10 +26,9 @@ internal static class EventDialogue
 		{
 			type = NodeType.@event,
 			oncePerRun = true,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			bg = "BGBootSequence",
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
@@ -41,7 +40,7 @@ internal static class EventDialogue
 					who = "comp",
 					Text = "Energy readings are back to normal."
 				}
-			}
+			]
 		};
 		DB.story.GetNode("CrystallizedFriendEvent")?.lines.OfType<SaySwitch>().FirstOrDefault()?.lines.Insert(0, new CustomSay()
 		{
@@ -53,10 +52,9 @@ internal static class EventDialogue
 		{
 			type = NodeType.@event,
 			oncePerRun = true,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			bg = "BGCrystalizedFriend",
-			lines = new()
-			{
+			lines = [
 				new Wait()
 				{
 					secs = 1.5
@@ -67,7 +65,7 @@ internal static class EventDialogue
 					Text = "That was the correct choice.",
 					loopTag = Instance.SmugPortraitAnimations[3].Tag
 				}
-			}
+			]
 		};
 		DB.story.GetNode("DraculaTime")?.lines.OfType<SaySwitch>().FirstOrDefault()?.lines.Insert(0, new CustomSay()
 		{
@@ -91,10 +89,9 @@ internal static class EventDialogue
 		{
 			type = NodeType.@event,
 			oncePerRun = true,
-			allPresent = new() { soggins },
+			allPresent = [soggins],
 			bg = "BGSupernova",
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
@@ -107,7 +104,7 @@ internal static class EventDialogue
 					Text = "Huh, let's get going.",
 					loopTag = "squint"
 				}
-			}
+			]
 		};
 		DB.story.GetNode("Sasha_2_multi_2")?.lines.OfType<SaySwitch>().FirstOrDefault()?.lines.Insert(0, new CustomSay()
 		{
@@ -118,11 +115,10 @@ internal static class EventDialogue
 		DB.story.all[$"ShopkeeperInfinite_{soggins}_Multi_0"] = new()
 		{
 			type = NodeType.@event,
-			lookup = new() { "shopBefore" },
-			allPresent = new() { soggins },
+			lookup = ["shopBefore"],
+			allPresent = [soggins],
 			bg = "BGShop",
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = "nerd",
@@ -140,16 +136,15 @@ internal static class EventDialogue
 				{
 					key = "NewShop"
 				}
-			}
+			]
 		};
 		DB.story.all[$"ShopkeeperInfinite_{soggins}_Multi_1"] = new()
 		{
 			type = NodeType.@event,
-			lookup = new() { "shopBefore" },
-			allPresent = new() { soggins },
+			lookup = ["shopBefore"],
+			allPresent = [soggins],
 			bg = "BGShop",
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = "nerd",
@@ -167,16 +162,15 @@ internal static class EventDialogue
 				{
 					key = "NewShop"
 				}
-			}
+			]
 		};
 		DB.story.all[$"ShopkeeperInfinite_{soggins}_Multi_2"] = new()
 		{
 			type = NodeType.@event,
-			lookup = new() { "shopBefore" },
-			allPresent = new() { soggins },
+			lookup = ["shopBefore"],
+			allPresent = [soggins],
 			bg = "BGShop",
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = "nerd",
@@ -194,7 +188,7 @@ internal static class EventDialogue
 				{
 					key = "NewShop"
 				}
-			}
+			]
 		};
 		DB.story.GetNode("SogginsEscape_1")?.lines.OfType<SaySwitch>().FirstOrDefault()?.lines.Insert(0, new CustomSay()
 		{
@@ -205,12 +199,11 @@ internal static class EventDialogue
 		DB.story.all[$"{soggins}_Intro_1"] = new()
 		{
 			type = NodeType.@event,
-			lookup = new() { "zone_first" },
-			allPresent = new() { soggins },
+			lookup = ["zone_first"],
+			allPresent = [soggins],
 			once = true,
 			bg = "BGRunStart",
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = soggins,
@@ -253,7 +246,7 @@ internal static class EventDialogue
 					Text = "Okay.",
 					loopTag = Instance.SmugPortraitAnimations[-3].Tag
 				}
-			}
+			]
 		};
 	}
 }

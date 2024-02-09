@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Shockah.Soggins;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
+[ArtifactMeta(pools = [ArtifactPool.Common])]
 public sealed class SogginsMaxArtifact : Artifact, IRegisterableArtifact, ISmugHook, IHookPriority
 {
 	private static ModEntry Instance => ModEntry.Instance;

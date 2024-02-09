@@ -106,8 +106,7 @@ internal static class I18n
 	public static string ExeCardTextA => $"Get 1 <c=status>SMUG</c>. Add 1 of 2 <c=cardtrait>discnt, temp</c> {SogginsName} cards to your hand.";
 	public static string ExeCardTextB => $"<c=status>SMUG</c> = 0. Add 1 of 3 <c=cardtrait>discnt, temp</c> {SogginsName} cards to your hand.";
 
-	public static readonly string[] ApologyFlavorTexts = new[]
-	{
+	public static readonly string[] ApologyFlavorTexts = [
 		"I'm sorry you feel that way",
 		"Sowwee",
 		"That wasn't my fault",
@@ -149,5 +148,5 @@ internal static class I18n
 		"*sob*",
 		"Less than slash three",
 		"Apology #{0}"
-	};
+	];
 }

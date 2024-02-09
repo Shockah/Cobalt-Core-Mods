@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Shockah.Soggins;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Boss })]
+[ArtifactMeta(pools = [ArtifactPool.Boss])]
 public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook, IHookPriority
 {
 	private static ModEntry Instance => ModEntry.Instance;
@@ -39,11 +39,10 @@ public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			lookup = new() { $"{Key()}Trigger" },
-			allPresent = new() { Instance.SogginsDeck.GlobalName },
-			hasArtifacts = new() { Key() },
-			lines = new()
-			{
+			lookup = [$"{Key()}Trigger"],
+			allPresent = [Instance.SogginsDeck.GlobalName],
+			hasArtifacts = [Key()],
+			lines = [
 				new CustomSay()
 				{
 					who = Instance.SogginsDeck.GlobalName,
@@ -52,8 +51,7 @@ public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = "comp",
@@ -72,9 +70,9 @@ public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook
 							Text = "All these readings are wrong.",
 							loopTag = "neutral"
 						}
-					}
+					]
 				}
-			}
+			]
 		};
 	}
 
@@ -92,7 +90,7 @@ public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
-		var tooltips = base.GetExtraTooltips() ?? new();
+		var tooltips = base.GetExtraTooltips() ?? [];
 		tooltips.Add(Instance.Api.GetSmugTooltip());
 		return tooltips;
 	}

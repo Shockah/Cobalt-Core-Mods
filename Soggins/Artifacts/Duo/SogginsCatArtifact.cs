@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Shockah.Soggins;
 
-[ArtifactMeta(pools = new ArtifactPool[] { ArtifactPool.Common })]
+[ArtifactMeta(pools = [ArtifactPool.Common])]
 public sealed class SogginsCatArtifact : Artifact, IRegisterableArtifact, ISmugHook
 {
 	private static ModEntry Instance => ModEntry.Instance;
