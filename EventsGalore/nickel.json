@@ -1,0 +1,7 @@
+{
+    "UniqueName": "Shockah.EventsGalore",
+    "Version": "0.1.0",
+    "RequiredApiVersion": "0.7.0",
+    "EntryPointAssembly": "EventsGalore.dll",
+    "LoadPhase": "AfterDbInit"
+}

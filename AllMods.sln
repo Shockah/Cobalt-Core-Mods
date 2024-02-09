@@ -36,6 +36,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bloch", "Bloch\Bloch.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetterRunSummaries", "BetterRunSummaries\BetterRunSummaries.csproj", "{224C4F0C-5499-413B-839F-F13A7DE1A5E7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventsGalore", "EventsGalore\EventsGalore.csproj", "{A324EDAF-B4B3-4F19-AFF6-81A8B90E8CE4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +88,10 @@ Global
 		{224C4F0C-5499-413B-839F-F13A7DE1A5E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{224C4F0C-5499-413B-839F-F13A7DE1A5E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{224C4F0C-5499-413B-839F-F13A7DE1A5E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A324EDAF-B4B3-4F19-AFF6-81A8B90E8CE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A324EDAF-B4B3-4F19-AFF6-81A8B90E8CE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A324EDAF-B4B3-4F19-AFF6-81A8B90E8CE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A324EDAF-B4B3-4F19-AFF6-81A8B90E8CE4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,6 +106,7 @@ Global
 		_Shared\_Shared.projitems*{57783051-6882-4f42-a260-e557d788b64d}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{5820f297-795c-414f-9d2d-6b401165828b}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{a0276a09-5fdf-4352-adf4-ed072da21953}*SharedItemsImports = 13
+		_Shared\_Shared.projitems*{a324edaf-b4b3-4f19-aff6-81a8b90e8ce4}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{ad25e0f4-175f-4fb8-927f-f07433bce6b3}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{c649604d-9e77-42e4-b0a8-173a7c4d2af3}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{caa4f9f1-1ba1-40b9-ac8c-520469f1e7a2}*SharedItemsImports = 5

@@ -1,0 +1,18 @@
+{
+    "event": {
+        "ShipSwap": {
+            "1-Selene": "Hey, could I ask you for a favor?",
+            "2-Selene": "We've got an order for a ship with very specific parts, which we don't have in stock right now...",
+            "3-Selene": "And who would have thought, your ship has exactly the parts we need!",
+            "4-Selene": "We could swap you for another ship.",
+            "Choice-Yes": "Sure...",
+            "Choice-No": "Please leave my ship alone.",
+            "Yes-1-Selene": "Thanks a lot.",
+            "No-1-Selene": "Fine! Whatever!",
+            "Action-Tooltip": [
+                "<c=action>SWAP SHIP</c>",
+                "Swap your ship to a random different one. Lose all ship-specific artifacts for your current ship. Gain all starting artifacts for the new ship. Optionally gain any starting cards for the new ship."
+            ]
+        }
+    }
+}
