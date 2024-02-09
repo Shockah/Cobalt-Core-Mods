@@ -10,11 +10,7 @@ internal sealed class CustomSay : Say
 	public string? Text { get; set; }
 	public string? DynamicLoopTag { get; set; }
 
-	internal static readonly Dictionary<string, Func<G, string>> RegisteredDynamicLoopTags = new();
-
-	static CustomSay()
-	{
-	}
+	internal static readonly Dictionary<string, Func<G, string>> RegisteredDynamicLoopTags = [];
 
 	public override bool Execute(G g, IScriptTarget target, ScriptCtx ctx)
 	{

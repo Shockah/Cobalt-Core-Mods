@@ -8,7 +8,7 @@ internal sealed class QueuedAction
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private static readonly List<QueuedAction> QueuedActions = new();
+	private static readonly List<QueuedAction> QueuedActions = [];
 
 	public Action? Action { get; set; }
 	public bool WaitForCombatQueueDrain { get; set; }

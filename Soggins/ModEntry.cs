@@ -43,10 +43,10 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal ExternalCharacter SogginsCharacter { get; private set; } = null!;
 
 	internal ExternalSprite MiniPortraitSprite { get; private set; } = null!;
-	internal Dictionary<int, List<ExternalSprite>> SmugPortraitSprites { get; private init; } = new();
-	internal List<ExternalSprite> OversmugPortraitSprites { get; private init; } = new();
-	internal List<ExternalSprite> SquintPortraitSprites { get; private init; } = new();
-	internal List<ExternalSprite> MadPortraitSprites { get; private init; } = new();
+	internal Dictionary<int, List<ExternalSprite>> SmugPortraitSprites { get; private init; } = [];
+	internal List<ExternalSprite> OversmugPortraitSprites { get; private init; } = [];
+	internal List<ExternalSprite> SquintPortraitSprites { get; private init; } = [];
+	internal List<ExternalSprite> MadPortraitSprites { get; private init; } = [];
 
 	internal ExternalSprite SmugStatusSprite { get; private set; } = null!;
 	internal ExternalSprite FrogproofSprite { get; private set; } = null!;
@@ -66,7 +66,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal ExternalStatus DoubleTimeStatus { get; private set; } = null!;
 	internal ExternalStatus DoublersLuckStatus { get; private set; } = null!;
 
-	internal Dictionary<int, ExternalAnimation> SmugPortraitAnimations { get; private init; } = new();
+	internal Dictionary<int, ExternalAnimation> SmugPortraitAnimations { get; private init; } = [];
 	internal ExternalAnimation OversmugPortraitAnimation { get; private set; } = null!;
 	internal ExternalAnimation NeutralPortraitAnimation { get; private set; } = null!;
 	internal ExternalAnimation SquintPortraitAnimation { get; private set; } = null!;
@@ -74,8 +74,8 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal ExternalAnimation GameOverPortraitAnimation { get; private set; } = null!;
 	internal ExternalAnimation MiniPortraitAnimation { get; private set; } = null!;
 
-	internal static readonly Type[] ApologyCards = new Type[]
-	{
+	internal static readonly Type[] ApologyCards =
+	[
 		typeof(RandomPlaceholderApologyCard),
 		typeof(DualApologyCard),
 		typeof(AttackApologyCard),
@@ -90,14 +90,14 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		typeof(MissileApologyCard),
 		typeof(MineApologyCard),
 		typeof(HealApologyCard),
-	};
-	internal static readonly Type[] StarterCards = new Type[]
-	{
+	];
+	internal static readonly Type[] StarterCards =
+	[
 		typeof(SmugnessControlCard),
 		typeof(PressingButtonsCard),
-	};
-	internal static readonly Type[] CommonCards = new Type[]
-	{
+	];
+	internal static readonly Type[] CommonCards =
+	[
 		typeof(TakeCoverCard),
 		typeof(ZenCard),
 		typeof(MysteriousAmmoCard),
@@ -105,9 +105,9 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		typeof(BetterSpaceMineCard),
 		typeof(ThoughtsAndPrayersCard),
 		typeof(HumiliatingAttackCard),
-	};
-	internal static readonly Type[] UncommonCards = new Type[]
-	{
+	];
+	internal static readonly Type[] UncommonCards =
+	[
 		typeof(HarnessingSmugnessCard),
 		typeof(SoSorryCard),
 		typeof(BetterThanYouCard),
@@ -115,37 +115,37 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		typeof(BlastFromThePastCard),
 		typeof(BegForMercyCard),
 		typeof(StopItCard),
-	};
-	internal static readonly Type[] RareCards = new Type[]
-	{
+	];
+	internal static readonly Type[] RareCards =
+	[
 		typeof(ClonedSeekerCard),
 		typeof(ClonedMissileMalwareCard),
 		typeof(ExtraApologyCard),
 		typeof(DoSomethingCard),
 		typeof(ImAlwaysRightCard),
-	};
+	];
 
 	internal static IEnumerable<Type> AllCards
 		=> ApologyCards.Concat(StarterCards).Concat(CommonCards).Concat(UncommonCards).Concat(RareCards).Append(typeof(SogginsExeCard));
 
-	internal static readonly Type[] StarterArtifacts = new Type[]
-	{
+	internal static readonly Type[] StarterArtifacts =
+	[
 		typeof(SmugArtifact),
-	};
-	internal static readonly Type[] CommonArtifacts = new Type[]
-	{
+	];
+	internal static readonly Type[] CommonArtifacts =
+	[
 		typeof(VideoWillArtifact),
 		typeof(PiratedShipCadArtifact),
 		typeof(HotTubArtifact),
 		typeof(MisprintedApologyArtifact),
-	};
-	internal static readonly Type[] BossArtifacts = new Type[]
-	{
+	];
+	internal static readonly Type[] BossArtifacts =
+	[
 		typeof(RepeatedMistakesArtifact),
 		typeof(HijinksArtifact),
-	};
-	internal static readonly Type[] DuoArtifacts = new Type[]
-	{
+	];
+	internal static readonly Type[] DuoArtifacts =
+	[
 		typeof(SogginsDizzyArtifact),
 		typeof(SogginsRiggsArtifact),
 		typeof(SogginsPeriArtifact),
@@ -154,7 +154,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		typeof(SogginsMaxArtifact),
 		typeof(SogginsBooksArtifact),
 		typeof(SogginsCatArtifact),
-	};
+	];
 
 	internal static IEnumerable<Type> AllArtifacts
 		=> StarterArtifacts.Concat(CommonArtifacts).Concat(BossArtifacts).Concat(DuoArtifacts);
