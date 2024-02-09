@@ -5,13 +5,16 @@ namespace Shockah.Soggins;
 public interface ISogginsApi
 {
 	ExternalDeck SogginsDeck { get; }
+	Deck SogginsVanillaDeck { get; }
 
 	Tooltip FrogproofCardTraitTooltip { get; }
 
 	ExternalStatus FrogproofingStatus { get; }
+	Status FrogproofingVanillaStatus { get; }
 	Tooltip FrogproofingTooltip { get; }
 
 	ExternalStatus SmugStatus { get; }
+	Status SmugVanillaStatus { get; }
 	Tooltip GetSmugTooltip();
 	Tooltip GetSmugTooltip(State state, Ship ship);
 	bool IsRunWithSmug(State state);

@@ -12,17 +12,26 @@ public sealed class ApiImplementation : ISogginsApi
 	public ExternalDeck SogginsDeck
 		=> Instance.SogginsDeck;
 
+	public Deck SogginsVanillaDeck
+		=> (Deck)Instance.SogginsDeck.Id!.Value;
+
 	public Tooltip FrogproofCardTraitTooltip
 		=> new CustomTTGlossary(CustomTTGlossary.GlossaryType.cardtrait, () => (Spr)Instance.FrogproofSprite.Id!.Value, () => I18n.FrogproofCardTraitName, () => I18n.FrogproofCardTraitText);
 
 	public ExternalStatus FrogproofingStatus
 		=> Instance.FrogproofingStatus;
 
+	public Status FrogproofingVanillaStatus
+		=> (Status)Instance.FrogproofingStatus.Id!.Value;
+
 	public Tooltip FrogproofingTooltip
 		=> new TTGlossary($"status.{Instance.FrogproofingStatus.Id!.Value}");
 
 	public ExternalStatus SmugStatus
 		=> Instance.SmugStatus;
+
+	public Status SmugVanillaStatus
+		=> (Status)Instance.SmugStatus.Id!.Value;
 
 	public Tooltip GetSmugTooltip()
 		=> new TTGlossary($"status.{Instance.SmugStatus.Id!.Value}");

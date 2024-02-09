@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming version
+
+* API improvements for Nickel mods.
+
 ## 1.2.2
 Released 6 January 2024.
 
