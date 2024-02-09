@@ -30,5 +30,5 @@ public sealed class RandomPlaceholderApologyCard : ApologyCard, IRegisterableCar
 		=> 0;
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new() { new ADummyAction() };
+		=> [new ADummyAction()];
 }

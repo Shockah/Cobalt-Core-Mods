@@ -61,8 +61,7 @@ public sealed class MysteriousAmmoCard : Card, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new ASpawn
 			{
 				thing = GetPayload()
@@ -75,5 +74,5 @@ public sealed class MysteriousAmmoCard : Card, IRegisterableCard
 			},
 			new ADummyAction(),
 			new ADummyAction()
-		};
+		];
 }

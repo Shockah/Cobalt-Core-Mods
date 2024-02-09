@@ -37,12 +37,12 @@ public sealed class SogginsCatArtifact : Artifact, IRegisterableArtifact, ISmugH
 
 	public void ApplyPatches(Harmony harmony)
 	{
-		Instance.DuoArtifactsApi!.RegisterDuoArtifact(GetType(), new[] { (Deck)Instance.SogginsDeck.Id!.Value, Deck.catartifact });
+		Instance.DuoArtifactsApi!.RegisterDuoArtifact(GetType(), [(Deck)Instance.SogginsDeck.Id!.Value, Deck.catartifact]);
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
-		var tooltips = base.GetExtraTooltips() ?? new();
+		var tooltips = base.GetExtraTooltips() ?? [];
 		tooltips.Add(Instance.Api.GetSmugTooltip());
 		tooltips.Add(new TTGlossary("status.missingCat", 1));
 		return tooltips;

@@ -55,7 +55,7 @@ public sealed class BlastFromThePastCard : Card, IRegisterableCard, IFrogproofCa
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
 		bool backwards = upgrade != Upgrade.A;
-		List<CardAction> actions = new();
+		List<CardAction> actions = [];
 
 		if (upgrade == Upgrade.None)
 			actions.Add(Instance.KokoroApi.ConditionalActions.Make(

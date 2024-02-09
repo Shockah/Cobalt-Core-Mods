@@ -19,11 +19,10 @@ public sealed class AttackApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new AAttack
 			{
 				damage = GetDmg(s, 1)
 			}
-		};
+		];
 }

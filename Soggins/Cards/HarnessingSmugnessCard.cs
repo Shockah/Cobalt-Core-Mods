@@ -69,8 +69,7 @@ public sealed class HarnessingSmugnessCard : Card, IRegisterableCard, IFrogproof
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.A => new()
-			{
+			Upgrade.A => [
 				new AStatus
 				{
 					status = (Status)Instance.SmugStatus.Id!.Value,
@@ -104,9 +103,8 @@ public sealed class HarnessingSmugnessCard : Card, IRegisterableCard, IFrogproof
 					targetPlayer = true,
 					disabled = !flipped
 				}
-			},
-			Upgrade.B => new()
-			{
+			],
+			Upgrade.B => [
 				new AStatus
 				{
 					status = (Status)Instance.SmugStatus.Id!.Value,
@@ -134,9 +132,8 @@ public sealed class HarnessingSmugnessCard : Card, IRegisterableCard, IFrogproof
 					targetPlayer = true,
 					disabled = !flipped
 				}
-			},
-			_ => new()
-			{
+			],
+			_ => [
 				new AStatus
 				{
 					status = (Status)Instance.SmugStatus.Id!.Value,
@@ -164,6 +161,6 @@ public sealed class HarnessingSmugnessCard : Card, IRegisterableCard, IFrogproof
 					targetPlayer = true,
 					disabled = !flipped
 				}
-			}
+			]
 		};
 }

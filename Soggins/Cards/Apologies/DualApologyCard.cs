@@ -63,11 +63,11 @@ public sealed class DualApologyCard : ApologyCard, IRegisterableCard
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		List<CardAction> firstActions = FirstCard?.GetActions(s, c).Select(a => { a.disabled = CustomFlopped; return a; }).ToList() ?? new();
-		List<CardAction> secondActions = SecondCard?.GetActions(s, c).Select(a => { a.disabled = !CustomFlopped; return a; }).ToList() ?? new();
+		List<CardAction> firstActions = FirstCard?.GetActions(s, c).Select(a => { a.disabled = CustomFlopped; return a; }).ToList() ?? [];
+		List<CardAction> secondActions = SecondCard?.GetActions(s, c).Select(a => { a.disabled = !CustomFlopped; return a; }).ToList() ?? [];
 		int perSide = Math.Max(firstActions.Count, secondActions.Count);
 
-		List<CardAction> actions = new();
+		List<CardAction> actions = [];
 		for (int i = 0; i < perSide - firstActions.Count; i++)
 			actions.Add(new ADummyAction());
 		actions.AddRange(firstActions);

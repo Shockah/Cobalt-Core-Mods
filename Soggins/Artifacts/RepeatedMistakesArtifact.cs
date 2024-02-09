@@ -39,11 +39,10 @@ public sealed class RepeatedMistakesArtifact : Artifact, IRegisterableArtifact
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			lookup = new() { $"{Key()}Trigger" },
-			allPresent = new() { Instance.SogginsDeck.GlobalName },
-			hasArtifacts = new() { Key() },
-			lines = new()
-			{
+			lookup = [$"{Key()}Trigger"],
+			allPresent = [Instance.SogginsDeck.GlobalName],
+			hasArtifacts = [Key()],
+			lines = [
 				new CustomSay()
 				{
 					who = Instance.SogginsDeck.GlobalName,
@@ -52,8 +51,7 @@ public sealed class RepeatedMistakesArtifact : Artifact, IRegisterableArtifact
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = Deck.hacker.Key(),
@@ -66,9 +64,9 @@ public sealed class RepeatedMistakesArtifact : Artifact, IRegisterableArtifact
 							Text = "How will I launch drones now?",
 							loopTag = "squint"
 						}
-					}
+					]
 				}
-			}
+			]
 		};
 	}
 
@@ -104,7 +102,7 @@ public sealed class RepeatedMistakesArtifact : Artifact, IRegisterableArtifact
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
-		var tooltips = base.GetExtraTooltips() ?? new();
+		var tooltips = base.GetExtraTooltips() ?? [];
 		tooltips.Add(new TTGlossary("status.backwardsMissiles"));
 		tooltips.Add(new TTGlossary("action.spawn"));
 		tooltips.Add(new TTGlossary("midrow.missile_seeker", 2));

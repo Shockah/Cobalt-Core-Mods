@@ -65,15 +65,14 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard, IFrogproof
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		List<CardAction> actions = new()
-		{
+		List<CardAction> actions = [
 			new AStatus
 			{
 				status = (Status)Instance.SmugStatus.Id!.Value,
 				statusAmount = 1,
 				targetPlayer = true
 			}
-		};
+		];
 
 		if (IsDuringTryPlayCard)
 		{

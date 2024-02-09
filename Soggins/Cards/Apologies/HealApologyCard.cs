@@ -29,12 +29,11 @@ public sealed class HealApologyCard : ApologyCard, IRegisterableCard
 		=> timesGiven > 0 ? 0 : base.GetApologyWeight(state, combat, timesGiven) * 0.5;
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new AHeal
 			{
 				healAmount = 1,
 				targetPlayer = true
 			}
-		};
+		];
 }

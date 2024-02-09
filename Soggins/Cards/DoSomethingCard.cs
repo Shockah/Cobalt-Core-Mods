@@ -51,8 +51,7 @@ public sealed class DoSomethingCard : Card, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new ADelay
 			{
 				time = -0.5
@@ -67,5 +66,5 @@ public sealed class DoSomethingCard : Card, IRegisterableCard
 				).Where(c => c.Key() != Key()).Select(c => c.uuid),
 				amount: upgrade == Upgrade.B ? 2 : 1
 			)
-		};
+		];
 }

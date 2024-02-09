@@ -43,8 +43,7 @@ public sealed class ClonedSeekerCard : Card, IRegisterableCard
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.A => new()
-			{
+			Upgrade.A => [
 				new AMove
 				{
 					dir = -3,
@@ -60,9 +59,8 @@ public sealed class ClonedSeekerCard : Card, IRegisterableCard
 				},
 				new ADummyAction(),
 				new ADummyAction()
-			},
-			Upgrade.B => new()
-			{
+			],
+			Upgrade.B => [
 				new ASpawn
 				{
 					thing = new Missile
@@ -85,9 +83,8 @@ public sealed class ClonedSeekerCard : Card, IRegisterableCard
 					}
 				},
 				new ADummyAction()
-			},
-			_ => new()
-			{
+			],
+			_ => [
 				new ASpawn
 				{
 					thing = new Missile
@@ -98,6 +95,6 @@ public sealed class ClonedSeekerCard : Card, IRegisterableCard
 				},
 				new ADummyAction(),
 				new ADummyAction()
-			}
+			]
 		};
 }

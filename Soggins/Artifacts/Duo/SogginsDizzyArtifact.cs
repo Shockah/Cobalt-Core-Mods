@@ -36,12 +36,12 @@ public sealed class SogginsDizzyArtifact : Artifact, IRegisterableArtifact, ISmu
 
 	public void ApplyPatches(Harmony harmony)
 	{
-		Instance.DuoArtifactsApi!.RegisterDuoArtifact(GetType(), new[] { (Deck)Instance.SogginsDeck.Id!.Value, Deck.dizzy });
+		Instance.DuoArtifactsApi!.RegisterDuoArtifact(GetType(), [(Deck)Instance.SogginsDeck.Id!.Value, Deck.dizzy]);
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
-		var tooltips = base.GetExtraTooltips() ?? new();
+		var tooltips = base.GetExtraTooltips() ?? [];
 		tooltips.Add(Instance.Api.GetSmugTooltip());
 		tooltips.Add(new TTGlossary("status.shieldAlt"));
 		return tooltips;

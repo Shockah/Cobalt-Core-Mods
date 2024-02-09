@@ -75,8 +75,7 @@ public sealed class SmugnessControlCard : Card, IRegisterableCard, IFrogproofCar
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new AStatus
 			{
 				status = (Status)Instance.SmugStatus.Id!.Value,
@@ -106,5 +105,5 @@ public sealed class SmugnessControlCard : Card, IRegisterableCard, IFrogproofCar
 				targetPlayer = true,
 				disabled = !flipped
 			}
-		};
+		];
 }

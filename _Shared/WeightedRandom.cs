@@ -16,7 +16,7 @@ internal sealed class WeightedRandom<T>
 
 	public double WeightSum { get; private set; } = 0;
 
-	private readonly List<WeightedItem<T>> ItemStorage = new();
+	private readonly List<WeightedItem<T>> ItemStorage = [];
 
 	public WeightedRandom()
 	{

@@ -47,8 +47,7 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.A => new()
-			{
+			Upgrade.A => [
 				Instance.KokoroApi.ConditionalActions.Make(
 					Instance.KokoroApi.ConditionalActions.Equation(
 						Instance.KokoroApi.ConditionalActions.Status((Status)Instance.SmugStatus.Id!.Value),
@@ -77,9 +76,8 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 				),
 				new ADummyAction(),
 				new ADummyAction()
-			},
-			_ => new()
-			{
+			],
+			_ => [
 				Instance.KokoroApi.ConditionalActions.Make(
 					Instance.KokoroApi.ConditionalActions.Equation(
 						Instance.KokoroApi.ConditionalActions.Status((Status)Instance.SmugStatus.Id!.Value),
@@ -95,6 +93,6 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 				),
 				new ADummyAction(),
 				new ADummyAction()
-			}
+			]
 		};
 }

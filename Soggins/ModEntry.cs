@@ -200,7 +200,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 
 		List<ExternalSprite>? RegisterAllFrames(string path, string idFormat)
 		{
-			List<ExternalSprite> frames = new();
+			List<ExternalSprite> frames = [];
 			for (int frame = 0; frame < int.MaxValue; frame++)
 			{
 				var frameFileInfo = new FileInfo(Path.Combine(path, $"{frame}.png"));
@@ -468,7 +468,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 				deck: SogginsDeck,
 				tag: "mini",
 				intendedOverwrite: false,
-				frames: new[] { MiniPortraitSprite }
+				frames: [MiniPortraitSprite]
 			);
 			registry.RegisterAnimation(MiniPortraitAnimation);
 		}

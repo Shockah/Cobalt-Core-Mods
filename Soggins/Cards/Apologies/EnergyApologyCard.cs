@@ -22,11 +22,10 @@ public sealed class EnergyApologyCard : ApologyCard, IRegisterableCard
 		=> base.GetApologyWeight(state, combat, timesGiven) * 0.5;
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new AEnergy
 			{
 				changeAmount = 1
 			}
-		};
+		];
 }

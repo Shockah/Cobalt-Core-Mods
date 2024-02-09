@@ -19,13 +19,12 @@ public sealed class DroneShiftApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new AStatus
 			{
 				status = Status.droneShift,
 				statusAmount = 1,
 				targetPlayer = true
 			}
-		};
+		];
 }

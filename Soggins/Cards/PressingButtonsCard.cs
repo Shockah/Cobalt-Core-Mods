@@ -43,8 +43,7 @@ public sealed class PressingButtonsCard : Card, IRegisterableCard
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.A => new()
-			{
+			Upgrade.A => [
 				new AAttack
 				{
 					damage = GetDmg(s, 1)
@@ -59,9 +58,8 @@ public sealed class PressingButtonsCard : Card, IRegisterableCard
 				{
 					damage = GetDmg(s, 2)
 				}
-			},
-			Upgrade.B => new()
-			{
+			],
+			Upgrade.B => [
 				new AAttack
 				{
 					damage = GetDmg(s, 1)
@@ -86,9 +84,8 @@ public sealed class PressingButtonsCard : Card, IRegisterableCard
 				{
 					damage = GetDmg(s, 1)
 				}
-			},
-			_ => new()
-			{
+			],
+			_ => [
 				new AAttack
 				{
 					damage = GetDmg(s, 1)
@@ -103,6 +100,6 @@ public sealed class PressingButtonsCard : Card, IRegisterableCard
 				{
 					damage = GetDmg(s, 1)
 				}
-			}
+			]
 		};
 }

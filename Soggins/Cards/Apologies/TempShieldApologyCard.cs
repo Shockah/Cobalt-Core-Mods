@@ -19,13 +19,12 @@ public sealed class TempShieldApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new AStatus
 			{
 				status = Status.tempShield,
 				statusAmount = 1,
 				targetPlayer = true
 			}
-		};
+		];
 }

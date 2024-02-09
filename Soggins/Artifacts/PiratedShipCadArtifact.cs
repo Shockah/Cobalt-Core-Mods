@@ -39,11 +39,10 @@ public sealed class PiratedShipCadArtifact : Artifact, IRegisterableArtifact, IS
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			lookup = new() { $"{Key()}Trigger" },
-			allPresent = new() { Instance.SogginsDeck.GlobalName },
-			hasArtifacts = new() { Key() },
-			lines = new()
-			{
+			lookup = [$"{Key()}Trigger"],
+			allPresent = [Instance.SogginsDeck.GlobalName],
+			hasArtifacts = [Key()],
+			lines = [
 				new CustomSay()
 				{
 					who = Instance.SogginsDeck.GlobalName,
@@ -52,8 +51,7 @@ public sealed class PiratedShipCadArtifact : Artifact, IRegisterableArtifact, IS
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = "comp",
@@ -66,15 +64,15 @@ public sealed class PiratedShipCadArtifact : Artifact, IRegisterableArtifact, IS
 							Text = "That's a malware risk.",
 							loopTag = "mad"
 						}
-					}
+					]
 				}
-			}
+			]
 		};
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
-		var tooltips = base.GetExtraTooltips() ?? new();
+		var tooltips = base.GetExtraTooltips() ?? [];
 		tooltips.Add(Instance.Api.GetSmugTooltip());
 		tooltips.Add(new TTGlossary("status.tempShieldAlt"));
 		return tooltips;

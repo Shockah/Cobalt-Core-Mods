@@ -36,12 +36,12 @@ public sealed class SogginsIsaacArtifact : Artifact, IRegisterableArtifact
 
 	public void ApplyPatches(Harmony harmony)
 	{
-		Instance.DuoArtifactsApi!.RegisterDuoArtifact(GetType(), new[] { (Deck)Instance.SogginsDeck.Id!.Value, Deck.goat });
+		Instance.DuoArtifactsApi!.RegisterDuoArtifact(GetType(), [(Deck)Instance.SogginsDeck.Id!.Value, Deck.goat]);
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
-		var tooltips = base.GetExtraTooltips() ?? new();
+		var tooltips = base.GetExtraTooltips() ?? [];
 		tooltips.Add(new TTGlossary("action.spawn"));
 		tooltips.Add(new TTGlossary("midrow.drone", 1));
 		tooltips.Add(Instance.Api.GetSmugTooltip());

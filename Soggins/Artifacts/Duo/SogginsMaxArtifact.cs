@@ -14,7 +14,7 @@ public sealed class SogginsMaxArtifact : Artifact, IRegisterableArtifact, ISmugH
 
 	private static ExternalSprite Sprite = null!;
 
-	private HashSet<Card> ModifiedCards = new();
+	private HashSet<Card> ModifiedCards = [];
 
 	public void RegisterArt(ISpriteRegistry registry)
 	{
@@ -38,12 +38,12 @@ public sealed class SogginsMaxArtifact : Artifact, IRegisterableArtifact, ISmugH
 
 	public void ApplyPatches(Harmony harmony)
 	{
-		Instance.DuoArtifactsApi!.RegisterDuoArtifact(GetType(), new[] { (Deck)Instance.SogginsDeck.Id!.Value, Deck.hacker });
+		Instance.DuoArtifactsApi!.RegisterDuoArtifact(GetType(), [(Deck)Instance.SogginsDeck.Id!.Value, Deck.hacker]);
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
-		var tooltips = base.GetExtraTooltips() ?? new();
+		var tooltips = base.GetExtraTooltips() ?? [];
 		tooltips.Add(Instance.Api.GetSmugTooltip());
 		return tooltips;
 	}

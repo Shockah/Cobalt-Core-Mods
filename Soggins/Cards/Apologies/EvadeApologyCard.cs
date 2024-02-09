@@ -19,13 +19,12 @@ public sealed class EvadeApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new AStatus
 			{
 				status = Status.evade,
 				statusAmount = 1,
 				targetPlayer = true
 			}
-		};
+		];
 }

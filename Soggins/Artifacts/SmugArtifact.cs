@@ -57,7 +57,7 @@ public sealed class SmugArtifact : Artifact, IRegisterableArtifact
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
-		var tooltips = base.GetExtraTooltips() ?? new();
+		var tooltips = base.GetExtraTooltips() ?? [];
 		tooltips.Add(Instance.Api.GetSmugTooltip());
 		return tooltips;
 	}

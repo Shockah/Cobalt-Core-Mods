@@ -26,12 +26,11 @@ public sealed class MoveApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new AMove
 			{
 				targetPlayer = true,
 				dir = 1
 			}
-		};
+		];
 }

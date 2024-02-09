@@ -43,7 +43,7 @@ public sealed class SogginsDrakeArtifact : Artifact, IRegisterableArtifact
 
 	public void ApplyPatches(Harmony harmony)
 	{
-		Instance.DuoArtifactsApi!.RegisterDuoArtifact(GetType(), new[] { (Deck)Instance.SogginsDeck.Id!.Value, Deck.eunice });
+		Instance.DuoArtifactsApi!.RegisterDuoArtifact(GetType(), [(Deck)Instance.SogginsDeck.Id!.Value, Deck.eunice]);
 	}
 
 	public override Spr GetSprite()
@@ -51,7 +51,7 @@ public sealed class SogginsDrakeArtifact : Artifact, IRegisterableArtifact
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
-		var tooltips = base.GetExtraTooltips() ?? new();
+		var tooltips = base.GetExtraTooltips() ?? [];
 		tooltips.Add(new TTGlossary("action.overheat"));
 		tooltips.Add(new TTGlossary($"status.{Instance.ConstantApologiesStatus.Id!.Value}", 1));
 		return tooltips;

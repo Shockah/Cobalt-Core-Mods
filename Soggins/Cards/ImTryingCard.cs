@@ -73,7 +73,7 @@ public sealed class ImTryingCard : Card, IRegisterableCard, IFrogproofCard
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		List<CardAction> actions = new();
+		List<CardAction> actions = [];
 		int cardsInHandAfterPlaying = GetCardsInHandAfterPlaying(c);
 
 		if (upgrade == Upgrade.B)

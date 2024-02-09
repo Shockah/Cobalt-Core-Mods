@@ -37,7 +37,7 @@ public sealed class SogginsBooksArtifact : Artifact, IRegisterableArtifact
 
 	public void ApplyPatches(Harmony harmony)
 	{
-		Instance.DuoArtifactsApi!.RegisterDuoArtifact(GetType(), new[] { (Deck)Instance.SogginsDeck.Id!.Value, Deck.shard });
+		Instance.DuoArtifactsApi!.RegisterDuoArtifact(GetType(), [(Deck)Instance.SogginsDeck.Id!.Value, Deck.shard]);
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
@@ -46,7 +46,7 @@ public sealed class SogginsBooksArtifact : Artifact, IRegisterableArtifact
 		if (maxShardAmount == 0)
 			maxShardAmount = 3;
 
-		var tooltips = base.GetExtraTooltips() ?? new();
+		var tooltips = base.GetExtraTooltips() ?? [];
 		tooltips.Add(new TTGlossary($"status.{Status.shard.Key()}", maxShardAmount));
 		tooltips.Add(new TTCard { card = Instance.Api.MakePlaceholderApology() });
 		return tooltips;

@@ -19,11 +19,10 @@ public sealed class DrawApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new ADrawCard
 			{
 				count = 1
 			}
-		};
+		];
 }

@@ -60,22 +60,20 @@ public sealed class BetterThanYouCard : Card, IRegisterableCard, IFrogproofCard
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.B => new()
-			{
+			Upgrade.B => [
 				new ASpecificColorSearch
 				{
 					Deck = (Deck)Instance.SogginsDeck.Id!.Value,
 					Amount = 10,
 					IgnoreCardID = uuid
 				}
-			},
-			_ => new()
-			{
+			],
+			_ => [
 				new ADiscardAndSearchFromADeck
 				{
 					Deck = (Deck)Instance.SogginsDeck.Id!.Value,
 					IgnoreCardID = uuid
 				}
-			}
+			]
 		};
 }

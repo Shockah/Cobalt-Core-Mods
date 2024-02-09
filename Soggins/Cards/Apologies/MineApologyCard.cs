@@ -19,8 +19,7 @@ public sealed class MineApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new ASpawn
 			{
 				thing = new SpaceMine
@@ -28,5 +27,5 @@ public sealed class MineApologyCard : ApologyCard, IRegisterableCard
 					yAnimation = 0.0
 				}
 			}
-		};
+		];
 }

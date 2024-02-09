@@ -58,13 +58,12 @@ public sealed class ImAlwaysRightCard : Card, IRegisterableCard, IFrogproofCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new AStatus
 			{
 				status = GetStatus(),
 				statusAmount = 1,
 				targetPlayer = true
 			}
-		};
+		];
 }

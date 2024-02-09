@@ -50,12 +50,11 @@ public sealed class HotTubArtifact : Artifact, IRegisterableArtifact
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			allPresent = new() { Instance.SogginsDeck.GlobalName },
-			hasArtifacts = new() { Key() },
+			allPresent = [Instance.SogginsDeck.GlobalName],
+			hasArtifacts = [Key()],
 			turnStart = true,
 			maxTurnsThisCombat = 1,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = Instance.SogginsDeck.GlobalName,
@@ -64,17 +63,16 @@ public sealed class HotTubArtifact : Artifact, IRegisterableArtifact
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = Deck.eunice.Key(),
 							Text = "I can make it much hotter if you want.",
 							loopTag = "sly"
 						}
-					}
+					]
 				}
-			}
+			]
 		};
 	}
 
@@ -112,7 +110,7 @@ public sealed class HotTubArtifact : Artifact, IRegisterableArtifact
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
-		var tooltips = base.GetExtraTooltips() ?? new();
+		var tooltips = base.GetExtraTooltips() ?? [];
 		tooltips.Add(Instance.Api.GetSmugTooltip());
 		return tooltips;
 	}

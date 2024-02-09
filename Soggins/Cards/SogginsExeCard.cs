@@ -38,36 +38,34 @@ public sealed class SogginsExeCard : Card, IRegisterableCard, IFrogproofCard
 		DB.story.all[$"{Key()}_0"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { "comp" },
-			lookup = new() { $"summon{Instance.SogginsDeck.GlobalName}" },
-			oncePerCombatTags = new() { $"summon{Instance.SogginsDeck.GlobalName}Tag" },
+			allPresent = ["comp"],
+			lookup = [$"summon{Instance.SogginsDeck.GlobalName}"],
+			oncePerCombatTags = [$"summon{Instance.SogginsDeck.GlobalName}Tag"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = "comp",
 					Text = "I can feel my CPU slowing down.",
 					loopTag = "squint"
 				}
-			}
+			]
 		};
 		DB.story.all[$"{Key()}_1"] = new()
 		{
 			type = NodeType.combat,
-			allPresent = new() { "comp" },
-			lookup = new() { $"summon{Instance.SogginsDeck.GlobalName}" },
-			oncePerCombatTags = new() { $"summon{Instance.SogginsDeck.GlobalName}Tag" },
+			allPresent = ["comp"],
+			lookup = [$"summon{Instance.SogginsDeck.GlobalName}"],
+			oncePerCombatTags = [$"summon{Instance.SogginsDeck.GlobalName}Tag"],
 			oncePerRun = true,
-			lines = new()
-			{
+			lines = [
 				new CustomSay()
 				{
 					who = "comp",
 					Text = "The smugness is unbearable.",
 					loopTag = "squint"
 				}
-			}
+			]
 		};
 	}
 
@@ -107,7 +105,7 @@ public sealed class SogginsExeCard : Card, IRegisterableCard, IFrogproofCard
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		List<CardAction> actions = new();
+		List<CardAction> actions = [];
 		if (!Instance.Api.IsSmugEnabled(s, s.ship))
 			actions.Add(new AEnableSmug());
 

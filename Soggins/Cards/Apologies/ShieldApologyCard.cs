@@ -19,13 +19,12 @@ public sealed class ShieldApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new AStatus
 			{
 				status = Status.shield,
 				statusAmount = 1,
 				targetPlayer = true
 			}
-		};
+		];
 }

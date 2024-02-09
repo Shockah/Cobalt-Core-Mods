@@ -19,8 +19,7 @@ public sealed class MissileApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new ASpawn
 			{
 				thing = new Missile
@@ -29,5 +28,5 @@ public sealed class MissileApologyCard : ApologyCard, IRegisterableCard
 					missileType = MissileType.normal
 				}
 			}
-		};
+		];
 }

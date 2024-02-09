@@ -46,11 +46,10 @@ public sealed class MisprintedApologyArtifact : Artifact, IRegisterableArtifact
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			lookup = new() { $"{Key()}Trigger" },
-			allPresent = new() { Instance.SogginsDeck.GlobalName },
-			hasArtifacts = new() { Key() },
-			lines = new()
-			{
+			lookup = [$"{Key()}Trigger"],
+			allPresent = [Instance.SogginsDeck.GlobalName],
+			hasArtifacts = [Key()],
+			lines = [
 				new CustomSay()
 				{
 					who = Instance.SogginsDeck.GlobalName,
@@ -59,8 +58,7 @@ public sealed class MisprintedApologyArtifact : Artifact, IRegisterableArtifact
 				},
 				new SaySwitch()
 				{
-					lines = new()
-					{
+					lines = [
 						new CustomSay()
 						{
 							who = Deck.dizzy.Key(),
@@ -73,9 +71,9 @@ public sealed class MisprintedApologyArtifact : Artifact, IRegisterableArtifact
 							Text = "You've been spending all the paper on these?",
 							loopTag = "mad"
 						}
-					}
+					]
 				}
-			}
+			]
 		};
 	}
 
@@ -84,7 +82,7 @@ public sealed class MisprintedApologyArtifact : Artifact, IRegisterableArtifact
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
-		var tooltips = base.GetExtraTooltips() ?? new();
+		var tooltips = base.GetExtraTooltips() ?? [];
 		tooltips.Add(new TTCard { card = new RandomPlaceholderApologyCard() });
 		return tooltips;
 	}

@@ -65,8 +65,7 @@ public sealed class TakeCoverCard : Card, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new AStatus
 			{
 				status = Status.tempShield,
@@ -85,5 +84,5 @@ public sealed class TakeCoverCard : Card, IRegisterableCard
 				disabled = flipped
 			},
 			new ADummyAction()
-		};
+		];
 }

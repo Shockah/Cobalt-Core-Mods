@@ -43,8 +43,7 @@ public sealed class BetterSpaceMineCard : Card, IRegisterableCard
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.A => new()
-			{
+			Upgrade.A => [
 				new ASpawn
 				{
 					thing = new SpaceMine
@@ -64,9 +63,8 @@ public sealed class BetterSpaceMineCard : Card, IRegisterableCard
 				new ADummyAction(),
 				new ADummyAction(),
 				new ADummyAction()
-			},
-			Upgrade.B => new()
-			{
+			],
+			Upgrade.B => [
 				new ASpawn
 				{
 					thing = new SpaceMine
@@ -92,9 +90,8 @@ public sealed class BetterSpaceMineCard : Card, IRegisterableCard
 				},
 				new ADummyAction(),
 				new ADummyAction()
-			},
-			_ => new()
-			{
+			],
+			_ => [
 				new ASpawn
 				{
 					thing = new SpaceMine
@@ -113,6 +110,6 @@ public sealed class BetterSpaceMineCard : Card, IRegisterableCard
 				new ADummyAction(),
 				new ADummyAction(),
 				new ADummyAction()
-			}
+			]
 		};
 }

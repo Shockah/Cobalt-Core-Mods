@@ -9,7 +9,7 @@ namespace Shockah.Shared;
 
 public class HookManager<THook> : IEnumerable<THook> where THook : class
 {
-	protected readonly OrderedList<THook, double> Hooks = new();
+	protected readonly OrderedList<THook, double> Hooks = [];
 
 	public void Register(THook hook, double priority)
 		=> Hooks.Add(hook, -priority);

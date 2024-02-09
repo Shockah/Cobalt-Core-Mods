@@ -31,7 +31,7 @@ public partial interface IKokoroApi
 		{
 			void Render(G g, ref Vec position, bool isDisabled, bool dontRender);
 			string GetTooltipDescription(State state, Combat? combat);
-			List<Tooltip> GetTooltips(State state, Combat? combat) => new();
+			List<Tooltip> GetTooltips(State state, Combat? combat) => [];
 		}
 
 		public interface IBoolExpression : IExpression

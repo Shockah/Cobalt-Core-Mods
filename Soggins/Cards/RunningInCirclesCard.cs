@@ -43,8 +43,7 @@ public sealed class RunningInCirclesCard : Card, IRegisterableCard
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		List<CardAction> actions = new()
-		{
+		List<CardAction> actions = [
 			new AMove
 			{
 				dir = 1,
@@ -69,7 +68,7 @@ public sealed class RunningInCirclesCard : Card, IRegisterableCard
 				statusAmount = 1,
 				targetPlayer = true
 			}
-		};
+		];
 		if (upgrade == Upgrade.A)
 			actions.Insert(0, new AStatus
 			{

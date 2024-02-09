@@ -14,7 +14,7 @@ public sealed class OrderedList<TElement, TOrderingValue> : IReadOnlyList<TEleme
 		TOrderingValue OrderingValue
 	);
 
-	private readonly List<Entry> Entries = new();
+	private readonly List<Entry> Entries = [];
 
 	public int Count
 		=> Entries.Count;

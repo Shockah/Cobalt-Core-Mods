@@ -53,8 +53,7 @@ public sealed class StopItCard : Card, IRegisterableCard, IFrogproofCard
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.B => new()
-			{
+			Upgrade.B => [
 				new ADrawCard
 				{
 					count = 2
@@ -67,9 +66,8 @@ public sealed class StopItCard : Card, IRegisterableCard, IFrogproofCard
 				},
 				new ADummyAction(),
 				new ADummyAction()
-			},
-			_ => new()
-			{
+			],
+			_ => [
 				new AStatus
 				{
 					status = (Status)Instance.FrogproofingStatus.Id!.Value,
@@ -78,6 +76,6 @@ public sealed class StopItCard : Card, IRegisterableCard, IFrogproofCard
 				},
 				new ADummyAction(),
 				new ADummyAction()
-			}
+			]
 		};
 }

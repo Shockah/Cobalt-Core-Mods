@@ -71,8 +71,7 @@ public sealed class ExtraApologyCard : Card, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			new AStatus
 			{
 				status = GetStatus(),
@@ -84,7 +83,7 @@ public sealed class ExtraApologyCard : Card, IRegisterableCard
 				card = IsDuringTryPlayCard ? SmugStatusManager.GenerateAndTrackApology(s, c, s.rngActions) : new RandomPlaceholderApologyCard(),
 				destination = CardDestination.Hand
 			}
-		};
+		];
 
 	private static void Combat_TryPlayCard_Prefix()
 		=> IsDuringTryPlayCard = true;

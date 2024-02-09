@@ -51,8 +51,7 @@ public sealed class BegForMercyCard : Card, IRegisterableCard, IFrogproofCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> new()
-		{
+		=> [
 			Instance.KokoroApi.ConditionalActions.Make(
 				Instance.KokoroApi.ConditionalActions.Equation(
 					Instance.KokoroApi.ConditionalActions.Status((Status)Instance.SmugStatus.Id!.Value),
@@ -67,5 +66,5 @@ public sealed class BegForMercyCard : Card, IRegisterableCard, IFrogproofCard
 					targetPlayer = true
 				}
 			)
-		};
+		];
 }
