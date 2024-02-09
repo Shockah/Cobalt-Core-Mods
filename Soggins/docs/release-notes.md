@@ -4,6 +4,8 @@
 
 ## Upcoming version
 
+* Added Dracula Blood Tap integration.
+* Added alternative starters (More Difficulties integration).
 * API improvements for Nickel mods.
 
 ## 1.2.2

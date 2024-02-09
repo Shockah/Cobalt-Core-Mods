@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Shockah.Soggins;
 
-public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IStatusManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest
+public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IStatusManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest, ICustomEventManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = null!;
@@ -543,5 +543,52 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		SogginsCharacter.AddNameLocalisation(I18n.SogginsName);
 		SogginsCharacter.AddDescLocalisation(I18n.SogginsDescription);
 		registry.RegisterCharacter(SogginsCharacter);
+	}
+
+	public void LoadManifest(ICustomEventHub eventHub)
+	{
+		eventHub.ConnectToEvent<Func<IManifest, IPrelaunchContactPoint>>("Nickel::OnAfterDbInitPhaseFinished", contactPointProvider =>
+		{
+			var contactPoint = contactPointProvider(this);
+
+			if (contactPoint.GetApi<IDraculaApi>("Shockah.Dracula") is { } draculaApi)
+			{
+				draculaApi.RegisterBloodTapOptionProvider((Status)FrogproofingStatus.Id!.Value, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+				]);
+				draculaApi.RegisterBloodTapOptionProvider((Status)ExtraApologiesStatus.Id!.Value, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+				]);
+				draculaApi.RegisterBloodTapOptionProvider((Status)ConstantApologiesStatus.Id!.Value, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 2 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+				]);
+				draculaApi.RegisterBloodTapOptionProvider((Status)BidingTimeStatus.Id!.Value, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+				]);
+				draculaApi.RegisterBloodTapOptionProvider((Status)DoublersLuckStatus.Id!.Value, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+				]);
+				draculaApi.RegisterBloodTapOptionProvider(Status.backwardsMissiles, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+				]);
+			}
+
+			contactPoint.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties")?.RegisterAltStarters(
+				deck: (Deck)SogginsDeck.Id!.Value,
+				starterDeck: new StarterDeck
+				{
+					cards = [
+						new TakeCoverCard(),
+						new ThoughtsAndPrayersCard()
+					]
+				}
+			);
+		});
 	}
 }
