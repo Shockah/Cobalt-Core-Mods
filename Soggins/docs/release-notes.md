@@ -4,9 +4,11 @@
 
 ## Upcoming version
 
+* Now comes with a `nickel.json` file.
 * Added Dracula Blood Tap integration.
 * Added alternative starters (More Difficulties integration).
 * API improvements for Nickel mods.
+* Fixed some dialogue never triggering.
 
 ## 1.2.2
 Released 6 January 2024.

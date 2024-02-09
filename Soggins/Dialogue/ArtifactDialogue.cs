@@ -21,7 +21,6 @@ internal static class ArtifactDialogue
 		{
 			type = NodeType.combat,
 			oncePerRun = true,
-			lookup = new() { "EnergyPrepTrigger" },
 			allPresent = new() { soggins },
 			hasArtifacts = new() { "EnergyPrep" },
 			lines = new()
