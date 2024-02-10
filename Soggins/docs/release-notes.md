@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming version
+## 1.3.0
+Released 10 January 2024.
 
 * Now comes with a `nickel.json` file.
 * Added Dracula Blood Tap integration.
