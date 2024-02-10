@@ -48,7 +48,7 @@ internal static class EventDialogue
 			Text = "My experience will be of use to you all when I'm gone.",
 			loopTag = Instance.SmugPortraitAnimations[3].Tag
 		});
-		DB.story.all[$"CrystallizedFriendEvent_{soggins}"] = new()
+		DB.story.all[$"CrystallizedFriendEvent_{Instance.SogginsDeck.Id!}"] = new()
 		{
 			type = NodeType.@event,
 			oncePerRun = true,
