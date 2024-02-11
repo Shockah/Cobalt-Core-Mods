@@ -36,7 +36,7 @@ internal sealed class LayoutCard : Card, IRegisterable
 		=> [
 			new ASpecificCardOffering
 			{
-				Destination = upgrade == Upgrade.A ? CardDestination.Hand : CardDestination.Deck,
+				Destination = upgrade == Upgrade.A ? CardDestination.Hand : CardDestination.Discard,
 				Cards = [
 					new BulletPointCard(),
 					new SlideTransitionCard(),

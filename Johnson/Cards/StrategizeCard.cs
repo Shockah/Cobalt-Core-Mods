@@ -39,12 +39,12 @@ internal sealed class StrategizeCard : Card, IRegisterable
 		{
 			actions.Add(new AAddCard
 			{
-				card = new LeverageCard(),
+				card = new BrainstormCard(),
 				destination = CardDestination.Discard
 			});
 			actions.Add(new AAddCard
 			{
-				card = new BrainstormCard(),
+				card = new LeverageCard(),
 				destination = CardDestination.Discard
 			});
 		}
@@ -52,17 +52,17 @@ internal sealed class StrategizeCard : Card, IRegisterable
 		{
 			actions.Add(new ASpecificCardOffering
 			{
-				Destination = CardDestination.Deck,
+				Destination = CardDestination.Discard,
 				Cards = [
-					new LeverageCard(),
 					new BrainstormCard(),
+					new LeverageCard(),
 				],
 			});
 			actions.Add(new ATooltipAction
 			{
 				Tooltips = [
-					new TTCard { card = new LeverageCard() },
 					new TTCard { card = new BrainstormCard() },
+					new TTCard { card = new LeverageCard() },
 				]
 			});
 		}
