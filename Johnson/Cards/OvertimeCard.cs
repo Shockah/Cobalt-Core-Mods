@@ -27,14 +27,14 @@ internal sealed class OvertimeCard : Card, IRegisterable
 		=> new()
 		{
 			artTint = "FFFFFF",
-			cost = upgrade == Upgrade.B ? 3 : 2,
-			exhaust = upgrade != Upgrade.B
+			cost = upgrade == Upgrade.A ? 1 : 2,
+			exhaust = true
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.A => [
+			Upgrade.B => [
 				new ADrawCard
 				{
 					count = 2

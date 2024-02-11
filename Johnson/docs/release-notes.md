@@ -5,6 +5,7 @@
 ## Upcoming version
 
 * Layout and Strategize now put the cards in the discard pile instead of the draw pile.
+* Rebalanced Overtime.
 * Fixed Strengthen not updating text card attacks visually.
 
 ## 1.0.2
