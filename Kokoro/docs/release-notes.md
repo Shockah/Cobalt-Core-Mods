@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming version
+
+* Fixed the `APlaySpecificCardFromAnywhere` action's behavior.
+
 ## 1.3.1
 Released 22 January 2024.
 
