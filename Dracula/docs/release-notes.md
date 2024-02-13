@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* The Wings of Night artifact now gives Bat Form A instead of Bat Form (the card is discounted).
 * Fixed Bat Form crashing when upgrading while a specific quad option is selected.
 * Fixed Death Coil tooltip being wrong on card reward screen.
 

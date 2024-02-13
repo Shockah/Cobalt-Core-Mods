@@ -30,6 +30,7 @@ internal sealed class WingsOfNightArtifact : Artifact, IDraculaArtifact
 			{
 				card = new BatFormCard
 				{
+					upgrade = Upgrade.A,
 					temporaryOverride = true,
 					exhaustOverride = true
 				}
@@ -47,6 +48,7 @@ internal sealed class WingsOfNightArtifact : Artifact, IDraculaArtifact
 			{
 				card = new BatFormCard
 				{
+					upgrade = Upgrade.A,
 					temporaryOverride = true,
 					exhaustOverride = true
 				},

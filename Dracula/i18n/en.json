@@ -174,7 +174,7 @@
         },
         "WingsOfNight": {
             "name": "WINGS OF NIGHT",
-            "description": "Every turn add a <c=cardtrait>temporary</c> <c=card>Bat Form</c> with <c=cardtrait>exhaust</c> to your hand and <c=downside>lose 1 <c=status>EVADE</c></c>."
+            "description": "Every turn add a <c=cardtrait>temporary</c> <c=card>Bat Form A</c> with <c=cardtrait>exhaust</c> to your hand and <c=downside>lose 1 <c=status>EVADE</c></c>."
         }
     },
     "card": {
