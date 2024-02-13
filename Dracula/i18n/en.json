@@ -130,6 +130,9 @@
                     "Whenever you don't have a <c=card>Bat Debit Card</c> in your hand, gain one.",
                     "Whenever you <c=heal>heal any amount of hull</c>, add 1 <c=status>blood</c> to the <c=artifact>Blood Bank</c>.",
                     "Limited to 5 <c=status>blood</c>. Starts with 3 <c=status>blood</c> stored."
+                ],
+                "healBoosterRestrictionDescription": [
+                    "<c=downside><c=artifact>Heal Booster</c> now only triggers once per turn.</c>"
                 ]
             },
             "ABType": {
