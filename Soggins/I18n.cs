@@ -3,7 +3,7 @@
 internal static class I18n
 {
 	public static string SogginsColor => "B79CE5";
-	public static string SogginsName => $"<c={SogginsColor}>Soggins</c>";
+	public static string SogginsName => $"Soggins";
 	public static string SogginsDescription => $"<c={SogginsColor}>SOGGINS</c>\nThis is that frog who keeps making mistakes. Why did we let him on the ship?";
 
 	public static string SmugArtifactName => "Smug";
@@ -102,9 +102,9 @@ internal static class I18n
 
 	// EXE card
 	public static string ExeCardName => "Soggins.EXE";
-	public static string ExeCardText0 => $"Get <c=status>SMUG</c>. Add 1 of 2 <c=cardtrait>discnt, temp</c> {SogginsName} cards to your hand.";
-	public static string ExeCardTextA => $"Get 1 <c=status>SMUG</c>. Add 1 of 2 <c=cardtrait>discnt, temp</c> {SogginsName} cards to your hand.";
-	public static string ExeCardTextB => $"<c=status>SMUG</c> = 0. Add 1 of 3 <c=cardtrait>discnt, temp</c> {SogginsName} cards to your hand.";
+	public static string ExeCardText0 => $"Get <c=status>SMUG</c>. Add 1 of 2 <c=cardtrait>discnt, temp</c> <c={SogginsColor}>{SogginsName}</c> cards to your hand.";
+	public static string ExeCardTextA => $"Get 1 <c=status>SMUG</c>. Add 1 of 2 <c=cardtrait>discnt, temp</c> <c={SogginsColor}>{SogginsName}</c> cards to your hand.";
+	public static string ExeCardTextB => $"<c=status>SMUG</c> = 0. Add 1 of 3 <c=cardtrait>discnt, temp</c> <c={SogginsColor}>{SogginsName}</c> cards to your hand.";
 
 	public static readonly string[] ApologyFlavorTexts = [
 		"I'm sorry you feel that way",
