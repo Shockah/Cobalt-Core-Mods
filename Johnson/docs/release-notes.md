@@ -6,6 +6,7 @@
 
 * Layout and Strategize now put the cards in the discard pile instead of the draw pile.
 * Rebalanced Overtime.
+* Added alternative starters for the [More Difficulty Options](https://github.com/TheJazMaster/MoreDifficulties) mod.
 * Fixed Strengthen not updating text card attacks visually.
 
 ## 1.0.2

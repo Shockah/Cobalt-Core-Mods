@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
+using Nickel.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -254,6 +255,17 @@ public sealed class ModEntry : SimpleMod
 		StrengthenIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/Strengthen.png"));
 		StrengthenHandIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/StrengthenHand.png"));
 		DiscountHandIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/DiscountHand.png"));
+
+		helper.ModRegistry.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", new SemanticVersion(1, 3, 0))?.RegisterAltStarters(
+			deck: JohnsonDeck.Deck,
+			starterDeck: new StarterDeck
+			{
+				cards = [
+					new BuyLowCard(),
+					new ProfitMarginCard()
+				]
+			}
+		);
 	}
 
 	public override object? GetApi(IModManifest requestingMod)
