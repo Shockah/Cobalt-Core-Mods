@@ -123,8 +123,13 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 		{
 			var progress = ship.Get(ModEntry.Instance.TransfusingStatus.Status);
 			var total = ship.Get(ModEntry.Instance.TransfusionStatus.Status);
+			var missingHull = ship.hullMax - ship.hull;
+			var healingRequiredForMax = Math.Max(missingHull - (ship.isPlayerShip ? g.state.EnumerateAllArtifacts().Sum(a => a.ModifyHealAmount(progress, g.state, true)) : 0), 0);
+			var wouldHealToFullNow = progress >= healingRequiredForMax;
 
-			if (progress <= 0 || total <= 0 || progress < total)
+			if (progress <= 0 || total <= 0 || (progress < total))
+				return;
+			if (progress < total && !wouldHealToFullNow)
 				return;
 			if (ship.IsTransfusionDisabled())
 				return;
