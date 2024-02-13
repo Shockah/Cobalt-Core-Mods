@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming version
+## 1.0.3
+Released 13 February 2024.
 
 * Layout and Strategize now put the cards in the discard pile instead of the draw pile.
 * Rebalanced Overtime.
