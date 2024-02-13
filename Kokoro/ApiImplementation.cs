@@ -22,12 +22,6 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 		this.Manifest = manifest;
 	}
 
-	public IEvadeHook VanillaEvadeHook
-		=> Kokoro.VanillaEvadeHook.Instance;
-
-	public IEvadeHook VanillaDebugEvadeHook
-		=> Kokoro.VanillaDebugEvadeHook.Instance;
-
 	#region Generic
 	public TimeSpan TotalGameTime
 		=> Instance.TotalGameTime;
@@ -158,11 +152,26 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 	#endregion
 
 	#region EvadeHook
+	public IEvadeHook VanillaEvadeHook
+		=> Kokoro.VanillaEvadeHook.Instance;
+
+	public IEvadeHook VanillaDebugEvadeHook
+		=> Kokoro.VanillaDebugEvadeHook.Instance;
+
 	public void RegisterEvadeHook(IEvadeHook hook, double priority)
 		=> Instance.EvadeManager.Register(hook, priority);
 
 	public void UnregisterEvadeHook(IEvadeHook hook)
 		=> Instance.EvadeManager.Unregister(hook);
+
+	public bool IsEvadePossible(State state, Combat combat, EvadeHookContext context)
+		=> Instance.EvadeManager.IsEvadePossible(state, combat, context);
+
+	public IEvadeHook? GetEvadeHandlingHook(State state, Combat combat, EvadeHookContext context)
+		=> Instance.EvadeManager.GetHandlingHook(state, combat, context);
+
+	public void AfterEvade(State state, Combat combat, int direction, IEvadeHook hook)
+		=> Instance.EvadeManager.AfterEvade(state, combat, direction, hook);
 	#endregion
 
 	#region DroneShiftHook
@@ -177,6 +186,15 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 
 	public void UnregisterDroneShiftHook(IDroneShiftHook hook)
 		=> Instance.DroneShiftManager.Unregister(hook);
+
+	public bool IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
+		=> Instance.DroneShiftManager.IsDroneShiftPossible(state, combat, context);
+
+	public IDroneShiftHook? GetDroneShiftHandlingHook(State state, Combat combat, DroneShiftHookContext context)
+		=> Instance.DroneShiftManager.GetHandlingHook(state, combat, context);
+
+	public void AfterDroneShift(State state, Combat combat, int direction, IDroneShiftHook hook)
+		=> Instance.DroneShiftManager.AfterDroneShift(state, combat, direction, hook);
 	#endregion
 
 	#region ArtifactIconHook

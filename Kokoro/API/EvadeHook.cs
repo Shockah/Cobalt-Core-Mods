@@ -6,6 +6,10 @@ public partial interface IKokoroApi
 	IEvadeHook VanillaDebugEvadeHook { get; }
 	void RegisterEvadeHook(IEvadeHook hook, double priority);
 	void UnregisterEvadeHook(IEvadeHook hook);
+
+	bool IsEvadePossible(State state, Combat combat, EvadeHookContext context);
+	IEvadeHook? GetEvadeHandlingHook(State state, Combat combat, EvadeHookContext context);
+	void AfterEvade(State state, Combat combat, int direction, IEvadeHook hook);
 }
 
 public enum EvadeHookContext

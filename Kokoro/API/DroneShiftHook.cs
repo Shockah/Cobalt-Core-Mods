@@ -6,6 +6,10 @@ public partial interface IKokoroApi
 	IDroneShiftHook VanillaDebugDroneShiftHook { get; }
 	void RegisterDroneShiftHook(IDroneShiftHook hook, double priority);
 	void UnregisterDroneShiftHook(IDroneShiftHook hook);
+
+	bool IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context);
+	IDroneShiftHook? GetDroneShiftHandlingHook(State state, Combat combat, DroneShiftHookContext context);
+	void AfterDroneShift(State state, Combat combat, int direction, IDroneShiftHook hook);
 }
 
 public enum DroneShiftHookContext

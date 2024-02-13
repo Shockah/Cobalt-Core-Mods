@@ -27,6 +27,12 @@ public sealed class DroneShiftManager : HookManager<IDroneShiftHook>
 		}
 		return null;
 	}
+
+	public void AfterDroneShift(State state, Combat combat, int direction, IDroneShiftHook hook)
+	{
+		foreach (var hooks in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
+			hooks.AfterDroneShift(state, combat, direction, hook);
+	}
 }
 
 public sealed class VanillaDroneShiftHook : IDroneShiftHook

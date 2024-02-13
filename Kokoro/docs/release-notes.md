@@ -4,6 +4,7 @@
 
 ## Upcoming version
 
+* Added extra evade and droneshift related APIs.
 * Fixed the `APlaySpecificCardFromAnywhere` action's behavior.
 
 ## 1.3.1

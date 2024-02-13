@@ -28,6 +28,12 @@ public sealed class EvadeManager : HookManager<IEvadeHook>
 		}
 		return null;
 	}
+
+	public void AfterEvade(State state, Combat combat, int direction, IEvadeHook hook)
+	{
+		foreach (var hooks in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
+			hooks.AfterEvade(state, combat, direction, hook);
+	}
 }
 
 public sealed class VanillaEvadeHook : IEvadeHook
