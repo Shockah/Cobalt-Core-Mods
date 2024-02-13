@@ -203,8 +203,8 @@ internal sealed class BatFormCard : Card, IDraculaCard
 		if (card is not BatFormCard batFormCard)
 			return sprite;
 		return batFormCard.upgrade == Upgrade.B
-			? TriadIcon[batFormCard.FlipIndex].Sprite
-			: QuadIcon[batFormCard.FlipIndex].Sprite;
+			? TriadIcon[batFormCard.FlipIndex % TriadIcon.Count].Sprite
+			: QuadIcon[batFormCard.FlipIndex % QuadIcon.Count].Sprite;
 	}
 
 	private static bool Card_Render_Transpiler_ReplaceFlipped(bool flipped, Card card)

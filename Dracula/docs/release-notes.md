@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Bat Form crashing when upgrading while a specific quad option is selected.
+
 ## 1.0.2
 Released 3 February 2024.
 
