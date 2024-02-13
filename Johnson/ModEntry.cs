@@ -35,15 +35,12 @@ public sealed class ModEntry : SimpleMod
 	internal ISpriteEntry StrengthenHandIcon { get; }
 	internal ISpriteEntry DiscountHandIcon { get; }
 
-	internal static IReadOnlyList<Type> StarterCardTypes { get; } = [
-		typeof(KickstartCard),
-		typeof(LayoutCard),
-	];
-
 	internal static IReadOnlyList<Type> CommonCardTypes { get; } = [
 		typeof(BuyLowCard),
 		typeof(CaffeineBuzzCard),
 		typeof(InvestmentCard),
+		typeof(KickstartCard),
+		typeof(LayoutCard),
 		typeof(ProfitMarginCard),
 		typeof(RevampCard),
 		typeof(StrategizeCard),
@@ -81,8 +78,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static IEnumerable<Type> AllCardTypes
-		=> StarterCardTypes
-			.Concat(CommonCardTypes)
+		=> CommonCardTypes
 			.Concat(UncommonCardTypes)
 			.Concat(RareCardTypes)
 			.Concat(SpecialCardTypes);
@@ -207,7 +203,6 @@ public sealed class ModEntry : SimpleMod
 			Deck = JohnsonDeck.Deck,
 			Description = this.AnyLocalizations.Bind(["character", "description"]).Localize,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CharacterFrame.png")).Sprite,
-			StarterCardTypes = StarterCardTypes,
 			NeutralAnimation = new()
 			{
 				Deck = JohnsonDeck.Deck,
@@ -222,6 +217,13 @@ public sealed class ModEntry : SimpleMod
 				LoopTag = "mini",
 				Frames = [
 					helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Character/Mini.png")).Sprite
+				]
+			},
+			Starters = new()
+			{
+				cards = [
+					new KickstartCard(),
+					new LayoutCard()
 				]
 			}
 		});
