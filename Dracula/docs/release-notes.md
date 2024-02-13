@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Fixed Bat Form crashing when upgrading while a specific quad option is selected.
+* Fixed Death Coil tooltip being wrong on card reward screen.
 
 ## 1.0.2
 Released 3 February 2024.

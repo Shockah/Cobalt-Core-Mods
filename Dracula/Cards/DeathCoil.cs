@@ -109,7 +109,7 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 
 		public string GetTooltipDescription(State state, Combat? combat)
 		{
-			if (state.IsOutsideRun())
+			if (state.IsOutsideRun() || state == DB.fakeState)
 				return ModEntry.Instance.Localizations.Localize(["condition", "hull", BelowHalf ? "below" : "above", "stateless"]);
 			else
 				return ModEntry.Instance.Localizations.Localize(["condition", "hull", BelowHalf ? "below" : "above", "stateful"], new { Hull = state.ship.hullMax / 2 });
