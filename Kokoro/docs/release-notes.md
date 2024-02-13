@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming version
+## 1.4.0
+Released 13 February 2024.
 
 * Added extra evade and droneshift related APIs.
 * Fixed the `APlaySpecificCardFromAnywhere` action's behavior.
