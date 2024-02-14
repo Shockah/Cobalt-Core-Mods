@@ -15,7 +15,7 @@ Displays a "NEW!" indicator next to cards and artifacts you've never picked (whi
 
 **Dracula** -- A so-called "last living human". His cards often *self-hurt*, but they also often *heal*.  
 Dracula also comes with his own ride -- the **Batmobile**.  
-\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fdracula-1.0.2)] \[[release notes](Dracula/docs/release-notes.md)] \[[README/source code](Dracula)]
+\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fdracula-1.0.3)] \[[release notes](Dracula/docs/release-notes.md)] \[[README/source code](Dracula)]
 
 [![Card preview screenshot](Dracula/docs/images/preview-none-thumb.png)](Dracula/docs/images/preview-none.png)
 [![Card A upgrade preview screenshot](Dracula/docs/images/preview-a-thumb.png)](Dracula/docs/images/preview-a.png)

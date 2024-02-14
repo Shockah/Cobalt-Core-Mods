@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.3
+Released 14 February 2024.
 
 * The Wings of Night artifact now gives Bat Form A instead of Bat Form (the card is discounted).
 * The Heal Booster artifact is now limited to triggering once per turn when on the Batmobile.
