@@ -5,8 +5,9 @@
 ## Upcoming release
 
 * The Wings of Night artifact now gives Bat Form A instead of Bat Form (the card is discounted).
-* The Transfusion status now also triggers when it would fully repair the ship.
 * The Heal Booster artifact is now limited to triggering once per turn when on the Batmobile.
+* The Transfusion status now also triggers when it would fully repair the ship.
+* The Blood Mirror status now doubles the damage done.
 * Red Thirst now also draws a card.
 * Fixed Bat Form crashing when upgrading while a specific quad option is selected.
 * Fixed Death Coil tooltip being wrong on card reward screen.

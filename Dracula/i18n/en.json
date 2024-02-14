@@ -64,7 +64,7 @@
         },
         "BloodMirror": {
             "name": "Blood Mirror",
-            "description": "Whenever you take hull damage, your enemy also takes as much. <c=downside>Decreases by 1 at the start of each turn.</c>"
+            "description": "Whenever you take hull damage, your enemy takes double as much. <c=downside>Decreases by 1 at the start of each turn.</c>"
         },
         "Transfusion": {
             "name": "Transfusion",

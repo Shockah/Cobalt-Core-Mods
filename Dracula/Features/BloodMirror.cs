@@ -63,7 +63,7 @@ internal sealed class BloodMirrorManager : IStatusLogicHook
 		var action = new AHurt
 		{
 			targetPlayer = !__instance.isPlayerShip,
-			hurtAmount = damageTaken,
+			hurtAmount = damageTaken * 2,
 			statusPulse = ModEntry.Instance.BloodMirrorStatus.Status
 		};
 		action.SetBloodMirrorDepth(BloodMirrorDepth + 1);
