@@ -44,6 +44,12 @@ internal sealed class RedThirstCard : Card, IDraculaCard
 				},
 				new AStatus
 				{
+					targetPlayer = true,
+					status = Status.drawNextTurn,
+					statusAmount = 1
+				},
+				new AStatus
+				{
 					targetPlayer = false,
 					status = ModEntry.Instance.BloodMirrorStatus.Status,
 					statusAmount = 1
@@ -53,6 +59,10 @@ internal sealed class RedThirstCard : Card, IDraculaCard
 				new AEnergy
 				{
 					changeAmount = 2
+				},
+				new ADrawCard
+				{
+					count = 1
 				},
 				new AStatus
 				{
