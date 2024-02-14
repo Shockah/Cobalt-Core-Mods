@@ -5,6 +5,7 @@
 ## Upcoming version
 
 * Fixed Soggins name being always colored in various places (causing issues in other places).
+* Fixed Smug rolling for RNG even if there was no chance for a botch nor double (in a no-Smug run).
 
 ## 1.3.0
 Released 10 January 2024.

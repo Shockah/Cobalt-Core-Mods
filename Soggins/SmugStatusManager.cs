@@ -130,6 +130,8 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			return SmugResult.Botch;
 		if (botchChance <= 0 && doubleChance >= 1)
 			return SmugResult.Double;
+		if (botchChance <= 0 && doubleChance <= 0)
+			return SmugResult.Normal;
 
 		var result = rng.Next();
 		if (result < botchChance)
