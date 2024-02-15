@@ -1,4 +1,5 @@
-﻿using Nanoray.PluginManager;
+﻿using FSPRO;
+using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +15,8 @@ internal static class SacrificeExt
 
 internal sealed class SacrificeCard : Card, IDraculaCard
 {
-	private const CardBrowse.Source ExhaustOrSingleUseNonSacrificeBrowseSource = (CardBrowse.Source)2137201;
-	private const CardBrowse.Source HandDrawDiscardNonSacrificeBrowseSource = (CardBrowse.Source)2137202;
+	private const CardBrowse.Source ExhaustOrSingleUseBrowseSource = (CardBrowse.Source)2137201;
+	private const CardBrowse.Source HandDrawDiscardBrowseSource = (CardBrowse.Source)2137202;
 
 	private static bool IsDuringTryPlayCard { get; set; } = false;
 
@@ -42,17 +43,17 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 		}, 0);
 
 		CustomCardBrowse.RegisterCustomCardSource(
-			ExhaustOrSingleUseNonSacrificeBrowseSource,
+			ExhaustOrSingleUseBrowseSource,
 			new(
 				(_, _, cards) => ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "ui", "exhaustOrSingleUse"], new { Count = cards.Count }),
-				(_, c) => (c?.exhausted ?? []).Concat(c?.GetSingleUseCardsPlayed() ?? []).Where(c => c is not SacrificeCard).ToList()
+				(_, c) => (c?.exhausted ?? []).Concat(c?.GetSingleUseCardsPlayed() ?? []).ToList()
 			)
 		);
 		CustomCardBrowse.RegisterCustomCardSource(
-			HandDrawDiscardNonSacrificeBrowseSource,
+			HandDrawDiscardBrowseSource,
 			new(
 				(_, _, cards) => ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "ui", "handDrawDiscard"], new { Count = cards.Count }),
-				(s, c) => s.deck.Concat(c?.hand ?? []).Concat(c?.discard ?? []).Where(c => c is not SacrificeCard).ToList()
+				(s, c) => s.deck.Concat(c?.hand ?? []).Concat(c?.discard ?? []).ToList()
 			)
 		);
 	}
@@ -69,18 +70,19 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 		=> [
 			new ACardSelect
 			{
-				browseSource = upgrade == Upgrade.A ? HandDrawDiscardNonSacrificeBrowseSource : CardBrowse.Source.Hand,
+				browseSource = upgrade == Upgrade.A ? HandDrawDiscardBrowseSource : CardBrowse.Source.Hand,
 				browseAction = new ExhaustCardBrowseAction
 				{
 					OnSuccess = [
 						new ACardSelect
 						{
 							browseSource = upgrade == Upgrade.B
-								? ExhaustOrSingleUseNonSacrificeBrowseSource
+								? ExhaustOrSingleUseBrowseSource
 								: CardBrowse.Source.ExhaustPile,
 							browseAction = upgrade == Upgrade.B
 								? new PutCardInHandBrowseAction()
 								: new PlayCardFromAnywhereBrowseAction(),
+							ignoreCardType = Key()
 						}
 					]
 				},
@@ -112,11 +114,27 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 				return;
 			c.QueueImmediate(new List<CardAction>
 			{
-				new AExhaustOtherCard
+				new AFixedExhaustOtherCard
 				{
 					uuid = selectedCard.uuid
 				}
 			}.Concat(OnSuccess ?? []).ToList());
+		}
+	}
+
+	private sealed class AFixedExhaustOtherCard : AExhaustOtherCard
+	{
+		public override void Begin(G g, State s, Combat c)
+		{
+			timer = 0.0;
+			if (s.FindCard(uuid) is not Card card)
+				return;
+
+			card.ExhaustFX();
+			Audio.Play(Event.CardHandling);
+			s.RemoveCardFromWhereverItIs(uuid);
+			c.SendCardToExhaust(s, card);
+			timer = 0.3;
 		}
 	}
 

@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Sacrifice being able to cast Sacrifice from exhaust.
+* Fixed Sacrifice A not exhausting cards not in hand.
+
 ## 1.0.3
 Released 14 February 2024.
 
