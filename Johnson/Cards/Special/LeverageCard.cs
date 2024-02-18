@@ -38,13 +38,13 @@ internal sealed class LeverageCard : Card, IRegisterable
 			{
 				targetPlayer = true,
 				status = Status.shield,
-				statusAmount = upgrade == Upgrade.B ? 5 : 3,
+				statusAmount = upgrade == Upgrade.A ? 4 : 2,
 			},
 			new AStatus
 			{
 				targetPlayer = true,
 				status = Status.tempShield,
-				statusAmount = upgrade == Upgrade.A ? 5 : 3,
+				statusAmount = upgrade == Upgrade.B ? 5 : 3,
 			}
 		];
 }

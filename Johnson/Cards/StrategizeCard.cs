@@ -52,7 +52,7 @@ internal sealed class StrategizeCard : Card, IRegisterable
 		{
 			actions.Add(new ASpecificCardOffering
 			{
-				Destination = CardDestination.Discard,
+				Destination = CardDestination.Deck,
 				Cards = [
 					new BrainstormCard(),
 					new LeverageCard(),

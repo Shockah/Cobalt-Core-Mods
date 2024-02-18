@@ -27,8 +27,7 @@ internal sealed class ProfitMarginCard : Card, IRegisterable
 		=> new()
 		{
 			artTint = "FFFFFF",
-			cost = 1,
-			exhaust = upgrade == Upgrade.B
+			cost = upgrade == Upgrade.B ? 1 : 2
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
@@ -45,7 +44,7 @@ internal sealed class ProfitMarginCard : Card, IRegisterable
 				{
 					targetPlayer = true,
 					status = Status.shield,
-					statusAmount = 1
+					statusAmount = 2
 				},
 				new AStatus
 				{
@@ -58,14 +57,14 @@ internal sealed class ProfitMarginCard : Card, IRegisterable
 				new AStatus
 				{
 					targetPlayer = true,
-					status = Status.shield,
+					status = Status.tempShield,
 					statusAmount = 2
 				},
 				new AStatus
 				{
 					targetPlayer = true,
 					status = Status.temporaryCheap,
-					statusAmount = 2
+					statusAmount = 1
 				}
 			],
 			_ => [
@@ -73,7 +72,7 @@ internal sealed class ProfitMarginCard : Card, IRegisterable
 				{
 					targetPlayer = true,
 					status = Status.tempShield,
-					statusAmount = 2
+					statusAmount = 3
 				},
 				new AStatus
 				{

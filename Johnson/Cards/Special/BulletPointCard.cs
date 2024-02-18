@@ -44,7 +44,8 @@ internal sealed class BulletPointCard : Card, IRegisterable
 			});
 		actions.Add(new AAttack
 		{
-			damage = GetDmg(s, upgrade == Upgrade.A ? 4 : 3)
+			damage = GetDmg(s, upgrade == Upgrade.A ? 3 : 2),
+			piercing = true
 		});
 		return actions;
 	}

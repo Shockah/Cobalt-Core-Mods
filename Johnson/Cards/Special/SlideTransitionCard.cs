@@ -28,23 +28,17 @@ internal sealed class SlideTransitionCard : Card, IRegisterable
 		=> new()
 		{
 			artTint = "FFFFFF",
-			cost = upgrade == Upgrade.B ? 0 : 1,
-			exhaust = upgrade == Upgrade.B,
+			cost = upgrade == Upgrade.A ? 0 : 1,
+			flippable = true,
 			temporary = true
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new AStatus
+			new AMove
 			{
 				targetPlayer = true,
-				status = Status.evade,
-				statusAmount = upgrade switch
-				{
-					Upgrade.A => 3,
-					Upgrade.B => 4,
-					_ => 2
-				}
+				dir = upgrade == Upgrade.B ? 4 : 3
 			}
 		];
 }

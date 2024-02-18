@@ -38,16 +38,16 @@ internal sealed class BrainstormCard : Card, IRegisterable
 			{
 				count = upgrade switch
 				{
-					Upgrade.A => 5,
+					Upgrade.A => 2,
 					Upgrade.B => 3,
-					_ => 2
+					_ => 1
 				}
 			},
 			new AStatus
 			{
 				targetPlayer = true,
 				status = Status.drawNextTurn,
-				statusAmount = upgrade == Upgrade.B ? 3 : 2,
+				statusAmount = upgrade == Upgrade.A ? 4 : 3,
 			}
 		];
 }
