@@ -577,6 +577,9 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 					cards = [
 						new TakeCoverCard(),
 						new ThoughtsAndPrayersCard()
+					],
+					artifacts = [
+						new SmugArtifact()
 					]
 				}
 			);
