@@ -179,7 +179,6 @@ internal static class CombatPatches
 
 	private static bool Combat_RenderDroneShiftButtons_Transpiler_ShouldRender(G g, int direction)
 	{
-		Instance.Logger!.LogInformation("ya " + direction);
 		if (g.state.route is not Combat combat)
 			return false;
 		return Instance.DroneShiftManager.IsDroneShiftPossible(g.state, combat, direction, DroneShiftHookContext.Rendering);

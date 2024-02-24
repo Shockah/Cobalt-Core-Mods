@@ -21,7 +21,7 @@ internal sealed class IsaacRiggsArtifact : DuoArtifact, IEvadeHook, IDroneShiftH
 		=> -100;
 
 	bool? IEvadeHook.IsEvadePossible(State state, Combat combat, EvadeHookContext context)
-		=> state.ship.Get(Status.droneShift) > 0;
+		=> state.ship.Get(Status.droneShift) > 0 ? true : null;
 
 	void IEvadeHook.PayForEvade(State state, Combat combat, int direction)
 	{
