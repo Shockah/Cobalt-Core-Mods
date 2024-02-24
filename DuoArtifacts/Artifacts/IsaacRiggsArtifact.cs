@@ -35,7 +35,7 @@ internal sealed class IsaacRiggsArtifact : DuoArtifact, IEvadeHook, IDroneShiftH
 	}
 
 	bool? IDroneShiftHook.IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
-		=> state.EnumerateAllArtifacts().Any(a => a is IsaacRiggsArtifact) && state.ship.Get(Status.evade) > 0;
+		=> state.ship.Get(Status.evade) > 0 ? true : null;
 
 	void IDroneShiftHook.PayForDroneShift(State state, Combat combat, int direction)
 	{
