@@ -1,4 +1,6 @@
-﻿namespace Shockah.Kokoro;
+﻿using System.Collections.Generic;
+
+namespace Shockah.Kokoro;
 
 public partial interface IKokoroApi
 {
@@ -19,7 +21,9 @@ public enum DroneShiftHookContext
 
 public interface IDroneShiftHook
 {
+	bool? IsDroneShiftPossible(State state, Combat combat, int direction, DroneShiftHookContext context) => IsDroneShiftPossible(state, combat, context);
 	bool? IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context) => null;
 	void PayForDroneShift(State state, Combat combat, int direction) { }
 	void AfterDroneShift(State state, Combat combat, int direction, IDroneShiftHook hook) { }
+	List<CardAction>? ProvideDroneShiftActions(State state, Combat combat, int direction) => null;
 }

@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+﻿﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
@@ -44,23 +44,60 @@ internal static class CombatPatches
 		);
 	}
 
-	private static IEnumerable<CodeInstruction> Combat_RenderMoveButtons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	private static IEnumerable<CodeInstruction> Combat_RenderMoveButtons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
 		try
 		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+			var elements = new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
+					ILMatches.Ldarg(1).ExtractLabels(out var labels),
 					ILMatches.Ldfld("state"),
 					ILMatches.Ldfld("ship"),
 					ILMatches.LdcI4((int)Status.evade),
 					ILMatches.Call("Get"),
 					ILMatches.LdcI4(0),
-					ILMatches.Bgt.GetBranchTarget(out var branchTarget)
+					ILMatches.Bgt,
+					ILMatches.Instruction(OpCodes.Ret)
 				)
 				.Replace(
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderMoveButtons_Transpiler_ShouldRender))),
-					new CodeInstruction(OpCodes.Brtrue, branchTarget.Value)
+					new CodeInstruction(OpCodes.Nop).WithLabels(labels)
 				)
+				.AllElements();
+
+			Label leftEndLabel = il.DefineLabel();
+			Label rightEndLabel = il.DefineLabel();
+			return new SequenceBlockMatcher<CodeInstruction>(elements)
+				.Find(
+					ILMatches.Ldarg(1).Anchor(out var gPointer1),
+					ILMatches.LdcI4((int)StableUK.btn_move_left),
+					ILMatches.AnyCall,
+					ILMatches.Stloc<UIKey>(originalMethod)
+				)
+				.Anchors()
+				.PointerMatcher(gPointer1)
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, new List<CodeInstruction> {
+					new(OpCodes.Ldc_I4, -1),
+					new(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderMoveButtons_Transpiler_ShouldRender))),
+					new(OpCodes.Brfalse, leftEndLabel),
+					new(OpCodes.Ldarg_1)
+				})
+				.EncompassUntil(SequenceMatcherPastBoundsDirection.After, new List<ElementMatch<CodeInstruction>> {
+					ILMatches.Ldarg(1),
+					ILMatches.LdcI4((int)StableUK.btn_move_right),
+					ILMatches.AnyCall,
+					ILMatches.Stloc<UIKey>(originalMethod)
+				})
+				.PointerMatcher(SequenceMatcherRelativeElement.Last)
+				.Encompass(SequenceMatcherEncompassDirection.Before, 3)
+				.PointerMatcher(SequenceMatcherRelativeElement.First)
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, new List<CodeInstruction> {
+					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(leftEndLabel),
+					new(OpCodes.Ldc_I4, 1),
+					new(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderMoveButtons_Transpiler_ShouldRender))),
+					new(OpCodes.Brfalse, rightEndLabel)
+				})
+				.PointerMatcher(SequenceMatcherRelativeElement.LastInWholeSequence)
+				.AddLabel(rightEndLabel)
 				.AllElements();
 		}
 		catch (Exception ex)
@@ -70,30 +107,67 @@ internal static class CombatPatches
 		}
 	}
 
-	private static bool Combat_RenderMoveButtons_Transpiler_ShouldRender(G g)
+	private static bool Combat_RenderMoveButtons_Transpiler_ShouldRender(G g, int direction)
 	{
 		if (g.state.route is not Combat combat)
 			return false;
-		return Instance.EvadeManager.IsEvadePossible(g.state, combat, EvadeHookContext.Rendering);
+		return Instance.EvadeManager.IsEvadePossible(g.state, combat, direction, EvadeHookContext.Rendering);
 	}
 
-	private static IEnumerable<CodeInstruction> Combat_RenderDroneShiftButtons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	private static IEnumerable<CodeInstruction> Combat_RenderDroneShiftButtons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
 		try
 		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+			var elements = new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
+					ILMatches.Ldarg(1).ExtractLabels(out var labels),
 					ILMatches.Ldfld("state"),
 					ILMatches.Ldfld("ship"),
 					ILMatches.LdcI4((int)Status.droneShift),
 					ILMatches.Call("Get"),
 					ILMatches.LdcI4(0),
-					ILMatches.Bgt.GetBranchTarget(out var branchTarget)
+					ILMatches.Bgt,
+					ILMatches.Instruction(OpCodes.Ret)
 				)
 				.Replace(
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderDroneShiftButtons_Transpiler_ShouldRender))),
-					new CodeInstruction(OpCodes.Brtrue, branchTarget.Value)
+					new CodeInstruction(OpCodes.Nop).WithLabels(labels)
 				)
+				.AllElements();
+
+			Label leftEndLabel = il.DefineLabel();
+			Label rightEndLabel = il.DefineLabel();
+			return new SequenceBlockMatcher<CodeInstruction>(elements)
+				.Find(
+					ILMatches.Ldarg(1).Anchor(out var gPointer1),
+					ILMatches.Stloc<G>(originalMethod),
+					ILMatches.LdcI4((int)StableUK.btn_moveDrones_left),
+					ILMatches.Call("op_Implicit")
+				)
+				.Anchors()
+				.PointerMatcher(gPointer1)
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, new List<CodeInstruction> {
+					new(OpCodes.Ldc_I4, -1),
+					new(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderDroneShiftButtons_Transpiler_ShouldRender))),
+					new(OpCodes.Brfalse, leftEndLabel),
+					new(OpCodes.Ldarg_1)
+				})
+				.EncompassUntil(SequenceMatcherPastBoundsDirection.After, new List<ElementMatch<CodeInstruction>> {
+					ILMatches.Ldarg(1),
+					ILMatches.Stloc<G>(originalMethod),
+					ILMatches.LdcI4((int)StableUK.btn_moveDrones_right),
+					ILMatches.Call("op_Implicit")
+				})
+				.PointerMatcher(SequenceMatcherRelativeElement.Last)
+				.Encompass(SequenceMatcherEncompassDirection.Before, 3)
+				.PointerMatcher(SequenceMatcherRelativeElement.First)
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, new List<CodeInstruction> {
+					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(leftEndLabel),
+					new(OpCodes.Ldc_I4, 1),
+					new(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderDroneShiftButtons_Transpiler_ShouldRender))),
+					new(OpCodes.Brfalse, rightEndLabel)
+				})
+				.PointerMatcher(SequenceMatcherRelativeElement.LastInWholeSequence)
+				.AddLabel(rightEndLabel)
 				.AllElements();
 		}
 		catch (Exception ex)
@@ -103,11 +177,12 @@ internal static class CombatPatches
 		}
 	}
 
-	private static bool Combat_RenderDroneShiftButtons_Transpiler_ShouldRender(G g)
+	private static bool Combat_RenderDroneShiftButtons_Transpiler_ShouldRender(G g, int direction)
 	{
+		Instance.Logger!.LogInformation("ya " + direction);
 		if (g.state.route is not Combat combat)
 			return false;
-		return Instance.DroneShiftManager.IsDroneShiftPossible(g.state, combat, DroneShiftHookContext.Rendering);
+		return Instance.DroneShiftManager.IsDroneShiftPossible(g.state, combat, direction, DroneShiftHookContext.Rendering);
 	}
 
 	private static bool Combat_DoEvade_Prefix(G g, int dir)
@@ -115,15 +190,15 @@ internal static class CombatPatches
 		if (g.state.route is not Combat combat)
 			return true;
 
-		var hook = Instance.EvadeManager.GetHandlingHook(g.state, combat);
+		var hook = Instance.EvadeManager.GetHandlingHook(g.state, combat, dir);
 		if (hook is not null)
 		{
-			combat.Queue(new AMove
+			combat.Queue(hook.ProvideEvadeActions(g.state, combat, dir) ?? [new AMove
 			{
 				dir = dir,
 				targetPlayer = true,
 				fromEvade = true
-			});
+			}]);
 			hook.PayForEvade(g.state, combat, dir);
 			Instance.EvadeManager.AfterEvade(g.state, combat, dir, hook);
 		}
@@ -135,13 +210,13 @@ internal static class CombatPatches
 		if (g.state.route is not Combat combat)
 			return true;
 
-		var hook = Instance.DroneShiftManager.GetHandlingHook(g.state, combat);
+		var hook = Instance.DroneShiftManager.GetHandlingHook(g.state, combat, dir);
 		if (hook is not null)
 		{
-			combat.Queue(new ADroneMove
+			combat.Queue(hook.ProvideDroneShiftActions(g.state, combat, dir) ?? [new ADroneMove
 			{
 				dir = dir
-			});
+			}]);
 			hook.PayForDroneShift(g.state, combat, dir);
 			Instance.DroneShiftManager.AfterDroneShift(g.state, combat, dir, hook);
 		}

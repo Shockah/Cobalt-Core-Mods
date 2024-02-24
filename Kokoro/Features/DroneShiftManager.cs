@@ -12,14 +12,14 @@ public sealed class DroneShiftManager : HookManager<IDroneShiftHook>
 		Register(VanillaMidrowCheckDroneShiftHook.Instance, int.MaxValue);
 	}
 
-	public bool IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
-		=> GetHandlingHook(state, combat, context) is not null;
+	public bool IsDroneShiftPossible(State state, Combat combat, int direction, DroneShiftHookContext context)
+		=> GetHandlingHook(state, combat, direction, context) is not null;
 
-	public IDroneShiftHook? GetHandlingHook(State state, Combat combat, DroneShiftHookContext context = DroneShiftHookContext.Action)
+	public IDroneShiftHook? GetHandlingHook(State state, Combat combat, int direction, DroneShiftHookContext context = DroneShiftHookContext.Action)
 	{
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
 		{
-			var hookResult = hook.IsDroneShiftPossible(state, combat, context);
+			var hookResult = hook.IsDroneShiftPossible(state, combat, direction, context);
 			if (hookResult == false)
 				return null;
 			else if (hookResult == true)
