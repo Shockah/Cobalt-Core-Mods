@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.5
+Released 29 February 2024.
 
 * Updated to the latest Kokoro.
 
