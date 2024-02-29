@@ -2,9 +2,10 @@
 
 # Release notes
 
-## Upcoming release
+## 1.5.0
+Released 29 February 2024.
 
-* Expanded upon the evade and droneshift APIs (thanks to [https://github.com/TheJazMaster](TheJazMaster)!).
+* Expanded upon the evade and droneshift APIs (thanks to [TheJazMaster](https://github.com/TheJazMaster)!).
 
 ## 1.4.0
 Released 13 February 2024.
