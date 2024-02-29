@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace Shockah.DuoArtifacts;
+﻿namespace Shockah.DuoArtifacts;
 
 internal sealed class IsaacRiggsArtifact : DuoArtifact, IEvadeHook, IDroneShiftHook, IHookPriority
 {
@@ -20,10 +18,10 @@ internal sealed class IsaacRiggsArtifact : DuoArtifact, IEvadeHook, IDroneShiftH
 	public double HookPriority
 		=> -100;
 
-	bool? IEvadeHook.IsEvadePossible(State state, Combat combat, EvadeHookContext context)
+	public bool? IsEvadePossible(State state, Combat combat, EvadeHookContext context)
 		=> state.ship.Get(Status.droneShift) > 0 ? true : null;
 
-	void IEvadeHook.PayForEvade(State state, Combat combat, int direction)
+	public void PayForEvade(State state, Combat combat, int direction)
 	{
 		combat.QueueImmediate(new AStatus
 		{
@@ -34,10 +32,10 @@ internal sealed class IsaacRiggsArtifact : DuoArtifact, IEvadeHook, IDroneShiftH
 		});
 	}
 
-	bool? IDroneShiftHook.IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
+	public bool? IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
 		=> state.ship.Get(Status.evade) > 0 ? true : null;
 
-	void IDroneShiftHook.PayForDroneShift(State state, Combat combat, int direction)
+	public void PayForDroneShift(State state, Combat combat, int direction)
 	{
 		combat.QueueImmediate(new AStatus
 		{

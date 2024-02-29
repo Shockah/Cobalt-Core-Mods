@@ -10,7 +10,9 @@ public partial interface IKokoroApi
 	void UnregisterDroneShiftHook(IDroneShiftHook hook);
 
 	bool IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context);
+	bool IsDroneShiftPossible(State state, Combat combat, int direction, DroneShiftHookContext context);
 	IDroneShiftHook? GetDroneShiftHandlingHook(State state, Combat combat, DroneShiftHookContext context);
+	IDroneShiftHook? GetDroneShiftHandlingHook(State state, Combat combat, int direction, DroneShiftHookContext context);
 	void AfterDroneShift(State state, Combat combat, int direction, IDroneShiftHook hook);
 }
 

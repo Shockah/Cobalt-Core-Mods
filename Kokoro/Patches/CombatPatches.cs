@@ -1,4 +1,4 @@
-﻿﻿using HarmonyLib;
+﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
@@ -48,7 +48,10 @@ internal static class CombatPatches
 	{
 		try
 		{
-			var elements = new SequenceBlockMatcher<CodeInstruction>(instructions)
+			var leftEndLabel = il.DefineLabel();
+			var rightEndLabel = il.DefineLabel();
+
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
 					ILMatches.Ldarg(1).ExtractLabels(out var labels),
 					ILMatches.Ldfld("state"),
@@ -62,12 +65,8 @@ internal static class CombatPatches
 				.Replace(
 					new CodeInstruction(OpCodes.Nop).WithLabels(labels)
 				)
-				.AllElements();
-
-			Label leftEndLabel = il.DefineLabel();
-			Label rightEndLabel = il.DefineLabel();
-			return new SequenceBlockMatcher<CodeInstruction>(elements)
 				.Find(
+					SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.WholeSequence,
 					ILMatches.Ldarg(1).Anchor(out var gPointer1),
 					ILMatches.LdcI4((int)StableUK.btn_move_left),
 					ILMatches.AnyCall,
@@ -75,27 +74,30 @@ internal static class CombatPatches
 				)
 				.Anchors()
 				.PointerMatcher(gPointer1)
-				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, new List<CodeInstruction> {
-					new(OpCodes.Ldc_I4, -1),
-					new(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderMoveButtons_Transpiler_ShouldRender))),
-					new(OpCodes.Brfalse, leftEndLabel),
-					new(OpCodes.Ldarg_1)
-				})
-				.EncompassUntil(SequenceMatcherPastBoundsDirection.After, new List<ElementMatch<CodeInstruction>> {
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldc_I4, -1),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderMoveButtons_Transpiler_ShouldRender))),
+					new CodeInstruction(OpCodes.Brfalse, leftEndLabel),
+					new CodeInstruction(OpCodes.Ldarg_1)
+				)
+				.EncompassUntil(
+					SequenceMatcherPastBoundsDirection.After,
 					ILMatches.Ldarg(1),
 					ILMatches.LdcI4((int)StableUK.btn_move_right),
 					ILMatches.AnyCall,
 					ILMatches.Stloc<UIKey>(originalMethod)
-				})
+				)
 				.PointerMatcher(SequenceMatcherRelativeElement.Last)
 				.Encompass(SequenceMatcherEncompassDirection.Before, 3)
 				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, new List<CodeInstruction> {
+				.Insert(
+					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
 					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(leftEndLabel),
-					new(OpCodes.Ldc_I4, 1),
-					new(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderMoveButtons_Transpiler_ShouldRender))),
-					new(OpCodes.Brfalse, rightEndLabel)
-				})
+					new CodeInstruction(OpCodes.Ldc_I4, 1),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderMoveButtons_Transpiler_ShouldRender))),
+					new CodeInstruction(OpCodes.Brfalse, rightEndLabel)
+				)
 				.PointerMatcher(SequenceMatcherRelativeElement.LastInWholeSequence)
 				.AddLabel(rightEndLabel)
 				.AllElements();
@@ -118,7 +120,10 @@ internal static class CombatPatches
 	{
 		try
 		{
-			var elements = new SequenceBlockMatcher<CodeInstruction>(instructions)
+			var leftEndLabel = il.DefineLabel();
+			var rightEndLabel = il.DefineLabel();
+
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
 					ILMatches.Ldarg(1).ExtractLabels(out var labels),
 					ILMatches.Ldfld("state"),
@@ -132,12 +137,8 @@ internal static class CombatPatches
 				.Replace(
 					new CodeInstruction(OpCodes.Nop).WithLabels(labels)
 				)
-				.AllElements();
-
-			Label leftEndLabel = il.DefineLabel();
-			Label rightEndLabel = il.DefineLabel();
-			return new SequenceBlockMatcher<CodeInstruction>(elements)
 				.Find(
+					SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.WholeSequence,
 					ILMatches.Ldarg(1).Anchor(out var gPointer1),
 					ILMatches.Stloc<G>(originalMethod),
 					ILMatches.LdcI4((int)StableUK.btn_moveDrones_left),
@@ -145,27 +146,30 @@ internal static class CombatPatches
 				)
 				.Anchors()
 				.PointerMatcher(gPointer1)
-				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, new List<CodeInstruction> {
-					new(OpCodes.Ldc_I4, -1),
-					new(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderDroneShiftButtons_Transpiler_ShouldRender))),
-					new(OpCodes.Brfalse, leftEndLabel),
-					new(OpCodes.Ldarg_1)
-				})
-				.EncompassUntil(SequenceMatcherPastBoundsDirection.After, new List<ElementMatch<CodeInstruction>> {
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldc_I4, -1),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderDroneShiftButtons_Transpiler_ShouldRender))),
+					new CodeInstruction(OpCodes.Brfalse, leftEndLabel),
+					new CodeInstruction(OpCodes.Ldarg_1)
+				)
+				.EncompassUntil(
+					SequenceMatcherPastBoundsDirection.After,
 					ILMatches.Ldarg(1),
 					ILMatches.Stloc<G>(originalMethod),
 					ILMatches.LdcI4((int)StableUK.btn_moveDrones_right),
 					ILMatches.Call("op_Implicit")
-				})
+				)
 				.PointerMatcher(SequenceMatcherRelativeElement.Last)
 				.Encompass(SequenceMatcherEncompassDirection.Before, 3)
 				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, new List<CodeInstruction> {
+				.Insert(
+					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
 					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(leftEndLabel),
-					new(OpCodes.Ldc_I4, 1),
-					new(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderDroneShiftButtons_Transpiler_ShouldRender))),
-					new(OpCodes.Brfalse, rightEndLabel)
-				})
+					new CodeInstruction(OpCodes.Ldc_I4, 1),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CombatPatches), nameof(Combat_RenderDroneShiftButtons_Transpiler_ShouldRender))),
+					new CodeInstruction(OpCodes.Brfalse, rightEndLabel)
+				)
 				.PointerMatcher(SequenceMatcherRelativeElement.LastInWholeSequence)
 				.AddLabel(rightEndLabel)
 				.AllElements();
@@ -212,10 +216,7 @@ internal static class CombatPatches
 		var hook = Instance.DroneShiftManager.GetHandlingHook(g.state, combat, dir);
 		if (hook is not null)
 		{
-			combat.Queue(hook.ProvideDroneShiftActions(g.state, combat, dir) ?? [new ADroneMove
-			{
-				dir = dir
-			}]);
+			combat.Queue(hook.ProvideDroneShiftActions(g.state, combat, dir) ?? [new ADroneMove { dir = dir }]);
 			hook.PayForDroneShift(g.state, combat, dir);
 			Instance.DroneShiftManager.AfterDroneShift(g.state, combat, dir, hook);
 		}

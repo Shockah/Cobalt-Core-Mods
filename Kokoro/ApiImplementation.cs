@@ -15,7 +15,7 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 	private static ModEntry Instance => ModEntry.Instance;
 
 	private readonly IManifest Manifest;
-	private readonly Dictionary<Type, ConditionalWeakTable<object, object?>> ProxyCache = new();
+	private readonly Dictionary<Type, ConditionalWeakTable<object, object?>> ProxyCache = [];
 
 	public ApiImplementation(IManifest manifest)
 	{
