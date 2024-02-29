@@ -32,14 +32,14 @@ internal sealed class DrakeRiggsArtifact : DuoArtifact, IEvadeHook, IHookPriorit
 	public double HookPriority
 		=> -10;
 
-	bool? IEvadeHook.IsEvadePossible(State state, Combat combat, EvadeHookContext context)
+	public bool? IsEvadePossible(State state, Combat combat, EvadeHookContext context)
 	{
 		if (UsedThisTurn)
 			return null;
 		return true;
 	}
 
-	void IEvadeHook.PayForEvade(State state, Combat combat, int direction)
+	public void PayForEvade(State state, Combat combat, int direction)
 	{
 		var artifact = state.EnumerateAllArtifacts().OfType<DrakeRiggsArtifact>().First();
 		artifact.Pulse();

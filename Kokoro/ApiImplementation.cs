@@ -1,4 +1,4 @@
-﻿using CobaltCoreModding.Definitions.ExternalItems;
+﻿﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModManifests;
 using Nanoray.Pintail;
 using Shockah.Shared;
@@ -15,7 +15,7 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 	private static ModEntry Instance => ModEntry.Instance;
 
 	private readonly IManifest Manifest;
-	private readonly Dictionary<Type, ConditionalWeakTable<object, object?>> ProxyCache = new();
+	private readonly Dictionary<Type, ConditionalWeakTable<object, object?>> ProxyCache = [];
 
 	public ApiImplementation(IManifest manifest)
 	{
@@ -164,11 +164,17 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 	public void UnregisterEvadeHook(IEvadeHook hook)
 		=> Instance.EvadeManager.Unregister(hook);
 
+	public bool IsEvadePossible(State state, Combat combat, int direction, EvadeHookContext context)
+		=> Instance.EvadeManager.IsEvadePossible(state, combat, direction, context);
+
 	public bool IsEvadePossible(State state, Combat combat, EvadeHookContext context)
-		=> Instance.EvadeManager.IsEvadePossible(state, combat, context);
+		=> Instance.EvadeManager.IsEvadePossible(state, combat, 0, context);
+
+	public IEvadeHook? GetEvadeHandlingHook(State state, Combat combat, int direction, EvadeHookContext context)
+		=> Instance.EvadeManager.GetHandlingHook(state, combat, direction, context);
 
 	public IEvadeHook? GetEvadeHandlingHook(State state, Combat combat, EvadeHookContext context)
-		=> Instance.EvadeManager.GetHandlingHook(state, combat, context);
+		=> Instance.EvadeManager.GetHandlingHook(state, combat, 0, context);
 
 	public void AfterEvade(State state, Combat combat, int direction, IEvadeHook hook)
 		=> Instance.EvadeManager.AfterEvade(state, combat, direction, hook);
@@ -187,11 +193,17 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 	public void UnregisterDroneShiftHook(IDroneShiftHook hook)
 		=> Instance.DroneShiftManager.Unregister(hook);
 
+	public bool IsDroneShiftPossible(State state, Combat combat, int direction, DroneShiftHookContext context)
+		=> Instance.DroneShiftManager.IsDroneShiftPossible(state, combat, direction, context);
+
 	public bool IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
-		=> Instance.DroneShiftManager.IsDroneShiftPossible(state, combat, context);
+		=> Instance.DroneShiftManager.IsDroneShiftPossible(state, combat, 0, context);
+
+	public IDroneShiftHook? GetDroneShiftHandlingHook(State state, Combat combat, int direction, DroneShiftHookContext context)
+		=> Instance.DroneShiftManager.GetHandlingHook(state, combat, direction, context);
 
 	public IDroneShiftHook? GetDroneShiftHandlingHook(State state, Combat combat, DroneShiftHookContext context)
-		=> Instance.DroneShiftManager.GetHandlingHook(state, combat, context);
+		=> Instance.DroneShiftManager.GetHandlingHook(state, combat, 0, context);
 
 	public void AfterDroneShift(State state, Combat combat, int direction, IDroneShiftHook hook)
 		=> Instance.DroneShiftManager.AfterDroneShift(state, combat, direction, hook);

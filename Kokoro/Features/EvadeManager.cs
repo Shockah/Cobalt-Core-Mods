@@ -1,4 +1,4 @@
-﻿using FSPRO;
+﻿﻿using FSPRO;
 using Shockah.Shared;
 using System.Linq;
 
@@ -11,16 +11,17 @@ public sealed class EvadeManager : HookManager<IEvadeHook>
 		Register(VanillaEvadeHook.Instance, 0);
 		Register(VanillaDebugEvadeHook.Instance, int.MaxValue);
 		Register(VanillaTrashAnchorEvadeHook.Instance, 1000);
+		Register(VanillaLockdownEvadeHook.Instance, 1001);
 	}
 
-	public bool IsEvadePossible(State state, Combat combat, EvadeHookContext context)
-		=> GetHandlingHook(state, combat, context) is not null;
+	public bool IsEvadePossible(State state, Combat combat, int direction, EvadeHookContext context)
+		=> GetHandlingHook(state, combat, direction, context) is not null;
 
-	public IEvadeHook? GetHandlingHook(State state, Combat combat, EvadeHookContext context = EvadeHookContext.Action)
+	public IEvadeHook? GetHandlingHook(State state, Combat combat, int direction, EvadeHookContext context = EvadeHookContext.Action)
 	{
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
 		{
-			var hookResult = hook.IsEvadePossible(state, combat, context);
+			var hookResult = hook.IsEvadePossible(state, combat, direction, context);
 			if (hookResult == false)
 				return null;
 			else if (hookResult == true)
@@ -70,6 +71,28 @@ public sealed class VanillaTrashAnchorEvadeHook : IEvadeHook
 		if (context != EvadeHookContext.Action)
 			return null;
 		if (!combat.hand.Any(c => c is TrashAnchor))
+			return null;
+
+		Audio.Play(Event.Status_PowerDown);
+		state.ship.shake += 1.0;
+		return false;
+	}
+
+	public void PayForEvade(State state, Combat combat, int direction)
+		=> state.ship.Add(Status.evade, -1);
+}
+
+public sealed class VanillaLockdownEvadeHook : IEvadeHook
+{
+	public static VanillaLockdownEvadeHook Instance { get; private set; } = new();
+
+	private VanillaLockdownEvadeHook() { }
+
+	public bool? IsEvadePossible(State state, Combat combat, EvadeHookContext context)
+	{
+		if (context != EvadeHookContext.Action)
+			return null;
+		if (state.ship.Get(Status.lockdown) <= 0)
 			return null;
 
 		Audio.Play(Event.Status_PowerDown);
