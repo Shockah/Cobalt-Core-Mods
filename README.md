@@ -32,7 +32,7 @@ The mod adds a new artifact pool: duo artifacts, which are pretty powerful artif
 # Johnson
 
 **Johnson** -- Your coworker. Capable of *creating* and *improving* cards.  
-\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fjohnson-1.0.3)] \[[release notes](Johnson/docs/release-notes.md)] \[[README/source code](Johnson)]
+\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fjohnson-1.0.4)] \[[NexusMods](https://www.nexusmods.com/cobaltcore/mods/10)] \[[release notes](Johnson/docs/release-notes.md)] \[[README/source code](Johnson)]
 
 [![Card preview screenshot](Johnson/docs/images/preview-none-thumb.png)](Johnson/docs/images/preview-none.png)
 [![Card A upgrade preview screenshot](Johnson/docs/images/preview-a-thumb.png)](Johnson/docs/images/preview-a.png)

@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.4
+Released 29 February 2024.
 
 * Rebalanced Profit Margin.
 * Rebalanced Layout/Strategize-generated cards.
