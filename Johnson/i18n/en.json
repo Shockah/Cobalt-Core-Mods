@@ -181,9 +181,9 @@
         "Suppliment": {
             "name": "Supplement",
             "description": {
-                "None": "Gain 1 <c=status>shield</c>. <c=cardtrait>Discount</c> your rightmost card.",
-                "A": "Gain 2 <c=status>shield</c>. <c=cardtrait>Discount</c> your rightmost card.",
-                "B": "Gain 1 <c=status>shield</c>. <c=cardtrait>Discount</c> your left and rightmost card."
+                "None": "Gain 1 <c=status>shield</c>. <c=cardtrait>Discount</c> the rightmost card.",
+                "A": "Gain 2 <c=status>shield</c>. <c=cardtrait>Discount</c> the rightmost card.",
+                "B": "Gain 1 <c=status>shield</c>. <c=cardtrait>Discount</c> the left and rightmost card."
             }
         },
         "TheWorks": {
