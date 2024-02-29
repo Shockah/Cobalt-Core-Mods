@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.2
+Released 29 February 2024.
 
 * Fixed alternative starter deck not including the Smug artifact.
 

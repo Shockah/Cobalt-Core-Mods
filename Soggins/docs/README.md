@@ -16,5 +16,6 @@ Design and Art by Arin
 [![Cards screenshot](images/cards-thumb.png)](images/cards.png)
 
 ## See also
-* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fsoggins-1.3.1)
+* [Latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fsoggins-1.3.2)
+* [NexusMods](https://www.nexusmods.com/cobaltcore/mods/5)
 * [Release notes](release-notes.md)
