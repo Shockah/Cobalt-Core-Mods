@@ -11,8 +11,9 @@
             "No-1-Selene": "Fine! Whatever!",
             "Action-Tooltip": [
                 "<c=action>SWAP SHIP</c>",
-                "Swap your ship to a random different one. Lose all ship-specific artifacts for your current ship. Gain all starting artifacts for the new ship. Optionally gain any starting cards for the new ship."
-            ]
+                "Swap your ship to a random different one. Lose all ship-specific artifacts for your current ship. Gain all starting and an equivalent amount of random ship-specific artifacts for the new ship. Optionally gain any starting cards for the new ship."
+            ],
+            "Action-UpgradeText": "Swapped to a random ship"
         }
     }
 }
