@@ -202,12 +202,12 @@ internal sealed class ShipSwapEvent : IRegisterable
 				foreach (var action in Mutil.DeepCopy(moreActions))
 					action.Begin(g, fakeState, DB.fakeCombat);
 
-				void AddArtifacts(IEnumerable<Artifact> all, int amount)
+				int AddArtifacts(IEnumerable<Artifact> all, int amount)
 				{
 					foreach (var artifact in all)
 					{
 						if (amount <= 0)
-							return;
+							return amount;
 						if (ArtifactReward.GetBlockedArtifacts(fakeState).Contains(artifact.GetType()))
 							continue;
 
@@ -215,6 +215,7 @@ internal sealed class ShipSwapEvent : IRegisterable
 						new AAddArtifact { artifact = artifact }.Begin(g, fakeState, DB.fakeCombat);
 						amount--;
 					}
+					return amount;
 				}
 
 				var exclusiveArtifacts = GetExclusiveArtifactTypes(newShipKey)
@@ -224,9 +225,25 @@ internal sealed class ShipSwapEvent : IRegisterable
 					.ToList();
 
 				if (commonArtifactKeysToRemove.Count != 0)
-					AddArtifacts(exclusiveArtifacts.Where(a => a.GetMeta().pools.Contains(ArtifactPool.Common)), commonArtifactKeysToRemove.Count);
+				{
+					var leftToAdd = AddArtifacts(exclusiveArtifacts.Where(a => a.GetMeta().pools.Contains(ArtifactPool.Common)), commonArtifactKeysToRemove.Count);
+					for (var i = 0; i < leftToAdd; i++)
+						moreActions.Add(new AArtifactOffering
+						{
+							amount = s.GetDifficulty() >= 2 ? 2 : 3,
+							limitPools = [ArtifactPool.Common]
+						});
+				}
 				if (bossArtifactKeysToRemove.Count != 0)
-					AddArtifacts(exclusiveArtifacts.Where(a => a.GetMeta().pools.Contains(ArtifactPool.Boss)), bossArtifactKeysToRemove.Count);
+				{
+					var leftToAdd = AddArtifacts(exclusiveArtifacts.Where(a => a.GetMeta().pools.Contains(ArtifactPool.Boss)), bossArtifactKeysToRemove.Count);
+					for (var i = 0; i < leftToAdd; i++)
+						moreActions.Add(new AArtifactOffering
+						{
+							amount = s.GetDifficulty() >= 2 ? 2 : 3,
+							limitPools = [ArtifactPool.Boss]
+						});
+				}
 			}
 
 			moreActions.Add(new ATakeCardsUntilSkip { Cards = newShipStarter.cards.Select(card => card.CopyWithNewId()).ToList() });
