@@ -12,7 +12,7 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		GadgetArtifact.Register(package, helper);
+		CombatAnalyzerGadgetArtifact.Register(package, helper);
 
 		EventName = $"{package.Manifest.UniqueName}::{typeof(CombatDataCalibrationEvent).Name}";
 
@@ -92,7 +92,7 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 				label = ModEntry.Instance.Localizations.Localize(["event", "CombatDataCalibration", "Choice-Yes"]),
 				key = $"{EventName}::Yes",
 				actions = [
-					new AAddArtifact { artifact = new GadgetArtifact() }
+					new AAddArtifact { artifact = new CombatAnalyzerGadgetArtifact() }
 				]
 			},
 			new Choice
@@ -102,11 +102,11 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 			}
 		];
 
-	private sealed class GadgetArtifact : Artifact, IRegisterable
+	private sealed class CombatAnalyzerGadgetArtifact : Artifact, IRegisterable
 	{
 		public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 		{
-			helper.Content.Artifacts.RegisterArtifact("CombatAnalyzerGadget", new()
+			helper.Content.Artifacts.RegisterArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 			{
 				ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 				Meta = new()

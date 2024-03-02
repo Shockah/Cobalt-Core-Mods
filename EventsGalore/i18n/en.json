@@ -1,5 +1,22 @@
 {
     "event": {
+        "AbyssalPower": {
+            "1-Tentacle": "GLORP!!",
+            "2-Any": "Watch out!",
+            "3-Tentacle": "GLORP.",
+            "4-Any": "...?!",
+            "5-Tentacle": "GLURP. GLORP.",
+            "6-CAT": "I think... it wants us... to take the card?",
+            "Choice-Yes": "Take the card",
+            "Choice-No": "Decline",
+            "Yes-1-CAT": "Huh, it left... anyway, let's go!",
+            "No-1-Tentacle": "GLURP GLARP!!",
+            "No-2-CAT": "I think we pissed them off...",
+            "No-Choice-EnterCombat": "Enter combat...",
+            "card": {
+                "name": "Abyssal Power"
+            }
+        },
         "CombatDataCalibration": {
             "1-CAT": "Getting a hail from a research vessel.",
             "2-Bjorn": "Hail! I, the great Dr. Bjorn, need help calibrating my new gadget. Just bring it near a powerful energy source and let it do the analysis.",

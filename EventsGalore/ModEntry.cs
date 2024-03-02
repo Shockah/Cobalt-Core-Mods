@@ -15,6 +15,7 @@ internal sealed class ModEntry : SimpleMod
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
 	internal static IReadOnlyList<Type> EventTypes { get; } = [
+		typeof(AbyssalPowerEvent),
 		typeof(CombatDataCalibrationEvent),
 		typeof(ShipSwapEvent),
 	];
