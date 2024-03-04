@@ -15,6 +15,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal Harmony Harmony { get; }
 	internal IKokoroApi KokoroApi { get; }
+	internal IDuoArtifactsApi? DuoArtifactsApi { get; }
 	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
@@ -27,6 +28,7 @@ public sealed class ModEntry : SimpleMod
 	internal IStatusEntry BloodMirrorStatus { get; }
 	internal IStatusEntry TransfusionStatus { get; }
 	internal IStatusEntry TransfusingStatus { get; }
+	internal IStatusEntry OxidationStatus { get; }
 
 	internal ISpriteEntry ShieldCostOff { get; }
 	internal ISpriteEntry ShieldCostOn { get; }
@@ -127,11 +129,16 @@ public sealed class ModEntry : SimpleMod
 	internal static IEnumerable<Type> AllArtifactTypes
 		=> CommonArtifacts.Concat(BossArtifacts).Concat(ShipArtifacts);
 
+	internal static IReadOnlyList<Type> DuoArtifactTypes { get; } = [
+		typeof(DraculaDizzyArtifact)
+	];
+
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
 		Harmony = new(package.Manifest.UniqueName);
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+		DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
 		_ = new BleedingManager();
 		_ = new BloodMirrorManager();
 		_ = new LifestealManager();
@@ -223,11 +230,16 @@ public sealed class ModEntry : SimpleMod
 			Name = this.AnyLocalizations.Bind(["status", "Transfusing", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["status", "Transfusing", "description"]).Localize
 		});
+		// TODO: replace with API
+		OxidationStatus = helper.Content.Statuses.LookupByUniqueName("Shockah.Kokoro::Shockah.Kokoro.Status.Oxidation")!;
 
 		foreach (var cardType in AllCardTypes)
 			AccessTools.DeclaredMethod(cardType, nameof(IDraculaCard.Register))?.Invoke(null, [package, helper]);
 		foreach (var artifactType in AllArtifactTypes)
-			AccessTools.DeclaredMethod(artifactType, nameof(IDraculaCard.Register))?.Invoke(null, [helper]);
+			AccessTools.DeclaredMethod(artifactType, nameof(IDraculaArtifact.Register))?.Invoke(null, [helper]);
+		if (DuoArtifactsApi is not null)
+			foreach (var artifactType in DuoArtifactTypes)
+				AccessTools.DeclaredMethod(artifactType, nameof(IDraculaArtifact.Register))?.Invoke(null, [helper]);
 
 		helper.Content.Characters.RegisterCharacter("Dracula", new()
 		{

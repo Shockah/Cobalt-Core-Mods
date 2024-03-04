@@ -178,6 +178,13 @@
         "WingsOfNight": {
             "name": "WINGS OF NIGHT",
             "description": "Every turn add a <c=cardtrait>temporary</c> <c=card>Bat Form A</c> with <c=cardtrait>exhaust</c> to your hand and <c=downside>lose 1 <c=status>EVADE</c></c>."
+        },
+
+        "Duo": {
+            "DraculaDizzy": {
+                "name": "ROTTEN BLOOD",
+                "description": "Whenever <c=status>BLEEDING</c> triggers, give the ship {{ResultingOxidation}} <c=status>OXIDATION</c>."
+            }
         }
     },
     "card": {

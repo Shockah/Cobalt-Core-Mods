@@ -20,7 +20,17 @@ internal sealed class BleedingManager : IStatusLogicHook
 			return;
 
 		var thinBloodArtifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is ThinBloodArtifact);
+		var dizzyDuoArtifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is DraculaDizzyArtifact);
 		var triggers = thinBloodArtifact is null ? 1 : Math.Min(2, oldAmount);
+
+		if (dizzyDuoArtifact is not null)
+			combat.QueueImmediate(Enumerable.Range(0, triggers).Select(i => new AStatus
+			{
+				targetPlayer = ship.isPlayerShip,
+				status = ModEntry.Instance.OxidationStatus.Status,
+				statusAmount = DraculaDizzyArtifact.ResultingOxidation,
+				artifactPulse = dizzyDuoArtifact.Key()
+			}));
 		combat.QueueImmediate(Enumerable.Range(0, triggers).Select(i => new AHurt
 		{
 			targetPlayer = ship.isPlayerShip,

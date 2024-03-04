@@ -6,6 +6,7 @@
 
 * Added Dracula.EXE.
 * Reworked the Aura of Darkness B card.
+* Added a duo artifact for Dizzy.
 * Fixed various Transfusion bugs.
 * Minor card text and tooltip improvements.
 
