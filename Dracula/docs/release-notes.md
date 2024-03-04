@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Added Dracula.EXE.
+* Fixed various Transfusion bugs.
 
 ## 1.0.4
 Released 29 February 2024.

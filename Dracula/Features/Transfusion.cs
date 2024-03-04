@@ -127,9 +127,9 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 			var healingRequiredForMax = Math.Max(missingHull - (ship.isPlayerShip ? g.state.EnumerateAllArtifacts().Sum(a => a.ModifyHealAmount(progress, g.state, true)) : 0), 0);
 			var wouldHealToFullNow = progress >= healingRequiredForMax;
 
-			if (progress <= 0 || total <= 0 || (progress < total))
+			if (progress <= 0)
 				return;
-			if (progress < total && !wouldHealToFullNow)
+			if (progress < total && (!wouldHealToFullNow || ship.hull >= ship.hullMax))
 				return;
 			if (ship.IsTransfusionDisabled())
 				return;
@@ -140,12 +140,12 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 				TargetPlayer = ship.isPlayerShip,
 				canRunAfterKill = true
 			});
-			if (total > 0)
+			if (progress > 0)
 			{
 				__instance.QueueImmediate(new AHeal
 				{
 					targetPlayer = ship.isPlayerShip,
-					healAmount = total,
+					healAmount = progress,
 					canRunAfterKill = true
 				});
 			}
