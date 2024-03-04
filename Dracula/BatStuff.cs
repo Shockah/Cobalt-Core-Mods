@@ -304,24 +304,12 @@ internal sealed class BatStuff : StuffBase
 					ship.NormalDamage(state, combat, 1, FromX);
 			}
 
-			if (HasValidTarget)
+			QueuedSubActions.Add(new AStatus
 			{
-				QueuedSubActions.Add(new AStatus
-				{
-					targetPlayer = ship.isPlayerShip,
-					status = ModEntry.Instance.TransfusionStatus.Status,
-					statusAmount = 1
-				});
-			}
-			else
-			{
-				QueuedSubActions.Add(new AStatus
-				{
-					targetPlayer = ship.isPlayerShip,
-					status = ModEntry.Instance.BleedingStatus.Status,
-					statusAmount = 1
-				});
-			}
+				targetPlayer = ship.isPlayerShip,
+				status = HasValidTarget ? ModEntry.Instance.TransfusionStatus.Status : ModEntry.Instance.BleedingStatus.Status,
+				statusAmount = 1
+			});
 		}
 	}
 }
