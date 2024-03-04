@@ -313,6 +313,15 @@
             "name": "Leech"
         },
 
+        "DraculaExe": {
+            "name": "Dracula.EXE",
+            "description": {
+                "None": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=E81B16>Dracula</c> cards to your hand.",
+                "A": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=E81B16>Dracula</c> cards to your hand.",
+                "B": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=E81B16>Dracula</c> cards to your hand."
+            }
+        },
+
         "Secret": {
             "Placeholder": {
                 "name": "Secret Spell",

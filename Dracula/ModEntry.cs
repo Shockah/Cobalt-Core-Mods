@@ -99,6 +99,7 @@ public sealed class ModEntry : SimpleMod
 		=> CommonCardTypes
 			.Concat(UncommonCardTypes)
 			.Concat(RareCardTypes)
+			.Append(typeof(DraculaExeCard))
 			.Append(typeof(PlaceholderSecretCard))
 			.Concat(SecretAttackCardTypes)
 			.Concat(SecretNonAttackCardTypes)
@@ -259,7 +260,8 @@ public sealed class ModEntry : SimpleMod
 					new BiteCard(),
 					new BloodShieldCard()
 				]
-			}
+			},
+			ExeCardType = typeof(DraculaExeCard)
 		});
 
 		helper.Content.Characters.RegisterCharacterAnimation(new()
