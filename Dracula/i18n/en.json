@@ -184,6 +184,10 @@
             "DraculaDizzy": {
                 "name": "ROTTEN BLOOD",
                 "description": "Whenever <c=status>BLEEDING</c> triggers, give the ship {{ResultingOxidation}} <c=status>OXIDATION</c>."
+            },
+            "DraculaIsaac": {
+                "name": "HALL OF MIRRORS",
+                "description": "<c=midrow>Midrow objects</c> act as if they had <c=status>BLOOD MIRROR</c> and 1 hull."
             }
         }
     },
