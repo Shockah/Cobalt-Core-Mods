@@ -5,7 +5,7 @@
 ## Upcoming release
 
 * Added Dracula.EXE.
-* Added a duo artifact for Dizzy.
+* Added duo artifacts for Dizzy and Isaac.
 * Fixed various Transfusion bugs.
 
 ## 1.0.4
