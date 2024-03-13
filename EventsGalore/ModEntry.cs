@@ -14,6 +14,10 @@ internal sealed class ModEntry : SimpleMod
 	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
+	internal static IReadOnlyList<Type> EnemyTypes { get; } = [
+		typeof(OverdriveOnHitEnemy),
+	];
+
 	internal static IReadOnlyList<Type> EventTypes { get; } = [
 		typeof(AbyssalPowerEvent),
 		typeof(CombatDataCalibrationEvent),
@@ -32,6 +36,8 @@ internal sealed class ModEntry : SimpleMod
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
 		);
 
+		foreach (var enemyType in EnemyTypes)
+			AccessTools.DeclaredMethod(enemyType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
 		foreach (var eventType in EventTypes)
 			AccessTools.DeclaredMethod(eventType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
 	}
