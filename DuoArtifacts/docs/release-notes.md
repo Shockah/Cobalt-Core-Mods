@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.6
+Released 17 March 2024.
 
 * Fixed CAT duo artifacts never being available.
 * Character tooltips now show the list of possible duo artifacts when a character is eligible for one.
