@@ -144,10 +144,13 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 	internal DuoArtifactEligibity GetDuoArtifactEligibity(Deck deck, State state)
 	{
+		if (deck == Deck.catartifact)
+			deck = Deck.colorless;
+
 		if (state.IsOutsideRun())
 			return DuoArtifactEligibity.InvalidState;
 		
-		var character = state.characters.FirstOrDefault(c => DeckMatches(c.deckType, deck));
+		var character = state.characters.FirstOrDefault(c => deck == c.deckType);
 		if (character is null)
 			return DuoArtifactEligibity.InvalidState;
 
@@ -155,14 +158,14 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		{
 			var artifactsForThisCharacter = Database.GetAllDuoArtifactTypes()
 				.Select(t => (Type: t, Ownership: Database.GetDuoArtifactTypeOwnership(t)!))
-				.Where(e => e.Ownership.Any(owner => DeckMatches(deck, owner)));
+				.Where(e => e.Ownership.Any(owner => ArtifactDeckMatches(deck, owner)));
 
 			if (!artifactsForThisCharacter.Any())
 				return DuoArtifactEligibity.NoDuosForThisCharacter;
 
 			var artifactsForThisCharacterInThisCrew = Database.GetMatchingDuoArtifactTypes(state.characters.Select(c => c.deckType).WhereNotNull())
 				.Select(t => (Type: t, Ownership: Database.GetDuoArtifactTypeOwnership(t)!))
-				.Where(e => e.Ownership.Any(owner => DeckMatches(deck, owner)));
+				.Where(e => e.Ownership.Any(owner => ArtifactDeckMatches(deck, owner)));
 
 			if (!artifactsForThisCharacterInThisCrew.Any())
 				return DuoArtifactEligibity.NoDuosForThisCrew;
@@ -193,6 +196,6 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		return DuoArtifactEligibity.RequirementsNotSatisfied;
 	}
 
-	internal static bool DeckMatches(Deck? lhs, Deck? rhs)
-		=> Equals(lhs, rhs) || (lhs == Deck.colorless && rhs == Deck.catartifact) || (lhs == Deck.catartifact && rhs == Deck.colorless);
+	internal static bool ArtifactDeckMatches(Deck characterDeck, Deck? otherDeck)
+		=> Equals(characterDeck, otherDeck == Deck.catartifact ? Deck.colorless : otherDeck);
 }

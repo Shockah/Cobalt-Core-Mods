@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.DuoArtifacts;
@@ -7,20 +6,23 @@ namespace Shockah.DuoArtifacts;
 internal static class I18n
 {
 	public static string DuoArtifactDeckName => "Duo";
-	public static string DuoArtifactTooltip => "{0}-{1} Duo Artifact.";
+	public static string DuoArtifactTooltip => "{0}-{1}";
+	public static string DuoArtifactLongTooltip => $"{DuoArtifactTooltip} Duo Artifact.";
 
-	public static string TrioArtifactDeckName => "Duo";
-	public static string TrioArtifactTooltip => "{0}-{1}-{2} Trio Artifact.";
+	public static string TrioArtifactDeckName => "Trio";
+	public static string TrioArtifactTooltip => "{0}-{1}-{2}";
+	public static string TrioArtifactLongTooltip => $"{TrioArtifactTooltip} Trio Artifact.";
 
 	public static string ComboArtifactDeckName => "Combo";
-	public static string ComboArtifactTooltip => "{0} Combo Artifact.";
+	public static string ComboArtifactTooltip => "{0}";
+	public static string ComboArtifactLongTooltip => $"{ComboArtifactTooltip} Combo Artifact.";
 	public static string ComboArtifactTooltipSeparator => "-";
 
-	public static string CharacterEligibleForDuoArtifact => "Eligible for duo artifacts.";
+	public static string CharacterEligibleForDuoArtifact => "Eligible for duo artifacts:";
 	public static string CharacterEligibleForDuoArtifactNoDuos => "Technically eligible for duo artifacts... but there are none for them!";
 	public static string CharacterEligibleForDuoArtifactNoMatchingDuos => "Technically eligible for duo artifacts... but there are none for them you can get with this crew!";
 
-	public static string GetDuoArtifactTooltip(IEnumerable<Deck> characters)
+	public static string GetDuoArtifactTooltip(IEnumerable<Deck> characters, bool @long = true)
 	{
 		var characterNamesWithColor = characters
 			.Distinct()
@@ -31,9 +33,9 @@ internal static class I18n
 
 		return characterNamesWithColor.Count switch
 		{
-			2 => string.Format(DuoArtifactTooltip, characterNamesWithColor[0], characterNamesWithColor[1]),
-			3 => string.Format(TrioArtifactTooltip, characterNamesWithColor[0], characterNamesWithColor[1], characterNamesWithColor[2]),
-			_ => string.Format(ComboArtifactTooltip, string.Join(ComboArtifactTooltipSeparator, characterNamesWithColor))
+			2 => string.Format(@long ? DuoArtifactLongTooltip : DuoArtifactTooltip, characterNamesWithColor[0], characterNamesWithColor[1]),
+			3 => string.Format(@long ? TrioArtifactLongTooltip : TrioArtifactTooltip, characterNamesWithColor[0], characterNamesWithColor[1], characterNamesWithColor[2]),
+			_ => string.Format(@long ? ComboArtifactLongTooltip : ComboArtifactTooltip, string.Join(ComboArtifactTooltipSeparator, characterNamesWithColor))
 		};
 	}
 

@@ -56,6 +56,21 @@ internal static class CharacterPatches
 				break;
 			case DuoArtifactEligibity.Eligible:
 				g.tooltips.AddText(g.tooltips.pos, I18n.CharacterEligibleForDuoArtifact);
+				foreach (var duoType in ModEntry.Instance.Database.GetMatchingDuoArtifactTypes(g.state.characters.Select(c => c.deckType).WhereNotNull()))
+				{
+					if (DB.artifacts.FirstOrNull(kvp => kvp.Value == duoType) is not { } kvp)
+						continue;
+					if (ModEntry.Instance.Database.GetDuoArtifactTypeOwnership(duoType) is not { } ownership)
+						continue;
+					if (!ownership.Contains(deck))
+						continue;
+
+					if (g.state.storyVars.artifactsOwned.Contains(kvp.Key))
+						g.tooltips.AddText(g.tooltips.pos, $"<c=artifact>{Loc.T($"artifact.{kvp.Key}.name")}</c>\n{I18n.GetDuoArtifactTooltip(ownership, @long: false)}");
+					else
+						g.tooltips.AddText(g.tooltips.pos, $"<c=artifact>???</c>\n{I18n.GetDuoArtifactTooltip(ownership, @long: false)}");
+				}
+
 				break;
 		}
 	}
