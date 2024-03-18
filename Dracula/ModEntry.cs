@@ -130,6 +130,7 @@ public sealed class ModEntry : SimpleMod
 		=> CommonArtifacts.Concat(BossArtifacts).Concat(ShipArtifacts);
 
 	internal static IReadOnlyList<Type> DuoArtifactTypes { get; } = [
+		typeof(DraculaBooksArtifact),
 		typeof(DraculaDizzyArtifact),
 		typeof(DraculaDrakeArtifact),
 		typeof(DraculaIsaacArtifact),
