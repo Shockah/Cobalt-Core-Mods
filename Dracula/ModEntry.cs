@@ -131,6 +131,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static IReadOnlyList<Type> DuoArtifactTypes { get; } = [
 		typeof(DraculaDizzyArtifact),
+		typeof(DraculaDrakeArtifact),
 		typeof(DraculaIsaacArtifact),
 	];
 
