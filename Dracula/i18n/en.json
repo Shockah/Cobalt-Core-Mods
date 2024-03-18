@@ -181,6 +181,10 @@
         },
 
         "Duo": {
+            "DraculaBooks": {
+                "name": "BLOODSHARD",
+                "description": "Once per combat, whenever you spend your last <c=status>SHARD</c>, <c=heal>heal {{HealAmount}}</c>."
+            },
             "DraculaDizzy": {
                 "name": "ROTTEN BLOOD",
                 "description": "Whenever <c=status>BLEEDING</c> triggers, give the ship {{ResultingOxidation}} <c=status>OXIDATION</c>."
