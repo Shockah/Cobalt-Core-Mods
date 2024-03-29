@@ -18,10 +18,12 @@ internal sealed class ModEntry : SimpleMod
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
 	internal static IReadOnlyList<Type> StatusTypes { get; } = [
+		typeof(BombEnemy.SelfDestructTimerStatus),
 		typeof(VolatileOverdriveStatus),
 	];
 
 	internal static IReadOnlyList<Type> EnemyTypes { get; } = [
+		typeof(BombEnemy),
 		typeof(VolatileOverdriveEnemy),
 	];
 
@@ -56,4 +58,7 @@ internal sealed class ModEntry : SimpleMod
 				AccessTools.DeclaredMethod(type, nameof(IRegisterable.OnLoadStringsForLocale))?.Invoke(null, [package, helper, e]);
 		};
 	}
+
+	public override object? GetApi(IModManifest requestingMod)
+		=> new ApiImplementation();
 }

@@ -52,14 +52,33 @@
         }
     },
     "enemy": {
+        "Bomb": [
+            {
+                "name": "N1 Bomb"
+            },
+            {
+                "name": "N2 Bomb"
+            },
+            {
+                "name": "N3 Bomb"
+            }
+        ],
         "VolatileOverdrive": {
             "name": "BTL-13 \"BEETLE\" Interceptor"
         }
     },
     "status": {
+        "SelfDestructTimer": {
+            "name": "Self-destruct",
+            "description": "In {0} turns, this ship will... <c=hurt>try to self-destruct, dealing hull damage to the player?!</c>"
+        },
         "VolatileOverdrive": {
             "name": "Volatile Overdrive",
             "description": "Add {0} damage to all attacks. <c=downside>Decreases by 1 at end of turn. Whenever your cockpit is hit, lose 1 and your opponent gains 1 <c=status>OVERDRIVE</c>.</c>"
         }
+    },
+    "intent": {
+        "SwitchBrittlePart": "This part will become <c=parttrait>brittle</c>, instead of the current one.",
+        "SelfDestruct": "The enemy will... <c=hurt>self-destruct, dealing {{Damage}} hull damage to you?!</c>"
     }
 }

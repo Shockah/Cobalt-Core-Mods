@@ -20,8 +20,7 @@ internal sealed class VolatileOverdriveEnemy : AI, IRegisterable
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		var enemy = new VolatileOverdriveEnemy();
-		DB.enemies[enemy.Key()] = enemy.GetType();
+		DB.enemies[MyKey] = MethodBase.GetCurrentMethod()!.DeclaringType!;
 
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
@@ -35,7 +34,7 @@ internal sealed class VolatileOverdriveEnemy : AI, IRegisterable
 		e.Localizations[$"enemy.{MyKey}.name"] = ModEntry.Instance.Localizations.Localize(["enemy", "VolatileOverdrive", "name"]);
 	}
 
-	private static void Map_GetEnemyPools_Postfix(State s, ref MapBase.MapEnemyPool __result)
+	private static void Map_GetEnemyPools_Postfix(ref MapBase.MapEnemyPool __result)
 	{
 		__result.normal.Add(new VolatileOverdriveEnemy());
 	}
