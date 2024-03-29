@@ -50,5 +50,16 @@
             ],
             "Action-UpgradeText": "Swap to a new ship"
         }
+    },
+    "enemy": {
+        "VolatileOverdrive": {
+            "name": "BTL-13 \"BEETLE\" Interceptor"
+        }
+    },
+    "status": {
+        "VolatileOverdrive": {
+            "name": "Volatile Overdrive",
+            "description": "Add {0} damage to all attacks. <c=downside>Decreases by 1 at end of turn. Whenever your cockpit is hit, lose 1 and your opponent gains 1 <c=status>OVERDRIVE</c>.</c>"
+        }
     }
 }

@@ -115,7 +115,7 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 					pools = [ArtifactPool.EventOnly],
 					unremovable = true
 				},
-				Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/CombatAnalyzerGadget.png")).Sprite,
+				Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifact/CombatAnalyzerGadget.png")).Sprite,
 				Name = ModEntry.Instance.AnyLocalizations.Bind(["event", "CombatDataCalibration", "artifact", "name"]).Localize,
 				Description = ModEntry.Instance.AnyLocalizations.Bind(["event", "CombatDataCalibration", "artifact", "description"]).Localize
 			});

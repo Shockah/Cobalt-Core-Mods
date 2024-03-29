@@ -4,18 +4,25 @@ using Nanoray.PluginManager;
 using Nickel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Shockah.EventsGalore;
 
 internal sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
+	internal Harmony Harmony { get; }
+	internal IKokoroApi KokoroApi { get; }
 
 	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
+	internal static IReadOnlyList<Type> StatusTypes { get; } = [
+		typeof(VolatileOverdriveStatus),
+	];
+
 	internal static IReadOnlyList<Type> EnemyTypes { get; } = [
-		typeof(OverdriveOnHitEnemy),
+		typeof(VolatileOverdriveEnemy),
 	];
 
 	internal static IReadOnlyList<Type> EventTypes { get; } = [
@@ -24,9 +31,13 @@ internal sealed class ModEntry : SimpleMod
 		typeof(ShipSwapEvent),
 	];
 
+	internal static IEnumerable<Type> RegisterableTypes { get; } = StatusTypes.Concat(EnemyTypes).Concat(EventTypes);
+
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
+		Harmony = new(package.Manifest.UniqueName);
+		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -36,9 +47,13 @@ internal sealed class ModEntry : SimpleMod
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
 		);
 
-		foreach (var enemyType in EnemyTypes)
-			AccessTools.DeclaredMethod(enemyType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
-		foreach (var eventType in EventTypes)
-			AccessTools.DeclaredMethod(eventType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
+		foreach (var type in RegisterableTypes)
+			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
+
+		helper.Events.OnLoadStringsForLocale += (_, e) =>
+		{
+			foreach (var type in RegisterableTypes)
+				AccessTools.DeclaredMethod(type, nameof(IRegisterable.OnLoadStringsForLocale))?.Invoke(null, [package, helper, e]);
+		};
 	}
 }
