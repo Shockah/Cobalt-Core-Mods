@@ -90,42 +90,45 @@ internal sealed class ShipSwapEvent : IRegisterable
 	}
 
 	private static List<Choice> GetChoices(State state)
-		=> [
-			new Choice
+	{
+		var currentShipKey = state.ship.key;
+		var otherShips = StarterShip.ships.Keys
+			.Where(key => currentShipKey != key)
+			.ToList();
+		var newShipKeys = otherShips.Shuffle(state.rngCurrentEvent).Take(3).ToList();
+
+		return Enumerable.Range(0, newShipKeys.Count)
+			.Select(i => new Choice
 			{
-				label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-Yes"]),
+				label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-Yes", i.ToString()], new { ShipName = Loc.T($"ship.{newShipKeys[i]}.name") }),
 				key = $"{EventName}::Yes",
 				actions = [
 					new AShipUpgrades
 					{
 						actions = [
-							new AChangeShipRandomly()
+							new ASwapShip { NewShipKey = newShipKeys[i] }
 						]
 					}
 				]
-			},
-			new Choice
+			})
+			.Append(new Choice
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-No"]),
 				key = $"{EventName}::No"
-			}
-		];
+			})
+			.ToList();
+	}
 
-	private sealed class AChangeShipRandomly : CardAction
+	private sealed class ASwapShip : CardAction
 	{
+		public required string NewShipKey;
+
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
 			
 			var currentShipKey = s.ship.key;
-			var otherShips = StarterShip.ships.Keys
-				.Where(key => currentShipKey != key)
-				.ToList();
-			var newShipKey = otherShips.Random(s.rngCurrentEvent);
-
-			if (newShipKey is null)
-				return;
-			if (!StarterShip.ships.TryGetValue(newShipKey, out var newShipStarter))
+			if (!StarterShip.ships.TryGetValue(NewShipKey, out var newShipStarter))
 				return;
 			if (!StarterShip.ships.TryGetValue(currentShipKey, out var currentShipStarter))
 				return;
@@ -218,7 +221,7 @@ internal sealed class ShipSwapEvent : IRegisterable
 					return amount;
 				}
 
-				var exclusiveArtifacts = GetExclusiveArtifactTypes(newShipKey)
+				var exclusiveArtifacts = GetExclusiveArtifactTypes(NewShipKey)
 					.Select(t => (Artifact)Activator.CreateInstance(t)!)
 					.Where(a => !a.GetMeta().pools.Contains(ArtifactPool.Unreleased))
 					.Shuffle(s.rngCurrentEvent)
@@ -251,7 +254,10 @@ internal sealed class ShipSwapEvent : IRegisterable
 		}
 
 		public override List<Tooltip> GetTooltips(State s)
-			=> [new TTText(ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Action-Tooltip"]))];
+			=> [
+				new TTText(ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Action-Tooltip"])),
+				new TTText($"<c=textChoice>{Loc.T($"ship.{NewShipKey}.name")}</c>\n{Loc.T($"ship.{NewShipKey}.desc")}")
+			];
 
 		public override string? GetUpgradeText(State s)
 			=> ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Action-UpgradeText"]);
