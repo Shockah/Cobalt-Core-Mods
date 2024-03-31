@@ -4,6 +4,7 @@ namespace Shockah.EventsGalore;
 
 public interface IApi
 {
+	IStatusEntry ActionReactionStatus { get; }
 	IStatusEntry VolatileOverdriveStatus { get; }
 
 	#region Self-destruct

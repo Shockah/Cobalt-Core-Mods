@@ -18,11 +18,13 @@ internal sealed class ModEntry : SimpleMod
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
 	internal static IReadOnlyList<Type> StatusTypes { get; } = [
+		typeof(ActionReactionStatus),
 		typeof(BombEnemy.SelfDestructTimerStatus),
 		typeof(VolatileOverdriveStatus),
 	];
 
 	internal static IReadOnlyList<Type> EnemyTypes { get; } = [
+		typeof(ActionReactionEnemy),
 		typeof(BombEnemy),
 		typeof(VolatileOverdriveEnemy),
 	];

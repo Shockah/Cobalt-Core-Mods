@@ -4,6 +4,9 @@ namespace Shockah.EventsGalore;
 
 public sealed class ApiImplementation : IApi
 {
+	public IStatusEntry ActionReactionStatus
+		=> EventsGalore.ActionReactionStatus.Instance.Entry;
+	
 	public IStatusEntry VolatileOverdriveStatus
 		=> EventsGalore.VolatileOverdriveStatus.Instance.Entry;
 

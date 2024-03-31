@@ -68,6 +68,10 @@
         }
     },
     "status": {
+        "ActionReaction": {
+            "name": "Action-Reaction",
+            "description": "<c=downside>Whenever you play a card, receive 1 damage.</c> Decreases by 1 at end of turn."
+        },
         "SelfDestructTimer": {
             "name": "Self-destruct",
             "description": "In {0} turns, this ship will... <c=hurt>try to self-destruct, dealing hull damage to the player?!</c>"

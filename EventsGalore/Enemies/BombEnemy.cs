@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Nanoray.PluginManager;
-using Newtonsoft.Json;
 using Nickel;
 using Shockah.Shared;
 using System;
@@ -32,9 +31,6 @@ internal abstract class BombEnemy : AI, IRegisterable
 	private static ISpriteEntry SelfDestructIntentSprite = null!;
 
 	private readonly ZoneType Zone;
-
-	[JsonProperty]
-	private int AiCounter;
 
 	public BombEnemy(ZoneType zone) 
 	{
@@ -236,7 +232,6 @@ internal abstract class BombEnemy : AI, IRegisterable
 				});
 		}
 
-		AiCounter++;
 		return new EnemyDecision
 		{
 			actions = [],
