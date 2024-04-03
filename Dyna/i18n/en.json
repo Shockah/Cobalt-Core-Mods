@@ -1,0 +1,23 @@
+{
+    "character": {
+        "name": "Dyna",
+        "description": [
+            "<c=EC592B>DYNA</c>",
+            "A fire ant demolition expert. She�s trigger-happy and eager to help out just for the sake of blowing up more things."
+        ]
+    },
+    "card": {
+        "Bang": {
+            "name": "Bang"
+        },
+        "Kaboom": {
+            "name": "Kaboom"
+        },
+        "MegatonBlast": {
+            "name": "Megaton Blast"
+        },
+        "SmokeBomb": {
+            "name": "Smoke Bomb"
+        }
+    }
+}

@@ -13,4 +13,20 @@ internal static class CardActionExt
 		self.canRunAfterKill = canRunAfterKill;
 		return self;
 	}
+
+	public static void FullyRun(this CardAction self, G g, State state, Combat combat)
+	{
+		self.Begin(g, state, combat);
+
+		if (self.timer > 0)
+		{
+			var oldDt = g.dt;
+			g.dt = 1000;
+
+			while (self.timer > 0)
+				self.Update(g, state, combat);
+
+			g.dt = oldDt;
+		}
+	}
 }
