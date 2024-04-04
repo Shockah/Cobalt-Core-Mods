@@ -61,6 +61,7 @@ public sealed class ModEntry : SimpleMod
 		);
 
 		_ = new BlastwaveManager();
+		CustomTTGlossary.ApplyPatches(Harmony);
 
 		DynaDeck = helper.Content.Decks.RegisterDeck("Dyna", new()
 		{

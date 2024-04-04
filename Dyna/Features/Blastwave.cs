@@ -1,7 +1,10 @@
-﻿using HarmonyLib;
+﻿using FMOD;
+using FSPRO;
+using HarmonyLib;
 using Nickel;
 using Shockah.Shared;
 using System;
+using System.Collections.Generic;
 
 namespace Shockah.Dyna;
 
@@ -33,6 +36,7 @@ internal sealed class BlastwaveManager
 {
 	private static ISpriteEntry BlastwaveIcon = null!;
 	private static ISpriteEntry WideBlastwaveIcon = null!;
+	private static ISpriteEntry StunBlastwaveIcon = null!;
 
 	private static AAttack? AttackContext;
 
@@ -40,12 +44,18 @@ internal sealed class BlastwaveManager
 	{
 		BlastwaveIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icons/Blastwave.png"));
 		WideBlastwaveIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icons/BlastwaveWide.png"));
+		StunBlastwaveIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icons/BlastwaveStun.png"));
 
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
 			prefix: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Prefix)),
 			finalizer: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Finalizer))
+		);
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.GetTooltips)),
+			postfix: new HarmonyMethod(GetType(), nameof(AAttack_GetTooltips_Postfix))
 		);
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
@@ -87,11 +97,78 @@ internal sealed class BlastwaveManager
 		});
 	}
 
+	private static void SpawnHitEffect(G g, bool targetPlayer, RaycastResult ray, DamageDone dmg)
+	{
+		if (g.state.route is not Combat combat)
+			return;
+
+		if (ray.hitShip)
+		{
+			var rectVecA = ray.fromDrone
+				? FxPositions.DroneCannon(ray.worldX, targetPlayer)
+				: FxPositions.Cannon(ray.worldX, !targetPlayer);
+
+			Vec rectVecB;
+			if (!ray.hitDrone && !ray.hitShip)
+				rectVecB = FxPositions.Miss(ray.worldX, targetPlayer);
+			else if (ray.hitDrone)
+				rectVecB = FxPositions.Drone(ray.worldX);
+			else if (dmg.hitHull)
+				rectVecB = FxPositions.Hull(ray.worldX, targetPlayer);
+			else
+				rectVecB = FxPositions.Shield(ray.worldX, targetPlayer);
+
+			var rect = Rect.FromPoints(rectVecA, rectVecB);
+			var hitPos = new Vec(rect.x, targetPlayer ? rect.y2 : rect.y);
+			ParticleBursts.HullImpact(g, hitPos, targetPlayer, !ray.hitDrone, ray.fromDrone);
+		}
+
+		if (dmg.hitShield && !dmg.hitHull)
+		{
+			combat.fx.Add(new ShieldHit { pos = FxPositions.Shield(ray.worldX, targetPlayer) });
+			ParticleBursts.ShieldImpact(g, FxPositions.Shield(ray.worldX, targetPlayer), targetPlayer);
+		}
+
+		if (dmg.poppedShield)
+			combat.fx.Add(new ShieldPop { pos = FxPositions.Shield(ray.worldX, targetPlayer) });
+
+		GUID? sound = null;
+		if (dmg.poppedShield)
+			sound = Event.Hits_ShieldPop;
+		else if (dmg.hitShield)
+			sound = Event.Hits_ShieldHit;
+
+		if (!ray.hitDrone && !ray.hitShip)
+			sound = Event.Hits_Miss;
+		else if (dmg.hitHull)
+			sound = targetPlayer ? Event.Hits_HitHurt : Event.Hits_OutgoingHit;
+		else if (ray.hitDrone)
+			sound = Event.Hits_HitDrone;
+
+		if (sound.HasValue)
+			Audio.Play(sound.Value);
+	}
+
 	private static void AAttack_Begin_Prefix(AAttack __instance)
 		=> AttackContext = __instance;
 
 	private static void AAttack_Begin_Finalizer()
 		=> AttackContext = null;
+
+	private static void AAttack_GetTooltips_Postfix(AAttack __instance, State s, ref List<Tooltip> __result)
+	{
+		if (!__instance.IsBlastwave())
+			return;
+
+		__result.AddRange(new BlastwaveAction
+		{
+			TargetPlayer = __instance.targetPlayer,
+			WorldX = 0,
+			Damage = __instance.GetBlastwaveDamage(),
+			Range = __instance.GetBlastwaveRange(),
+			IsStunwave = __instance.IsStunwave(),
+		}.GetTooltips(s));
+	}
 
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
 	{
@@ -114,11 +191,14 @@ internal sealed class BlastwaveManager
 
 		if (!dontDraw)
 		{
-			var icon = attack.GetBlastwaveRange() switch
-			{
-				<= 1 => BlastwaveIcon,
-				>= 2 => WideBlastwaveIcon,
-			};
+			ISpriteEntry icon;
+			if (attack.IsStunwave())
+				icon = StunBlastwaveIcon;
+			else if (attack.GetBlastwaveRange() >= 2)
+				icon = WideBlastwaveIcon;
+			else
+				icon = BlastwaveIcon;
+
 			Draw.Sprite(icon.Sprite, initialX + __result, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
 		}
 		__result += 9;
@@ -128,13 +208,6 @@ internal sealed class BlastwaveManager
 			if (!dontDraw)
 				BigNumbers.Render(damage, initialX + __result, position.y, action.disabled ? Colors.disabledText : Colors.redd);
 			__result += damage.ToString().Length * 6;
-		}
-
-		if (attack.IsStunwave())
-		{
-			if (!dontDraw)
-				Draw.Sprite(StableSpr.icons_stun, initialX + __result, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
-			__result += 9;
 		}
 
 		return false;
@@ -150,6 +223,59 @@ internal sealed class BlastwaveManager
 		public int Range = 1;
 		public bool IsStunwave;
 		public bool IsPiercing = false;
+
+		public override List<Tooltip> GetTooltips(State s)
+		{
+			string key;
+			string name;
+			string description;
+			ISpriteEntry icon;
+
+			if (IsStunwave)
+			{
+				icon = StunBlastwaveIcon;
+				name = ModEntry.Instance.Localizations.Localize(["action", "Blastwave", "name", "Stun"]);
+				if (Damage is { } damage)
+				{
+					key = $"{ModEntry.Instance.Package.Manifest.UniqueName}::Blastwave::Stun::StunDamage";
+					description = ModEntry.Instance.Localizations.Localize(["action", "Blastwave", "description", "StunDamage"], new { Range, Damage = damage });
+				}
+				else
+				{
+					key = $"{ModEntry.Instance.Package.Manifest.UniqueName}::Blastwave::Stun::Stun";
+					description = ModEntry.Instance.Localizations.Localize(["action", "Blastwave", "description", "Stun"], new { Range });
+				}
+			}
+			else if (Range >= 2)
+			{
+				icon = WideBlastwaveIcon;
+				key = $"{ModEntry.Instance.Package.Manifest.UniqueName}::Blastwave::Wide::Damage";
+				name = ModEntry.Instance.Localizations.Localize(["action", "Blastwave", "name", "Wide"]);
+				description = ModEntry.Instance.Localizations.Localize(["action", "Blastwave", "description", "Damage"], new { Range, Damage = Damage ?? 0 });
+			}
+			else
+			{
+				icon = BlastwaveIcon;
+				key = $"{ModEntry.Instance.Package.Manifest.UniqueName}::Blastwave::Normal::Damage";
+				name = ModEntry.Instance.Localizations.Localize(["action", "Blastwave", "name", "Normal"]);
+				description = ModEntry.Instance.Localizations.Localize(["action", "Blastwave", "description", "Damage"], new { Range, Damage = Damage ?? 0 });
+			}
+
+			List<Tooltip> tooltips = [
+				new CustomTTGlossary(
+					CustomTTGlossary.GlossaryType.action,
+					() => icon.Sprite,
+					() => name,
+					() => description,
+					key: key
+				)
+			];
+
+			if (IsStunwave)
+				tooltips.Add(new TTGlossary("action.stun"));
+
+			return tooltips;
+		}
 
 		public override void Begin(G g, State s, Combat c)
 		{
@@ -199,7 +325,7 @@ internal sealed class BlastwaveManager
 					hitShip = true,
 					worldX = worldX
 				};
-				EffectSpawner.Cannon(g, TargetPlayer, raycastResult, damageDone, isBeam: false);
+				SpawnHitEffect(g, TargetPlayer, raycastResult, damageDone);
 			}
 
 			RunAt(WorldX - offset);

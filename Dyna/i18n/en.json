@@ -6,6 +6,20 @@
             "A fire ant demolition expert. She�s trigger-happy and eager to help out just for the sake of blowing up more things."
         ]
     },
+    "action": {
+        "Blastwave": {
+            "name": {
+                "Normal": "Blastwave",
+                "Wide": "Wide Blastwave",
+                "Stun": "Stunwave"
+            },
+            "description": {
+                "Damage": "Additionally hits parts up to {{Range}} away for {{Damage}} damage.",
+                "StunDamage": "Additionally hits parts up to {{Range}} away for {{Damage}} damage, stunning them.",
+                "Stun": "Additionally hits parts up to {{Range}} away, stunning them."
+            }
+        }
+    },
     "card": {
         "Bang": {
             "name": "Bang"
