@@ -1,6 +1,4 @@
-﻿using FMOD;
-using FSPRO;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Nickel;
 using Shockah.Shared;
 using System;
@@ -89,64 +87,13 @@ internal sealed class BlastwaveManager
 		attack.timer *= 0.5;
 		combat.QueueImmediate(new BlastwaveAction
 		{
+			Source = attack,
 			TargetPlayer = targetPlayer,
 			WorldX = worldX,
 			Damage = attack.GetBlastwaveDamage(),
 			Range = attack.GetBlastwaveRange(),
 			IsStunwave = attack.IsStunwave(),
 		});
-	}
-
-	private static void SpawnHitEffect(G g, bool targetPlayer, RaycastResult ray, DamageDone dmg)
-	{
-		if (g.state.route is not Combat combat)
-			return;
-
-		if (ray.hitShip)
-		{
-			var rectVecA = ray.fromDrone
-				? FxPositions.DroneCannon(ray.worldX, targetPlayer)
-				: FxPositions.Cannon(ray.worldX, !targetPlayer);
-
-			Vec rectVecB;
-			if (!ray.hitDrone && !ray.hitShip)
-				rectVecB = FxPositions.Miss(ray.worldX, targetPlayer);
-			else if (ray.hitDrone)
-				rectVecB = FxPositions.Drone(ray.worldX);
-			else if (dmg.hitHull)
-				rectVecB = FxPositions.Hull(ray.worldX, targetPlayer);
-			else
-				rectVecB = FxPositions.Shield(ray.worldX, targetPlayer);
-
-			var rect = Rect.FromPoints(rectVecA, rectVecB);
-			var hitPos = new Vec(rect.x, targetPlayer ? rect.y2 : rect.y);
-			ParticleBursts.HullImpact(g, hitPos, targetPlayer, !ray.hitDrone, ray.fromDrone);
-		}
-
-		if (dmg.hitShield && !dmg.hitHull)
-		{
-			combat.fx.Add(new ShieldHit { pos = FxPositions.Shield(ray.worldX, targetPlayer) });
-			ParticleBursts.ShieldImpact(g, FxPositions.Shield(ray.worldX, targetPlayer), targetPlayer);
-		}
-
-		if (dmg.poppedShield)
-			combat.fx.Add(new ShieldPop { pos = FxPositions.Shield(ray.worldX, targetPlayer) });
-
-		GUID? sound = null;
-		if (dmg.poppedShield)
-			sound = Event.Hits_ShieldPop;
-		else if (dmg.hitShield)
-			sound = Event.Hits_ShieldHit;
-
-		if (!ray.hitDrone && !ray.hitShip)
-			sound = Event.Hits_Miss;
-		else if (dmg.hitHull)
-			sound = targetPlayer ? Event.Hits_HitHurt : Event.Hits_OutgoingHit;
-		else if (ray.hitDrone)
-			sound = Event.Hits_HitDrone;
-
-		if (sound.HasValue)
-			Audio.Play(sound.Value);
 	}
 
 	private static void AAttack_Begin_Prefix(AAttack __instance)
@@ -162,6 +109,7 @@ internal sealed class BlastwaveManager
 
 		__result.AddRange(new BlastwaveAction
 		{
+			Source = __instance,
 			TargetPlayer = __instance.targetPlayer,
 			WorldX = 0,
 			Damage = __instance.GetBlastwaveDamage(),
@@ -217,6 +165,7 @@ internal sealed class BlastwaveManager
 	{
 		private const double SinglePartDuration = 0.2;
 
+		public required AAttack Source;
 		public bool TargetPlayer = false;
 		public required int WorldX;
 		public required int? Damage;
@@ -325,7 +274,14 @@ internal sealed class BlastwaveManager
 					hitShip = true,
 					worldX = worldX
 				};
-				SpawnHitEffect(g, TargetPlayer, raycastResult, damageDone);
+				EffectSpawnerExt.HitEffect(g, TargetPlayer, raycastResult, damageDone);
+
+				if (!TargetPlayer)
+				{
+					combat.otherShip.ai?.OnHitByAttack(state, combat, worldX, Source);
+					foreach (var artifact in state.EnumerateAllArtifacts())
+						artifact.OnEnemyGetHit(state, combat, part);
+				}
 			}
 
 			RunAt(WorldX - offset);

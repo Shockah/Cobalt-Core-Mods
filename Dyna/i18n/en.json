@@ -18,6 +18,16 @@
                 "StunDamage": "Additionally hits parts up to {{Range}} away for {{Damage}} damage, stunning them.",
                 "Stun": "Additionally hits parts up to {{Range}} away, stunning them."
             }
+        },
+        "FireCharge": {
+            "name": "Fire Charge",
+            "description": "Fire a <c=parttrait>charge</c> from your missile bay."
+        }
+    },
+    "charge": {
+        "Burst": {
+            "name": "Burst Charge",
+            "description": "Deals 3 damage when triggered."
         }
     },
     "card": {
