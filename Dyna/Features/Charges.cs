@@ -314,8 +314,9 @@ public sealed class FireChargeAction : CardAction
 			{
 				Audio.Play(Event.Hits_DroneCollision);
 				part.SetStickedCharge(null);
-				existingCharge.OnTrigger(s, c, targetShip, part);
+				// reversed order - charges are expected to QueueImmediate their actions, which reverses their order
 				Charge.OnTrigger(s, c, targetShip, part);
+				existingCharge.OnTrigger(s, c, targetShip, part);
 			}
 			else
 			{

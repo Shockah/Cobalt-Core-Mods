@@ -42,14 +42,32 @@ public sealed class BurstCharge : DynaCharge, IRegisterable
 		var partIndex = ship.parts.IndexOf(part);
 		if (partIndex < 0)
 			return;
-		var worldX = ship.x + partIndex;
 
-		var damageDone = ship.NormalDamage(state, combat, 3, worldX);
-		var raycastResult = new RaycastResult
+		var worldX = ship.x + partIndex;
+		combat.QueueImmediate(new Action
 		{
-			hitShip = true,
-			worldX = worldX
-		};
-		EffectSpawnerExt.HitEffect(MG.inst.g, ship.isPlayerShip, raycastResult, damageDone);
+			TargetPlayer = ship.isPlayerShip,
+			WorldX = worldX
+		});
+	}
+
+	private sealed class Action : CardAction
+	{
+		public bool TargetPlayer;
+		public required int WorldX;
+
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+
+			var targetShip = TargetPlayer ? s.ship : c.otherShip;
+			var damageDone = targetShip.NormalDamage(s, c, 3, WorldX);
+			var raycastResult = new RaycastResult
+			{
+				hitShip = true,
+				worldX = WorldX
+			};
+			EffectSpawnerExt.HitEffect(MG.inst.g, TargetPlayer, raycastResult, damageDone);
+		}
 	}
 }
