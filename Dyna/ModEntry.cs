@@ -20,6 +20,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
 		typeof(BangCard),
+		typeof(DemoChargeCard),
 		typeof(KaboomCard),
 	];
 
@@ -29,6 +30,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
 		typeof(MegatonBlastCard),
+		typeof(ShatterChargeCard),
 	];
 
 	internal static IEnumerable<Type> AllCardTypes
@@ -45,8 +47,14 @@ public sealed class ModEntry : SimpleMod
 	internal static readonly IEnumerable<Type> AllArtifactTypes
 		= CommonArtifacts.Concat(BossArtifacts);
 
+	internal static readonly IReadOnlyList<Type> ChargeTypes = [
+		typeof(BurstCharge),
+		typeof(DemoCharge),
+		typeof(ShatterCharge),
+	];
+
 	internal static readonly IEnumerable<Type> RegisterableTypes
-		= AllCardTypes.Concat(AllArtifactTypes);
+		= AllCardTypes.Concat(AllArtifactTypes).Concat(ChargeTypes);
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
@@ -63,6 +71,7 @@ public sealed class ModEntry : SimpleMod
 		);
 
 		_ = new BlastwaveManager();
+		_ = new ChargeManager();
 		CustomTTGlossary.ApplyPatches(Harmony);
 
 		DynaDeck = helper.Content.Decks.RegisterDeck("Dyna", new()

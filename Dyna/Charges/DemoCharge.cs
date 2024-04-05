@@ -5,15 +5,15 @@ using System.Collections.Generic;
 
 namespace Shockah.Dyna;
 
-public sealed class BurstCharge : DynaCharge, IRegisterable
+public sealed class DemoCharge : DynaCharge, IRegisterable
 {
 	private static ISpriteEntry Sprite = null!;
 	private static ISpriteEntry LightsSprite = null!;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		Sprite = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Charges/Burst.png"));
-		LightsSprite = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Charges/BurstLight.png"));
+		Sprite = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Charges/Demo.png"));
+		LightsSprite = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Charges/DemoLight.png"));
 	}
 
 	public override Spr GetIcon(State state)
@@ -27,10 +27,11 @@ public sealed class BurstCharge : DynaCharge, IRegisterable
 			new CustomTTGlossary(
 				CustomTTGlossary.GlossaryType.parttrait,
 				() => GetIcon(state),
-				() => ModEntry.Instance.Localizations.Localize(["charge", "Burst", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["charge", "Burst", "description"]),
-				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::Charge::Burst"
-			)
+				() => ModEntry.Instance.Localizations.Localize(["charge", "Demo", "name"]),
+				() => ModEntry.Instance.Localizations.Localize(["charge", "Demo", "description"]),
+				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::Charge::Demo"
+			),
+			new TTGlossary("parttrait.weak")
 		];
 
 	public override void OnTrigger(State state, Combat combat, Ship ship, Part part)
@@ -44,7 +45,13 @@ public sealed class BurstCharge : DynaCharge, IRegisterable
 			return;
 		var worldX = ship.x + partIndex;
 
-		var damageDone = ship.NormalDamage(state, combat, 3, worldX);
+		combat.QueueImmediate(new AWeaken
+		{
+			targetPlayer = ship.isPlayerShip,
+			worldX = worldX
+		});
+
+		var damageDone = new DamageDone { hitHull = true };
 		var raycastResult = new RaycastResult
 		{
 			hitShip = true,

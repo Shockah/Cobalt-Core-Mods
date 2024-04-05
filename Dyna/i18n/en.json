@@ -21,24 +21,38 @@
         },
         "FireCharge": {
             "name": "Fire Charge",
-            "description": "Fire a <c=parttrait>charge</c> from your missile bay."
+            "description": "Fire a <c=parttrait>charge</c> from your missile bay. The charge will stick to the enemy ship or deal damage to a <c=midrow>midrow object</c>. The charge will trigger when shot upon or upon collision with another charge."
         }
     },
     "charge": {
         "Burst": {
             "name": "Burst Charge",
             "description": "Deals 3 damage when triggered."
+        },
+        "Demo": {
+            "name": "Demo Charge",
+            "description": "Makes the ship part <c=parttrait>weak</c> when triggered."
+        },
+        "Shatter": {
+            "name": "Shatter Charge",
+            "description": "Makes the ship part <c=parttrait>brittle</c> when triggered."
         }
     },
     "card": {
         "Bang": {
             "name": "Bang"
         },
+        "DemoCharge": {
+            "name": "Demo Charge"
+        },
         "Kaboom": {
             "name": "Kaboom"
         },
         "MegatonBlast": {
             "name": "Megaton Blast"
+        },
+        "ShatterCharge": {
+            "name": "Shatter Charge"
         },
         "SmokeBomb": {
             "name": "Smoke Bomb"
