@@ -1,15 +1,10 @@
 ﻿using FSPRO;
 using HarmonyLib;
-using Microsoft.Extensions.Logging;
-using Nanoray.Shrike;
-using Nanoray.Shrike.Harmony;
 using Nickel;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
 
 namespace Shockah.Dyna;
 
@@ -30,16 +25,22 @@ internal static class ChargeExt
 
 internal sealed class ChargeManager
 {
-	private const UK PlayerChargeUK = (UK)2137031;
-	private const UK EnemyChargeUK = (UK)2137032;
-	private const UK IncomingChargeUK = (UK)2137033;
-
 	public ChargeManager()
 	{
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(State), nameof(State.Render)),
-			transpiler: new HarmonyMethod(GetType(), nameof(State_Render_Transpiler))
+			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderDrones)),
+			postfix: new HarmonyMethod(GetType(), nameof(Combat_RenderDrones_Postfix))
+		);
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.RenderShipUI)),
+			prefix: new HarmonyMethod(GetType(), nameof(Ship_RenderShipUI_Prefix))
+		);
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.RenderPartUI)),
+			postfix: new HarmonyMethod(GetType(), nameof(Ship_RenderPartUI_Prefix))
 		);
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
@@ -70,86 +71,69 @@ internal sealed class ChargeManager
 		charge.OnTrigger(state, combat, targetShip, nonNullPart);
 	}
 
-	private static void RenderCharges(G g, State state)
+	private static void RenderShipCharges(G g, State state, Combat combat, Ship ship)
 	{
-		if (state.route is not Combat combat)
+		for (var i = 0; i < ship.parts.Count; i++)
+			RenderShipCharge(g, state, combat, ship, i);
+	}
+
+	private static void RenderShipCharge(G g, State state, Combat combat, Ship ship, int partIndex)
+	{
+		if (ship.parts[partIndex] is not { } part || part.type == PType.empty)
 			return;
+		if (part.GetStickedCharge() is not { } charge)
+			return;
+		RenderAnyCharge(g, state, combat, ship, partIndex, charge);
+	}
 
-		void RenderAnyCharge(Ship ship, int partIndex, DynaCharge charge, bool isIncoming = false)
-		{
-			var box = g.Push(new UIKey(isIncoming ? IncomingChargeUK : (ship.isPlayerShip ? PlayerChargeUK : EnemyChargeUK), ship.x + partIndex), new Rect((ship.xLerped + partIndex) * 16 + 12.5, 90.5));
-			charge.Render(g, state, combat, ship, ship.x + partIndex, box.rect.xy);
-			g.Pop();
-		}
-
-		void RenderShipCharge(Ship ship, int partIndex)
-		{
-			if (ship.parts[partIndex] is not { } part || part.type == PType.empty)
-				return;
-			if (part.GetStickedCharge() is not { } charge)
-				return;
-			RenderAnyCharge(ship, partIndex, charge);
-		}
-
-		void RenderShipCharges(Ship ship)
-		{
-			for (var i = 0; i < ship.parts.Count; i++)
-				RenderShipCharge(ship, i);
-		}
-
-		var rect = default(Rect) + Combat.arenaPos + combat.GetCamOffset();
-		g.Push(null, rect);
-
-		RenderShipCharges(state.ship);
-		RenderShipCharges(combat.otherShip);
-		if (combat.GetInProgressFireChargeAction() is { } inProgressFireChargeAction && inProgressFireChargeAction.VolleyX is { } x)
-		{
-			var targetShip = inProgressFireChargeAction.TargetPlayer ? state.ship : combat.otherShip;
-			var partIndex = x - targetShip.x;
-			RenderAnyCharge(targetShip, partIndex, inProgressFireChargeAction.Charge, isIncoming: true);
-		}
-
+	private static void RenderAnyCharge(G g, State state, Combat combat, Ship ship, int partIndex, DynaCharge charge)
+	{
+		var box = g.Push(null, new Rect(partIndex * 16 + 7.5, 53.5));
+		charge.Render(g, state, combat, ship, ship.x + partIndex, box.rect.xy);
 		g.Pop();
 	}
 
-	private static IEnumerable<CodeInstruction> State_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	private static void Combat_RenderDrones_Postfix(Combat __instance, G g)
 	{
-		try
-		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
-					ILMatches.Ldloc<MapRoute>(originalMethod).ExtractLabels(out var labels),
-					ILMatches.Ldarg(1),
-					ILMatches.Call("Render")
-				)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(labels),
-					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(RenderCharges)))
-				)
-				.Find(
-					ILMatches.Ldarg(0).ExtractLabels(out labels),
-					ILMatches.Ldfld("route"),
-					ILMatches.Ldarg(1),
-					ILMatches.Call("Render")
-				)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(labels),
-					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(RenderCharges)))
-				)
-				.AllElements();
-		}
-		catch (Exception ex)
-		{
-			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.GetDisplayName(@long: false), ex);
-			return instructions;
-		}
+		if (__instance.GetInProgressFireChargeAction() is not { } inProgressFireChargeAction || inProgressFireChargeAction.VolleyX is not { } x)
+			return;
+
+		var targetShip = inProgressFireChargeAction.TargetPlayer ? g.state.ship : __instance.otherShip;
+		var partIndex = x - targetShip.x;
+
+		g.Push(null, new Rect(targetShip.GetX(g.state), 12) + Combat.arenaPos + __instance.GetCamOffset());
+		RenderAnyCharge(g, g.state, __instance, targetShip, partIndex, inProgressFireChargeAction.Charge);
+		g.Pop();
 	}
 
-	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
+	private static void Ship_RenderShipUI_Prefix(Ship __instance, G g, Vec v, bool positionSelf, bool isPreview)
+	{
+		if (isPreview)
+			return;
+		if (g.state.route is not Combat combat)
+			return;
+
+		g.Push(null, new Rect(positionSelf ? __instance.GetX(g.state) : 0) + v);
+		RenderShipCharges(g, g.state, combat, __instance);
+		g.Pop();
+	}
+
+	private static void Ship_RenderPartUI_Prefix(G g, Combat? combat, Part part, int localX, string keyPrefix, bool isPreview)
+	{
+		if (isPreview || combat is null)
+			return;
+		if (part.GetStickedCharge() is not { } charge)
+			return;
+
+		if (g.boxes.FirstOrDefault(b => b.key == new UIKey(StableUK.part, localX, keyPrefix)) is not { } box)
+			return;
+		if (!box.IsHover())
+			return;
+
+		g.tooltips.Add(g.tooltips.pos, charge.GetTooltips(g.state));
+	}
+
+	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, ref int __result)
 	{
 		if (action is not FireChargeAction fireAction)
 			return true;
