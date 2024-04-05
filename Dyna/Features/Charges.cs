@@ -174,9 +174,10 @@ public sealed class FireChargeAction : CardAction
 		for (var partIndex = 0; partIndex < s.ship.parts.Count; partIndex++)
 		{
 			var part = s.ship.parts[partIndex];
-			if (part.type == PType.missiles && part.active)
-				part.hilight = true;
+			if (part.type != PType.missiles || !part.active)
+				continue;
 
+			part.hilight = true;
 			if (s.route is Combat combat && combat.stuff.TryGetValue(s.ship.x + partIndex, out var @object))
 				@object.hilight = 2;
 		}
@@ -306,6 +307,8 @@ public sealed class FireChargeAction : CardAction
 				@object.bubbleShield = false;
 			else if (isInvincible)
 				c.QueueImmediate(@object.GetActionsOnBonkedWhileInvincible(s, c, !TargetPlayer, new DynaChargeFakeStuff()));
+			else
+				c.DestroyDroneAt(s, worldX, !TargetPlayer);
 			Audio.Play(Event.Hits_DroneCollision);
 		}
 		else if (targetShip.GetPartAtWorldX(worldX) is { } part && part.type != PType.empty)
