@@ -99,7 +99,7 @@ internal sealed class ChargeManager
 			return;
 
 		var targetShip = inProgressFireChargeAction.TargetPlayer ? g.state.ship : __instance.otherShip;
-		var partIndex = x - targetShip.x;
+		var partIndex = x + inProgressFireChargeAction.Offset - targetShip.x;
 
 		g.Push(null, new Rect(targetShip.GetX(g.state), 12) + Combat.arenaPos + __instance.GetCamOffset());
 		RenderAnyCharge(g, g.state, __instance, targetShip, partIndex, inProgressFireChargeAction.Charge);
@@ -141,8 +141,24 @@ internal sealed class ChargeManager
 		var box = g.Push();
 
 		if (!dontDraw)
-			Draw.Sprite(StableSpr.icons_spawn, box.rect.x + __result, box.rect.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
-		__result += 9;
+			Draw.Sprite(fireAction.Offset switch
+			{
+				< 0 => StableSpr.icons_spawnOffsetLeft,
+				> 0 => StableSpr.icons_spawnOffsetRight,
+				_ => StableSpr.icons_spawn
+			}, box.rect.x + __result, box.rect.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
+		__result += 8;
+
+		if (fireAction.Offset != 0)
+		{
+			__result += 2;
+
+			if (!dontDraw)
+				BigNumbers.Render(Math.Abs(fireAction.Offset), box.rect.x + __result, box.rect.y, color: action.disabled ? Colors.disabledDrone : Colors.drone);
+			__result += Math.Abs(fireAction.Offset).ToString().Length * 6;
+		}
+
+		__result += 2;
 
 		var icon = fireAction.Charge.GetIcon(state);
 		if (!dontDraw)
@@ -185,9 +201,24 @@ public sealed class FireChargeAction : CardAction
 		List<Tooltip> tooltips = [
 			new CustomTTGlossary(
 				CustomTTGlossary.GlossaryType.action,
-				() => StableSpr.icons_spawn,
-				() => ModEntry.Instance.Localizations.Localize(["action", "FireCharge", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["action", "FireCharge", "description"]),
+				() => Offset switch
+				{
+					< 0 => StableSpr.icons_spawnOffsetLeft,
+					> 0 => StableSpr.icons_spawnOffsetRight,
+					_ => StableSpr.icons_spawn
+				},
+				() => ModEntry.Instance.Localizations.Localize(["action", "FireCharge", "name", Offset switch
+				{
+					< 0 => "OffsetLeft",
+					> 0 => "OffsetRight",
+					_ => "Normal"
+				}]),
+				() => ModEntry.Instance.Localizations.Localize(["action", "FireCharge", "description", Offset switch
+				{
+					< 0 => "OffsetLeft",
+					> 0 => "OffsetRight",
+					_ => "Normal"
+				}], new { Offset = Math.Abs(Offset) }),
 				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::FireCharge"
 			)
 		];

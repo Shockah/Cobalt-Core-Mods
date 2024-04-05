@@ -20,6 +20,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
 		typeof(BangCard),
+		typeof(BurstChargeCard),
 		typeof(DemoChargeCard),
 		typeof(KaboomCard),
 	];
