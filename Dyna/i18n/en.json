@@ -44,17 +44,36 @@
         "Shatter": {
             "name": "Shatter Charge",
             "description": "Makes the ship part <c=parttrait>brittle</c> when triggered."
+        },
+        "Swift": {
+            "name": "Swift Charge",
+            "description": "Draws 3 cards when triggered."
         }
     },
     "card": {
         "Bang": {
             "name": "Bang"
         },
+        "Blitzkrieg": {
+            "name": "Blitzkrieg"
+        },
+        "Bunker": {
+            "name": "Bunker"
+        },
         "BurstCharge": {
             "name": "Burst Charge"
         },
+        "ClearAPath": {
+            "name": "Clear a Path"
+        },
         "DemoCharge": {
             "name": "Demo Charge"
+        },
+        "FlashBurst": {
+            "name": "Flash Burst"
+        },
+        "Incoming": {
+            "name": "Incoming"
         },
         "Kaboom": {
             "name": "Kaboom"
@@ -62,11 +81,17 @@
         "MegatonBlast": {
             "name": "Megaton Blast"
         },
+        "PerkUp": {
+            "name": "Perk Up"
+        },
         "ShatterCharge": {
             "name": "Shatter Charge"
         },
         "SmokeBomb": {
             "name": "Smoke Bomb"
+        },
+        "SwiftCharge": {
+            "name": "Swift Charge"
         }
     }
 }

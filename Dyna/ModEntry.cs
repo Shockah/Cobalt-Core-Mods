@@ -21,11 +21,18 @@ public sealed class ModEntry : SimpleMod
 	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
 		typeof(BangCard),
 		typeof(BurstChargeCard),
+		typeof(ClearAPathCard),
 		typeof(DemoChargeCard),
+		typeof(FlashBurstCard),
+		typeof(IncomingCard),
 		typeof(KaboomCard),
+		typeof(SwiftChargeCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
+		typeof(BlitzkriegCard),
+		typeof(BunkerCard),
+		typeof(PerkUpCard),
 		typeof(SmokeBombCard),
 	];
 
@@ -52,6 +59,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(BurstCharge),
 		typeof(DemoCharge),
 		typeof(ShatterCharge),
+		typeof(SwiftCharge),
 	];
 
 	internal static readonly IEnumerable<Type> RegisterableTypes
