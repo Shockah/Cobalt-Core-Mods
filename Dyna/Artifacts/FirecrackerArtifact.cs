@@ -47,7 +47,8 @@ internal sealed class FirecrackerArtifact : Artifact, IRegisterable, IDynaHook
 		{
 			targetPlayer = true,
 			status = NitroManager.TempNitroStatus.Status,
-			statusAmount = 1
+			statusAmount = 1,
+			artifactPulse = Key()
 		});
 	}
 }

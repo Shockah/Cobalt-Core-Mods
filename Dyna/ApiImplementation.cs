@@ -11,6 +11,9 @@ public sealed class ApiImplementation : IDynaApi
 	public IStatusEntry NitroStatus
 		=> NitroManager.NitroStatus;
 
+	public IStatusEntry BastionStatus
+		=> BastionManager.BastionStatus;
+
 	public int GetBlastwaveDamage(Card? card, State state, int baseDamage, bool targetPlayer = false, int blastwaveIndex = 0)
 	{
 		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, state.EnumerateAllArtifacts()))

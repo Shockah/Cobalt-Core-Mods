@@ -7,3 +7,8 @@ public partial interface IKokoroApi : IProxyProvider
 {
 	TimeSpan TotalGameTime { get; }
 }
+
+public interface IHookPriority
+{
+	double HookPriority { get; }
+}

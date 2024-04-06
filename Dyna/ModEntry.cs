@@ -62,6 +62,7 @@ public sealed class ModEntry : SimpleMod
 			.Concat(SpecialCardTypes);
 
 	internal static readonly IReadOnlyList<Type> CommonArtifacts = [
+		typeof(BlastPowderArtifact),
 		typeof(FirecrackerArtifact),
 		typeof(GeligniteArtifact),
 		typeof(HardHatArtifact),
@@ -69,6 +70,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static readonly IReadOnlyList<Type> BossArtifacts = [
 		typeof(BlownFuseArtifact),
+		typeof(UnstableCompoundArtifact),
 	];
 
 	internal static readonly IEnumerable<Type> AllArtifactTypes

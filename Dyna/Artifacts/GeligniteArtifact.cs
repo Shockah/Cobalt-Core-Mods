@@ -36,5 +36,6 @@ internal sealed class GeligniteArtifact : Artifact, IRegisterable
 			.ToList();
 		var partIndex = partIndexes[state.rngActions.NextInt() % partIndexes.Count];
 		combat.otherShip.parts[partIndex].SetStickedCharge(new BurstCharge());
+		Pulse();
 	}
 }

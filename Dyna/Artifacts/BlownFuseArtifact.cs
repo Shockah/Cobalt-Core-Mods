@@ -1,8 +1,5 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dyna;
@@ -24,11 +21,6 @@ internal sealed class BlownFuseArtifact : Artifact, IRegisterable
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "BlownFuse", "description"]).Localize
 		});
 	}
-
-	public override List<Tooltip>? GetExtraTooltips()
-		=> StatusMeta.GetTooltips(Status.energyLessNextTurn, Math.Max(MG.inst.g.state.ship.Get(Status.energyLessNextTurn), 1))
-			.Concat(StatusMeta.GetTooltips(Status.tempShield, 2))
-			.ToList();
 
 	public override void OnReceiveArtifact(State state)
 	{
@@ -58,5 +50,6 @@ internal sealed class BlownFuseArtifact : Artifact, IRegisterable
 
 		RemoveAllCharges(state.ship);
 		RemoveAllCharges(combat.otherShip);
+		Pulse();
 	}
 }

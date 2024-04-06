@@ -94,9 +94,13 @@
         }
     },
     "artifact": {
+        "BlastPowder": {
+            "name": "BLAST POWDER",
+            "description": "Non-<c=action>Blastwave attacks</c> deal +1 damage whenever they directly hit a <c=parttrait>charge</c>."
+        },
         "BlownFuse": {
             "name": "BLOWN FUSE",
-            "description": "Gain 1 extra <c=energy>ENERGY</c> every turn. <c=downside>Charges that haven't been triggered are removed at the end of your enemy's turn.</c>"
+            "description": "Gain 1 extra <c=energy>ENERGY</c> every turn. <c=downside><c=parttrait>Charges</c> that haven't been triggered are removed at the end of your enemy's turn.</c>"
         },
         "Firecracker": {
             "name": "FIRECRACKER",
@@ -109,6 +113,10 @@
         "HardHat": {
             "name": "HARD HAT",
             "description": "If you end your turn with <c=status>LOSE ENERGY NEXT TURN</c>, gain 2 <c=status>TEMP SHIELD</c>."
+        },
+        "UnstableCompound": {
+            "name": "UNSTABLE COMPOUND",
+            "description": "All <c=action>Blastwave</c> attacks are <c=action>Wide Blastwave</c>. <c=downside>Whenever you trigger <c=action>Blastwave</c>, take 1 damage.</c>"
         }
     },
     "card": {

@@ -6,6 +6,7 @@ public interface IDynaApi
 {
 	IStatusEntry TempNitroStatus { get; }
 	IStatusEntry NitroStatus { get; }
+	IStatusEntry BastionStatus { get; }
 
 	int GetBlastwaveDamage(Card? card, State state, int baseDamage, bool targetPlayer = false, int blastwaveIndex = 0);
 

@@ -42,7 +42,8 @@ internal sealed class HardHatArtifact : Artifact, IRegisterable
 		{
 			targetPlayer = true,
 			status = Status.tempShield,
-			statusAmount = 2
+			statusAmount = 2,
+			artifactPulse = Key()
 		});
 	}
 }
