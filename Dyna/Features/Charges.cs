@@ -349,13 +349,20 @@ public sealed class FireChargeAction : CardAction
 				Audio.Play(Event.Hits_DroneCollision);
 				part.SetStickedCharge(null);
 				// reversed order - charges are expected to QueueImmediate their actions, which reverses their order
+				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, s.EnumerateAllArtifacts()))
+					hook.OnChargeTrigger(s, c, targetShip, worldX);
 				Charge.OnTrigger(s, c, targetShip, part);
+				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, s.EnumerateAllArtifacts()))
+					hook.OnChargeTrigger(s, c, targetShip, worldX);
 				existingCharge.OnTrigger(s, c, targetShip, part);
 			}
 			else
 			{
 				Audio.Play(Event.Hits_ShieldHit);
 				part.SetStickedCharge(Charge);
+
+				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, s.EnumerateAllArtifacts()))
+					hook.OnChargeSticked(s, c, targetShip, worldX);
 			}
 		}
 	}

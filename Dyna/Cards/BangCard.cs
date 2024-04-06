@@ -35,7 +35,7 @@ internal sealed class BangCard : Card, IRegisterable
 			{
 				damage = GetDmg(s, 1)
 			}.SetBlastwave(
-				damage: GetDmg(s, 0),
+				damage: ModEntry.Instance.Api.GetBlastwaveDamage(this, s, 0),
 				range: upgrade == Upgrade.B ? 2 : 1
 			)
 		];

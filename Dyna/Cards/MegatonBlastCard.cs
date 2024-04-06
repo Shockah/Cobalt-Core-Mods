@@ -38,7 +38,7 @@ internal sealed class MegatonBlastCard : Card, IRegisterable
 				{
 					damage = GetDmg(s, 4)
 				}.SetBlastwave(
-					damage: GetDmg(s, 2),
+					damage: ModEntry.Instance.Api.GetBlastwaveDamage(this, s, 2),
 					range: 2
 				),
 				new AEndTurn()
@@ -48,7 +48,7 @@ internal sealed class MegatonBlastCard : Card, IRegisterable
 				{
 					damage = GetDmg(s, 4)
 				}.SetBlastwave(
-					damage: GetDmg(s, 3),
+					damage: ModEntry.Instance.Api.GetBlastwaveDamage(this, s, 3),
 					range: 2
 				),
 				new AStatus
@@ -64,7 +64,7 @@ internal sealed class MegatonBlastCard : Card, IRegisterable
 				{
 					damage = GetDmg(s, 4)
 				}.SetBlastwave(
-					damage: GetDmg(s, 2),
+					damage: ModEntry.Instance.Api.GetBlastwaveDamage(this, s, 2),
 					range: 2
 				),
 				new AStatus

@@ -36,7 +36,7 @@ internal sealed class BlitzkriegCard : Card, IRegisterable
 			{
 				damage = GetDmg(s, upgrade == Upgrade.B ? 2 : 1)
 			}.SetBlastwave(
-				damage: GetDmg(s, 1)
+				damage: ModEntry.Instance.Api.GetBlastwaveDamage(this, s, 1, blastwaveIndex: 0)
 			),
 			new AMove
 			{
@@ -48,7 +48,7 @@ internal sealed class BlitzkriegCard : Card, IRegisterable
 			{
 				damage = GetDmg(s, upgrade == Upgrade.B ? 2 : 1)
 			}.SetBlastwave(
-				damage: GetDmg(s, 1)
+				damage: ModEntry.Instance.Api.GetBlastwaveDamage(this, s, 1, blastwaveIndex: 1)
 			),
 			new AStatus
 			{

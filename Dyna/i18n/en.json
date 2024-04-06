@@ -32,10 +32,28 @@
             }
         }
     },
+    "status": {
+        "TempNitro": {
+            "name": "Temp Nitro",
+            "description": "The next triggered Blastwave deals {0} more damage."
+        },
+        "Nitro": {
+            "name": "Nitro",
+            "description": "Blastwave deals {0} more damage."
+        },
+        "Bastion": {
+            "name": "Bastion",
+            "description": "Whenever you trigger a <c=parttrait>charge</c>, gain {0} <c=status>TEMP SHIELD</c>."
+        }
+    },
     "charge": {
         "Burst": {
             "name": "Burst Charge",
             "description": "Deals 3 damage when triggered."
+        },
+        "Concussion": {
+            "name": "Concussion Charge",
+            "description": "Makes the ship part <c=parttrait>concussable</c> when triggered."
         },
         "Demo": {
             "name": "Demo Charge",
@@ -54,6 +72,9 @@
         "Bang": {
             "name": "Bang"
         },
+        "Bastion": {
+            "name": "Bastion"
+        },
         "Blitzkrieg": {
             "name": "Blitzkrieg"
         },
@@ -66,6 +87,9 @@
         "ClearAPath": {
             "name": "Clear a Path"
         },
+        "ConcussionCharge": {
+            "name": "Concussion Charge"
+        },
         "DemoCharge": {
             "name": "Demo Charge"
         },
@@ -77,6 +101,9 @@
         },
         "Kaboom": {
             "name": "Kaboom"
+        },
+        "LightItUp": {
+            "name": "Light It Up"
         },
         "MegatonBlast": {
             "name": "Megaton Blast"

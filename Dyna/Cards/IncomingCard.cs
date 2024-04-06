@@ -41,7 +41,7 @@ internal sealed class IncomingCard : Card, IRegisterable
 			{
 				damage = GetDmg(s, 2)
 			}.SetBlastwave(
-				damage: GetDmg(s, upgrade == Upgrade.B ? 1 : 0)
+				damage: ModEntry.Instance.Api.GetBlastwaveDamage(this, s, upgrade == Upgrade.B ? 1 : 0)
 			)
 		];
 }

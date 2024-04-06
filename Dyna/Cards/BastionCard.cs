@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Shockah.Dyna;
 
-internal sealed class KaboomCard : Card, IRegisterable
+internal sealed class BastionCard : Card, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -18,53 +18,54 @@ internal sealed class KaboomCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Kaboom.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Kaboom", "name"]).Localize
+			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Bastion.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Bastion", "name"]).Localize
 		});
 	}
 
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = upgrade == Upgrade.B ? 2 : 1
+			cost = upgrade == Upgrade.B ? 2 : 1,
+			exhaust = true
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new AAttack
-				{
-					damage = GetDmg(s, 1)
-				}.SetBlastwave(
-					damage: ModEntry.Instance.Api.GetBlastwaveDamage(this, s, 1)
-				)
-			],
-			Upgrade.B => [
-				new AAttack
-				{
-					damage = GetDmg(s, 2)
-				}.SetBlastwave(
-					damage: ModEntry.Instance.Api.GetBlastwaveDamage(this, s, 2)
-				),
 				new AStatus
 				{
 					targetPlayer = true,
-					status = Status.energyLessNextTurn,
+					status = BastionManager.BastionStatus.Status,
+					statusAmount = 1
+				},
+				new AStatus
+				{
+					targetPlayer = true,
+					status = Status.shield,
+					statusAmount = 1
+				},
+				new AStatus
+				{
+					targetPlayer = true,
+					status = Status.tempShield,
 					statusAmount = 1
 				}
 			],
-			_ => [
-				new AAttack
-				{
-					damage = GetDmg(s, 1)
-				}.SetBlastwave(
-					damage: ModEntry.Instance.Api.GetBlastwaveDamage(this, s, 1)
-				),
+			Upgrade.B => [
 				new AStatus
 				{
 					targetPlayer = true,
-					status = Status.energyLessNextTurn,
+					status = BastionManager.BastionStatus.Status,
+					statusAmount = 2
+				}
+			],
+			_ => [
+				new AStatus
+				{
+					targetPlayer = true,
+					status = BastionManager.BastionStatus.Status,
 					statusAmount = 1
 				}
 			]

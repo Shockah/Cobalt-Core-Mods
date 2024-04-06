@@ -153,6 +153,7 @@ internal sealed class BlastwaveManager
 
 		if (attack.GetBlastwaveDamage() is { } damage)
 		{
+			__result++;
 			if (!dontDraw)
 				BigNumbers.Render(damage, initialX + __result, position.y, action.disabled ? Colors.disabledText : Colors.redd);
 			__result += damage.ToString().Length * 6;
@@ -161,7 +162,7 @@ internal sealed class BlastwaveManager
 		return false;
 	}
 
-	private sealed class BlastwaveAction : CardAction
+	internal sealed class BlastwaveAction : CardAction
 	{
 		private const double SinglePartDuration = 0.2;
 
@@ -233,6 +234,10 @@ internal sealed class BlastwaveManager
 
 			if (Range > 0)
 				Run(g, s, c, 1);
+
+			var targetShip = TargetPlayer ? s.ship : c.otherShip;
+			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, s.EnumerateAllArtifacts()))
+				hook.OnBlastwaveTrigger(s, c, targetShip, WorldX);
 		}
 
 		public override void Update(G g, State s, Combat c)
@@ -282,6 +287,9 @@ internal sealed class BlastwaveManager
 					foreach (var artifact in state.EnumerateAllArtifacts())
 						artifact.OnEnemyGetHit(state, combat, part);
 				}
+
+				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, state.EnumerateAllArtifacts()))
+					hook.OnBlastwaveHit(state, combat, targetShip, worldX, WorldX);
 			}
 
 			RunAt(WorldX - offset);
