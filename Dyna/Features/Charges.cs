@@ -25,8 +25,16 @@ internal static class ChargeExt
 
 internal sealed class ChargeManager
 {
+	internal static ISpriteEntry FireChargeIcon { get; private set; } = null!;
+	internal static ISpriteEntry FireChargeLeftIcon { get; private set; } = null!;
+	internal static ISpriteEntry FireChargeRightIcon { get; private set; } = null!;
+
 	public ChargeManager()
 	{
+		FireChargeIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icons/FireCharge.png"));
+		FireChargeLeftIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icons/FireChargeLeft.png"));
+		FireChargeRightIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icons/FireChargeRight.png"));
+
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderDrones)),
@@ -143,9 +151,9 @@ internal sealed class ChargeManager
 		if (!dontDraw)
 			Draw.Sprite(fireAction.Offset switch
 			{
-				< 0 => StableSpr.icons_spawnOffsetLeft,
-				> 0 => StableSpr.icons_spawnOffsetRight,
-				_ => StableSpr.icons_spawn
+				< 0 => FireChargeLeftIcon.Sprite,
+				> 0 => FireChargeRightIcon.Sprite,
+				_ => FireChargeIcon.Sprite
 			}, box.rect.x + __result, box.rect.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
 		__result += 8;
 
@@ -154,7 +162,7 @@ internal sealed class ChargeManager
 			__result += 2;
 
 			if (!dontDraw)
-				BigNumbers.Render(Math.Abs(fireAction.Offset), box.rect.x + __result, box.rect.y, color: action.disabled ? Colors.disabledDrone : Colors.drone);
+				BigNumbers.Render(Math.Abs(fireAction.Offset), box.rect.x + __result, box.rect.y, color: action.disabled ? new Color("4B4B4B") : new Color("DBDBDB"));
 			__result += Math.Abs(fireAction.Offset).ToString().Length * 6;
 		}
 
@@ -203,9 +211,9 @@ public sealed class FireChargeAction : CardAction
 				CustomTTGlossary.GlossaryType.action,
 				() => Offset switch
 				{
-					< 0 => StableSpr.icons_spawnOffsetLeft,
-					> 0 => StableSpr.icons_spawnOffsetRight,
-					_ => StableSpr.icons_spawn
+					< 0 => ChargeManager.FireChargeLeftIcon.Sprite,
+					> 0 => ChargeManager.FireChargeRightIcon.Sprite,
+					_ => ChargeManager.FireChargeIcon.Sprite
 				},
 				() => ModEntry.Instance.Localizations.Localize(["action", "FireCharge", "name", Offset switch
 				{

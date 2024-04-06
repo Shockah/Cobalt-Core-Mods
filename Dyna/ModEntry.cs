@@ -109,7 +109,7 @@ public sealed class ModEntry : SimpleMod
 		{
 			Definition = new() { color = new("EC592B"), titleColor = Colors.black },
 			DefaultCardArt = StableSpr.cards_colorless,
-			BorderSprite = StableSpr.cardShared_border_colorless,
+			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize
 		});
 
