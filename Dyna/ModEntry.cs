@@ -37,6 +37,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(BlitzkriegCard),
 		typeof(BunkerCard),
 		typeof(LightItUpCard),
+		typeof(LockAndLoadCard),
 		typeof(PerkUpCard),
 		typeof(RemoteDetonatorCard),
 		typeof(SmokeBombCard),
@@ -50,10 +51,15 @@ public sealed class ModEntry : SimpleMod
 		typeof(ShatterChargeCard),
 	];
 
+	internal static readonly IReadOnlyList<Type> SpecialCardTypes = [
+		typeof(CustomChargeCard),
+	];
+
 	internal static IEnumerable<Type> AllCardTypes
 		=> CommonCardTypes
 			.Concat(UncommonCardTypes)
-			.Concat(RareCardTypes);
+			.Concat(RareCardTypes)
+			.Concat(SpecialCardTypes);
 
 	internal static readonly IReadOnlyList<Type> CommonArtifacts = [
 	];

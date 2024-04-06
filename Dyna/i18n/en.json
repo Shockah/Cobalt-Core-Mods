@@ -78,6 +78,21 @@
             "description": "The opposing ship gains 1 <c=status>TEMP SHIELD</c> when this part gets hit."
         }
     },
+    "cardTrait": {
+        "triad": {
+            "name": "Triad Card",
+            "description": {
+                "m&k": [
+                    "This card has three separate sets of actions.",
+                    "In combat, <c=keyword>right click or ctrl-click</c> this card to switch between them."
+                ],
+                "controller": [
+                    "This card has three separate sets of actions.",
+                    "In combat, press {{Button}} on this card to switch between them."
+                ]
+            }
+        }
+    },
     "card": {
         "Bang": {
             "name": "Bang"
@@ -100,6 +115,9 @@
         "ConcussionCharge": {
             "name": "Concussion Charge"
         },
+        "CustomCharge": {
+            "name": "Custom Charge"
+        },
         "DemoCharge": {
             "name": "Demo Charge"
         },
@@ -117,6 +135,14 @@
         },
         "LightItUp": {
             "name": "Light It Up"
+        },
+        "LockAndLoad": {
+            "name": "Lock and Load",
+            "description": {
+                "None": "Add two <c=card>Custom Charge</c>s to your hand. Gain 1 <c=status>evade</c>.",
+                "A": "Add two <c=card>Custom Charge A</c>s to your hand. Gain 1 <c=status>evade</c>.",
+                "B": "Add two <c=card>Custom Charge</c>s to your hand. Gain 2 <c=status>evade</c>."
+            }
         },
         "MegatonBlast": {
             "name": "Megaton Blast"
