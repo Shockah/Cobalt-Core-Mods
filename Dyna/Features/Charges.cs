@@ -91,7 +91,10 @@ internal sealed class ChargeManager
 			return;
 		if (part.GetStickedCharge() is not { } charge)
 			return;
+
+		g.Push(null, new Rect(0, (ship.isPlayerShip ? 6 : -6) * part.pulse).round());
 		RenderAnyCharge(g, state, combat, ship, partIndex, charge);
+		g.Pop();
 	}
 
 	private static void RenderAnyCharge(G g, State state, Combat combat, Ship ship, int partIndex, DynaCharge charge)

@@ -14,9 +14,9 @@
                 "Stun": "Stunwave"
             },
             "description": {
-                "Damage": "Additionally hits parts up to {{Range}} away for {{Damage}} damage.",
-                "StunDamage": "Additionally hits parts up to {{Range}} away for {{Damage}} damage, stunning them.",
-                "Stun": "Additionally hits parts up to {{Range}} away, stunning them."
+                "Damage": "Additionally hits parts up to {{Range}} spaces away for {{Damage}} damage.",
+                "StunDamage": "Additionally hits parts up to {{Range}} spaces away for {{Damage}} damage, stunning them.",
+                "Stun": "Additionally hits parts up to {{Range}} spaces away, stunning them."
             }
         },
         "FireCharge": {
@@ -35,11 +35,11 @@
     "status": {
         "TempNitro": {
             "name": "Temp Nitro",
-            "description": "The next triggered Blastwave deals {0} more damage."
+            "description": "The next triggered <c=action>Blastwave</c> deals {0} more damage."
         },
         "Nitro": {
             "name": "Nitro",
-            "description": "Blastwave deals {0} more damage."
+            "description": "<c=action>Blastwave</c> deals {0} more damage."
         },
         "Bastion": {
             "name": "Bastion",

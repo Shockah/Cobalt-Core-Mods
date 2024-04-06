@@ -79,17 +79,16 @@ internal sealed class FluxPartModManager
 
 	private static void Ship_RenderPartUI_Postfix(Ship __instance, G g, Part part, int localX, string keyPrefix, bool isPreview)
 	{
+		if (part.invincible || part.GetDamageModifier() != FluxDamageModifier)
+			return;
 		if (g.boxes.FirstOrDefault(b => b.key == new UIKey(StableUK.part, localX, keyPrefix)) is not { } box)
 			return;
 
 		var offset = isPreview ? 25 : 34;
 		var v = box.rect.xy + new Vec(0, __instance.isPlayerShip ? (offset - 16) : 8);
 
-		if (!part.invincible && part.GetDamageModifier() == FluxDamageModifier)
-		{
-			var color = new Color(1, 1, 1, 0.8 + Math.Sin(g.state.time * 4.0) * 0.3);
-			Draw.Sprite(StableSpr.icons_libra, v.x, v.y, color: color);
-		}
+		var color = new Color(1, 1, 1, 0.8 + Math.Sin(g.state.time * 4.0) * 0.3);
+		Draw.Sprite(StableSpr.icons_libra, v.x, v.y, color: color);
 
 		if (!box.IsHover())
 			return;

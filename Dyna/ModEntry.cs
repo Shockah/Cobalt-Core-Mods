@@ -115,6 +115,53 @@ public sealed class ModEntry : SimpleMod
 
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
+
+		helper.Content.Characters.RegisterCharacter("Dyna", new()
+		{
+			Deck = DynaDeck.Deck,
+			Description = this.AnyLocalizations.Bind(["character", "description"]).Localize,
+			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CharacterFrame.png")).Sprite,
+			NeutralAnimation = new()
+			{
+				Deck = DynaDeck.Deck,
+				LoopTag = "neutral",
+				Frames = Enumerable.Range(0, 1)
+					.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Neutral/{i}.png")).Sprite)
+					.ToList()
+			},
+			MiniAnimation = new()
+			{
+				Deck = DynaDeck.Deck,
+				LoopTag = "mini",
+				Frames = [
+					helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Character/Mini.png")).Sprite
+				]
+			},
+			Starters = new()
+			{
+				cards = [
+					new DemoChargeCard(),
+					new KaboomCard()
+				]
+			}
+		});
+
+		helper.Content.Characters.RegisterCharacterAnimation(new()
+		{
+			Deck = DynaDeck.Deck,
+			LoopTag = "gameover",
+			Frames = Enumerable.Range(0, 1)
+				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/GameOver/{i}.png")).Sprite)
+				.ToList()
+		});
+		helper.Content.Characters.RegisterCharacterAnimation(new()
+		{
+			Deck = DynaDeck.Deck,
+			LoopTag = "squint",
+			Frames = Enumerable.Range(0, 2)
+				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Squint/{i}.png")).Sprite)
+				.ToList()
+		});
 	}
 
 	public override object? GetApi(IModManifest requestingMod)
