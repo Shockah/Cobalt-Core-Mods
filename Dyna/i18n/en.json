@@ -59,6 +59,10 @@
             "name": "Demo Charge",
             "description": "Makes the ship part <c=parttrait>weak</c> when triggered."
         },
+        "Flux": {
+            "name": "Flux Charge",
+            "description": "Makes the ship part <c=parttrait>flux</c> when triggered."
+        },
         "Shatter": {
             "name": "Shatter Charge",
             "description": "Makes the ship part <c=parttrait>brittle</c> when triggered."
@@ -66,6 +70,12 @@
         "Swift": {
             "name": "Swift Charge",
             "description": "Draws 3 cards when triggered."
+        }
+    },
+    "partModifier": {
+        "Flux": {
+            "name": "Flux",
+            "description": "The opposing ship gains 1 <c=status>TEMP SHIELD</c> when this part gets hit."
         }
     },
     "card": {
@@ -95,6 +105,9 @@
         },
         "FlashBurst": {
             "name": "Flash Burst"
+        },
+        "FluxCharge": {
+            "name": "Flux Charge"
         },
         "Incoming": {
             "name": "Incoming"

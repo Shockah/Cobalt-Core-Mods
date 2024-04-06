@@ -40,7 +40,7 @@ internal sealed class ChargeManager
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.RenderPartUI)),
-			postfix: new HarmonyMethod(GetType(), nameof(Ship_RenderPartUI_Prefix))
+			postfix: new HarmonyMethod(GetType(), nameof(Ship_RenderPartUI_Postfix))
 		);
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
@@ -118,7 +118,7 @@ internal sealed class ChargeManager
 		g.Pop();
 	}
 
-	private static void Ship_RenderPartUI_Prefix(G g, Combat? combat, Part part, int localX, string keyPrefix, bool isPreview)
+	private static void Ship_RenderPartUI_Postfix(G g, Combat? combat, Part part, int localX, string keyPrefix, bool isPreview)
 	{
 		if (isPreview || combat is null)
 			return;

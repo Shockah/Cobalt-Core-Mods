@@ -27,6 +27,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(ClearAPathCard),
 		typeof(DemoChargeCard),
 		typeof(FlashBurstCard),
+		typeof(FluxChargeCard),
 		typeof(IncomingCard),
 		typeof(KaboomCard),
 		typeof(SwiftChargeCard),
@@ -67,6 +68,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(BurstCharge),
 		typeof(ConcussionCharge),
 		typeof(DemoCharge),
+		typeof(FluxCharge),
 		typeof(ShatterCharge),
 		typeof(SwiftCharge),
 	];
@@ -94,6 +96,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new ChargeManager();
 		_ = new NitroManager();
 		_ = new BastionManager();
+		_ = new FluxPartModManager();
 		CustomTTGlossary.ApplyPatches(Harmony);
 
 		DynaDeck = helper.Content.Decks.RegisterDeck("Dyna", new()
