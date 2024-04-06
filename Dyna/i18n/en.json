@@ -108,8 +108,15 @@
         "MegatonBlast": {
             "name": "Megaton Blast"
         },
+        "Nitro": {
+            "name": "Nitro"
+        },
         "PerkUp": {
             "name": "Perk Up"
+        },
+        "RemoteDetonator": {
+            "name": "Remote Detonator",
+            "description": "Trigger all <c=parttrait>charges</c>, deal {{Damage}} hull damage for each."
         },
         "ShatterCharge": {
             "name": "Shatter Charge"

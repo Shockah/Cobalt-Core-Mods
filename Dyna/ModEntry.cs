@@ -37,6 +37,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(BunkerCard),
 		typeof(LightItUpCard),
 		typeof(PerkUpCard),
+		typeof(RemoteDetonatorCard),
 		typeof(SmokeBombCard),
 	];
 
@@ -44,6 +45,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(BastionCard),
 		typeof(ConcussionChargeCard),
 		typeof(MegatonBlastCard),
+		typeof(NitroCard),
 		typeof(ShatterChargeCard),
 	];
 

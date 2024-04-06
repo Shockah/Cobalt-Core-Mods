@@ -39,7 +39,7 @@ internal sealed class BunkerCard : Card, IRegisterable
 				{
 					Upgrade.A => 3,
 					Upgrade.B => 1,
-					_ => 0
+					_ => 2
 				}
 			},
 			new AStatus

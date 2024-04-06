@@ -1,4 +1,5 @@
 ﻿using Nickel;
+using System;
 
 namespace Shockah.Dyna;
 
@@ -14,7 +15,7 @@ public sealed class ApiImplementation : IDynaApi
 	{
 		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, state.EnumerateAllArtifacts()))
 			baseDamage += hook.ModifyBlastwaveDamage(card, state, targetPlayer, blastwaveIndex);
-		return Card.GetActualDamage(state, baseDamage, targetPlayer, card);
+		return Math.Max(baseDamage, 0);
 	}
 
 	public void RegisterHook(IDynaHook hook, double priority)

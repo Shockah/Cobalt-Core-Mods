@@ -59,7 +59,7 @@ internal sealed class ChargeManager
 		}, -1);
 	}
 
-	private static void TriggerChargeIfAny(State state, Combat combat, Part? part, bool targetPlayer)
+	internal static void TriggerChargeIfAny(State state, Combat combat, Part? part, bool targetPlayer)
 	{
 		if (part is not { } nonNullPart)
 			return;
