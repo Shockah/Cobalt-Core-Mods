@@ -117,6 +117,20 @@
         "UnstableCompound": {
             "name": "UNSTABLE COMPOUND",
             "description": "All <c=action>Blastwave</c> attacks are <c=action>Wide Blastwave</c>. <c=downside>Whenever you trigger <c=action>Blastwave</c>, take 1 damage.</c>"
+        },
+        "Duo": {
+            "DynaBooks": {
+                "name": "PHOENIX FEATHER",
+                "description": "At the end of your turn, spend 3 <c=status>SHARD</c> to gain 1 <c=status>NITRO</c>."
+            },
+            "DynaCat": {
+                "name": "BLAST PROCESSOR",
+                "description": "<c=card>Basic Shot</c> cards now have <c=action>Blastwave 1</c>. Upon pickup, add two <c=card>Basic Shot</c>s to your deck."
+            },
+            "DynaDrake": {
+                "name": "ROMAN CANDLE",
+                "description": "Whenever you <c=action>OVERHEAT</c>, gain 1 <c=status>NITRO</c>."
+            }
         }
     },
     "card": {

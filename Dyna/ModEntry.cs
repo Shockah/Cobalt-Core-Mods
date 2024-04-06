@@ -16,6 +16,7 @@ public sealed class ModEntry : SimpleMod
 	internal readonly HookManager<IDynaHook> HookManager;
 	internal readonly ApiImplementation Api;
 	internal readonly IKokoroApi KokoroApi;
+	internal readonly IDuoArtifactsApi? DuoArtifactsApi;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
@@ -73,6 +74,12 @@ public sealed class ModEntry : SimpleMod
 		typeof(UnstableCompoundArtifact),
 	];
 
+	internal static readonly IReadOnlyList<Type> DuoArtifacts = [
+		typeof(DynaBooksArtifact),
+		typeof(DynaCatArtifact),
+		typeof(DynaDrakeArtifact),
+	];
+
 	internal static readonly IEnumerable<Type> AllArtifactTypes
 		= CommonArtifacts.Concat(BossArtifacts);
 
@@ -86,7 +93,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static readonly IEnumerable<Type> RegisterableTypes
-		= AllCardTypes.Concat(AllArtifactTypes).Concat(ChargeTypes);
+		= AllCardTypes.Concat(AllArtifactTypes).Concat(ChargeTypes).Concat(DuoArtifacts);
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
@@ -95,6 +102,7 @@ public sealed class ModEntry : SimpleMod
 		HookManager = new();
 		Api = new();
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+		DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
