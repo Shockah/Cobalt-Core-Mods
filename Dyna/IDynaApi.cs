@@ -19,6 +19,7 @@ public interface IDynaHook
 	void OnBlastwaveHit(State state, Combat combat, Ship ship, int originWorldX, int waveWorldX) { }
 	int ModifyBlastwaveDamage(Card? card, State state, bool targetPlayer, int blastwaveIndex) => 0;
 
+	void OnChargeFired(State state, Combat combat, Ship targetShip, int worldX) { }
 	void OnChargeSticked(State state, Combat combat, Ship ship, int worldX) { }
 	void OnChargeTrigger(State state, Combat combat, Ship ship, int worldX) { }
 }

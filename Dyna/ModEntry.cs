@@ -62,9 +62,13 @@ public sealed class ModEntry : SimpleMod
 			.Concat(SpecialCardTypes);
 
 	internal static readonly IReadOnlyList<Type> CommonArtifacts = [
+		typeof(FirecrackerArtifact),
+		typeof(GeligniteArtifact),
+		typeof(HardHatArtifact),
 	];
 
 	internal static readonly IReadOnlyList<Type> BossArtifacts = [
+		typeof(BlownFuseArtifact),
 	];
 
 	internal static readonly IEnumerable<Type> AllArtifactTypes
@@ -174,5 +178,14 @@ public sealed class ModEntry : SimpleMod
 		if (UncommonCardTypes.Contains(type))
 			return Rarity.uncommon;
 		return Rarity.common;
+	}
+
+	internal static ArtifactPool[] GetArtifactPools(Type type)
+	{
+		if (BossArtifacts.Contains(type))
+			return [ArtifactPool.Boss];
+		if (CommonArtifacts.Contains(type))
+			return [ArtifactPool.Common];
+		return [];
 	}
 }

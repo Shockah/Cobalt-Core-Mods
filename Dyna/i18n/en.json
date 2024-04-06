@@ -93,6 +93,24 @@
             }
         }
     },
+    "artifact": {
+        "BlownFuse": {
+            "name": "BLOWN FUSE",
+            "description": "Gain 1 extra <c=energy>ENERGY</c> every turn. <c=downside>Charges that haven't been triggered are removed at the end of your enemy's turn.</c>"
+        },
+        "Firecracker": {
+            "name": "FIRECRACKER",
+            "description": "Every 4th time you fire a <c=parttrait>charge</c>, gain 1 <c=status>TEMP NITRO</c>."
+        },
+        "Gelignite": {
+            "name": "GELIGNITE",
+            "description": "Each combat, stick a <c=parttrait>Burst Charge</c> to a random enemy ship's part."
+        },
+        "HardHat": {
+            "name": "HARD HAT",
+            "description": "If you end your turn with <c=status>LOSE ENERGY NEXT TURN</c>, gain 2 <c=status>TEMP SHIELD</c>."
+        }
+    },
     "card": {
         "Bang": {
             "name": "Bang"

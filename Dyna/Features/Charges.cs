@@ -92,6 +92,7 @@ internal sealed class ChargeManager
 		if (part.GetStickedCharge() is not { } charge)
 			return;
 
+		charge.YOffset = FireChargeAction.ShipDistanceFromMidrow * (ship.isPlayerShip ? 1 : -1);
 		g.Push(null, new Rect(0, (ship.isPlayerShip ? 6 : -6) * part.pulse).round());
 		RenderAnyCharge(g, state, combat, ship, partIndex, charge);
 		g.Pop();
@@ -184,7 +185,7 @@ internal sealed class ChargeManager
 
 public sealed class FireChargeAction : CardAction
 {
-	private const double ShipDistanceFromMidrow = 40;
+	internal const double ShipDistanceFromMidrow = 40;
 	private const double OuterSpaceDistanceFromMidrow = 200;
 	private const double DistancePerSecond = OuterSpaceDistanceFromMidrow;
 
@@ -299,6 +300,9 @@ public sealed class FireChargeAction : CardAction
 		Audio.Play(Event.Drones_MissileLaunch);
 		if (ownerShip.GetPartAtWorldX(worldX) is { } firingPart)
 			firingPart.pulse = 1;
+
+		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, s.EnumerateAllArtifacts()))
+			hook.OnChargeFired(s, c, targetShip, worldX);
 	}
 
 	public override void Update(G g, State s, Combat c)
