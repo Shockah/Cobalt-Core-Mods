@@ -323,7 +323,7 @@ internal sealed class BlastwaveManager
 					hitHull = !hitShield
 				};
 
-				if (IsStunwave)
+				if (IsStunwave || part.stunModifier == PStunMod.stunnable)
 					new AStunPart { worldX = worldX }.FullyRun(g, state, combat);
 				if (Damage is { } damage)
 					damageDone = targetShip.NormalDamage(state, combat, damage, worldX, piercing: IsPiercing);
@@ -343,7 +343,7 @@ internal sealed class BlastwaveManager
 				}
 
 				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, state.EnumerateAllArtifacts()))
-					hook.OnBlastwaveHit(state, combat, targetShip, worldX, WorldX, HitMidrow);
+					hook.OnBlastwaveHit(state, combat, targetShip, WorldX, worldX, HitMidrow);
 			}
 
 			void RunForMidrowAt(int worldX)

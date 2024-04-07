@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Shockah.Dyna;
 
-internal sealed class FluxPartModManager
+internal sealed class FluxPartModManager : IDynaHook
 {
 	internal const PDamMod FluxDamageModifier = (PDamMod)2137401;
 
@@ -33,13 +33,19 @@ internal sealed class FluxPartModManager
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerTakeNormalDamage), (State state, Combat combat, Part? part) =>
 		{
+			if (AttackContext is null)
+				return;
 			TriggerFluxIfNeeded(combat, part, targetPlayer: true);
 		}, 0);
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnEnemyGetHit), (State state, Combat combat, Part? part) =>
 		{
+			if (AttackContext is null)
+				return;
 			TriggerFluxIfNeeded(combat, part, targetPlayer: false);
 		}, 0);
+
+		ModEntry.Instance.Api.RegisterHook(this, 0);
 	}
 
 	internal static IEnumerable<Tooltip> MakeFluxPartModTooltips()
@@ -59,8 +65,6 @@ internal sealed class FluxPartModManager
 	private static void TriggerFluxIfNeeded(Combat combat, Part? part, bool targetPlayer)
 	{
 		if (part is not { } nonNullPart || nonNullPart.invincible || nonNullPart.GetDamageModifier() != FluxDamageModifier)
-			return;
-		if (AttackContext is null)
 			return;
 
 		combat.QueueImmediate(new AStatus
@@ -103,5 +107,12 @@ internal sealed class FluxPartModManager
 		part.brittleIsHidden = false;
 		__result = part.invincible ? 0 : incomingDamage;
 		return false;
+	}
+
+	public void OnBlastwaveHit(State state, Combat combat, Ship ship, int originWorldX, int waveWorldX, bool hitMidrow)
+	{
+		if (ship.GetPartAtWorldX(waveWorldX) is not { } part)
+			return;
+		TriggerFluxIfNeeded(combat, part, ship.isPlayerShip);
 	}
 }

@@ -64,7 +64,8 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 		{
 			cost = 0,
 			exhaust = upgrade != Upgrade.B,
-			floppable = true
+			floppable = true,
+			temporary = true
 		};
 
 	public override void ExtraRender(G g, Vec v)
