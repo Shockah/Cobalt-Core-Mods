@@ -75,7 +75,10 @@ internal sealed class ChargeManager
 			return;
 
 		var targetShip = targetPlayer ? state.ship : combat.otherShip;
+		var worldX = targetShip.x + targetShip.parts.IndexOf(nonNullPart);
 		nonNullPart.SetStickedCharge(null);
+		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, state.EnumerateAllArtifacts()))
+			hook.OnChargeTrigger(state, combat, targetShip, worldX);
 		charge.OnTrigger(state, combat, targetShip, nonNullPart);
 	}
 

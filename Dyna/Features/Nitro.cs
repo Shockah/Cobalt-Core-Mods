@@ -42,7 +42,7 @@ internal sealed class NitroManager : IDynaHook, IStatusRenderHook
 		return ownerShip.Get(NitroStatus.Status) + (blastwaveIndex == 0 ? ownerShip.Get(TempNitroStatus.Status) : 0);
 	}
 
-	public void OnBlastwaveTrigger(State state, Combat combat, Ship ship, int worldX)
+	public void OnBlastwaveTrigger(State state, Combat combat, Ship ship, int worldX, bool hitMidrow)
 	{
 		var ownerShip = ship.isPlayerShip ? combat.otherShip : state.ship;
 		if (ownerShip.Get(TempNitroStatus.Status) <= 0)

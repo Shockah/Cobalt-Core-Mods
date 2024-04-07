@@ -1,8 +1,14 @@
-﻿using HarmonyLib;
+﻿using FSPRO;
+using HarmonyLib;
+using Microsoft.Extensions.Logging;
+using Nanoray.Shrike;
+using Nanoray.Shrike.Harmony;
 using Nickel;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Shockah.Dyna;
 
@@ -48,6 +54,7 @@ internal sealed class BlastwaveManager
 			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
 			prefix: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Prefix)),
+			transpiler: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Transpiler)),
 			finalizer: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Finalizer))
 		);
 		ModEntry.Instance.Harmony.TryPatch(
@@ -63,26 +70,34 @@ internal sealed class BlastwaveManager
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerTakeNormalDamage), (State state, Combat combat, Part? part) =>
 		{
-			TriggerBlastwaveIfNeeded(state, combat, part, targetPlayer: true);
+			if (part is null || part.type == PType.empty)
+				return;
+			var worldX = state.ship.x + state.ship.parts.IndexOf(part);
+			TriggerBlastwaveIfNeeded(state, combat, worldX, targetPlayer: true, hitMidrow: false);
 		}, 0);
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnEnemyGetHit), (State state, Combat combat, Part? part) =>
 		{
-			TriggerBlastwaveIfNeeded(state, combat, part, targetPlayer: false);
+			if (part is null || part.type == PType.empty)
+				return;
+			var worldX = combat.otherShip.x + combat.otherShip.parts.IndexOf(part);
+			TriggerBlastwaveIfNeeded(state, combat, worldX, targetPlayer: false, hitMidrow: false);
 		}, 0);
 	}
 
-	private static void TriggerBlastwaveIfNeeded(State state, Combat combat, Part? part, bool targetPlayer)
+	private static void TriggerBlastwaveIfNeeded(State state, Combat combat, int worldX, bool targetPlayer, bool hitMidrow)
 	{
-		if (part is not { } nonNullPart)
-			return;
 		if (AttackContext is not { } attack)
 			return;
 		if (!attack.IsBlastwave())
 			return;
 
-		var targetShip = targetPlayer ? state.ship : combat.otherShip;
-		var worldX = targetShip.x + targetShip.parts.IndexOf(nonNullPart);
+		if (!hitMidrow)
+		{
+			var targetShip = targetPlayer ? state.ship : combat.otherShip;
+			if (targetShip.GetPartAtWorldX(worldX) is not { } part || part.type == PType.empty)
+				return;
+		}
 
 		attack.timer *= 0.5;
 		combat.QueueImmediate(new BlastwaveAction
@@ -93,6 +108,7 @@ internal sealed class BlastwaveManager
 			Damage = attack.GetBlastwaveDamage(),
 			Range = attack.GetBlastwaveRange(),
 			IsStunwave = attack.IsStunwave(),
+			HitMidrow = hitMidrow,
 		});
 	}
 
@@ -101,6 +117,43 @@ internal sealed class BlastwaveManager
 
 	private static void AAttack_Begin_Finalizer()
 		=> AttackContext = null;
+
+	private static IEnumerable<CodeInstruction> AAttack_Begin_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(
+					ILMatches.Ldloc<RaycastResult>(originalMethod).CreateLdlocInstruction(out var ldlocRaycastResult),
+					ILMatches.Ldfld("hitDrone"),
+					ILMatches.Brfalse.GetBranchTarget(out var branchTarget)
+				)
+				.PointerMatcher(branchTarget)
+				.ExtractLabels(out var labels)
+				.Insert(
+					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldarg_2).WithLabels(labels),
+					new CodeInstruction(OpCodes.Ldarg_3),
+					ldlocRaycastResult,
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Transpiler_AfterDroneHitCheck)))
+				)
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.GetDisplayName(@long: false), ex);
+			return instructions;
+		}
+	}
+
+	private static void AAttack_Begin_Transpiler_AfterDroneHitCheck(State state, Combat combat, RaycastResult raycastResult)
+	{
+		if (raycastResult.fromDrone || raycastResult.hitShip || !raycastResult.hitDrone)
+			return;
+		if (AttackContext is not { } attack)
+			return;
+		TriggerBlastwaveIfNeeded(state, combat, raycastResult.worldX, attack.targetPlayer, hitMidrow: true);
+	}
 
 	private static void AAttack_GetTooltips_Postfix(AAttack __instance, State s, ref List<Tooltip> __result)
 	{
@@ -167,12 +220,13 @@ internal sealed class BlastwaveManager
 		private const double SinglePartDuration = 0.2;
 
 		public required AAttack Source;
-		public bool TargetPlayer = false;
+		public bool TargetPlayer;
 		public required int WorldX;
 		public required int? Damage;
 		public int Range = 1;
 		public bool IsStunwave;
-		public bool IsPiercing = false;
+		public bool IsPiercing;
+		public bool HitMidrow;
 
 		public override List<Tooltip> GetTooltips(State s)
 		{
@@ -237,7 +291,7 @@ internal sealed class BlastwaveManager
 
 			var targetShip = TargetPlayer ? s.ship : c.otherShip;
 			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, s.EnumerateAllArtifacts()))
-				hook.OnBlastwaveTrigger(s, c, targetShip, WorldX);
+				hook.OnBlastwaveTrigger(s, c, targetShip, WorldX, HitMidrow);
 		}
 
 		public override void Update(G g, State s, Combat c)
@@ -257,7 +311,7 @@ internal sealed class BlastwaveManager
 		{
 			var targetShip = TargetPlayer ? state.ship : combat.otherShip;
 
-			void RunAt(int worldX)
+			void RunForPartAt(int worldX)
 			{
 				if (targetShip.GetPartAtWorldX(worldX) is not { } part || part.type == PType.empty)
 					return;
@@ -289,11 +343,68 @@ internal sealed class BlastwaveManager
 				}
 
 				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, state.EnumerateAllArtifacts()))
-					hook.OnBlastwaveHit(state, combat, targetShip, worldX, WorldX);
+					hook.OnBlastwaveHit(state, combat, targetShip, worldX, WorldX, HitMidrow);
+			}
+
+			void RunForMidrowAt(int worldX)
+			{
+				if (!combat.stuff.TryGetValue(worldX, out var @object))
+					return;
+
+				var isInvincible = @object.Invincible();
+				foreach (var artifact in state.EnumerateAllArtifacts())
+				{
+					if (artifact.ModifyDroneInvincibility(state, combat, @object) == true)
+					{
+						isInvincible = true;
+						artifact.Pulse();
+					}
+				}
+
+				var damageDone = new DamageDone
+				{
+					hitShield = @object.bubbleShield,
+					hitHull = !@object.bubbleShield
+				};
+				var raycastResult = new RaycastResult
+				{
+					hitDrone = true,
+					worldX = worldX
+				};
+				EffectSpawnerExt.HitEffect(g, TargetPlayer, raycastResult, damageDone);
+
+				if (@object.bubbleShield)
+				{
+					@object.bubbleShield = false;
+					Audio.Play(Event.Hits_ShieldPop);
+				}
+				else if (isInvincible)
+				{
+					combat.QueueImmediate(@object.GetActionsOnBonkedWhileInvincible(state, combat, !TargetPlayer, new BlastwaveFakeStuff()));
+				}
+				else
+				{
+					combat.DestroyDroneAt(state, worldX, !TargetPlayer);
+				}
+
+				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, state.EnumerateAllArtifacts()))
+					hook.OnBlastwaveHit(state, combat, targetShip, worldX, WorldX, HitMidrow);
+			}
+
+			void RunAt(int worldX)
+			{
+				if (HitMidrow)
+					RunForMidrowAt(worldX);
+				else
+					RunForPartAt(worldX);
 			}
 
 			RunAt(WorldX - offset);
 			RunAt(WorldX + offset);
 		}
 	}
+}
+
+internal sealed class BlastwaveFakeStuff : StuffBase
+{
 }

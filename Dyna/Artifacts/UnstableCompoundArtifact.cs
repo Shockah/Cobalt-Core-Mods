@@ -40,7 +40,7 @@ internal sealed class UnstableCompoundArtifact : Artifact, IRegisterable, IDynaH
 	public double HookPriority
 		=> -10;
 
-	public void OnBlastwaveTrigger(State state, Combat combat, Ship ship, int worldX)
+	public void OnBlastwaveTrigger(State state, Combat combat, Ship ship, int worldX, bool hitMidrow)
 	{
 		if (ship.isPlayerShip)
 			return;
