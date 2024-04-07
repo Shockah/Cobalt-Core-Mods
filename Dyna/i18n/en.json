@@ -112,7 +112,7 @@
         },
         "HardHat": {
             "name": "HARD HAT",
-            "description": "If you end your turn with <c=status>LOSE ENERGY NEXT TURN</c>, gain 2 <c=status>TEMP SHIELD</c>."
+            "description": "If you end your turn with <c=status>LESS ENERGY NEXT TURN</c>, gain 2 <c=status>TEMP SHIELD</c>."
         },
         "UnstableCompound": {
             "name": "UNSTABLE COMPOUND",

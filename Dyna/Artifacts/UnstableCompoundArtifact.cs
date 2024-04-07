@@ -54,8 +54,11 @@ internal sealed class UnstableCompoundArtifact : Artifact, IRegisterable, IDynaH
 		});
 	}
 
-	private static void Card_GetActionsOverridden_Postfix(ref List<CardAction> __result)
+	private static void Card_GetActionsOverridden_Postfix(State s, ref List<CardAction> __result)
 	{
+		if (!s.EnumerateAllArtifacts().Any(a => a is UnstableCompoundArtifact))
+			return;
+
 		foreach (var action in __result)
 			foreach (var wrappedAction in ModEntry.Instance.KokoroApi.Actions.GetWrappedCardActionsRecursively(action))
 				if (wrappedAction is AAttack attack && attack.IsBlastwave() && attack.GetBlastwaveRange() <= 1)

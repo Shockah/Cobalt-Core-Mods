@@ -16,7 +16,7 @@ internal sealed class NitroManager : IDynaHook, IStatusRenderHook
 			Definition = new()
 			{
 				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/TempNitro.png")).Sprite,
-				color = new("FF00FF")
+				color = new("EC592B")
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "TempNitro", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "TempNitro", "description"]).Localize
@@ -26,7 +26,7 @@ internal sealed class NitroManager : IDynaHook, IStatusRenderHook
 			Definition = new()
 			{
 				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/Nitro.png")).Sprite,
-				color = new("FF00FF")
+				color = new("FBAB32")
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Nitro", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Nitro", "description"]).Localize

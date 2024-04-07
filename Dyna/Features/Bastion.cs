@@ -15,7 +15,7 @@ internal sealed class BastionManager : IDynaHook, IStatusRenderHook
 			Definition = new()
 			{
 				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/Bastion.png")).Sprite,
-				color = new("FF00FF")
+				color = new("7E7E7E")
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Bastion", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Bastion", "description"]).Localize

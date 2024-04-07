@@ -33,7 +33,7 @@ internal sealed class HardHatArtifact : Artifact, IRegisterable
 	public override void OnTurnEnd(State state, Combat combat)
 	{
 		base.OnTurnEnd(state, combat);
-		if (!combat.isPlayerTurn)
+		if (combat.isPlayerTurn)
 			return;
 		if (state.ship.Get(Status.energyLessNextTurn) <= 0)
 			return;
