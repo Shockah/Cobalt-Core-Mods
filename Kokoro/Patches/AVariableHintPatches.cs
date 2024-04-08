@@ -41,10 +41,9 @@ internal static class AVariableHintPatches
 				() => null,
 				() => "",
 				() => I18n.EnergyVariableHint,
-				new Func<object>[]
-				{
+				[
 					() => (s.route is Combat combat) ? $" </c>(<c=keyword>{Instance.Api.ObtainExtensionData(__instance, "energyTooltipOverride", () => (int?)null) ?? combat.energy}</c>)" : ""
-				}
+				]
 			);
 		}
 		else if (!Instance.Api.ObtainExtensionData(__instance, "targetPlayer", () => true))
@@ -54,13 +53,12 @@ internal static class AVariableHintPatches
 				() => null,
 				() => "",
 				() => I18n.EnemyVariableHint,
-				new Func<object>[]
-				{
+				[
 					() => "<c=status>" + status.GetLocName().ToUpperInvariant() + "</c>",
 					() => (s.route is Combat combat1) ? $" </c>(<c=keyword>{combat1.otherShip.Get(status)}</c>)" : "",
 					() => __instance.secondStatus is { } secondStatus1 ? (" </c>+ <c=status>" + secondStatus1.GetLocName().ToUpperInvariant() + "</c>") : "",
 					() => __instance.secondStatus is { } secondStatus2 && s.route is Combat combat2 ? $" </c>(<c=keyword>{combat2.otherShip.Get(secondStatus2)}</c>)" : ""
-				}
+				]
 			);
 		}
 	}

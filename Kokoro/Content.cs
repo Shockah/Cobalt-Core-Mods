@@ -1,12 +1,29 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
+using daisyowl.text;
 using Shockah.Shared;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Shockah.Kokoro;
 
 internal sealed class Content
 {
+	private static readonly Regex InfoFaceRegex = new("face=\"(.*?)\"");
+	private static readonly Regex InfoSizeRegex = new("size=(\\d+)");
+	private static readonly Regex CommonLineHeightRegex = new("lineHeight=(\\d+)");
+	private static readonly Regex CommonBaseRegex = new("base=(\\d+)");
+	private static readonly Regex CharIdRegex = new("id=(\\d+)");
+	private static readonly Regex CharXRegex = new("x=(\\d+)");
+	private static readonly Regex CharYRegex = new("y=(\\d+)");
+	private static readonly Regex CharWidthRegex = new("width=(\\d+)");
+	private static readonly Regex CharHeightRegex = new("height=(\\d+)");
+	private static readonly Regex CharXOffsetRegex = new("xoffset=(\\-?\\d+)");
+	private static readonly Regex CharYOffsetRegex = new("yoffset=(\\-?\\d+)");
+	private static readonly Regex CharXAdvanceRegex = new("xadvance=(\\-?\\d+)");
+
 	private static ModEntry Instance => ModEntry.Instance;
 
 	internal ExternalSprite WormSprite { get; private set; } = null!;
@@ -29,6 +46,8 @@ internal sealed class Content
 
 	internal ExternalSprite ContinueSprite { get; private set; } = null!;
 	internal ExternalSprite StopSprite { get; private set; } = null!;
+
+	internal Font PinchCompactFont { get; private set; } = null!;
 
 	internal void RegisterArt(ISpriteRegistry registry)
 	{
@@ -88,6 +107,20 @@ internal sealed class Content
 			id: $"{typeof(ModEntry).Namespace}.Stop",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Stop.png"))
 		);
+
+		PinchCompactFont = LoadFont(
+			registry: registry,
+			id: $"{typeof(ModEntry).Namespace}.PinchCompactFont",
+			atlasFile: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Fonts", "PinchCompact_0.png")),
+			fntFile: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Fonts", "PinchCompact.fnt"))
+		);
+		PinchCompactFont.outlined = LoadFont(
+			registry: registry,
+			id: $"{typeof(ModEntry).Namespace}.PinchCompactOutlineFont",
+			atlasFile: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Fonts", "PinchCompactOutline_0.png")),
+			fntFile: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Fonts", "PinchCompactOutline.fnt")),
+			hasOutline: true
+		);
 	}
 
 	internal void RegisterStatuses(IStatusRegistry registry)
@@ -116,5 +149,128 @@ internal sealed class Content
 			OxidationStatus.AddLocalisation(I18n.OxidationStatusName, I18n.OxidationStatusDescription);
 			registry.RegisterStatus(OxidationStatus);
 		}
+	}
+
+	private static Font LoadFont(ISpriteRegistry registry, string id, FileInfo atlasFile, FileInfo fntFile, bool hasOutline = false)
+	{
+		var atlas = registry.RegisterArtOrThrow(id: id, file: atlasFile);
+		var fntText = File.ReadAllText(fntFile.FullName).Split("\n");
+		return new()
+		{
+			atlas = (Spr)atlas.Id!.Value,
+			metrics = ParseFontMetrics(fntText, hasOutline)
+		};
+	}
+
+	private static FontMetrics ParseFontMetrics(string[] lines, bool hasOutline = false)
+	{
+		string? face = null;
+		int? size = null, lineHeight = null, @base = null;
+		List<int> charsId = [], charsX = [], charsY = [], charsW = [], charsH = [], charsXOffset = [], charsYOffset = [], charsAdvance = [];
+		int charId, charX, charY, charW, charH, charXOffset, charYOffset, charAdvance;
+		Match match;
+
+		foreach (var line in lines)
+		{
+			if (line.StartsWith("info "))
+			{
+				match = InfoFaceRegex.Match(line);
+				if (match.Success)
+					face = match.Groups[1].Value;
+
+				match = InfoSizeRegex.Match(line);
+				if (match.Success)
+					size = int.Parse(match.Groups[1].Value);
+			}
+			else if (line.StartsWith("common "))
+			{
+				match = CommonLineHeightRegex.Match(line);
+				if (match.Success)
+					lineHeight = int.Parse(match.Groups[1].Value);
+
+				match = CommonBaseRegex.Match(line);
+				if (match.Success)
+					@base = int.Parse(match.Groups[1].Value);
+			}
+			else if (line.StartsWith("char "))
+			{
+				match = CharIdRegex.Match(line);
+				if (!match.Success)
+					continue;
+				charId = int.Parse(match.Groups[1].Value);
+
+				match = CharXRegex.Match(line);
+				if (!match.Success)
+					continue;
+				charX = int.Parse(match.Groups[1].Value) + (hasOutline ? 1 : 0);
+
+				match = CharYRegex.Match(line);
+				if (!match.Success)
+					continue;
+				charY = int.Parse(match.Groups[1].Value) + (hasOutline ? 1 : 0);
+
+				match = CharWidthRegex.Match(line);
+				if (!match.Success)
+					continue;
+				charW = int.Parse(match.Groups[1].Value) - (hasOutline ? 2 : 0);
+
+				match = CharHeightRegex.Match(line);
+				if (!match.Success)
+					continue;
+				charH = int.Parse(match.Groups[1].Value) - (hasOutline ? 2 : 0);
+
+				match = CharXOffsetRegex.Match(line);
+				if (!match.Success)
+					continue;
+				charXOffset = int.Parse(match.Groups[1].Value);
+
+				match = CharYOffsetRegex.Match(line);
+				if (!match.Success)
+					continue;
+				charYOffset = int.Parse(match.Groups[1].Value);
+
+				match = CharXAdvanceRegex.Match(line);
+				if (!match.Success)
+					continue;
+				charAdvance = int.Parse(match.Groups[1].Value) - 1;
+
+				charsId.Add(charId);
+				charsX.Add(charX);
+				charsY.Add(charY);
+				charsW.Add(charW);
+				charsH.Add(charH);
+				charsXOffset.Add(charXOffset);
+				charsYOffset.Add(charYOffset);
+				charsAdvance.Add(charAdvance);
+			}
+		}
+
+		if (string.IsNullOrEmpty(face))
+			throw new InvalidDataException("Invalid font metrics");
+		if (size is not { } nonNullSize)
+			throw new InvalidDataException("Invalid font metrics");
+		if (lineHeight is not { } nonNullLineHeight)
+			throw new InvalidDataException("Invalid font metrics");
+		if (@base is not { } nonNullBase)
+			throw new InvalidDataException("Invalid font metrics");
+
+		return new()
+		{
+			name = face,
+			size = nonNullSize,
+			ascent = nonNullBase,
+			descent = -(nonNullLineHeight - nonNullBase - 1),
+			char_count = charsId.Count,
+			chars = charsId.ToArray(),
+			advance = charsAdvance.ToArray(),
+			offset_x = charsXOffset.ToArray(),
+			offset_y = Enumerable.Range(0, charsId.Count).Select(i => -nonNullBase + charsYOffset[i]).ToArray(),
+			width = charsW.ToArray(),
+			height = charsH.ToArray(),
+			pack_x = charsX.ToArray(),
+			pack_y = charsY.ToArray(),
+			kerning = [],
+			has_1px_outline = hasOutline,
+		};
 	}
 }

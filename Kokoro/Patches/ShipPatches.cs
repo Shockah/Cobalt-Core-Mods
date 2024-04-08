@@ -23,7 +23,7 @@ internal static class ShipPatches
 		var boxWidth = AccessTools.DeclaredField(statusPlanType, "boxWidth");
 		var getStatusSizeMethod = AccessTools.DeclaredMethod(typeof(Ship), "GetStatusSize");
 
-		DynamicMethod method = new("GetStatusSizeBoxWidth", typeof(int), new Type[] { typeof(Ship), typeof(G), typeof(Status), typeof(int) });
+		DynamicMethod method = new("GetStatusSizeBoxWidth", typeof(int), [typeof(Ship), typeof(G), typeof(Status), typeof(int)]);
 		var il = method.GetILGenerator();
 		il.Emit(OpCodes.Ldarg_0);
 		il.Emit(OpCodes.Ldarg_1);
@@ -39,7 +39,7 @@ internal static class ShipPatches
 	{
 		var renderStatusRowMethod = AccessTools.DeclaredMethod(typeof(Ship), "RenderStatusRow");
 
-		DynamicMethod method = new("RenderStatusRow", typeof(void), new Type[] { typeof(Ship), typeof(G), typeof(string), typeof(List<KeyValuePair<Status, int>>), typeof(int), typeof(int), typeof(int) });
+		DynamicMethod method = new("RenderStatusRow", typeof(void), [typeof(Ship), typeof(G), typeof(string), typeof(List<KeyValuePair<Status, int>>), typeof(int), typeof(int), typeof(int)]);
 		var il = method.GetILGenerator();
 		il.Emit(OpCodes.Ldarg_0);
 		il.Emit(OpCodes.Ldarg_1);

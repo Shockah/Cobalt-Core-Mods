@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming version
+
+* Added an API to choose a font for a given card's text.
+* Added a custom compact variant of the Pinch font.
+
 ## 1.5.0
 Released 29 February 2024.
 

@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using daisyowl.text;
+using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Nanoray.Shrike;
@@ -124,14 +125,23 @@ internal static class CardPatches
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_Render_Transpiler_PushMatrix))),
 					new CodeInstruction(OpCodes.Stloc, modifiedScaleLocal)
 				)
+				.Find(
+					ILMatches.Ldloc<CardData>(originalMethod),
+					ILMatches.Ldfld("description")
+				)
+				.Find(ILMatches.Instruction(OpCodes.Ldnull))
+				.Replace(
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldarg_1),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_Render_Transpiler_ReplaceCardTextFont)))
+				)
 				.ForEach(
 					SequenceMatcherRelativeBounds.After,
-					new[]
-					{
+					[
 						ILMatches.LdcI4(51),
 						ILMatches.Instruction(OpCodes.Conv_R8),
 						ILMatches.Instruction(OpCodes.Call)
-					},
+					],
 					matcher =>
 					{
 						return matcher
@@ -158,6 +168,9 @@ internal static class CardPatches
 			return instructions;
 		}
 	}
+
+	private static Font? Card_Render_Transpiler_ReplaceCardTextFont(Card card, G g)
+		=> Instance.CardRenderManager.ReplaceTextCardFont(g, card);
 
 	private static Vec Card_Render_Transpiler_PushMatrix(Card card, G g)
 	{

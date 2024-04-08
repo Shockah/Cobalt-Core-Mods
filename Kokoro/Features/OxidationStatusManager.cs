@@ -24,7 +24,7 @@ public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>, 
 		{
 			var tooltip = tooltips[i];
 			if (tooltip is TTGlossary glossary && glossary.key == $"status.{Instance.Content.OxidationStatus.Id!.Value}")
-				glossary.vals = new object[] { $"<c=boldPink>{oxidationMaxValue}</c>" };
+				glossary.vals = [$"<c=boldPink>{oxidationMaxValue}</c>"];
 		}
 		return tooltips;
 	}

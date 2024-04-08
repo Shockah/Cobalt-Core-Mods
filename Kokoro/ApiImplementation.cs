@@ -1,5 +1,6 @@
 ﻿﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModManifests;
+using daisyowl.text;
 using Nanoray.Pintail;
 using Shockah.Shared;
 using System;
@@ -128,7 +129,7 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 	public Tooltip GetScorchingTooltip(int? value = null)
 		=> value is null
 			? new CustomTTGlossary(CustomTTGlossary.GlossaryType.midrow, () => StableSpr.icons_overheat, () => I18n.ScorchingGlossaryName, () => I18n.ScorchingGlossaryAltDescription)
-			: new CustomTTGlossary(CustomTTGlossary.GlossaryType.midrow, () => StableSpr.icons_overheat, () => I18n.ScorchingGlossaryName, () => I18n.ScorchingGlossaryDescription, new Func<object>[] { () => value.Value });
+			: new CustomTTGlossary(CustomTTGlossary.GlossaryType.midrow, () => StableSpr.icons_overheat, () => I18n.ScorchingGlossaryName, () => I18n.ScorchingGlossaryDescription, [() => value.Value]);
 
 	public int GetScorchingStatus(State state, Combat combat, StuffBase @object)
 		=> TryGetExtensionData(@object, ModEntry.ScorchingTag, out int value) ? value : 0;
@@ -223,6 +224,9 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 
 	public void UnregisterCardRenderHook(ICardRenderHook hook)
 		=> Instance.CardRenderManager.Unregister(hook);
+
+	public Font PinchCompactFont
+		=> ModEntry.Instance.Content.PinchCompactFont;
 	#endregion
 
 	#region StatusRenderHook

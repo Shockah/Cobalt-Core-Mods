@@ -13,7 +13,7 @@ public sealed class WormStatusManager : IStatusLogicHook
 		foreach (var tooltip in tooltips)
 		{
 			if (tooltip is TTGlossary glossary && glossary.key == $"status.{Instance.Content.WormStatus.Id!.Value}" && (glossary.vals is null || glossary.vals.Length == 0 || Equals(glossary.vals[0], "<c=boldPink>0</c>")))
-				glossary.vals = new object[] { "<c=boldPink>1</c>" };
+				glossary.vals = ["<c=boldPink>1</c>"];
 			yield return tooltip;
 		}
 	}
