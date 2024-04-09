@@ -35,14 +35,14 @@ internal sealed class FluxPartModManager : IDynaHook
 		{
 			if (AttackContext is null)
 				return;
-			TriggerFluxIfNeeded(combat, part, targetPlayer: true);
+			TriggerFluxIfNeeded(state, combat, part, targetPlayer: true);
 		}, 0);
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnEnemyGetHit), (State state, Combat combat, Part? part) =>
 		{
 			if (AttackContext is null)
 				return;
-			TriggerFluxIfNeeded(combat, part, targetPlayer: false);
+			TriggerFluxIfNeeded(state, combat, part, targetPlayer: false);
 		}, 0);
 
 		ModEntry.Instance.Api.RegisterHook(this, 0);
@@ -62,17 +62,25 @@ internal sealed class FluxPartModManager : IDynaHook
 		return tooltips;
 	}
 
-	private static void TriggerFluxIfNeeded(Combat combat, Part? part, bool targetPlayer)
+	private static void TriggerFluxIfNeeded(State state, Combat combat, Part? part, bool targetPlayer)
 	{
 		if (part is not { } nonNullPart || nonNullPart.invincible || nonNullPart.GetDamageModifier() != FluxDamageModifier)
 			return;
 
-		combat.QueueImmediate(new AStatus
-		{
-			targetPlayer = !targetPlayer,
-			status = Status.tempShield,
-			statusAmount = 1
-		});
+		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is DynaDizzyArtifact) is { } dizzyDuo)
+			combat.QueueImmediate(new GainShieldOrTempShieldAction
+			{
+				TargetPlayer = !targetPlayer,
+				Amount = 1,
+				ShieldArtifactPulse = dizzyDuo.Key(),
+			});
+		else
+			combat.QueueImmediate(new AStatus
+			{
+				targetPlayer = !targetPlayer,
+				status = Status.tempShield,
+				statusAmount = 1
+			});
 	}
 
 	private static void AAttack_Begin_Prefix(AAttack __instance)
@@ -113,6 +121,51 @@ internal sealed class FluxPartModManager : IDynaHook
 	{
 		if (ship.GetPartAtWorldX(waveWorldX) is not { } part)
 			return;
-		TriggerFluxIfNeeded(combat, part, ship.isPlayerShip);
+		TriggerFluxIfNeeded(state, combat, part, ship.isPlayerShip);
+	}
+
+	private sealed class GainShieldOrTempShieldAction : CardAction
+	{
+		public bool TargetPlayer;
+		public int Amount;
+		public string? ShieldArtifactPulse;
+		public Status? ShieldStatusPulse;
+
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+			List<CardAction> actions = [];
+
+			var targetShip = TargetPlayer ? s.ship : c.otherShip;
+			var amountLeft = Amount;
+			var missingShield = Math.Max(targetShip.GetMaxShield() - targetShip.Get(Status.shield), 0);
+
+			if (amountLeft > 0 && missingShield > 0)
+			{
+				var toGain = Math.Min(amountLeft, missingShield);
+				amountLeft -= toGain;
+				actions.Add(new AStatus
+				{
+					targetPlayer = TargetPlayer,
+					status = Status.shield,
+					statusAmount = toGain,
+					artifactPulse = ShieldArtifactPulse ?? artifactPulse,
+					statusPulse = ShieldStatusPulse ?? statusPulse
+				});
+			}
+
+			if (amountLeft > 0)
+				actions.Add(new AStatus
+				{
+					targetPlayer = TargetPlayer,
+					status = Status.tempShield,
+					statusAmount = amountLeft,
+					artifactPulse = artifactPulse,
+					statusPulse = statusPulse
+				});
+
+			timer = 0;
+			c.QueueImmediate(actions);
+		}
 	}
 }

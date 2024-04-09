@@ -77,7 +77,9 @@ public sealed class ModEntry : SimpleMod
 	internal static readonly IReadOnlyList<Type> DuoArtifacts = [
 		typeof(DynaBooksArtifact),
 		typeof(DynaCatArtifact),
+		typeof(DynaDizzyArtifact),
 		typeof(DynaDrakeArtifact),
+		typeof(DynaPeriArtifact),
 	];
 
 	internal static readonly IEnumerable<Type> AllArtifactTypes

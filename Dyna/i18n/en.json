@@ -127,9 +127,17 @@
                 "name": "BLAST PROCESSOR",
                 "description": "<c=card>Basic Shot</c> cards now have <c=action>Blastwave 1</c>. Upon pickup, add two <c=card>Basic Shot</c>s to your deck."
             },
+            "DynaDizzy": {
+                "name": "BLAST GOGGLES",
+                "description": "At the start of combat, add a <c=cardtrait>temporary</c> <c=card>Flux Charge B</c> with <c=cardtrait>Exhaust</c> to your hand. <c=status>TEMP SHIELD</c> gained from hitting a part with <c=parttrait>Flux</c> is converted into <c=status>SHIELD</c> if possible."
+            },
             "DynaDrake": {
                 "name": "ROMAN CANDLE",
                 "description": "Whenever you <c=action>OVERHEAT</c>, gain 1 <c=status>NITRO</c>."
+            },
+            "DynaPeri": {
+                "name": "FISSION CHARGE",
+                "description": "When <c=parttrait>charges</c> are triggered, enemies take damage equal to your <c=status>OVERDRIVE</c> and lose hull equal to your <c=status>POWERDRIVE</c>."
             }
         }
     },
