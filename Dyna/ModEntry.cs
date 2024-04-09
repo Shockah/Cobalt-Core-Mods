@@ -119,6 +119,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new NitroManager();
 		_ = new BastionManager();
 		_ = new FluxPartModManager();
+		_ = new JesterIntegration();
 		CustomTTGlossary.ApplyPatches(Harmony);
 
 		DynaDeck = helper.Content.Decks.RegisterDeck("Dyna", new()
