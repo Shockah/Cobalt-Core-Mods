@@ -84,5 +84,11 @@
     "intent": {
         "SwitchBrittlePart": "This part will become <c=parttrait>brittle</c>, instead of the current one.",
         "SelfDestruct": "The enemy will... <c=hurt>self-destruct, dealing {{Damage}} hull damage to you?!</c>"
+    },
+    "action": {
+        "RemoveThisCard": {
+            "name": "Remove this card",
+            "description": "Playing this card <c=downside>completely removes it from your deck.</c>"
+        }
     }
 }

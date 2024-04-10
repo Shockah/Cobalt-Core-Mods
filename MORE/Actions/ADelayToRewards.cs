@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Shockah.EventsGalore;
+namespace Shockah.MORE;
 
 public sealed class ADelayToRewards : CardAction
 {

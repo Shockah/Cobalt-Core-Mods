@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Shockah.EventsGalore;
+namespace Shockah.MORE;
 
 internal sealed class ATooltipAction : ADummyAction
 {

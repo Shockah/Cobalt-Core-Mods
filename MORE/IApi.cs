@@ -1,6 +1,6 @@
 ﻿using Nickel;
 
-namespace Shockah.EventsGalore;
+namespace Shockah.MORE;
 
 public interface IApi
 {

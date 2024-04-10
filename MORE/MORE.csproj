@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<RootNamespace>Shockah.EventsGalore</RootNamespace>
+		<RootNamespace>Shockah.MORE</RootNamespace>
 		<Version>0.1.0</Version>
 		<IncludedModProjectPaths>i18n;assets</IncludedModProjectPaths>
 	</PropertyGroup>

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Shockah.EventsGalore;
+namespace Shockah.MORE;
 
 internal abstract class BombEnemy : AI, IRegisterable
 {

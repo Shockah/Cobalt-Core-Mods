@@ -1,4 +1,4 @@
-﻿namespace Shockah.EventsGalore;
+﻿namespace Shockah.MORE;
 
 public partial interface IKokoroApi
 {

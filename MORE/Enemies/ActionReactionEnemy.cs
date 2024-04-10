@@ -6,7 +6,7 @@ using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Shockah.EventsGalore;
+namespace Shockah.MORE;
 
 internal sealed class ActionReactionEnemy : AI, IRegisterable
 {
@@ -36,7 +36,7 @@ internal sealed class ActionReactionEnemy : AI, IRegisterable
 
 	private static void Map_GetEnemyPools_Postfix(ref MapBase.MapEnemyPool __result)
 	{
-		__result.normal.Add(new ActionReactionEnemy());
+		//__result.normal.Add(new ActionReactionEnemy());
 	}
 
 	public override Ship BuildShipForSelf(State s)

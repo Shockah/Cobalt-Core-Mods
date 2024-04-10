@@ -1,6 +1,6 @@
 ﻿using Nanoray.EnumByNameSourceGenerator;
 
-namespace Shockah.EventsGalore;
+namespace Shockah.MORE;
 
 [EnumByName(typeof(Spr))]
 internal static partial class StableSpr { }

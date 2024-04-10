@@ -1,8 +1,11 @@
 {
-    "UniqueName": "Shockah.EventsGalore",
+    "UniqueName": "Shockah.MORE",
     "Version": "0.1.0",
+    "DisplayName": "Mix Of Random Elements",
+    "Description": "Adds various content all around.",
+    "Author": "Shockah",
     "RequiredApiVersion": "0.7.0",
-    "EntryPointAssembly": "EventsGalore.dll",
+    "EntryPointAssembly": "MORE.dll",
     "LoadPhase": "AfterDbInit",
     "Dependencies": [
         {

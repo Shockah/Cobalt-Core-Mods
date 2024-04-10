@@ -2,7 +2,7 @@
 using Nickel;
 using System;
 
-namespace Shockah.EventsGalore;
+namespace Shockah.MORE;
 
 internal sealed class ActionReactionStatus : IRegisterable, IStatusLogicHook
 {

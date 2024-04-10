@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Shockah.EventsGalore;
+namespace Shockah.MORE;
 
 internal sealed class ModEntry : SimpleMod
 {
@@ -35,7 +35,10 @@ internal sealed class ModEntry : SimpleMod
 		typeof(ShipSwapEvent),
 	];
 
-	internal static IEnumerable<Type> RegisterableTypes { get; } = StatusTypes.Concat(EnemyTypes).Concat(EventTypes);
+	internal static IEnumerable<Type> RegisterableTypes { get; }
+		= StatusTypes.Concat(EnemyTypes)
+			.Concat(EventTypes)
+			.Append(typeof(EphemeralUpgrades));
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
@@ -53,6 +56,7 @@ internal sealed class ModEntry : SimpleMod
 
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
+		CustomTTGlossary.ApplyPatches(Harmony);
 
 		helper.Events.OnLoadStringsForLocale += (_, e) =>
 		{

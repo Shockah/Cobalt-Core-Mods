@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Shockah.EventsGalore;
+namespace Shockah.MORE;
 
 internal sealed class CustomSay : Say
 {

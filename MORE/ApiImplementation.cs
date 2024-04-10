@@ -1,14 +1,14 @@
 ﻿using Nickel;
 
-namespace Shockah.EventsGalore;
+namespace Shockah.MORE;
 
 public sealed class ApiImplementation : IApi
 {
 	public IStatusEntry ActionReactionStatus
-		=> EventsGalore.ActionReactionStatus.Instance.Entry;
+		=> MORE.ActionReactionStatus.Instance.Entry;
 	
 	public IStatusEntry VolatileOverdriveStatus
-		=> EventsGalore.VolatileOverdriveStatus.Instance.Entry;
+		=> MORE.VolatileOverdriveStatus.Instance.Entry;
 
 	#region Self-destruct
 	public IStatusEntry SelfDestructTimerStatus

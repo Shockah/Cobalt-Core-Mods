@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Shockah.EventsGalore;
+namespace Shockah.MORE;
 
 public partial interface IKokoroApi
 {

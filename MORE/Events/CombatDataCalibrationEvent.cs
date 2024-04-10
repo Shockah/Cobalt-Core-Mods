@@ -4,7 +4,7 @@ using Nickel;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Shockah.EventsGalore;
+namespace Shockah.MORE;
 
 internal sealed class CombatDataCalibrationEvent : IRegisterable
 {

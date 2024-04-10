@@ -1,7 +1,7 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
 
-namespace Shockah.EventsGalore;
+namespace Shockah.MORE;
 
 internal interface IRegisterable
 {

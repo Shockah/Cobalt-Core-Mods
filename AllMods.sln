@@ -36,7 +36,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bloch", "Bloch\Bloch.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetterRunSummaries", "BetterRunSummaries\BetterRunSummaries.csproj", "{224C4F0C-5499-413B-839F-F13A7DE1A5E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventsGalore", "EventsGalore\EventsGalore.csproj", "{A324EDAF-B4B3-4F19-AFF6-81A8B90E8CE4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MORE", "MORE\MORE.csproj", "{A324EDAF-B4B3-4F19-AFF6-81A8B90E8CE4}"
+EndProject
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
