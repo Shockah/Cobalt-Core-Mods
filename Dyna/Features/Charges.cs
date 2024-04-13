@@ -214,28 +214,28 @@ public sealed class FireChargeAction : CardAction
 		}
 
 		List<Tooltip> tooltips = [
-			new CustomTTGlossary(
-				CustomTTGlossary.GlossaryType.action,
-				() => Offset switch
+			new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::FireCharge")
+			{
+				Icon = Offset switch
 				{
 					< 0 => ChargeManager.FireChargeLeftIcon.Sprite,
 					> 0 => ChargeManager.FireChargeRightIcon.Sprite,
 					_ => ChargeManager.FireChargeIcon.Sprite
 				},
-				() => ModEntry.Instance.Localizations.Localize(["action", "FireCharge", "name", Offset switch
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["action", "FireCharge", "name", Offset switch
 				{
 					< 0 => "OffsetLeft",
 					> 0 => "OffsetRight",
 					_ => "Normal"
 				}]),
-				() => ModEntry.Instance.Localizations.Localize(["action", "FireCharge", "description", Offset switch
+				Description = ModEntry.Instance.Localizations.Localize(["action", "FireCharge", "description", Offset switch
 				{
 					< 0 => "OffsetLeft",
 					> 0 => "OffsetRight",
 					_ => "Normal"
-				}], new { Offset = Math.Abs(Offset) }),
-				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::FireCharge"
-			)
+				}], new { Offset = Math.Abs(Offset) })
+			}
 		];
 		tooltips.AddRange(Charge.GetTooltips(s));
 		return tooltips;

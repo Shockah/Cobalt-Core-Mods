@@ -24,13 +24,13 @@ public sealed class ConcussionCharge : DynaCharge, IRegisterable
 
 	public override List<Tooltip> GetTooltips(State state)
 		=> [
-			new CustomTTGlossary(
-				CustomTTGlossary.GlossaryType.parttrait,
-				() => GetIcon(state),
-				() => ModEntry.Instance.Localizations.Localize(["charge", "Concussion", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["charge", "Concussion", "description"]),
-				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::Charge::Concussion"
-			),
+			new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::Charge::Concussion")
+			{
+				Icon = GetIcon(state),
+				TitleColor = Colors.parttrait,
+				Title = ModEntry.Instance.Localizations.Localize(["charge", "Concussion", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["charge", "Concussion", "description"])
+			},
 			new TTGlossary("parttrait.stunnable")
 		];
 

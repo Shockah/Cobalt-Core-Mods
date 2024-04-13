@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Nickel;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -51,12 +52,13 @@ internal sealed class FluxPartModManager : IDynaHook
 	internal static IEnumerable<Tooltip> MakeFluxPartModTooltips()
 	{
 		List<Tooltip> tooltips = [
-			new CustomTTGlossary(
-				CustomTTGlossary.GlossaryType.parttrait,
-				() => StableSpr.icons_libra,
-				() => ModEntry.Instance.Localizations.Localize(["partModifier", "Flux", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["partModifier", "Flux", "description"])
-			)
+			new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::PartDamageModifier::Flux")
+			{
+				Icon = StableSpr.icons_libra,
+				TitleColor = Colors.parttrait,
+				Title = ModEntry.Instance.Localizations.Localize(["partModifier", "Flux", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["partModifier", "Flux", "description"])
+			}
 		];
 		tooltips.AddRange(StatusMeta.GetTooltips(Status.tempShield, 1));
 		return tooltips;

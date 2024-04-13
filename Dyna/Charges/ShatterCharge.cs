@@ -24,13 +24,13 @@ public sealed class ShatterCharge : DynaCharge, IRegisterable
 
 	public override List<Tooltip> GetTooltips(State state)
 		=> [
-			new CustomTTGlossary(
-				CustomTTGlossary.GlossaryType.parttrait,
-				() => GetIcon(state),
-				() => ModEntry.Instance.Localizations.Localize(["charge", "Shatter", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["charge", "Shatter", "description"]),
-				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::Shatter::Demo"
-			),
+			new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::Charge::Shatter")
+			{
+				Icon = GetIcon(state),
+				TitleColor = Colors.parttrait,
+				Title = ModEntry.Instance.Localizations.Localize(["charge", "Shatter", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["charge", "Shatter", "description"])
+			},
 			new TTGlossary("parttrait.brittle")
 		];
 

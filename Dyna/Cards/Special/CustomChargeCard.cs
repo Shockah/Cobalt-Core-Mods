@@ -175,12 +175,13 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 					_ => Loc.T("controller.xbox.b"),
 				};
 
-				return new CustomTTGlossary(
-					CustomTTGlossary.GlossaryType.cardtrait,
-					icon: () => TriadIcon[0].Sprite,
-					title: () => ModEntry.Instance.Localizations.Localize(["cardTrait", "triad", "name"]),
-					description: () => ModEntry.Instance.Localizations.Localize(["cardTrait", "triad", "description", PlatformIcons.GetPlatform() == Platform.MouseKeyboard ? "m&k" : "controller"], new { Button = buttonText })
-				);
+				return new GlossaryTooltip("cardtrait.triad")
+				{
+					Icon = TriadIcon[0].Sprite,
+					TitleColor = Colors.cardtrait,
+					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "triad", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "triad", "description", PlatformIcons.GetPlatform() == Platform.MouseKeyboard ? "m&k" : "controller"], new { Button = buttonText })
+				};
 			});
 	}
 

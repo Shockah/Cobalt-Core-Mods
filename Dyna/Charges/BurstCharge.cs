@@ -24,13 +24,13 @@ public sealed class BurstCharge : DynaCharge, IRegisterable
 
 	public override List<Tooltip> GetTooltips(State state)
 		=> [
-			new CustomTTGlossary(
-				CustomTTGlossary.GlossaryType.parttrait,
-				() => GetIcon(state),
-				() => ModEntry.Instance.Localizations.Localize(["charge", "Burst", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["charge", "Burst", "description"]),
-				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::Charge::Burst"
-			)
+			new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::Charge::Burst")
+			{
+				Icon = GetIcon(state),
+				TitleColor = Colors.parttrait,
+				Title = ModEntry.Instance.Localizations.Localize(["charge", "Burst", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["charge", "Burst", "description"])
+			}
 		];
 
 	public override void OnTrigger(State state, Combat combat, Ship ship, Part part)

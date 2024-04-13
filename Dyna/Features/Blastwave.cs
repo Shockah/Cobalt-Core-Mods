@@ -266,13 +266,13 @@ internal sealed class BlastwaveManager
 			}
 
 			List<Tooltip> tooltips = [
-				new CustomTTGlossary(
-					CustomTTGlossary.GlossaryType.action,
-					() => icon.Sprite,
-					() => name,
-					() => description,
-					key: key
-				)
+				new GlossaryTooltip(key)
+				{
+					Icon = icon.Sprite,
+					TitleColor = Colors.action,
+					Title = name,
+					Description = description
+				}
 			];
 
 			if (IsStunwave)

@@ -24,13 +24,13 @@ public sealed class SwiftCharge : DynaCharge, IRegisterable
 
 	public override List<Tooltip> GetTooltips(State state)
 		=> [
-			new CustomTTGlossary(
-				CustomTTGlossary.GlossaryType.parttrait,
-				() => GetIcon(state),
-				() => ModEntry.Instance.Localizations.Localize(["charge", "Swift", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["charge", "Swift", "description"]),
-				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::Charge::Swift"
-			)
+			new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::Charge::Swift")
+			{
+				Icon = GetIcon(state),
+				TitleColor = Colors.parttrait,
+				Title = ModEntry.Instance.Localizations.Localize(["charge", "Swift", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["charge", "Swift", "description"])
+			}
 		];
 
 	public override void OnTrigger(State state, Combat combat, Ship ship, Part part)

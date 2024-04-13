@@ -24,13 +24,13 @@ public sealed class DemoCharge : DynaCharge, IRegisterable
 
 	public override List<Tooltip> GetTooltips(State state)
 		=> [
-			new CustomTTGlossary(
-				CustomTTGlossary.GlossaryType.parttrait,
-				() => GetIcon(state),
-				() => ModEntry.Instance.Localizations.Localize(["charge", "Demo", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["charge", "Demo", "description"]),
-				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::Charge::Demo"
-			),
+			new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::Charge::Demo")
+			{
+				Icon = GetIcon(state),
+				TitleColor = Colors.parttrait,
+				Title = ModEntry.Instance.Localizations.Localize(["charge", "Demo", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["charge", "Demo", "description"])
+			},
 			new TTGlossary("parttrait.weak")
 		];
 

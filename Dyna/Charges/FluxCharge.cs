@@ -25,13 +25,13 @@ public sealed class FluxCharge : DynaCharge, IRegisterable
 	public override List<Tooltip> GetTooltips(State state)
 	{
 		List<Tooltip> tooltips = [
-			new CustomTTGlossary(
-				CustomTTGlossary.GlossaryType.parttrait,
-				() => GetIcon(state),
-				() => ModEntry.Instance.Localizations.Localize(["charge", "Flux", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["charge", "Flux", "description"]),
-				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::Charge::Flux"
-			)
+			new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::Charge::Flux")
+			{
+				Icon = GetIcon(state),
+				TitleColor = Colors.parttrait,
+				Title = ModEntry.Instance.Localizations.Localize(["charge", "Flux", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["charge", "Flux", "description"])
+			}
 		];
 		tooltips.AddRange(FluxPartModManager.MakeFluxPartModTooltips());
 		return tooltips;
