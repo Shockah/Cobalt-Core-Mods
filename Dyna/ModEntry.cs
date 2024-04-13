@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
+using Nickel.Common;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -180,6 +181,40 @@ public sealed class ModEntry : SimpleMod
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Squint/{i}.png")).Sprite)
 				.ToList()
 		});
+
+		helper.ModRegistry.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", new SemanticVersion(1, 3, 0))?.RegisterAltStarters(
+			deck: DynaDeck.Deck,
+			starterDeck: new StarterDeck
+			{
+				cards = [
+					new BangCard(),
+					new BurstChargeCard()
+				]
+			}
+		);
+
+		helper.Events.OnModLoadPhaseFinished += (_, phase) =>
+		{
+			if (phase != ModLoadPhase.AfterDbInit)
+				return;
+
+			if (helper.ModRegistry.GetApi<IDraculaApi>("Shockah.Dracula") is { } draculaApi)
+			{
+				draculaApi.RegisterBloodTapOptionProvider(BastionManager.BastionStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+					new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 }
+				]);
+				draculaApi.RegisterBloodTapOptionProvider(NitroManager.TempNitroStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 2 }
+				]);
+				draculaApi.RegisterBloodTapOptionProvider(NitroManager.NitroStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 1 }
+				]);
+			}
+		};
 	}
 
 	public override object? GetApi(IModManifest requestingMod)
