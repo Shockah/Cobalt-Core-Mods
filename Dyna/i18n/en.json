@@ -169,6 +169,14 @@
         "DemoCharge": {
             "name": "Demo Charge"
         },
+        "DynaExe": {
+            "name": "Dyna.EXE",
+            "description": {
+                "None": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=EC592B>Dyna</c> cards to your hand.",
+                "A": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=EC592B>Dyna</c> cards to your hand.",
+                "B": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=EC592B>Dyna</c> cards to your hand."
+            }
+        },
         "FlashBurst": {
             "name": "Flash Burst"
         },

@@ -18,6 +18,7 @@ internal sealed class SmokeBombCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = StableSpr.cards_Scattershot,
 			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/SmokeBomb.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "SmokeBomb", "name"]).Localize
 		});

@@ -18,6 +18,7 @@ internal sealed class PerkUpCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = StableSpr.cards_ExtraBattery,
 			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/PerkUp.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "PerkUp", "name"]).Localize
 		});

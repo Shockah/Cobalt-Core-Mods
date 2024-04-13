@@ -18,6 +18,7 @@ internal sealed class ClearAPathCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = StableSpr.cards_BlockShot,
 			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/ClearAPath.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "ClearAPath", "name"]).Localize
 		});

@@ -18,6 +18,7 @@ internal sealed class BangCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
+			Art = StableSpr.cards_Cannon,
 			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Bang.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Bang", "name"]).Localize
 		});

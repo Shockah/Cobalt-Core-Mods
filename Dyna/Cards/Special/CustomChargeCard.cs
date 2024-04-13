@@ -41,6 +41,7 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true
 			},
+			Art = StableSpr.cards_GoatDrone,
 			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/CustomCharge.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "CustomCharge", "name"]).Localize
 		});

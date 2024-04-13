@@ -54,6 +54,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static readonly IReadOnlyList<Type> SpecialCardTypes = [
 		typeof(CustomChargeCard),
+		typeof(DynaExeCard),
 	];
 
 	internal static IEnumerable<Type> AllCardTypes
@@ -159,7 +160,8 @@ public sealed class ModEntry : SimpleMod
 					new DemoChargeCard(),
 					new KaboomCard()
 				]
-			}
+			},
+			ExeCardType = typeof(DynaExeCard)
 		});
 
 		helper.Content.Characters.RegisterCharacterAnimation(new()
