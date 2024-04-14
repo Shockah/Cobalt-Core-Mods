@@ -80,10 +80,10 @@ internal sealed class DynaMaxArtifact : Artifact, IRegisterable
 	{
 		if (s.EnumerateAllArtifacts().OfType<DynaMaxArtifact>().FirstOrDefault() is not { } artifact)
 			return;
-		if (++artifact.Counter <= 5)
+		if (++artifact.Counter < 5)
 			return;
 
-		artifact.Counter = 0;
+		artifact.Counter -= 5;
 		__instance.QueueImmediate(new AAttack()
 		{
 			damage = Card.GetActualDamage(s, 0),

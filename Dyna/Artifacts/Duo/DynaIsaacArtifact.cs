@@ -2,6 +2,7 @@
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -40,7 +41,9 @@ internal sealed class DynaIsaacArtifact : Artifact, IRegisterable
 	public override List<Tooltip>? GetExtraTooltips()
 		=> [
 			..new AttackDrone().GetTooltips(),
-			..new BlastwaveManager.BlastwaveAction { Source = new(), WorldX = 0, Damage = 0, Range = 1 }.GetTooltips(DB.fakeState)
+			..new BlastwaveManager.BlastwaveAction { Source = new(), WorldX = 0, Damage = 0, Range = 1 }.GetTooltips(DB.fakeState),
+			..StatusMeta.GetTooltips(NitroManager.NitroStatus.Status, Math.Max(MG.inst.g.state.ship.Get(NitroManager.NitroStatus.Status), 1)),
+			..StatusMeta.GetTooltips(NitroManager.TempNitroStatus.Status, Math.Max(MG.inst.g.state.ship.Get(NitroManager.TempNitroStatus.Status), 1)),
 		];
 
 	private static void AAttack_Begin_Prefix(AAttack __instance, State s, Combat c)
