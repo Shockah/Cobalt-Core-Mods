@@ -1,6 +1,8 @@
-﻿using Nanoray.PluginManager;
+﻿using HarmonyLib;
+using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
+using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +40,12 @@ internal sealed class DynaRiggsArtifact : Artifact, IRegisterable
 		});
 
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.DynaDeck.Deck, Deck.riggs]);
+
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.Begin)),
+			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AStatus_Begin_Prefix)), priority: Priority.Low)
+		);
 	}
 
 	public override Spr GetSprite()
@@ -54,19 +62,31 @@ internal sealed class DynaRiggsArtifact : Artifact, IRegisterable
 		TriggeredThisCombat = false;
 	}
 
-	public override void AfterPlayerStatusAction(State state, Combat combat, Status status, AStatusMode mode, int statusAmount)
+	private static void AStatus_Begin_Prefix(AStatus __instance, State s, Combat c)
 	{
-		base.AfterPlayerStatusAction(state, combat, status, mode, statusAmount);
-		if (TriggeredThisCombat)
+		if (__instance.status != Status.energyLessNextTurn || !__instance.targetPlayer)
 			return;
-		if (mode != AStatusMode.Add || status != Status.energyLessNextTurn || statusAmount < 0)
+		if (s.EnumerateAllArtifacts().OfType<DynaRiggsArtifact>().FirstOrDefault() is not { } artifact)
+			return;
+		if (artifact.TriggeredThisCombat)
 			return;
 
-		TriggeredThisCombat = true;
-		combat.QueueImmediate(new FireChargeAction
+		var currentAmount = s.ship.Get(Status.energyLessNextTurn);
+		var newAmount = __instance.mode switch
+		{
+			AStatusMode.Set => __instance.statusAmount,
+			AStatusMode.Add => currentAmount + __instance.statusAmount,
+			AStatusMode.Mult => currentAmount * __instance.statusAmount,
+			_ => currentAmount
+		};
+		if (newAmount < currentAmount)
+			return;
+
+		artifact.TriggeredThisCombat = true;
+		c.QueueImmediate(new FireChargeAction
 		{
 			Charge = new SwiftCharge(),
-			artifactPulse = Key(),
+			artifactPulse = artifact.Key(),
 		});
 	}
 }
