@@ -18,6 +18,7 @@ public sealed class ModEntry : SimpleMod
 	internal readonly ApiImplementation Api;
 	internal readonly IKokoroApi KokoroApi;
 	internal readonly IDuoArtifactsApi? DuoArtifactsApi;
+	internal readonly ISogginsApi? SogginsApi;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
@@ -81,10 +82,12 @@ public sealed class ModEntry : SimpleMod
 		typeof(DynaCatArtifact),
 		typeof(DynaDizzyArtifact),
 		typeof(DynaDrakeArtifact),
+		typeof(DynaEddieArtifact),
 		typeof(DynaIsaacArtifact),
 		typeof(DynaMaxArtifact),
 		typeof(DynaPeriArtifact),
 		typeof(DynaRiggsArtifact),
+		typeof(DynaSogginsArtifact),
 	];
 
 	internal static readonly IEnumerable<Type> AllArtifactTypes
@@ -110,6 +113,7 @@ public sealed class ModEntry : SimpleMod
 		Api = new();
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 		DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
+		SogginsApi = helper.ModRegistry.GetApi<ISogginsApi>("Shockah.Soggins");
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),

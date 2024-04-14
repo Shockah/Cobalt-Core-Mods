@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace Shockah.Dyna;
 
-internal sealed class DynaRiggsArtifact : Artifact, IRegisterable
+internal sealed class DynaEddieArtifact : Artifact, IRegisterable
 {
 	private static ISpriteEntry ActiveSprite = null!;
 	private static ISpriteEntry InactiveSprite = null!;
@@ -20,13 +20,17 @@ internal sealed class DynaRiggsArtifact : Artifact, IRegisterable
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
+		// TODO: use Eddie's API
+
 		if (ModEntry.Instance.DuoArtifactsApi is not { } api)
 			return;
+		if (!helper.ModRegistry.LoadedMods.ContainsKey("TheJazMaster.Eddie"))
+			return;
 
-		ActiveSprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Duo/DynaRiggs.png"));
-		InactiveSprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Duo/DynaRiggsInactive.png"));
+		ActiveSprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Duo/DynaEddie.png"));
+		InactiveSprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Duo/DynaEddieInactive.png"));
 
-		helper.Content.Artifacts.RegisterArtifact("DynaRiggs", new()
+		helper.Content.Artifacts.RegisterArtifact("DynaEddie", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
@@ -35,16 +39,16 @@ internal sealed class DynaRiggsArtifact : Artifact, IRegisterable
 				pools = [ArtifactPool.Common]
 			},
 			Sprite = ActiveSprite.Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaRiggs", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaRiggs", "description"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaEddie", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaEddie", "description"]).Localize
 		});
 
-		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.DynaDeck.Deck, Deck.riggs]);
+		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.DynaDeck.Deck, helper.Content.Decks.LookupByUniqueName("TheJazMaster.Eddie::Eddie.EddieDeck")!.Deck]);
 
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.Begin)),
-			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AStatus_Begin_Prefix)), priority: Priority.Low)
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AStatus_Begin_Prefix))
 		);
 	}
 
@@ -52,9 +56,10 @@ internal sealed class DynaRiggsArtifact : Artifact, IRegisterable
 		=> (TriggeredThisCombat ? InactiveSprite : ActiveSprite).Sprite;
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> StatusMeta.GetTooltips(Status.energyLessNextTurn, Math.Max(MG.inst.g.state.ship.Get(Status.energyLessNextTurn), 1))
-			.Concat(new SwiftCharge().GetTooltips(MG.inst.g.state ?? DB.fakeState))
-			.ToList();
+		=> [
+			..StatusMeta.GetTooltips(Status.energyLessNextTurn, Math.Max(MG.inst.g.state.ship.Get(Status.energyLessNextTurn), 1)),
+			..StatusMeta.GetTooltips(Status.energyNextTurn, 1)
+		];
 
 	public override void OnCombatStart(State state, Combat combat)
 	{
@@ -66,7 +71,7 @@ internal sealed class DynaRiggsArtifact : Artifact, IRegisterable
 	{
 		if (__instance.status != Status.energyLessNextTurn || !__instance.targetPlayer)
 			return;
-		if (s.EnumerateAllArtifacts().OfType<DynaRiggsArtifact>().FirstOrDefault() is not { } artifact)
+		if (s.EnumerateAllArtifacts().OfType<DynaEddieArtifact>().FirstOrDefault() is not { } artifact)
 			return;
 		if (artifact.TriggeredThisCombat)
 			return;
@@ -82,11 +87,10 @@ internal sealed class DynaRiggsArtifact : Artifact, IRegisterable
 		if (newAmount <= currentAmount)
 			return;
 
+		artifact.Pulse();
 		artifact.TriggeredThisCombat = true;
-		c.QueueImmediate(new FireChargeAction
-		{
-			Charge = new SwiftCharge(),
-			artifactPulse = artifact.Key(),
-		});
+		__instance.mode = AStatusMode.Add;
+		__instance.status = Status.energyNextTurn;
+		__instance.statusAmount = 1;
 	}
 }

@@ -135,6 +135,10 @@
                 "name": "ROMAN CANDLE",
                 "description": "Whenever you <c=action>OVERHEAT</c>, gain 1 <c=status>NITRO</c>."
             },
+            "DynaEddie": {
+                "name": "BLUE WIRE",
+                "description": "The first time you would gain <c=status>LESS ENERGY NEXT TURN</c> each combat, gain 1 <c=status>ENERGY NEXT TURN</c> instead."
+            },
             "DynaIsaac": {
                 "name": "BAZOOKA MOD",
                 "description": "Shots from <c=midrow>Attack Drones</c> now have <c=action>Blastwave 0</c>. <c=status>NITRO</c> and <c=status>TEMP NITRO</c> affect their <c=action>Blastwave</c> damage."
@@ -149,7 +153,11 @@
             },
             "DynaRiggs": {
                 "name": "MODEL ROCKET",
-                "description": "The first time you gain <c=status>LESS ENERGY NEXT TURN</c> each combat, fire a <c=parttrait>Swift Charge</c>."
+                "description": "The first time you would gain <c=status>LESS ENERGY NEXT TURN</c> each combat, fire a <c=parttrait>Swift Charge</c>."
+            },
+            "DynaSoggins": {
+                "name": "DUD BOMB",
+                "description": "The first time you <c=downside>botch</c> a card each turn, fire either a <c=parttrait>Concussion or Shatter Charge</c> at random."
             }
         }
     },
