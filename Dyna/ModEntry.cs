@@ -81,7 +81,10 @@ public sealed class ModEntry : SimpleMod
 		typeof(DynaCatArtifact),
 		typeof(DynaDizzyArtifact),
 		typeof(DynaDrakeArtifact),
+		typeof(DynaIsaacArtifact),
+		typeof(DynaMaxArtifact),
 		typeof(DynaPeriArtifact),
+		typeof(DynaRiggsArtifact),
 	];
 
 	internal static readonly IEnumerable<Type> AllArtifactTypes

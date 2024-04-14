@@ -135,9 +135,21 @@
                 "name": "ROMAN CANDLE",
                 "description": "Whenever you <c=action>OVERHEAT</c>, gain 1 <c=status>NITRO</c>."
             },
+            "DynaIsaac": {
+                "name": "BAZOOKA MOD",
+                "description": "Shots from <c=midrow>Attack Drones</c> now have <c=action>Blastwave 0</c>. <c=status>NITRO</c> and <c=status>TEMP NITRO</c> affect their <c=action>Blastwave</c> damage."
+            },
+            "DynaMax": {
+                "name": "VIRUS BOMB",
+                "description": "Every 5th time you <c=cardtrait>exhaust</c> a card, fire a 0 damage shot with <c=action>Stunwave</c>."
+            },
             "DynaPeri": {
                 "name": "FISSION CHARGE",
                 "description": "When <c=parttrait>charges</c> are triggered, enemies take damage equal to your <c=status>OVERDRIVE</c> and lose hull equal to your <c=status>POWERDRIVE</c>."
+            },
+            "DynaRiggs": {
+                "name": "MODEL ROCKET",
+                "description": "The first time you gain <c=status>LESS ENERGY NEXT TURN</c> each combat, fire a <c=parttrait>Swift Charge</c>."
             }
         }
     },
