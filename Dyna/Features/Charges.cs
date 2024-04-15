@@ -55,31 +55,24 @@ internal sealed class ChargeManager
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Prefix))
 		);
-
-		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerTakeNormalDamage), (State state, Combat combat, Part? part) =>
-		{
-			TriggerChargeIfAny(state, combat, part, targetPlayer: true);
-		}, -1);
-
-		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnEnemyGetHit), (State state, Combat combat, Part? part) =>
-		{
-			TriggerChargeIfAny(state, combat, part, targetPlayer: false);
-		}, -1);
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
+			postfix: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Postfix))
+		);
 	}
 
-	internal static void TriggerChargeIfAny(State state, Combat combat, Part? part, bool targetPlayer)
+	internal static void TriggerChargeIfAny(State state, Combat combat, Part part, bool targetPlayer)
 	{
-		if (part is not { } nonNullPart)
-			return;
-		if (nonNullPart.GetStickedCharge() is not { } charge)
+		if (part.GetStickedCharge() is not { } charge)
 			return;
 
 		var targetShip = targetPlayer ? state.ship : combat.otherShip;
-		var worldX = targetShip.x + targetShip.parts.IndexOf(nonNullPart);
-		nonNullPart.SetStickedCharge(null);
+		var worldX = targetShip.x + targetShip.parts.IndexOf(part);
+		part.SetStickedCharge(null);
 		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, state.EnumerateAllArtifacts()))
 			hook.OnChargeTrigger(state, combat, targetShip, worldX);
-		charge.OnTrigger(state, combat, targetShip, nonNullPart);
+		charge.OnTrigger(state, combat, targetShip, part);
 	}
 
 	private static void RenderShipCharges(G g, State state, Combat combat, Ship ship)
@@ -183,6 +176,15 @@ internal sealed class ChargeManager
 		g.Pop();
 
 		return false;
+	}
+
+	private static void Ship_NormalDamage_Postfix(Ship __instance, State s, Combat c, int? maybeWorldGridX)
+	{
+		if (maybeWorldGridX is not { } worldGridX)
+			return;
+		if (__instance.GetPartAtWorldX(worldGridX) is not { } part || part.type == PType.empty)
+			return;
+		TriggerChargeIfAny(s, c, part, targetPlayer: __instance.isPlayerShip);
 	}
 }
 
