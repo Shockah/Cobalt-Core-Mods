@@ -29,6 +29,13 @@ The mod adds a new artifact pool: duo artifacts, which are pretty powerful artif
 [![Codex screenshot](DuoArtifacts/docs/images/codex-thumb.png)](DuoArtifacts/docs/images/codex.png)
 [![Reward screenshot](DuoArtifacts/docs/images/reward-thumb.png)](DuoArtifacts/docs/images/reward.png)
 
+# Dyna
+
+**Dyna** -- Your demolition expert. She can set charges that affect enemy parts when triggered.  
+\[[NexusMods](https://www.nexusmods.com/cobaltcore/mods/18)] \[[release notes](Dyna/docs/release-notes.md)] \[[source code](Dyna)]
+
+[![Banner](Dyna/Banner.png)](https://www.nexusmods.com/cobaltcore/mods/18)
+
 # Johnson
 
 **Johnson** -- Your coworker. Capable of *creating* and *improving* cards.  
