@@ -52,7 +52,7 @@ internal sealed class BunkerCard : Card, IRegisterable
 			new AStatus
 			{
 				targetPlayer = true,
-				status = upgrade == Upgrade.B ? Status.energyNextTurn : Status.energyLessNextTurn,
+				status = upgrade == Upgrade.B ? Status.energyLessNextTurn : Status.energyNextTurn,
 				statusAmount = 1
 			}
 		];
