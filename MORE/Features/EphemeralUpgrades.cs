@@ -169,12 +169,13 @@ internal sealed class EphemeralUpgrades : IRegisterable
 
 		public override List<Tooltip> GetTooltips(State s)
 			=> [
-				new CustomTTGlossary(
-					CustomTTGlossary.GlossaryType.action,
-					() => StableSpr.icons_singleUse,
-					() => ModEntry.Instance.Localizations.Localize(["action", "RemoveThisCard", "name"]),
-					() => ModEntry.Instance.Localizations.Localize(["action", "RemoveThisCard", "description"])
-				)
+				new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::{GetType().Name}")
+				{
+					Icon = StableSpr.icons_singleUse,
+					TitleColor = Colors.action,
+					Title = ModEntry.Instance.Localizations.Localize(["action", "RemoveThisCard", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["action", "RemoveThisCard", "description"])
+				}
 			];
 
 		public override void Begin(G g, State s, Combat c)

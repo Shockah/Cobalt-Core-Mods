@@ -58,7 +58,6 @@ internal sealed class ModEntry : SimpleMod
 
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
-		CustomTTGlossary.ApplyPatches(Harmony);
 
 		helper.Events.OnLoadStringsForLocale += (_, e) =>
 		{
