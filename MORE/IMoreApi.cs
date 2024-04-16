@@ -2,7 +2,7 @@
 
 namespace Shockah.MORE;
 
-public interface IApi
+public interface IMoreApi
 {
 	IStatusEntry ActionReactionStatus { get; }
 	IStatusEntry VolatileOverdriveStatus { get; }

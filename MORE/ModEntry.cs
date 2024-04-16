@@ -4,7 +4,6 @@ using Nanoray.PluginManager;
 using Nickel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Shockah.MORE;
 
@@ -36,9 +35,12 @@ internal sealed class ModEntry : SimpleMod
 	];
 
 	internal static IEnumerable<Type> RegisterableTypes { get; }
-		= StatusTypes.Concat(EnemyTypes)
-			.Concat(EventTypes)
-			.Append(typeof(EphemeralUpgrades));
+		= [
+			..StatusTypes,
+			..EnemyTypes,
+			typeof(EphemeralUpgrades),
+			typeof(ReleaseUpgrades),
+		];
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{

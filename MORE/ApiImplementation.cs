@@ -2,7 +2,7 @@
 
 namespace Shockah.MORE;
 
-public sealed class ApiImplementation : IApi
+public sealed class ApiImplementation : IMoreApi
 {
 	public IStatusEntry ActionReactionStatus
 		=> MORE.ActionReactionStatus.Instance.Entry;
