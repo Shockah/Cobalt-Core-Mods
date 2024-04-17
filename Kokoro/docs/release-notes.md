@@ -7,6 +7,7 @@
 * Added an API to choose a font for a given card's text.
 * Added a custom compact variant of the Pinch font.
 * Fixed card (action) rendering matrix transformations breaking in certain scenarios.
+* Fixed wrapped attack actions visually losing their stun icon.
 
 ## 1.5.0
 Released 29 February 2024.

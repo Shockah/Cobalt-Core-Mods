@@ -356,7 +356,8 @@ internal static class CardPatches
 			if (wrappedAction is AAttack attack)
 			{
 				var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
-				attack.stunEnemy = shouldStun;
+				if (shouldStun)
+					attack.stunEnemy = shouldStun;
 			}
 
 			g.Push(rect: new(position.x - initialX, 0));
@@ -391,7 +392,8 @@ internal static class CardPatches
 			if (wrappedAction is AAttack attack)
 			{
 				var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
-				attack.stunEnemy = shouldStun;
+				if (shouldStun)
+					attack.stunEnemy = shouldStun;
 			}
 
 			g.Push(rect: new(position.x - initialX, 0));
@@ -417,7 +419,8 @@ internal static class CardPatches
 			if (wrappedAction is AAttack attack)
 			{
 				var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
-				attack.stunEnemy = shouldStun;
+				if (shouldStun)
+					attack.stunEnemy = shouldStun;
 			}
 
 			g.Push(rect: new(position.x - initialX, 0));
