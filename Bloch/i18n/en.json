@@ -1,0 +1,50 @@
+{
+    "character": {
+        "name": "Bloch",
+        "description": [
+            "<c=C2FF60>BLOCH</c>",
+            "Your ship's \"mentalist\". Specializes in <c=boldPink>reducing incoming damage</c>, <c=boldPink>card draw manipulation</c> and <c=boldPink>discard effects</c>."
+        ]
+    },
+    "action": {
+        "DiscardOther": {
+            "name": "Discard Other",
+            "description": "Discard {{Count}} random cards, other than this one."
+        },
+        "OnHullDamage": {
+            "name": "On Hull Damage",
+            "description": "This action only triggers after your ship receives hull damage with the card still in hand."
+        }
+    },
+    "status": {
+        "Veiling": {
+            "name": "Veiling Aura",
+            "description": "Reduce incoming attack damage by 1 and <c=downside>decrease this by 1</c>. Will not trigger if <c=parttrait>armor</c> will reduce damage to 0."
+        },
+        "Intensify": {
+            "name": "Intensify",
+            "description": "All of your auras trigger again for each stack of this. <c=downside>Goes away at start of next turn.</c>"
+        }
+    },
+    "cardTrait": {
+    },
+    "artifact": {
+    },
+    "card": {
+        "Distress": {
+            "name": "Distress"
+        },
+        "Focus": {
+            "name": "Focus"
+        },
+        "Materialize": {
+            "name": "Materialize"
+        },
+        "PainReaction": {
+            "name": "Pain Reaction"
+        },
+        "SayThoughtsLoud": {
+            "name": "Say Thoughts Loud"
+        }
+    }
+}

@@ -32,6 +32,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Johnson", "Johnson\Johnson.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dyna", "Dyna\Dyna.csproj", "{CF83B02E-C4DC-4F8C-BB84-6BDDE883F5C1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bloch", "Bloch\Bloch.csproj", "{57783051-6882-4F42-A260-E557D788B64D}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetterRunSummaries", "BetterRunSummaries\BetterRunSummaries.csproj", "{224C4F0C-5499-413B-839F-F13A7DE1A5E7}"
 EndProject
 Global
@@ -76,6 +78,10 @@ Global
 		{CF83B02E-C4DC-4F8C-BB84-6BDDE883F5C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF83B02E-C4DC-4F8C-BB84-6BDDE883F5C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF83B02E-C4DC-4F8C-BB84-6BDDE883F5C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57783051-6882-4F42-A260-E557D788B64D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57783051-6882-4F42-A260-E557D788B64D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57783051-6882-4F42-A260-E557D788B64D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57783051-6882-4F42-A260-E557D788B64D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{224C4F0C-5499-413B-839F-F13A7DE1A5E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{224C4F0C-5499-413B-839F-F13A7DE1A5E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{224C4F0C-5499-413B-839F-F13A7DE1A5E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -91,6 +97,7 @@ Global
 		_Shared\_Shared.projitems*{1455e3e8-caf2-4cf5-acfe-951cec4d1eb4}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{224c4f0c-5499-413b-839f-f13a7de1a5e7}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{26f4b3c4-c636-4358-8e4f-ed592e2629bb}*SharedItemsImports = 5
+		_Shared\_Shared.projitems*{57783051-6882-4f42-a260-e557d788b64d}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{5820f297-795c-414f-9d2d-6b401165828b}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{a0276a09-5fdf-4352-adf4-ed072da21953}*SharedItemsImports = 13
 		_Shared\_Shared.projitems*{ad25e0f4-175f-4fb8-927f-f07433bce6b3}*SharedItemsImports = 5
