@@ -43,7 +43,7 @@
         },
         "Bastion": {
             "name": "Bastion",
-            "description": "Whenever you trigger a <c=parttrait>charge</c>, gain {0} <c=status>TEMP SHIELD</c>."
+            "description": "Whenever you trigger a <c=parttrait>charge</c>, gain {0} <c=status>TEMP SHIELD</c>, converting as much as possible to <c=status>SHIELD</c>."
         }
     },
     "charge": {

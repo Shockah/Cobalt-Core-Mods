@@ -1,6 +1,5 @@
 ﻿using Nickel;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Shockah.Dyna;
 
@@ -32,15 +31,19 @@ internal sealed class BastionManager : IDynaHook, IStatusRenderHook
 		if (amount <= 0)
 			return;
 
-		combat.QueueImmediate(new AStatus
+		combat.QueueImmediate(new GainShieldOrTempShieldAction
 		{
-			targetPlayer = ownerShip.isPlayerShip,
-			status = Status.tempShield,
-			statusAmount = amount,
+			TargetPlayer = ownerShip.isPlayerShip,
+			Amount = amount,
 			statusPulse = BastionStatus.Status
 		});
 	}
 
 	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
-		=> status == BastionStatus.Status ? tooltips.Concat(StatusMeta.GetTooltips(Status.tempShield, amount)).ToList() : tooltips;
+		=> status == BastionStatus.Status
+			? [
+				..tooltips,
+				..StatusMeta.GetTooltips(Status.tempShield, amount),
+				..StatusMeta.GetTooltips(Status.shield, amount)
+			] : tooltips;
 }
