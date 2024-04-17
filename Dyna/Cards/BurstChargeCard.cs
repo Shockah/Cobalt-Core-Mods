@@ -29,8 +29,8 @@ internal sealed class BurstChargeCard : Card, IRegisterable
 		{
 			cost = upgrade switch
 			{
-				Upgrade.A => 2,
-				Upgrade.B => 0,
+				Upgrade.A => 0,
+				Upgrade.B => 2,
 				_ => 1
 			}
 		};
@@ -38,7 +38,7 @@ internal sealed class BurstChargeCard : Card, IRegisterable
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.A => [
+			Upgrade.B => [
 				new FireChargeAction
 				{
 					Charge = new BurstCharge(),
