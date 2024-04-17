@@ -14,6 +14,10 @@
         "OnHullDamage": {
             "name": "On Hull Damage",
             "description": "This action only triggers after your ship receives hull damage with the card still in hand."
+        },
+        "OncePerTurn": {
+            "name": "Once Per Turn",
+            "description": "This action triggers whenever a turn starts with this card in hand, or if it's drawn for the first time this turn."
         }
     },
     "status": {
@@ -27,10 +31,17 @@
         }
     },
     "cardTrait": {
+        "OncePerTurnTriggered": {
+            "name": "Triggered This Turn",
+            "description": "This card's \"Once Per Turn\" effects already triggered this turn."
+        }
     },
     "artifact": {
     },
     "card": {
+        "Calm": {
+            "name": "Calm"
+        },
         "Distress": {
             "name": "Distress"
         },
@@ -44,7 +55,7 @@
             "name": "Pain Reaction"
         },
         "SayThoughtsLoud": {
-            "name": "Say Thoughts Loud"
+            "name": "Speak Out Thoughts"
         }
     }
 }

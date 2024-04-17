@@ -19,7 +19,7 @@ internal sealed class PainReactionCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_BigShield,
+			Art = StableSpr.cards_Panic,
 			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/PainReaction.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "PainReaction", "name"]).Localize
 		});

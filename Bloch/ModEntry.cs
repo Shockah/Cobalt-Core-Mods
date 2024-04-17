@@ -19,6 +19,7 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry BlochDeck { get; }
 
 	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
+		typeof(CalmCard),
 		typeof(DistressCard),
 		typeof(FocusCard),
 		typeof(MaterializeCard),
@@ -82,6 +83,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new AuraManager();
 		_ = new NegativeBoostManager();
 		_ = new OnHullDamageManager();
+		_ = new OncePerTurnManager();
 
 		BlochDeck = helper.Content.Decks.RegisterDeck("Bloch", new()
 		{
