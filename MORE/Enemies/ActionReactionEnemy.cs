@@ -36,7 +36,7 @@ internal sealed class ActionReactionEnemy : AI, IRegisterable
 
 	private static void Map_GetEnemyPools_Postfix(ref MapBase.MapEnemyPool __result)
 	{
-		//__result.normal.Add(new ActionReactionEnemy());
+		__result.normal.Add(new ActionReactionEnemy());
 	}
 
 	public override Ship BuildShipForSelf(State s)
@@ -102,13 +102,6 @@ internal sealed class ActionReactionEnemy : AI, IRegisterable
 	public override EnemyDecision PickNextIntent(State s, Combat c, Ship ownShip)
 	{
 		List<Intent> intents = [
-			new IntentStatus
-			{
-				key = "cockpit",
-				targetSelf = false,
-				status = ActionReactionStatus.Instance.Entry.Status,
-				amount = 1
-			},
 			new IntentSpawn
 			{
 				key = AiCounter % 2 == 0 ? "bay.left" : "bay.right",
@@ -124,6 +117,15 @@ internal sealed class ActionReactionEnemy : AI, IRegisterable
 					}
 			}
 		];
+
+		if (AiCounter % 2 == 0)
+			intents.Add(new IntentStatus
+			{
+				key = "cockpit",
+				targetSelf = false,
+				status = ActionReactionStatus.Instance.Entry.Status,
+				amount = 1
+			});
 
 		AiCounter++;
 		return new EnemyDecision

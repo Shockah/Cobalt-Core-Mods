@@ -89,16 +89,16 @@ internal abstract class BombEnemy : AI, IRegisterable
 
 		var baseHealth = Zone switch
 		{
-			ZoneType.First => 12,
-			ZoneType.Second => 16,
-			ZoneType.Third => 20,
+			ZoneType.First => 16,
+			ZoneType.Second => 24,
+			ZoneType.Third => 32,
 			_ => throw new ArgumentException()
 		};
 
 		var health = s.GetHarderEnemies() ? (int)(baseHealth * 1.25) : baseHealth;
 		var ship = new Ship
 		{
-			x = 6,
+			x = 8,
 			hull = health,
 			hullMax = health,
 			shieldMaxBase = 0,

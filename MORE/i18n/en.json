@@ -52,6 +52,9 @@
         }
     },
     "enemy": {
+        "ActionReaction": {
+            "name": "PCP-08 \"PORCUPINE\" Interceptor"
+        },
         "Bomb": [
             {
                 "name": "N1 Bomb"

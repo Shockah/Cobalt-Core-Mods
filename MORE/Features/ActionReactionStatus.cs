@@ -31,7 +31,7 @@ internal sealed class ActionReactionStatus : IRegisterable, IStatusLogicHook
 			if (state.ship.Get(Instance.Entry.Status) <= 0)
 				return;
 
-			combat.QueueImmediate(new AHurt
+			combat.Queue(new AHurt
 			{
 				targetPlayer = true,
 				hurtShieldsFirst = true,
