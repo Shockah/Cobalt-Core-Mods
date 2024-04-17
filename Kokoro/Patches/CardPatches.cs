@@ -36,6 +36,7 @@ internal static class CardPatches
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
+			prefix: new HarmonyMethod(typeof(CardPatches), nameof(Card_Render_Prefix)),
 			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_Render_Transpiler))
 		);
 		harmony.TryPatch(
@@ -103,6 +104,18 @@ internal static class CardPatches
 	private static void Card_GetAllTooltips_Postfix(ref IEnumerable<Tooltip> __result)
 	{
 		__result = Instance.WormStatusManager.ModifyCardTooltips(__result);
+	}
+
+	private static void Card_Render_Prefix(Card __instance)
+	{
+		MakeAllActionIconsCounter = 0;
+		RenderActionCounter = 0;
+		LastRenderActionWidth = 0;
+		LastCard = __instance;
+		LastCardActions = null;
+		CurrentResourceState = null;
+		CurrentNonDrawingResourceState = null;
+		CardRenderMatrixStack.Clear();
 	}
 
 	private static IEnumerable<CodeInstruction> Card_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
