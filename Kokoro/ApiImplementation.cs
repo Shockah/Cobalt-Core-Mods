@@ -102,6 +102,9 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 	public ExternalStatus WormStatus
 		=> Instance.Content.WormStatus;
 
+	public Status WormVanillaStatus
+		=> (Status)WormStatus.Id!.Value;
+
 	public Tooltip GetWormStatusTooltip(int? value = null)
 		=> value is null
 			? new CustomTTGlossary(CustomTTGlossary.GlossaryType.status, () => (Spr)Instance.Content.WormSprite.Id!.Value, () => I18n.WormStatusName, () => I18n.WormStatusAltGlossaryDescription)
@@ -111,6 +114,9 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 	#region OxidationStatus
 	public ExternalStatus OxidationStatus
 		=> Instance.Content.OxidationStatus;
+
+	public Status OxidationVanillaStatus
+		=> (Status)OxidationStatus.Id!.Value;
 
 	public Tooltip GetOxidationStatusTooltip(State state, Ship ship)
 		=> new TTGlossary($"status.{Instance.Content.OxidationStatus.Id!.Value}", Instance.OxidationStatusManager.GetOxidationStatusMaxValue(state, ship));

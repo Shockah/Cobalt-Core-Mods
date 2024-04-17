@@ -6,6 +6,7 @@
 
 * Added an API to choose a font for a given card's text.
 * Added a custom compact variant of the Pinch font.
+* Added Nickel-compatible APIs for getting the Oxidation and Worm statuses.
 * Fixed card (action) rendering matrix transformations breaking in certain scenarios.
 * Fixed wrapped attack actions visually losing their stun icon.
 

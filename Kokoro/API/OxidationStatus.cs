@@ -5,6 +5,7 @@ namespace Shockah.Kokoro;
 public partial interface IKokoroApi
 {
 	ExternalStatus OxidationStatus { get; }
+	Status OxidationVanillaStatus { get; }
 	Tooltip GetOxidationStatusTooltip(State state, Ship ship);
 	int GetOxidationStatusMaxValue(State state, Ship ship);
 
