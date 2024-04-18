@@ -32,29 +32,65 @@ internal sealed class AuraOfDarknessCard : Card, IDraculaCard
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		List<CardAction> actions = [
-			new AStatus
-			{
-				targetPlayer = false,
-				status = ModEntry.Instance.BleedingStatus.Status,
-				statusAmount = 1
-			},
-			new AStatus
-			{
-				targetPlayer = true,
-				status = ModEntry.Instance.BleedingStatus.Status,
-				statusAmount = 1
-			}
-		];
-		if (upgrade == Upgrade.A)
-			actions.Add(new AStatus
-			{
-				targetPlayer = true,
-				status = Status.drawNextTurn,
-				statusAmount = 1
-			});
-
-		return actions;
-	}
+		=> upgrade switch
+		{
+			Upgrade.B => [
+				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
+					expression: ModEntry.Instance.KokoroApi.ConditionalActions.Equation(
+						lhs: ModEntry.Instance.KokoroApi.ConditionalActions.Status(ModEntry.Instance.BleedingStatus.Status),
+						@operator: IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual,
+						rhs: ModEntry.Instance.KokoroApi.ConditionalActions.Constant(3),
+						style: IKokoroApi.IConditionalActionApi.EquationStyle.Possession,
+						hideOperator: true
+					),
+					action: ModEntry.Instance.KokoroApi.Actions.MakeStop(out var stopId)
+				),
+				..ModEntry.Instance.KokoroApi.Actions.MakeStopped(stopId, [
+					new AStatus
+					{
+						targetPlayer = true,
+						status = ModEntry.Instance.BleedingStatus.Status,
+						statusAmount = 1
+					},
+					new ADrawCard
+					{
+						count = 1
+					}
+				])
+			],
+			Upgrade.A => [
+				new AStatus
+				{
+					targetPlayer = false,
+					status = ModEntry.Instance.BleedingStatus.Status,
+					statusAmount = 1
+				},
+				new AStatus
+				{
+					targetPlayer = true,
+					status = ModEntry.Instance.BleedingStatus.Status,
+					statusAmount = 1
+				},
+				new AStatus
+				{
+					targetPlayer = true,
+					status = Status.drawNextTurn,
+					statusAmount = 1
+				}
+			],
+			_ => [
+				new AStatus
+				{
+					targetPlayer = false,
+					status = ModEntry.Instance.BleedingStatus.Status,
+					statusAmount = 1
+				},
+				new AStatus
+				{
+					targetPlayer = true,
+					status = ModEntry.Instance.BleedingStatus.Status,
+					statusAmount = 1
+				}
+			]
+		};
 }

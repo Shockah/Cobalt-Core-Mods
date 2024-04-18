@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Added Dracula.EXE.
+* Reworked the Aura of Darkness B card.
 * Fixed various Transfusion bugs.
 * Minor card text and tooltip improvements.
 
