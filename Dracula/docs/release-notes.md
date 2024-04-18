@@ -6,6 +6,7 @@
 
 * Added Dracula.EXE.
 * Fixed various Transfusion bugs.
+* Minor card text and tooltip improvements.
 
 ## 1.0.4
 Released 29 February 2024.

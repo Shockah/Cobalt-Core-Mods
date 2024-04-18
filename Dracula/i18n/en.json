@@ -224,9 +224,9 @@
         "BloodTap": {
             "name": "Blood Tap",
             "description": {
-                "None": "Choose a status you have or had. Gain it for a hull price.",
-                "A": "Choose a status you have or had. Gain it for a hull price.",
-                "B": "Choose a status you or the enemy have or had. Gain it for a hull price."
+                "None": "Choose a status you have or had. Gain it <c=downside>for a hull price</c>.",
+                "A": "Choose a status you have or had. Gain it <c=downside>for a hull price</c>.",
+                "B": "Choose a status you or the enemy have or had. Gain it <c=downside>for a hull price</c>."
             },
             "tooltip": {
                 "title": "<c=action>Applicable statuses:</c>",
@@ -259,17 +259,17 @@
         "Echolocation": {
             "name": "Echolocation",
             "description": {
-                "None": "Align your cannon with the closest weak part.",
-                "A": "Align your cannon with the closest weak part.",
-                "B": "Align your cannon with the closest weak part. Move back on turn end."
+                "None": "Align your cannon with the closest <c=parttrait>weak</c> part.",
+                "A": "Align your cannon with the closest <c=parttrait>weak</c> part.",
+                "B": "Align your cannon with the closest <c=parttrait>weak</c> part. Move back on turn end."
             }
         },
         "Enshroud": {
             "name": "Enshroud",
             "description": {
-                "None": "All your ship parts get armor until the start of the next turn.",
-                "A": "All your ship parts get armor until the start of the next turn.",
-                "B": "ALL ship parts get armor until the start of the next turn."
+                "None": "All your ship parts get <c=parttrait>armor</c> until the start of the next turn.",
+                "A": "All your ship parts get <c=parttrait>armor</c> until the start of the next turn.",
+                "B": "ALL ship parts get <c=parttrait>armor</c> until the start of the next turn."
             }
         },
         "GrimoireOfSecrets": {

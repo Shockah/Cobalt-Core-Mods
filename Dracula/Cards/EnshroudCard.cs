@@ -91,6 +91,8 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 						WorldX = ship.x + partIndex,
 						omitFromTooltips = true,
 					});
+
+		actions.Add(new ATooltipAction { Tooltips = [new TTGlossary("parttrait.armor")] });
 		return actions;
 	}
 
@@ -101,6 +103,9 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 
 		[JsonProperty]
 		public required int WorldX;
+
+		public override List<Tooltip> GetTooltips(State s)
+			=> [new TTGlossary("parttrait.armor")];
 
 		public override void Begin(G g, State s, Combat c)
 		{
