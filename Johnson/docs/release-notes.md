@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Downsize card causing issues with the Philip mod.
+
 ## 1.0.4
 Released 29 February 2024.
 

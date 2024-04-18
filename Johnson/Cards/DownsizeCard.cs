@@ -1,5 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -36,40 +37,56 @@ internal sealed class DownsizeCard : Card, IRegisterable
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		List<CardAction> actions = [];
-		if (upgrade == Upgrade.B)
-		{
-			foreach (var card in c.hand)
-				if (card.uuid != uuid && !card.GetDataWithOverrides(s).temporary)
-					actions.Add(new ATemporarify { CardId = card.uuid });
-		}
-		else
-		{
-			var card = c.hand.LastOrDefault(card => card.uuid != uuid && !card.GetDataWithOverrides(s).temporary);
-			if (card is not null)
-				actions.Add(new ATemporarify { CardId = card.uuid });
-		}
-		actions.Add(new ATooltipAction
-		{
-			Tooltips = [
-				new TTGlossary("cardtrait.temporary")
-			]
-		});
-		return actions;
-	}
+		=> [
+			new ATemporarify
+			{
+				Cards = upgrade == Upgrade.B ? ATemporarify.CardsType.All : ATemporarify.CardsType.Right
+			}
+		];
 
 	public sealed class ATemporarify : CardAction
 	{
-		public required int CardId;
+		public enum CardsType
+		{
+			Left, Right, All
+		}
+
+		public required CardsType Cards;
 
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
 			timer = 0;
-			if (s.FindCard(CardId) is not { } card)
-				return;
-			card.temporaryOverride = true;
+
+			switch (Cards)
+			{
+				case CardsType.Left:
+					foreach (var card in c.hand)
+					{
+						if (card.GetDataWithOverrides(s).temporary)
+							continue;
+						ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, ModEntry.Instance.Helper.Content.Cards.TemporaryCardTrait, true, permanent: true);
+						return;
+					}
+					break;
+				case CardsType.Right:
+					foreach (var card in ((IEnumerable<Card>)c.hand).Reverse())
+					{
+						if (card.GetDataWithOverrides(s).temporary)
+							continue;
+						ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, ModEntry.Instance.Helper.Content.Cards.TemporaryCardTrait, true, permanent: true);
+						return;
+					}
+					break;
+				case CardsType.All:
+					foreach (var card in c.hand)
+					{
+						if (card.GetDataWithOverrides(s).temporary)
+							continue;
+						ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, ModEntry.Instance.Helper.Content.Cards.TemporaryCardTrait, true, permanent: true);
+					}
+					break;
+			}
 		}
 	}
 }
