@@ -52,7 +52,7 @@ internal sealed class ConditionalActionHandConstant : IKokoroApi.IConditionalAct
 	}
 
 	public string GetTooltipDescription(State state, Combat? combat)
-		=> string.Format(I18n.ConditionalHandDescription, Value);
+		=> I18n.ConditionalHandDescription;
 }
 
 internal sealed class ConditionalActionXConstant : IKokoroApi.IConditionalActionApi.IIntExpression

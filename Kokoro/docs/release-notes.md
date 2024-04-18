@@ -9,6 +9,7 @@
 * Added Nickel-compatible APIs for getting the Oxidation and Worm statuses.
 * Fixed card (action) rendering matrix transformations breaking in certain scenarios.
 * Fixed wrapped attack actions visually losing their stun icon.
+* Fixed hand card count condition tooltip.
 
 ## 1.5.0
 Released 29 February 2024.

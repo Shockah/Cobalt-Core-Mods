@@ -15,7 +15,7 @@ internal static class I18n
 
 	public static string ConditionalActionName => "CONDITIONAL";
 	public static string ConditionalActionDescription => "This action will only trigger if {0}.";
-	public static string ConditionalHandDescription => "<c=boldPink>{0}</c> cards in your hand";
+	public static string ConditionalHandDescription => "cards in your hand";
 	public static string ConditionalXDescription => "<c=action>X</c>";
 	public static string ConditionalHasStatusDescription => "you have {0}";
 	public static string ConditionalEquationFormalEqualDescription => "{0} is {1}";
