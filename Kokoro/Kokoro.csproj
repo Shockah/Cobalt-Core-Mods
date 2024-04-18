@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Shockah.Kokoro</RootNamespace>
-		<Version>1.5.0</Version>
+		<Version>1.6.0</Version>
 		<IsLegacyMod>True</IsLegacyMod>
-		<IncludedModProjectPaths>assets;nickel.json</IncludedModProjectPaths>
+		<IncludedModProjectPaths>assets</IncludedModProjectPaths>
 	</PropertyGroup>
 	<Import Project="..\Configuration.Mod.props" />
 	<ItemGroup>
