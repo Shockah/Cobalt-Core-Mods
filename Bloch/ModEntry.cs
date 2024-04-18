@@ -21,16 +21,21 @@ public sealed class ModEntry : SimpleMod
 	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
 		typeof(CalmCard),
 		typeof(DistressCard),
+		typeof(FeedbackCard),
 		typeof(FocusCard),
 		typeof(MaterializeCard),
 		typeof(PainReactionCard),
+		typeof(PsychicDamageCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
+		typeof(AttentionSpanCard),
+		typeof(MindBlastCard),
 		typeof(SayThoughtsLoudCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
+		typeof(IntrusiveThoughtCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> SpecialCardTypes = [
@@ -45,6 +50,7 @@ public sealed class ModEntry : SimpleMod
 		];
 
 	internal static readonly IReadOnlyList<Type> CommonArtifacts = [
+		typeof(VainMemoriesArtifact),
 	];
 
 	internal static readonly IReadOnlyList<Type> BossArtifacts = [
@@ -82,6 +88,8 @@ public sealed class ModEntry : SimpleMod
 
 		_ = new AuraManager();
 		_ = new NegativeBoostManager();
+		_ = new OnDiscardManager();
+		_ = new OnTurnEndManager();
 		_ = new OnHullDamageManager();
 		_ = new OncePerTurnManager();
 

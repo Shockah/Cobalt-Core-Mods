@@ -11,19 +11,31 @@
             "name": "Discard Other",
             "description": "Discard {{Count}} random cards, other than this one."
         },
+        "OnDiscard": {
+            "name": "On Discard",
+            "description": "This action only triggers whenever this card is discarded during your turn without playing it."
+        },
+        "OnTurnEnd": {
+            "name": "On Turn End",
+            "description": "This action only triggers whenever you end your turn with the card still in hand."
+        },
         "OnHullDamage": {
             "name": "On Hull Damage",
             "description": "This action only triggers after your ship receives hull damage with the card still in hand."
         },
         "OncePerTurn": {
             "name": "Once Per Turn",
-            "description": "This action triggers whenever a turn starts with this card in hand, or if it's drawn for the first time this turn."
+            "description": "This action only triggers whenever a turn starts with this card in hand, or if it's drawn for the first time this turn."
         }
     },
     "status": {
         "Veiling": {
             "name": "Veiling Aura",
-            "description": "Reduce incoming attack damage by 1 and <c=downside>decrease this by 1</c>. Will not trigger if <c=parttrait>armor</c> will reduce damage to 0."
+            "description": "Reduce incoming attack damage by 1 and <c=downside>decrease this by 1</c>."
+        },
+        "Feedback": {
+            "name": "Feedback Aura",
+            "description": "Whenever you are hit by an attack, deal 1 damage to the enemy and <c=downside>decrease this by 1</c>."
         },
         "Intensify": {
             "name": "Intensify",
@@ -33,26 +45,50 @@
     "cardTrait": {
         "OncePerTurnTriggered": {
             "name": "Triggered This Turn",
-            "description": "This card's \"Once Per Turn\" effects already triggered this turn."
+            "description": "This card's <c=action>Once Per Turn</c> actions already triggered this turn."
         }
     },
     "artifact": {
+        "VainMemories": {
+            "name": "VAIN MEMORIES",
+            "description": "Gain 1 <c=status>ENERGY FRAGMENT</c> whenever you discard a card during your turn without playing it."
+        }
     },
     "card": {
+        "AttentionSpan": {
+            "name": "Attention Span"
+        },
         "Calm": {
             "name": "Calm"
         },
         "Distress": {
             "name": "Distress"
         },
+        "Feedback": {
+            "name": "Feedback"
+        },
         "Focus": {
             "name": "Focus"
+        },
+        "IntrusiveThought": {
+            "name": "Intrusive Thought"
         },
         "Materialize": {
             "name": "Materialize"
         },
+        "MindBlast": {
+            "name": "Mind Blast",
+            "description": {
+                "None": "Attack for {{Damage}}. <c=action>On Discard</c>, gains 2 damage this combat.",
+                "A": "Attack for {{Damage}}. <c=action>On Discard</c>, gains 2 damage this combat.",
+                "B": "Attack for {{Damage}}. <c=action>On Discard</c>, gains 1 damage and <c=cardtrait>exhausts</c>."
+            }
+        },
         "PainReaction": {
             "name": "Pain Reaction"
+        },
+        "PsychicDamage": {
+            "name": "Psychic Damage"
         },
         "SayThoughtsLoud": {
             "name": "Speak Out Thoughts"

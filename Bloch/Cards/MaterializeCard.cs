@@ -25,8 +25,8 @@ internal sealed class MaterializeCard : Card, IRegisterable
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
 			Art = StableSpr.cards_Flux,
-			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Focus.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Focus", "name"]).Localize
+			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Materialize.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Materialize", "name"]).Localize
 		});
 	}
 
