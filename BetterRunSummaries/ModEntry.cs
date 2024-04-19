@@ -29,6 +29,11 @@ public sealed class ModEntry : SimpleMod
 
 		Harmony.TryPatch(
 			logger: Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
+			postfix: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Postfix))
+		);
+		Harmony.TryPatch(
+			logger: Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(RunSummary), nameof(RunSummary.SaveFromState)),
 			prefix: new HarmonyMethod(GetType(), nameof(RunSummary_SaveFromState_Prefix))
 		);
@@ -44,6 +49,12 @@ public sealed class ModEntry : SimpleMod
 		);
 	}
 
+	private static void Combat_TryPlayCard_Postfix(Card card, bool __result)
+	{
+		if (__result)
+			card.IncrementTimesPlayed();
+	}
+
 	private static void RunSummary_SaveFromState_Prefix(State s)
 		=> LastSavingState = s;
 
@@ -52,6 +63,7 @@ public sealed class ModEntry : SimpleMod
 		if (LastSavingState is not { } state)
 			return;
 
+		__result.SetTimesPlayed(c.GetTimesPlayed());
 		__result.SetTraitOverrides(
 			Instance.Helper.Content.Cards.GetAllCardTraits(state, c)
 				.Where(kvp => kvp.Value.PermanentOverride is not null)
@@ -97,6 +109,7 @@ public sealed class ModEntry : SimpleMod
 	private static void RunSummaryRoute_Render_Transpiler_ApplyExtraData(Card card, CardSummary cardSummary)
 	{
 		var fakeState = Mutil.DeepCopy(DB.fakeState);
+		card.SetTimesPlayed(cardSummary.GetTimesPlayed() ?? 0);
 		foreach (var traitOverride in cardSummary.GetTraitOverrides())
 			Instance.Helper.Content.Cards.SetCardTraitOverride(fakeState, card, traitOverride.Key, traitOverride.Value, permanent: true);
 	}
@@ -111,13 +124,19 @@ public sealed class ModEntry : SimpleMod
 			if (trait.Key.Configuration.Icon(DB.fakeState, card) is not { } icon)
 				continue;
 
-			Draw.Sprite(icon, x + traitIndex * 10, y - 2);
-			if (!permanentOverride)
-				Draw.Sprite(StableSpr.icons_unplayable, x + traitIndex * 10, y - 2);
+			if (!dontDraw)
+			{
+				Draw.Sprite(icon, x + traitIndex * 10, y - 2);
+				if (!permanentOverride)
+					Draw.Sprite(StableSpr.icons_unplayable, x + traitIndex * 10, y - 2);
+			}
 
 			str = $"{Tooltip.GetIndent()}{str}";
 			traitIndex++;
 		}
+
+		if (card.GetTimesPlayed() is { } timesPlayed)
+			str = $"{str} <c=white>({timesPlayed})</c>";
 
 		return Draw.Text(str, x, y, font, color, colorForce, progress, maxWidth, align, dontDraw, lineHeight, outline, blend, samplerState, effect, dontSubstituteLocFont, letterSpacing, extraScale);
 	}

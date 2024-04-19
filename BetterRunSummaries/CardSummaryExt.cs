@@ -6,6 +6,12 @@ namespace Shockah.BetterRunSummaries;
 
 internal static class CardSummaryExt
 {
+	public static int? GetTimesPlayed(this CardSummary summary)
+		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<int>(summary, "TimesPlayed");
+
+	public static void SetTimesPlayed(this CardSummary summary, int? value)
+		=> ModEntry.Instance.Helper.ModData.SetOptionalModData(summary, "TimesPlayed", value);
+
 	public static IReadOnlyDictionary<ICardTraitEntry, bool> GetTraitOverrides(this CardSummary summary)
 		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<Dictionary<string, bool>>(summary, "TraitOverrides")
 			.Select(kvp => new KeyValuePair<ICardTraitEntry?, bool>(ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(kvp.Key), kvp.Value))
