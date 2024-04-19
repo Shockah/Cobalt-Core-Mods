@@ -32,6 +32,11 @@ public sealed class ModEntry : SimpleMod
 
 		Harmony.TryPatch(
 			logger: Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(State), nameof(State.PopulateRun)),
+			prefix: new HarmonyMethod(GetType(), nameof(State_PopulateRun_Prefix))
+		);
+		Harmony.TryPatch(
+			logger: Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(State), nameof(State.Update)),
 			postfix: new HarmonyMethod(GetType(), nameof(State_Update_Postfix))
 		);
@@ -63,6 +68,9 @@ public sealed class ModEntry : SimpleMod
 		);
 	}
 
+	private static void State_PopulateRun_Prefix(State __instance)
+		=> Instance.Helper.ModData.RemoveModData(__instance, "TimesCardsPlayed");
+
 	private static void State_Update_Postfix(State __instance, G g)
 	{
 		foreach (var artifact in __instance.EnumerateAllArtifacts())
@@ -72,10 +80,10 @@ public sealed class ModEntry : SimpleMod
 				artifact.IncrementTimesTriggered();
 	}
 
-	private static void Combat_TryPlayCard_Postfix(Card card, bool __result)
+	private static void Combat_TryPlayCard_Postfix(State s, Card card, bool __result)
 	{
 		if (__result)
-			card.IncrementTimesPlayed();
+			card.IncrementTimesPlayed(s);
 	}
 
 	private static void RunSummary_Save_Prefix(RunSummary __instance)
@@ -99,7 +107,7 @@ public sealed class ModEntry : SimpleMod
 		if (LastSavingState is not { } state)
 			return;
 
-		__result.SetTimesPlayed(c.GetTimesPlayed());
+		__result.SetTimesPlayed(c.GetTimesPlayed(state));
 		__result.SetTraitOverrides(
 			Instance.Helper.Content.Cards.GetAllCardTraits(state, c)
 				.Where(kvp => kvp.Value.PermanentOverride is not null)
@@ -108,7 +116,11 @@ public sealed class ModEntry : SimpleMod
 	}
 
 	private static void RunSummaryRoute_Render_Prefix(RunSummaryRoute __instance)
-		=> LastRunSummaryRoute = __instance;
+	{
+		LastRunSummaryRoute = __instance;
+		if (!Instance.Helper.ModData.ContainsModData(__instance, "FakeState"))
+			Instance.Helper.ModData.SetModData(__instance, "FakeState", Mutil.DeepCopy(DB.fakeState));
+	}
 
 	private static IEnumerable<CodeInstruction> RunSummaryRoute_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
@@ -118,19 +130,19 @@ public sealed class ModEntry : SimpleMod
 				.Find(ILMatches.Call(AccessTools.DeclaredMethod(typeof(Artifact), nameof(Artifact.Render))))
 				.Replace(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(RunSummaryRoute_Render_Transpiler_HijackArtifactRender))))
 				.Find(
-					ILMatches.Ldloc<Card>(originalMethod).CreateLdlocInstruction(out var ldlocCard),
+					ILMatches.Ldloc<Card>(originalMethod).CreateLdlocaInstruction(out var ldlocaCard),
 					ILMatches.Ldloc<CardSummary>(originalMethod).CreateLdlocInstruction(out var ldlocCardSummary),
 					ILMatches.Ldfld("upgrade"),
 					ILMatches.Stfld("upgrade")
 				)
 				.Insert(
 					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-					ldlocCard,
+					ldlocaCard,
 					ldlocCardSummary,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(RunSummaryRoute_Render_Transpiler_ApplyExtraCardData)))
 				)
 				.Find(
-					ILMatches.Ldloc<Card>(originalMethod).CreateLdlocInstruction(out ldlocCard),
+					ILMatches.Ldloc<Card>(originalMethod).CreateLdlocInstruction(out var ldlocCard),
 					ILMatches.Call("GetFullDisplayName")
 				)
 				.Find(ILMatches.Call("Text"))
@@ -158,27 +170,46 @@ public sealed class ModEntry : SimpleMod
 		{
 			var rect = new Rect(0, 0, 11, 11) + restingPosition;
 			var box = g.Push(rect: rect, autoFocus: autoFocus);
-			Draw.Text(DB.IntStringCache(timesTriggered), box.rect.x + 7, box.rect.y + 6, outline: Colors.black, color: Colors.white, dontSubstituteLocFont: true);
+			Draw.Text(DB.IntStringCache(timesTriggered), box.rect.x + 13, box.rect.y + 6, outline: Colors.black, color: Colors.white, align: TAlign.Right, dontSubstituteLocFont: true);
 			g.Pop();
 		}
 	}
 
-	private static void RunSummaryRoute_Render_Transpiler_ApplyExtraCardData(Card card, CardSummary cardSummary)
+	private static void RunSummaryRoute_Render_Transpiler_ApplyExtraCardData(ref Card card, CardSummary cardSummary)
 	{
-		var fakeState = Mutil.DeepCopy(DB.fakeState);
-		card.SetTimesPlayed(cardSummary.GetTimesPlayed() ?? 0);
+		if (LastRunSummaryRoute is not { } route)
+			return;
+		var fakeState = Instance.Helper.ModData.GetModData<State>(route, "FakeState");
+
+		if (!Instance.Helper.ModData.TryGetModData<int>(cardSummary, "CardId", out var cardId))
+		{
+			cardId = Mutil.NextRandInt();
+			Instance.Helper.ModData.SetModData(cardSummary, "CardId", cardId);
+		}
+
+		// forcing a GetActions call to make weird cards behave, like Jester's
+		card.GetActions(DB.fakeState, DB.fakeCombat);
+
+		card = Mutil.DeepCopy(card);
+		card.uuid = cardId;
+
+		card.SetTimesPlayed(fakeState, cardSummary.GetTimesPlayed() ?? 0);
 		foreach (var traitOverride in cardSummary.GetTraitOverrides())
 			Instance.Helper.Content.Cards.SetCardTraitOverride(fakeState, card, traitOverride.Key, traitOverride.Value, permanent: true);
 	}
 
 	private static Rect RunSummaryRoute_Render_Transpiler_HijackCardRender(string str, double x, double y, Font? font, Color? color, Color? colorForce, double? progress, double? maxWidth, TAlign? align, bool dontDraw, int? lineHeight, Color? outline, BlendState? blend, SamplerState? samplerState, Effect? effect, bool dontSubstituteLocFont, double letterSpacing, double extraScale, Card card)
 	{
+		if (LastRunSummaryRoute is not { } route)
+			return Draw.Text(str, x, y, Instance.KokoroApi?.PinchCompactFont ?? font, color, colorForce, progress, maxWidth, align, dontDraw, lineHeight, outline, blend, samplerState, effect, dontSubstituteLocFont, letterSpacing, extraScale);
+		var fakeState = Instance.Helper.ModData.GetModData<State>(route, "FakeState");
+
 		var traitIndex = 0;
-		foreach (var trait in Instance.Helper.Content.Cards.GetAllCardTraits(DB.fakeState, card))
+		foreach (var trait in Instance.Helper.Content.Cards.GetAllCardTraits(fakeState, card))
 		{
 			if (trait.Value.PermanentOverride is not { } permanentOverride)
 				continue;
-			if (trait.Key.Configuration.Icon(DB.fakeState, card) is not { } icon)
+			if (trait.Key.Configuration.Icon(fakeState, card) is not { } icon)
 				continue;
 
 			if (!dontDraw)
@@ -192,9 +223,16 @@ public sealed class ModEntry : SimpleMod
 			traitIndex++;
 		}
 
-		if (card.GetTimesPlayed() is { } timesPlayed && timesPlayed > 0)
+		if (card.GetTimesPlayed(fakeState) is { } timesPlayed && timesPlayed > 0)
 			str = $"{str} <c=white>({timesPlayed})</c>";
 
-		return Draw.Text(str, x, y, Instance.KokoroApi?.PinchCompactFont ?? font, color, colorForce, progress, maxWidth, align, dontDraw, lineHeight, outline, blend, samplerState, effect, dontSubstituteLocFont, letterSpacing, extraScale);
+		var rect = Draw.Text(str, x, y, Instance.KokoroApi?.PinchCompactFont ?? font, color, colorForce, progress, maxWidth, align, dontDraw, lineHeight, outline, blend, samplerState, effect, dontSubstituteLocFont, letterSpacing, extraScale);
+		var box = MG.inst.g.Push(new UIKey(StableUK.card, card.uuid), new Rect(x - 80, y - 12, rect.w, rect.h));
+
+		if (box.IsHover())
+			MG.inst.g.tooltips.Add(box.rect.xy.round() + new Vec(rect.w + 8), new TTCard { card = card, showCardTraitTooltips = true });
+
+		MG.inst.g.Pop();
+		return rect;
 	}
 }
