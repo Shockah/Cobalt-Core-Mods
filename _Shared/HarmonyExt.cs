@@ -24,8 +24,8 @@ internal static class HarmonyExt
 		LogLevel successLogLevel = LogLevel.Trace,
 		HarmonyMethod? prefix = null,
 		HarmonyMethod? postfix = null,
-		HarmonyMethod? transpiler = null,
-		HarmonyMethod? finalizer = null
+		HarmonyMethod? finalizer = null,
+		HarmonyMethod? transpiler = null
 	)
 	{
 		if (original is null)
@@ -47,8 +47,8 @@ internal static class HarmonyExt
 		LogLevel successLogLevel = LogLevel.Trace,
 		HarmonyMethod? prefix = null,
 		HarmonyMethod? postfix = null,
-		HarmonyMethod? transpiler = null,
-		HarmonyMethod? finalizer = null
+		HarmonyMethod? finalizer = null,
+		HarmonyMethod? transpiler = null
 	)
 	{
 		var originalMethod = original();
@@ -88,8 +88,8 @@ internal static class HarmonyExt
 		LogLevel successLogLevel = LogLevel.Trace,
 		HarmonyMethod? prefix = null,
 		HarmonyMethod? postfix = null,
-		HarmonyMethod? transpiler = null,
-		HarmonyMethod? finalizer = null
+		HarmonyMethod? finalizer = null,
+		HarmonyMethod? transpiler = null
 	)
 	{
 		if (original is null)
@@ -157,8 +157,8 @@ internal static class HarmonyExt
 		LogLevel successLogLevel = LogLevel.Trace,
 		HarmonyMethod? prefix = null,
 		HarmonyMethod? postfix = null,
-		HarmonyMethod? transpiler = null,
-		HarmonyMethod? finalizer = null
+		HarmonyMethod? finalizer = null,
+		HarmonyMethod? transpiler = null
 	)
 	{
 		var originalMethod = original();
