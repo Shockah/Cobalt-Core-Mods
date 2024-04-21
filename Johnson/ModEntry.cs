@@ -18,12 +18,15 @@ public sealed class ModEntry : SimpleMod
 	internal const CardBrowse.Source UpgradableCardsAnywhereToTypeBBrowseSource = (CardBrowse.Source)2137305;
 	internal const CardBrowse.Source DiscountCardAnywhereBrowseSource = (CardBrowse.Source)2137306;
 	internal const CardBrowse.Source NonPermanentlyUpgradedCardsBrowseSource = (CardBrowse.Source)2137307;
+	internal const CardBrowse.Source StrengthenBrowseSource = (CardBrowse.Source)2137308;
 
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly IJohnsonApi Api = new ApiImplementation();
 
 	internal Harmony Harmony { get; }
 	internal IKokoroApi KokoroApi { get; }
+	internal IDuoArtifactsApi? DuoArtifactsApi { get; }
+	internal ITyAndSashaApi? TyAndSashaApi { get; private set; }
 	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
@@ -77,11 +80,8 @@ public sealed class ModEntry : SimpleMod
 		typeof(SlideTransitionCard),
 	];
 
-	internal static IEnumerable<Type> AllCardTypes
-		=> CommonCardTypes
-			.Concat(UncommonCardTypes)
-			.Concat(RareCardTypes)
-			.Concat(SpecialCardTypes);
+	internal static IEnumerable<Type> AllCardTypes { get; }
+		= [..CommonCardTypes, ..UncommonCardTypes, ..RareCardTypes, ..SpecialCardTypes];
 
 	internal static IReadOnlyList<Type> CommonArtifacts { get; } = [
 		typeof(BriefcaseArtifact),
@@ -96,14 +96,42 @@ public sealed class ModEntry : SimpleMod
 		typeof(RAndDArtifact),
 	];
 
+	internal static IReadOnlyList<Type> DuoArtifacts { get; } = [
+		typeof(JohnsonBooksArtifact),
+		typeof(JohnsonBucketArtifact),
+		typeof(JohnsonDizzyArtifact),
+		typeof(JohnsonDrakeArtifact),
+		typeof(JohnsonPeriArtifact),
+		typeof(JohnsonRiggsArtifact),
+		typeof(JohnsonTyArtifact),
+	];
+
 	internal static IEnumerable<Type> AllArtifactTypes
-		=> CommonArtifacts.Concat(BossArtifacts);
+		=> [..CommonArtifacts, ..BossArtifacts];
+
+	internal static readonly IEnumerable<Type> RegisterableTypes
+		= [..AllCardTypes, ..AllArtifactTypes];
+
+	internal static readonly IEnumerable<Type> LateRegisterableTypes
+		= DuoArtifacts;
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
 		Harmony = new(package.Manifest.UniqueName);
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+		DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
+
+		helper.Events.OnModLoadPhaseFinished += (_, phase) =>
+		{
+			if (phase != ModLoadPhase.AfterDbInit)
+				return;
+
+			TyAndSashaApi = helper.ModRegistry.GetApi<ITyAndSashaApi>("TheJazMaster.TyAndSasha");
+
+			foreach (var registerableType in LateRegisterableTypes)
+				AccessTools.DeclaredMethod(registerableType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
+		};
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -162,7 +190,7 @@ public sealed class ModEntry : SimpleMod
 			DiscountCardAnywhereBrowseSource,
 			new CustomCardBrowse.CustomCardSource(
 				(_, _, _) => Localizations.Localize(["browseSource", nameof(DiscountCardAnywhereBrowseSource)]),
-				(state, combat) => state.deck.Concat(combat?.discard ?? []).Concat(combat?.hand ?? []).ToList()
+				(state, combat) => [.. state.deck, .. combat?.discard, .. combat?.hand]
 			)
 		);
 		CustomCardBrowse.RegisterCustomCardSource(
@@ -170,6 +198,13 @@ public sealed class ModEntry : SimpleMod
 			new CustomCardBrowse.CustomCardSource(
 				(_, _, _) => Loc.T("cardBrowse.title.upgrade"),
 				(state, combat) => state.deck.Concat(combat?.discard ?? []).Concat(combat?.hand ?? []).Where(c => c.upgrade == Upgrade.None || c.IsTemporarilyUpgraded()).ToList()
+			)
+		);
+		CustomCardBrowse.RegisterCustomCardSource(
+			StrengthenBrowseSource,
+			new CustomCardBrowse.CustomCardSource(
+				(_, _, _) => Localizations.Localize(["browseSource", nameof(StrengthenBrowseSource)]),
+				(state, combat) => [..state.deck, ..combat?.discard, ..combat?.hand]
 			)
 		);
 
@@ -192,11 +227,9 @@ public sealed class ModEntry : SimpleMod
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize
 		});
-		
-		foreach (var cardType in AllCardTypes)
-			AccessTools.DeclaredMethod(cardType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
-		foreach (var artifactType in AllArtifactTypes)
-			AccessTools.DeclaredMethod(artifactType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
+
+		foreach (var registerableType in RegisterableTypes)
+			AccessTools.DeclaredMethod(registerableType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
 
 		helper.Content.Characters.RegisterCharacter("Johnson", new()
 		{

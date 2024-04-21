@@ -1,10 +1,6 @@
-**/.vs/**
-*/bin/**
-*/obj/**
-*/.bin/**
-*/.obj/**
-*/.release/**
-packages/**
-**/*.zip
+.vs
+.bin
+.obj
+.release
 *.user
 *.user.*

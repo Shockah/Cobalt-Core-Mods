@@ -6,6 +6,7 @@ using Nickel;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -41,9 +42,15 @@ internal sealed class StrengthenManager
 			postfix: new HarmonyMethod(GetType(), nameof(Card_GetAllTooltips_Postfix))
 		);
 
-		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.ModifyBaseDamage), (Card? card) =>
+		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.ModifyBaseDamage), (Card? card, State state) =>
 		{
-			return card?.GetStrengthen() ?? 0;
+			if (card is null)
+				return 0;
+
+			var strengthen = card.GetStrengthen();
+			if (strengthen > 0 && state.EnumerateAllArtifacts().Any(a => a is JohnsonPeriArtifact))
+				strengthen++;
+			return strengthen;
 		}, 0);
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>

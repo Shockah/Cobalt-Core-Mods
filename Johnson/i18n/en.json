@@ -24,7 +24,8 @@
     "browseSource": {
         "UpgradableCardsAnywhereToTypeABrowseSource": "Upgrade a Card to type A",
         "UpgradableCardsAnywhereToTypeBBrowseSource": "Upgrade a Card to type B",
-        "DiscountCardAnywhereBrowseSource": "Discount a Card"
+        "DiscountCardAnywhereBrowseSource": "Discount a Card",
+        "StrengthenBrowseSource": "Strengthen a Card"
     },
     "cardTrait": {
         "TemporaryUpgrade": {
@@ -75,6 +76,36 @@
         "RAndD": {
             "name": "R&D",
             "description": "Each turn, add 1 of 2 <c=cardtrait>temp</c> cards from any of the current crewmates to your <c=keyword>hand</c>."
+        },
+        "Duo": {
+            "JohnsonBooks": {
+                "name": "SUMMONING STAFF",
+                "description": "The first time you play a <c=cardtrait>temporary</c> card each turn, gain 1 <c=status>SHARD</c>."
+            },
+            "JohnsonBucket": {
+                "name": "TRIMMING FAT",
+                "description": "<c=cardtrait>Discount</c> the first <c=trash>trash</c> card drawn each turn."
+            },
+            "JohnsonDizzy": {
+                "name": "FORTIFY",
+                "description": "<c=cardtrait>Strengthen</c> also increases the amount of <c=status>SHIELD</c> cards give. Each combat, choose a card in your deck to <c=cardtrait>Strengthen</c>."
+            },
+            "JohnsonDrake": {
+                "name": "ICED COFFEE",
+                "description": "Whenever you play <c=card>Burn Out</c>, lose 1 <c=status>HEAT</c>."
+            },
+            "JohnsonPeri": {
+                "name": "MILITARY SPENDING",
+                "description": "<c=cardtrait>Strengthened</c> cards deal 1 more damage."
+            },
+            "JohnsonRiggs": {
+                "name": "PLAN B",
+                "description": "At the end of your turn, gain 1 <c=status>EVADE</c> if a card in your hand is upgraded to B."
+            },
+            "JohnsonTy": {
+                "name": "GUERILLA MARKETING",
+                "description": "The first time a <c=cardtrait>Wild</c> card is played each turn, <c=cardtrait>temp upgrade</c> it."
+            }
         }
     },
     "card": {
