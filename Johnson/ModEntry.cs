@@ -149,7 +149,6 @@ public sealed class ModEntry : SimpleMod
 		_ = new TemporaryUpgradeManager();
 
 		DynamicWidthCardAction.ApplyPatches(Harmony, logger);
-		ASpecificCardOffering.ApplyPatches(Harmony, logger);
 		CustomCardBrowse.ApplyPatches(Harmony, logger);
 		CustomTTGlossary.ApplyPatches(Harmony);
 		InPlaceCardUpgrade.ApplyPatches(Harmony, logger);
