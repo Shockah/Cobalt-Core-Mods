@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Nickel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -135,12 +136,13 @@ internal sealed class BatStuff : StuffBase
 	public override List<Tooltip> GetTooltips()
 	{
 		List<Tooltip> tooltips = [
-			new CustomTTGlossary(
-				CustomTTGlossary.GlossaryType.midrow,
-				() => GetIcon()!,
-				() => ModEntry.Instance.Localizations.Localize(["midrow", "Bat", Type.ToString(), "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["midrow", "Bat", Type.ToString(), "description"])
-			),
+			new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::Midrow::Bat")
+			{
+				Icon = GetIcon(),
+				TitleColor = Colors.midrow,
+				Title = ModEntry.Instance.Localizations.Localize(["midrow", "Bat", Type.ToString(), "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["midrow", "Bat", Type.ToString(), "description"])
+			},
 			new TTGlossary($"status.{ModEntry.Instance.BleedingStatus.Status.Key()}"),
 			new TTGlossary($"status.{ModEntry.Instance.TransfusionStatus.Status.Key()}"),
 		];

@@ -230,23 +230,24 @@ internal sealed class BatFormCard : Card, IDraculaCard
 					_ => Loc.T("controller.xbox.b"),
 				};
 
-				return new CustomTTGlossary(
-					CustomTTGlossary.GlossaryType.cardtrait,
-					icon: () => batFormCard.upgrade == Upgrade.B
+				return new GlossaryTooltip("cardtrait.triad")
+				{
+					Icon = batFormCard.upgrade == Upgrade.B
 						? TriadIcon[0].Sprite
 						: QuadIcon[0].Sprite,
-					title: () => ModEntry.Instance.Localizations.Localize([
+					TitleColor = Colors.cardtrait,
+					Title = ModEntry.Instance.Localizations.Localize([
 						"cardTrait",
 						batFormCard.upgrade == Upgrade.B ? "triad" : "quad",
 						"name"
 					]),
-					description: () => ModEntry.Instance.Localizations.Localize([
+					Description = ModEntry.Instance.Localizations.Localize([
 						"cardTrait",
 						batFormCard.upgrade == Upgrade.B ? "triad" : "quad",
 						"description",
 						PlatformIcons.GetPlatform() == Platform.MouseKeyboard ? "m&k" : "controller"
 					], new { Button = buttonText })
-				);
+				};
 			});
 	}
 }

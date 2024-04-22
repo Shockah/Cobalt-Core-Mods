@@ -220,17 +220,18 @@ internal sealed class DominateCard : Card, IDraculaCard
 					_ => Loc.T("controller.xbox.b"),
 				};
 
-				return new CustomTTGlossary(
-					CustomTTGlossary.GlossaryType.cardtrait,
-					icon: () => OptionalOffIcon.Sprite,
-					title: () => ModEntry.Instance.Localizations.Localize(["cardTrait", "optional", "name"]),
-					description: () => ModEntry.Instance.Localizations.Localize([
+				return new GlossaryTooltip("cardtrait.optional")
+				{
+					Icon = OptionalOffIcon.Sprite,
+					TitleColor = Colors.cardtrait,
+					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "optional", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize([
 						"cardTrait",
 						"optional",
 						"description",
 						PlatformIcons.GetPlatform() == Platform.MouseKeyboard ? "m&k" : "controller"
 					], new { Button = buttonText })
-				);
+				};
 			});
 	}
 }

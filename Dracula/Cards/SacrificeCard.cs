@@ -92,12 +92,13 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 			{
 				Tooltips = upgrade == Upgrade.B
 					? [
-						new CustomTTGlossary(
-							CustomTTGlossary.GlossaryType.cardtrait,
-							() => StableSpr.icons_singleUse,
-							() => ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "removedFromPlay", "name"]),
-							() => ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "removedFromPlay", "description"])
-						),
+						new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::Sacrifice::RemovedFromPlay")
+						{
+							Icon = StableSpr.icons_singleUse,
+							TitleColor = Colors.cardtrait,
+							Title = ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "removedFromPlay", "name"]),
+							Description = ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "removedFromPlay", "description"])
+						},
 						new TTGlossary("cardtrait.singleUse")
 					] : null
 			}

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Nickel;
 using System.Collections.Generic;
 
 namespace Shockah.Dracula;
@@ -23,13 +24,13 @@ public sealed class APositionalDroneTrigger : CardAction
 			@object.hilight = 2;
 
 		return [
-			new CustomTTGlossary(
-				CustomTTGlossary.GlossaryType.action,
-				() => ModEntry.Instance.DroneTriggerIcon.Sprite,
-				() => ModEntry.Instance.Localizations.Localize(["action", "droneTrigger", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["action", "droneTrigger", "description"]),
-				key: typeof(APositionalDroneTrigger).FullName ?? typeof(APositionalDroneTrigger).Name
-			)
+			new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::Action::DroneTrigger")
+			{
+				Icon = ModEntry.Instance.DroneTriggerIcon.Sprite,
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["action", "droneTrigger", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["action", "droneTrigger", "description"])
+			}
 		];
 	}
 

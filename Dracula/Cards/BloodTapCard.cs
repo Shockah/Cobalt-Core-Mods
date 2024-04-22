@@ -70,12 +70,12 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 			else
 			{
 				foreach (var status in Statuses)
-					tooltips.Add(new CustomTTGlossary(
-						CustomTTGlossary.GlossaryType.status,
-						() => DB.statuses[status].icon,
-						() => status.GetLocName(),
-						() => ""
-					));
+					tooltips.Add(new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::BloodTap::Status::{status.Key()}")
+					{
+						Icon = DB.statuses[status].icon,
+						TitleColor = Colors.status,
+						Title = status.GetLocName()
+					});
 			}
 
 			return tooltips;

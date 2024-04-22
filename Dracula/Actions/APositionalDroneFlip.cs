@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Nickel;
 using System.Collections.Generic;
 
 namespace Shockah.Dracula;
@@ -35,12 +36,13 @@ public sealed class APositionalDroneFlip : CardAction
 			@object.hilight = 2;
 
 		return [
-			new CustomTTGlossary(
-				CustomTTGlossary.GlossaryType.action,
-				() => StableSpr.icons_droneFlip,
-				() => Loc.T("action.droneFlipSingle.name"),
-				() => Loc.T("action.droneFlipSingle.desc")
-			)
+			new GlossaryTooltip("action.droneFlipSingle")
+			{
+				Icon = StableSpr.icons_droneFlip,
+				TitleColor = Colors.action,
+				Title = Loc.T("action.droneFlipSingle.name"),
+				Description = Loc.T("action.droneFlipSingle.desc")
+			}
 		];
 	}
 

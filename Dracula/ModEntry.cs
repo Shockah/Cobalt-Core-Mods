@@ -151,7 +151,6 @@ public sealed class ModEntry : SimpleMod
 		BloodTapManager = new();
 
 		CustomCardBrowse.ApplyPatches(Harmony, logger);
-		CustomTTGlossary.ApplyPatches(Harmony);
 		ASpecificCardOffering.ApplyPatches(Harmony, logger);
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
