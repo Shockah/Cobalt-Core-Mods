@@ -75,6 +75,7 @@ internal sealed class JohnsonCatArtifact : Artifact, IRegisterable
 				{
 					deck = ModEntry.Instance.DuoArtifactsApi!.DuoArtifactVanillaDeck,
 					rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
+					upgradesTo = [Upgrade.A, Upgrade.B],
 					dontOffer = true,
 				},
 				Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Duo/JohnsonCatNoneOfTheAbove.png")).Sprite,
@@ -94,11 +95,11 @@ internal sealed class JohnsonCatArtifact : Artifact, IRegisterable
 			=> [
 				new AEnergy
 				{
-					changeAmount = 1
+					changeAmount = upgrade == Upgrade.A ? 2 : 1
 				},
 				new ADrawCard
 				{
-					count = 2
+					count = upgrade == Upgrade.B ? 4 : 1
 				}
 			];
 	}

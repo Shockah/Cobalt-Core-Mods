@@ -47,7 +47,7 @@ internal sealed class JohnsonIsaacArtifact : Artifact, IRegisterable
 			new ADelay(),
 			new ASpecificCardOffering
 			{
-				Destination = CardDestination.Hand,
+				Destination = CardDestination.Deck,
 				Cards = [
 					new SupplyCard(),
 					new DemandCard(),
@@ -68,6 +68,7 @@ internal sealed class JohnsonIsaacArtifact : Artifact, IRegisterable
 				{
 					deck = ModEntry.Instance.DuoArtifactsApi!.DuoArtifactVanillaDeck,
 					rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
+					upgradesTo = [Upgrade.A, Upgrade.B],
 					dontOffer = true,
 				},
 				Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Duo/JohnsonIsaacSupply.png")).Sprite,
@@ -78,22 +79,62 @@ internal sealed class JohnsonIsaacArtifact : Artifact, IRegisterable
 		public override CardData GetData(State state)
 			=> new()
 			{
-				cost = 1,
-				exhaust = true,
+				cost = upgrade == Upgrade.A ? 1 : 2,
 				temporary = true
 			};
 
 		public override List<CardAction> GetActions(State s, Combat c)
-			=> [
-				new ASpawn
-				{
-					thing = new ShieldDrone
+			=> upgrade switch
+			{
+				Upgrade.B => [
+					new ASpawn
 					{
-						targetPlayer = true,
-						bubbleShield = true
+						thing = new ShieldDrone
+						{
+							targetPlayer = true,
+							bubbleShield = true,
+						},
+						offset = -1
+					},
+					new ASpawn
+					{
+						thing = new ShieldDrone
+						{
+							targetPlayer = true,
+							bubbleShield = true
+						}
+					},
+					new ASpawn
+					{
+						thing = new ShieldDrone
+						{
+							targetPlayer = true,
+							bubbleShield = true
+						},
+						offset = 1
 					}
-				}
-			];
+				],
+				_ => [
+					new ASpawn
+					{
+						thing = new ShieldDrone
+						{
+							targetPlayer = true,
+							bubbleShield = true
+						},
+						offset = -1
+					},
+					new ASpawn
+					{
+						thing = new ShieldDrone
+						{
+							targetPlayer = true,
+							bubbleShield = true
+						},
+						offset = 1
+					}
+				]
+			};
 	}
 
 	private sealed class DemandCard : Card, IRegisterable
@@ -107,6 +148,7 @@ internal sealed class JohnsonIsaacArtifact : Artifact, IRegisterable
 				{
 					deck = ModEntry.Instance.DuoArtifactsApi!.DuoArtifactVanillaDeck,
 					rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
+					upgradesTo = [Upgrade.A, Upgrade.B],
 					dontOffer = true,
 				},
 				Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Duo/JohnsonIsaacDemand.png")).Sprite,
@@ -117,8 +159,7 @@ internal sealed class JohnsonIsaacArtifact : Artifact, IRegisterable
 		public override CardData GetData(State state)
 			=> new()
 			{
-				cost = 1,
-				exhaust = true,
+				cost = upgrade == Upgrade.A ? 1 : 2,
 				temporary = true
 			};
 
@@ -128,8 +169,19 @@ internal sealed class JohnsonIsaacArtifact : Artifact, IRegisterable
 				{
 					thing = new AttackDrone
 					{
-						bubbleShield = true
-					}
+						bubbleShield = true,
+						upgraded = upgrade == Upgrade.B
+					},
+					offset = -1
+				},
+				new ASpawn
+				{
+					thing = new AttackDrone
+					{
+						bubbleShield = true,
+						upgraded = upgrade == Upgrade.B
+					},
+					offset = 1
 				}
 			];
 	}

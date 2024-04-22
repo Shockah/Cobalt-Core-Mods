@@ -100,7 +100,7 @@
             },
             "JohnsonIsaac": {
                 "name": "CARE PACKAGE",
-                "description": "On the first turn of each combat, add either a <c=card>Supply</c> or a <c=card>Demand</c> into your hand."
+                "description": "On the first turn of each combat, add either a <c=card>Supply</c> or a <c=card>Demand</c> to your draw pile."
             },
             "JohnsonMax": {
                 "name": "TREND CHASER",
