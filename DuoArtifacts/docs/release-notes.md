@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Added possible duos to character tooltips on the new run screen.
+* Fixed Drone Overclock (the Isaac-Drake duo) not working with Shield Drones as advertised.
 
 ## 1.0.6
 Released 17 March 2024.

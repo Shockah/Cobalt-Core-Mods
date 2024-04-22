@@ -63,7 +63,7 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 
 	private static void StuffBase_GetActions_Postfix(StuffBase __instance, State s, ref List<CardAction>? __result)
 	{
-		if (__instance is not AttackDrone or ShieldDrone)
+		if (__instance is not (AttackDrone or ShieldDrone))
 			return;
 		if (!__instance.fromPlayer)
 			return;
@@ -74,8 +74,10 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 		if (artifact is null)
 			return;
 
+		if ((__result ?? []).Count == 0)
+			return;
+
 		artifact.Pulse();
-		__result ??= new();
-		__result.AddRange(__result.ToList());
+		__result = [..__result, ..__result];
 	}
 }
