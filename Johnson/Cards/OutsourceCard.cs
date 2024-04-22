@@ -28,9 +28,9 @@ internal sealed class OutsourceCard : Card, IRegisterable
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		get => upgrade switch
 		{
-			Upgrade.A => 7,
+			Upgrade.A => 6,
 			Upgrade.B => 3,
-			_ => 5
+			_ => 4
 		};
 	}
 

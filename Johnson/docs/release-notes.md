@@ -4,6 +4,8 @@
 
 ## Upcoming release
 
+* Added duo artifacts.
+* Nerfed the Outsource card a bit.
 * Fixed the Downsize card causing issues with the Philip mod.
 
 ## 1.0.4
