@@ -57,7 +57,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule("CobaltCoreModding.Proxies");
 		ProxyManager = new ProxyManager<string>(moduleBuilder, new ProxyManagerConfiguration<string>(
 			proxyPrepareBehavior: ProxyManagerProxyPrepareBehavior.Eager,
-			proxyObjectInterfaceMarking: ProxyObjectInterfaceMarking.Disabled,
+			proxyObjectInterfaceMarking: ProxyObjectInterfaceMarking.MarkerWithProperty,
 			accessLevelChecking: AccessLevelChecking.DisabledButOnlyAllowPublicMembers
 		));
 		Api = new(this);
