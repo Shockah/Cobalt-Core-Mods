@@ -147,12 +147,10 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		if (deck == Deck.catartifact)
 			deck = Deck.colorless;
 
-		if (state.IsOutsideRun())
-			return DuoArtifactEligibity.InvalidState;
-		
-		var character = state.characters.FirstOrDefault(c => deck == c.deckType);
-		if (character is null)
-			return DuoArtifactEligibity.InvalidState;
+		var decks = state.IsOutsideRun()
+			? state.runConfig.selectedChars.ToHashSet()
+			: state.characters.Select(c => c.deckType).WhereNotNull().ToHashSet();
+		decks.Add(deck);
 
 		DuoArtifactEligibity CheckDetailedEligibity()
 		{
@@ -163,7 +161,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 			if (!artifactsForThisCharacter.Any())
 				return DuoArtifactEligibity.NoDuosForThisCharacter;
 
-			var artifactsForThisCharacterInThisCrew = Database.GetMatchingDuoArtifactTypes(state.characters.Select(c => c.deckType).WhereNotNull())
+			var artifactsForThisCharacterInThisCrew = Database.GetMatchingDuoArtifactTypes(decks)
 				.Select(t => (Type: t, Ownership: Database.GetDuoArtifactTypeOwnership(t)!))
 				.Where(e => e.Ownership.Any(owner => ArtifactDeckMatches(deck, owner)));
 
@@ -172,6 +170,13 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 			return DuoArtifactEligibity.Eligible;
 		}
+
+		if (state.IsOutsideRun())
+			return CheckDetailedEligibity();
+
+		var character = state.characters.FirstOrDefault(c => deck == c.deckType);
+		if (character is null)
+			return DuoArtifactEligibity.InvalidState;
 
 		var eligibleArtifacts = character.artifacts
 			.Where(a => a.GetMeta().pools.Contains(ArtifactPool.Boss) || !a.GetMeta().unremovable)

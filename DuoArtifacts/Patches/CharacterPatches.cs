@@ -36,6 +36,10 @@ internal static class CharacterPatches
 	{
 		if (!showTooltips || !canFocus || renderLocked || __instance.deckType is not { } deck)
 			return;
+		if (g.metaRoute is not null)
+			return;
+		if (g.state.IsOutsideRun() && g.state.route is not NewRunOptions)
+			return;
 
 		var key = new UIKey(mini ? StableUK.char_mini : StableUK.character, (int)deck, __instance.type);
 		if (g.boxes.FirstOrDefault(b => b.key == key) is not { } box)
@@ -49,14 +53,21 @@ internal static class CharacterPatches
 			case DuoArtifactEligibity.RequirementsNotSatisfied:
 				break;
 			case DuoArtifactEligibity.NoDuosForThisCharacter:
-				g.tooltips.AddText(g.tooltips.pos, I18n.CharacterEligibleForDuoArtifactNoDuos);
+				if (!g.state.IsOutsideRun())
+					g.tooltips.AddText(g.tooltips.pos, I18n.CharacterEligibleForDuoArtifactNoDuos);
 				break;
 			case DuoArtifactEligibity.NoDuosForThisCrew:
-				g.tooltips.AddText(g.tooltips.pos, I18n.CharacterEligibleForDuoArtifactNoMatchingDuos);
+				if (!g.state.IsOutsideRun())
+					g.tooltips.AddText(g.tooltips.pos, I18n.CharacterEligibleForDuoArtifactNoMatchingDuos);
 				break;
 			case DuoArtifactEligibity.Eligible:
+				var decks = g.state.IsOutsideRun()
+					? g.state.runConfig.selectedChars.ToHashSet()
+					: g.state.characters.Select(c => c.deckType).WhereNotNull().ToHashSet();
+				decks.Add(deck);
+
 				g.tooltips.AddText(g.tooltips.pos, I18n.CharacterEligibleForDuoArtifact);
-				foreach (var duoType in ModEntry.Instance.Database.GetMatchingDuoArtifactTypes(g.state.characters.Select(c => c.deckType).WhereNotNull()))
+				foreach (var duoType in ModEntry.Instance.Database.GetMatchingDuoArtifactTypes(decks))
 				{
 					if (DB.artifacts.FirstOrNull(kvp => kvp.Value == duoType) is not { } kvp)
 						continue;

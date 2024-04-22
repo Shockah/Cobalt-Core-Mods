@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added possible duos to character tooltips on the new run screen.
+
 ## 1.0.6
 Released 17 March 2024.
 
