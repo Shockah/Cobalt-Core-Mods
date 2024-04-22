@@ -36,7 +36,8 @@ internal sealed class CouponArtifact : Artifact, IRegisterable
 				{
 					Amount = -1
 				},
-				browseSource = ModEntry.DiscountCardAnywhereBrowseSource
+				browseSource = ModEntry.DiscountCardAnywhereBrowseSource,
+				artifactPulse = Key()
 			}
 		]);
 	}

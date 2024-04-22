@@ -38,7 +38,8 @@ internal sealed class EspressoShotArtifact : Artifact, IRegisterable
 		combat.Queue(new AAddCard
 		{
 			destination = CardDestination.Hand,
-			card = new BurnOutCard()
+			card = new BurnOutCard(),
+			artifactPulse = Key()
 		});
 	}
 }

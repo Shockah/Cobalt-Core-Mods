@@ -57,6 +57,8 @@ internal sealed class JohnsonBooksArtifact : Artifact, IRegisterable
 	public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
 	{
 		base.OnPlayerPlayCard(energyCost, deck, card, state, combat, handPosition, handCount);
+		if (TriggeredThisTurn)
+			return;
 		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, ModEntry.Instance.Helper.Content.Cards.TemporaryCardTrait))
 			return;
 
@@ -66,12 +68,6 @@ internal sealed class JohnsonBooksArtifact : Artifact, IRegisterable
 			targetPlayer = true,
 			status = Status.shard,
 			statusAmount = 1,
-			artifactPulse = Key()
-		});
-
-		combat.Queue(new ATemporarilyUpgrade
-		{
-			CardId = card.uuid,
 			artifactPulse = Key()
 		});
 	}

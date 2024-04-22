@@ -36,7 +36,8 @@ internal sealed class RAndDArtifact : Artifact, IRegisterable
 				makeAllCardsTemporary = true,
 				overrideUpgradeChances = false,
 				canSkip = false,
-				inCombat = true
+				inCombat = true,
+				artifactPulse = Key()
 			}
 		]);
 	}

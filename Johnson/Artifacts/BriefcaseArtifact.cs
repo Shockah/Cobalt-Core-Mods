@@ -39,6 +39,7 @@ internal sealed class BriefcaseArtifact : Artifact, IRegisterable
 					new LeverageCard(),
 					new BrainstormCard(),
 				],
+				artifactPulse = Key()
 			}
 		]);
 	}

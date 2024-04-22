@@ -99,8 +99,11 @@ public sealed class ModEntry : SimpleMod
 	internal static IReadOnlyList<Type> DuoArtifacts { get; } = [
 		typeof(JohnsonBooksArtifact),
 		typeof(JohnsonBucketArtifact),
+		typeof(JohnsonCatArtifact),
 		typeof(JohnsonDizzyArtifact),
 		typeof(JohnsonDrakeArtifact),
+		typeof(JohnsonIsaacArtifact),
+		typeof(JohnsonMaxArtifact),
 		typeof(JohnsonPeriArtifact),
 		typeof(JohnsonRiggsArtifact),
 		typeof(JohnsonTyArtifact),

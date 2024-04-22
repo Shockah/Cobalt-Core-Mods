@@ -56,10 +56,15 @@ internal sealed class JohnsonTyArtifact : Artifact, IRegisterable
 	public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
 	{
 		base.OnPlayerPlayCard(energyCost, deck, card, state, combat, handPosition, handCount);
+		if (TriggeredThisTurn)
+			return;
 		if (!ModEntry.Instance.TyAndSashaApi!.IsWild(card, state, combat))
 			return;
 
 		TriggeredThisTurn = true;
+		if (card.upgrade != Upgrade.None)
+			return;
+
 		combat.Queue(new ATemporarilyUpgrade
 		{
 			CardId = card.uuid,
