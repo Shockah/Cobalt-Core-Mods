@@ -18,6 +18,7 @@ public sealed class AConditional : CardAction
 		if (!Expression.GetValue(s, c))
 			return;
 
+		Action.whoDidThis = whoDidThis;
 		c.QueueImmediate(Action);
 	}
 

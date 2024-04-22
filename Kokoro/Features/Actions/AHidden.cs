@@ -14,6 +14,7 @@ public sealed class AHidden : CardAction
 
 		if (Action is null)
 			return;
+		Action.whoDidThis = whoDidThis;
 		c.QueueImmediate(Action);
 	}
 

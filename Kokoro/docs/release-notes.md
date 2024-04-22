@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Proxied hooks are now marked with a proxy interface, allowing better integration.
+* Kokoro wrapped actions now get their `whoDidThis` set.
 
 ## 1.6.0
 Released 18 April 2024.

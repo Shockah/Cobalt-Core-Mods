@@ -24,6 +24,7 @@ public sealed class AContinued : CardAction
 
 		if (Continue == !hasFlag)
 			return;
+		Action.whoDidThis = whoDidThis;
 		c.QueueImmediate(Action);
 	}
 
