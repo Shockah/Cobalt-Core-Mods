@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Nanoray.Pintail;
 using Shockah.Shared;
 using System.Linq;
 
@@ -42,7 +43,11 @@ internal sealed class PeriRiggsArtifact : DuoArtifact, IEvadeHook
 
 	void IEvadeHook.AfterEvade(State state, Combat combat, int direction, IEvadeHook hook)
 	{
-		if (hook != Instance.KokoroApi.VanillaEvadeHook)
+		if (hook is not IProxyObject.IWithProxyTargetInstanceProperty hookMarker)
+			return;
+		if (Instance.KokoroApi.VanillaEvadeHook is not IProxyObject.IWithProxyTargetInstanceProperty vanillaEvadeHookMarker)
+			return;
+		if (!ReferenceEquals(hookMarker.ProxyTargetInstance, vanillaEvadeHookMarker.ProxyTargetInstance))
 			return;
 		EvadesLeft--;
 	}
