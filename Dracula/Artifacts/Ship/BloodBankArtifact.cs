@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
 using Shockah.Shared;
@@ -8,16 +9,16 @@ using System.Reflection;
 
 namespace Shockah.Dracula;
 
-internal sealed class BloodBankArtifact : Artifact, IDraculaArtifact
+internal sealed class BloodBankArtifact : Artifact, IRegisterable
 {
 	private static ISpriteEntry HealBoosterInactiveIcon = null!;
 
 	[JsonProperty]
 	public int Charges { get; set; } = 3;
 
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		HealBoosterInactiveIcon = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/HealBoosterInactive.png"));
+		HealBoosterInactiveIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/HealBoosterInactive.png"));
 
 		helper.Content.Artifacts.RegisterArtifact("BloodBank", new()
 		{
@@ -28,7 +29,7 @@ internal sealed class BloodBankArtifact : Artifact, IDraculaArtifact
 				unremovable = true,
 				pools = [ArtifactPool.Common]
 			},
-			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/BloodBank.png")).Sprite,
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/BloodBank.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "ship", "BloodBank", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "ship", "BloodBank", "description"]).Localize
 		});

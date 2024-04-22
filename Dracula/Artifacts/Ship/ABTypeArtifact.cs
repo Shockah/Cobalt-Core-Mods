@@ -1,15 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using Nanoray.PluginManager;
+using Newtonsoft.Json;
 using Nickel;
 using System.Reflection;
 
 namespace Shockah.Dracula;
 
-internal sealed class ABTypeArtifact : Artifact, IDraculaArtifact
+internal sealed class ABTypeArtifact : Artifact, IRegisterable
 {
 	[JsonProperty]
 	public int Charges { get; set; } = 3;
 
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Artifacts.RegisterArtifact("ABType", new()
 		{
@@ -19,7 +20,7 @@ internal sealed class ABTypeArtifact : Artifact, IDraculaArtifact
 				owner = Deck.colorless,
 				pools = [ArtifactPool.Boss]
 			},
-			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/ABType.png")).Sprite,
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/ABType.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "ship", "ABType", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "ship", "ABType", "description"]).Localize
 		});

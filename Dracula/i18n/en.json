@@ -194,8 +194,8 @@
                 "description": "<c=action>PIERCING and STUNNING ATTACKS</c> apply 1 <c=status>BLEEDING</c>."
             },
             "DraculaIsaac": {
-                "name": "HALL OF MIRRORS",
-                "description": "<c=midrow>Midrow objects</c> act as if they had <c=status>BLOOD MIRROR</c> and 1 hull."
+                "name": "BAT SOUL",
+                "description": "Your destroyed <c=midrow>drones</c> get replaced with <c=midrow>Bats</c>."
             }
         }
     },

@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
 using Shockah.Shared;
@@ -8,12 +9,12 @@ using System.Reflection;
 
 namespace Shockah.Dracula;
 
-internal sealed class MasochismArtifact : Artifact, IDraculaArtifact
+internal sealed class MasochismArtifact : Artifact, IRegisterable
 {
 	[JsonProperty]
 	public int Stacks { get; set; } = 0;
 
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Artifacts.RegisterArtifact("Masochism", new()
 		{
@@ -23,7 +24,7 @@ internal sealed class MasochismArtifact : Artifact, IDraculaArtifact
 				owner = ModEntry.Instance.DraculaDeck.Deck,
 				pools = [ArtifactPool.Common]
 			},
-			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Masochism.png")).Sprite,
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Masochism.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Masochism", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Masochism", "description"]).Localize
 		});

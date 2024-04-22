@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
 using Shockah.Shared;
@@ -8,7 +9,7 @@ using System.Reflection;
 
 namespace Shockah.Dracula;
 
-internal sealed class PurgatoryArtifact : Artifact, IDraculaArtifact
+internal sealed class PurgatoryArtifact : Artifact, IRegisterable
 {
 	private static ISpriteEntry ActiveSprite = null!;
 	private static ISpriteEntry InactiveSprite = null!;
@@ -16,10 +17,10 @@ internal sealed class PurgatoryArtifact : Artifact, IDraculaArtifact
 	[JsonProperty]
 	public bool TriggeredThisCombat { get; set; } = false;
 
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		ActiveSprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Purgatory.png"));
-		InactiveSprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/PurgatoryInactive.png"));
+		ActiveSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Purgatory.png"));
+		InactiveSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/PurgatoryInactive.png"));
 
 		helper.Content.Artifacts.RegisterArtifact("Purgatory", new()
 		{

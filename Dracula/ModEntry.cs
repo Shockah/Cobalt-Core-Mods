@@ -136,6 +136,12 @@ public sealed class ModEntry : SimpleMod
 		typeof(DraculaIsaacArtifact),
 	];
 
+	internal static readonly IEnumerable<Type> RegisterableTypes
+		= [.. AllCardTypes, .. AllArtifactTypes];
+
+	internal static readonly IEnumerable<Type> LateRegisterableTypes
+		= DuoArtifactTypes;
+
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
@@ -149,6 +155,15 @@ public sealed class ModEntry : SimpleMod
 		_ = new NegativeOverdriveManager();
 		_ = new CardScalingManager();
 		BloodTapManager = new();
+
+		helper.Events.OnModLoadPhaseFinished += (_, phase) =>
+		{
+			if (phase != ModLoadPhase.AfterDbInit)
+				return;
+
+			foreach (var registerableType in LateRegisterableTypes)
+				AccessTools.DeclaredMethod(registerableType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
+		};
 
 		CustomCardBrowse.ApplyPatches(Harmony, logger);
 		ASpecificCardOffering.ApplyPatches(Harmony, logger);
@@ -235,13 +250,8 @@ public sealed class ModEntry : SimpleMod
 		// TODO: replace with API
 		OxidationStatus = helper.Content.Statuses.LookupByUniqueName("Shockah.Kokoro::Shockah.Kokoro.Status.Oxidation")!;
 
-		foreach (var cardType in AllCardTypes)
-			AccessTools.DeclaredMethod(cardType, nameof(IDraculaCard.Register))?.Invoke(null, [package, helper]);
-		foreach (var artifactType in AllArtifactTypes)
-			AccessTools.DeclaredMethod(artifactType, nameof(IDraculaArtifact.Register))?.Invoke(null, [helper]);
-		if (DuoArtifactsApi is not null)
-			foreach (var artifactType in DuoArtifactTypes)
-				AccessTools.DeclaredMethod(artifactType, nameof(IDraculaArtifact.Register))?.Invoke(null, [helper]);
+		foreach (var registerableType in RegisterableTypes)
+			AccessTools.DeclaredMethod(registerableType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
 
 		helper.Content.Characters.RegisterCharacter("Dracula", new()
 		{

@@ -1,21 +1,21 @@
 ﻿using HarmonyLib;
+using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dracula;
 
-internal sealed class DraculaDrakeArtifact : Artifact, IDraculaArtifact
+internal sealed class DraculaDrakeArtifact : Artifact, IRegisterable
 {
 	private static AAttack? CurrentAttack;
 
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		if (ModEntry.Instance.DuoArtifactsApi is not { } api)
-			throw new InvalidOperationException();
+			return;
 
 		helper.Content.Artifacts.RegisterArtifact("DraculaDrake", new()
 		{
@@ -25,7 +25,7 @@ internal sealed class DraculaDrakeArtifact : Artifact, IDraculaArtifact
 				owner = api.DuoArtifactVanillaDeck,
 				pools = [ArtifactPool.Common]
 			},
-			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Duo/DraculaDrake.png")).Sprite,
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Duo/DraculaDrake.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DraculaDrake", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DraculaDrake", "description"]).Localize
 		});

@@ -1,15 +1,15 @@
 ﻿using HarmonyLib;
+using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
 using Shockah.Shared;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dracula;
 
-internal sealed class DraculaBooksArtifact : Artifact, IDraculaArtifact
+internal sealed class DraculaBooksArtifact : Artifact, IRegisterable
 {
 	internal const int HealAmount = 2;
 
@@ -18,14 +18,14 @@ internal sealed class DraculaBooksArtifact : Artifact, IDraculaArtifact
 
 	[JsonProperty]
 	private bool TriggeredThisCombat;
-	
-	public static void Register(IModHelper helper)
+
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		if (ModEntry.Instance.DuoArtifactsApi is not { } api)
-			throw new InvalidOperationException();
+			return;
 
-		ActiveSprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Duo/DraculaBooks.png"));
-		InactiveSprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Duo/DraculaBooksInactive.png"));
+		ActiveSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Duo/DraculaBooks.png"));
+		InactiveSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Duo/DraculaBooksInactive.png"));
 
 		helper.Content.Artifacts.RegisterArtifact("DraculaBooks", new()
 		{

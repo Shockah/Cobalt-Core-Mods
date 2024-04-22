@@ -1,5 +1,6 @@
 ﻿using FSPRO;
 using HarmonyLib;
+using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
 using Shockah.Shared;
@@ -9,7 +10,7 @@ using System.Reflection;
 
 namespace Shockah.Dracula;
 
-internal sealed class BatmobileArtifact : Artifact, IDraculaArtifact
+internal sealed class BatmobileArtifact : Artifact, IRegisterable
 {
 	private static ISpriteEntry Sprite100 = null!;
 	private static ISpriteEntry Sprite75 = null!;
@@ -29,13 +30,13 @@ internal sealed class BatmobileArtifact : Artifact, IDraculaArtifact
 	[JsonProperty]
 	private bool InCombat = false;
 
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		Sprite100 = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile100.png"));
-		Sprite75 = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile75.png"));
-		Sprite50 = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile50.png"));
-		Sprite25 = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile25.png"));
-		Sprite1 = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile1.png"));
+		Sprite100 = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile100.png"));
+		Sprite75 = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile75.png"));
+		Sprite50 = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile50.png"));
+		Sprite25 = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile25.png"));
+		Sprite1 = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile1.png"));
 
 		helper.Content.Artifacts.RegisterArtifact("Batmobile", new()
 		{
@@ -46,7 +47,7 @@ internal sealed class BatmobileArtifact : Artifact, IDraculaArtifact
 				unremovable = true,
 				pools = [ArtifactPool.Common]
 			},
-			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile.png")).Sprite,
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/Batmobile.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "ship", "Batmobile", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "ship", "Batmobile", "description"]).Localize
 		});

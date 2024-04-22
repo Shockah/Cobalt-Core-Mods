@@ -1,13 +1,14 @@
-﻿using Nickel;
+﻿using Nanoray.PluginManager;
+using Nickel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dracula;
 
-internal sealed class ThinBloodArtifact : Artifact, IDraculaArtifact
+internal sealed class ThinBloodArtifact : Artifact, IRegisterable
 {
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Artifacts.RegisterArtifact("ThinBlood", new()
 		{
@@ -17,7 +18,7 @@ internal sealed class ThinBloodArtifact : Artifact, IDraculaArtifact
 				owner = ModEntry.Instance.DraculaDeck.Deck,
 				pools = [ArtifactPool.Common]
 			},
-			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/ThinBlood.png")).Sprite,
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/ThinBlood.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "ThinBlood", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "ThinBlood", "description"]).Localize
 		});

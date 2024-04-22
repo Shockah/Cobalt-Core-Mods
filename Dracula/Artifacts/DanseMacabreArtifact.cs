@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
@@ -7,9 +8,9 @@ using System.Reflection;
 
 namespace Shockah.Dracula;
 
-internal sealed class DanseMacabreArtifact : Artifact, IDraculaArtifact
+internal sealed class DanseMacabreArtifact : Artifact, IRegisterable
 {
-	public static void Register(IModHelper helper)
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Artifacts.RegisterArtifact("DanseMacabre", new()
 		{
@@ -19,7 +20,7 @@ internal sealed class DanseMacabreArtifact : Artifact, IDraculaArtifact
 				owner = ModEntry.Instance.DraculaDeck.Deck,
 				pools = [ArtifactPool.Boss]
 			},
-			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/DanseMacabre.png")).Sprite,
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/DanseMacabre.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "DanseMacabre", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "DanseMacabre", "description", "stateless"]).Localize
 		});
