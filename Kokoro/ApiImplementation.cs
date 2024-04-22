@@ -1,4 +1,4 @@
-﻿﻿using CobaltCoreModding.Definitions.ExternalItems;
+﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModManifests;
 using daisyowl.text;
 using Nanoray.Pintail;
@@ -319,6 +319,40 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 			var copy = Mutil.DeepCopy(action);
 			copy.targetPlayer = true;
 			Instance.Api.SetExtensionData(copy, "energy", energy);
+			return copy;
+		}
+
+		public ACardOffering WithDestination(ACardOffering action, CardDestination? destination, bool? insertRandomly = null)
+		{
+			var copy = Mutil.DeepCopy(action);
+
+			if (destination is null)
+				Instance.Api.RemoveExtensionData(copy, "destination");
+			else
+				Instance.Api.SetExtensionData(copy, "destination", destination.Value);
+
+			if (insertRandomly is null)
+				Instance.Api.RemoveExtensionData(copy, "destinationInsertRandomly");
+			else
+				Instance.Api.SetExtensionData(copy, "destinationInsertRandomly", insertRandomly.Value);
+
+			return copy;
+		}
+
+		public CardReward WithDestination(CardReward route, CardDestination? destination, bool? insertRandomly = null)
+		{
+			var copy = Mutil.DeepCopy(route);
+
+			if (destination is null)
+				Instance.Api.RemoveExtensionData(copy, "destination");
+			else
+				Instance.Api.SetExtensionData(copy, "destination", destination.Value);
+
+			if (insertRandomly is null)
+				Instance.Api.RemoveExtensionData(copy, "destinationInsertRandomly");
+			else
+				Instance.Api.SetExtensionData(copy, "destinationInsertRandomly", insertRandomly.Value);
+
 			return copy;
 		}
 

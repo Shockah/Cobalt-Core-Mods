@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added an API to choose the destination for `ACardOffering`/`CardReward`.
 * Proxied hooks are now marked with a proxy interface, allowing better integration.
 * Kokoro wrapped actions now get their `whoDidThis` set.
 

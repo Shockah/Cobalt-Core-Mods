@@ -61,8 +61,10 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 			accessLevelChecking: AccessLevelChecking.DisabledButOnlyAllowPublicMembers
 		));
 		Api = new(this);
+		Api.RegisterTypeForExtensionData(typeof(ACardOffering));
 		Api.RegisterTypeForExtensionData(typeof(AStatus));
 		Api.RegisterTypeForExtensionData(typeof(AVariableHint));
+		Api.RegisterTypeForExtensionData(typeof(CardReward));
 		Api.RegisterTypeForExtensionData(typeof(Combat));
 		Api.RegisterTypeForExtensionData(typeof(StuffBase));
 
@@ -72,12 +74,14 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 		Harmony = new(Name);
 
+		ACardOfferingPatches.Apply(Harmony);
 		ArtifactBrowsePatches.Apply(Harmony);
 		ArtifactPatches.Apply(Harmony);
 		AStatusPatches.Apply(Harmony);
 		AVariableHintPatches.Apply(Harmony);
 		BigStatsPatches.Apply(Harmony);
 		CardPatches.Apply(Harmony);
+		CardRewardPatches.Apply(Harmony);
 		CombatPatches.Apply(Harmony);
 		DrawPatches.Apply(Harmony);
 		EditorPatches.Apply(Harmony);
