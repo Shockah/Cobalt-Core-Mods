@@ -38,7 +38,32 @@ internal sealed class JohnsonMaxArtifact : Artifact, IRegisterable
 		=> TurnCounter;
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> [new TTGlossary("cardtrait.discount", 1)];
+	{
+		List<Tooltip> tooltips = [];
+
+		var state = MG.inst.g.state ?? DB.fakeState;
+		if (!state.IsOutsideRun() && state != DB.fakeState)
+		{
+			var combat = state.route as Combat;
+			IEnumerable<Card> cards = [.. state.deck, .. combat?.discard, .. combat?.hand];
+
+			var groups = cards
+				.GroupBy(card => card.Key())
+				.OrderByDescending(group => group.Count())
+				.Take(2)
+				.ToList();
+
+			var hasEffect = !(groups.Count == 0 || groups[0].Count() == groups[1].Count());
+			tooltips.Add(
+				hasEffect
+					? new TTText(ModEntry.Instance.Localizations.Localize(["artifact", "Duo", "JohnsonMax", "hasEffect"], new { CardName = Loc.T($"card.{groups[0].First().Key()}.name") }))
+					: new TTText(ModEntry.Instance.Localizations.Localize(["artifact", "Duo", "JohnsonMax", "hasNoEffect"]))
+			);
+		}
+
+		tooltips.Add(new TTGlossary("cardtrait.discount", 1));
+		return tooltips;
+	}
 
 	public override void OnTurnStart(State state, Combat combat)
 	{
@@ -50,7 +75,7 @@ internal sealed class JohnsonMaxArtifact : Artifact, IRegisterable
 
 		TurnCounter -= 3;
 
-		var groups = state.deck.Concat(combat.discard).Concat(combat.hand).Concat(combat.exhausted)
+		var groups = state.deck.Concat(combat.discard).Concat(combat.hand)
 			.GroupBy(card => card.Key())
 			.OrderByDescending(group => group.Count())
 			.Take(2)

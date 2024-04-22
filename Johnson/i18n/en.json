@@ -104,7 +104,9 @@
             },
             "JohnsonMax": {
                 "name": "TREND CHASER",
-                "description": "Every 3 turns, <c=cardtrait>discount</c> all copies of the most abundant card in your deck. Ties result in no discount."
+                "description": "Every 3 turns, <c=cardtrait>discount</c> all copies of the most abundant card in your deck. Ties result in no discount.",
+                "hasEffect": "Currently affects <c=card>{{CardName}}</c>.",
+                "hasNoEffect": "Currently has no effect."
             },
             "JohnsonPeri": {
                 "name": "MILITARY SPENDING",
