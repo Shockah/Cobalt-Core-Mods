@@ -24,5 +24,12 @@ public partial interface IKokoroApi
 		AVariableHint SetTargetPlayer(AVariableHint action, bool targetPlayer);
 		AVariableHint MakeEnergyX(AVariableHint? action = null, bool energy = true, int? tooltipOverride = null);
 		AStatus MakeEnergy(AStatus action, bool energy = true);
+
+		ACardOffering WithDestination(ACardOffering action, CardDestination? destination, bool? insertRandomly = null);
+		CardReward WithDestination(CardReward route, CardDestination? destination, bool? insertRandomly = null);
+
+		List<CardAction> GetWrappedCardActions(CardAction action);
+		List<CardAction> GetWrappedCardActionsRecursively(CardAction action);
+		List<CardAction> GetWrappedCardActionsRecursively(CardAction action, bool includingWrapperActions);
 	}
 }

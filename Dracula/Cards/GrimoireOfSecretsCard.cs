@@ -59,12 +59,11 @@ internal sealed class GrimoireOfSecretsCard : Card, IDraculaCard
 		{
 			if (IsDuringTryPlayCard)
 			{
-				foreach (var cardType in GenerateCards(s.rngActions))
-					actions.Add(new AAddCard
-					{
-						card = (Card)Activator.CreateInstance(cardType)!,
-						destination = CardDestination.Hand
-					});
+				actions.AddRange(GenerateCards(s).Select(card => new AAddCard
+				{
+					card = card,
+					destination = CardDestination.Hand
+				}));
 			}
 			else
 			{
@@ -80,25 +79,39 @@ internal sealed class GrimoireOfSecretsCard : Card, IDraculaCard
 			actions.Add(new ASpecificCardOffering
 			{
 				Cards = IsDuringTryPlayCard
-					? GenerateCards(s.rngActions).Select(t => (Card)Activator.CreateInstance(t)!).ToList()
+					? GenerateCards(s)
 					: Enumerable.Range(0, CardCount).Select(_ => (Card)new PlaceholderSecretCard()).ToList()
 			});
 		}
 		return actions;
 	}
 
-	private List<Type> GenerateCards(Rand rng)
+	private List<Card> GenerateCards(State state)
 	{
-		List<Type> results = [];
-		if (results.Count < CardCount)
-			results.Add(ModEntry.SecretAttackCardTypes[rng.NextInt() % ModEntry.SecretAttackCardTypes.Count]);
-		while (results.Count < CardCount)
+		List<Type> typeResults = [];
+
+		if (typeResults.Count < CardCount)
+			typeResults.Add(ModEntry.SecretAttackCardTypes[state.rngCardOfferings.NextInt() % ModEntry.SecretAttackCardTypes.Count]);
+
+		while (typeResults.Count < CardCount)
 		{
-			var chosen = ModEntry.SecretNonAttackCardTypes[rng.NextInt() % ModEntry.SecretNonAttackCardTypes.Count];
-			if (!results.Contains(chosen))
-				results.Add(chosen);
+			var chosen = ModEntry.SecretNonAttackCardTypes[state.rngCardOfferings.NextInt() % ModEntry.SecretNonAttackCardTypes.Count];
+			if (!typeResults.Contains(chosen))
+				typeResults.Add(chosen);
 		}
-		return results;
+
+		var cardResults = typeResults.Select(t => (Card)Activator.CreateInstance(t)!).ToList();
+		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is DraculaCatArtifact) is { } artifact)
+		{
+			artifact.Pulse();
+			var exeCardTypes = ModEntry.Instance.GetExeCardTypes().ToList();
+			var exeCardType = exeCardTypes[state.rngCardOfferings.NextInt() % exeCardTypes.Count];
+			var exeCard = (Card)Activator.CreateInstance(exeCardType)!;
+			exeCard.discount = -1;
+			cardResults.Add(exeCard);
+		}
+
+		return cardResults;
 	}
 
 	private static void Combat_TryPlayCard_Prefix()

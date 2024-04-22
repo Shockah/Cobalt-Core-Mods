@@ -15,7 +15,8 @@ public sealed class ModEntry : SimpleMod
 
 	internal Harmony Harmony { get; }
 	internal IKokoroApi KokoroApi { get; }
-	internal IDuoArtifactsApi? DuoArtifactsApi { get; }
+	internal IEssentialsApi? EssentialsApi { get; private set; }
+	internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; }
 	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
@@ -48,6 +49,8 @@ public sealed class ModEntry : SimpleMod
 	internal IShipEntry Ship { get; }
 	internal IPartEntry ShipWing { get; }
 	internal IPartEntry ShipArmoredWing { get; }
+
+	private readonly HashSet<Type> ExeTypes = [];
 
 	internal static IReadOnlyList<Type> CommonCardTypes { get; } = [
 		typeof(BiteCard),
@@ -131,6 +134,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static IReadOnlyList<Type> DuoArtifactTypes { get; } = [
 		typeof(DraculaBooksArtifact),
+		typeof(DraculaCatArtifact),
 		typeof(DraculaDizzyArtifact),
 		typeof(DraculaDrakeArtifact),
 		typeof(DraculaIsaacArtifact),
@@ -147,7 +151,6 @@ public sealed class ModEntry : SimpleMod
 		Instance = this;
 		Harmony = new(package.Manifest.UniqueName);
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
-		DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
 		_ = new BleedingManager();
 		_ = new BloodMirrorManager();
 		_ = new LifestealManager();
@@ -160,6 +163,9 @@ public sealed class ModEntry : SimpleMod
 		{
 			if (phase != ModLoadPhase.AfterDbInit)
 				return;
+
+			DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
+			EssentialsApi = helper.ModRegistry.GetApi<IEssentialsApi>("Nickel.Essentials");
 
 			foreach (var registerableType in LateRegisterableTypes)
 				AccessTools.DeclaredMethod(registerableType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
@@ -416,4 +422,40 @@ public sealed class ModEntry : SimpleMod
 
 	public override object? GetApi(IModManifest requestingMod)
 		=> new ApiImplementation();
+
+	private void UpdateExeTypesIfNeeded()
+	{
+		if (ExeTypes.Count != 0)
+			return;
+
+		foreach (var deck in NewRunOptions.allChars)
+			if (Helper.Content.Characters.LookupByDeck(deck) is { } character)
+				if (character.Configuration.ExeCardType is { } exeCardType)
+					ExeTypes.Add(exeCardType);
+	}
+
+	internal IEnumerable<Type> GetExeCardTypes()
+	{
+		if (EssentialsApi is { } essentialsApi)
+		{
+			foreach (var deck in NewRunOptions.allChars)
+				if (essentialsApi.GetExeCardTypeForDeck(deck) is { } exeCardType)
+					yield return exeCardType;
+		}
+		else
+		{
+			UpdateExeTypesIfNeeded();
+			foreach (var exeCardType in ExeTypes)
+				yield return exeCardType;
+		}
+	}
+
+	internal bool IsExeCardType(Type cardType)
+	{
+		if (EssentialsApi is { } essentialsApi)
+			return essentialsApi.IsExeCardType(cardType);
+
+		UpdateExeTypesIfNeeded();
+		return ExeTypes.Contains(cardType);
+	}
 }
