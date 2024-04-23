@@ -344,22 +344,14 @@ public sealed class FireChargeAction : CardAction
 
 		if (@object is not null)
 		{
-			var isInvincible = @object.Invincible();
-			foreach (var artifact in s.EnumerateAllArtifacts())
-			{
-				if (artifact.ModifyDroneInvincibility(s, c, @object) == true)
-				{
-					isInvincible = true;
-					artifact.Pulse();
-				}
-			}
+			var outcome = ASpawn.GetCollisionOutcome(new FakeDrone(), @object);
+			@object.bubbleShield = false;
 
-			if (@object.bubbleShield)
-				@object.bubbleShield = false;
-			else if (isInvincible)
-				c.QueueImmediate(@object.GetActionsOnBonkedWhileInvincible(s, c, !TargetPlayer, new DynaChargeFakeStuff()));
-			else
+			if (outcome is ASpawn.Outcome.BothDie or ASpawn.Outcome.LaunchedWins)
 				c.DestroyDroneAt(s, worldX, !TargetPlayer);
+			else if (@object.Invincible())
+				c.QueueImmediate(@object.GetActionsOnBonkedWhileInvincible(s, c, !TargetPlayer, new FakeDrone()));
+
 			Audio.Play(Event.Hits_DroneCollision);
 		}
 		else if (targetShip.GetPartAtWorldX(worldX) is { } part && part.type != PType.empty)
@@ -416,8 +408,4 @@ public abstract class DynaCharge
 	public virtual void OnTrigger(State state, Combat combat, Ship ship, Part part)
 	{
 	}
-}
-
-internal sealed class DynaChargeFakeStuff : StuffBase
-{
 }

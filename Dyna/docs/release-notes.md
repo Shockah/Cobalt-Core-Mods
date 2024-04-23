@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Fixed various issues regarding the Ricochet Paddle artifact.
 * Added `IDeckEntry DynaDeck` to the API.
 
 ## 1.0.1

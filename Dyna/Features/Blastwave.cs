@@ -380,7 +380,7 @@ internal sealed class BlastwaveManager
 				}
 				else if (isInvincible)
 				{
-					combat.QueueImmediate(@object.GetActionsOnBonkedWhileInvincible(state, combat, !TargetPlayer, new BlastwaveFakeStuff()));
+					combat.QueueImmediate(@object.GetActionsOnShotWhileInvincible(state, combat, !TargetPlayer, Damage ?? 0));
 				}
 				else
 				{
