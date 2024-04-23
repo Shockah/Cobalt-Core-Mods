@@ -4,7 +4,7 @@
 
 ## 1.0.2
 
-* Fixed charges triggering too late, as compared to other attack-attach actions.
+* Fixed charges triggering too late, as compared to other attack-attached actions.
 * Fixed various issues regarding the Ricochet Paddle artifact.
 * Improved Blastwave tooltip text.
 * Added a lot of APIs for mod integrations.
