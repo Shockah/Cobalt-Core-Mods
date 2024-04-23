@@ -42,6 +42,44 @@ public sealed class ApiImplementation : IDynaApi
 	public AAttack SetBlastwave(AAttack attack, int? damage, int range = 1, bool isStunwave = false)
 		=> attack.SetBlastwave(damage, range, isStunwave);
 
+	public IDynaCharge MakeBurstCharge()
+		=> new BurstCharge();
+
+	public IDynaCharge MakeConcussionCharge()
+		=> new ConcussionCharge();
+
+	public IDynaCharge MakeDemoCharge()
+		=> new DemoCharge();
+
+	public IDynaCharge MakeFluxCharge()
+		=> new FluxCharge();
+
+	public IDynaCharge MakeShatterCharge()
+		=> new ShatterCharge();
+
+	public IDynaCharge MakeSwiftCharge()
+		=> new SwiftCharge();
+
+	public CardAction MakeFireChargeAction(IDynaCharge charge, int offset = 0, bool targetPlayer = false)
+		=> new FireChargeAction
+		{
+			Charge = charge,
+			Offset = offset,
+			TargetPlayer = targetPlayer
+		};
+
+	public IDynaCharge? GetStickedCharge(State state, Combat combat, Part part)
+		=> part.GetStickedCharge();
+
+	public void SetStickedCharge(State state, Combat combat, Part part, IDynaCharge? charge)
+		=> part.SetStickedCharge(charge);
+
+	public bool TriggerChargeIfAny(State state, Combat combat, Part part, bool targetPlayer)
+		=> ChargeManager.TriggerChargeIfAny(state, combat, part, targetPlayer);
+
+	public void DefaultRenderChargeImplementation(IDynaCharge charge, G g, State state, Combat combat, Ship ship, int worldX, Vec position)
+		=> ChargeManager.DefaultRenderChargeImplementation(charge, g, state, position);
+
 	public void RegisterHook(IDynaHook hook, double priority)
 		=> ModEntry.Instance.HookManager.Register(hook, priority);
 

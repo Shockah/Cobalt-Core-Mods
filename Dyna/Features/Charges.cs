@@ -1,10 +1,15 @@
 ﻿using FSPRO;
 using HarmonyLib;
+using Microsoft.Extensions.Logging;
+using Nanoray.Shrike.Harmony;
+using Nanoray.Shrike;
 using Nickel;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Shockah.Dyna;
 
@@ -16,10 +21,10 @@ internal static class ChargeExt
 	public static void SetInProgressFireChargeAction(this Combat combat, FireChargeAction? action)
 		=> ModEntry.Instance.Helper.ModData.SetOptionalModData(combat, "InProgressFireChargeAction", action);
 
-	public static DynaCharge? GetStickedCharge(this Part part)
-		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<DynaCharge>(part, "StickedCharge");
+	public static IDynaCharge? GetStickedCharge(this Part part)
+		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<IDynaCharge>(part, "StickedCharge");
 
-	public static void SetStickedCharge(this Part part, DynaCharge? charge)
+	public static void SetStickedCharge(this Part part, IDynaCharge? charge)
 		=> ModEntry.Instance.Helper.ModData.SetOptionalModData(part, "StickedCharge", charge);
 }
 
@@ -57,15 +62,15 @@ internal sealed class ChargeManager
 		);
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
-			postfix: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Postfix))
+			original: () => AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
+			transpiler: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Transpiler))
 		);
 	}
 
-	internal static void TriggerChargeIfAny(State state, Combat combat, Part part, bool targetPlayer)
+	internal static bool TriggerChargeIfAny(State state, Combat combat, Part part, bool targetPlayer)
 	{
 		if (part.GetStickedCharge() is not { } charge)
-			return;
+			return false;
 
 		var targetShip = targetPlayer ? state.ship : combat.otherShip;
 		var worldX = targetShip.x + targetShip.parts.IndexOf(part);
@@ -73,6 +78,7 @@ internal sealed class ChargeManager
 		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, state.EnumerateAllArtifacts()))
 			hook.OnChargeTrigger(state, combat, targetShip, worldX);
 		charge.OnTrigger(state, combat, targetShip, part);
+		return true;
 	}
 
 	private static void RenderShipCharges(G g, State state, Combat combat, Ship ship)
@@ -94,11 +100,24 @@ internal sealed class ChargeManager
 		g.Pop();
 	}
 
-	private static void RenderAnyCharge(G g, State state, Combat combat, Ship ship, int partIndex, DynaCharge charge)
+	private static void RenderAnyCharge(G g, State state, Combat combat, Ship ship, int partIndex, IDynaCharge charge)
 	{
 		var box = g.Push(null, new Rect(partIndex * 16 + 7.5, 53.5));
 		charge.Render(g, state, combat, ship, ship.x + partIndex, box.rect.xy);
 		g.Pop();
+	}
+
+	internal static void DefaultRenderChargeImplementation(IDynaCharge charge, G g, State state, Vec position)
+	{
+		var icon = charge.GetIcon(state);
+		var texture = SpriteLoader.Get(icon)!;
+		Draw.Sprite(icon, position.x - texture.Width / 2.0, position.y - texture.Height / 2.0 + charge.YOffset);
+
+		if (charge.GetLightsIcon(state) is not { } lightsIcon)
+			return;
+		texture = SpriteLoader.Get(lightsIcon)!;
+		var color = Color.Lerp(Colors.white, Colors.black, (ModEntry.Instance.KokoroApi.TotalGameTime.TotalSeconds + position.x / 160.0) % 1.0);
+		Draw.Sprite(lightsIcon, position.x - texture.Width / 2.0, position.y - texture.Height / 2.0 + charge.YOffset, color: color);
 	}
 
 	private static void Combat_RenderDrones_Postfix(Combat __instance, G g)
@@ -178,13 +197,41 @@ internal sealed class ChargeManager
 		return false;
 	}
 
-	private static void Ship_NormalDamage_Postfix(Ship __instance, State s, Combat c, int? maybeWorldGridX)
+	private static IEnumerable<CodeInstruction> AAttack_Begin_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
-		if (maybeWorldGridX is not { } worldGridX)
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(
+					ILMatches.Ldloc<RaycastResult>(originalMethod).CreateLdlocInstruction(out var ldlocRaycastResult),
+					ILMatches.Ldfld("hitShip"),
+					ILMatches.Brfalse.GetBranchTarget(out var branchTarget)
+				)
+				.PointerMatcher(branchTarget)
+				.ExtractLabels(out var labels)
+				.Insert(
+					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
+					new CodeInstruction(OpCodes.Ldarg_2),
+					new CodeInstruction(OpCodes.Ldarg_3),
+					ldlocRaycastResult,
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Transpiler_TriggerChargeIfAny)))
+				)
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.GetDisplayName(@long: false), ex);
+			return instructions;
+		}
+	}
+
+	private static void AAttack_Begin_Transpiler_TriggerChargeIfAny(AAttack attack, State state, Combat combat, RaycastResult raycastResult)
+	{
+		var targetShip = attack.targetPlayer ? state.ship : combat.otherShip;
+		if (targetShip.GetPartAtWorldX(raycastResult.worldX) is not { } part || part.type == PType.empty)
 			return;
-		if (__instance.GetPartAtWorldX(worldGridX) is not { } part || part.type == PType.empty)
-			return;
-		TriggerChargeIfAny(s, c, part, targetPlayer: __instance.isPlayerShip);
+		TriggerChargeIfAny(state, combat, part, attack.targetPlayer);
 	}
 }
 
@@ -194,7 +241,7 @@ public sealed class FireChargeAction : CardAction
 	private const double OuterSpaceDistanceFromMidrow = 200;
 	private const double DistancePerSecond = OuterSpaceDistanceFromMidrow;
 
-	public required DynaCharge Charge;
+	public required IDynaCharge Charge;
 	public int Offset;
 	public int? VolleyX;
 	public bool TargetPlayer;
@@ -380,9 +427,10 @@ public sealed class FireChargeAction : CardAction
 	}
 }
 
-public abstract class DynaCharge
+public abstract class BaseDynaCharge(string key) : IDynaCharge
 {
-	public double YOffset = 0;
+	public string Key() => key;
+	public double YOffset { get; set; }
 
 	public abstract Spr GetIcon(State state);
 
@@ -390,19 +438,9 @@ public abstract class DynaCharge
 		=> null;
 
 	public virtual void Render(G g, State state, Combat combat, Ship ship, int worldX, Vec position)
-	{
-		var icon = GetIcon(state);
-		var texture = SpriteLoader.Get(icon)!;
-		Draw.Sprite(icon, position.x - texture.Width / 2.0, position.y - texture.Height / 2.0 + YOffset);
+		=> ModEntry.Instance.Api.DefaultRenderChargeImplementation(this, g, state, combat, ship, worldX, position);
 
-		if (GetLightsIcon(state) is not { } lightsIcon)
-			return;
-		texture = SpriteLoader.Get(lightsIcon)!;
-		var color = Color.Lerp(Colors.white, Colors.black, (ModEntry.Instance.KokoroApi.TotalGameTime.TotalSeconds + position.x / 160.0) % 1.0);
-		Draw.Sprite(lightsIcon, position.x - texture.Width / 2.0, position.y - texture.Height / 2.0 + YOffset, color: color);
-	}
-
-	public virtual List<Tooltip> GetTooltips(State state)
+	public virtual IEnumerable<Tooltip> GetTooltips(State state)
 		=> [];
 
 	public virtual void OnTrigger(State state, Combat combat, Ship ship, Part part)

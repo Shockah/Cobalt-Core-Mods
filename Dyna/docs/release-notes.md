@@ -4,9 +4,10 @@
 
 ## Upcoming release
 
+* Fixed charges triggering too late, as compared to other attack-attach actions.
 * Fixed various issues regarding the Ricochet Paddle artifact.
 * Improved Blastwave tooltip text.
-* Added `IDeckEntry DynaDeck` to the API.
+* Added a lot of APIs for mod integrations.
 
 ## 1.0.1
 Released 18 April 2024.

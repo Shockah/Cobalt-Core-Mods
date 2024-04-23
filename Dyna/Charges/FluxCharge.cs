@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Dyna;
 
-public sealed class FluxCharge : DynaCharge, IRegisterable
+public sealed class FluxCharge : BaseDynaCharge, IRegisterable
 {
 	private static ISpriteEntry Sprite = null!;
 	private static ISpriteEntry LightsSprite = null!;
@@ -14,6 +14,10 @@ public sealed class FluxCharge : DynaCharge, IRegisterable
 	{
 		Sprite = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Charges/Flux.png"));
 		LightsSprite = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Charges/FluxLight.png"));
+	}
+
+	public FluxCharge() : base($"{ModEntry.Instance.Package.Manifest.UniqueName}::FluxCharge")
+	{
 	}
 
 	public override Spr GetIcon(State state)

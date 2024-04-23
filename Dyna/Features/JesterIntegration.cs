@@ -1,5 +1,4 @@
-﻿using Shockah.Shared;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.Dyna;
@@ -136,7 +135,7 @@ internal sealed class JesterIntegration
 
 		public sealed class SameChargeEntry : IJesterApi.IEntry
 		{
-			public required DynaCharge Charge;
+			public required IDynaCharge Charge;
 			public required int CostPerCharge;
 			public required IList<int> AllowedOffsets;
 			public IList<int> Offsets = [0];
@@ -198,8 +197,8 @@ internal sealed class JesterIntegration
 
 		public sealed class DifferentChargesEntry : IJesterApi.IEntry
 		{
-			public required DynaCharge BaseCharge;
-			public required DynaCharge ExtraCharge;
+			public required IDynaCharge BaseCharge;
+			public required IDynaCharge ExtraCharge;
 			public required int BaseChargeCost;
 			public required int ExtraChargeCost;
 			public bool UseExtraCharge;
