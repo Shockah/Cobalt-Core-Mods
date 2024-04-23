@@ -14,9 +14,9 @@
                 "Stun": "Stunwave"
             },
             "description": {
-                "Damage": "Additionally hits parts up to {{Range}} spaces away for {{Damage}} damage.",
-                "StunDamage": "Additionally hits parts up to {{Range}} spaces away for {{Damage}} damage, stunning them.",
-                "Stun": "Additionally hits parts up to {{Range}} spaces away, stunning them."
+                "Damage": "Additionally hits parts or <c=midrow>midrow objects</c> up to {{Range}} spaces away for <c=boldPink>{{Damage}}</c> damage.",
+                "StunDamage": "Additionally hits parts or <c=midrow>midrow objects</c> up to {{Range}} spaces away for <c=boldPink>{{Damage}}</c> damage, stunning them.",
+                "Stun": "Additionally hits parts or <c=midrow>midrow objects</c> up to {{Range}} spaces away, <c=action>stunning</c> them."
             }
         },
         "FireCharge": {
