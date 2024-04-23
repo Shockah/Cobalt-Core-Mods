@@ -5,6 +5,9 @@ namespace Shockah.Dyna;
 
 public sealed class ApiImplementation : IDynaApi
 {
+	public IDeckEntry DynaDeck
+		=> ModEntry.Instance.DynaDeck;
+
 	public IStatusEntry TempNitroStatus
 		=> NitroManager.TempNitroStatus;
 

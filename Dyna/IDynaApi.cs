@@ -4,6 +4,8 @@ namespace Shockah.Dyna;
 
 public interface IDynaApi
 {
+	IDeckEntry DynaDeck { get; }
+
 	IStatusEntry TempNitroStatus { get; }
 	IStatusEntry NitroStatus { get; }
 	IStatusEntry BastionStatus { get; }

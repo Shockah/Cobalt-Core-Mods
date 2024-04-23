@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added `IDeckEntry DynaDeck` to the API.
+
 ## 1.0.1
 Released 18 April 2024.
 
