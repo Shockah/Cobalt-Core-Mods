@@ -2,7 +2,7 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.2
 
 * Fixed charges triggering too late, as compared to other attack-attach actions.
 * Fixed various issues regarding the Ricochet Paddle artifact.

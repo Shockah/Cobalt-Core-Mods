@@ -1,16 +1,16 @@
 {
     "UniqueName": "Shockah.Dyna",
-    "Version": "1.0.1",
+    "Version": "1.0.2",
     "DisplayName": "Dyna",
     "Description": "Dyna: Your demolition expert. She can set charges that affect enemy parts when triggered.",
     "Author": "Hatter, Kurio, Shockah",
-    "RequiredApiVersion": "0.8.0",
+    "RequiredApiVersion": "0.9.0",
     "EntryPointAssembly": "Dyna.dll",
     "LoadPhase": "AfterDbInit",
     "Dependencies": [
         {
             "UniqueName": "Shockah.Kokoro",
-            "Version": "1.3.1"
+            "Version": "1.7.0"
         },
         {
             "UniqueName": "TheJazMaster.MoreDifficulties",
