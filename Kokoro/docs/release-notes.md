@@ -2,6 +2,10 @@
 
 # Release notes
 
+## 1.7.1
+
+* Extended available card text width by 1 pixel for modded cards.
+
 ## 1.7.0
 
 * Added an API to choose the destination for `ACardOffering`/`CardReward`.
