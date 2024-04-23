@@ -28,119 +28,119 @@ internal sealed class BloodTapManager : IStatusLogicHook
 			postfix: new HarmonyMethod(GetType(), nameof(Combat_Update_Postfix))
 		);
 
-		RegisterStatusOptionProvider(Status.evade, (_, _, status) => [
+		RegisterOptionProvider(Status.evade, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatusOptionProvider(Status.droneShift, (_, _, status) => [
+		RegisterOptionProvider(Status.droneShift, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatusOptionProvider(Status.hermes, (_, _, status) => [
+		RegisterOptionProvider(Status.hermes, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 },
 		]);
-		RegisterStatusOptionProvider(Status.payback, (_, _, status) => [
+		RegisterOptionProvider(Status.payback, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
-		RegisterStatusOptionProvider(Status.tempPayback, (_, _, status) => [
+		RegisterOptionProvider(Status.tempPayback, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatusOptionProvider(Status.mitosis, (_, _, status) => [
+		RegisterOptionProvider(Status.mitosis, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 2 },
 		]);
-		RegisterStatusOptionProvider(Status.stunCharge, (_, _, status) => [
+		RegisterOptionProvider(Status.stunCharge, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatusOptionProvider(Status.stunSource, (_, _, status) => [
+		RegisterOptionProvider(Status.stunSource, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 2 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AStatus { targetPlayer = true, status = Status.stunCharge, statusAmount = 1 },
 		]);
-		RegisterStatusOptionProvider(Status.serenity, (_, _, status) => [
+		RegisterOptionProvider(Status.serenity, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatusOptionProvider(Status.ace, (_, _, status) => [
+		RegisterOptionProvider(Status.ace, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 2 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 1 },
 		]);
-		RegisterStatusOptionProvider(Status.strafe, (_, _, status) => [
+		RegisterOptionProvider(Status.strafe, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 2 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 },
 		]);
-		RegisterStatusOptionProvider(Status.libra, (_, _, status) => [
+		RegisterOptionProvider(Status.libra, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 2 },
 		]);
-		RegisterStatusOptionProvider(Status.overdrive, (_, _, status) => [
+		RegisterOptionProvider(Status.overdrive, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 2 },
 		]);
-		RegisterStatusOptionProvider(Status.powerdrive, (_, _, status) => [
+		RegisterOptionProvider(Status.powerdrive, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
-		RegisterStatusOptionProvider(Status.endlessMagazine, (_, _, status) => [
+		RegisterOptionProvider(Status.endlessMagazine, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
-		RegisterStatusOptionProvider(Status.bubbleJuice, (_, _, status) => [
+		RegisterOptionProvider(Status.bubbleJuice, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 2 },
 		]);
-		RegisterStatusOptionProvider(Status.autododgeRight, (_, _, status) => [
+		RegisterOptionProvider(Status.autododgeRight, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatusOptionProvider(Status.autododgeLeft, (_, _, status) => [
+		RegisterOptionProvider(Status.autododgeLeft, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 2 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
-		RegisterStatusOptionProvider(Status.autopilot, (_, _, status) => [
+		RegisterOptionProvider(Status.autopilot, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AEnergy { changeAmount = 1 }
 		]);
-		RegisterStatusOptionProvider(Status.boost, (_, _, status) => [
+		RegisterOptionProvider(Status.boost, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 2 },
 		]);
-		RegisterStatusOptionProvider(Status.temporaryCheap, (_, _, status) => [
+		RegisterOptionProvider(Status.temporaryCheap, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatusOptionProvider(Status.timeStop, (_, _, status) => [
+		RegisterOptionProvider(Status.timeStop, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 2 },
 		]);
-		RegisterStatusOptionProvider(Status.shard, (_, _, status) => [
+		RegisterOptionProvider(Status.shard, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 		]);
-		RegisterStatusOptionProvider(Status.maxShard, (_, _, status) => [
+		RegisterOptionProvider(Status.maxShard, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AStatus { targetPlayer = true, status = Status.shard, statusAmount = 1 },
 		]);
-		RegisterStatusOptionProvider(Status.quarry, (_, _, status) => [
+		RegisterOptionProvider(Status.quarry, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
 	}
 
-	public void RegisterStatusOptionProvider(Status status, Func<State, Combat, Status, List<CardAction>> actions)
+	public void RegisterOptionProvider(Status status, Func<State, Combat, Status, List<CardAction>> actions)
 		=> StatusOptions[status] = actions;
 
-	public void RegisterStatusOptionProvider(IBloodTapOptionProvider provider, double priority = 0)
+	public void RegisterOptionProvider(IBloodTapOptionProvider provider, double priority = 0)
 		=> StatusOptionProviders.Register(provider, priority);
 
 	public HashSet<Status> GetAllOwnedStatuses(Combat combat, bool includeEnemy)

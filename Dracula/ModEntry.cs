@@ -18,6 +18,7 @@ public sealed class ModEntry : SimpleMod
 	internal IEssentialsApi? EssentialsApi { get; private set; }
 	internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; }
 	internal IDynaApi? DynaApi { get; private set; }
+	internal IJohnsonApi? JohnsonApi { get; private set; }
 	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
@@ -140,6 +141,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(DraculaDrakeArtifact),
 		typeof(DraculaDynaArtifact),
 		typeof(DraculaIsaacArtifact),
+		typeof(DraculaJohnsonArtifact),
 	];
 
 	internal static readonly IEnumerable<Type> RegisterableTypes
@@ -169,12 +171,14 @@ public sealed class ModEntry : SimpleMod
 			DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
 			EssentialsApi = helper.ModRegistry.GetApi<IEssentialsApi>("Nickel.Essentials");
 			DynaApi = helper.ModRegistry.GetApi<IDynaApi>("Shockah.Dyna");
+			JohnsonApi = helper.ModRegistry.GetApi<IJohnsonApi>("Shockah.Johnson");
 
 			foreach (var registerableType in LateRegisterableTypes)
 				AccessTools.DeclaredMethod(registerableType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
 		};
 
 		CustomCardBrowse.ApplyPatches(Harmony, logger);
+		DynamicWidthCardAction.ApplyPatches(Harmony, logger);
 		ASpecificCardOffering.ApplyPatches(Harmony, logger);
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
@@ -402,11 +406,11 @@ public sealed class ModEntry : SimpleMod
 			Description = this.AnyLocalizations.Bind(["ship", "description"]).Localize,
 		});
 
-		BloodTapManager.RegisterStatusOptionProvider(BloodMirrorStatus.Status, (_, _, status) => [
+		BloodTapManager.RegisterOptionProvider(BloodMirrorStatus.Status, (_, _, status) => [
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 		]);
-		BloodTapManager.RegisterStatusOptionProvider(TransfusionStatus.Status, (_, _, status) => [
+		BloodTapManager.RegisterOptionProvider(TransfusionStatus.Status, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);

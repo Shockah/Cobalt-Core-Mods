@@ -25,8 +25,8 @@ public sealed class ApiImplementation : IDraculaApi
 		=> ModEntry.Instance.TransfusingStatus;
 
 	public void RegisterBloodTapOptionProvider(Status status, Func<State, Combat, Status, List<CardAction>> provider)
-		=> ModEntry.Instance.BloodTapManager.RegisterStatusOptionProvider(status, provider);
+		=> ModEntry.Instance.BloodTapManager.RegisterOptionProvider(status, provider);
 
 	public void RegisterBloodTapOptionProvider(IBloodTapOptionProvider provider, double priority = 0)
-		=> ModEntry.Instance.BloodTapManager.RegisterStatusOptionProvider(provider, priority);
+		=> ModEntry.Instance.BloodTapManager.RegisterOptionProvider(provider, priority);
 }

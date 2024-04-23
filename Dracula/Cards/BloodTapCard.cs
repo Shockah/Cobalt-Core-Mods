@@ -36,40 +36,43 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new ABloodTap
-			{
-				Statuses = ModEntry.Instance.BloodTapManager.GetApplicableStatuses(s, c, includeEnemy: upgrade == Upgrade.B),
-				Choices = ModEntry.Instance.BloodTapManager.MakeChoices(s, c, includeEnemy: upgrade == Upgrade.B).ToList()
-			}
+			new ABloodTap { IncludeEnemy = upgrade == Upgrade.B }
 		];
 
 	public sealed class ABloodTap : CardAction
 	{
 		public List<List<CardAction>>? Choices;
 		public List<Status>? Statuses;
+		public bool IncludeEnemy;
 
 		public override Route? BeginWithRoute(G g, State s, Combat c)
 			=> new ActionChoiceRoute
 			{
 				Title = ModEntry.Instance.Localizations.Localize(["card", "BloodTap", "ui", "title"]),
-				Choices = Choices ?? ModEntry.Instance.BloodTapManager.MakeChoices(s, c, includeEnemy: false).ToList()
+				Choices = Choices ?? ModEntry.Instance.BloodTapManager.MakeChoices(s, c, includeEnemy: IncludeEnemy).ToList()
 			};
+
+		private List<Status> GetStatuses(State s)
+		{
+			if (Statuses is null && s.route is Combat combat)
+				Statuses = ModEntry.Instance.BloodTapManager.GetApplicableStatuses(s, combat, includeEnemy: IncludeEnemy);
+			return Statuses ?? [];
+		}
 
 		public override List<Tooltip> GetTooltips(State s)
 		{
-			Statuses ??= [];
 			List<Tooltip> tooltips = [];
 			if (s == DB.fakeState)
 				return tooltips;
 
 			tooltips.Add(new TTText(ModEntry.Instance.Localizations.Localize(["card", "BloodTap", "tooltip", "title"])));
-			if (Statuses.Count == 0)
+			if (GetStatuses(s).Count == 0)
 			{
 				tooltips.Add(new TTText(ModEntry.Instance.Localizations.Localize(["card", "BloodTap", "tooltip", "none"])));
 			}
 			else
 			{
-				foreach (var status in Statuses)
+				foreach (var status in GetStatuses(s))
 					tooltips.Add(new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::BloodTap::Status::{status.Key()}")
 					{
 						Icon = DB.statuses[status].icon,

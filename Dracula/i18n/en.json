@@ -203,7 +203,16 @@
             },
             "DraculaIsaac": {
                 "name": "BAT SOUL",
-                "description": "Your destroyed <c=midrow>drones</c> get replaced with <c=midrow>Bats</c>."
+                "description": "Your destroyed <c=midrow>non-Jupiter drones</c> get replaced with <c=midrow>Bats</c>."
+            },
+            "DraculaJohnson": {
+                "name": "BLOOD SIGNATURE",
+                "description": "<c=card>Blood Tap</c> gains an option to make a <c=cardtrait>temp upgrade</c> permanent, <c=downside>for the cost of 4 hull damage</c>. At the start of combat, add a free, <c=cardtrait>temporary</c> <c=card>Blood Tap</c> with <c=cardtrait>exhaust</c> to your hand.",
+                "browseTitle": "Temporarily Upgraded: {{Count}} Cards",
+                "action": {
+                    "name": "Make permanent",
+                    "description": "Make a <c=cardtrait>temp upgrade</c> permanent."
+                }
             }
         }
     },
