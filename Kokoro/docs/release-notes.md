@@ -2,7 +2,7 @@
 
 # Release notes
 
-## Upcoming release
+## 1.7.0
 
 * Added an API to choose the destination for `ACardOffering`/`CardReward`.
 * Proxied hooks are now marked with a proxy interface, allowing better integration.
