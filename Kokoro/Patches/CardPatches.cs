@@ -162,6 +162,7 @@ internal static class CardPatches
 							.Insert(
 								SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
 								new CodeInstruction(OpCodes.Ldloc, modifiedScaleLocal),
+								new CodeInstruction(OpCodes.Ldarg_0),
 								new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_Render_Transpiler_ModifyAvailableWidth)))
 							);
 					},
@@ -218,8 +219,8 @@ internal static class CardPatches
 		ResetSpriteBatch();
 	}
 
-	private static double Card_Render_Transpiler_ModifyAvailableWidth(double width, Vec modifiedScale)
-		=> width / modifiedScale.x;
+	private static double Card_Render_Transpiler_ModifyAvailableWidth(double width, Vec modifiedScale, Card card)
+		=> (width + (card.GetType().Assembly == typeof(G).Assembly ? 0 : 1)) / modifiedScale.x;
 
 	private static IEnumerable<CodeInstruction> Card_MakeAllActionIcons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
