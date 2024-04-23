@@ -17,6 +17,7 @@ public sealed class ModEntry : SimpleMod
 	internal IKokoroApi KokoroApi { get; }
 	internal IEssentialsApi? EssentialsApi { get; private set; }
 	internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; }
+	internal IDynaApi? DynaApi { get; private set; }
 	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
@@ -137,6 +138,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(DraculaCatArtifact),
 		typeof(DraculaDizzyArtifact),
 		typeof(DraculaDrakeArtifact),
+		typeof(DraculaDynaArtifact),
 		typeof(DraculaIsaacArtifact),
 	];
 
@@ -166,6 +168,7 @@ public sealed class ModEntry : SimpleMod
 
 			DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
 			EssentialsApi = helper.ModRegistry.GetApi<IEssentialsApi>("Nickel.Essentials");
+			DynaApi = helper.ModRegistry.GetApi<IDynaApi>("Shockah.Dyna");
 
 			foreach (var registerableType in LateRegisterableTypes)
 				AccessTools.DeclaredMethod(registerableType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);

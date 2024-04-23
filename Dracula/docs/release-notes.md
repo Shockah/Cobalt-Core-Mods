@@ -6,7 +6,7 @@
 
 * Added Dracula.EXE.
 * Reworked the Aura of Darkness B card.
-* Added duo artifacts for Books, CAT, Dizzy, Drake and Isaac.
+* Added duo artifacts for Books, CAT, Dizzy, Drake, Dyna and Isaac.
 * Fixed various Transfusion bugs.
 * Minor card text and tooltip improvements.
 

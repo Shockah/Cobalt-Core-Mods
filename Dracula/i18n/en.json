@@ -185,17 +185,21 @@
                 "name": "BLOODSHARD",
                 "description": "Once per combat, whenever you spend your last <c=status>SHARD</c>, <c=heal>heal {{HealAmount}}</c>."
             },
-            "DraculaDizzy": {
-                "name": "ROTTEN BLOOD",
-                "description": "Whenever <c=status>BLEEDING</c> triggers, give the ship {{ResultingOxidation}} <c=status>OXIDATION</c>."
-            },
             "DraculaCat": {
                 "name": "GRIMOIRE.EXE",
                 "description": "<c=card>Grimoire of Secrets</c> now includes a choice of a random discounted EXE card. EXE cards now include a choice of a random Spell."
             },
+            "DraculaDizzy": {
+                "name": "ROTTEN BLOOD",
+                "description": "Whenever <c=status>BLEEDING</c> triggers, give the ship {{ResultingOxidation}} <c=status>OXIDATION</c>."
+            },
             "DraculaDrake": {
                 "name": "PERFORATING SLUGS",
                 "description": "<c=action>PIERCING and STUNNING ATTACKS</c> apply 1 <c=status>BLEEDING</c>."
+            },
+            "DraculaDyna": {
+                "name": "SHRAPNEL",
+                "description": "Whenever a <c=parttrait>charge</c> is triggered, the ship gains 1 <c=status>BLEEDING</c>."
             },
             "DraculaIsaac": {
                 "name": "BAT SOUL",
