@@ -52,10 +52,10 @@ internal static class I18n
 	public static CustomTTGlossary MaxShieldLowerAltGlossary = new(CustomTTGlossary.GlossaryType.status, () => StableSpr.icons_maxShieldLower, () => MaxShieldLowerAltGlossaryName, () => MaxShieldLowerAltGlossaryDescription);
 
 	public static string BooksCatArtifactName => "Shard Synthesizer";
-	public static string BooksCatArtifactTooltip => "At the end of each turn, gain <c=status>SHARD</c> equal to unspent <c=status>ENERGY</c>.";
+	public static string BooksCatArtifactTooltip => "At the end of each turn, gain <c=status>SHARD</c> equal to unspent <c=energy>ENERGY</c>.";
 
 	public static string BooksDrakeArtifactName => "Stunflare Catalyst";
-	public static string BooksDrakeArtifactTooltip => "Whenever you play an <c=action>ATTACK</c>, lose 2 <c=status>SHARD</c>: the <c=action>ATTACK</c> becomes piercing. If it was already piercing, it stuns. If it was already stunning, <c=action>TOTAL STUN</c> the opponent.";
+	public static string BooksDrakeArtifactTooltip => "Whenever you play an <c=action>attack</c>, lose 2 <c=status>SHARD</c>: the <c=action>attack</c> becomes piercing. If it was already piercing, it <c=action>stuns</c>. If it was already stunning, <c=action>TOTAL STUN</c> the opponent.";
 
 	public static string BooksDizzyArtifactName => "Aegis Transmuter";
 	public static string BooksDizzyArtifactTooltip => "<c=status>SHIELD</c> and <c=status>SHARD</c> can be used interchangeably.";
@@ -64,10 +64,10 @@ internal static class I18n
 	public static string BooksIsaacArtifactTooltip => "At the end of each turn, lose 2 <c=status>SHARD</c>: your <c=midrow>Attack Drones</c> deal 1 more damage.";
 
 	public static string BooksMaxArtifactName => "Evaporator";
-	public static string BooksMaxArtifactTooltip => "Whenever you <c=cardtrait>EXHAUST</c> a card, gain 1 <c=status>SHARD</c>.";
+	public static string BooksMaxArtifactTooltip => "Whenever you <c=cardtrait>exhaust</c> a card, gain 1 <c=status>SHARD</c>.";
 
 	public static string BooksPeriArtifactName => "Shardblade Infuser";
-	public static string BooksPeriArtifactTooltip => "Whenever you play an <c=action>ATTACK</c>, lose 1 <c=status>SHARD</c>: the <c=action>ATTACK</c> deals 1 more damage.";
+	public static string BooksPeriArtifactTooltip => "Whenever you play an <c=action>attack</c>, lose 1 <c=status>SHARD</c>: the <c=action>attack</c> deals 1 more damage.";
 
 	public static string BooksRiggsArtifactName => "Fleetfoot Resonator";
 	public static string BooksRiggsArtifactTooltip => "Gain 1 <c=status>HERMES BOOTS</c> for each 3 <c=status>SHARD</c> you have each turn.";
@@ -79,22 +79,22 @@ internal static class I18n
 	public static string CatDrakeArtifactTooltip => "Whenever you gain <c=status>SERENITY</c>, gain <c=status>TIMESTOP</c>. Whenever you gain <c=status>TIMESTOP</c>, gain <c=status>SERENITY</c>.";
 
 	public static string CatIsaacArtifactName => "Smart Launch System";
-	public static string CatIsaacArtifactTooltip => "Twice per turn, whenever you are about to <c=action>LAUNCH</c> into an object and doing so would not benefit you, shove objects to the side to make space for it instead.";
+	public static string CatIsaacArtifactTooltip => "Twice per turn, whenever you are about to <c=action>launch</c> into an <c=midrow>object</c> and doing so would not benefit you, shove <c=midrow>objects</c> to the side to make space for it instead.";
 
 	public static string CatMaxArtifactName => "Gashapon.EXE";
 	public static string CatMaxArtifactTooltip => "Gain 1 random positive status each turn.";
 
 	public static string CatPeriArtifactName => "Combat Training Simulator";
-	public static string CatPeriArtifactTooltip => "Whenever you play a <c=cardtrait>temporary</c> <c=action>ATTACK</c>, gain 1 <c=status>OVERDRIVE</c>.\n<c=downside>Lose an extra <c=status>OVERDRIVE</c> each turn.</c>";
+	public static string CatPeriArtifactTooltip => "Whenever you play a <c=cardtrait>temporary</c> <c=action>attack</c>, gain 1 <c=status>OVERDRIVE</c>.\n<c=downside>Lose an extra <c=status>OVERDRIVE</c> each turn.</c>";
 
 	public static string CatRiggsArtifactName => "Tech-Support Protocol";
-	public static string CatRiggsArtifactTooltip => "<c=cardtrait>DISCOUNT</c> the first non-zero-cost extra card drawn each turn.";
+	public static string CatRiggsArtifactTooltip => "<c=cardtrait>Discount</c> the first non-zero-cost extra card drawn each turn.";
 
 	public static string DizzyDrakeArtifactName => "Frozen Control Rods";
 	public static string DizzyDrakeArtifactTooltip => "<c=action>OVERHEAT</c> now causes you to lose 2 <c=status>(TEMP) SHIELD</c> instead of hull, if possible.";
 
 	public static string DizzyIsaacArtifactName => "Corrosive Payload";
-	public static string DizzyIsaacArtifactTooltip => "Whenever a <c=midrow>midrow object</c> gets destroyed by an <c=action>ATTACK</c> or <c=action>LAUNCH</c>, the ship that caused it gains 1 <c=status>OXIDATION</c>.";
+	public static string DizzyIsaacArtifactTooltip => "Whenever a <c=midrow>midrow object</c> gets destroyed by an <c=action>attack</c> or <c=action>launch</c>, the ship that caused it gains 1 <c=status>OXIDATION</c>.";
 
 	public static string DizzyMaxArtifactName => "Dynamo";
 	public static string DizzyMaxArtifactTooltip => "At the start of combat, gain a <c=card>Dynamo</c>.";
@@ -122,7 +122,7 @@ internal static class I18n
 	public static string DrakeRiggsArtifactTooltip => "Once a turn, when you have no <c=status>EVADE</c>, you may still <c=status>EVADE</c>: gain 1 <c=status>HEAT</c>.";
 
 	public static string IsaacMaxArtifactName => "Recycler";
-	public static string IsaacMaxArtifactTooltip => "Whenever you <c=action>DISCARD</c> or <c=cardtrait>EXHAUST</c> any number of cards during your turn, put a <c=midrow>BUBBLE</c> on a random <c=midrow>midrow object</c> without one in front of the ship. If there are none, <c=action>LAUNCH</c> an <c=midrow>asteroid</c> on a random space in front of the ship.";
+	public static string IsaacMaxArtifactTooltip => "Whenever you <c=action>discard</c> or <c=cardtrait>exhaust</c> any number of cards during your turn, put a <c=midrow>bubble</c> on a random <c=midrow>midrow object</c> without one in front of the ship. If there are none, <c=action>launch</c> an <c=midrow>asteroid</c> on a random space in front of the ship.";
 
 	public static string IsaacPeriArtifactName => "Enhanced Antenna";
 	public static string IsaacPeriArtifactTooltip => "Your <c=midrow>Attack Drones</c> benefit from <c=status>OVERDRIVE</c>, <c=status>POWERDRIVE</c> and <c=status>FLUX</c>.";
@@ -131,7 +131,7 @@ internal static class I18n
 	public static string IsaacRiggsArtifactTooltip => "<c=status>EVADE</c> and <c=status>DRONESHIFT</c> can be used interchangeably.\nGain 1 <c=status>EVADE</c> on the first turn.";
 
 	public static string MaxPeriArtifactName => "Combat Spreadsheets";
-	public static string MaxPeriArtifactTooltip => "Your leftmost <c=action>ATTACK</c> deals 1 more damage.\nYour rightmost <c=action>ATTACK</c> fires an extra 1 damage shot.\nThe last <c=action>ATTACK</c> in your hand gets no bonuses.";
+	public static string MaxPeriArtifactTooltip => "Your leftmost <c=action>attack</c> deals 1 more damage.\nYour rightmost <c=action>attack</c> fires an extra 1 damage shot.\nThe last <c=action>attack</c> in your hand gets no bonuses.";
 
 	public static string MaxRiggsArtifactName => "Boba Break.EXE";
 	public static string MaxRiggsArtifactTooltip => "Gain 1 <c=status>AUTOPILOT</c> each turn. <c=downside>Gain 1 <c=status>ENGINE STALL</c> each turn.</c>";
