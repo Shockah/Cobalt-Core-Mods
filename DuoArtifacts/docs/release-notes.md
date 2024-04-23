@@ -2,7 +2,7 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.7
 
 * Added possible duos to character tooltips on the new run screen.
 * Fixed Drone Overclock (the Isaac-Drake duo) not working with Shield Drones as advertised.
