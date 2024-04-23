@@ -1,13 +1,13 @@
 {
     "UniqueName": "Shockah.Johnson",
-    "Version": "1.0.5",
-    "RequiredApiVersion": "0.7.0",
+    "Version": "1.1.0",
+    "RequiredApiVersion": "0.9.0",
     "EntryPointAssembly": "Johnson.dll",
     "LoadPhase": "AfterDbInit",
     "Dependencies": [
         {
             "UniqueName": "Shockah.Kokoro",
-            "Version": "1.3.1"
+            "Version": "1.7.1"
         },
         {
             "UniqueName": "TheJazMaster.MoreDifficulties",

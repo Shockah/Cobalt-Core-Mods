@@ -2,10 +2,11 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.0
 
 * Added duo artifacts.
 * Nerfed the Outsource card a bit.
+* Updated the mini portrait.
 * Fixed the Downsize card causing issues with the Philip mod.
 
 ## 1.0.4

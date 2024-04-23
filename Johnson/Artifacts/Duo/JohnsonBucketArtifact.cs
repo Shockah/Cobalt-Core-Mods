@@ -82,25 +82,6 @@ internal sealed class JohnsonBucketArtifact : Artifact, IRegisterable
 		});
 	}
 
-	public override void OnDrawCard(State state, Combat combat, int count)
-	{
-		base.OnDrawCard(state, combat, count);
-	}
-
-	public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
-	{
-		base.OnPlayerPlayCard(energyCost, deck, card, state, combat, handPosition, handCount);
-		if (!ModEntry.Instance.TyAndSashaApi!.IsWild(card, state, combat))
-			return;
-
-		TriggeredThisTurn = true;
-		combat.Queue(new ATemporarilyUpgrade
-		{
-			CardId = card.uuid,
-			artifactPulse = Key()
-		});
-	}
-
 	private sealed class Action : CardAction
 	{
 		public required int CardId;

@@ -44,7 +44,10 @@ internal sealed class JohnsonTyArtifact : Artifact, IRegisterable
 		=> (TriggeredThisTurn ? InactiveSprite : ActiveSprite).Sprite;
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> [ModEntry.Instance.Api.TemporaryUpgradeTooltip];
+		=> [
+			..ModEntry.Instance.TyAndSashaApi!.WildTrait.Configuration.Tooltips?.Invoke(DB.fakeState, null),
+			ModEntry.Instance.Api.TemporaryUpgradeTooltip
+		];
 
 	public override void OnTurnStart(State state, Combat combat)
 	{
@@ -58,7 +61,7 @@ internal sealed class JohnsonTyArtifact : Artifact, IRegisterable
 		base.OnPlayerPlayCard(energyCost, deck, card, state, combat, handPosition, handCount);
 		if (TriggeredThisTurn)
 			return;
-		if (!ModEntry.Instance.TyAndSashaApi!.IsWild(card, state, combat))
+		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, ModEntry.Instance.TyAndSashaApi!.WildTrait))
 			return;
 
 		TriggeredThisTurn = true;
