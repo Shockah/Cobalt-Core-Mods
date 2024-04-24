@@ -34,6 +34,8 @@ internal sealed class ChargeManager
 	internal static ISpriteEntry FireChargeLeftIcon { get; private set; } = null!;
 	internal static ISpriteEntry FireChargeRightIcon { get; private set; } = null!;
 
+	private static AAttack? AttackContext;
+
 	public ChargeManager()
 	{
 		FireChargeIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icons/FireCharge.png"));
@@ -63,7 +65,14 @@ internal sealed class ChargeManager
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
+			prefix: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Prefix)),
+			finalizer: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Finalizer)),
 			transpiler: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Transpiler))
+		);
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
+			postfix: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Postfix))
 		);
 	}
 
@@ -232,6 +241,23 @@ internal sealed class ChargeManager
 		if (targetShip.GetPartAtWorldX(raycastResult.worldX) is not { } part || part.type == PType.empty)
 			return;
 		TriggerChargeIfAny(state, combat, part, attack.targetPlayer);
+	}
+
+	private static void AAttack_Begin_Prefix(AAttack __instance)
+		=> AttackContext = __instance;
+
+	private static void AAttack_Begin_Finalizer()
+		=> AttackContext = null;
+
+	private static void Ship_NormalDamage_Postfix(Ship __instance, State s, Combat c, int? maybeWorldGridX)
+	{
+		if (AttackContext is not null)
+			return;
+		if (maybeWorldGridX is not { } worldGridX)
+			return;
+		if (__instance.GetPartAtWorldX(worldGridX) is not { } part || part.type == PType.empty)
+			return;
+		TriggerChargeIfAny(s, c, part, targetPlayer: __instance.isPlayerShip);
 	}
 }
 
