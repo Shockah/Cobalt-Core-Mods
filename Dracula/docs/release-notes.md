@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.0
+Released 24 April 2024.
 
 * Added Dracula.EXE.
 * Reworked the Aura of Darkness B card.

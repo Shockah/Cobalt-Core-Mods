@@ -3,6 +3,7 @@
 # Release notes
 
 ## 1.0.2
+Released 23 April 2024.
 
 * Fixed charges triggering too late, as compared to other attack-attached actions.
 * Fixed various issues regarding the Ricochet Paddle artifact.

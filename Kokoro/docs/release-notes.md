@@ -3,10 +3,12 @@
 # Release notes
 
 ## 1.7.1
+Released 23 April 2024.
 
 * Extended available card text width by 1 pixel for modded cards.
 
 ## 1.7.0
+Released 23 April 2024.
 
 * Added an API to choose the destination for `ACardOffering`/`CardReward`.
 * Proxied hooks are now marked with a proxy interface, allowing better integration.
