@@ -53,6 +53,20 @@ internal sealed class DraculaJohnsonArtifact : Artifact, IRegisterable
 			ModEntry.Instance.JohnsonApi!.TemporaryUpgradeTooltip
 		];
 
+	public override void OnTurnStart(State state, Combat combat)
+	{
+		base.OnTurnStart(state, combat);
+		if (!combat.isPlayerTurn || combat.turn != 1)
+			return;
+
+		combat.Queue(new AAddCard
+		{
+			destination = CardDestination.Hand,
+			card = new BloodTapCard { discount = -1, temporaryOverride = true, exhaustOverride = true },
+			artifactPulse = Key()
+		});
+	}
+
 	private sealed class Provider : IBloodTapOptionProvider
 	{
 		public IEnumerable<Status> GetBloodTapApplicableStatuses(State state, Combat combat, IReadOnlySet<Status> allStatuses)
