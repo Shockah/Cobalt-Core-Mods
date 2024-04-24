@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.1
+Released 24 April 2024.
 
 * Fixed the Johnson duo not giving the card as advertised.
 

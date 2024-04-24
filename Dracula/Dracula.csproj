@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Shockah.Dracula</RootNamespace>
-		<Version>1.1.0</Version>
+		<Version>1.1.1</Version>
 		<IncludedModProjectPaths>i18n;assets</IncludedModProjectPaths>
 	</PropertyGroup>
 	<Import Project="..\Configuration.Mod.props" />
