@@ -190,7 +190,7 @@
                 "description": "<c=card>Grimoire of Secrets</c> now includes a choice of a random discounted EXE card. EXE cards now include a choice of a random Spell."
             },
             "DraculaDizzy": {
-                "name": "ROTTEN BLOOD",
+                "name": "UNHOLY WATER",
                 "description": "Whenever <c=status>BLEEDING</c> triggers, give the ship {{ResultingOxidation}} <c=status>OXIDATION</c>."
             },
             "DraculaDrake": {
@@ -202,7 +202,7 @@
                 "description": "Whenever a <c=parttrait>charge</c> is triggered, the ship gains 1 <c=status>BLEEDING</c>."
             },
             "DraculaIsaac": {
-                "name": "BAT SOUL",
+                "name": "SOUL OF BAT",
                 "description": "Your destroyed <c=midrow>non-Jupiter drones</c> get replaced with <c=midrow>Bats</c>."
             },
             "DraculaJohnson": {
