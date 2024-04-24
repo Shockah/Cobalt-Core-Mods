@@ -133,6 +133,7 @@ public sealed class ModEntry : SimpleMod
 		__result.SetTraitOverrides(
 			Instance.Helper.Content.Cards.GetAllCardTraits(state, c)
 				.Where(kvp => kvp.Value.PermanentOverride is not null)
+				.Where(kvp => kvp.Value.Innate != kvp.Value.PermanentOverride)
 				.Select(kvp => new KeyValuePair<ICardTraitEntry, bool>(kvp.Key, kvp.Value.PermanentOverride!.Value))
 		);
 	}
@@ -146,12 +147,14 @@ public sealed class ModEntry : SimpleMod
 
 	private static void RunSummaryRoute_Render_Postfix(RunSummaryRoute __instance)
 	{
+		var slideIn = Vault.GetSlideIn(__instance.introAnimTime);
 		var index = 0;
+		var baseY = 98 + __instance.scroll + slideIn;
 
 		if (__instance.runSummary.GetEnemyDiedTo() is { } enemyDiedToKey && DB.currentLocale.strings.TryGetValue($"enemy.{enemyDiedToKey}.name", out var enemyName))
 		{
-			Draw.Text(Instance.Localizations.Localize(["enemyDiedTo"]), 240, 98 + index * 12, color: Colors.textMain);
-			Draw.Text(enemyName, 400, 98 + index * 12, color: Colors.textBold, align: TAlign.Right);
+			Draw.Text(Instance.Localizations.Localize(["enemyDiedTo"]), 240, baseY + index * 12, color: Colors.textMain);
+			Draw.Text(enemyName, 400, baseY + index * 12, color: Colors.textBold, align: TAlign.Right);
 			index++;
 		}
 	}
@@ -276,7 +279,7 @@ public sealed class ModEntry : SimpleMod
 		{
 			var rect = new Rect(0, 0, 11, 11) + restingPosition;
 			var box = g.Push(rect: rect, autoFocus: autoFocus);
-			Draw.Text(DB.IntStringCache(timesTriggered), box.rect.x + 13, box.rect.y + 6, outline: Colors.black, color: Colors.white, align: TAlign.Right, dontSubstituteLocFont: true);
+			Draw.Text(DB.IntStringCache(timesTriggered), box.rect.x + 6, box.rect.y + 13, outline: null, color: Color.Lerp(Colors.white, Colors.black, 0.5), align: TAlign.Center, dontSubstituteLocFont: true);
 			g.Pop();
 		}
 	}
