@@ -20,6 +20,8 @@ public sealed class ModEntry : SimpleMod
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly Harmony Harmony;
 	internal readonly IKokoroApi? KokoroApi;
+	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
+	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
 	private static State? LastSavingState;
 	private static RunSummaryRoute? LastRunSummaryRoute;
@@ -29,6 +31,14 @@ public sealed class ModEntry : SimpleMod
 		Instance = this;
 		Harmony = new(package.Manifest.UniqueName);
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro");
+
+		this.AnyLocalizations = new JsonLocalizationProvider(
+			tokenExtractor: new SimpleLocalizationTokenExtractor(),
+			localeStreamFunction: locale => package.PackageRoot.GetRelativeFile($"i18n/{locale}.json").OpenRead()
+		);
+		this.Localizations = new MissingPlaceholderLocalizationProvider<IReadOnlyList<string>>(
+			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
+		);
 
 		Harmony.TryPatch(
 			logger: Logger,
@@ -44,6 +54,11 @@ public sealed class ModEntry : SimpleMod
 			logger: Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
 			postfix: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Postfix))
+		);
+		Harmony.TryPatch(
+			logger: Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.PlayerLost)),
+			prefix: new HarmonyMethod(GetType(), nameof(Combat_PlayerLost_Prefix))
 		);
 		Harmony.TryPatch(
 			logger: Logger,
@@ -64,6 +79,7 @@ public sealed class ModEntry : SimpleMod
 			logger: Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(RunSummaryRoute), nameof(RunSummaryRoute.Render)),
 			prefix: new HarmonyMethod(GetType(), nameof(RunSummaryRoute_Render_Prefix)),
+			postfix: new HarmonyMethod(GetType(), nameof(RunSummaryRoute_Render_Postfix)),
 			transpiler: new HarmonyMethod(GetType(), nameof(RunSummaryRoute_Render_Transpiler))
 		);
 	}
@@ -86,10 +102,16 @@ public sealed class ModEntry : SimpleMod
 			card.IncrementTimesPlayed(s);
 	}
 
+	private static void Combat_PlayerLost_Prefix(Combat __instance, G g)
+		=> g.state.SetEnemyDiedTo(__instance.otherShip.ai?.Key());
+
 	private static void RunSummary_Save_Prefix(RunSummary __instance)
 	{
 		if (LastSavingState is not { } state)
 			return;
+
+		__instance.SetEnemyDiedTo(state.GetEnemyDiedTo());
+		state.SetEnemyDiedTo(null);
 
 		__instance.SetTimesArtifactsTriggered(
 			state.EnumerateAllArtifacts()
@@ -122,13 +144,96 @@ public sealed class ModEntry : SimpleMod
 			Instance.Helper.ModData.SetModData(__instance, "FakeState", Mutil.DeepCopy(DB.fakeState));
 	}
 
+	private static void RunSummaryRoute_Render_Postfix(RunSummaryRoute __instance)
+	{
+		var index = 0;
+
+		if (__instance.runSummary.GetEnemyDiedTo() is { } enemyDiedToKey && DB.currentLocale.strings.TryGetValue($"enemy.{enemyDiedToKey}.name", out var enemyName))
+		{
+			Draw.Text(Instance.Localizations.Localize(["enemyDiedTo"]), 240, 98 + index * 12, color: Colors.textMain);
+			Draw.Text(enemyName, 400, 98 + index * 12, color: Colors.textBold, align: TAlign.Right);
+			index++;
+		}
+	}
+
 	private static IEnumerable<CodeInstruction> RunSummaryRoute_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(ILMatches.Ldstr("runSummary.turnsTaken"))
+				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldfld("y"))
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldc_R8, 1.0),
+					new CodeInstruction(OpCodes.Sub)
+				)
+				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldfld("y"))
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldc_R8, 1.0),
+					new CodeInstruction(OpCodes.Sub)
+				)
+
+				.Find(ILMatches.Ldstr("runSummary.hullDamageTaken"))
+				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldfld("y"))
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldc_R8, 2.0),
+					new CodeInstruction(OpCodes.Sub)
+				)
+				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldfld("y"))
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldc_R8, 2.0),
+					new CodeInstruction(OpCodes.Sub)
+				)
+
+				.Find(ILMatches.Ldstr("runSummary.seed"))
+				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldfld("y"))
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldc_R8, 3.0),
+					new CodeInstruction(OpCodes.Sub)
+				)
+				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldfld("y"))
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldc_R8, 3.0),
+					new CodeInstruction(OpCodes.Sub)
+				)
+
+				.Find(ILMatches.Ldstr("runSummary.ship"))
+				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldfld("y"))
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldc_R8, 4.0),
+					new CodeInstruction(OpCodes.Sub)
+				)
+				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldfld("y"))
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldc_R8, 4.0),
+					new CodeInstruction(OpCodes.Sub)
+				)
+
+				.Find(ILMatches.Ldstr("runSummary.difficulty"))
+				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldfld("y"))
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldc_R8, 5.0),
+					new CodeInstruction(OpCodes.Sub)
+				)
+				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldfld("y"))
+				.Insert(
+					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldc_R8, 5.0),
+					new CodeInstruction(OpCodes.Sub)
+				)
+
 				.Find(ILMatches.Call(AccessTools.DeclaredMethod(typeof(Artifact), nameof(Artifact.Render))))
 				.Replace(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(RunSummaryRoute_Render_Transpiler_HijackArtifactRender))))
+
 				.Find(
 					ILMatches.Ldloc<Card>(originalMethod).CreateLdlocaInstruction(out var ldlocaCard),
 					ILMatches.Ldloc<CardSummary>(originalMethod).CreateLdlocInstruction(out var ldlocCardSummary),
@@ -150,6 +255,7 @@ public sealed class ModEntry : SimpleMod
 					ldlocCard,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(RunSummaryRoute_Render_Transpiler_HijackCardRender)))
 				)
+
 				.AllElements();
 		}
 		catch (Exception ex)
@@ -224,10 +330,13 @@ public sealed class ModEntry : SimpleMod
 		}
 
 		if (card.GetTimesPlayed(fakeState) is { } timesPlayed && timesPlayed > 0)
-			str = $"{str} <c=white>({timesPlayed})</c>";
+		{
+			var counterColor = Color.Lerp(color ?? Colors.textMain, Colors.black, 0.5);
+			str = $"{str} <c={counterColor}>({timesPlayed})</c>";
+		}
 
 		var rect = Draw.Text(str, x, y, Instance.KokoroApi?.PinchCompactFont ?? font, color, colorForce, progress, maxWidth, align, dontDraw, lineHeight, outline, blend, samplerState, effect, dontSubstituteLocFont, letterSpacing, extraScale);
-		var box = MG.inst.g.Push(new UIKey(StableUK.card, card.uuid), new Rect(x - 80, y - 12, rect.w, rect.h));
+		var box = MG.inst.g.Push(new UIKey(StableUK.card, card.uuid), new Rect(x - 82, y - 14, rect.w + 4, rect.h + 4));
 
 		if (box.IsHover())
 			MG.inst.g.tooltips.Add(box.rect.xy.round() + new Vec(rect.w + 8), new TTCard { card = card, showCardTraitTooltips = true });

@@ -11,4 +11,10 @@ internal static class RunSummaryExt
 
 	public static void SetTimesArtifactsTriggered(this RunSummary summary, IEnumerable<KeyValuePair<string, int>> times)
 		=> ModEntry.Instance.Helper.ModData.SetOptionalModData(summary, "TimesArtifactsTriggered", times.ToDictionary());
+
+	public static string? GetEnemyDiedTo(this RunSummary summary)
+		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<string>(summary, "EnemyDiedTo");
+
+	public static void SetEnemyDiedTo(this RunSummary summary, string? value)
+		=> ModEntry.Instance.Helper.ModData.SetOptionalModData(summary, "EnemyDiedTo", value);
 }
