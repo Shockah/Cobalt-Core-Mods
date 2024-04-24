@@ -195,7 +195,7 @@
             },
             "DraculaDrake": {
                 "name": "PERFORATING SLUGS",
-                "description": "<c=action>PIERCING and STUNNING ATTACKS</c> apply 1 <c=status>BLEEDING</c>."
+                "description": "<c=action>Piercing and stunning attacks</c> apply 1 <c=status>BLEEDING</c>."
             },
             "DraculaDyna": {
                 "name": "SHRAPNEL",
