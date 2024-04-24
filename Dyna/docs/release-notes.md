@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.3
+Released 24 April 2024.
 
 * Fixed Blastwave no longer triggering charges.
 
