@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed a crash when previewing Bat Form upgrades when currently on the 4th quadrant of the base card.
+
 ## 1.1.1
 Released 24 April 2024.
 
