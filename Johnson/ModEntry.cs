@@ -257,7 +257,7 @@ public sealed class ModEntry : SimpleMod
 			Starters = new()
 			{
 				cards = [
-					new KickstartCard(),
+					new RevampCard(),
 					new LayoutCard()
 				]
 			}
