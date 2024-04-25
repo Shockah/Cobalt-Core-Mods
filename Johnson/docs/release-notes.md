@@ -6,6 +6,7 @@
 
 * Changed the starter card from Kickstart to Revamp.
 * Fixed temporary card upgrades persisting to the run summary.
+* Changed art for the None of the Above card for the CAT duo artifact.
 
 ## 1.1.0
 Released 24 April 2024.
