@@ -34,11 +34,27 @@ internal sealed class TemporaryUpgradeManager
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
 			postfix: new HarmonyMethod(GetType(), nameof(Card_GetAllTooltips_Postfix))
 		);
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(State), nameof(State.EndRun)),
+			prefix: new HarmonyMethod(GetType(), nameof(State_EndRun_Prefix))
+		);
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
 			state.rewardsQueue.Queue(new ARemoveTemporaryUpgrades());
 		}, 0);
+	}
+
+	private static void RemoveTemporaryUpgrades(State state)
+	{
+		foreach (var card in state.GetAllCards())
+		{
+			if (!card.IsTemporarilyUpgraded())
+				continue;
+			card.SetTemporarilyUpgraded(false);
+			card.upgrade = Upgrade.None;
+		}
 	}
 
 	private static IEnumerable<CodeInstruction> Card_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
@@ -113,18 +129,15 @@ internal sealed class TemporaryUpgradeManager
 		__result = ModifyTooltips(__result);
 	}
 
+	private static void State_EndRun_Prefix(State __instance)
+		=> RemoveTemporaryUpgrades(__instance);
+
 	public sealed class ARemoveTemporaryUpgrades : CardAction
 	{
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
-			foreach (var card in s.GetAllCards())
-			{
-				if (!card.IsTemporarilyUpgraded())
-					continue;
-				card.SetTemporarilyUpgraded(false);
-				card.upgrade = Upgrade.None;
-			}
+			RemoveTemporaryUpgrades(s);
 		}
 	}
 }

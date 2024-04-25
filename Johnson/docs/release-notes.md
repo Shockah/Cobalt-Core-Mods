@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Changed the starter card from Kickstart to Revamp.
+* Fixed temporary card upgrades persisting to the run summary.
 
 ## 1.1.0
 Released 24 April 2024.
