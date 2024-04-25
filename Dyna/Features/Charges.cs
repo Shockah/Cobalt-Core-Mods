@@ -237,9 +237,13 @@ internal sealed class ChargeManager
 
 	private static void AAttack_Begin_Transpiler_TriggerChargeIfAny(AAttack attack, State state, Combat combat, RaycastResult raycastResult)
 	{
+		if (raycastResult.hitDrone || !raycastResult.hitShip)
+			return;
+
 		var targetShip = attack.targetPlayer ? state.ship : combat.otherShip;
 		if (targetShip.GetPartAtWorldX(raycastResult.worldX) is not { } part || part.type == PType.empty)
 			return;
+
 		TriggerChargeIfAny(state, combat, part, attack.targetPlayer);
 	}
 
