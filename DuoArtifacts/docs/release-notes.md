@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Duo artifacts now appear in each character's section in the Codex.
+
 ## 1.0.7
 
 * Added possible duos to character tooltips on the new run screen.

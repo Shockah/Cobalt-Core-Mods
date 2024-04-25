@@ -64,6 +64,9 @@ public sealed class ApiImplementation : IApi
 	public IEnumerable<Artifact> InstantiateMatchingDuoArtifacts(IEnumerable<Deck> combo)
 		=> Database.InstantiateMatchingDuoArtifacts(combo);
 
+	public Color GetDynamicColorForArtifact(Artifact artifact, Deck? ignoreDeck = null)
+		=> Database.GetDynamicColorForArtifact(artifact, ignoreDeck);
+
 	public void RegisterDuoArtifact(Type type, IEnumerable<Deck> combo)
 		=> Database.RegisterDuoArtifact(type, combo);
 

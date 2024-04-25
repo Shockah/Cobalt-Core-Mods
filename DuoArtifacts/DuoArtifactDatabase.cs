@@ -7,6 +7,8 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class DuoArtifactDatabase
 {
+	private const double SingleColorTransitionAnimationLengthSeconds = 1;
+
 	internal ExternalDeck DuoArtifactDeck { get; set; } = null!;
 	internal ExternalDeck TrioArtifactDeck { get; set; } = null!;
 	internal ExternalDeck ComboArtifactDeck { get; set; } = null!;
@@ -48,6 +50,37 @@ internal sealed class DuoArtifactDatabase
 
 	public IEnumerable<Artifact> InstantiateMatchingDuoArtifacts(IEnumerable<Deck> combo)
 		=> GetMatchingDuoArtifactTypes(combo).Select(t => (Artifact)Activator.CreateInstance(t)!);
+
+	public Color GetDynamicColorForArtifact(Artifact artifact, Deck? ignoreDeck = null)
+	{
+		var colors = GetDuoArtifactOwnership(artifact)
+			?.Select(c => c == Deck.catartifact ? Deck.colorless : c)
+			.OrderBy(NewRunOptions.allChars.IndexOf)
+			.Where(key => key != ignoreDeck)
+			.Select(key => DB.decks[key].color)
+			.ToList();
+		if (colors is null || colors.Count == 0)
+			return DB.decks[artifact.GetMeta().owner].color;
+		if (colors.Count == 1)
+			return colors[0];
+
+		static (Color, Color, double) GetLerpInfo(List<Color> colors, double totalFraction)
+		{
+			double singleFraction = 1.0 / colors.Count;
+			int whichFraction = ((int)Math.Round(totalFraction / singleFraction) + colors.Count - 1) % colors.Count;
+			double fractionStart = singleFraction * whichFraction;
+			double fractionEnd = singleFraction * (whichFraction + 1);
+			double fraction = (totalFraction - fractionStart) / (fractionEnd - fractionStart);
+			return (colors[whichFraction], colors[(whichFraction + 1) % colors.Count], fraction);
+		}
+
+		double animationLength = colors.Count * SingleColorTransitionAnimationLengthSeconds;
+		double animationPosition = ModEntry.Instance.KokoroApi.TotalGameTime.TotalSeconds % animationLength;
+		double totalFraction = animationPosition / animationLength;
+		var (fromColor, toColor, fraction) = GetLerpInfo(colors, totalFraction);
+		double lerpFraction = Math.Sin(fraction * Math.PI) * 0.5 + 0.5;
+		return Color.Lerp(fromColor, toColor, lerpFraction);
+	}
 
 	public void RegisterDuoArtifact(Type type, IEnumerable<Deck> combo)
 	{

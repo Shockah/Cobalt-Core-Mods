@@ -21,7 +21,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	internal static ModEntry Instance { get; private set; } = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
-	public IEnumerable<DependencyEntry> Dependencies => new DependencyEntry[] { new DependencyEntry<IModManifest>("Shockah.Kokoro", ignoreIfMissing: false) };
+	public IEnumerable<DependencyEntry> Dependencies => [new DependencyEntry<IModManifest>("Shockah.Kokoro", ignoreIfMissing: false)];
 
 	public DirectoryInfo? GameRootFolder { get; set; }
 	public DirectoryInfo? ModRootFolder { get; set; }
@@ -29,6 +29,8 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 	internal IKokoroApi KokoroApi { get; private set; } = null!;
 	internal readonly DuoArtifactDatabase Database = new();
+	internal ExternalSprite[] DuoGlowSprites { get; private set; } = new ExternalSprite[2];
+	internal ExternalSprite[] TrioGlowSprites { get; private set; } = new ExternalSprite[3];
 
 	private Harmony Harmony { get; set; } = null!;
 	private readonly Dictionary<HashSet<string>, ExternalSprite> DuoArtifactSprites = new(HashSet<string>.CreateSetComparer());
@@ -62,6 +64,17 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 	public void LoadManifest(ISpriteRegistry registry)
 	{
+		for (var i = 0; i < DuoGlowSprites.Length; i++)
+			DuoGlowSprites[i] = registry.RegisterArtOrThrow(
+				id: $"{typeof(ModEntry).Namespace}.DuoGlow.{i}",
+				file: new FileInfo(Path.Combine(ModRootFolder!.FullName, "assets", "Effects", $"DuoGlow{i}.png"))
+			);
+		for (var i = 0; i < TrioGlowSprites.Length; i++)
+			TrioGlowSprites[i] = registry.RegisterArtOrThrow(
+				id: $"{typeof(ModEntry).Namespace}.TrioGlow.{i}",
+				file: new FileInfo(Path.Combine(ModRootFolder!.FullName, "assets", "Effects", $"TrioGlow{i}.png"))
+			);
+
 		string namePrefix = $"{typeof(ModEntry).Namespace}.Sprite";
 		foreach (var definition in DuoArtifactDefinition.Definitions)
 		{

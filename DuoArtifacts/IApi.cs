@@ -30,6 +30,8 @@ public interface IApi
 	IEnumerable<Type> GetMatchingDuoArtifactTypes(IEnumerable<Deck> combo);
 	IEnumerable<Artifact> InstantiateMatchingDuoArtifacts(IEnumerable<Deck> combo);
 
+	Color GetDynamicColorForArtifact(Artifact artifact, Deck? ignoreDeck = null);
+
 	void RegisterDuoArtifact(Type type, IEnumerable<Deck> combo);
 	void RegisterDuoArtifact<TArtifact>(IEnumerable<Deck> combo) where TArtifact : Artifact;
 }

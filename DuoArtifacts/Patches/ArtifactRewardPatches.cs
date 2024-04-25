@@ -15,8 +15,6 @@ internal static class ArtifactRewardPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private const double SingleColorTransitionAnimationLengthSeconds = 1;
-
 	private static readonly string FirstZoneDuoTag = $"{typeof(ModEntry).Namespace!}.Duo.FirstZone";
 	private static readonly string PastFirstZoneDuoTag = $"{typeof(ModEntry).Namespace!}.Duo.PastFirstZone";
 
@@ -157,35 +155,8 @@ internal static class ArtifactRewardPatches
 		}
 	}
 
-	private static Color ArtifactReward_Render_Transpiler_ModifyDeckColor(Color color, Artifact artifact)
-	{
-		if (!Instance.Database.IsDuoArtifact(artifact))
-			return color;
-
-		var colors = Instance.Database.GetDuoArtifactOwnership(artifact)
-			?.OrderBy(c => c.Key())
-			.Select(key => DB.decks[key].color)
-			.ToList();
-		if (colors is null)
-			return color;
-
-		static (Color, Color, double) GetLerpInfo(List<Color> colors, double totalFraction)
-		{
-			double singleFraction = 1.0 / colors.Count;
-			int whichFraction = ((int)Math.Round(totalFraction / singleFraction) + colors.Count - 1) % colors.Count;
-			double fractionStart = singleFraction * whichFraction;
-			double fractionEnd = singleFraction * (whichFraction + 1);
-			double fraction = (totalFraction - fractionStart) / (fractionEnd - fractionStart);
-			return (colors[whichFraction], colors[(whichFraction + 1) % colors.Count], fraction);
-		}
-
-		double animationLength = colors.Count * SingleColorTransitionAnimationLengthSeconds;
-		double animationPosition = Instance.KokoroApi.TotalGameTime.TotalSeconds % animationLength;
-		double totalFraction = animationPosition / animationLength;
-		var (fromColor, toColor, fraction) = GetLerpInfo(colors, totalFraction);
-		double lerpFraction = Math.Sin(fraction * Math.PI) * 0.5 + 0.5;
-		return Color.Lerp(fromColor, toColor, lerpFraction);
-	}
+	private static Color ArtifactReward_Render_Transpiler_ModifyDeckColor(Color _, Artifact artifact)
+		=> Instance.Database.GetDynamicColorForArtifact(artifact);
 
 	private static void ArtifactReward_OnMouseDown_Postfix(ArtifactReward __instance, G g, Box b)
 	{
