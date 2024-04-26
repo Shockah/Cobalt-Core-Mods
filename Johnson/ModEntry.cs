@@ -81,7 +81,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static IEnumerable<Type> AllCardTypes { get; }
-		= [..CommonCardTypes, ..UncommonCardTypes, ..RareCardTypes, ..SpecialCardTypes];
+		= [..CommonCardTypes, ..UncommonCardTypes, ..RareCardTypes, typeof(JohnsonExeCard), ..SpecialCardTypes];
 
 	internal static IReadOnlyList<Type> CommonArtifacts { get; } = [
 		typeof(BriefcaseArtifact),
@@ -260,7 +260,8 @@ public sealed class ModEntry : SimpleMod
 					new RevampCard(),
 					new LayoutCard()
 				]
-			}
+			},
+			ExeCardType = typeof(JohnsonExeCard)
 		});
 
 		helper.Content.Characters.RegisterCharacterAnimation(new()

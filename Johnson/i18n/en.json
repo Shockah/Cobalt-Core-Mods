@@ -287,6 +287,15 @@
             "name": "Slide Transition"
         },
 
+        "JohnsonExe": {
+            "name": "Johnson .EXE",
+            "description": {
+                "None": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=2D3F61>Johnson</c> cards to your hand.",
+                "A": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=2D3F61>Johnson</c> cards to your hand.",
+                "B": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=2D3F61>Johnson</c> cards to your hand."
+            }
+        },
+
         "Duo": {
             "JohnsonCatNoneOfTheAbove": {
                 "name": "None of the Above"

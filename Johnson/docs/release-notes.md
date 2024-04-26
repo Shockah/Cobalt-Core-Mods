@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added a Johnson.EXE card.
+
 ## 1.1.1
 Released 26 April 2024.
 
