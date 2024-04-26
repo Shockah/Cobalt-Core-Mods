@@ -1,6 +1,6 @@
 {
     "UniqueName": "Shockah.Dracula",
-    "Version": "1.1.1",
+    "Version": "1.1.2",
     "RequiredApiVersion": "0.9.0",
     "EntryPointAssembly": "Dracula.dll",
     "LoadPhase": "AfterDbInit",

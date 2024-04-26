@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.2
+Released 26 April 2024.
 
 * Fixed a crash when previewing Bat Form upgrades when currently on the 4th quadrant of the base card.
 * Fixed the Dizzy duo Oxidation vs Corrode vs Bleeding triggers. It still triggers delayed, but doesn't eat up Oxidation while doing so.
