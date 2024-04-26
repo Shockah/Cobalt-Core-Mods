@@ -44,6 +44,19 @@ internal sealed class BatStuff : StuffBase
 	public override double GetWiggleRate()
 		=> 7;
 
+	private static int? ClosestShipPart(Ship ship, int worldX)
+	{
+		var maxOffset = Math.Max(Math.Abs(ship.x - worldX), Math.Abs(ship.x + ship.parts.Count - 1 - worldX));
+		for (var i = 0; i < maxOffset; i++)
+		{
+			if (i != 0 && ship.GetPartAtWorldX(worldX - i) is { } part1 && part1.type != PType.empty)
+				return worldX - i;
+			if (ship.GetPartAtWorldX(worldX + i) is { } part2 && part2.type != PType.empty)
+				return worldX + i;
+		}
+		return null;
+	}
+
 	public override Vec GetOffset(G g, bool doRound = false)
 	{
 		var offset = base.GetOffset(g, doRound);
@@ -51,24 +64,11 @@ internal sealed class BatStuff : StuffBase
 		if (g.state.route is not Combat combat)
 			return offset;
 
-		int? ClosestShipPart(Ship ship)
-		{
-			var maxOffset = Math.Max(Math.Abs(ship.x - x), Math.Abs(ship.x + ship.parts.Count - 1 - x));
-			for (var i = 0; i < maxOffset; i++)
-			{
-				if (i != 0 && ship.GetPartAtWorldX(x - i) is { } part1 && part1.type != PType.empty)
-					return x - i;
-				if (ship.GetPartAtWorldX(x + i) is { } part2 && part2.type != PType.empty)
-					return x + i;
-			}
-			return null;
-		}
-
 		static double Ease(double f)
 			=> -(Math.Cos(Math.PI * f) - 1) / 2;
 
 		var ownerShip = targetPlayer ? combat.otherShip : g.state.ship;
-		if (ClosestShipPart(ownerShip) is not { } closestShipPart || Animation is not { } animation)
+		if (ClosestShipPart(ownerShip, x) is not { } closestShipPart || Animation is not { } animation)
 			return offset;
 
 		float playerShipOffset = 32;
@@ -303,7 +303,7 @@ internal sealed class BatStuff : StuffBase
 						healAmount = 1
 					});
 				else
-					ship.NormalDamage(state, combat, 1, FromX);
+					ship.NormalDamage(state, combat, 1, ClosestShipPart(ship, FromX));
 			}
 
 			QueuedSubActions.Add(new AStatus
