@@ -1,0 +1,22 @@
+{
+    "artifact": {
+        "name": "REROLLS",
+        "description": "Allows you to reroll <c=artifact>artifact</c> or <c=card>card</c> rewards.",
+        "extraDescription": {
+            "zero": [
+                "You have no rerolls left.",
+                "Clearing a zone grants an extra reroll."
+            ],
+            "one": [
+                "You can reroll <c=boldPink>1</c> more time.",
+                "Clearing a zone grants an extra reroll."
+            ],
+            "other": [
+                "You can reroll <c=boldPink>{{Amount}}</c> more times.",
+                "Clearing a zone grants an extra reroll."
+            ]
+        }
+    },
+    "button": "REROLL",
+    "shopChoice": "Grant an extra reroll"
+}

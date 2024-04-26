@@ -4,21 +4,6 @@
     "DisplayName": "Rerolls",
     "Description": "Adds a way to reroll artifact and card rewards.",
     "Author": "Shockah",
-    "RequiredApiVersion": "0.6.0",
-    "ModType": "Nickel.Legacy",
-    "EntryPointAssembly": "Rerolls.dll",
-    "AssemblyReferences": [
-        {
-            "Name": "Shrike"
-        },
-        {
-            "Name": "Shrike.Harmony"
-        }
-    ],
-    "Dependencies": [
-        {
-            "UniqueName": "Nickel.Legacy",
-            "Version": "0.4.0"
-        }
-    ]
+    "RequiredApiVersion": "0.9.0",
+    "EntryPointAssembly": "Rerolls.dll"
 }

@@ -4,8 +4,5 @@
 		<Version>1.1.2</Version>
 		<IncludedModProjectPaths>i18n;assets</IncludedModProjectPaths>
 	</PropertyGroup>
-	<ItemGroup>
-	  <Folder Include="assets\" />
-	</ItemGroup>
 	<Import Project="..\Configuration.Mod.props" />
 </Project>

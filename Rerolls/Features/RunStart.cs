@@ -4,16 +4,14 @@ using System.Linq;
 
 namespace Shockah.Rerolls;
 
-internal static class StatePatches
+internal sealed class RunStartManager
 {
-	private static ModEntry Instance => ModEntry.Instance;
-
-	public static void Apply(Harmony harmony)
+	public RunStartManager()
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
 			original: () => typeof(State).GetNestedTypes(AccessTools.all).SelectMany(t => t.GetMethods(AccessTools.all)).First(m => m.Name.StartsWith("<PopulateRun>") && m.ReturnType == typeof(Route)),
-			postfix: new HarmonyMethod(typeof(StatePatches), nameof(State_PopulateRun_Delegate_Postfix))
+			postfix: new HarmonyMethod(GetType(), nameof(State_PopulateRun_Delegate_Postfix))
 		);
 	}
 
