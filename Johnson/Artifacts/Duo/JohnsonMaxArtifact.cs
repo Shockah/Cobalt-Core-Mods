@@ -45,7 +45,7 @@ internal sealed class JohnsonMaxArtifact : Artifact, IRegisterable
 		if (!state.IsOutsideRun() && state != DB.fakeState)
 		{
 			var combat = state.route as Combat;
-			IEnumerable<Card> cards = [.. state.deck, .. combat?.discard, .. combat?.hand];
+			IEnumerable<Card> cards = [..state.deck, ..combat?.discard ?? [], ..combat?.hand ?? []];
 
 			var groups = cards
 				.GroupBy(card => card.Key())
