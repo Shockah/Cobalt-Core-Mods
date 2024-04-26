@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Added a Johnson.EXE card.
+* Changed the A upgrade of the Profit Margin card.
 * Minor Strategize card text improvement.
 
 ## 1.1.1

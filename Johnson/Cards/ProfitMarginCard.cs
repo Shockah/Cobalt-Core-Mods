@@ -38,13 +38,13 @@ internal sealed class ProfitMarginCard : Card, IRegisterable
 				{
 					targetPlayer = true,
 					status = Status.tempShield,
-					statusAmount = 1
+					statusAmount = 3
 				},
 				new AStatus
 				{
 					targetPlayer = true,
 					status = Status.shield,
-					statusAmount = 2
+					statusAmount = 1
 				},
 				new AStatus
 				{
