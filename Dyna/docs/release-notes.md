@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Blown Fuse artifact not working as intended.
+
 ## 1.0.4
 Released 26 April 2024.
 

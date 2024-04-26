@@ -34,22 +34,32 @@ internal sealed class BlownFuseArtifact : Artifact, IRegisterable
 		state.ship.baseEnergy--;
 	}
 
-	public override void OnTurnEnd(State state, Combat combat)
+	public override void OnTurnStart(State state, Combat combat)
 	{
-		base.OnTurnEnd(state, combat);
-		if (combat.isPlayerTurn)
+		base.OnTurnStart(state, combat);
+		if (!combat.isPlayerTurn)
 			return;
-		if (combat.turn == 0)
+		if (combat.turn <= 1)
 			return;
-
-		static void RemoveAllCharges(Ship ship)
+		
+		static bool RemoveAllCharges(Ship ship)
 		{
+			var removedAny = false;
 			foreach (var part in ship.parts)
+			{
+				if (part.GetStickedCharge() is null)
+					continue;
 				part.SetStickedCharge(null);
+				removedAny = true;
+			}
+			return removedAny;
 		}
 
-		RemoveAllCharges(state.ship);
-		RemoveAllCharges(combat.otherShip);
-		Pulse();
+		var removedAny = false;
+		removedAny |= RemoveAllCharges(state.ship);
+		removedAny |= RemoveAllCharges(combat.otherShip);
+
+		if (removedAny)
+			Pulse();
 	}
 }
