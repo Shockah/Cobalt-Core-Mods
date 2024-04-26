@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.3
+Released 26 April 2024.
 
 * Fixed the Crimson Wave card always highlighting all parts when held in hand.
 * Fixed bats sometimes ignoring damage modifiers on the owner's ship.
