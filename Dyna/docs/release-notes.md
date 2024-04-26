@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Fixed attacks "piercing through" missiles and triggering charges behind them when they shouldn't.
+* Minor tooltip improvements.
 
 ## 1.0.3
 Released 24 April 2024.
