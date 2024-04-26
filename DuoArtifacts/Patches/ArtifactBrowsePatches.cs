@@ -17,6 +17,8 @@ internal static class ArtifactBrowsePatches
 	private static ModEntry Instance => ModEntry.Instance;
 	private static readonly Lazy<Func<ArtifactBrowse, Dictionary<UIKey, double>>> ArtifactToScrollYCacheGetter = new(() => AccessTools.DeclaredField(typeof(ArtifactBrowse), "artifactToScrollYCache").EmitInstanceGetter<ArtifactBrowse, Dictionary<UIKey, double>>());
 
+	private static readonly List<Artifact> LastDuos = [];
+	private static ArtifactBrowse? LastRoute;
 	private static Deck? LastDeck;
 
 	public static void Apply(Harmony harmony)
@@ -42,6 +44,7 @@ internal static class ArtifactBrowsePatches
 				.Find(ILMatches.Stloc<List<(Deck, List<KeyValuePair<string, Type>>)>>(originalMethod))
 				.Insert(
 					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(ArtifactBrowsePatches), nameof(ArtifactBrowse_Render_Transpiler_ModifyArtifacts)))
 				)
 
@@ -60,9 +63,14 @@ internal static class ArtifactBrowsePatches
 		}
 	}
 
-	private static List<(Deck, List<KeyValuePair<string, Type>>)> ArtifactBrowse_Render_Transpiler_ModifyArtifacts(List<(Deck, List<KeyValuePair<string, Type>>)> allArtifacts)
+	private static List<(Deck, List<KeyValuePair<string, Type>>)> ArtifactBrowse_Render_Transpiler_ModifyArtifacts(List<(Deck, List<KeyValuePair<string, Type>>)> allArtifacts, ArtifactBrowse route)
 	{
-		var allDuos = Instance.Database.InstantiateAllDuoArtifacts().ToList();
+		if (route != LastRoute)
+		{
+			LastRoute = route;
+			LastDuos.Clear();
+			LastDuos.AddRange(Instance.Database.InstantiateAllDuoArtifacts());
+		}
 
 		foreach (var (deck, artifacts) in allArtifacts)
 		{
@@ -72,7 +80,7 @@ internal static class ArtifactBrowsePatches
 				continue;
 
 			artifacts.AddRange(
-				allDuos
+				LastDuos
 					.Where(duo => Instance.Database.GetDuoArtifactOwnership(duo)?.Contains(deck == Deck.catartifact ? Deck.colorless : deck) ?? false)
 					.Select(duo => new KeyValuePair<string, Type>(duo.Key(), duo.GetType()))
 			);
