@@ -192,7 +192,7 @@ public sealed class ModEntry : SimpleMod
 			DiscountCardAnywhereBrowseSource,
 			new CustomCardBrowse.CustomCardSource(
 				(_, _, _) => Localizations.Localize(["browseSource", nameof(DiscountCardAnywhereBrowseSource)]),
-				(state, combat) => [.. state.deck, .. combat?.discard, .. combat?.hand]
+				(state, combat) => [..state.deck, ..combat?.discard ?? [], ..combat?.hand ?? []]
 			)
 		);
 		CustomCardBrowse.RegisterCustomCardSource(
@@ -206,7 +206,7 @@ public sealed class ModEntry : SimpleMod
 			StrengthenBrowseSource,
 			new CustomCardBrowse.CustomCardSource(
 				(_, _, _) => Localizations.Localize(["browseSource", nameof(StrengthenBrowseSource)]),
-				(state, combat) => [..state.deck, ..combat?.discard, ..combat?.hand]
+				(state, combat) => [..state.deck, ..combat?.discard ?? [], ..combat?.hand ?? []]
 			)
 		);
 
