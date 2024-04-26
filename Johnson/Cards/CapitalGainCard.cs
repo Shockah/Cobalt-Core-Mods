@@ -32,20 +32,10 @@ internal sealed class CapitalGainCard : Card, IRegisterable
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> upgrade switch
-		{
-			Upgrade.B => [
-				new AStrengthenHand
-				{
-					Amount = 2
-				},
-				new AEndTurn()
-			],
-			_ => [
-				new AStrengthenHand
-				{
-					Amount = 1
-				}
-			],
-		};
+		=> [
+			new AStrengthenHand
+			{
+				Amount = upgrade == Upgrade.B ? 2 : 1
+			}
+		];
 }

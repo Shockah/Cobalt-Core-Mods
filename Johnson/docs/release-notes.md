@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Changed the starter card from Kickstart to Revamp.
+* Changed the B upgrade of the Capital Gain card.
 * Fixed temporary card upgrades persisting to the run summary.
 * Fixed the Max duo artifact sometimes crashing the game on hover.
 * Changed art for the None of the Above card for the CAT duo artifact.
