@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Added a Johnson.EXE card.
+* Minor Strategize card text improvement.
 
 ## 1.1.1
 Released 26 April 2024.

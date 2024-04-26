@@ -218,9 +218,9 @@
         "Strategize": {
             "name": "Strategize",
             "description": {
-                "None": "Add either a <c=card>Brainstorm</c> or a <c=card>Leverage</c> to your <c=keyword>draw pile</c>.",
-                "A": "Add either a <c=card>Brainstorm</c> or a <c=card>Leverage</c> to your <c=keyword>draw pile</c>.",
-                "B": "Add a <c=card>Brainstorm</c> and a <c=card>Leverage</c> to your <c=keyword>discard pile</c>."
+                "None": "Add either a <c=card>Leverage</c> or a <c=card>Brainstorm</c> to your <c=keyword>draw pile</c>.",
+                "A": "Add either a <c=card>Leverage</c> or a <c=card>Brainstorm</c> to your <c=keyword>draw pile</c>.",
+                "B": "Add a <c=card>Leverage</c> and a <c=card>Brainstorm</c> to your <c=keyword>discard pile</c>."
             }
         },
         "Suppliment": {
