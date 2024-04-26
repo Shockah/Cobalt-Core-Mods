@@ -53,7 +53,7 @@ internal sealed class JohnsonMaxArtifact : Artifact, IRegisterable
 				.Take(2)
 				.ToList();
 
-			var hasEffect = !(groups.Count == 0 || groups[0].Count() == groups[1].Count());
+			var hasEffect = groups.Count == 1 || (groups.Count == 2 && groups[0].Count() != groups[1].Count());
 			tooltips.Add(
 				hasEffect
 					? new TTText(ModEntry.Instance.Localizations.Localize(["artifact", "Duo", "JohnsonMax", "hasEffect"], new { CardName = Loc.T($"card.{groups[0].First().Key()}.name") }))
