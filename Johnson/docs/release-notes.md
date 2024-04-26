@@ -9,6 +9,7 @@
 * Fixed temporary card upgrades persisting to the run summary.
 * Fixed the Max duo artifact sometimes crashing the game on hover.
 * Changed art for the None of the Above card for the CAT duo artifact.
+* Minor Revamp card text improvement.
 
 ## 1.1.0
 Released 24 April 2024.

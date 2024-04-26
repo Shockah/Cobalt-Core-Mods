@@ -212,7 +212,7 @@
             "description": {
                 "None": "Your left & rightmost card <c=cardtrait>temp upgrade</c> to type A and B respectively.",
                 "A": "Your left & rightmost card <c=cardtrait>temp upgrade</c> to type A and B respectively.",
-                "B": "<c=cardtrait>Temporarily upgrade</c> your left and rightmost card."
+                "B": "<c=cardtrait>Temporarily upgrade</c> your left & rightmost card."
             }
         },
         "Strategize": {
