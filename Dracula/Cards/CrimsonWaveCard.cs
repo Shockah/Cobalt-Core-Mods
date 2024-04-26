@@ -41,10 +41,6 @@ internal sealed class CrimsonWaveCard : Card, IDraculaCard
 			if (s.ship.parts[i].type == PType.empty)
 				continue;
 
-			s.ship.parts[i].hilight = true;
-			if (c.stuff.TryGetValue(s.ship.x + i, out var @object))
-				@object.hilight = 2;
-
 			actions.Add(new AAttack
 			{
 				fromX = i,
@@ -55,6 +51,34 @@ internal sealed class CrimsonWaveCard : Card, IDraculaCard
 			}.SetLifestealMultiplier(upgrade == Upgrade.B ? 1 : 0));
 		}
 		actions.Add(new LifestealManager.AApplyLifesteal { TargetPlayer = true });
+		actions.Add(new HilightAction());
 		return actions;
+	}
+
+	private sealed class HilightAction : CardAction
+	{
+		public override List<Tooltip> GetTooltips(State s)
+		{
+			if (s.route is not Combat combat)
+				return base.GetTooltips(s);
+
+			for (var i = 0; i < s.ship.parts.Count; i++)
+			{
+				if (s.ship.parts[i].type == PType.empty)
+					continue;
+
+				s.ship.parts[i].hilight = true;
+				if (combat.stuff.TryGetValue(s.ship.x + i, out var @object))
+					@object.hilight = 2;
+			}
+
+			return base.GetTooltips(s);
+		}
+
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+			timer = 0;
+		}
 	}
 }
