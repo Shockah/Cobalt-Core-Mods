@@ -6,6 +6,7 @@
 
 * Fixed the Crimson Wave card always highlighting all parts when held in hand.
 * Fixed bats sometimes ignoring damage modifiers on the owner's ship.
+* Fixed the Wings of Night artifact never pulsing.
 
 ## 1.1.2
 Released 26 April 2024.

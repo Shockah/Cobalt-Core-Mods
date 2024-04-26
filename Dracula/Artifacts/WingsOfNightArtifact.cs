@@ -1,7 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dracula;
@@ -25,8 +24,8 @@ internal sealed class WingsOfNightArtifact : Artifact, IRegisterable
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> new List<Tooltip>
-		{
+		=>
+		[
 			new TTCard
 			{
 				card = new BatFormCard
@@ -35,15 +34,15 @@ internal sealed class WingsOfNightArtifact : Artifact, IRegisterable
 					temporaryOverride = true,
 					exhaustOverride = true
 				}
-			}
-		}
-		.Concat(StatusMeta.GetTooltips(Status.evade, 1))
-		.ToList();
+			},
+			..StatusMeta.GetTooltips(Status.evade, 1),
+		];
 
 	public override void OnTurnStart(State state, Combat combat)
 	{
 		if (!combat.isPlayerTurn)
 			return;
+
 		combat.QueueImmediate([
 			new AAddCard
 			{
@@ -53,7 +52,8 @@ internal sealed class WingsOfNightArtifact : Artifact, IRegisterable
 					temporaryOverride = true,
 					exhaustOverride = true
 				},
-				destination = CardDestination.Hand
+				destination = CardDestination.Hand,
+				artifactPulse = Key()
 			},
 			new AStatus
 			{
