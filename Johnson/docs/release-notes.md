@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.2
+Released 26 April 2024.
 
 * Added a Johnson.EXE card.
 * Changed the A upgrade of the Profit Margin card.
