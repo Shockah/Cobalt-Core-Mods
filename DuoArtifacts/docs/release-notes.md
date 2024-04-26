@@ -2,9 +2,9 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.8
 
-* Duo artifacts now appear in each character's section in the Codex.
+* Duo artifacts now appear in each character's section in the Codex, instead of their own section at the end.
 
 ## 1.0.7
 
