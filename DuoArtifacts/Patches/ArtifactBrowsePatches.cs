@@ -81,7 +81,11 @@ internal static class ArtifactBrowsePatches
 
 			artifacts.AddRange(
 				LastDuos
-					.Where(duo => Instance.Database.GetDuoArtifactOwnership(duo)?.Contains(deck == Deck.catartifact ? Deck.colorless : deck) ?? false)
+					.Select(duo => (Duo: duo, Owners: Instance.Database.GetDuoArtifactOwnership(duo)))
+					.Where(e => e.Owners?.Contains(deck == Deck.catartifact ? Deck.colorless : deck) ?? false)
+					.Select(e => (Duo: e.Duo, SecondaryOwners: e.Owners!.Where(owner => owner != deck).OrderBy(owner => NewRunOptions.allChars.IndexOf(owner)).ToList()))
+					.OrderBy(e => e.SecondaryOwners, new DuoByOwnerComparer())
+					.Select(e => e.Duo)
 					.Select(duo => new KeyValuePair<string, Type>(duo.Key(), duo.GetType()))
 			);
 		}
@@ -172,5 +176,38 @@ internal static class ArtifactBrowsePatches
 		}
 
 		return newKey;
+	}
+
+	private sealed class DuoByOwnerComparer : IComparer<List<Deck>>
+	{
+		public int Compare(List<Deck>? x, List<Deck>? y)
+		{
+			if (x is null && y is null)
+				return 0;
+			if (x is null)
+				return -1;
+			if (y is null)
+				return 1;
+
+			if (x.Count != y.Count)
+				return x.Count < y.Count ? -1 : 1;
+
+			for (var i = 0; i < x.Count; i++)
+			{
+				var xIndex = NewRunOptions.allChars.IndexOf(x[i]);
+				var yIndex = NewRunOptions.allChars.IndexOf(y[i]);
+
+				if (xIndex == -1 && yIndex == -1)
+					return 0;
+				if (xIndex == -1)
+					return 1;
+				if (yIndex == -1)
+					return -1;
+				if (xIndex != yIndex)
+					return xIndex < yIndex ? -1 : 1;
+			}
+
+			return 0;
+		}
 	}
 }
