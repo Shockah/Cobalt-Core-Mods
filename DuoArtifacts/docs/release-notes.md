@@ -3,10 +3,12 @@
 # Release notes
 
 ## 1.0.8
+Released 26 April 2024.
 
 * Duo artifacts now appear in each character's section in the Codex, instead of their own section at the end.
 
 ## 1.0.7
+Released 23 April 2024.
 
 * Added possible duos to character tooltips on the new run screen.
 * Fixed Drone Overclock (the Isaac-Drake duo) not working with Shield Drones as advertised.

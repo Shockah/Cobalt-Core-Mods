@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.1
+Released 26 April 2024.
 
 * Changed the starter card from Kickstart to Revamp.
 * Changed the B upgrade of the Capital Gain card.
