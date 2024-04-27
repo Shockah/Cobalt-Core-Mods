@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.6
+Released 27 April 2024.
 
 * Fixed direct hits on breakable parts not triggering Blastwave.
 
