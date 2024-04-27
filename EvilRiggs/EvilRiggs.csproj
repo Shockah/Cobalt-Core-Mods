@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<RootNamespace>EvilRiggs</RootNamespace>
+		<Version>1.1.0</Version>
+		<IsLegacyMod>True</IsLegacyMod>
+		<IncludedModProjectPaths>Sprites</IncludedModProjectPaths>
+	</PropertyGroup>
+	<Import Project="..\Configuration.Mod.props" />
+</Project>
