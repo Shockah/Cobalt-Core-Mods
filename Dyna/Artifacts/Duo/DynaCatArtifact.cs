@@ -2,6 +2,7 @@
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,6 +11,8 @@ namespace Shockah.Dyna;
 
 internal sealed class DynaCatArtifact : Artifact, IRegisterable
 {
+	private static readonly Dictionary<Type, bool> BasicAttackCardCache = [];
+
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		if (ModEntry.Instance.DuoArtifactsApi is not { } api)
@@ -32,8 +35,8 @@ internal sealed class DynaCatArtifact : Artifact, IRegisterable
 
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(CannonColorless), nameof(CannonColorless.GetActions)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CannonColorless_GetActions_Postfix))
+			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetActionsOverridden_Postfix))
 		);
 	}
 
@@ -51,9 +54,50 @@ internal sealed class DynaCatArtifact : Artifact, IRegisterable
 		});
 	}
 
-	private static void CannonColorless_GetActions_Postfix(CannonColorless __instance, State s, ref List<CardAction> __result)
+	private static bool IsBasicAttackCard(State state, Combat combat, Card card)
+	{
+		var type = card.GetType();
+		if (BasicAttackCardCache.TryGetValue(type, out var result))
+			return result;
+
+		if (card is CannonColorless)
+		{
+			BasicAttackCardCache[type] = true;
+			return true;
+		}
+		if (ModEntry.Instance.MoreDifficultiesApi is { } moreDifficultiesApi && type == moreDifficultiesApi.BasicOffencesCardType)
+		{
+			BasicAttackCardCache[type] = true;
+			return true;
+		}
+
+		foreach (var ship in StarterShip.ships.Values)
+		{
+			foreach (var shipCard in ship.cards)
+			{
+				if (shipCard.GetType() != type)
+					continue;
+
+				foreach (var action in shipCard.GetActions(state, combat))
+				{
+					if (action is not AAttack)
+						continue;
+
+					BasicAttackCardCache[type] = true;
+					return true;
+				}
+			}
+		}
+
+		BasicAttackCardCache[type] = false;
+		return false;
+	}
+
+	private static void Card_GetActionsOverridden_Postfix(Card __instance, State s, Combat c, ref List<CardAction> __result)
 	{
 		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is DynaCatArtifact) is not { } artifact)
+			return;
+		if (!IsBasicAttackCard(s, c, __instance))
 			return;
 
 		foreach (var action in __result)
@@ -63,6 +107,8 @@ internal sealed class DynaCatArtifact : Artifact, IRegisterable
 				attack.SetBlastwave(
 					damage: ModEntry.Instance.Api.GetBlastwaveDamage(__instance, s, 1)
 				);
+				if (string.IsNullOrEmpty(attack.artifactPulse))
+					attack.artifactPulse = artifact.Key();
 				break;
 			}
 		}

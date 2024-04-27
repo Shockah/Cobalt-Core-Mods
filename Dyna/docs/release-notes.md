@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* The CAT duo now counts various other cards as Basic Shots.
+
 ## 1.0.6
 Released 27 April 2024.
 

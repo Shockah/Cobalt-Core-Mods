@@ -18,6 +18,7 @@ public sealed class ModEntry : SimpleMod
 	internal readonly ApiImplementation Api;
 	internal readonly IKokoroApi KokoroApi;
 	internal readonly IDuoArtifactsApi? DuoArtifactsApi;
+	internal readonly IMoreDifficultiesApi? MoreDifficultiesApi;
 	internal readonly ISogginsApi? SogginsApi;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
@@ -189,7 +190,8 @@ public sealed class ModEntry : SimpleMod
 				.ToList()
 		});
 
-		helper.ModRegistry.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", new SemanticVersion(1, 3, 0))?.RegisterAltStarters(
+		MoreDifficultiesApi = helper.ModRegistry.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", new SemanticVersion(1, 3, 0));
+		MoreDifficultiesApi?.RegisterAltStarters(
 			deck: DynaDeck.Deck,
 			starterDeck: new StarterDeck
 			{
