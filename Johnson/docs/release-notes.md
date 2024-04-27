@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.3
+Released 27 April 2024.
 
 * The Merger card's A upgrade now pre-calculates the Strengthen damage in the attack action.
 * The Merger card now takes Ty and Sasha's X Factor into account.
