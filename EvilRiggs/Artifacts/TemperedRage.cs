@@ -1,22 +1,24 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace EvilRiggs.Artifacts;
-
-[ArtifactMeta(pools = [ArtifactPool.Common])]
-internal class TemperedRage : Artifact
+namespace EvilRiggs.Artifacts
 {
-	public override void OnTurnStart(State state, Combat combat)
+	internal class TemperedRage : Artifact
 	{
-		if (state.ship.Get((Status)Manifest.statuses["rage"].Id!.Value) >= 4)
+		public override void OnTurnStart(State state, Combat combat)
 		{
-			combat.QueueImmediate((CardAction)new ADrawCard
+			if (state.ship.Get((Status)Manifest.statuses["rage"].Id!) >= 4)
 			{
-				count = 2,
-				artifactPulse = ((Artifact)this).Key()
-			});
+				combat.QueueImmediate(new ADrawCard
+				{
+					count = 2,
+					artifactPulse = Key()
+				});
+			}
+		}
+
+		public override List<Tooltip>? GetExtraTooltips()
+		{
+			return StatusMeta.GetTooltips((Status)Manifest.statuses["rage"].Id!, 4);
 		}
 	}
-
-	public override List<Tooltip>? GetExtraTooltips()
-		=> StatusMeta.GetTooltips((Status)Manifest.statuses["rage"].Id!.Value, 4);
 }

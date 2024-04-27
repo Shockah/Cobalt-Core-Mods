@@ -1,16 +1,16 @@
 {
-    "UniqueName": "parchment.evilRiggs.manifest",
-    "Version": "1.1.0",
-    "DisplayName": "Evil Riggs",
-    "Author": "parchmentEngineer",
-    "RequiredApiVersion": "0.8.0",
-    "ModType": "Nickel.Legacy",
-    "EntryPointAssembly": "EvilRiggs.dll",
-    "Dependencies": [
-        {
-            "UniqueName": "Nickel.Legacy",
-            "Version": "0.8.0",
-            "IsRequired": true
-        }
-    ]
+	"UniqueName": "parchment.evilRiggs.manifest",
+	"Version": "1.1.0",
+	"DisplayName": "Evil Riggs",
+	"Author": "parchmentEngineer",
+	"RequiredApiVersion": "0.8.0",
+	"ModType": "Nickel.Legacy",
+	"EntryPointAssembly": "EvilRiggs.dll",
+	"Dependencies": [
+		{
+			"UniqueName": "Nickel.Legacy",
+			"Version": "0.8.0",
+			"IsRequired": true
+		}
+	]
 }

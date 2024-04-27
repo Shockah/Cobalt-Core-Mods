@@ -1,28 +1,27 @@
-using System;
-using System.Collections.Generic;
-using CobaltCoreModding.Definitions.ExternalItems;
+﻿using System.Collections.Generic;
 
-namespace EvilRiggs.CardActions;
-
-internal class ASequential : CardAction
+namespace EvilRiggs.CardActions
 {
-	public Card? targetCard;
-
-	public override void Begin(G g, State s, Combat c)
+	internal class ASequential : CardAction
 	{
-		base.timer = 0.0;
-		if (targetCard != null)
+		public Card? targetCard;
+		public override void Begin(G g, State s, Combat c)
 		{
-			targetCard.flipped = true;
+			timer = 0.0;
+			if (targetCard != null)
+			{
+				targetCard.flipped = true;
+			}
 		}
-	}
 
-	public override List<Tooltip> GetTooltips(State s)
-	{
-		List<Tooltip> tooltips = new List<Tooltip>();
-		ExternalGlossary obj = Manifest.glossary["sequentialHint"];
-		TTGlossary glossary = new TTGlossary(obj.Head, Array.Empty<object>());
-		tooltips.Add((Tooltip)(object)glossary);
-		return tooltips;
+		public override List<Tooltip> GetTooltips(State s)
+		{
+			List<Tooltip> tooltips = new List<Tooltip>();
+			TTGlossary glossary;
+			glossary = new TTGlossary(Manifest.glossary["sequentialHint"].Head);
+			tooltips.Add(glossary);
+
+			return tooltips;
+		}
 	}
 }

@@ -1,44 +1,44 @@
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace EvilRiggs.Artifacts;
-
-[ArtifactMeta(pools = [ArtifactPool.Boss])]
-internal class HoldThatThought : Artifact
+namespace EvilRiggs.Artifacts
 {
-	private int count = 0;
-
-	public override void OnCombatStart(State state, Combat combat)
+	[ArtifactMeta(owner = Deck.colorless, pools = new ArtifactPool[] { ArtifactPool.Boss })]
+	internal class HoldThatThought : Artifact
 	{
-		count = 0;
-	}
+		int count = 0;
 
-	public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
-	{
-		if (card.GetData(state).infinite && card.GetData(state).cost > 0)
+		public override void OnCombatStart(State state, Combat combat)
 		{
-			count++;
-			if (count == 1)
+			count = 0;
+		}
+
+		public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
+		{
+			if(card.GetData(state).infinite && card.GetData(state).cost > 0)
 			{
-				card.retainOverride = true;
+				count++;
+				if(count==1) {
+					card.retainOverride = true;
+				}
 			}
 		}
-	}
 
-	public override Spr GetSprite()
-	{
-		if (count < 1)
+		public override Spr GetSprite()
 		{
-			return (Spr)Manifest.sprites["artifact_holdThatThought"].Id!.Value;
-		}
-		return (Spr)Manifest.sprites["artifact_holdThatThoughtUsed"].Id!.Value;
-	}
+			if (count < 1)
+			{
+				return (Spr)Manifest.sprites["artifact_holdThatThought"].Id!;
+			}
 
-	public override List<Tooltip>? GetExtraTooltips()
-	{
-		List<Tooltip> list = new List<Tooltip>();
-		list.Add((Tooltip)new TTGlossary("cardtrait.infinite", Array.Empty<object>()));
-		list.Add((Tooltip)new TTGlossary("cardtrait.retain", Array.Empty<object>()));
-		return list;
+			return (Spr)Manifest.sprites["artifact_holdThatThoughtUsed"].Id!;
+		}
+
+		public override List<Tooltip>? GetExtraTooltips()
+		{
+			List<Tooltip> list = new List<Tooltip>();
+			list.Add(new TTGlossary("cardtrait.infinite"));
+			list.Add(new TTGlossary("cardtrait.retain"));
+			return list;
+		}
 	}
 }

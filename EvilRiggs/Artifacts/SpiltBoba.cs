@@ -1,48 +1,39 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace EvilRiggs.Artifacts;
-
-[ArtifactMeta(pools = [ArtifactPool.Common])]
-internal class SpiltBoba : Artifact
+namespace EvilRiggs.Artifacts
 {
-	private int count = 0;
-
-	public override void OnTurnStart(State state, Combat combat)
+	internal class SpiltBoba : Artifact
 	{
-		count = 0;
-	}
+		int count = 0;
 
-	public override void OnPlayerTakeNormalDamage(State state, Combat combat, int rawAmount, Part? part)
-	{
-		count++;
-		if (count == 1)
+		public override void OnTurnStart(State state, Combat combat)
 		{
-			combat.QueueImmediate((CardAction)new AStatus
+			count = 0;
+		}
+
+		public override void OnPlayerTakeNormalDamage(State state, Combat combat, int rawAmount, Part? part)
+		{
+			count++;
+			if(count == 1)
 			{
-				targetPlayer = true,
-				status = (Status)Manifest.statuses["rage"].Id!.Value,
-				statusAmount = 2,
-				artifactPulse = ((Artifact)this).Key()
-			});
-			combat.QueueImmediate((CardAction)new AStatus
+				combat.QueueImmediate(new AStatus { targetPlayer = true, status = (Status)Manifest.statuses["rage"].Id!, statusAmount = 2, artifactPulse = Key() });
+				combat.QueueImmediate(new AStatus { targetPlayer = true, status = Status.drawLessNextTurn, statusAmount = 1, artifactPulse = Key() });
+			}
+		}
+
+		public override Spr GetSprite()
+		{
+			if (count < 1)
 			{
-				targetPlayer = true,
-				status = Status.drawLessNextTurn,
-				statusAmount = 1,
-				artifactPulse = ((Artifact)this).Key()
-			});
+				return (Spr)Manifest.sprites["artifact_spiltBoba"].Id!;
+			}
+
+			return (Spr)Manifest.sprites["artifact_spiltBobaUsed"].Id!;
+		}
+
+		public override List<Tooltip>? GetExtraTooltips()
+		{
+			return StatusMeta.GetTooltips((Status)Manifest.statuses["rage"].Id!, 2);
 		}
 	}
-
-	public override Spr GetSprite()
-	{
-		if (count < 1)
-		{
-			return (Spr)Manifest.sprites["artifact_spiltBoba"].Id!.Value;
-		}
-		return (Spr)Manifest.sprites["artifact_spiltBobaUsed"].Id!.Value;
-	}
-
-	public override List<Tooltip>? GetExtraTooltips()
-		=> StatusMeta.GetTooltips((Status)Manifest.statuses["rage"].Id!.Value, 2);
 }

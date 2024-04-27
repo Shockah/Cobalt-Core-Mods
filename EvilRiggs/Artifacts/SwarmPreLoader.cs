@@ -1,23 +1,23 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace EvilRiggs.Artifacts;
-
-[ArtifactMeta(pools = [ArtifactPool.Common])]
-internal class SwarmPreLoader : Artifact
+namespace EvilRiggs.Artifacts
 {
-	public override string Name()
+	internal class SwarmPreLoader : Artifact
 	{
-		return "SWARM PRELOADER";
-	}
-
-	public override List<Tooltip>? GetExtraTooltips()
-	{
-		return new List<Tooltip> { (Tooltip)new TTCard
+		public override string Name()
 		{
-			card = (Card)new EvilRiggsCard
+			return "SWARM PRELOADER";
+		}
+
+		public override List<Tooltip>? GetExtraTooltips()
+		{
+			return new List<Tooltip>
 			{
-				discount = -2
-			}
-		} };
+				new TTCard
+				{
+					card = new EvilRiggsCard() {discount = -2}
+				},
+			};
+		}
 	}
 }

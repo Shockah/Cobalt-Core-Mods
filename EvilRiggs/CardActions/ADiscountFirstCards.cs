@@ -1,32 +1,31 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace EvilRiggs.CardActions;
-
-internal class ADiscountFirstCards : CardAction
+namespace EvilRiggs.CardActions
 {
-	public int amount;
-
-	public int offset;
-
-	public override void Begin(G g, State s, Combat c)
+	internal class ADiscountFirstCards : CardAction
 	{
-		if (c.hand[offset] != null)
+		public int amount;
+		public int offset;
+		public override void Begin(G g, State s, Combat c)
 		{
-			Card obj = c.hand[offset];
-			obj.discount--;
-			if (amount > 1)
+			if(c.hand[offset] != null)
 			{
-				c.QueueImmediate((CardAction)(object)new ADiscountFirstCards
+				c.hand[offset].discount -= 1;
+				if (amount >  1)
 				{
-					amount = amount - 1,
-					offset = offset + 1
-				});
+					c.QueueImmediate(new ADiscountFirstCards { amount = amount-1, offset = offset+1 });
+				}
 			}
 		}
-	}
 
-	public override List<Tooltip> GetTooltips(State s)
-	{
-		return new List<Tooltip>();
+		public override List<Tooltip> GetTooltips(State s)
+		{
+			List<Tooltip> tooltips = new List<Tooltip>();
+			//TTGlossary glossary;
+			//glossary = new TTGlossary(Manifest.glossary["sequential"]?.Head);
+			//tooltips.Add(glossary);
+
+			return tooltips;
+		}
 	}
 }

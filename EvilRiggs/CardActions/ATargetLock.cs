@@ -1,49 +1,44 @@
-using System;
+﻿using FSPRO;
 using System.Collections.Generic;
 using System.Linq;
-using CobaltCoreModding.Definitions.ExternalItems;
-using EvilRiggs.Drones;
-using FMOD;
-using FSPRO;
 
-namespace EvilRiggs.CardActions;
-
-internal class ATargetLock : CardAction
+namespace EvilRiggs.CardActions
 {
-	public override void Begin(G g, State s, Combat c)
+	internal class ATargetLock : CardAction
 	{
-		foreach (StuffBase item in c.stuff.Values.ToList())
+		public override void Begin(G g, State s, Combat c)
 		{
-			if (typeof(Missile) == ((object)item).GetType() || typeof(MissileLight) == ((object)item).GetType())
+			foreach (StuffBase item in c.stuff.Values.ToList())
 			{
-				c.stuff.Remove(item.x);
-				Missile value = new Missile
+				if (typeof(Missile) == item.GetType() || typeof(Drones.MissileLight) == item.GetType())
 				{
-					x = item.x,
-					xLerped = item.xLerped,
-					bubbleShield = item.bubbleShield,
-					targetPlayer = item.targetPlayer,
-					missileType = (MissileType)3,
-					age = item.age
-				};
-				c.stuff[item.x] = (StuffBase)(object)value;
+					c.stuff.Remove(item.x);
+					Missile value = new Missile
+					{
+						x = item.x,
+						xLerped = item.xLerped,
+						bubbleShield = item.bubbleShield,
+						targetPlayer = item.targetPlayer,
+						missileType = MissileType.seeker,
+						age = item.age
+					};
+					c.stuff[item.x] = value;
+				}
 			}
+			Audio.Play(Event.Drones_MissileLaunch);
+			Audio.Play(Event.TogglePart);
 		}
-		Audio.Play((GUID?)Event.Drones_MissileLaunch, true);
-		Audio.Play((GUID?)Event.TogglePart, true);
-	}
 
-	public override List<Tooltip> GetTooltips(State s)
-	{
-		List<Tooltip> tooltips = new List<Tooltip>();
-		ExternalGlossary obj = Manifest.glossary["targetLock"];
-		TTGlossary glossary = new TTGlossary(obj.Head, Array.Empty<object>());
-		tooltips.Add((Tooltip)(object)glossary);
-		return tooltips;
-	}
+		public override List<Tooltip> GetTooltips(State s)
+		{
+			List<Tooltip> tooltips = new List<Tooltip>();
+			TTGlossary glossary;
+			glossary = new TTGlossary(Manifest.glossary["targetLock"].Head);
+			tooltips.Add(glossary);
 
-	public override Icon? GetIcon(State s)
-	{
-		return new Icon((Spr)Manifest.sprites["evilRiggs_status_targetLock"].Id!.Value, (int?)null, Colors.status, false);
+			return tooltips;
+		}
+
+		public override Icon? GetIcon(State s) { return new Icon((Spr)Manifest.sprites["evilRiggs_status_targetLock"].Id!, null, Colors.status); }
 	}
 }
