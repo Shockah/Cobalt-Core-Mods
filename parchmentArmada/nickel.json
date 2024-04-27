@@ -1,15 +1,15 @@
 {
     "UniqueName": "parchmentEngineer.Armada",
-    "Version": "1.1.2",
+    "Version": "1.1.3",
     "DisplayName": "parchment's Armada",
     "Author": "parchmentEngineer",
-    "RequiredApiVersion": "0.8.0",
+    "RequiredApiVersion": "0.10.0",
     "ModType": "Nickel.Legacy",
     "EntryPointAssembly": "parchmentArmada.dll",
     "Dependencies": [
         {
             "UniqueName": "Nickel.Legacy",
-            "Version": "0.8.0",
+            "Version": "0.10.0",
             "IsRequired": true
         }
     ]
