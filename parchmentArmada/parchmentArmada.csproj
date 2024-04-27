@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<RootNamespace>parchmentArmada</RootNamespace>
+		<Version>1.1.2</Version>
+		<IsLegacyMod>True</IsLegacyMod>
+		<IncludedModProjectPaths>Sprites</IncludedModProjectPaths>
+	</PropertyGroup>
+	<Import Project="..\Configuration.Mod.props" />
+</Project>

@@ -34,6 +34,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dyna", "Dyna\Dyna.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetterRunSummaries", "BetterRunSummaries\BetterRunSummaries.csproj", "{224C4F0C-5499-413B-839F-F13A7DE1A5E7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "parchmentArmada", "parchmentArmada\parchmentArmada.csproj", "{404FB4B5-3DD6-4F0D-B55E-56473C9E4D7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,10 @@ Global
 		{224C4F0C-5499-413B-839F-F13A7DE1A5E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{224C4F0C-5499-413B-839F-F13A7DE1A5E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{224C4F0C-5499-413B-839F-F13A7DE1A5E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{404FB4B5-3DD6-4F0D-B55E-56473C9E4D7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{404FB4B5-3DD6-4F0D-B55E-56473C9E4D7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{404FB4B5-3DD6-4F0D-B55E-56473C9E4D7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{404FB4B5-3DD6-4F0D-B55E-56473C9E4D7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,6 +97,7 @@ Global
 		_Shared\_Shared.projitems*{1455e3e8-caf2-4cf5-acfe-951cec4d1eb4}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{224c4f0c-5499-413b-839f-f13a7de1a5e7}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{26f4b3c4-c636-4358-8e4f-ed592e2629bb}*SharedItemsImports = 5
+		_Shared\_Shared.projitems*{404fb4b5-3dd6-4f0d-b55e-56473c9e4d7e}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{5820f297-795c-414f-9d2d-6b401165828b}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{a0276a09-5fdf-4352-adf4-ed072da21953}*SharedItemsImports = 13
 		_Shared\_Shared.projitems*{ad25e0f4-175f-4fb8-927f-f07433bce6b3}*SharedItemsImports = 5
