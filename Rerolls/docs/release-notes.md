@@ -2,6 +2,12 @@
 
 # Release notes
 
+## 2.0.0
+
+* Completely rewritten.
+* Fixed appearing in some combat-specific artifact and card reward screens.
+* Rerolling multiple times in a row will now prevent ANY earlier rewards from being presented, instead of only the previous roll.
+
 ## 1.0.3
 
 * Now comes with a `nickel.json` file.
