@@ -80,6 +80,8 @@ internal sealed class CardRerollManager
 
 	private static void CardReward_Render_Postfix(CardReward __instance, G g)
 	{
+		if (__instance.ugpradePreview is not null)
+			return;
 		if (g.state.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault() is not { } artifact || artifact.RerollsLeft <= 0)
 			return;
 		if (!ModEntry.Instance.Helper.ModData.ContainsModData(__instance, "OriginalAction"))
