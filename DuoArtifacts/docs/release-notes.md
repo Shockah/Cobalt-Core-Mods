@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed not being able to scroll down past any duo artifact in the codex while playing on a gamepad.
+
 ## 1.0.8
 Released 26 April 2024.
 

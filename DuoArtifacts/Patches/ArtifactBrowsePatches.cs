@@ -164,7 +164,7 @@ internal static class ArtifactBrowsePatches
 
 		var parentBox = g.uiStack.Peek();
 		var baseX = parentBox.rect.x + restingPosition.x;
-		var baseY = parentBox.rect.y + restingPosition.y;
+		var baseY = parentBox.rect.y + restingPosition.y - route.scroll;
 
 		var newKey = new UIKey(baseKey.k, baseKey.v, $"{baseKey.str}__{(int)baseX}__{(int)baseY}");
 
