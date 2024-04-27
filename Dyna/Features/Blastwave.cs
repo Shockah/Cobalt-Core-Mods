@@ -70,7 +70,7 @@ internal sealed class BlastwaveManager
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerTakeNormalDamage), (State state, Combat combat, Part? part) =>
 		{
-			if (part is null || part.type == PType.empty)
+			if (part is null)
 				return;
 			var worldX = state.ship.x + state.ship.parts.IndexOf(part);
 			TriggerBlastwaveIfNeeded(state, combat, worldX, targetPlayer: true, hitMidrow: false);
@@ -78,7 +78,7 @@ internal sealed class BlastwaveManager
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnEnemyGetHit), (State state, Combat combat, Part? part) =>
 		{
-			if (part is null || part.type == PType.empty)
+			if (part is null)
 				return;
 			var worldX = combat.otherShip.x + combat.otherShip.parts.IndexOf(part);
 			TriggerBlastwaveIfNeeded(state, combat, worldX, targetPlayer: false, hitMidrow: false);
@@ -95,7 +95,7 @@ internal sealed class BlastwaveManager
 		if (!hitMidrow)
 		{
 			var targetShip = targetPlayer ? state.ship : combat.otherShip;
-			if (targetShip.GetPartAtWorldX(worldX) is not { } part || part.type == PType.empty)
+			if (targetShip.GetPartAtWorldX(worldX) is null)
 				return;
 		}
 
