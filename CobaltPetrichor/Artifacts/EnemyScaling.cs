@@ -1,9 +1,11 @@
 ﻿using CobaltPetrichor.CardActions;
+using Shockah.Shared;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CobaltPetrichor.Artifacts
 {
+	[ArtifactMeta(unremovable = true)]
 	internal class EnemyScaling : Artifact
 	{
 		public int turns;
@@ -41,15 +43,25 @@ namespace CobaltPetrichor.Artifacts
 				combat.Queue(new AHullMax { amount = buffHull, targetPlayer = false });
 				combat.Queue(new AHeal { healAmount = buffHull, targetPlayer = false });
 			}
+
 			for(int i=0; i<buffDrones; i++)
 			{
 				combat.Queue(new ASummon { thing = new AttackDrone {targetPlayer = true} });
 			}
-			for(int i=0; i<buffArmored; i++)
+
+			if (buffArmored > 0)
 			{
-				int targetSlot = state.rngActions.NextInt() % combat.otherShip.parts.Count();
-				combat.Queue(new AArmor { worldX = targetSlot + combat.otherShip.x });
+				var nonEmptyPartIndexes = Enumerable.Range(0, combat.otherShip.parts.Count)
+					.Where(i => combat.otherShip.parts[i].type != PType.empty)
+					.Shuffle(state.rngActions)
+					.ToList();
+
+				for (int i = 0; i < buffArmored; i++)
+				{
+					combat.Queue(new AArmor { worldX = nonEmptyPartIndexes[i] + combat.otherShip.x });
+				}
 			}
+
 			if (buffPowerdrive > 0)
 			{
 				combat.Queue(new AStatus { status = Status.powerdrive, statusAmount= buffPowerdrive, targetPlayer = false });

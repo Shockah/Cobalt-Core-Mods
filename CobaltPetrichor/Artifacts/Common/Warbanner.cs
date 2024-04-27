@@ -7,7 +7,8 @@ namespace CobaltPetrichor.Artifacts.Common
 	{
 		public override void OnCombatStart(State state, Combat combat)
 		{
-			MapBattle battle = (MapBattle)state.map.GetCurrent().contents;
+			if (state.map.GetCurrent().contents is not MapBattle battle)
+				return;
 			if (battle.battleType == BattleType.Elite || battle.battleType == BattleType.Boss )
 			{
 				combat.QueueImmediate(new AStatus { status = Status.powerdrive, targetPlayer = true, statusAmount = 1 });
