@@ -41,6 +41,14 @@ internal sealed class MergerCard : Card, IRegisterable
 			cost = 1
 		};
 
+	private int GetX(State state)
+	{
+		var x = state.ship.Get(Status.shield);
+		if (ModEntry.Instance.TyAndSashaApi is { } api)
+			x += state.ship.Get(api.XFactorStatus);
+		return x;
+	}
+
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
@@ -52,12 +60,12 @@ internal sealed class MergerCard : Card, IRegisterable
 				new AStrengthen
 				{
 					CardId = uuid,
-					Amount = s.ship.Get(Status.shield),
+					Amount = GetX(s),
 					xHint = 1
 				},
 				new AAttack
 				{
-					damage = GetDmg(s, 1 + (IsDuringTryPlayCard ? s.ship.Get(Status.shield) : 0))
+					damage = GetDmg(s, 1 + GetX(s))
 				},
 				new AStatus
 				{
@@ -79,7 +87,7 @@ internal sealed class MergerCard : Card, IRegisterable
 				new AStrengthen
 				{
 					CardId = uuid,
-					Amount = s.ship.Get(Status.shield),
+					Amount = GetX(s),
 					xHint = 1
 				},
 				new AStatus
