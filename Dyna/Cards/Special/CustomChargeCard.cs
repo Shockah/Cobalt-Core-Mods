@@ -17,6 +17,9 @@ namespace Shockah.Dyna;
 
 internal sealed class CustomChargeCard : Card, IRegisterable
 {
+	private static ISpriteEntry TopArt = null!;
+	private static ISpriteEntry BottomArt = null!;
+	private static List<ISpriteEntry> TriadArt = null!;
 	private static List<ISpriteEntry> TriadIcon = null!;
 
 	[JsonProperty]
@@ -27,6 +30,12 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
+		TopArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/CustomChargeTop.png"));
+		BottomArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/CustomChargeBottom.png"));
+
+		TriadArt = Enumerable.Range(0, 3)
+			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Cards/CustomChargeTriad{i}.png")))
+			.ToList();
 		TriadIcon = Enumerable.Range(0, 3)
 			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Icons/Triad{i}.png")))
 			.ToList();
@@ -41,8 +50,6 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true
 			},
-			Art = StableSpr.cards_GoatDrone,
-			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/CustomCharge.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "CustomCharge", "name"]).Localize
 		});
 
@@ -66,7 +73,11 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 			cost = 0,
 			exhaust = upgrade != Upgrade.B,
 			floppable = true,
-			temporary = true
+			temporary = true,
+			artTint = "CC390B",
+			art = upgrade == Upgrade.A
+				? TriadArt[FlipIndex % 3].Sprite
+				: (FlipIndex % 2 == 0 ? TopArt.Sprite : BottomArt.Sprite)
 		};
 
 	public override void ExtraRender(G g, Vec v)

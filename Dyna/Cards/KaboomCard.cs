@@ -18,8 +18,7 @@ internal sealed class KaboomCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_Cannon,
-			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Kaboom.png")).Sprite,
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Kaboom.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Kaboom", "name"]).Localize
 		});
 	}

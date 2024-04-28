@@ -18,8 +18,7 @@ internal sealed class FlashBurstCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_MultiShot,
-			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/FlashBurst.png")).Sprite,
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/FlashBurst.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "FlashBurst", "name"]).Localize
 		});
 	}

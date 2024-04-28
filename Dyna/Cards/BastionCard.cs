@@ -18,8 +18,7 @@ internal sealed class BastionCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_Flux,
-			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Bastion.png")).Sprite,
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Bastion.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Bastion", "name"]).Localize
 		});
 	}

@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added custom card art for all cards.
 * The CAT duo now counts various other cards as Basic Shots.
 
 ## 1.0.6
