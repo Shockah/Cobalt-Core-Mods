@@ -20,11 +20,11 @@ namespace parchmentArmada.Artifacts
                 if (part.type == PType.cannon) { hasCannon = true; }
                 if (part.type == PType.missiles) { hasMissiles = true; }
                 if (part.type == PType.cockpit) { hasCockpit = true; }
-                if (part.skin == "@mod_part:parchment.armada.proteus.fuel") { combat.Queue(new ADrawCard { count = 1 }); }
-                if (part.skin == "@mod_part:parchment.armada.proteus.reactor") { combat.Queue(new AEnergy { changeAmount = 1 }); }
-                if (part.skin == "@mod_part:parchment.armada.proteus.thrusters") { combat.Queue(new AMove { dir = 1, targetPlayer = true }); }
-                if (part.skin == "@mod_part:parchment.armada.proteus.thrusters2") { combat.Queue(new AMove { dir = -1, targetPlayer = true }); }
-                if (part.skin == "@mod_part:parchment.armada.proteus.armor") { combat.Queue(new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 1, }); }
+                if (part.skin?.EndsWith(".proteus.fuel") == true) { combat.Queue(new ADrawCard { count = 1 }); }
+                if (part.skin?.EndsWith(".proteus.reactor") == true) { combat.Queue(new AEnergy { changeAmount = 1 }); }
+                if (part.skin?.EndsWith(".proteus.thrusters") == true) { combat.Queue(new AMove { dir = 1, targetPlayer = true }); }
+                if (part.skin?.EndsWith(".proteus.thrusters2") == true) { combat.Queue(new AMove { dir = -1, targetPlayer = true }); }
+                if (part.skin?.EndsWith(".proteus.armor") == true) { combat.Queue(new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 1, }); }
             }
             if (!hasCockpit) { index = 1; }
             if (!hasMissiles) { index = 2; }

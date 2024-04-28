@@ -177,7 +177,7 @@ namespace parchmentArmada.Ships
             //HeliosArtifact = new ExternalArtifact(typeof(Artifacts.HeliosArtifact), "parchment.armada.HeliosArtifact", spr, null, new ExternalGlossary[0]);
             //HeliosArtifact.AddLocalisation("SOLAR CANNON", "After you play the centermost card of your hand, lose all remaining energy and gain 1 <c=status>Solar Charge</c> per energy lost. At 5 charges, your solar cannon fires a burst of six 1-damage shots.");
             //registry.RegisterArtifact(HeliosArtifact);
-            addArtifact("MINIATURE STAR", "helios_artifact", "<c=downside>Whenever you move, gain 1 HEAT.</c> When you overheat, fire the Helios Cannon, deaing damage equal to twice your <c=status>HEAT</c>. <c=downside>Overheating does 1 additional self-damage for each HEAT over 3.</c>", typeof(Artifacts.HeliosArtifact), registry);
+            addArtifact("MINIATURE STAR", "helios_artifact", "<c=downside>Whenever you move, gain 1 HEAT.</c> When you overheat, fire the Helios Cannon, dealing piercing damage equal to twice your <c=status>HEAT</c>. <c=downside>Overheating does 1 additional self-damage for each HEAT over 3.</c>", typeof(Artifacts.HeliosArtifact), registry);
             addArtifact("SOLAR VENTS", "helios_artifact", "At the start of each turn, gain 1 <c=status>SERENITY</c> if you do not have any.", typeof(Artifacts.HeliosHeatsink), registry);
         }
         

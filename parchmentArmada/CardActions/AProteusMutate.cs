@@ -15,7 +15,7 @@ namespace parchmentArmada.CardActions
             if (pos != 0)
             {
                 Part part = parts[pos - 1];
-                part.skin = "@mod_part:parchment.armada.proteus." + skin;
+                part.skin = Proteus.parts[skin].Key;
                 part.type = type;
                 part.damageModifier = PDamMod.none;
                 if (skin == "armor" ) { part.damageModifier = PDamMod.armor; }

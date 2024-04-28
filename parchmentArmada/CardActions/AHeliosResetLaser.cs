@@ -11,7 +11,7 @@ namespace parchmentArmada.CardActions
             {
                 if ((part.type == PType.cannon) || (part.type == PType.special))
                 {
-                    if (part.skin == "@mod_part:parchment.armada.helios.cannon") part.type = PType.cannon;
+                    if (part.skin?.EndsWith(".helios.cannon") == true) part.type = PType.cannon;
                     else part.type = PType.special;
                 }
             }
