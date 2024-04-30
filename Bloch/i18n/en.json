@@ -28,6 +28,11 @@
             "description": "This action only triggers whenever a turn starts with this card in hand, or if it's drawn for the first time this turn."
         }
     },
+    "route": {
+        "MultiCardBrowse": {
+            "doneButton": "DONE"
+        }
+    },
     "status": {
         "Veiling": {
             "name": "Veiling Aura",
@@ -82,6 +87,14 @@
                 "None": "Attack for {{Damage}}. <c=action>On Discard</c>, gains 2 damage this combat.",
                 "A": "Attack for {{Damage}}. <c=action>On Discard</c>, gains 2 damage this combat.",
                 "B": "Attack for {{Damage}}. <c=action>On Discard</c>, gains 1 damage and <c=cardtrait>exhausts</c>."
+            }
+        },
+        "MindPurge": {
+            "name": "Mind Purge",
+            "description": {
+                "None": "Choose cards to discard. Draw as many.",
+                "A": "Choose cards to discard. Draw as many, +1.",
+                "B": "Choose cards to discard. Draw 3 cards."
             }
         },
         "PainReaction": {
