@@ -76,6 +76,9 @@ internal sealed class ScryAction : CardAction
 
 	private sealed class BrowseAction : CardAction
 	{
+		public override string? GetCardSelectText(State s)
+			=> ModEntry.Instance.Localizations.Localize(["action", "Scry", "browseText"]);
+
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);

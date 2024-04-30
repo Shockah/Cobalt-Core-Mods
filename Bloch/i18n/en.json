@@ -29,7 +29,8 @@
         },
         "Scry": {
             "name": "Scry",
-            "description": "Look at the top <c=boldPink>{{Amount}}</c> cards of your <c=keyword>draw pile</c>. If there aren't enough cards, reshuffle the <c=keyword>discard pile</c> first. Choose cards to discard."
+            "description": "Look at the top <c=boldPink>{{Amount}}</c> cards of your <c=keyword>draw pile</c>. If there aren't enough cards, reshuffle the <c=keyword>discard pile</c> first. Choose cards to discard.",
+            "browseText": "Choose cards to discard."
         }
     },
     "route": {
@@ -70,6 +71,9 @@
         "Calm": {
             "name": "Calm"
         },
+        "DelveDeep": {
+            "name": "Delve Deep"
+        },
         "Distress": {
             "name": "Distress"
         },
@@ -99,7 +103,8 @@
                 "None": "Choose cards to discard. Draw as many.",
                 "A": "Choose cards to discard. Draw as many, +1.",
                 "B": "Choose cards to discard. Draw 3 cards."
-            }
+            },
+            "browseText": "Choose cards to discard."
         },
         "Opt": {
             "name": "Opt"
