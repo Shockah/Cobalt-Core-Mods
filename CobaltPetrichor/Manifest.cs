@@ -295,7 +295,7 @@ namespace CobaltPetrichor
 			for (int i = 0; i < spawnConfig.roomsPerFloor; i++)
 			{
 				Vec key = new Vec(i, spawnConfig.floorsNotCountingExit / 2);
-				if (__instance.markers.TryGetValue(key, out Marker? value))
+				if (__instance.markers.TryGetValue(key, out Marker? value) && value.contents is MapArtifact)
 				{
 					value.contents = new MapUES();
 				}

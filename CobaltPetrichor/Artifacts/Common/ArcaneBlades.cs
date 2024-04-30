@@ -9,7 +9,8 @@ namespace CobaltPetrichor.Artifacts.Common
 		public override void OnCombatEnd(State state) { count = 0; }
 		public override void OnTurnStart(State state, Combat combat)
 		{
-			MapBattle battle = (MapBattle)state.map.GetCurrent().contents;
+			if (state.map.GetCurrent().contents is not MapBattle battle)
+				return;
 			if (battle.battleType == BattleType.Elite || battle.battleType == BattleType.Boss)
 			{
 				count++;
