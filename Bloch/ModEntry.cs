@@ -24,6 +24,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(FeedbackCard),
 		typeof(FocusCard),
 		typeof(MaterializeCard),
+		typeof(OptCard),
 		typeof(PainReactionCard),
 		typeof(PsychicDamageCard),
 	];
@@ -93,6 +94,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new OnTurnEndManager();
 		_ = new OnHullDamageManager();
 		_ = new OncePerTurnManager();
+		_ = new ScryManager();
 
 		BlochDeck = helper.Content.Decks.RegisterDeck("Bloch", new()
 		{

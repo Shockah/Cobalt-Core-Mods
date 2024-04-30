@@ -20,6 +20,8 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 
 	public int MinSelected = 0;
 	public int MaxSelected = int.MaxValue;
+	public bool EnabledSorting = true;
+	public List<Card>? CardsOverride;
 
 	private readonly HashSet<int> SelectedCards = [];
 
@@ -28,6 +30,11 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 		if (IsHarmonySetup)
 			return;
 
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(CardBrowse), nameof(GetCardList)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardBrowse_GetCardList_Prefix))
+		);
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
@@ -60,9 +67,14 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 	public override void Render(G g)
 	{
 		SetupHarmonyIfNeeded();
+		var oldEnabledSortModes = enabledSortModes.ToList();
 
 		CurrentlyRenderedMenu = this;
+		if (!EnabledSorting)
+			enabledSortModes.Clear();
 		base.Render(g);
+		if (!EnabledSorting)
+			enabledSortModes.AddRange(oldEnabledSortModes);
 		CurrentlyRenderedMenu = null;
 
 		SharedArt.ButtonText(
@@ -96,6 +108,20 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 			g.state.GetCurrentQueue().QueueImmediate(browseAction);
 		}
 		g.CloseRoute(this, CBResult.Done);
+	}
+
+	private static bool CardBrowse_GetCardList_Prefix(CardBrowse __instance, ref List<Card> __result)
+	{
+		if (__instance is not MultiCardBrowse route)
+			return true;
+
+		if (route.CardsOverride is null)
+			return true;
+
+		__result = route.CardsOverride;
+		__instance._listCache.Clear();
+		__instance._listCache.AddRange(route.CardsOverride);
+		return false;
 	}
 
 	private static void Card_Render_Prefix(Card __instance, ref bool hilight)

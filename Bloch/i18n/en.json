@@ -26,6 +26,10 @@
         "OncePerTurn": {
             "name": "Once Per Turn",
             "description": "This action only triggers whenever a turn starts with this card in hand, or if it's drawn for the first time this turn."
+        },
+        "Scry": {
+            "name": "Scry",
+            "description": "Look at the top <c=boldPink>{{Amount}}</c> cards of your <c=keyword>draw pile</c>. If there aren't enough cards, reshuffle the <c=keyword>discard pile</c> first. Choose cards to discard."
         }
     },
     "route": {
@@ -96,6 +100,9 @@
                 "A": "Choose cards to discard. Draw as many, +1.",
                 "B": "Choose cards to discard. Draw 3 cards."
             }
+        },
+        "Opt": {
+            "name": "Opt"
         },
         "PainReaction": {
             "name": "Pain Reaction"
