@@ -47,6 +47,10 @@
             "name": "Feedback Aura",
             "description": "Whenever you are hit by an attack, deal 1 damage to the enemy and <c=downside>decrease this by 1</c>."
         },
+        "Insight": {
+            "name": "Insight Aura",
+            "description": "Whenever you are about to draw any amount of cards, <c=action>Scry 1</c> and <c=downside>decrease this by 1</c>."
+        },
         "Intensify": {
             "name": "Intensify",
             "description": "All of your auras trigger again for each stack of this. <c=downside>Goes away at start of next turn.</c>"
@@ -111,6 +115,12 @@
         },
         "PainReaction": {
             "name": "Pain Reaction"
+        },
+        "PrismaticAura": {
+            "name": "Prismatic Aura",
+            "description": {
+                "B": "Gain 1 of each Aura. <c=action>On Discard</c>, gain 1 of each Aura."
+            }
         },
         "PsychicDamage": {
             "name": "Psychic Damage"

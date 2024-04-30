@@ -2,13 +2,15 @@
 using Nickel;
 using Shockah.Shared;
 using System;
+using System.Collections.Generic;
 
 namespace Shockah.Bloch;
 
-internal sealed class AuraManager : IStatusLogicHook
+internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 {
 	internal static IStatusEntry VeilingStatus { get; private set; } = null!;
 	internal static IStatusEntry FeedbackStatus { get; private set; } = null!;
+	internal static IStatusEntry InsightStatus { get; private set; } = null!;
 	internal static IStatusEntry IntensifyStatus { get; private set; } = null!;
 
 	private static bool IsDuringNormalDamage = false;
@@ -38,6 +40,17 @@ internal sealed class AuraManager : IStatusLogicHook
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Feedback", "description"]).Localize
 		});
 
+		InsightStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Insight", new()
+		{
+			Definition = new()
+			{
+				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/Insight.png")).Sprite,
+				color = new("A17FFF")
+			},
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Insight", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Insight", "description"]).Localize
+		});
+
 		IntensifyStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Intensify", new()
 		{
 			Definition = new()
@@ -62,8 +75,14 @@ internal sealed class AuraManager : IStatusLogicHook
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.ModifyDamageDueToParts)),
 			prefix: new HarmonyMethod(GetType(), nameof(Ship_ModifyDamageDueToParts_Prefix))
 		);
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrawCards)),
+			prefix: new HarmonyMethod(GetType(), nameof(Combat_DrawCards_Prefix))
+		);
 
 		ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(this, 0);
+		ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(this, 0);
 	}
 
 	private static void Ship_NormalDamage_Prefix()
@@ -131,6 +150,39 @@ internal sealed class AuraManager : IStatusLogicHook
 		ReducedDamage = toReduce;
 	}
 
+	private static bool Combat_DrawCards_Prefix(Combat __instance, State s, int count)
+	{
+		if (ModEntry.Instance.Helper.ModData.TryGetModData(s, "StopInsightRecursion", out bool stopInsightRecursion) && stopInsightRecursion)
+		{
+			ModEntry.Instance.Helper.ModData.RemoveModData(s, "StopInsightRecursion");
+			return true;
+		}
+
+		var insight = s.ship.Get(InsightStatus.Status);
+		var maxInsight = Math.Min(Math.Min(insight, s.ship.Get(IntensifyStatus.Status) + 1), s.deck.Count + __instance.discard.Count);
+
+		if (maxInsight <= 0)
+			return true;
+
+		ModEntry.Instance.Helper.ModData.SetModData(s, "StopInsightRecursion", true);
+		__instance.QueueImmediate([
+			new AStatus
+			{
+				targetPlayer = true,
+				status = InsightStatus.Status,
+				statusAmount = -maxInsight,
+				statusPulse = maxInsight > 1 ? IntensifyStatus.Status : null,
+			},
+			new ScryAction
+			{
+				Amount = maxInsight,
+				statusPulse = InsightStatus.Status,
+			},
+			new ADrawCard { count = count }
+		]);
+		return false;
+	}
+
 	public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
 	{
 		if (status != IntensifyStatus.Status)
@@ -140,5 +192,12 @@ internal sealed class AuraManager : IStatusLogicHook
 
 		amount = 0;
 		return false;
+	}
+
+	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
+	{
+		if (status == InsightStatus.Status)
+			return [..tooltips, ..new ScryAction { Amount = amount }.GetTooltips(DB.fakeState)];
+		return tooltips;
 	}
 }

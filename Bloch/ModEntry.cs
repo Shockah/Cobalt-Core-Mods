@@ -34,6 +34,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(DelveDeepCard),
 		typeof(MindBlastCard),
 		typeof(MindPurgeCard),
+		typeof(PrismaticAuraCard),
 		typeof(SayThoughtsLoudCard),
 	];
 
