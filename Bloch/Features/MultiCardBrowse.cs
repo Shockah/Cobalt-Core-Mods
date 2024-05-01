@@ -77,12 +77,14 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 			enabledSortModes.AddRange(oldEnabledSortModes);
 		CurrentlyRenderedMenu = null;
 
+		var inactive = SelectedCards.Count < MinSelected || SelectedCards.Count > MaxSelected;
 		SharedArt.ButtonText(
 			g,
 			new Vec(390, GetBackButtonMode() == BackMode.None ? 228 : 202),
 			(UIKey)(UK)21375001,
 			ModEntry.Instance.Localizations.Localize(["route", "MultiCardBrowse", "doneButton"]),
-			inactive: SelectedCards.Count < MinSelected || SelectedCards.Count > MaxSelected,
+			boxColor: inactive ? Colors.buttonInactive : null, 
+			inactive: inactive,
 			onMouseDown: this,
 			platformButtonHint: Btn.Y
 		);

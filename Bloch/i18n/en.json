@@ -58,6 +58,11 @@
         "DrawEachTurn": {
             "name": "Draw Each Turn",
             "description": "Draw {0} extra cards each turn."
+        },
+        "Retain": {
+            "name": "Retain",
+            "description": "At the end of your turn, choose up to {0} cards to <c=cardtrait>retain</c>.",
+            "browseText": "Choose up to {{Amount}} cards to <c=cardtrait>retain</c>."
         }
     },
     "cardTrait": {
@@ -107,6 +112,9 @@
                 "A": "Attack for {{Damage}}. <c=action>On Discard</c>, gains 2 damage this combat.",
                 "B": "Attack for {{Damage}}. <c=action>On Discard</c>, gains 1 damage and <c=cardtrait>exhausts</c>."
             }
+        },
+        "MindMap": {
+            "name": "Mind Map"
         },
         "MindPurge": {
             "name": "Mind Purge",

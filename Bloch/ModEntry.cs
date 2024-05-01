@@ -41,6 +41,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
 		typeof(IntrusiveThoughtCard),
+		typeof(MindMapCard),
 		typeof(OverstimulationCard),
 	];
 
@@ -99,6 +100,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new OnTurnEndManager();
 		_ = new OnHullDamageManager();
 		_ = new OncePerTurnManager();
+		_ = new RetainManager();
 		_ = new ScryManager();
 
 		BlochDeck = helper.Content.Decks.RegisterDeck("Bloch", new()
