@@ -72,6 +72,10 @@
         }
     },
     "artifact": {
+        "AuraMastery": {
+            "name": "AURA MASTERY",
+            "description": "Every 2 <c=status>VEILING AURA</c> you gain, gain 1 <c=status>FEEDBACK AURA</c> or <c=status>INSIGHT AURA</c> at random."
+        },
         "VainMemories": {
             "name": "VAIN MEMORIES",
             "description": "Gain 1 <c=status>ENERGY FRAGMENT</c> whenever you discard a card during your turn without playing it."
