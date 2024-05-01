@@ -42,6 +42,7 @@ public sealed class ModEntry : SimpleMod
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
 		typeof(IntrusiveThoughtCard),
 		typeof(MindMapCard),
+		typeof(OutburstCard),
 		typeof(OverstimulationCard),
 	];
 

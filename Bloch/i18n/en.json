@@ -128,6 +128,21 @@
         "Opt": {
             "name": "Opt"
         },
+        "Outburst": {
+            "name": "Outburst",
+            "description": {
+                "stateless": {
+                    "None": "Discard cards in hand. Deal their energy cost sum as damage.",
+                    "A": "Discard cards in hand. Deal their energy cost sum as damage.",
+                    "B": "Exhaust cards in hand. Deal their energy cost sum as damage."
+                },
+                "stateful": {
+                    "None": "Discard cards in hand. Deal their energy cost sum as damage: <c=hurt>{{Damage}}</c>.",
+                    "A": "Discard cards in hand. Deal their energy cost sum as damage: <c=hurt>{{Damage}}</c>.",
+                    "B": "Exhaust cards in hand. Deal their energy cost sum as damage: <c=hurt>{{Damage}}</c>."
+                }
+            }
+        },
         "Overstimulation": {
             "name": "Over-stimulation"
         },
