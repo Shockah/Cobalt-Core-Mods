@@ -47,7 +47,7 @@ internal sealed class ScryAction : CardAction
 			c.discard.Clear();
 			s.ShuffleDeck(isMidCombat: true);
 
-			s.deck.InsertRange(0, currentDeck);
+			s.deck.AddRange(currentDeck);
 		}
 	}
 
@@ -58,7 +58,7 @@ internal sealed class ScryAction : CardAction
 			mode = CardBrowse.Mode.Browse,
 			browseSource = CardBrowse.Source.DrawPile,
 			browseAction = new BrowseAction(),
-			CardsOverride = s.deck.Take(Amount).ToList(),
+			CardsOverride = s.deck.TakeLast(Amount).ToList(),
 			EnabledSorting = false,
 		};
 		c.Queue(new ADelay
