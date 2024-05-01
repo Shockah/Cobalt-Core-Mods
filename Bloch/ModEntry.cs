@@ -23,6 +23,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(DistressCard),
 		typeof(FeedbackCard),
 		typeof(FocusCard),
+		typeof(InsightCard),
 		typeof(MaterializeCard),
 		typeof(OptCard),
 		typeof(PainReactionCard),
@@ -92,6 +93,7 @@ public sealed class ModEntry : SimpleMod
 		);
 
 		_ = new AuraManager();
+		_ = new DrawEachTurnManager();
 		_ = new NegativeBoostManager();
 		_ = new OnDiscardManager();
 		_ = new OnTurnEndManager();

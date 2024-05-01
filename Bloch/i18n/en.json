@@ -54,6 +54,10 @@
         "Intensify": {
             "name": "Intensify",
             "description": "All of your auras trigger again for each stack of this. <c=downside>Goes away at start of next turn.</c>"
+        },
+        "DrawEachTurn": {
+            "name": "Draw Each Turn",
+            "description": "Draw {0} extra cards each turn."
         }
     },
     "cardTrait": {
@@ -86,6 +90,9 @@
         },
         "Focus": {
             "name": "Focus"
+        },
+        "Insight": {
+            "name": "Insight"
         },
         "IntrusiveThought": {
             "name": "Intrusive Thought"
