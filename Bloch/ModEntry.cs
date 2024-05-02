@@ -189,6 +189,43 @@ public sealed class ModEntry : SimpleMod
 				]
 			}
 		);
+
+		helper.Events.OnModLoadPhaseFinished += (_, phase) =>
+		{
+			if (phase != ModLoadPhase.AfterDbInit)
+				return;
+
+			if (helper.ModRegistry.GetApi<IDraculaApi>("Shockah.Dracula") is { } draculaApi)
+			{
+				draculaApi.RegisterBloodTapOptionProvider(AuraManager.VeilingStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+					new AStatus { targetPlayer = true, status = AuraManager.IntensifyStatus.Status, statusAmount = 1 },
+				]);
+				draculaApi.RegisterBloodTapOptionProvider(AuraManager.FeedbackStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+					new AStatus { targetPlayer = true, status = AuraManager.IntensifyStatus.Status, statusAmount = 1 },
+				]);
+				draculaApi.RegisterBloodTapOptionProvider(AuraManager.InsightStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+					new AStatus { targetPlayer = true, status = AuraManager.IntensifyStatus.Status, statusAmount = 1 },
+				]);
+				draculaApi.RegisterBloodTapOptionProvider(DrawEachTurnManager.DrawEachTurnStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+				]);
+				draculaApi.RegisterBloodTapOptionProvider(RetainManager.RetainStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+				]);
+				draculaApi.RegisterBloodTapOptionProvider(SplitPersonalityManager.SplitPersonalityStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+				]);
+			}
+		};
 	}
 
 	public override object? GetApi(IModManifest requestingMod)
