@@ -27,18 +27,23 @@ internal sealed class OptCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = upgrade == Upgrade.B ? 0 : 1,
+			cost = upgrade == Upgrade.B ? 1 : 0,
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
 			new ScryAction
 			{
-				Amount = upgrade == Upgrade.B ? 1 : 3
+				Amount = upgrade switch
+				{
+					Upgrade.A => 2,
+					Upgrade.B => 3,
+					_ => 1
+				}
 			},
 			new ADrawCard
 			{
-				count = upgrade == Upgrade.A ? 2 : 1
+				count = upgrade == Upgrade.B ? 2 : 1
 			}
 		];
 }
