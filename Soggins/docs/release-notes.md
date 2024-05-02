@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Smug is now Boost-proof.
 * Fixed Halfhearted-Apology-generating cards sometimes breaking when played by other cards automatically.
 
 ## 1.3.2

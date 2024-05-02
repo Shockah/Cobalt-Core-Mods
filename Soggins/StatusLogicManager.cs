@@ -10,5 +10,5 @@ internal sealed class StatusLogicManager : IStatusLogicHook
 	}
 
 	public bool? IsAffectedByBoost(State state, Combat combat, Ship ship, Status status)
-		=> status == (Status)Instance.DoubleTimeStatus.Id!.Value || status == (Status)Instance.BotchesStatus.Id!.Value ? false : null;
+		=> status == (Status)Instance.DoubleTimeStatus.Id!.Value || status == (Status)Instance.BotchesStatus.Id!.Value || status == (Status)Instance.SmugStatus.Id!.Value ? false : null;
 }
