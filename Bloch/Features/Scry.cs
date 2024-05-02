@@ -53,12 +53,14 @@ internal sealed class ScryAction : CardAction
 
 	public override Route? BeginWithRoute(G g, State s, Combat c)
 	{
+		var cards = s.deck.TakeLast(Amount).ToList();
+
 		var route = new MultiCardBrowse()
 		{
 			mode = CardBrowse.Mode.Browse,
 			browseSource = CardBrowse.Source.DrawPile,
-			browseAction = new BrowseAction(),
-			CardsOverride = s.deck.TakeLast(Amount).ToList(),
+			browseAction = new BrowseAction { PresentedCards = cards },
+			CardsOverride = cards,
 			EnabledSorting = false,
 		};
 		c.Queue(new ADelay
@@ -76,6 +78,8 @@ internal sealed class ScryAction : CardAction
 
 	private sealed class BrowseAction : CardAction
 	{
+		public required List<Card> PresentedCards;
+
 		public override string? GetCardSelectText(State s)
 			=> ModEntry.Instance.Localizations.Localize(["action", "Scry", "browseText"]);
 
@@ -83,7 +87,6 @@ internal sealed class ScryAction : CardAction
 		{
 			base.Begin(g, s, c);
 
-			var presentedCards = this.GetSelectedCards();
 			var cardsToDiscard = s.deck
 				.Where(card => this.GetSelectedCards().Any(selectedCard => selectedCard.uuid == card.uuid))
 				.ToList();
@@ -101,7 +104,7 @@ internal sealed class ScryAction : CardAction
 				Audio.Play(Event.CardHandling);
 
 			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, s.EnumerateAllArtifacts()))
-				hook.OnScryResult(s, c, presentedCards, cardsToDiscard);
+				hook.OnScryResult(s, c, PresentedCards, cardsToDiscard);
 		}
 	}
 }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
+using Nickel.Common;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -172,6 +173,17 @@ public sealed class ModEntry : SimpleMod
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Squint/{i}.png")).Sprite)
 				.ToList()
 		});
+
+		helper.ModRegistry.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", new SemanticVersion(1, 3, 0))?.RegisterAltStarters(
+			deck: BlochDeck.Deck,
+			starterDeck: new StarterDeck
+			{
+				cards = [
+					new OptCard(),
+					new PrismaticAuraCard()
+				]
+			}
+		);
 	}
 
 	public override object? GetApi(IModManifest requestingMod)
