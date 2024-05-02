@@ -20,8 +20,7 @@ public sealed class AContinue : CardAction
 	}
 
 	public override List<Tooltip> GetTooltips(State s)
-		=> new()
-		{
+		=> [
 			new CustomTTGlossary(
 				CustomTTGlossary.GlossaryType.action,
 				() => (Spr)(Continue ? ModEntry.Instance.Content.ContinueSprite : ModEntry.Instance.Content.StopSprite).Id!.Value,
@@ -29,7 +28,7 @@ public sealed class AContinue : CardAction
 				() => Continue ? I18n.ContinueActionDescription : I18n.StopActionDescription,
 				key: $"AContinue.{(Continue ? "Continue" : "Stop")}"
 			)
-		};
+		];
 
 	public override Icon? GetIcon(State s)
 		=> new(

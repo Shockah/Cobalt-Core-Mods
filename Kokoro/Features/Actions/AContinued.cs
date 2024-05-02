@@ -29,5 +29,5 @@ public sealed class AContinued : CardAction
 	}
 
 	public override List<Tooltip> GetTooltips(State s)
-		=> Action?.GetTooltips(s) ?? new();
+		=> Action?.omitFromTooltips == true ? [] : (Action?.GetTooltips(s) ?? []);
 }

@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added a spoofed action API.
+
 ## 1.7.1
 Released 23 April 2024.
 

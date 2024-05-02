@@ -434,6 +434,14 @@ internal static class CardPatches
 
 			return false;
 		}
+		else if (action is ASpoofed spoofedAction)
+		{
+			if ((spoofedAction.RenderAction ?? spoofedAction.RealAction) is not { } actionToRender)
+				return true;
+
+			__result = Card.RenderAction(g, state, actionToRender, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+			return false;
+		}
 
 		return true;
 	}

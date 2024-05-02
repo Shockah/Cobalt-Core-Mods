@@ -59,7 +59,7 @@ public sealed class AResourceCost : CardAction
 
 	public override List<Tooltip> GetTooltips(State s)
 	{
-		List<Tooltip> tooltips = new();
+		List<Tooltip> tooltips = [];
 		if (Costs is not null)
 			foreach (var cost in Costs)
 				tooltips.AddRange(cost.GetTooltips(s, s.route as Combat));
@@ -70,7 +70,7 @@ public sealed class AResourceCost : CardAction
 
 	public static Dictionary<string, int> GetCurrentResourceState(State state, Combat combat, IEnumerable<IKokoroApi.IActionCostApi.IResource> potentialResources)
 	{
-		Dictionary<string, int> resourceState = new();
+		Dictionary<string, int> resourceState = [];
 		foreach (var resource in potentialResources)
 			if (!resourceState.ContainsKey(resource.ResourceKey))
 				resourceState[resource.ResourceKey] = resource.GetCurrentResourceAmount(state, combat);
@@ -79,22 +79,22 @@ public sealed class AResourceCost : CardAction
 
 	public static (List<(string ResourceKey, bool IsSatisfied)> Payment, Dictionary<string, int> GroupedPayment, bool IsSatisfied) GetResourcePayment(Dictionary<string, int> resourceState, List<IKokoroApi.IActionCostApi.IActionCost> costs)
 	{
-		List<List<IKokoroApi.IActionCostApi.IResource>> toPay = new();
+		List<List<IKokoroApi.IActionCostApi.IResource>> toPay = [];
 		foreach (var cost in costs)
 			for (int i = 0; i < cost.ResourceAmount; i++)
 				toPay.Add(cost.PotentialResources.ToList());
 
-		List<(string ResourceKey, bool IsSatisfied)> payment = GetBestResourcePaymentOptions(resourceState, toPay).FirstOrDefault() ?? new();
+		List<(string ResourceKey, bool IsSatisfied)> payment = GetBestResourcePaymentOptions(resourceState, toPay).FirstOrDefault() ?? [];
 		Dictionary<string, int> groupedPayment = payment.GroupBy(k => k.ResourceKey).ToDictionary(g => g.Key, g => g.Count());
 		bool isSatisfied = payment.All(e => e.IsSatisfied);
 		return (Payment: payment, GroupedPayment: groupedPayment, IsSatisfied: isSatisfied);
 	}
 
 	private static IEnumerable<List<(string ResourceKey, bool IsSatisfied)>> GetBestResourcePaymentOptions(Dictionary<string, int> resourceState, List<List<IKokoroApi.IActionCostApi.IResource>> toPay)
-		=> GetResourcePaymentOptions(new(), toPay)
+		=> GetResourcePaymentOptions([], toPay)
 			.Select(o =>
 			{
-				List<(string ResourceKey, bool IsSatisfied)> resultOption = new();
+				List<(string ResourceKey, bool IsSatisfied)> resultOption = [];
 				Dictionary<string, int> currentState = new(resourceState);
 				foreach (var resourceKey in o)
 				{
@@ -124,12 +124,5 @@ public sealed class AResourceCost : CardAction
 			foreach (var option in GetResourcePaymentOptions(newPayment, newToPayLeft))
 				yield return option;
 		}
-	}
-
-	private static IEnumerable<string> GetSingleResourcePaymentOptions(Dictionary<string, int> resourceState, IEnumerable<string> resources)
-	{
-		foreach (var resource in resources)
-			if (resourceState.GetValueOrDefault(resource) > 0)
-				yield return resource;
 	}
 }

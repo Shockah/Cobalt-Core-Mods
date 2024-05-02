@@ -363,10 +363,8 @@ internal sealed class ConditionalActionEquation : IKokoroApi.IConditionalActionA
 		=> string.Format(GetTooltipDescriptionFormat(), Lhs.GetTooltipDescription(state, combat), Rhs.GetTooltipDescription(state, combat));
 
 	public List<Tooltip> GetTooltips(State state, Combat? combat)
-	{
-		List<Tooltip> tooltips = new();
-		tooltips.AddRange(Lhs.GetTooltips(state, combat));
-		tooltips.AddRange(Rhs.GetTooltips(state, combat));
-		return tooltips;
-	}
+		=> [
+			..Lhs.GetTooltips(state, combat),
+			..Rhs.GetTooltips(state, combat),
+		];
 }

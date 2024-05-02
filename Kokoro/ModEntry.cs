@@ -25,7 +25,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	private Harmony Harmony = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
-	public IEnumerable<DependencyEntry> Dependencies => Array.Empty<DependencyEntry>();
+	public IEnumerable<DependencyEntry> Dependencies => [];
 
 	public DirectoryInfo? GameRootFolder { get; set; }
 	public DirectoryInfo? ModRootFolder { get; set; }

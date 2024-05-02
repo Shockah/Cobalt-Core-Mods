@@ -62,7 +62,7 @@ internal sealed class ActionCostImpl : IKokoroApi.IActionCostApi.IActionCost
 	{
 		if (CustomTooltipProvider is not null)
 			return CustomTooltipProvider(state, combat, PotentialResources, ResourceAmount);
-		return PotentialResources.FirstOrDefault()?.GetTooltips(state, combat, ResourceAmount) ?? new();
+		return PotentialResources.FirstOrDefault()?.GetTooltips(state, combat, ResourceAmount) ?? [];
 	}
 }
 
@@ -143,8 +143,7 @@ internal sealed class ActionCostStatusResource : IKokoroApi.IActionCostApi.IReso
 		string name = string.Format(nameFormat, Status.GetLocName().ToUpper());
 		string description = string.Format(descriptionFormat, amount, Status.GetLocName().ToUpper());
 
-		return new()
-		{
+		return [
 			new CustomTTGlossary(
 				CustomTTGlossary.GlossaryType.action,
 				() => icon,
@@ -152,7 +151,7 @@ internal sealed class ActionCostStatusResource : IKokoroApi.IActionCostApi.IReso
 				() => description,
 				key: $"{name}\n{description}"
 			)
-		};
+		];
 	}
 }
 
@@ -190,8 +189,7 @@ internal sealed class ActionCostEnergyResource : IKokoroApi.IActionCostApi.IReso
 	}
 
 	public List<Tooltip> GetTooltips(State state, Combat? combat, int amount)
-		=> new()
-		{
+		=> [
 			new CustomTTGlossary(
 				CustomTTGlossary.GlossaryType.action,
 				() => CostSatisfiedIcon ?? CostUnsatisfiedIcon,
@@ -199,5 +197,5 @@ internal sealed class ActionCostEnergyResource : IKokoroApi.IActionCostApi.IReso
 				() => string.Format(I18n.EnergyCostActionDescription, amount),
 				key: $"{I18n.EnergyCostActionName}\n{I18n.EnergyCostActionDescription}"
 			)
-		};
+		];
 }

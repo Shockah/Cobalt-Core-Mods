@@ -24,7 +24,7 @@ public sealed class AConditional : CardAction
 
 	public override List<Tooltip> GetTooltips(State s)
 	{
-		List<Tooltip> tooltips = new();
+		List<Tooltip> tooltips = [];
 		if (Expression is not null)
 		{
 			var description = Expression.GetTooltipDescription(s, s.route as Combat);
@@ -38,7 +38,7 @@ public sealed class AConditional : CardAction
 			));
 			tooltips.AddRange(Expression.GetTooltips(s, s.route as Combat));
 		}
-		if (Action is not null)
+		if (Action is not null && !Action.omitFromTooltips)
 			tooltips.AddRange(Action.GetTooltips(s));
 		return tooltips;
 	}

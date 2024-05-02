@@ -11,6 +11,7 @@ public sealed class WrappedActionManager : HookManager<IWrappedActionHook>
 		Register(ResourceCostActionWrappedActionHook.Instance, 0);
 		Register(ContinuedActionWrappedActionHook.Instance, 0);
 		Register(HiddenActionWrappedActionHook.Instance, 0);
+		Register(SpoofedActionWrappedActionHook.Instance, 0);
 	}
 
 	public IEnumerable<CardAction> GetWrappedCardActions(CardAction action)
@@ -59,7 +60,7 @@ public sealed class ConditionalActionWrappedActionHook : IWrappedActionHook
 			return null;
 		if (conditional.Action is not { } wrappedAction)
 			return null;
-		return new() { wrappedAction };
+		return [wrappedAction];
 	}
 }
 
@@ -75,7 +76,7 @@ public sealed class ResourceCostActionWrappedActionHook : IWrappedActionHook
 			return null;
 		if (resourceCostAction.Action is not { } wrappedAction)
 			return null;
-		return new() { wrappedAction };
+		return [wrappedAction];
 	}
 }
 
@@ -91,7 +92,7 @@ public sealed class ContinuedActionWrappedActionHook : IWrappedActionHook
 			return null;
 		if (continued.Action is not { } wrappedAction)
 			return null;
-		return new() { wrappedAction };
+		return [wrappedAction];
 	}
 }
 
@@ -107,6 +108,26 @@ public sealed class HiddenActionWrappedActionHook : IWrappedActionHook
 			return null;
 		if (hidden.Action is not { } wrappedAction)
 			return null;
-		return new() { wrappedAction };
+		return [wrappedAction];
+	}
+}
+
+public sealed class SpoofedActionWrappedActionHook : IWrappedActionHook
+{
+	public static SpoofedActionWrappedActionHook Instance { get; private set; } = new();
+
+	private SpoofedActionWrappedActionHook() { }
+
+	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	{
+		if (action is not ASpoofed spoofed)
+			return null;
+
+		List<CardAction> results = [];
+		if (spoofed.RenderAction is { } renderAction)
+			results.Add(renderAction);
+		if (spoofed.RealAction is { } realAction)
+			results.Add(realAction);
+		return results.Count == 0 ? null : results;
 	}
 }

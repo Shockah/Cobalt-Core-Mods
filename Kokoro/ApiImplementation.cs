@@ -295,6 +295,9 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 		public IEnumerable<CardAction> MakeStopped(Guid id, IEnumerable<CardAction> action)
 			=> action.Select(a => MakeStopped(id, a));
 
+		public CardAction MakeSpoofed(CardAction renderAction, CardAction realAction)
+			=> new ASpoofed { RenderAction = renderAction, RealAction = realAction };
+
 		public CardAction MakeHidden(CardAction action, bool showTooltips = false)
 			=> new AHidden { Action = action, ShowTooltips = showTooltips };
 

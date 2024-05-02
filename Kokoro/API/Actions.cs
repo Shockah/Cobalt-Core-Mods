@@ -20,6 +20,7 @@ public partial interface IKokoroApi
 		CardAction MakeStopped(Guid id, CardAction action);
 		IEnumerable<CardAction> MakeStopped(Guid id, IEnumerable<CardAction> action);
 
+		CardAction MakeSpoofed(CardAction renderAction, CardAction realAction);
 		CardAction MakeHidden(CardAction action, bool showTooltips = false);
 		AVariableHint SetTargetPlayer(AVariableHint action, bool targetPlayer);
 		AVariableHint MakeEnergyX(AVariableHint? action = null, bool energy = true, int? tooltipOverride = null);

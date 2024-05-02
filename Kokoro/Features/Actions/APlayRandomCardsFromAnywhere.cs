@@ -6,7 +6,7 @@ namespace Shockah.Kokoro;
 
 public sealed class APlayRandomCardsFromAnywhere : CardAction
 {
-	public HashSet<int> CardIds = new();
+	public HashSet<int> CardIds = [];
 	public int Amount = 1;
 	public bool ShowTheCardIfNotInHand = true;
 

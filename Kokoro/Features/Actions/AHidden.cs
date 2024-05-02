@@ -19,10 +19,8 @@ public sealed class AHidden : CardAction
 	}
 
 	public override List<Tooltip> GetTooltips(State s)
-	{
-		List<Tooltip> tooltips = new();
-		if (Action is not null && ShowTooltips)
-			tooltips.AddRange(Action.GetTooltips(s));
-		return tooltips;
-	}
+		=> (!ShowTooltips || Action?.omitFromTooltips == true) ? [] : (Action?.GetTooltips(s) ?? []);
+
+	public override bool CanSkipTimerIfLastEvent()
+		=> Action?.CanSkipTimerIfLastEvent() ?? base.CanSkipTimerIfLastEvent();
 }
