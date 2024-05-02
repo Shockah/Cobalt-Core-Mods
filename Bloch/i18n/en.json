@@ -108,6 +108,11 @@
         "Calm": {
             "name": "Calm"
         },
+        "ChangePerspective": {
+            "name": "Change Perspective",
+            "description": "Convert any <c=C2FF60>Aura</c> into 2 of a different <c=C2FF60>Aura</c>.",
+            "uiTitle": "CONVERT AURA"
+        },
         "DelveDeep": {
             "name": "Delve Deep"
         },
@@ -176,7 +181,7 @@
         "PrismaticAura": {
             "name": "Prismatic Aura",
             "description": {
-                "B": "Gain 1 of each Aura. <c=action>On Discard</c>, gain 1 of each Aura."
+                "B": "Gain 1 of each <c=C2FF60>Aura</c>. <c=action>On Discard</c>, gain 1 of each <c=C2FF60>Aura</c>."
             }
         },
         "PsychicDamage": {
