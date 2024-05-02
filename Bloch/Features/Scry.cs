@@ -53,7 +53,7 @@ internal sealed class ScryAction : CardAction
 
 	public override Route? BeginWithRoute(G g, State s, Combat c)
 	{
-		var cards = s.deck.TakeLast(Amount).ToList();
+		var cards = s.deck.TakeLast(Amount).Reverse().ToList();
 
 		var route = new MultiCardBrowse()
 		{
