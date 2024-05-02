@@ -48,6 +48,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(MindMapCard),
 		typeof(OutburstCard),
 		typeof(OverstimulationCard),
+		typeof(SplitPersonalityCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> SpecialCardTypes = [
@@ -114,6 +115,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new OncePerTurnManager();
 		_ = new RetainManager();
 		_ = new ScryManager();
+		_ = new SplitPersonalityManager();
 
 		BlochDeck = helper.Content.Decks.RegisterDeck("Bloch", new()
 		{

@@ -63,6 +63,10 @@
             "name": "Retain",
             "description": "At the end of your turn, choose up to {0} cards to <c=cardtrait>retain</c>.",
             "browseText": "Choose up to {{Amount}} cards to <c=cardtrait>retain</c>."
+        },
+        "SplitPersonality": {
+            "name": "Split Personality",
+            "description": "The next {0} <c=action>attacks</c> or <c=action>launches</c> are copied and mirrored against the ship's center."
         }
     },
     "cardTrait": {
@@ -180,6 +184,9 @@
         },
         "SayThoughtsLoud": {
             "name": "Speak Out Thoughts"
+        },
+        "SplitPersonality": {
+            "name": "Split Personality"
         }
     }
 }
