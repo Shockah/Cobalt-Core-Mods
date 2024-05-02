@@ -43,16 +43,17 @@ internal sealed class AuraMasteryArtifact : Artifact, IRegisterable
 		if (status != AuraManager.VeilingStatus.Status || mode != AStatusMode.Add)
 			return;
 
-		if (++Counter < 2)
-			return;
-
-		Counter -= 2;
-		combat.QueueImmediate(new AStatus
+		Counter++;
+		while (Counter >= 2)
 		{
-			targetPlayer = true,
-			status = state.rngActions.NextInt() % 2 == 0 ? AuraManager.FeedbackStatus.Status : AuraManager.InsightStatus.Status,
-			statusAmount = 1,
-			artifactPulse = Key()
-		});
+			Counter -= 2;
+			combat.QueueImmediate(new AStatus
+			{
+				targetPlayer = true,
+				status = state.rngActions.NextInt() % 2 == 0 ? AuraManager.FeedbackStatus.Status : AuraManager.InsightStatus.Status,
+				statusAmount = 1,
+				artifactPulse = Key()
+			});
+		}
 	}
 }

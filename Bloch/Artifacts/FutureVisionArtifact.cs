@@ -30,7 +30,7 @@ internal sealed class FutureVisionArtifact : Artifact, IRegisterable, IBlochHook
 			new TTGlossary("cardtrait.discount", 1)
 		];
 
-	public void OnScryResult(State state, Combat combat, IReadOnlyList<Card> presentedCards, IReadOnlyList<Card> discardedCards)
+	public void OnScryResult(State state, Combat combat, IReadOnlyList<Card> presentedCards, IReadOnlyList<Card> discardedCards, bool fromInsight)
 	{
 		var keptCards = presentedCards.Where(card => !discardedCards.Any(card2 => card.uuid == card2.uuid)).ToList();
 		if (keptCards.Count == 0)

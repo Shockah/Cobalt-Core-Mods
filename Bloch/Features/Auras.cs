@@ -3,6 +3,7 @@ using Nickel;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Shockah.Bloch;
 
@@ -176,6 +177,7 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 			new ScryAction
 			{
 				Amount = maxInsight,
+				FromInsight = true,
 				statusPulse = InsightStatus.Status,
 			},
 			new ADrawCard { count = count }
@@ -189,8 +191,18 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 			return false;
 		if (timing != StatusTurnTriggerTiming.TurnStart)
 			return false;
+		if (amount == 0)
+			return false;
 
-		amount = 0;
+		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is ComposureArtifact) is { } composureArtifact)
+		{
+			composureArtifact.Pulse();
+			amount = Math.Max(amount - 1, 0);
+		}
+		else
+		{
+			amount = 0;
+		}
 		return false;
 	}
 

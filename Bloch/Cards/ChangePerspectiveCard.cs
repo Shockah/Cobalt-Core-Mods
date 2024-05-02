@@ -42,6 +42,13 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 
 	private sealed class Action : CardAction
 	{
+		public override List<Tooltip> GetTooltips(State s)
+			=> [
+				..StatusMeta.GetTooltips(AuraManager.VeilingStatus.Status, Math.Max(s.ship.Get(AuraManager.VeilingStatus.Status), 1)),
+				..StatusMeta.GetTooltips(AuraManager.FeedbackStatus.Status, Math.Max(s.ship.Get(AuraManager.FeedbackStatus.Status), 1)),
+				..StatusMeta.GetTooltips(AuraManager.InsightStatus.Status, Math.Max(s.ship.Get(AuraManager.InsightStatus.Status), 1)),
+			];
+
 		public override Route? BeginWithRoute(G g, State s, Combat c)
 			=> new CardRoute();
 	}

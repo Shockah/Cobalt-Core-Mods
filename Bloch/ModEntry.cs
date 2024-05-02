@@ -64,6 +64,8 @@ public sealed class ModEntry : SimpleMod
 		];
 
 	internal static readonly IReadOnlyList<Type> CommonArtifacts = [
+		typeof(ComposureArtifact),
+		typeof(LastingInsightArtifact),
 		typeof(LongTermMemoryArtifact),
 		typeof(MuscleMemoryArtifact),
 		typeof(UnlockedPotentialArtifact),

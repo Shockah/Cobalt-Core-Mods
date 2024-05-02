@@ -13,5 +13,5 @@ public interface IBlochApi
 
 public interface IBlochHook
 {
-	void OnScryResult(State state, Combat combat, IReadOnlyList<Card> presentedCards, IReadOnlyList<Card> discardedCards) { }
+	void OnScryResult(State state, Combat combat, IReadOnlyList<Card> presentedCards, IReadOnlyList<Card> discardedCards, bool fromInsight) { }
 }

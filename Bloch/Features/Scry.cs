@@ -18,6 +18,7 @@ internal sealed class ScryManager
 internal sealed class ScryAction : CardAction
 {
 	public required int Amount;
+	public bool FromInsight;
 
 	public override Icon? GetIcon(State s)
 		=> new(ScryManager.ActionIcon.Sprite, Amount, Colors.textMain);
@@ -59,7 +60,7 @@ internal sealed class ScryAction : CardAction
 		{
 			mode = CardBrowse.Mode.Browse,
 			browseSource = CardBrowse.Source.DrawPile,
-			browseAction = new BrowseAction { PresentedCards = cards },
+			browseAction = new BrowseAction { PresentedCards = cards, FromInsight = FromInsight },
 			CardsOverride = cards,
 			EnabledSorting = false,
 		};
@@ -79,6 +80,7 @@ internal sealed class ScryAction : CardAction
 	private sealed class BrowseAction : CardAction
 	{
 		public required List<Card> PresentedCards;
+		public required bool FromInsight;
 
 		public override string? GetCardSelectText(State s)
 			=> ModEntry.Instance.Localizations.Localize(["action", "Scry", "browseText"]);
@@ -104,7 +106,7 @@ internal sealed class ScryAction : CardAction
 				Audio.Play(Event.CardHandling);
 
 			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, s.EnumerateAllArtifacts()))
-				hook.OnScryResult(s, c, PresentedCards, cardsToDiscard);
+				hook.OnScryResult(s, c, PresentedCards, cardsToDiscard, FromInsight);
 		}
 	}
 }

@@ -80,9 +80,17 @@
             "name": "AURA MASTERY",
             "description": "Every 2 <c=status>VEILING AURA</c> you gain, gain 1 <c=status>FEEDBACK AURA</c> or <c=status>INSIGHT AURA</c> at random."
         },
+        "Composure": {
+            "name": "COMPOSURE",
+            "description": "<c=status>INTENSIFY</c> now only reduces by 1 at the start of each turn."
+        },
         "FutureVision": {
             "name": "FUTURE VISION",
             "description": "Whenever you keep any cards during <c=action>Scry</c>, <c=cardtrait>discount</c> one of the cards at random."
+        },
+        "LastingInsight": {
+            "name": "LASTING INSIGHT",
+            "description": "Refund 1 <c=status>INSIGHT AURA</c> for each card kept during its <c=action>Scry</c>."
         },
         "LongTermMemory": {
             "name": "LONG-TERM MEMORY",
