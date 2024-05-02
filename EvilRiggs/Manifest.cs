@@ -4,6 +4,7 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using CobaltCoreModding.Definitions.ModManifests;
 using EvilRiggs.Cards.Common;
 using EvilRiggs.Cards.Uncommon;
+using EvilRiggs.Drones;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using System;
@@ -35,6 +36,7 @@ namespace EvilRiggs
 
 		private static System.Drawing.Color Evil_Riggs_Color = System.Drawing.Color.FromArgb(255, 156, 95);
 
+		private static StuffBase? FootballBonkContext;
 
 		private void addSprite(string name, ISpriteRegistry artRegistry)
 		{
@@ -302,6 +304,14 @@ namespace EvilRiggs
 			var patch_target_6 = typeof(AMove).GetMethod("Begin", AccessTools.all);
 			var patch_method_6 = typeof(Manifest).GetMethod("EvilRiggsEngineRedirectPatch", AccessTools.all);
 			harmony.Patch(patch_target_6, postfix: new HarmonyMethod(patch_method_6));
+
+			var patch_target_7 = typeof(Football).GetMethod("GetActionsOnBonkedWhileInvincible", AccessTools.all);
+			var patch_method_7 = typeof(Manifest).GetMethod("EvilRiggsFootballBonkPatch", AccessTools.all);
+			harmony.Patch(patch_target_7, prefix: new HarmonyMethod(patch_method_7));
+
+			var patch_target_8 = typeof(Football).GetMethod("GetActionsOnShotWhileInvincible", AccessTools.all);
+			var patch_method_8 = typeof(Manifest).GetMethod("EvilRiggsFootballShootPatch", AccessTools.all);
+			harmony.Patch(patch_target_8, prefix: new HarmonyMethod(patch_method_8));
 		}
 
 		private static void EvilRiggsRagePatch(G g, State s, Combat c, AStatus __instance)
@@ -387,6 +397,21 @@ namespace EvilRiggs
 				c.QueueImmediate(new ADrawCard { count = 1 });
 				c.QueueImmediate(new AStatus { targetPlayer = true, status = statusRedirectUsed, statusAmount = 1 });
 			}
+		}
+
+		private static void EvilRiggsFootballBonkPatch(StuffBase thing)
+		{
+			FootballBonkContext = thing;
+		}
+
+		private static void EvilRiggsFootballShootPatch(ref int damage)
+		{
+			if (FootballBonkContext is MissileLight)
+			{
+				damage--;
+			}
+
+			FootballBonkContext = null;
 		}
 	}
 }
