@@ -62,7 +62,6 @@ public sealed class ModEntry : SimpleMod
 		];
 
 	internal static readonly IReadOnlyList<Type> CommonArtifacts = [
-		typeof(FutureVisionArtifact),
 		typeof(LongTermMemoryArtifact),
 		typeof(MuscleMemoryArtifact),
 		typeof(UnlockedPotentialArtifact),
@@ -71,6 +70,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static readonly IReadOnlyList<Type> BossArtifacts = [
 		typeof(AuraMasteryArtifact),
+		typeof(FutureVisionArtifact),
 	];
 
 	internal static readonly IReadOnlyList<Type> DuoArtifacts = [
