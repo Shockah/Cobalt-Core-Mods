@@ -1,6 +1,5 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
-using HarmonyLib;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.IO;
@@ -13,8 +12,6 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 	private static ModEntry Instance => ModEntry.Instance;
 
 	private static ExternalSprite Art = null!;
-
-	private static bool IsDuringTryPlayCard = false;
 
 	public void RegisterArt(ISpriteRegistry registry)
 	{
@@ -34,16 +31,6 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 		);
 		card.AddLocalisation(I18n.SoSorryCardName);
 		registry.RegisterCard(card);
-	}
-
-	public void ApplyPatches(Harmony harmony)
-	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
-			prefix: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Prefix)),
-			finalizer: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Finalizer))
-		);
 	}
 
 	public override CardData GetData(State state)
@@ -66,54 +53,41 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 		if (upgrade == Upgrade.B)
 			amount *= 2;
 
-		if (IsDuringTryPlayCard)
-		{
-			for (int i = 0; i < amount; i++)
-				actions.Add(new AAddCard
-				{
-					card = SmugStatusManager.GenerateAndTrackApology(s, c, s.rngActions),
-					destination = CardDestination.Hand,
-					omitFromTooltips = i != 0
-				});
-
-			if (upgrade == Upgrade.A)
-				for (int i = 0; i < 2; i++)
-					actions.Add(new AAddCard
-					{
-						card = SmugStatusManager.GenerateAndTrackApology(s, c, s.rngActions),
-						destination = CardDestination.Hand,
-						omitFromTooltips = amount != 0 || i != 0
-					});
-		}
-		else
-		{
-			actions.Add(new AAddCard
+		actions.Add(ModEntry.Instance.KokoroApi.Actions.MakeSpoofed(
+			renderAction: new AAddCard
 			{
 				card = new RandomPlaceholderApologyCard(),
 				destination = CardDestination.Hand,
 				amount = amount,
-				xHint = upgrade == Upgrade.B ? 2 : 1
-			});
+				xHint = 1
+			},
+			realAction: new AAddApologyCard
+			{
+				Destination = CardDestination.Hand,
+				Amount = amount
+			}
+		));
 
-			if (upgrade == Upgrade.A)
-				actions.Add(new AAddCard
+		if (upgrade == Upgrade.A)
+			actions.Add(ModEntry.Instance.KokoroApi.Actions.MakeSpoofed(
+				renderAction: new AAddCard
 				{
 					card = new RandomPlaceholderApologyCard(),
 					destination = CardDestination.Hand,
 					amount = 2,
 					omitFromTooltips = true
-				});
-		}
+				},
+				realAction: new AAddApologyCard
+				{
+					Destination = CardDestination.Hand,
+					Amount = 2,
+					omitFromTooltips = true
+				}
+			));
 
 		while (actions.Count < 5)
 			actions.Add(new ADummyAction());
 
 		return actions;
 	}
-
-	private static void Combat_TryPlayCard_Prefix()
-		=> IsDuringTryPlayCard = true;
-
-	private static void Combat_TryPlayCard_Finalizer()
-		=> IsDuringTryPlayCard = false;
 }

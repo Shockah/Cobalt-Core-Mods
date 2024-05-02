@@ -1,6 +1,5 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
-using HarmonyLib;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.IO;
@@ -13,8 +12,6 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard, IFrogproof
 	private static ModEntry Instance => ModEntry.Instance;
 
 	private static ExternalSprite Art = null!;
-
-	private static bool IsDuringTryPlayCard = false;
 
 	public void RegisterArt(ISpriteRegistry registry)
 	{
@@ -34,16 +31,6 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard, IFrogproof
 		);
 		card.AddLocalisation(I18n.ThoughtsAndPrayersCardName);
 		registry.RegisterCard(card);
-	}
-
-	public void ApplyPatches(Harmony harmony)
-	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
-			prefix: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Prefix)),
-			finalizer: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Finalizer))
-		);
 	}
 
 	private int GetAmount()
@@ -74,35 +61,23 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard, IFrogproof
 			}
 		];
 
-		if (IsDuringTryPlayCard)
-		{
-			for (int i = 0; i < GetAmount(); i++)
-				actions.Add(new AAddCard
-				{
-					card = SmugStatusManager.GenerateAndTrackApology(s, c, s.rngActions),
-					destination = CardDestination.Hand,
-					omitFromTooltips = i != 0
-				});
-		}
-		else
-		{
-			actions.Add(new AAddCard
+		actions.Add(ModEntry.Instance.KokoroApi.Actions.MakeSpoofed(
+			renderAction: new AAddCard
 			{
 				card = new RandomPlaceholderApologyCard(),
 				destination = CardDestination.Hand,
 				amount = GetAmount()
-			});
-		}
+			},
+			realAction: new AAddApologyCard
+			{
+				Destination = CardDestination.Hand,
+				Amount = GetAmount()
+			}
+		));
 
 		for (int i = 0; i < 2; i++)
 			actions.Add(new ADummyAction());
 
 		return actions;
 	}
-
-	private static void Combat_TryPlayCard_Prefix()
-		=> IsDuringTryPlayCard = true;
-
-	private static void Combat_TryPlayCard_Finalizer()
-		=> IsDuringTryPlayCard = false;
 }

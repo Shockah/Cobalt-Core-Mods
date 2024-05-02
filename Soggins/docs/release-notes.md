@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Halfhearted-Apology-generating cards sometimes breaking when played by other cards automatically.
+
 ## 1.3.2
 Released 29 February 2024.
 

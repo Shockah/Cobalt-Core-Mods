@@ -1,6 +1,5 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
-using HarmonyLib;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.IO;
@@ -13,8 +12,6 @@ public sealed class ExtraApologyCard : Card, IRegisterableCard
 	private static ModEntry Instance => ModEntry.Instance;
 
 	private static ExternalSprite Art = null!;
-
-	private static bool IsDuringTryPlayCard = false;
 
 	public void RegisterArt(ISpriteRegistry registry)
 	{
@@ -36,36 +33,10 @@ public sealed class ExtraApologyCard : Card, IRegisterableCard
 		registry.RegisterCard(card);
 	}
 
-	public void ApplyPatches(Harmony harmony)
-	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
-			prefix: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Prefix)),
-			finalizer: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Finalizer))
-		);
-	}
-
-	private int GetCost()
-		=> upgrade switch
-		{
-			Upgrade.A => 2,
-			Upgrade.B => 3,
-			_ => 3
-		};
-
-	private Status GetStatus()
-		=> upgrade switch
-		{
-			Upgrade.A => (Status)Instance.ExtraApologiesStatus.Id!.Value,
-			Upgrade.B => (Status)Instance.ConstantApologiesStatus.Id!.Value,
-			_ => (Status)Instance.ExtraApologiesStatus.Id!.Value
-		};
-
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.cost = GetCost();
+		data.cost = upgrade == Upgrade.A ? 2 : 3;
 		data.exhaust = true;
 		return data;
 	}
@@ -74,20 +45,20 @@ public sealed class ExtraApologyCard : Card, IRegisterableCard
 		=> [
 			new AStatus
 			{
-				status = GetStatus(),
+				status = upgrade == Upgrade.B ? (Status)Instance.ConstantApologiesStatus.Id!.Value : (Status)Instance.ExtraApologiesStatus.Id!.Value,
 				statusAmount = 1,
 				targetPlayer = true
 			},
-			new AAddCard
-			{
-				card = IsDuringTryPlayCard ? SmugStatusManager.GenerateAndTrackApology(s, c, s.rngActions) : new RandomPlaceholderApologyCard(),
-				destination = CardDestination.Hand
-			}
+			ModEntry.Instance.KokoroApi.Actions.MakeSpoofed(
+				renderAction: new AAddCard
+				{
+					card = new RandomPlaceholderApologyCard(),
+					destination = CardDestination.Hand
+				},
+				realAction: new AAddApologyCard
+				{
+					Destination = CardDestination.Hand,
+				}
+			)
 		];
-
-	private static void Combat_TryPlayCard_Prefix()
-		=> IsDuringTryPlayCard = true;
-
-	private static void Combat_TryPlayCard_Finalizer()
-		=> IsDuringTryPlayCard = false;
 }

@@ -1,6 +1,5 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
-using HarmonyLib;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -14,8 +13,6 @@ public sealed class ImTryingCard : Card, IRegisterableCard, IFrogproofCard
 	private static ModEntry Instance => ModEntry.Instance;
 
 	private static ExternalSprite Art = null!;
-
-	private static bool IsDuringTryPlayCard = false;
 
 	public void RegisterArt(ISpriteRegistry registry)
 	{
@@ -35,16 +32,6 @@ public sealed class ImTryingCard : Card, IRegisterableCard, IFrogproofCard
 		);
 		card.AddLocalisation(I18n.ImTryingCardName);
 		registry.RegisterCard(card);
-	}
-
-	public void ApplyPatches(Harmony harmony)
-	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
-			prefix: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Prefix)),
-			finalizer: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Finalizer))
-		);
 	}
 
 	private int GetCost()
@@ -89,33 +76,21 @@ public sealed class ImTryingCard : Card, IRegisterableCard, IFrogproofCard
 		});
 		actions.Add(Instance.KokoroApi.Actions.MakeExhaustEntireHandImmediate());
 
-		if (IsDuringTryPlayCard)
-		{
-			for (int i = 0; i < cardsInHandAfterPlaying; i++)
-				actions.Add(new AAddCard
-				{
-					card = SmugStatusManager.GenerateAndTrackApology(s, c, s.rngActions),
-					destination = CardDestination.Hand,
-					omitFromTooltips = i != 0
-				});
-		}
-		else
-		{
-			actions.Add(new AAddCard
+		actions.Add(ModEntry.Instance.KokoroApi.Actions.MakeSpoofed(
+			renderAction: new AAddCard
 			{
 				card = new RandomPlaceholderApologyCard(),
 				destination = CardDestination.Hand,
 				amount = cardsInHandAfterPlaying,
 				xHint = 1
-			});
-		}
+			},
+			realAction: new AAddApologyCard
+			{
+				Destination = CardDestination.Hand,
+				Amount = cardsInHandAfterPlaying
+			}
+		));
 
 		return actions;
 	}
-
-	private static void Combat_TryPlayCard_Prefix()
-		=> IsDuringTryPlayCard = true;
-
-	private static void Combat_TryPlayCard_Finalizer()
-		=> IsDuringTryPlayCard = false;
 }
