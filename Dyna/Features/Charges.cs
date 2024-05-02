@@ -35,6 +35,7 @@ internal sealed class ChargeManager
 	internal static ISpriteEntry FireChargeRightIcon { get; private set; } = null!;
 
 	private static AAttack? AttackContext;
+	private static StuffBase? BonkContext;
 
 	public ChargeManager()
 	{
@@ -73,6 +74,16 @@ internal sealed class ChargeManager
 			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
 			postfix: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Postfix))
+		);
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(Football), nameof(Football.GetActionsOnBonkedWhileInvincible)),
+			prefix: new HarmonyMethod(GetType(), nameof(Football_GetActionsOnBonkedWhileInvincible_Prefix))
+		);
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(Football), nameof(Football.GetActionsOnShotWhileInvincible)),
+			prefix: new HarmonyMethod(GetType(), nameof(Football_GetActionsOnShotWhileInvincible_Prefix))
 		);
 	}
 
@@ -263,6 +274,19 @@ internal sealed class ChargeManager
 			return;
 		TriggerChargeIfAny(s, c, part, targetPlayer: __instance.isPlayerShip);
 	}
+
+	private static void Football_GetActionsOnBonkedWhileInvincible_Prefix(StuffBase thing)
+		=> BonkContext = thing;
+
+	private static void Football_GetActionsOnShotWhileInvincible_Prefix(ref int damage)
+	{
+		if (BonkContext is not { } thing)
+			return;
+
+		BonkContext = null;
+		if (thing is DynaChargeFakeDrone charge)
+			damage += charge.ExtraDamage;
+	}
 }
 
 public sealed class FireChargeAction : CardAction
@@ -421,13 +445,14 @@ public sealed class FireChargeAction : CardAction
 
 		if (@object is not null)
 		{
-			var outcome = ASpawn.GetCollisionOutcome(new FakeDrone(), @object);
+			var dynaChargeFakeDrone = new DynaChargeFakeDrone { ExtraDamage = Charge.BonkDamage - 2 };
+			var outcome = ASpawn.GetCollisionOutcome(dynaChargeFakeDrone, @object);
 			@object.bubbleShield = false;
 
 			if (outcome is ASpawn.Outcome.BothDie or ASpawn.Outcome.LaunchedWins)
 				c.DestroyDroneAt(s, worldX, !TargetPlayer);
 			else if (@object.Invincible())
-				c.QueueImmediate(@object.GetActionsOnBonkedWhileInvincible(s, c, !TargetPlayer, new FakeDrone()));
+				c.QueueImmediate(@object.GetActionsOnBonkedWhileInvincible(s, c, !TargetPlayer, dynaChargeFakeDrone));
 
 			Audio.Play(Event.Hits_DroneCollision);
 		}
@@ -457,10 +482,16 @@ public sealed class FireChargeAction : CardAction
 	}
 }
 
+internal sealed class DynaChargeFakeDrone : FakeDrone
+{
+	public int ExtraDamage;
+}
+
 public abstract class BaseDynaCharge(string key) : IDynaCharge
 {
 	public string Key() => key;
 	public double YOffset { get; set; }
+	public virtual int BonkDamage { get; } = 2;
 
 	public abstract Spr GetIcon(State state);
 

@@ -43,6 +43,7 @@ public interface IDynaCharge
 {
 	string Key();
 	double YOffset { get; set; }
+	int BonkDamage { get => 2; }
 
 	Spr GetIcon(State state);
 	Spr? GetLightsIcon(State state) => null;

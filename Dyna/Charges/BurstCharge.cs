@@ -20,6 +20,9 @@ public sealed class BurstCharge : BaseDynaCharge, IRegisterable
 	{
 	}
 
+	public override int BonkDamage
+		=> 3;
+
 	public override Spr GetIcon(State state)
 		=> Sprite.Sprite;
 
