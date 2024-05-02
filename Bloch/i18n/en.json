@@ -76,6 +76,22 @@
             "name": "AURA MASTERY",
             "description": "Every 2 <c=status>VEILING AURA</c> you gain, gain 1 <c=status>FEEDBACK AURA</c> or <c=status>INSIGHT AURA</c> at random."
         },
+        "FutureVision": {
+            "name": "FUTURE VISION",
+            "description": "Whenever you keep any cards during <c=action>Scry</c>, <c=cardtrait>discount</c> one of the cards at random."
+        },
+        "LongTermMemory": {
+            "name": "LONG-TERM MEMORY",
+            "description": "Start each combat with 1 <c=status>RETAIN</c>."
+        },
+        "MuscleMemory": {
+            "name": "MUSCLE MEMORY",
+            "description": "<c=action>On Discard</c> effects now also trigger when a card is played."
+        },
+        "UnlockedPotential": {
+            "name": "UNLOCKED POTENTIAL",
+            "description": "<c=action>Once Per Turn</c> effects now also trigger when a card is played."
+        },
         "VainMemories": {
             "name": "VAIN MEMORIES",
             "description": "Gain 1 <c=status>ENERGY FRAGMENT</c> whenever you discard a card during your turn without playing it."

@@ -104,6 +104,13 @@ internal sealed class OnDiscardManager
 		{
 			base.Begin(g, s, c);
 			timer = 0;
+
+			if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is MuscleMemoryArtifact) is not { } artifact)
+				return;
+
+			if (string.IsNullOrEmpty(Action.artifactPulse))
+				Action.artifactPulse = artifact.Key();
+			c.QueueImmediate(Action);
 		}
 	}
 }

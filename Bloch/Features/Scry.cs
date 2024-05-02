@@ -83,6 +83,7 @@ internal sealed class ScryAction : CardAction
 		{
 			base.Begin(g, s, c);
 
+			var presentedCards = this.GetSelectedCards();
 			var cardsToDiscard = s.deck
 				.Where(card => this.GetSelectedCards().Any(selectedCard => selectedCard.uuid == card.uuid))
 				.ToList();
@@ -98,6 +99,9 @@ internal sealed class ScryAction : CardAction
 
 			if (cardsToDiscard.Count != 0)
 				Audio.Play(Event.CardHandling);
+
+			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, s.EnumerateAllArtifacts()))
+				hook.OnScryResult(s, c, presentedCards, cardsToDiscard);
 		}
 	}
 }
