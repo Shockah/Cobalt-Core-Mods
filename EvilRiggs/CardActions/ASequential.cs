@@ -4,13 +4,16 @@ namespace EvilRiggs.CardActions
 {
 	internal class ASequential : CardAction
 	{
-		public Card? targetCard;
+		public int CardId;
+
 		public override void Begin(G g, State s, Combat c)
 		{
 			timer = 0.0;
-			if (targetCard != null)
+
+			var card = s.FindCard(CardId);
+			if (card is SequentialCard sequentialCard)
 			{
-				targetCard.flipped = true;
+				sequentialCard.SequenceInitiated = true;
 			}
 		}
 

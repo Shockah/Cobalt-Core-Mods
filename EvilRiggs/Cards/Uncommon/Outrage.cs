@@ -4,13 +4,8 @@ using System.Collections.Generic;
 namespace EvilRiggs.Cards.Uncommon
 {
 	[CardMeta(deck = Deck.colorless, rarity = Rarity.uncommon, upgradesTo = new Upgrade[] { Upgrade.A, Upgrade.B })]
-	internal class Outrage : Card
+	internal class Outrage : SequentialCard
 	{
-		public override void OnDraw(State s, Combat c)
-		{
-			flipped = false;
-		}
-
 		public override List<CardAction> GetActions(State s, Combat c)
 		{
 			Status status = (Status)(Manifest.statuses["rage"].Id ?? throw new NullReferenceException());
@@ -18,24 +13,24 @@ namespace EvilRiggs.Cards.Uncommon
 			switch (this.upgrade)
 			{
 				case Upgrade.None:
-					list.Add(new ADiscard { count = 3, disabled = flipped });
-					list.Add(new AEnergy { changeAmount = 1, disabled = flipped });
-					list.Add(new CardActions.ASequential() { targetCard = this });
-					list.Add(new AStatus() { status = status, statusAmount = 3, targetPlayer = true, disabled = !flipped });
+					list.Add(new ADiscard { count = 3, disabled = SequenceInitiated });
+					list.Add(new AEnergy { changeAmount = 1, disabled = SequenceInitiated });
+					list.Add(new CardActions.ASequential() { CardId = uuid });
+					list.Add(new AStatus() { status = status, statusAmount = 3, targetPlayer = true, disabled = !SequenceInitiated });
 					break;
 
 				case Upgrade.A:
-					list.Add(new ADiscard { count = 1, disabled = flipped });
-					list.Add(new AEnergy { changeAmount = 1, disabled = flipped });
-					list.Add(new CardActions.ASequential() { targetCard = this });
-					list.Add(new AStatus() { status = status, statusAmount = 3, targetPlayer = true, disabled = !flipped });
+					list.Add(new ADiscard { count = 1, disabled = SequenceInitiated });
+					list.Add(new AEnergy { changeAmount = 1, disabled = SequenceInitiated });
+					list.Add(new CardActions.ASequential() { CardId = uuid });
+					list.Add(new AStatus() { status = status, statusAmount = 3, targetPlayer = true, disabled = !SequenceInitiated });
 					break;
 
 				case Upgrade.B:
-					list.Add(new ADiscard { count = 3, disabled = flipped });
-					list.Add(new AEnergy { changeAmount = 1, disabled = flipped });
-					list.Add(new CardActions.ASequential() { targetCard = this });
-					list.Add(new AStatus() { status = status, statusAmount = 4, targetPlayer = true, disabled = !flipped });
+					list.Add(new ADiscard { count = 3, disabled = SequenceInitiated });
+					list.Add(new AEnergy { changeAmount = 1, disabled = SequenceInitiated });
+					list.Add(new CardActions.ASequential() { CardId = uuid });
+					list.Add(new AStatus() { status = status, statusAmount = 4, targetPlayer = true, disabled = !SequenceInitiated });
 					break;
 			}
 
@@ -47,7 +42,7 @@ namespace EvilRiggs.Cards.Uncommon
 			cost = 1,
 			floppable = false,
 			infinite = true,
-			art = flipped ? (Spr)Manifest.sprites["cardart_seq_offset_bottom"].Id! : (Spr)Manifest.sprites["cardart_seq_offset_top"].Id!,
+			art = SequenceInitiated ? (Spr)Manifest.sprites["cardart_seq_offset_bottom"].Id! : (Spr)Manifest.sprites["cardart_seq_offset_top"].Id!,
 			artTint = "FFFFFF"
 		};
 

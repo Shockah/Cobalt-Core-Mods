@@ -377,12 +377,9 @@ namespace EvilRiggs
 
 			foreach(Card card in c.hand)
 			{
-				foreach(CardAction action in card.GetActions(s,c))
+				if (card is SequentialCard sequentialCard)
 				{
-					if(action.GetType() == typeof(CardActions.ASequential))
-					{
-						card.flipped = false;
-					}
+					sequentialCard.SequenceInitiated = false;
 				}
 			}
 		}
