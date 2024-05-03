@@ -111,6 +111,35 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 			: new TTGlossary($"status.{Instance.Content.WormStatus.Id!.Value}", value.Value);
 	#endregion
 
+	#region RedrawStatus
+	public ExternalStatus RedrawStatus
+		=> Instance.Content.RedrawStatus;
+
+	public Status RedrawVanillaStatus
+		=> (Status)RedrawStatus.Id!.Value;
+
+	public Tooltip GetRedrawStatusTooltip()
+		=> new TTGlossary($"status.{Instance.Content.RedrawStatus.Id!.Value}", 1);
+
+	public void RegisterRedrawStatusHook(IRedrawStatusHook hook, double priority)
+		=> Instance.RedrawStatusManager.Register(hook, priority);
+
+	public void UnregisterRedrawStatusHook(IRedrawStatusHook hook)
+		=> Instance.RedrawStatusManager.Unregister(hook);
+
+	public bool IsRedrawPossible(State state, Combat combat, Card card)
+		=> Instance.RedrawStatusManager.IsRedrawPossible(state, combat, card);
+
+	public IRedrawStatusHook? GetRedrawHandlingHook(State state, Combat combat, Card card)
+		=> Instance.RedrawStatusManager.GetHandlingHook(state, combat, card);
+
+	public void AfterRedraw(State state, Combat combat, Card card, IRedrawStatusHook hook)
+		=> Instance.RedrawStatusManager.AfterRedraw(state, combat, card, hook);
+
+	public IRedrawStatusHook StandardRedrawStatusHook
+		=> Kokoro.StandardRedrawStatusHook.Instance;
+	#endregion
+
 	#region OxidationStatus
 	public ExternalStatus OxidationStatus
 		=> Instance.Content.OxidationStatus;

@@ -43,6 +43,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	public MidrowScorchingManager MidrowScorchingManager { get; private init; } = new();
 	public WormStatusManager WormStatusManager { get; private init; } = new();
 	public OxidationStatusManager OxidationStatusManager { get; private init; } = new();
+	public RedrawStatusManager RedrawStatusManager { get; private init; } = new();
 
 	internal TimeSpan TotalGameTime;
 

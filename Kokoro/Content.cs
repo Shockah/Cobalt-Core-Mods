@@ -32,6 +32,11 @@ internal sealed class Content
 	internal ExternalSprite OxidationSprite { get; private set; } = null!;
 	internal ExternalStatus OxidationStatus { get; private set; } = null!;
 
+	internal ExternalSprite RedrawButtonSprite { get; private set; } = null!;
+	internal ExternalSprite RedrawButtonOnSprite { get; private set; } = null!;
+	internal ExternalSprite RedrawSprite { get; private set; } = null!;
+	internal ExternalStatus RedrawStatus { get; private set; } = null!;
+
 	internal ExternalSprite QuestionMarkSprite { get; private set; } = null!;
 	internal ExternalSprite EqualSprite { get; private set; } = null!;
 	internal ExternalSprite NotEqualSprite { get; private set; } = null!;
@@ -58,6 +63,18 @@ internal sealed class Content
 		OxidationSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Status.Oxidation",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "OxidationStatus.png"))
+		);
+		RedrawButtonSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.RedrawButton",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "RedrawButton.png"))
+		);
+		RedrawButtonOnSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.RedrawButtonOn",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "RedrawButtonOn.png"))
+		);
+		RedrawSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.Redraw",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "RedrawStatus.png"))
 		);
 		QuestionMarkSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Conditional.QuestionMark",
@@ -148,6 +165,18 @@ internal sealed class Content
 			);
 			OxidationStatus.AddLocalisation(I18n.OxidationStatusName, I18n.OxidationStatusDescription);
 			registry.RegisterStatus(OxidationStatus);
+		}
+		{
+			RedrawStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.Redraw",
+				isGood: true,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFFF0000)),
+				borderColor: null,
+				RedrawSprite,
+				affectedByTimestop: false
+			);
+			RedrawStatus.AddLocalisation(I18n.RedrawStatusName, I18n.RedrawStatusDescription);
+			registry.RegisterStatus(RedrawStatus);
 		}
 	}
 

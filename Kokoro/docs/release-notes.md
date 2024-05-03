@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added the Redraw status.
 * Added a spoofed action API.
 
 ## 1.7.1

@@ -13,6 +13,9 @@ internal static class I18n
 	public static string OxidationStatusName => "OXIDATION";
 	public static string OxidationStatusDescription => "If oxidation is {0} or more at end of turn, gain 1 <c=status>CORRODE</c> and set oxidation to 0.";
 
+	public static string RedrawStatusName => "REDRAW";
+	public static string RedrawStatusDescription => "Lets you discard a card and draw a new one. Costs 1 redraw per discard.";
+
 	public static string ConditionalActionName => "CONDITIONAL";
 	public static string ConditionalActionDescription => "This action will only trigger if {0}.";
 	public static string ConditionalHandDescription => "cards in your hand";
