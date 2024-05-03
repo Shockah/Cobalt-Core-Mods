@@ -1,11 +1,9 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Shockah.Dracula;
 
 public sealed class APositionalDroneBubble : CardAction
 {
-	[JsonProperty]
 	public required int WorldX;
 
 	public override void Begin(G g, State s, Combat c)
@@ -34,9 +32,7 @@ public sealed class APositionalDroneBubble : CardAction
 		if (s.route is Combat combat && combat.stuff.TryGetValue(WorldX, out var @object))
 			@object.hilight = 2;
 
-		return [
-			new TTGlossary("midrow.bubbleShield")
-		];
+		return [new TTGlossary("midrow.bubbleShield")];
 	}
 
 	public override Icon? GetIcon(State s)

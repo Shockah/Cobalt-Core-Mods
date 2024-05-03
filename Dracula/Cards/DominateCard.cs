@@ -20,8 +20,6 @@ internal sealed class DominateCard : Card, IDraculaCard
 	private static ISpriteEntry OptionalOnIcon = null!;
 	private static ISpriteEntry OptionalOffIcon = null!;
 
-	private static bool IsDuringTryPlayCard = false;
-
 	public Matrix ModifyCardActionRenderMatrix(G g, List<CardAction> actions, CardAction action, int actionWidth)
 	{
 		if (upgrade == Upgrade.None)
@@ -60,12 +58,6 @@ internal sealed class DominateCard : Card, IDraculaCard
 
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Prefix)),
-			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Finalizer))
-		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Render)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Transpiler))
 		);
@@ -85,80 +77,23 @@ internal sealed class DominateCard : Card, IDraculaCard
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		List<CardAction> actions = [];
-
-		if (IsDuringTryPlayCard)
+		=> upgrade switch
 		{
-			for (var i = 0; i < s.ship.parts.Count; i++)
-				if (s.ship.parts[i].type == PType.missiles)
-					actions.Add(new APositionalDroneFlip
-					{
-						WorldX = s.ship.x + i,
-						disabled = upgrade != Upgrade.None && flipped
-					});
-		}
-		else
-		{
-			actions.Add(new APositionalDroneFlip
-			{
-				WorldX = s.ship.x,
-				disabled = upgrade != Upgrade.None && flipped
-			});
-		}
-
-		if (upgrade == Upgrade.A)
-		{
-			if (IsDuringTryPlayCard)
-			{
-				for (var i = 0; i < s.ship.parts.Count; i++)
-					if (s.ship.parts[i].type == PType.missiles)
-						actions.Add(new APositionalDroneBubble
-						{
-							WorldX = s.ship.x + i
-						});
-			}
-			else
-			{
-				actions.Add(new APositionalDroneBubble
-				{
-					WorldX = s.ship.x
-				});
-			}
-		}
-		else if (upgrade == Upgrade.B)
-		{
-			if (IsDuringTryPlayCard)
-			{
-				for (var i = 0; i < s.ship.parts.Count; i++)
-					if (s.ship.parts[i].type == PType.missiles)
-						actions.Add(new APositionalDroneTrigger
-						{
-							WorldX = s.ship.x + i
-						});
-			}
-			else
-			{
-				actions.Add(new APositionalDroneTrigger
-				{
-					WorldX = s.ship.x
-				});
-			}
-		}
-
-		actions.Add(new ADrawCard
-		{
-			count = 1
-		});
-
-		return actions;
-	}
-
-	private static void Combat_TryPlayCard_Prefix()
-		=> IsDuringTryPlayCard = true;
-
-	private static void Combat_TryPlayCard_Finalizer()
-		=> IsDuringTryPlayCard = false;
+			Upgrade.A => [
+				new ABayDroneFlip { FromPlayer = true, disabled = flipped },
+				new ABayDroneBubble { FromPlayer = true },
+				new ADrawCard { count = 1 }
+			],
+			Upgrade.B => [
+				new ABayDroneFlip { FromPlayer = true, disabled = flipped },
+				new ABayDroneTrigger { FromPlayer = true },
+				new ADrawCard { count = 1 }
+			],
+			_ => [
+				new ABayDroneFlip { FromPlayer = true },
+				new ADrawCard { count = 1 }
+			]
+		};
 
 	private static IEnumerable<CodeInstruction> Card_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{

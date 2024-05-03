@@ -2,7 +2,6 @@
 using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dracula;
@@ -17,8 +16,6 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 {
 	private const CardBrowse.Source ExhaustOrSingleUseBrowseSource = (CardBrowse.Source)2137201;
 	private const CardBrowse.Source HandDrawDiscardBrowseSource = (CardBrowse.Source)2137202;
-
-	private static bool IsDuringTryPlayCard { get; set; } = false;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -113,13 +110,11 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 			base.Begin(g, s, c);
 			if (selectedCard is null)
 				return;
-			c.QueueImmediate(new List<CardAction>
-			{
-				new AFixedExhaustOtherCard
-				{
-					uuid = selectedCard.uuid
-				}
-			}.Concat(OnSuccess ?? []).ToList());
+
+			c.QueueImmediate([
+				new AFixedExhaustOtherCard { uuid = selectedCard.uuid },
+				..(OnSuccess ?? [])
+			]);
 		}
 	}
 
@@ -146,6 +141,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 			base.Begin(g, s, c);
 			if (selectedCard is null)
 				return;
+
 			c.QueueImmediate(ModEntry.Instance.KokoroApi.Actions.MakePlaySpecificCardFromAnywhere(selectedCard.uuid));
 		}
 	}

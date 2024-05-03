@@ -1,12 +1,10 @@
-﻿using Newtonsoft.Json;
-using Nickel;
+﻿using Nickel;
 using System.Collections.Generic;
 
 namespace Shockah.Dracula;
 
 public sealed class APositionalDroneFlip : CardAction
 {
-	[JsonProperty]
 	public required int WorldX;
 
 	public override void Begin(G g, State s, Combat c)

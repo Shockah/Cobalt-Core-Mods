@@ -1,7 +1,5 @@
-﻿using HarmonyLib;
-using Nanoray.PluginManager;
+﻿using Nanoray.PluginManager;
 using Nickel;
-using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +10,6 @@ namespace Shockah.Dracula;
 
 internal sealed class GrimoireOfSecretsCard : Card, IDraculaCard
 {
-	private static bool IsDuringTryPlayCard { get; set; } = false;
-
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("GrimoireOfSecrets", new()
@@ -28,15 +24,7 @@ internal sealed class GrimoireOfSecretsCard : Card, IDraculaCard
 			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/GrimoireOfSecrets.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "GrimoireOfSecrets", "name"]).Localize
 		});
-
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Prefix)),
-			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Finalizer))
-		);
 	}
-
 	
 	private int CardCount
 	{
@@ -53,38 +41,17 @@ internal sealed class GrimoireOfSecretsCard : Card, IDraculaCard
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		List<CardAction> actions = [];
-		if (upgrade == Upgrade.B)
-		{
-			if (IsDuringTryPlayCard)
+		=> [
+			new Action
 			{
-				actions.AddRange(GenerateCards(s).Select(card => new AAddCard
-				{
-					card = card,
-					destination = CardDestination.Hand
-				}));
+				CardCount = CardCount,
+				Mode = upgrade == Upgrade.B ? Action.ModeEnum.PutInHand : Action.ModeEnum.Choose
+			},
+			new ATooltipAction
+			{
+				Tooltips = [new TTCard { card = new PlaceholderSecretCard() }]
 			}
-			else
-			{
-				actions.Add(new AAddCard
-				{
-					card = new PlaceholderSecretCard(),
-					amount = CardCount
-				});
-			}
-		}
-		else
-		{
-			actions.Add(new ASpecificCardOffering
-			{
-				Cards = IsDuringTryPlayCard
-					? GenerateCards(s)
-					: Enumerable.Range(0, CardCount).Select(_ => (Card)new PlaceholderSecretCard()).ToList()
-			});
-		}
-		return actions;
-	}
+		];
 
 	private List<Card> GenerateCards(State state)
 	{
@@ -114,9 +81,54 @@ internal sealed class GrimoireOfSecretsCard : Card, IDraculaCard
 		return cardResults;
 	}
 
-	private static void Combat_TryPlayCard_Prefix()
-		=> IsDuringTryPlayCard = true;
+	private sealed class Action : CardAction
+	{
+		public enum ModeEnum
+		{
+			Choose,
+			PutInHand
+		}
 
-	private static void Combat_TryPlayCard_Finalizer()
-		=> IsDuringTryPlayCard = false;
+		public required int CardCount;
+		public required ModeEnum Mode;
+
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+			timer = 0;
+
+			List<Type> typeResults = [];
+
+			if (typeResults.Count < CardCount)
+				typeResults.Add(ModEntry.SecretAttackCardTypes[s.rngCardOfferings.NextInt() % ModEntry.SecretAttackCardTypes.Count]);
+
+			while (typeResults.Count < CardCount)
+			{
+				var chosen = ModEntry.SecretNonAttackCardTypes[s.rngCardOfferings.NextInt() % ModEntry.SecretNonAttackCardTypes.Count];
+				if (!typeResults.Contains(chosen))
+					typeResults.Add(chosen);
+			}
+
+			var cardResults = typeResults.Select(t => (Card)Activator.CreateInstance(t)!).ToList();
+			if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is DraculaCatArtifact) is { } artifact)
+			{
+				artifact.Pulse();
+				var exeCardTypes = ModEntry.Instance.GetExeCardTypes().ToList();
+				var exeCardType = exeCardTypes[s.rngCardOfferings.NextInt() % exeCardTypes.Count];
+				var exeCard = (Card)Activator.CreateInstance(exeCardType)!;
+				exeCard.discount = -1;
+				cardResults.Add(exeCard);
+			}
+
+			switch (Mode)
+			{
+				case ModeEnum.Choose:
+					c.QueueImmediate(new ASpecificCardOffering { Cards = cardResults });
+					break;
+				case ModeEnum.PutInHand:
+					c.QueueImmediate(cardResults.Select(card => new AAddCard { card = card, destination = CardDestination.Hand }));
+					break;
+			}
+		}
+	}
 }
