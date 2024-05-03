@@ -1,7 +1,5 @@
-﻿using HarmonyLib;
-using Nanoray.PluginManager;
+﻿using Nanoray.PluginManager;
 using Nickel;
-using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -9,8 +7,6 @@ namespace Shockah.Johnson;
 
 internal sealed class MergerCard : Card, IRegisterable
 {
-	private static bool IsDuringTryPlayCard = false;
-
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
@@ -25,13 +21,6 @@ internal sealed class MergerCard : Card, IRegisterable
 			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Merger.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Merger", "name"]).Localize
 		});
-
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Prefix)),
-			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Finalizer))
-		);
 	}
 
 	public override CardData GetData(State state)
@@ -99,10 +88,4 @@ internal sealed class MergerCard : Card, IRegisterable
 				}
 			]
 		};
-
-	private static void Combat_TryPlayCard_Prefix()
-		=> IsDuringTryPlayCard = true;
-
-	private static void Combat_TryPlayCard_Finalizer()
-		=> IsDuringTryPlayCard = false;
 }
