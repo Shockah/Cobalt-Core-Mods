@@ -23,8 +23,7 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_CloudSave,
-			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/ChangePerspective.png")).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/ChangePerspective.png"), StableSpr.cards_CloudSave).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "ChangePerspective", "name"]).Localize
 		});
 	}

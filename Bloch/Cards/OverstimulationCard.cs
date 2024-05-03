@@ -1,5 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -18,8 +19,7 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_Vamoose,
-			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Overstimulation.png")).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Overstimulation.png"), StableSpr.cards_Vamoose).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Overstimulation", "name"]).Localize
 		});
 	}

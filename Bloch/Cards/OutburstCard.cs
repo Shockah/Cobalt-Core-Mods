@@ -1,5 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Shared;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -19,8 +20,7 @@ internal sealed class OutburstCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_eunice,
-			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Outburst.png")).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Outburst.png"), StableSpr.cards_eunice).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Outburst", "name"]).Localize
 		});
 	}

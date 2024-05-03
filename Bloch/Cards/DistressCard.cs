@@ -1,6 +1,7 @@
 ﻿using FSPRO;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Shared;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -24,8 +25,7 @@ internal sealed class DistressCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_Shield,
-			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Distress.png")).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Distress.png"), StableSpr.cards_Shield).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Distress", "name"]).Localize
 		});
 	}

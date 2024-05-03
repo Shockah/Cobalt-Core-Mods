@@ -1,6 +1,6 @@
-﻿using FSPRO;
-using Nanoray.PluginManager;
+﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -19,8 +19,7 @@ internal sealed class PainReactionCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_Panic,
-			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/PainReaction.png")).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/PainReaction.png"), StableSpr.cards_Panic).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "PainReaction", "name"]).Localize
 		});
 	}

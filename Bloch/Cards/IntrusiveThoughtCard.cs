@@ -1,5 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -18,8 +19,7 @@ internal sealed class IntrusiveThoughtCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_TrashFumes,
-			//Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/IntrusiveThought.png")).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/IntrusiveThought.png"), StableSpr.cards_TrashFumes).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "IntrusiveThought", "name"]).Localize
 		});
 	}
