@@ -209,7 +209,7 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
 	{
 		if (status == InsightStatus.Status)
-			return [..tooltips, ..new ScryAction { Amount = amount }.GetTooltips(DB.fakeState)];
+			return [..tooltips, ..new ScryAction { Amount = 1 }.GetTooltips(DB.fakeState)];
 		return tooltips;
 	}
 }
