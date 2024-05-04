@@ -30,7 +30,7 @@ internal sealed class InsightCard : Card, IRegisterable
 			cost = upgrade switch
 			{
 				Upgrade.A => 0,
-				Upgrade.B => 2,
+				Upgrade.B => 3,
 				_ => 1
 			},
 			exhaust = upgrade == Upgrade.B

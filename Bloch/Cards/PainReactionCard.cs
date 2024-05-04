@@ -45,7 +45,7 @@ internal sealed class PainReactionCard : Card, IRegisterable
 					{
 						targetPlayer = true,
 						status = Status.tempShield,
-						statusAmount = 3
+						statusAmount = 4
 					}
 				}
 			],
@@ -60,7 +60,7 @@ internal sealed class PainReactionCard : Card, IRegisterable
 					{
 						targetPlayer = true,
 						status = Status.tempShield,
-						statusAmount = 2
+						statusAmount = 3
 					}
 				},
 				new OnHullDamageManager.TriggerAction
@@ -68,7 +68,7 @@ internal sealed class PainReactionCard : Card, IRegisterable
 					Action = new AHeal
 					{
 						targetPlayer = true,
-						healAmount = 2,
+						healAmount = 3,
 						canRunAfterKill = true,
 					}
 				},
@@ -91,7 +91,7 @@ internal sealed class PainReactionCard : Card, IRegisterable
 					{
 						targetPlayer = true,
 						status = Status.tempShield,
-						statusAmount = 2
+						statusAmount = 3
 					}
 				}
 			]

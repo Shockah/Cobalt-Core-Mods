@@ -33,7 +33,7 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 		{
 			cost = upgrade == Upgrade.A ? 0 : 1,
 			infinite = upgrade == Upgrade.B,
-			description = ModEntry.Instance.Localizations.Localize(["card", "ChangePerspective", "description"]),
+			description = ModEntry.Instance.Localizations.Localize(["card", "ChangePerspective", "description"], new { ConvertToAmount = 3 }),
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
@@ -69,7 +69,7 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 		];
 
 		public int ConvertFromAmount = 1;
-		public int ConvertToAmount = 2;
+		public int ConvertToAmount = 3;
 
 		private int? ConvertFromSelected;
 		private int? ConvertToSelected;
@@ -148,7 +148,7 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 				RotatedButtonSprite(g, rect, StableUK.btn_move_right, StableSpr.buttons_move, StableSpr.buttons_move_on, flipX: false, noHover: true);
 			}
 
-			var inactive = ConvertFromSelected is not { } convertFrom || ConvertToSelected is not { } convertTo || g.state.ship.Get(ConvertFrom[convertFrom]) < ConvertFromAmount;
+			var inactive = ConvertFromSelected is not { } convertFrom || ConvertToSelected is not { } convertTo || g.state.ship.Get(ConvertFrom[convertFrom]) < ConvertFromAmount || ConvertFrom[convertFrom] == ConvertTo[convertTo];
 			SharedArt.ButtonText(
 				g,
 				new Vec(210, 205),

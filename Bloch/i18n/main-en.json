@@ -118,7 +118,7 @@
         },
         "ChangePerspective": {
             "name": "Change Perspective",
-            "description": "Convert any <c=C2FF60>Aura</c> into 2 of a different <c=C2FF60>Aura</c>.",
+            "description": "Convert any <c=C2FF60>Aura</c> into {{ConvertToAmount}} of a different <c=C2FF60>Aura</c>.",
             "uiTitle": "CONVERT AURA"
         },
         "DelveDeep": {

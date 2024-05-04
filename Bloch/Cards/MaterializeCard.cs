@@ -34,14 +34,13 @@ internal sealed class MaterializeCard : Card, IRegisterable
 		=> new()
 		{
 			cost = upgrade == Upgrade.A ? 0 : 1,
-			infinite = upgrade == Upgrade.B
+			infinite = true
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		if (upgrade == Upgrade.B)
+		=> upgrade switch
 		{
-			return [
+			Upgrade.A => [
 				ModEntry.Instance.KokoroApi.ActionCosts.Make(
 					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
 						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
@@ -58,31 +57,51 @@ internal sealed class MaterializeCard : Card, IRegisterable
 						statusAmount = 3
 					}
 				)
-			];
-		}
-		else
-		{
-			var veiling = s.ship.Get(AuraManager.VeilingStatus.Status);
-			return [
-				new AVariableHint
-				{
-					status = AuraManager.VeilingStatus.Status,
-				},
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.tempShield,
-					statusAmount = veiling * 2,
-					xHint = 2,
-				},
-				new AStatus
-				{
-					targetPlayer = true,
-					mode = AStatusMode.Set,
-					status = AuraManager.VeilingStatus.Status,
-					statusAmount = 0,
-				}
-			];
-		}
-	}
+			],
+			Upgrade.B => [
+				ModEntry.Instance.KokoroApi.ActionCosts.Make(
+					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
+						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
+							AuraManager.VeilingStatus.Status,
+							UnsatisfiedVeilingCostIcon.Sprite,
+							SatisfiedVeilingCostIcon.Sprite
+						),
+						amount: 1
+					),
+					action: ModEntry.Instance.KokoroApi.Actions.MakeContinue(out var continueId)
+				),
+				..ModEntry.Instance.KokoroApi.Actions.MakeContinued(continueId, [
+					new AStatus
+					{
+						targetPlayer = true,
+						status = Status.tempShield,
+						statusAmount = 3
+					},
+					new AStatus
+					{
+						targetPlayer = true,
+						status = Status.shield,
+						statusAmount = 1
+					}
+				])
+			],
+			_ => [
+				ModEntry.Instance.KokoroApi.ActionCosts.Make(
+					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
+						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
+							AuraManager.VeilingStatus.Status,
+							UnsatisfiedVeilingCostIcon.Sprite,
+							SatisfiedVeilingCostIcon.Sprite
+						),
+						amount: 1
+					),
+					action: new AStatus
+					{
+						targetPlayer = true,
+						status = Status.tempShield,
+						statusAmount = 3
+					}
+				)
+			],
+		};
 }
