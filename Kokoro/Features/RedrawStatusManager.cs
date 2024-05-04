@@ -12,6 +12,11 @@ public sealed class RedrawStatusManager : HookManager<IRedrawStatusHook>
 
 	public bool IsRedrawPossible(State state, Combat combat, Card card)
 	{
+		if (!combat.isPlayerTurn)
+			return false;
+		if (!combat.hand.Contains(card))
+			return false;
+
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
 		{
 			var hookResult = hook.CanRedraw(state, combat, card);
