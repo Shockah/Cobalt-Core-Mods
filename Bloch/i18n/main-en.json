@@ -3,7 +3,7 @@
         "name": "Bloch",
         "description": [
             "<c=C2FF60>BLOCH</c>",
-            "Your ship's \"mentalist\". Specializes in <c=boldPink>reducing incoming damage</c>, <c=boldPink>card draw manipulation</c> and <c=boldPink>discard effects</c>."
+            "Your ship's mentalist. Specializes in <c=boldPink>reducing incoming damage</c>, <c=boldPink>card draw manipulation</c> and <c=boldPink>discard effects</c>."
         ]
     },
     "action": {
@@ -19,12 +19,8 @@
             "name": "On Turn End",
             "description": "This action only triggers whenever you end your turn with the card still in hand."
         },
-        "OnHullDamage": {
-            "name": "On Hull Damage",
-            "description": "This action only triggers after your ship receives hull damage with the card still in hand."
-        },
-        "OncePerTurn": {
-            "name": "Once Per Turn",
+        "Spontaneous": {
+            "name": "Spontaneous",
             "description": "This action only triggers whenever a turn starts with this card in hand, or if it's drawn for the first time this turn."
         },
         "Scry": {
@@ -70,9 +66,9 @@
         }
     },
     "cardTrait": {
-        "OncePerTurnTriggered": {
+        "Spontaneous": {
             "name": "Triggered This Turn",
-            "description": "This card's <c=action>Once Per Turn</c> actions already triggered this turn."
+            "description": "This card's <c=action>Spontaneous</c> actions already triggered this turn."
         }
     },
     "artifact": {
@@ -102,7 +98,7 @@
         },
         "UnlockedPotential": {
             "name": "UNLOCKED POTENTIAL",
-            "description": "<c=action>Once Per Turn</c> effects now also trigger when a card is played."
+            "description": "<c=action>Spontaneous</c> effects now also trigger when a card is played."
         },
         "VainMemories": {
             "name": "VAIN MEMORIES",
@@ -126,6 +122,9 @@
         },
         "Distress": {
             "name": "Distress"
+        },
+        "EmotionalDamage": {
+            "name": "Emotional Damage"
         },
         "Feedback": {
             "name": "Feedback"
@@ -182,9 +181,6 @@
         },
         "Overstimulation": {
             "name": "Over-stimulation"
-        },
-        "PainReaction": {
-            "name": "Pain Reaction"
         },
         "PrismaticAura": {
             "name": "Prismatic Aura",

@@ -6,28 +6,28 @@ using System.Linq;
 
 namespace Shockah.Bloch;
 
-internal sealed class OncePerTurnManager
+internal sealed class SpontaneousManager
 {
 	private static ISpriteEntry ActionIcon = null!;
 	private static ISpriteEntry TriggeredIcon = null!;
-	internal static ICardTraitEntry OncePerTurnTriggeredTrait { get; private set; } = null!;
+	internal static ICardTraitEntry SpontaneousTriggeredTrait { get; private set; } = null!;
 
-	public OncePerTurnManager()
+	public SpontaneousManager()
 	{
 		ActionIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Actions/OncePerTurn.png"));
 		TriggeredIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Actions/OncePerTurnTriggered.png"));
 
-		OncePerTurnTriggeredTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("OncePerTurnTriggered", new()
+		SpontaneousTriggeredTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Spontaneous", new()
 		{
 			Icon = (_, _) => TriggeredIcon.Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "OncePerTurnTriggered"]).Localize,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Spontaneous"]).Localize,
 			Tooltips = (_, _) => [
-				new GlossaryTooltip($"cardtrait.{GetType().Namespace!}::OncePerTurnTriggered")
+				new GlossaryTooltip($"cardtrait.{GetType().Namespace!}::Spontaneous")
 				{
 					Icon = TriggeredIcon.Sprite,
 					TitleColor = Colors.action,
-					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "OncePerTurnTriggered", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "OncePerTurnTriggered", "description"]),
+					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Spontaneous", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Spontaneous", "description"]),
 				}
 			]
 		});
@@ -57,15 +57,15 @@ internal sealed class OncePerTurnManager
 				return;
 
 			foreach (var card in state.GetAllCards())
-				if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, OncePerTurnTriggeredTrait))
-					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, OncePerTurnTriggeredTrait, null, permanent: false);
+				if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, SpontaneousTriggeredTrait))
+					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, SpontaneousTriggeredTrait, null, permanent: false);
 		}, 0);
 	}
 
 	private static void QueueOncePerTurnActions(State state, Combat combat, IEnumerable<Card> cards)
 		=> combat.QueueImmediate(
 			cards
-				.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, OncePerTurnTriggeredTrait))
+				.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, SpontaneousTriggeredTrait))
 				.Select(card => (Card: card, Actions: card.GetActionsOverridden(state, combat).Where(action => !action.disabled).OfType<TriggerAction>().Select(triggerAction => triggerAction.Action).ToList()))
 				.Where(e => e.Actions.Count != 0)
 				.SelectMany(e =>
@@ -124,12 +124,12 @@ internal sealed class OncePerTurnManager
 
 		public override List<Tooltip> GetTooltips(State s)
 			=> [
-				new GlossaryTooltip($"action.{GetType().Namespace!}::OncePerTurn")
+				new GlossaryTooltip($"action.{GetType().Namespace!}::Spontaneous")
 				{
 					Icon = ActionIcon.Sprite,
 					TitleColor = Colors.action,
-					Title = ModEntry.Instance.Localizations.Localize(["action", "OncePerTurn", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["action", "OncePerTurn", "description"]),
+					Title = ModEntry.Instance.Localizations.Localize(["action", "Spontaneous", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["action", "Spontaneous", "description"]),
 				},
 				..Action.GetTooltips(s)
 			];
@@ -159,7 +159,7 @@ internal sealed class OncePerTurnManager
 
 			if (s.FindCard(CardId) is not { } card)
 				return;
-			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, OncePerTurnTriggeredTrait, true, permanent: false);
+			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, SpontaneousTriggeredTrait, true, permanent: false);
 		}
 	}
 }

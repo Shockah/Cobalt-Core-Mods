@@ -24,5 +24,5 @@ internal sealed class UnlockedPotentialArtifact : Artifact, IRegisterable
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> new OncePerTurnManager.TriggerAction { Action = new ADummyAction() }.GetTooltips(DB.fakeState);
+		=> new SpontaneousManager.TriggerAction { Action = new ADummyAction() }.GetTooltips(DB.fakeState);
 }

@@ -19,7 +19,7 @@ internal sealed class DistressCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Distress.png"), StableSpr.cards_Shield).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Distress.png"), StableSpr.cards_DiceRoll).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Distress", "name"]).Localize
 		});
 	}
@@ -43,7 +43,7 @@ internal sealed class DistressCard : Card, IRegisterable
 				},
 				new ADiscard
 				{
-					count = 3
+					count = 2
 				}
 			],
 			Upgrade.B => [

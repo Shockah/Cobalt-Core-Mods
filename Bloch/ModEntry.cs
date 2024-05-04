@@ -30,8 +30,8 @@ public sealed class ModEntry : SimpleMod
 		typeof(FocusCard),
 		typeof(InsightCard),
 		typeof(OptCard),
-		typeof(PainReactionCard),
 		typeof(PsionicShieldCard),
+		typeof(PrismaticAuraCard),
 		typeof(PsychicDamageCard),
 	];
 
@@ -42,7 +42,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(MindBlastCard),
 		typeof(MindPurgeCard),
 		typeof(OverstimulationCard),
-		typeof(PrismaticAuraCard),
+		typeof(SplitPersonalityCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
@@ -50,7 +50,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(IntrusiveThoughtCard),
 		typeof(MindMapCard),
 		typeof(OutburstCard),
-		typeof(SplitPersonalityCard),
+		typeof(EmotionalDamageCard),
 	];
 
 	internal static readonly IEnumerable<Type> AllCardTypes
@@ -66,7 +66,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(LongTermMemoryArtifact),
 		typeof(MuscleMemoryArtifact),
 		typeof(UnlockedPotentialArtifact),
-		typeof(VainMemoriesArtifact),
+		//typeof(VainMemoriesArtifact),
 	];
 
 	internal static readonly IReadOnlyList<Type> BossArtifacts = [
@@ -117,8 +117,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new InfiniteCharacterAnimationManager();
 		_ = new OnDiscardManager();
 		_ = new OnTurnEndManager();
-		_ = new OnHullDamageManager();
-		_ = new OncePerTurnManager();
+		_ = new SpontaneousManager();
 		_ = new RetainManager();
 		_ = new ScryManager();
 		_ = new SplitPersonalityManager();
@@ -205,6 +204,14 @@ public sealed class ModEntry : SimpleMod
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Glorp/{i}.png")).Sprite)
 				.ToList()
 		});
+		helper.Content.Characters.RegisterCharacterAnimation(new()
+		{
+			Deck = BlochDeck.Deck,
+			LoopTag = "talking",
+			Frames = Enumerable.Range(0, 4)
+				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Talking/{i}.png")).Sprite)
+				.ToList()
+		});
 
 		helper.ModRegistry.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", new SemanticVersion(1, 3, 0))?.RegisterAltStarters(
 			deck: BlochDeck.Deck,
@@ -254,6 +261,7 @@ public sealed class ModEntry : SimpleMod
 			}
 		};
 
+		_ = new BasicDialogue();
 		_ = new CombatDialogue();
 	}
 

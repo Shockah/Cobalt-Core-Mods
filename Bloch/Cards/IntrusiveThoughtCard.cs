@@ -29,7 +29,7 @@ internal sealed class IntrusiveThoughtCard : Card, IRegisterable
 		{
 			cost = 1,
 			retain = true,
-			unplayable = true
+			unplayable = upgrade != Upgrade.B
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
@@ -38,43 +38,25 @@ internal sealed class IntrusiveThoughtCard : Card, IRegisterable
 			Upgrade.A => [
 				new OnDiscardManager.TriggerAction
 				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = Status.boost,
-						statusAmount = 1
-					}
+					Action = new ADrawCard { count = 3 }
 				}
 			],
 			Upgrade.B => [
-				new OnDiscardManager.TriggerAction
-				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = Status.boost,
-						statusAmount = 2
-					}
-				},
+				new ADrawCard { count = 3 },
 				new OnTurnEndManager.TriggerAction
 				{
 					Action = new AStatus
 					{
 						targetPlayer = true,
 						status = Status.drawLessNextTurn,
-						statusAmount = 2
+						statusAmount = 1
 					}
 				}
 			],
 			_ => [
 				new OnDiscardManager.TriggerAction
 				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = Status.boost,
-						statusAmount = 1
-					}
+					Action = new ADrawCard { count = 3 }
 				},
 				new OnTurnEndManager.TriggerAction
 				{

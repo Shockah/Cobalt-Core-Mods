@@ -40,7 +40,7 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new OncePerTurnManager.TriggerAction
+				new SpontaneousManager.TriggerAction
 				{
 					Action = new AStatus
 					{
@@ -49,7 +49,7 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 						statusAmount = 2
 					}
 				},
-				new OncePerTurnManager.TriggerAction
+				new SpontaneousManager.TriggerAction
 				{
 					Action = new AStatus
 					{
@@ -60,7 +60,7 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 				},
 			],
 			_ => [
-				new OncePerTurnManager.TriggerAction
+				new SpontaneousManager.TriggerAction
 				{
 					Action = new AStatus
 					{
@@ -69,7 +69,7 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 						statusAmount = 2
 					}
 				},
-				new OncePerTurnManager.TriggerAction
+				new SpontaneousManager.TriggerAction
 				{
 					Action = new AStatus
 					{

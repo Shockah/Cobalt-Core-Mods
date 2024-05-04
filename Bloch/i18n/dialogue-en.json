@@ -1,3 +1,13 @@
 {
+    "Intro_1": {
+        "1-Bloch": "Glorp glorp...",
+        "2-CAT": "Excuse me... who are you?",
+        "3-Bloch": ".................................",
+        "4-CAT": "Hellooo?",
+        "5-Bloch": "Oh, right. You're an AI, telepathy won't work. I'm your mentalist.",
+        "6-CAT": "Oh, so you do magic tricks?",
+        "7-CAT": "How is that even remotely useful...",
+        "8-Bloch": "I guess being able to make jokes about you with the rest of the crew, and you not being able to hear them IS a kind of a trick..."
+    },
     "JustHit_1": "Get psyched!"
 }

@@ -19,7 +19,7 @@ internal sealed class InfiniteCharacterAnimationManager
 		if (__instance.who != ModEntry.Instance.BlochDeck.UniqueName)
 			return;
 
-		if (__instance.loopTag == "glorp")
+		if (__instance.loopTag is "glorp" or "gloop" or "glerp")
 			__result = __instance.progress * 12 / 50;
 	}
 }

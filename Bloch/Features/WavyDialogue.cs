@@ -7,7 +7,7 @@ namespace Shockah.Bloch;
 internal sealed class WavyDialogueManager
 {
 	private static string? RenderedShoutText;
-	private static bool IsBlochSpeaking;
+	private static bool ShouldDisplayWavyText;
 	private static bool IsRenderingShoutText;
 
 	public WavyDialogueManager()
@@ -49,16 +49,16 @@ internal sealed class WavyDialogueManager
 
 	private static void Dialogue_Render_Prefix(Dialogue __instance, G g)
 	{
-		if (__instance.routeOverride is not null || !__instance.IsVisible() || !__instance.ctx.running || DB.story.GetNode(__instance.ctx.script) is null || __instance.shout is null)
+		if (__instance.routeOverride is not null || !__instance.IsVisible() || !__instance.ctx.running || DB.story.GetNode(__instance.ctx.script) is null || __instance.shout is not { } shout)
 			return;
-		RenderedShoutText = __instance.shout?.GetText();
-		IsBlochSpeaking = __instance.shout?.who == ModEntry.Instance.BlochDeck.UniqueName;
+		RenderedShoutText = shout.GetText();
+		ShouldDisplayWavyText = shout.who == ModEntry.Instance.BlochDeck.UniqueName && shout.loopTag != "talking";
 	}
 
 	private static void Dialogue_Render_Finalizer()
 	{
 		RenderedShoutText = null;
-		IsBlochSpeaking = false;
+		ShouldDisplayWavyText = false;
 		IsRenderingShoutText = false;
 	}
 
@@ -67,7 +67,7 @@ internal sealed class WavyDialogueManager
 		if (!showDialogue || g.state.ship.hull <= 0 || __instance.shout is not { } shout || shout.delay != 0)
 			return;
 		RenderedShoutText = shout.GetText();
-		IsBlochSpeaking = __instance.deckType == ModEntry.Instance.BlochDeck.Deck;
+		ShouldDisplayWavyText = __instance.deckType == ModEntry.Instance.BlochDeck.Deck;
 	}
 
 	private static void Character_Render_Finalizer(Character __instance, G g, bool showDialogue)
@@ -76,7 +76,7 @@ internal sealed class WavyDialogueManager
 			return;
 
 		RenderedShoutText = null;
-		IsBlochSpeaking = false;
+		ShouldDisplayWavyText = false;
 		IsRenderingShoutText = false;
 	}
 
@@ -85,14 +85,14 @@ internal sealed class WavyDialogueManager
 
 	private static void Draw_RenderCharacter_Prefix(ref Rect dst, ref Color color)
 	{
-		if (!IsBlochSpeaking || !IsRenderingShoutText)
+		if (!ShouldDisplayWavyText || !IsRenderingShoutText)
 			return;
 		ModifyText(ref dst, ref color);
 	}
 
 	private static void Draw_RenderCharacterOutline_Prefix(ref Rect dst, ref Color color)
 	{
-		if (!IsBlochSpeaking || !IsRenderingShoutText)
+		if (!ShouldDisplayWavyText || !IsRenderingShoutText)
 			return;
 		ModifyText(ref dst, ref color);
 	}

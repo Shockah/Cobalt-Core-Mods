@@ -35,7 +35,7 @@ internal sealed class AttentionSpanCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new OncePerTurnManager.TriggerAction
+				new SpontaneousManager.TriggerAction
 				{
 					Action = new AStatus
 					{
@@ -44,7 +44,7 @@ internal sealed class AttentionSpanCard : Card, IRegisterable
 						statusAmount = 2
 					}
 				},
-				new OncePerTurnManager.TriggerAction
+				new SpontaneousManager.TriggerAction
 				{
 					Action = new AStatus
 					{
@@ -53,7 +53,7 @@ internal sealed class AttentionSpanCard : Card, IRegisterable
 						statusAmount = 2
 					}
 				},
-				new OncePerTurnManager.TriggerAction
+				new SpontaneousManager.TriggerAction
 				{
 					Action = new AStatus
 					{
@@ -71,7 +71,7 @@ internal sealed class AttentionSpanCard : Card, IRegisterable
 				}
 			],
 			_ => [
-				new OncePerTurnManager.TriggerAction
+				new SpontaneousManager.TriggerAction
 				{
 					Action = new AStatus
 					{
@@ -80,7 +80,7 @@ internal sealed class AttentionSpanCard : Card, IRegisterable
 						statusAmount = 2
 					}
 				},
-				new OncePerTurnManager.TriggerAction
+				new SpontaneousManager.TriggerAction
 				{
 					Action = new AStatus
 					{
