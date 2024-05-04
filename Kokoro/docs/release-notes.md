@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.8.0
+Released 4 May 2024.
 
 * Added the Redraw status.
 * Added a spoofed action API.
