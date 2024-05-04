@@ -49,7 +49,7 @@ internal sealed class WavyDialogueManager
 
 	private static void Dialogue_Render_Prefix(Dialogue __instance, G g)
 	{
-		if (__instance.MaybeRenderOverride(g) || !__instance.IsVisible() || !__instance.ctx.running || DB.story.GetNode(__instance.ctx.script) is null || __instance.shout is null)
+		if (__instance.routeOverride is not null || !__instance.IsVisible() || !__instance.ctx.running || DB.story.GetNode(__instance.ctx.script) is null || __instance.shout is null)
 			return;
 		RenderedShoutText = __instance.shout?.GetText();
 		IsBlochSpeaking = __instance.shout?.who == ModEntry.Instance.BlochDeck.UniqueName;
@@ -79,9 +79,6 @@ internal sealed class WavyDialogueManager
 		IsBlochSpeaking = false;
 		IsRenderingShoutText = false;
 	}
-
-	private static void Shout_GetText_Postfix(string __result)
-		=> RenderedShoutText = __result;
 
 	private static void Draw_Text_Prefix(string str, bool dontDraw)
 		=> IsRenderingShoutText = !dontDraw && str == RenderedShoutText;

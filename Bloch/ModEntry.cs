@@ -36,20 +36,20 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
-		typeof(CalmCard),
 		typeof(ChangePerspectiveCard),
 		typeof(DelveDeepCard),
 		typeof(MindBlastCard),
 		typeof(MindPurgeCard),
 		typeof(OverstimulationCard),
 		typeof(PrismaticAuraCard),
+		typeof(PsionicShieldCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
+		typeof(CalmCard),
 		typeof(IntrusiveThoughtCard),
 		typeof(MindMapCard),
 		typeof(OutburstCard),
-		typeof(SayThoughtsLoudCard),
 		typeof(SplitPersonalityCard),
 	];
 

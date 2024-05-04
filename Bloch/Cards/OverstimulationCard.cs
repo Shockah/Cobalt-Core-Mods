@@ -27,7 +27,12 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = upgrade == Upgrade.None ? 3 : 2,
+			cost = upgrade switch
+			{
+				Upgrade.A => 2,
+				Upgrade.B => 1,
+				_ => 3
+			},
 			exhaust = upgrade == Upgrade.B,
 		};
 
@@ -41,7 +46,7 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 					{
 						targetPlayer = true,
 						status = Status.evade,
-						statusAmount = 1
+						statusAmount = 2
 					}
 				},
 				new OncePerTurnManager.TriggerAction
@@ -50,7 +55,7 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 					{
 						targetPlayer = true,
 						status = ModEntry.Instance.KokoroApi.OxidationVanillaStatus,
-						statusAmount = 1
+						statusAmount = 2
 					}
 				},
 			],
@@ -61,7 +66,7 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 					{
 						targetPlayer = true,
 						status = Status.evade,
-						statusAmount = 1
+						statusAmount = 2
 					}
 				},
 				new OncePerTurnManager.TriggerAction
@@ -70,7 +75,7 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 					{
 						targetPlayer = true,
 						status = ModEntry.Instance.KokoroApi.OxidationVanillaStatus,
-						statusAmount = 2
+						statusAmount = 3
 					}
 				},
 				new AStatus

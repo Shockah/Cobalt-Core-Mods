@@ -192,11 +192,11 @@
                 "B": "Gain 1 of each <c=C2FF60>Aura</c>. <c=action>On Discard</c>, gain 1 of each <c=C2FF60>Aura</c>."
             }
         },
+        "PsionicShield": {
+            "name": "Psionic Shield"
+        },
         "PsychicDamage": {
             "name": "Psychic Damage"
-        },
-        "SayThoughtsLoud": {
-            "name": "Speak Out Thoughts"
         },
         "SplitPersonality": {
             "name": "Split Personality"
