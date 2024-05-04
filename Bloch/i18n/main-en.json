@@ -60,7 +60,7 @@
             "description": "Draw {0} extra cards each turn."
         },
         "Retain": {
-            "name": "Retain",
+            "name": "Mind Map",
             "description": "At the end of your turn, choose up to {0} cards to <c=cardtrait>retain</c>.",
             "browseText": "Choose up to {{Amount}} cards to <c=cardtrait>retain</c>."
         },
@@ -94,7 +94,7 @@
         },
         "LongTermMemory": {
             "name": "LONG-TERM MEMORY",
-            "description": "Start each combat with 1 <c=status>RETAIN</c>."
+            "description": "Start each combat with 1 <c=status>MIND MAP</c>."
         },
         "MuscleMemory": {
             "name": "MUSCLE MEMORY",
@@ -145,9 +145,9 @@
         "MindBlast": {
             "name": "Mind Blast",
             "description": {
-                "None": "Attack for {{Damage}}. <c=action>On Discard</c>, gains 2 damage this combat.",
-                "A": "Attack for {{Damage}}. <c=action>On Discard</c>, gains 2 damage this combat.",
-                "B": "Attack for {{Damage}}. <c=action>On Discard</c>, gains 2 damage this combat."
+                "None": "Attack for <c=redd>{{Damage}}</c>. <c=action>On Discard</c>, gains <c=keyword>{{Gain}}</c> damage this combat.",
+                "A": "Attack for <c=redd>{{Damage}}</c>. <c=action>On Discard</c>, gains <c=keyword>{{Gain}}</c> damage this combat.",
+                "B": "Attack for <c=redd>{{Damage}}</c>. <c=action>On Discard</c>, gains <c=keyword>{{Gain}}</c> damage this combat."
             }
         },
         "MindMap": {

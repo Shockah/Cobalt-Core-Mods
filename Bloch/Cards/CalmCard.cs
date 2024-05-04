@@ -27,7 +27,8 @@ internal sealed class CalmCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = upgrade == Upgrade.A ? 0 : 1,
+			cost = 0,
+			exhaust = upgrade == Upgrade.B
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
@@ -38,12 +39,9 @@ internal sealed class CalmCard : Card, IRegisterable
 				{
 					targetPlayer = true,
 					status = AuraManager.VeilingStatus.Status,
-					statusAmount = 1
+					statusAmount = upgrade == Upgrade.A ? 2 : 1
 				}
 			},
-			new ADrawCard
-			{
-				count = upgrade == Upgrade.B ? 2 : 1
-			}
+			new ADrawCard { count = upgrade == Upgrade.B ? 2 : 1 }
 		];
 }

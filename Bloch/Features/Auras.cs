@@ -103,7 +103,7 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 					targetPlayer = true,
 					status = FeedbackStatus.Status,
 					statusAmount = -maxFeedback,
-					statusPulse = ReducedDamage > 1 ? IntensifyStatus.Status : null
+					statusPulse = maxFeedback > 1 ? IntensifyStatus.Status : null
 				},
 				new AHurt
 				{
@@ -114,7 +114,7 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 				}
 			]);
 
-		if (ReducedDamage == 0)
+		if (ReducedDamage <= 0)
 			return;
 
 		c.QueueImmediate(new AStatus
@@ -132,6 +132,8 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 		if (piercing)
 			return;
 		if (!IsDuringNormalDamage)
+			return;
+		if (__instance.Get(Status.perfectShield) > 0)
 			return;
 
 		var modifier = part.GetDamageModifier();

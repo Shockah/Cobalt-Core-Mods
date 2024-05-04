@@ -24,7 +24,7 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry BlochDeck { get; }
 
 	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
-		typeof(CalmCard),
+		typeof(AttentionSpanCard),
 		typeof(DistressCard),
 		typeof(FeedbackCard),
 		typeof(FocusCard),
@@ -36,7 +36,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
-		typeof(AttentionSpanCard),
+		typeof(CalmCard),
 		typeof(ChangePerspectiveCard),
 		typeof(DelveDeepCard),
 		typeof(MindBlastCard),

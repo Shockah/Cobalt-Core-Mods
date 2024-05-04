@@ -33,32 +33,15 @@ internal sealed class MaterializeCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = upgrade == Upgrade.A ? 0 : 1,
-			infinite = true
+			cost = 1,
+			infinite = upgrade != Upgrade.B,
+			exhaust = upgrade == Upgrade.B
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				ModEntry.Instance.KokoroApi.ActionCosts.Make(
-					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
-						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
-							AuraManager.VeilingStatus.Status,
-							UnsatisfiedVeilingCostIcon.Sprite,
-							SatisfiedVeilingCostIcon.Sprite
-						),
-						amount: 1
-					),
-					action: new AStatus
-					{
-						targetPlayer = true,
-						status = Status.tempShield,
-						statusAmount = 3
-					}
-				)
-			],
-			Upgrade.B => [
 				ModEntry.Instance.KokoroApi.ActionCosts.Make(
 					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
 						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
@@ -84,6 +67,24 @@ internal sealed class MaterializeCard : Card, IRegisterable
 						statusAmount = 1
 					}
 				])
+			],
+			Upgrade.B => [
+				ModEntry.Instance.KokoroApi.ActionCosts.Make(
+					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
+						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
+							AuraManager.VeilingStatus.Status,
+							UnsatisfiedVeilingCostIcon.Sprite,
+							SatisfiedVeilingCostIcon.Sprite
+						),
+						amount: 3
+					),
+					action: new AStatus
+					{
+						targetPlayer = true,
+						status = Status.perfectShield,
+						statusAmount = 1
+					}
+				)
 			],
 			_ => [
 				ModEntry.Instance.KokoroApi.ActionCosts.Make(

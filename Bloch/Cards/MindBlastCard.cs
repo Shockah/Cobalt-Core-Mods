@@ -35,7 +35,7 @@ internal sealed class MindBlastCard : Card, IRegisterable
 			cost = upgrade == Upgrade.A ? 1 : 2,
 			recycle = upgrade == Upgrade.B,
 			retain = upgrade == Upgrade.B,
-			description = ModEntry.Instance.Localizations.Localize(["card", "MindBlast", "description", upgrade.ToString()], new { Damage = GetDamage(state) })
+			description = ModEntry.Instance.Localizations.Localize(["card", "MindBlast", "description", upgrade.ToString()], new { Damage = GetDamage(state), Gain = 2 })
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)

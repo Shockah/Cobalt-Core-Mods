@@ -17,7 +17,7 @@ internal sealed class RetainManager : IStatusRenderHook
 		{
 			Definition = new()
 			{
-				icon = StableSpr.icons_retain,
+				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/MindMap.png")).Sprite,
 				color = new("F82E2E")
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Retain", "name"]).Localize,
