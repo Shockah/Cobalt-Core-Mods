@@ -45,7 +45,7 @@ internal sealed class PainReactionCard : Card, IRegisterable
 					{
 						targetPlayer = true,
 						status = Status.tempShield,
-						statusAmount = 4
+						statusAmount = 3
 					}
 				}
 			],
@@ -91,7 +91,7 @@ internal sealed class PainReactionCard : Card, IRegisterable
 					{
 						targetPlayer = true,
 						status = Status.tempShield,
-						statusAmount = 3
+						statusAmount = 2
 					}
 				}
 			]

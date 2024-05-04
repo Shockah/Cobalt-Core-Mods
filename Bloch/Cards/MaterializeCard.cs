@@ -1,6 +1,7 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -34,8 +35,7 @@ internal sealed class MaterializeCard : Card, IRegisterable
 		=> new()
 		{
 			cost = 1,
-			infinite = upgrade != Upgrade.B,
-			exhaust = upgrade == Upgrade.B
+			infinite = true,
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
@@ -76,15 +76,24 @@ internal sealed class MaterializeCard : Card, IRegisterable
 							UnsatisfiedVeilingCostIcon.Sprite,
 							SatisfiedVeilingCostIcon.Sprite
 						),
-						amount: 3
+						amount: 1
 					),
 					action: new AStatus
 					{
 						targetPlayer = true,
-						status = Status.perfectShield,
-						statusAmount = 1
+						status = Status.tempShield,
+						statusAmount = 2
 					}
-				)
+				),
+				new OnTurnEndManager.TriggerAction
+				{
+					Action = new AStatus
+					{
+						targetPlayer = true,
+						status = Status.tempShield,
+						statusAmount = 2
+					}
+				}
 			],
 			_ => [
 				ModEntry.Instance.KokoroApi.ActionCosts.Make(

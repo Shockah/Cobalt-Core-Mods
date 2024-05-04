@@ -117,7 +117,7 @@
             "name": "Calm"
         },
         "ChangePerspective": {
-            "name": "Change Perspective",
+            "name": "Perspective Change",
             "description": "Convert any <c=C2FF60>Aura</c> into {{ConvertToIntensifyAmount}} <c=status>intensify</c> or {{ConvertToAuraAmount}} of a different <c=C2FF60>Aura</c>.",
             "uiTitle": "CONVERT AURA"
         },

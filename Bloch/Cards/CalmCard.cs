@@ -42,6 +42,6 @@ internal sealed class CalmCard : Card, IRegisterable
 					statusAmount = upgrade == Upgrade.A ? 2 : 1
 				}
 			},
-			new ADrawCard { count = upgrade == Upgrade.B ? 2 : 1 }
+			new ADrawCard { count = upgrade == Upgrade.B ? 3 : 1 }
 		];
 }

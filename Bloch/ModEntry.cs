@@ -29,20 +29,20 @@ public sealed class ModEntry : SimpleMod
 		typeof(FeedbackCard),
 		typeof(FocusCard),
 		typeof(InsightCard),
-		typeof(MaterializeCard),
 		typeof(OptCard),
 		typeof(PainReactionCard),
+		typeof(PsionicShieldCard),
 		typeof(PsychicDamageCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
 		typeof(ChangePerspectiveCard),
 		typeof(DelveDeepCard),
+		typeof(MaterializeCard),
 		typeof(MindBlastCard),
 		typeof(MindPurgeCard),
 		typeof(OverstimulationCard),
 		typeof(PrismaticAuraCard),
-		typeof(PsionicShieldCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
@@ -115,7 +115,6 @@ public sealed class ModEntry : SimpleMod
 		_ = new AuraManager();
 		_ = new DrawEachTurnManager();
 		_ = new InfiniteCharacterAnimationManager();
-		_ = new NegativeBoostManager();
 		_ = new OnDiscardManager();
 		_ = new OnTurnEndManager();
 		_ = new OnHullDamageManager();
