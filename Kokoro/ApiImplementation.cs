@@ -130,14 +130,14 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 	public bool IsRedrawPossible(State state, Combat combat, Card card)
 		=> Instance.RedrawStatusManager.IsRedrawPossible(state, combat, card);
 
-	public IRedrawStatusHook? GetRedrawHandlingHook(State state, Combat combat, Card card)
-		=> Instance.RedrawStatusManager.GetHandlingHook(state, combat, card);
+	public bool DoRedraw(State state, Combat combat, Card card)
+		=> Instance.RedrawStatusManager.DoRedraw(state, combat, card);
 
-	public void AfterRedraw(State state, Combat combat, Card card, IRedrawStatusHook hook)
-		=> Instance.RedrawStatusManager.AfterRedraw(state, combat, card, hook);
+	public IRedrawStatusHook StandardRedrawStatusPaymentHook
+		=> Kokoro.StandardRedrawStatusPaymentHook.Instance;
 
-	public IRedrawStatusHook StandardRedrawStatusHook
-		=> Kokoro.StandardRedrawStatusHook.Instance;
+	public IRedrawStatusHook StandardRedrawStatusActionHook
+		=> Kokoro.StandardRedrawStatusActionHook.Instance;
 	#endregion
 
 	#region OxidationStatus

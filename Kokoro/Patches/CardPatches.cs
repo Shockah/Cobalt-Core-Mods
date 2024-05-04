@@ -138,15 +138,7 @@ internal static class CardPatches
 			new UIKey((UK)21370099, __instance.uuid),
 			(Spr)ModEntry.Instance.Content.RedrawButtonSprite.Id!.Value,
 			(Spr)ModEntry.Instance.Content.RedrawButtonOnSprite.Id!.Value,
-			onMouseDown: new MouseDownHandler(() =>
-			{
-				if (Instance.RedrawStatusManager.GetHandlingHook(state, combat, __instance) is not { } hook)
-					return;
-
-				hook.PayForRedraw(state, combat, __instance);
-				hook.DoRedraw(state, combat, __instance);
-				Instance.RedrawStatusManager.AfterRedraw(state, combat, __instance, hook);
-			})
+			onMouseDown: new MouseDownHandler(() => ModEntry.Instance.RedrawStatusManager.DoRedraw(state, combat, __instance))
 		);
 		if (result.isHover)
 			g.tooltips.Add(position + new Vec(30, 10), Instance.Api.GetRedrawStatusTooltip());

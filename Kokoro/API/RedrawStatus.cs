@@ -12,16 +12,16 @@ public partial interface IKokoroApi
 	void UnregisterRedrawStatusHook(IRedrawStatusHook hook);
 
 	bool IsRedrawPossible(State state, Combat combat, Card card);
-	IRedrawStatusHook? GetRedrawHandlingHook(State state, Combat combat, Card card);
-	void AfterRedraw(State state, Combat combat, Card card, IRedrawStatusHook hook);
+	bool DoRedraw(State state, Combat combat, Card card);
 
-	IRedrawStatusHook StandardRedrawStatusHook { get; }
+	IRedrawStatusHook StandardRedrawStatusPaymentHook { get; }
+	IRedrawStatusHook StandardRedrawStatusActionHook { get; }
 }
 
 public interface IRedrawStatusHook
 {
-	bool? IsRedrawPossible(State state, Combat combat, Card card) => null;
-	void PayForRedraw(State state, Combat combat, Card card) { }
-	void DoRedraw(State state, Combat combat, Card card) { }
-	void AfterRedraw(State state, Combat combat, Card card, IRedrawStatusHook hook) { }
+	bool? CanRedraw(State state, Combat combat, Card card) => null;
+	bool PayForRedraw(State state, Combat combat, Card card, IRedrawStatusHook possibilityHook) => false;
+	bool DoRedraw(State state, Combat combat, Card card, IRedrawStatusHook possibilityHook, IRedrawStatusHook paymentHook) => false;
+	void AfterRedraw(State state, Combat combat, Card card, IRedrawStatusHook possibilityHook, IRedrawStatusHook paymentHook, IRedrawStatusHook actionHook) { }
 }
