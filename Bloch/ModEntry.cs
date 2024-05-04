@@ -140,7 +140,7 @@ public sealed class ModEntry : SimpleMod
 			{
 				Deck = BlochDeck.Deck,
 				LoopTag = "neutral",
-				Frames = Enumerable.Range(0, 1)
+				Frames = Enumerable.Range(0, 8)
 					.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Neutral/{i}.png")).Sprite)
 					.ToList()
 			},
@@ -173,7 +173,7 @@ public sealed class ModEntry : SimpleMod
 		{
 			Deck = BlochDeck.Deck,
 			LoopTag = "squint",
-			Frames = Enumerable.Range(0, 2)
+			Frames = Enumerable.Range(0, 7)
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Squint/{i}.png")).Sprite)
 				.ToList()
 		});
