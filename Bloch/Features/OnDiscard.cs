@@ -47,11 +47,17 @@ internal sealed class OnDiscardManager
 		if (card == LastCardPlayed)
 			return;
 
+		var meta = card.GetMeta();
 		__instance.QueueImmediate(
 			card.GetActionsOverridden(s, __instance)
 				.Where(action => !action.disabled)
 				.OfType<TriggerAction>()
 				.Select(triggerAction => triggerAction.Action)
+				.Select(action =>
+				{
+					action.whoDidThis = meta.deck;
+					return action;
+				})
 		);
 	}
 

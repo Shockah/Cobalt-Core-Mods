@@ -35,10 +35,19 @@ internal sealed class OnHullDamageManager
 
 		c.QueueImmediate(
 			c.hand
-				.SelectMany(card => card.GetActionsOverridden(s, c))
-				.Where(action => !action.disabled)
-				.OfType<TriggerAction>()
-				.Select(triggerAction => triggerAction.Action)
+				.SelectMany(card =>
+				{
+					var meta = card.GetMeta();
+					return card.GetActionsOverridden(s, c)
+						.Where(action => !action.disabled)
+						.OfType<TriggerAction>()
+						.Select(triggerAction => triggerAction.Action)
+						.Select(action =>
+						{
+							action.whoDidThis = meta.deck;
+							return action;
+						});
+				})
 		);
 	}
 

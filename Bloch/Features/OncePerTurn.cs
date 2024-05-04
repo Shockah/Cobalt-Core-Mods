@@ -68,7 +68,17 @@ internal sealed class OncePerTurnManager
 				.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, OncePerTurnTriggeredTrait))
 				.Select(card => (Card: card, Actions: card.GetActionsOverridden(state, combat).Where(action => !action.disabled).OfType<TriggerAction>().Select(triggerAction => triggerAction.Action).ToList()))
 				.Where(e => e.Actions.Count != 0)
-				.SelectMany(e => e.Actions.Append(new MarkCardAsTriggeredAction { CardId = e.Card.uuid }))
+				.SelectMany(e =>
+				{
+					var meta = e.Card.GetMeta();
+					return e.Actions
+						.Append(new MarkCardAsTriggeredAction { CardId = e.Card.uuid })
+						.Select(action =>
+						{
+							action.whoDidThis = meta.deck;
+							return action;
+						});
+				})
 		);
 
 	private static void Combat_SendCardToHand_Postfix(Combat __instance, State s, Card card)

@@ -19,6 +19,7 @@ public sealed class ModEntry : SimpleMod
 	internal readonly IKokoroApi KokoroApi;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
+	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> DialogueLocalizations;
 
 	internal IDeckEntry BlochDeck { get; }
 
@@ -52,15 +53,11 @@ public sealed class ModEntry : SimpleMod
 		typeof(SplitPersonalityCard),
 	];
 
-	internal static readonly IReadOnlyList<Type> SpecialCardTypes = [
-	];
-
 	internal static readonly IEnumerable<Type> AllCardTypes
 		= [
 			..CommonCardTypes,
 			..UncommonCardTypes,
 			..RareCardTypes,
-			..SpecialCardTypes,
 		];
 
 	internal static readonly IReadOnlyList<Type> CommonArtifacts = [
@@ -103,14 +100,21 @@ public sealed class ModEntry : SimpleMod
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
-			localeStreamFunction: locale => package.PackageRoot.GetRelativeFile($"i18n/{locale}.json").OpenRead()
+			localeStreamFunction: locale => package.PackageRoot.GetRelativeFile($"i18n/main-{locale}.json").OpenRead()
 		);
 		this.Localizations = new MissingPlaceholderLocalizationProvider<IReadOnlyList<string>>(
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
 		);
+		this.DialogueLocalizations = new MissingPlaceholderLocalizationProvider<IReadOnlyList<string>>(
+			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(new JsonLocalizationProvider(
+				tokenExtractor: new SimpleLocalizationTokenExtractor(),
+				localeStreamFunction: locale => package.PackageRoot.GetRelativeFile($"i18n/dialogue-{locale}.json").OpenRead()
+			))
+		);
 
 		_ = new AuraManager();
 		_ = new DrawEachTurnManager();
+		_ = new InfiniteCharacterAnimationManager();
 		_ = new NegativeBoostManager();
 		_ = new OnDiscardManager();
 		_ = new OnTurnEndManager();
@@ -119,6 +123,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new RetainManager();
 		_ = new ScryManager();
 		_ = new SplitPersonalityManager();
+		_ = new WavyDialogueManager();
 
 		BlochDeck = helper.Content.Decks.RegisterDeck("Bloch", new()
 		{
@@ -177,6 +182,30 @@ public sealed class ModEntry : SimpleMod
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Squint/{i}.png")).Sprite)
 				.ToList()
 		});
+		helper.Content.Characters.RegisterCharacterAnimation(new()
+		{
+			Deck = BlochDeck.Deck,
+			LoopTag = "glerp",
+			Frames = Enumerable.Range(0, 10)
+				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Glerp/{i}.png")).Sprite)
+				.ToList()
+		});
+		helper.Content.Characters.RegisterCharacterAnimation(new()
+		{
+			Deck = BlochDeck.Deck,
+			LoopTag = "gloop",
+			Frames = Enumerable.Range(0, 10)
+				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Gloop/{i}.png")).Sprite)
+				.ToList()
+		});
+		helper.Content.Characters.RegisterCharacterAnimation(new()
+		{
+			Deck = BlochDeck.Deck,
+			LoopTag = "glorp",
+			Frames = Enumerable.Range(0, 13)
+				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Glorp/{i}.png")).Sprite)
+				.ToList()
+		});
 
 		helper.ModRegistry.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", new SemanticVersion(1, 3, 0))?.RegisterAltStarters(
 			deck: BlochDeck.Deck,
@@ -225,6 +254,8 @@ public sealed class ModEntry : SimpleMod
 				]);
 			}
 		};
+
+		_ = new CombatDialogue();
 	}
 
 	public override object? GetApi(IModManifest requestingMod)
