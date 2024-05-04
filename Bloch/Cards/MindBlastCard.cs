@@ -27,50 +27,28 @@ internal sealed class MindBlastCard : Card, IRegisterable
 	}
 
 	private int GetDamage(State state)
-		=> upgrade switch
-		{
-			Upgrade.B => GetDmg(state, 1 + PlayCounter),
-			_ => GetDmg(state, 2 + PlayCounter * 2)
-		};
+		=> GetDmg(state, 2 + PlayCounter * 2);
 
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = 2,
-			recycle = upgrade == Upgrade.A,
-			retain = upgrade == Upgrade.A,
-			exhaust = upgrade == Upgrade.B,
+			cost = upgrade == Upgrade.A ? 1 : 2,
+			recycle = upgrade == Upgrade.B,
+			retain = upgrade == Upgrade.B,
 			description = ModEntry.Instance.Localizations.Localize(["card", "MindBlast", "description", upgrade.ToString()], new { Damage = GetDamage(state) })
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> upgrade switch
-		{
-			Upgrade.B => [
-				new AAttack
-				{
-					damage = GetDamage(s)
-				},
-				new OnDiscardManager.TriggerAction
-				{
-					Action = new CountUpAction { CardId = uuid }
-				},
-				new OnDiscardManager.TriggerAction
-				{
-					Action = new ExhaustCardAction { CardId = uuid }
-				}
-			],
-			_ => [
-				new AAttack
-				{
-					damage = GetDamage(s)
-				},
-				new OnDiscardManager.TriggerAction
-				{
-					Action = new CountUpAction { CardId = uuid }
-				}
-			]
-		};
+		=> [
+			new AAttack
+			{
+				damage = GetDamage(s)
+			},
+			new OnDiscardManager.TriggerAction
+			{
+				Action = new CountUpAction { CardId = uuid }
+			}
+		];
 
 	public override void OnExitCombat(State s, Combat c)
 	{

@@ -9,6 +9,8 @@ namespace Shockah.Bloch;
 
 internal sealed class OutburstCard : Card, IRegisterable
 {
+	private static int GetDataRecursionDepth = 0;
+
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
@@ -26,25 +28,28 @@ internal sealed class OutburstCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> new()
+	{
+		GetDataRecursionDepth++;
+		try
 		{
-			cost = upgrade switch
+			return new()
 			{
-				Upgrade.A => 1,
-				Upgrade.B => 0,
-				_ => 2
-			},
-			exhaust = true,
-			description = ModEntry.Instance.Localizations.Localize(
-				["card", "Outburst", "description", state.route is Combat ? "stateful" : "stateless", upgrade.ToString()],
-				new { Damage = state.route is Combat combat ? combat.hand.Where(card => card.uuid != uuid).Sum(card => card.GetCurrentCost(state)) : 0 }
-			)
-		};
+				cost = upgrade == Upgrade.A ? 1 : 2,
+				exhaust = upgrade != Upgrade.B,
+				description = ModEntry.Instance.Localizations.Localize(
+					["card", "Outburst", "description", state.route is Combat ? "stateful" : "stateless", upgrade.ToString()],
+					new { Damage = state.route is Combat combat && GetDataRecursionDepth == 1 ? combat.hand.Where(card => card.uuid != uuid).Sum(card => card.GetCurrentCost(state)) : 0 }
+				)
+			};
+		}
+		finally
+		{
+			GetDataRecursionDepth--;
+		}
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new Action { CardId = uuid, Exhaust = upgrade == Upgrade.B }
-		];
+		=> [new Action { CardId = uuid }];
 
 	private sealed class Action : CardAction
 	{
@@ -54,16 +59,24 @@ internal sealed class OutburstCard : Card, IRegisterable
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
-			timer = 0;
 
 			var sum = c.hand.Sum(card => card.GetCurrentCost(s));
-			if (CardId is not { } cardId || s.FindCard(cardId) is not { } card)
-				card = null;
+			if (CardId is not { } cardId || s.FindCard(cardId) is not { } fromCard)
+				fromCard = null;
 
-			c.QueueImmediate([
-				Exhaust ? ModEntry.Instance.KokoroApi.Actions.MakeExhaustEntireHandImmediate() : new ADiscard(),
-				new AAttack { damage = GetActualDamage(s, sum, card: card) }
-			]);
+			var cards = c.hand.ToList();
+			c.QueueImmediate(new AAttack { damage = GetActualDamage(s, sum, card: fromCard) });
+			c.DiscardHand(s);
+
+			if (!Exhaust)
+				return;
+
+			foreach (Card card in ((IEnumerable<Card>)cards).Reverse())
+			{
+				card.ExhaustFX();
+				s.RemoveCardFromWhereverItIs(card.uuid);
+				c.SendCardToExhaust(s, card);
+			}
 		}
 	}
 }

@@ -156,7 +156,7 @@ public sealed class ModEntry : SimpleMod
 			{
 				cards = [
 					new DistressCard(),
-					new FocusCard(),
+					new PsychicDamageCard(),
 				]
 			}
 		});
@@ -183,8 +183,8 @@ public sealed class ModEntry : SimpleMod
 			starterDeck: new StarterDeck
 			{
 				cards = [
-					new OptCard(),
-					new PrismaticAuraCard()
+					new FocusCard(),
+					new FeedbackCard()
 				]
 			}
 		);

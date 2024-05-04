@@ -147,7 +147,7 @@
             "description": {
                 "None": "Attack for {{Damage}}. <c=action>On Discard</c>, gains 2 damage this combat.",
                 "A": "Attack for {{Damage}}. <c=action>On Discard</c>, gains 2 damage this combat.",
-                "B": "Attack for {{Damage}}. <c=action>On Discard</c>, gains 1 damage and <c=cardtrait>exhausts</c>."
+                "B": "Attack for {{Damage}}. <c=action>On Discard</c>, gains 2 damage this combat."
             }
         },
         "MindMap": {
@@ -169,14 +169,14 @@
             "name": "Outburst",
             "description": {
                 "stateless": {
-                    "None": "Discard cards in hand. Deal their energy cost sum as damage.",
-                    "A": "Discard cards in hand. Deal their energy cost sum as damage.",
-                    "B": "Exhaust cards in hand. Deal their energy cost sum as damage."
+                    "None": "Discard hand. Attack for the energy cost sum.",
+                    "A": "Discard hand. Attack for the energy cost sum.",
+                    "B": "Discard hand. Attack for the energy cost sum."
                 },
                 "stateful": {
-                    "None": "Discard cards in hand. Deal their energy cost sum as damage: <c=hurt>{{Damage}}</c>.",
-                    "A": "Discard cards in hand. Deal their energy cost sum as damage: <c=hurt>{{Damage}}</c>.",
-                    "B": "Exhaust cards in hand. Deal their energy cost sum as damage: <c=hurt>{{Damage}}</c>."
+                    "None": "Discard hand. Attack for the energy cost sum: <c=hurt>{{Damage}}</c>.",
+                    "A": "Discard hand. Attack for the energy cost sum: <c=hurt>{{Damage}}</c>.",
+                    "B": "Discard hand. Attack for the energy cost sum: <c=hurt>{{Damage}}</c>."
                 }
             }
         },

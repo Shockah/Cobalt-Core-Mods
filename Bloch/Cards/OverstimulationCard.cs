@@ -27,8 +27,8 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = upgrade == Upgrade.A ? 1 : 2,
-			exhaust = true,
+			cost = upgrade == Upgrade.None ? 3 : 2,
+			exhaust = upgrade == Upgrade.B,
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
@@ -40,34 +40,7 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 					Action = new AStatus
 					{
 						targetPlayer = true,
-						status = AuraManager.FeedbackStatus.Status,
-						statusAmount = 4
-					}
-				},
-				new OncePerTurnManager.TriggerAction
-				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.InsightStatus.Status,
-						statusAmount = 4
-					}
-				},
-				new OncePerTurnManager.TriggerAction
-				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.VeilingStatus.Status,
-						statusAmount = 4
-					}
-				},
-				new OncePerTurnManager.TriggerAction
-				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.IntensifyStatus.Status,
+						status = Status.evade,
 						statusAmount = 1
 					}
 				},
@@ -77,54 +50,7 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 					{
 						targetPlayer = true,
 						status = ModEntry.Instance.KokoroApi.OxidationVanillaStatus,
-						statusAmount = 4
-					}
-				},
-			],
-			Upgrade.A => [
-				new OncePerTurnManager.TriggerAction
-				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.FeedbackStatus.Status,
-						statusAmount = 2
-					}
-				},
-				new OncePerTurnManager.TriggerAction
-				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.InsightStatus.Status,
-						statusAmount = 2
-					}
-				},
-				new OncePerTurnManager.TriggerAction
-				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.VeilingStatus.Status,
-						statusAmount = 3
-					}
-				},
-				new OncePerTurnManager.TriggerAction
-				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.IntensifyStatus.Status,
 						statusAmount = 1
-					}
-				},
-				new OncePerTurnManager.TriggerAction
-				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = ModEntry.Instance.KokoroApi.OxidationVanillaStatus,
-						statusAmount = 3
 					}
 				},
 			],
@@ -134,34 +60,7 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 					Action = new AStatus
 					{
 						targetPlayer = true,
-						status = AuraManager.FeedbackStatus.Status,
-						statusAmount = 2
-					}
-				},
-				new OncePerTurnManager.TriggerAction
-				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.InsightStatus.Status,
-						statusAmount = 2
-					}
-				},
-				new OncePerTurnManager.TriggerAction
-				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.VeilingStatus.Status,
-						statusAmount = 2
-					}
-				},
-				new OncePerTurnManager.TriggerAction
-				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.IntensifyStatus.Status,
+						status = Status.evade,
 						statusAmount = 1
 					}
 				},
@@ -171,9 +70,16 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 					{
 						targetPlayer = true,
 						status = ModEntry.Instance.KokoroApi.OxidationVanillaStatus,
-						statusAmount = 3
+						statusAmount = 2
 					}
 				},
+				new AStatus
+				{
+					targetPlayer = true,
+					mode = AStatusMode.Set,
+					status = ModEntry.Instance.KokoroApi.OxidationVanillaStatus,
+					statusAmount = 0
+				}
 			]
 		};
 }
