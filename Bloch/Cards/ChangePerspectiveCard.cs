@@ -33,7 +33,7 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 		{
 			cost = upgrade == Upgrade.A ? 0 : 1,
 			infinite = upgrade == Upgrade.B,
-			description = ModEntry.Instance.Localizations.Localize(["card", "ChangePerspective", "description"], new { ConvertToAmount = 3 }),
+			description = ModEntry.Instance.Localizations.Localize(["card", "ChangePerspective", "description"], new { ConvertToAuraAmount = 3, ConvertToIntensifyAmount = 2 }),
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
@@ -43,9 +43,10 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 	{
 		public override List<Tooltip> GetTooltips(State s)
 			=> [
-				..StatusMeta.GetTooltips(AuraManager.VeilingStatus.Status, Math.Max(s.ship.Get(AuraManager.VeilingStatus.Status), 1)),
-				..StatusMeta.GetTooltips(AuraManager.FeedbackStatus.Status, Math.Max(s.ship.Get(AuraManager.FeedbackStatus.Status), 1)),
-				..StatusMeta.GetTooltips(AuraManager.InsightStatus.Status, Math.Max(s.ship.Get(AuraManager.InsightStatus.Status), 1)),
+				..StatusMeta.GetTooltips(AuraManager.IntensifyStatus.Status, Math.Max(s.ship.Get(AuraManager.IntensifyStatus.Status), 2)),
+				..StatusMeta.GetTooltips(AuraManager.VeilingStatus.Status, Math.Max(s.ship.Get(AuraManager.VeilingStatus.Status), 3)),
+				..StatusMeta.GetTooltips(AuraManager.FeedbackStatus.Status, Math.Max(s.ship.Get(AuraManager.FeedbackStatus.Status), 3)),
+				..StatusMeta.GetTooltips(AuraManager.InsightStatus.Status, Math.Max(s.ship.Get(AuraManager.InsightStatus.Status), 3)),
 			];
 
 		public override Route? BeginWithRoute(G g, State s, Combat c)
@@ -56,20 +57,18 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 	{
 		private const UK ChoiceKey = (UK)2137521;
 
-		public List<Status> ConvertFrom = [
-			AuraManager.VeilingStatus.Status,
-			AuraManager.FeedbackStatus.Status,
-			AuraManager.InsightStatus.Status,
+		public List<(Status Status, int Amount)> ConvertFrom = [
+			(AuraManager.VeilingStatus.Status, 1),
+			(AuraManager.FeedbackStatus.Status, 1),
+			(AuraManager.InsightStatus.Status, 1),
 		];
 
-		public List<Status> ConvertTo = [
-			AuraManager.VeilingStatus.Status,
-			AuraManager.FeedbackStatus.Status,
-			AuraManager.InsightStatus.Status,
+		public List<(Status Status, int Amount)> ConvertTo = [
+			(AuraManager.IntensifyStatus.Status, 2),
+			(AuraManager.VeilingStatus.Status, 3),
+			(AuraManager.FeedbackStatus.Status, 3),
+			(AuraManager.InsightStatus.Status, 3),
 		];
-
-		public int ConvertFromAmount = 1;
-		public int ConvertToAmount = 3;
 
 		private int? ConvertFromSelected;
 		private int? ConvertToSelected;
@@ -83,7 +82,7 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 		public override void Render(G g)
 		{
 			base.Render(g);
-			if (!ConvertFrom.Any(status => g.state.ship.Get(status) >= ConvertFromAmount))
+			if (!ConvertFrom.Any(e => g.state.ship.Get(e.Status) >= e.Amount))
 			{
 				g.CloseRoute(this);
 				return;
@@ -93,7 +92,7 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 			int topY = 80;
 
 			int choiceWidth = 56;
-			int choiceHeight = 18;
+			int choiceHeight = 24;
 			int choiceSpacing = 4;
 			int actionSpacing = 4;
 			int actionYOffset = 7;
@@ -103,7 +102,7 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 
 			Draw.Text(ModEntry.Instance.Localizations.Localize((["card", "ChangePerspective", "uiTitle"])), centerX, topY, font: DB.stapler, color: Colors.textMain, align: TAlign.Center);
 
-			void RenderChoices(List<Status> choices, int amount, Func<int?> isSelected, Func<int, bool> inactiveGetter, Action<int> choiceSetter, int y)
+			void RenderChoices(List<(Status Status, int Amount)> choices, Func<int?> isSelected, Func<int, bool> inactiveGetter, Action<int> choiceSetter, int y)
 			{
 				var rowWidth = choices.Count * choiceWidth + Math.Max(choices.Count - 1, 0) * choiceSpacing;
 				var rowStartX = centerX - rowWidth / 2;
@@ -113,7 +112,7 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 					var choice = choices[i];
 					var inactive = inactiveGetter(i);
 					var selected = isSelected() == i;
-					var fakeAction = new AStatus { targetPlayer = true, status = choice, statusAmount = amount, disabled = inactive };
+					var fakeAction = new AStatus { targetPlayer = true, status = choice.Status, statusAmount = choice.Amount, disabled = inactive };
 					var choiceStartX = rowStartX + (choiceWidth + choiceSpacing) * i;
 					var choiceTopY = topY + 24;
 
@@ -128,7 +127,7 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 
 					var isHover = g.boxes.FirstOrDefault(b => b.key == new UIKey(ChoiceKey, y * 10 + i))?.IsHover() == true;
 					if (isHover)
-						g.tooltips.Add(new Vec(buttonRect.x + buttonRect.w, buttonRect.y + buttonRect.h), StatusMeta.GetTooltips(choice, ConvertFromAmount));
+						g.tooltips.Add(new Vec(buttonRect.x + buttonRect.w, buttonRect.y + buttonRect.h), StatusMeta.GetTooltips(choice.Status, choice.Amount));
 
 					var actionWidth = RenderAction(g, g.state, fakeAction, dontDraw: true);
 					var actionStartX = choiceStartX + 3 + choiceWidth / 2 - actionWidth / 2;
@@ -140,15 +139,15 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 				}
 			}
 
-			RenderChoices(ConvertFrom, ConvertFromAmount, () => ConvertFromSelected, i => g.state.ship.Get(ConvertFrom[i]) < ConvertFromAmount, i => ConvertFromSelected = i, 0);
-			RenderChoices(ConvertTo, ConvertToAmount, () => ConvertToSelected, _ => false, i => ConvertToSelected = i, 60);
+			RenderChoices(ConvertFrom, () => ConvertFromSelected, i => g.state.ship.Get(ConvertFrom[i].Status) < ConvertFrom[i].Amount, i => ConvertFromSelected = i, 0);
+			RenderChoices(ConvertTo, () => ConvertToSelected, _ => false, i => ConvertToSelected = i, 60);
 
 			{
 				var rect = new Rect(centerX - 14, topY + 55, 33, 24);
 				RotatedButtonSprite(g, rect, StableUK.btn_move_right, StableSpr.buttons_move, StableSpr.buttons_move_on, flipX: false, noHover: true);
 			}
 
-			var inactive = ConvertFromSelected is not { } convertFrom || ConvertToSelected is not { } convertTo || g.state.ship.Get(ConvertFrom[convertFrom]) < ConvertFromAmount || ConvertFrom[convertFrom] == ConvertTo[convertTo];
+			var inactive = ConvertFromSelected is not { } convertFrom || ConvertToSelected is not { } convertTo || g.state.ship.Get(ConvertFrom[convertFrom].Status) < ConvertFrom[convertFrom].Amount || ConvertFrom[convertFrom].Status == ConvertTo[convertTo].Status;
 			SharedArt.ButtonText(
 				g,
 				new Vec(210, 205),
@@ -162,7 +161,7 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 
 		private void OnFinishChoosing(G g)
 		{
-			if (ConvertFromSelected is not { } convertFrom || ConvertToSelected is not { } convertTo || g.state.ship.Get(ConvertFrom[convertFrom]) < ConvertFromAmount)
+			if (ConvertFromSelected is not { } convertFrom || ConvertToSelected is not { } convertTo || g.state.ship.Get(ConvertFrom[convertFrom].Status) < ConvertFrom[convertFrom].Amount || ConvertFrom[convertFrom].Status == ConvertTo[convertTo].Status)
 			{
 				Audio.Play(Event.ZeroEnergy);
 				return;
@@ -172,14 +171,14 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 				new AStatus
 				{
 					targetPlayer = true,
-					status = ConvertFrom[convertFrom],
-					statusAmount = -ConvertFromAmount
+					status = ConvertFrom[convertFrom].Status,
+					statusAmount = -ConvertFrom[convertFrom].Amount
 				},
 				new AStatus
 				{
 					targetPlayer = true,
-					status = ConvertTo[convertTo],
-					statusAmount = ConvertToAmount
+					status = ConvertTo[convertTo].Status,
+					statusAmount = ConvertTo[convertTo].Amount
 				}
 			]);
 			g.CloseRoute(this);
