@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.8.1
+Released 5 May 2024.
 
 * Fixed Redraw buttons appearing on enemy turns and on cards not in hand.
 
