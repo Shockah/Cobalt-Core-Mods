@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.4
+Released 5 May 2024.
 
 * Fixed Dominate and Grimoire of Secrets cards sometimes breaking when played by other cards automatically.
 
