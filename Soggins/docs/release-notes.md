@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.3
+Released 5 May 2024.
 
 * Smug is now Boost-proof.
 * Fixed Halfhearted-Apology-generating cards sometimes breaking when played by other cards automatically.

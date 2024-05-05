@@ -53,7 +53,7 @@ Kokoro is a utility/library mod - a little bit for players, and a lot for modder
 # Rerolls
 
 Adds a way to reroll artifact and card rewards.  
-\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Frerolls-1.0.3)] \[[release notes](Rerolls/docs/release-notes.md)] \[[README/source code](Rerolls)]
+\[[NexusMods](https://www.nexusmods.com/cobaltcore/mods/2)] \[[release notes](Rerolls/docs/release-notes.md)] \[[README/source code](Rerolls)]
 
 [![Artifact icon screenshot](Rerolls/docs/images/artifact-thumb.png)](Rerolls/docs/images/artifact.png)
 [![Artifact reward screenshot](Rerolls/docs/images/artifact-reward-thumb.png)](Rerolls/docs/images/artifact-reward.png)
@@ -63,7 +63,7 @@ Adds a way to reroll artifact and card rewards.
 
 **Soggins** -- Unavoidable bumbling idiocy.  
 A completely disruptive crewmate, he makes most cards completely unreliable by just being aboard your ship, any single card played could turn out to work in unintended (but fun!) ways.  
-\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fsoggins-1.3.2)] \[[NexusMods](https://www.nexusmods.com/cobaltcore/mods/5)] \[[release notes](Soggins/docs/release-notes.md)] \[[README/source code](Soggins)]
+\[[NexusMods](https://www.nexusmods.com/cobaltcore/mods/5)] \[[release notes](Soggins/docs/release-notes.md)] \[[README/source code](Soggins)]
 
 [![Preview screenshot](Soggins/docs/images/preview-thumb.gif)](Soggins/docs/images/preview.gif)
 [![Apologies screenshot](Soggins/docs/images/apologies-thumb.png)](Soggins/docs/images/apologies.png)
