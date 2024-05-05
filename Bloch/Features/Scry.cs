@@ -1,5 +1,7 @@
 ﻿using FSPRO;
+using Newtonsoft.Json;
 using Nickel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,6 +22,12 @@ internal sealed class ScryAction : CardAction
 	public required int Amount;
 	public bool FromInsight;
 
+	[JsonProperty]
+	private int ModifiedAmount;
+
+	[JsonProperty]
+	private int InsightToReduce;
+
 	public override Icon? GetIcon(State s)
 		=> new(ScryManager.ActionIcon.Sprite, Amount, Colors.textMain);
 
@@ -37,8 +45,23 @@ internal sealed class ScryAction : CardAction
 	public override void Begin(G g, State s, Combat c)
 	{
 		base.Begin(g, s, c);
+		ModifiedAmount = Amount;
 
-		if (s.deck.Count < Amount && c.discard.Count > 0)
+		if (!ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(c, "TriggeredInsight"))
+		{
+			ModEntry.Instance.Helper.ModData.SetModData(c, "TriggeredInsight", true);
+
+			var insight = s.ship.Get(AuraManager.InsightStatus.Status);
+			var maxInsight = Math.Max(Math.Min(Math.Min(insight, s.ship.Get(AuraManager.IntensifyStatus.Status) + 1), s.deck.Count + c.discard.Count - Amount), 0);
+
+			ModifiedAmount += maxInsight;
+			InsightToReduce = maxInsight;
+		}
+
+		if (ModifiedAmount <= 0)
+			return;
+
+		if (s.deck.Count < ModifiedAmount && c.discard.Count > 0)
 		{
 			var currentDeck = s.deck.ToList();
 			s.deck.Clear();
@@ -54,9 +77,34 @@ internal sealed class ScryAction : CardAction
 
 	public override Route? BeginWithRoute(G g, State s, Combat c)
 	{
-		var cards = s.deck.TakeLast(Amount).Reverse().ToList();
+		if (ModifiedAmount <= 0)
+		{
+			timer = 0;
+			return null;
+		}
 
-		var route = new MultiCardBrowse()
+		var cards = s.deck.TakeLast(ModifiedAmount).Reverse().ToList();
+		if (cards.Count == 0)
+		{
+			timer = 0;
+			return null;
+		}
+
+		if (InsightToReduce > 0)
+		{
+			ModEntry.Instance.Helper.ModData.SetModData(c, "TriggeredInsight", true);
+			c.QueueImmediate(new AStatus
+			{
+				targetPlayer = true,
+				status = AuraManager.InsightStatus.Status,
+				statusAmount = -InsightToReduce,
+				statusPulse = InsightToReduce > 1 ? AuraManager.IntensifyStatus.Status : null,
+			});
+		}
+
+		c.Queue(new ADelay { timer = 0.0 });
+
+		return new MultiCardBrowse()
 		{
 			mode = CardBrowse.Mode.Browse,
 			browseSource = CardBrowse.Source.DrawPile,
@@ -64,17 +112,6 @@ internal sealed class ScryAction : CardAction
 			CardsOverride = cards,
 			EnabledSorting = false,
 		};
-		c.Queue(new ADelay
-		{
-			time = 0.0,
-			timer = 0.0
-		});
-		if (route.GetCardList(g).Count == 0)
-		{
-			timer = 0.0;
-			return null;
-		}
-		return route;
 	}
 
 	private sealed class BrowseAction : CardAction

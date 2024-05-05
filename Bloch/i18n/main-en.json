@@ -17,7 +17,7 @@
         },
         "OnTurnEnd": {
             "name": "On Turn End",
-            "description": "This action only triggers whenever you end your turn with the card still in hand."
+            "description": "This action only triggers when you end your turn with this card in hand."
         },
         "Spontaneous": {
             "name": "Spontaneous",
@@ -37,15 +37,19 @@
     "status": {
         "Veiling": {
             "name": "Veiling Aura",
-            "description": "Reduce incoming attack damage by 1 and <c=downside>decrease this by 1</c>."
+            "description": "Reduce incoming hits by 1 and <c=downside>decrease this by 1</c>."
         },
         "Feedback": {
             "name": "Feedback Aura",
-            "description": "Whenever you are hit by an attack, deal 1 hull damage to the enemy and <c=downside>decrease this by 1</c>."
+            "description": "When hit, deal 1 hull damage to the enemy and <c=downside>decrease this by 1</c>."
         },
         "Insight": {
             "name": "Insight Aura",
-            "description": "Whenever you are about to draw any amount of cards, <c=action>Scry 1</c> and <c=downside>decrease this by 1</c>."
+            "description": [
+                "If you <c=action>Scry</c>, <c=action>Scry</c> +1.",
+                "If you draw, <c=action>Scry 1</c>.",
+                "<c=downside>Decrease this by 1</c>."
+            ]
         },
         "Intensify": {
             "name": "Intensify",
@@ -155,9 +159,9 @@
         "MindPurge": {
             "name": "Mind Purge",
             "description": {
-                "None": "Choose cards to discard. Draw as many.",
-                "A": "Choose cards to discard. Draw as many, +1.",
-                "B": "Choose cards to discard. Draw 3 cards."
+                "None": "Choose cards to discard, then draw as many.",
+                "A": "Choose cards to discard, then draw as many, +2.",
+                "B": "Choose cards to discard, then draw as many. Twice."
             },
             "browseText": "Choose cards to discard."
         },

@@ -34,13 +34,19 @@ internal sealed class MindPurgeCard : Card, IRegisterable
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new Action
-			{
-				ExtraCards = upgrade == Upgrade.A ? 1 : 0,
-				CardCountOverride = upgrade == Upgrade.B ? 3 : null,
-			}
-		];
+		=> upgrade switch
+		{
+			Upgrade.B => [
+				new Action(),
+				new Action(),
+			],
+			Upgrade.A => [
+				new Action { ExtraCards = 2 }
+			],
+			_ => [
+				new Action()
+			]
+		};
 
 	private sealed class Action : CardAction
 	{

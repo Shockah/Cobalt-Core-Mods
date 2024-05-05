@@ -65,6 +65,21 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Intensify", "description"]).Localize
 		});
 
+		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnQueueEmptyDuringPlayerTurn), (Combat combat) =>
+		{
+			ModEntry.Instance.Helper.ModData.RemoveModData(combat, "TriggeredInsight");
+		}, 0);
+
+		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatStart), (Combat combat) =>
+		{
+			ModEntry.Instance.Helper.ModData.RemoveModData(combat, "TriggeredInsight");
+		}, 0);
+
+		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnEnd), (Combat combat) =>
+		{
+			ModEntry.Instance.Helper.ModData.RemoveModData(combat, "TriggeredInsight");
+		}, 0);
+
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
@@ -154,11 +169,8 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 
 	private static bool Combat_DrawCards_Prefix(Combat __instance, State s, int count)
 	{
-		if (ModEntry.Instance.Helper.ModData.TryGetModData(s, "StopInsightRecursion", out bool stopInsightRecursion) && stopInsightRecursion)
-		{
-			ModEntry.Instance.Helper.ModData.RemoveModData(s, "StopInsightRecursion");
+		if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(__instance, "TriggeredInsight"))
 			return true;
-		}
 
 		var insight = s.ship.Get(InsightStatus.Status);
 		var maxInsight = Math.Min(Math.Min(insight, s.ship.Get(IntensifyStatus.Status) + 1), s.deck.Count + __instance.discard.Count);
@@ -166,7 +178,7 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 		if (maxInsight <= 0)
 			return true;
 
-		ModEntry.Instance.Helper.ModData.SetModData(s, "StopInsightRecursion", true);
+		ModEntry.Instance.Helper.ModData.SetModData(__instance, "TriggeredInsight", true);
 		__instance.QueueImmediate([
 			new AStatus
 			{
