@@ -28,7 +28,7 @@ internal sealed class SplitPersonalityCard : Card, IRegisterable
 		=> new()
 		{
 			cost = 1,
-			exhaust = upgrade != Upgrade.B
+			exhaust = upgrade != Upgrade.A
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
@@ -37,7 +37,7 @@ internal sealed class SplitPersonalityCard : Card, IRegisterable
 			{
 				targetPlayer = true,
 				status = SplitPersonalityManager.SplitPersonalityStatus.Status,
-				statusAmount = upgrade == Upgrade.A ? 3 : 1
+				statusAmount = upgrade == Upgrade.B ? 3 : 1
 			}
 		];
 }

@@ -41,7 +41,7 @@
         },
         "Feedback": {
             "name": "Feedback Aura",
-            "description": "Whenever you are hit by an attack, deal 1 damage to the enemy and <c=downside>decrease this by 1</c>."
+            "description": "Whenever you are hit by an attack, deal 1 hull damage to the enemy and <c=downside>decrease this by 1</c>."
         },
         "Insight": {
             "name": "Insight Aura",
@@ -61,7 +61,7 @@
             "browseText": "Choose up to {{Amount}} cards to <c=cardtrait>retain</c>."
         },
         "SplitPersonality": {
-            "name": "Split Personality",
+            "name": "Personality Split",
             "description": "The next {0} <c=action>attacks</c> or <c=action>launches</c> are copied and mirrored against the ship's center."
         }
     },
@@ -195,7 +195,7 @@
             "name": "Psychic Damage"
         },
         "SplitPersonality": {
-            "name": "Split Personality"
+            "name": "Personality Split"
         }
     }
 }

@@ -108,7 +108,6 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 				new AHurt
 				{
 					targetPlayer = !__instance.isPlayerShip,
-					hurtShieldsFirst = true,
 					hurtAmount = maxFeedback,
 					statusPulse = FeedbackStatus.Status
 				}
