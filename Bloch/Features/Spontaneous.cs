@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Shockah.Bloch;
 
-internal sealed class SpontaneousManager
+internal sealed class SpontaneousManager : IWrappedActionHook
 {
 	private static ISpriteEntry ActionIcon = null!;
 	private static ISpriteEntry TriggeredIcon = null!;
@@ -60,6 +60,8 @@ internal sealed class SpontaneousManager
 				if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, SpontaneousTriggeredTrait))
 					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, SpontaneousTriggeredTrait, null, permanent: false);
 		}, 0);
+
+		ModEntry.Instance.KokoroApi.Actions.RegisterWrappedActionHook(this, 0);
 	}
 
 	private static void QueueOncePerTurnActions(State state, Combat combat, IEnumerable<Card> cards)
@@ -114,6 +116,9 @@ internal sealed class SpontaneousManager
 
 		return false;
 	}
+
+	public List<CardAction>? GetWrappedCardActions(CardAction action)
+		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
 
 	internal sealed class TriggerAction : CardAction
 	{

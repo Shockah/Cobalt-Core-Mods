@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Shockah.Bloch;
 
-internal sealed class OnDiscardManager
+internal sealed class OnDiscardManager : IWrappedActionHook
 {
 	private static ISpriteEntry ActionIcon = null!;
 
@@ -32,6 +32,8 @@ internal sealed class OnDiscardManager
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Prefix))
 		);
+
+		ModEntry.Instance.KokoroApi.Actions.RegisterWrappedActionHook(this, 0);
 	}
 
 	private static void Combat_TryPlayCard_Prefix(Card card)
@@ -86,6 +88,9 @@ internal sealed class OnDiscardManager
 
 		return false;
 	}
+
+	public List<CardAction>? GetWrappedCardActions(CardAction action)
+		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
 
 	internal sealed class TriggerAction : CardAction
 	{

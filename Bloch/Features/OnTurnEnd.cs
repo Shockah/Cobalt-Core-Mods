@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Shockah.Bloch;
 
-internal sealed class OnTurnEndManager
+internal sealed class OnTurnEndManager : IWrappedActionHook
 {
 	private static ISpriteEntry ActionIcon = null!;
 
@@ -24,6 +24,8 @@ internal sealed class OnTurnEndManager
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Prefix))
 		);
+
+		ModEntry.Instance.KokoroApi.Actions.RegisterWrappedActionHook(this, 0);
 	}
 
 	private static void AEndTurn_Begin_Prefix(State s, Combat c)
@@ -74,6 +76,9 @@ internal sealed class OnTurnEndManager
 
 		return false;
 	}
+
+	public List<CardAction>? GetWrappedCardActions(CardAction action)
+		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
 
 	internal sealed class TriggerAction : CardAction
 	{
