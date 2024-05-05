@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Aura of Darkness B is now unplayable at 3+ Bleeding (no more infinite free Autopilot).
+
 ## 1.1.4
 Released 5 May 2024.
 

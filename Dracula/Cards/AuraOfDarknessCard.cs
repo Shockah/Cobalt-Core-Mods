@@ -28,7 +28,8 @@ internal sealed class AuraOfDarknessCard : Card, IDraculaCard
 		{
 			cost = 0,
 			recycle = upgrade != Upgrade.B,
-			infinite = upgrade == Upgrade.B
+			infinite = upgrade == Upgrade.B,
+			unplayable = upgrade == Upgrade.B && state.ship.Get(ModEntry.Instance.BleedingStatus.Status) >= 3,
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
