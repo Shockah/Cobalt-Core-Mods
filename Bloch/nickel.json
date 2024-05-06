@@ -1,15 +1,16 @@
 {
     "UniqueName": "Shockah.Bloch",
-    "Version": "0.1.8",
+    "Version": "0.2.0",
     "DisplayName": "Bloch",
-    "Author": "Shockah",
+    "Description": "Your ship's mentalist. Specializes in reducing incoming damage, card draw manipulation and discard effects.",
+    "Author": "Arin, Soggoru Waffle, Shockah",
     "RequiredApiVersion": "0.8.0",
     "EntryPointAssembly": "Bloch.dll",
     "LoadPhase": "AfterDbInit",
     "Dependencies": [
         {
             "UniqueName": "Shockah.Kokoro",
-            "Version": "1.3.1"
+            "Version": "1.7.0"
         },
         {
             "UniqueName": "TheJazMaster.MoreDifficulties",
