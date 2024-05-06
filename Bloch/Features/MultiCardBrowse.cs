@@ -40,6 +40,11 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Prefix))
 		);
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(Loc), nameof(Loc.GetLocString)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Loc_GetLocString_Postfix))
+		);
 
 		IsHarmonySetup = true;
 	}
@@ -125,5 +130,13 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 			return;
 		if (CurrentlyRenderedMenu.SelectedCards.Contains(__instance.uuid))
 			hilight = true;
+	}
+
+	private static void Loc_GetLocString_Postfix(string key, ref string __result)
+	{
+		if (CurrentlyRenderedMenu is null)
+			return;
+		if (key == "codex.sortBy")
+			__result = "";
 	}
 }
