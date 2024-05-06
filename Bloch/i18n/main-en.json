@@ -43,19 +43,19 @@
     "status": {
         "Veiling": {
             "name": "Veiling Aura",
-            "description": "Reduce incoming hits by 1 and <c=downside>decrease this by 1</c>."
+            "description": "Reduce incoming hits by <c=C2FF60>1</c> and <c=downside>decrease this by <c=C2FF60>1</c></c>."
         },
         "Feedback": {
             "name": "Feedback Aura",
-            "description": "When hit, deal 1 hull damage to the enemy and <c=downside>decrease this by 1</c>."
+            "description": "When hit, deal <c=C2FF60>1</c> hull damage to the enemy and <c=downside>decrease this by <c=C2FF60>1</c></c>."
         },
         "Insight": {
             "name": "Insight Aura",
-            "description": "Boosts <c=action>Scry</c> by 1, or <c=action>Scry 1</c> when drawing, then <c=downside>decrease this by 1</c>."
+            "description": "At the start of your turn, <c=action>Scry <c=C2FF60>1</c></c>, draw <c=C2FF60>1</c> card and <c=downside>decrease this by <c=C2FF60>1</c></c>."
         },
         "Intensify": {
             "name": "Intensify",
-            "description": "All of your auras trigger again for each stack of this. <c=downside>Goes away at start of next turn.</c>"
+            "description": "All of your <c=C2FF60>Auras</c> trigger again for each stack of this. <c=downside>Goes away at start of next turn.</c>"
         },
         "DrawEachTurn": {
             "name": "Draw Each Turn",

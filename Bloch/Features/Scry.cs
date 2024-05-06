@@ -1,5 +1,4 @@
 ﻿using FSPRO;
-using Newtonsoft.Json;
 using Nickel;
 using System;
 using System.Collections.Generic;
@@ -22,12 +21,6 @@ internal sealed class ScryAction : CardAction
 	public required int Amount;
 	public bool FromInsight;
 
-	[JsonProperty]
-	private int InsightToUse;
-
-	private int ModifiedAmount
-		=> Amount + InsightToUse;
-
 	public override Icon? GetIcon(State s)
 		=> new(ScryManager.ActionIcon.Sprite, Amount, Colors.textMain);
 
@@ -45,15 +38,10 @@ internal sealed class ScryAction : CardAction
 	public override void Begin(G g, State s, Combat c)
 	{
 		base.Begin(g, s, c);
-
-		var insight = s.ship.Get(AuraManager.InsightStatus.Status);
-		var maxInsight = Math.Max(Math.Min(Math.Min(insight, s.ship.Get(AuraManager.IntensifyStatus.Status) + 1), s.deck.Count + c.discard.Count - Amount), 0);
-		InsightToUse = maxInsight;
-
-		if (ModifiedAmount <= 0)
+		if (Amount <= 0)
 			return;
 
-		if (s.deck.Count < ModifiedAmount && c.discard.Count > 0)
+		if (s.deck.Count < Amount && c.discard.Count > 0)
 		{
 			var currentDeck = s.deck.ToList();
 			s.deck.Clear();
@@ -69,29 +57,17 @@ internal sealed class ScryAction : CardAction
 
 	public override Route? BeginWithRoute(G g, State s, Combat c)
 	{
-		if (ModifiedAmount <= 0)
+		if (Amount <= 0)
 		{
 			timer = 0;
 			return null;
 		}
 
-		var cards = s.deck.TakeLast(ModifiedAmount).Reverse().ToList();
+		var cards = s.deck.TakeLast(Amount).Reverse().ToList();
 		if (cards.Count == 0)
 		{
 			timer = 0;
 			return null;
-		}
-
-		if (InsightToUse > 0)
-		{
-			ModEntry.Instance.Helper.ModData.SetModData(c, "TriggeredInsight", true);
-			c.QueueImmediate(new AStatus
-			{
-				targetPlayer = true,
-				status = AuraManager.InsightStatus.Status,
-				statusAmount = -InsightToUse,
-				statusPulse = InsightToUse > 1 ? AuraManager.IntensifyStatus.Status : null,
-			});
 		}
 
 		c.Queue(new ADelay { timer = 0.0 });

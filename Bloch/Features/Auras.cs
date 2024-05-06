@@ -70,22 +70,32 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Intensify", "description"]).Localize
 		});
 
-		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnQueueEmptyDuringPlayerTurn), (Combat combat) =>
+		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnTurnStart), (State state, Combat combat) =>
 		{
-			ModEntry.Instance.Helper.ModData.RemoveModData(combat, "TriggeredInsight");
+			if (!combat.isPlayerTurn)
+				return;
+
+			var insight = state.ship.Get(InsightStatus.Status);
+			var maxInsight = Math.Min(insight, state.ship.Get(IntensifyStatus.Status) + 1);
+			maxInsight = Math.Min(maxInsight, state.deck.Count + combat.discard.Count);
+
+			if (maxInsight <= 0)
+				return;
+
+			combat.Queue([
+				new AStatus
+				{
+					targetPlayer = true,
+					status = InsightStatus.Status,
+					statusAmount = -maxInsight,
+					statusPulse = maxInsight > 1 ? IntensifyStatus.Status : null,
+				},
+				new ScryAction { Amount = maxInsight },
+				new ADrawCard { count = maxInsight }
+			]);
 		}, 0);
 
-		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnEnd), (Combat combat) =>
-		{
-			ModEntry.Instance.Helper.ModData.RemoveModData(combat, "TriggeredInsight");
-		}, 0);
-
-		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatStart), (Combat combat) =>
-		{
-			ModEntry.Instance.Helper.ModData.RemoveModData(combat, "TriggeredInsight");
-		}, 0);
-
-		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
+		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
 			foreach (var card in state.deck)
 				ModEntry.Instance.Helper.ModData.RemoveModData(card, "ChosenAuras");
@@ -101,11 +111,6 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.ModifyDamageDueToParts)),
 			prefix: new HarmonyMethod(GetType(), nameof(Ship_ModifyDamageDueToParts_Prefix))
-		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrawCards)),
-			prefix: new HarmonyMethod(GetType(), nameof(Combat_DrawCards_Prefix))
 		);
 
 		ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(this, 0);
@@ -176,37 +181,6 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 
 		incomingDamage -= toReduce;
 		ReducedDamage = toReduce;
-	}
-
-	private static bool Combat_DrawCards_Prefix(Combat __instance, State s, int count)
-	{
-		if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(__instance, "TriggeredInsight"))
-			return true;
-
-		var insight = s.ship.Get(InsightStatus.Status);
-		var maxInsight = Math.Min(Math.Min(insight, s.ship.Get(IntensifyStatus.Status) + 1), s.deck.Count + __instance.discard.Count);
-
-		if (maxInsight <= 0)
-			return true;
-
-		ModEntry.Instance.Helper.ModData.SetModData(__instance, "TriggeredInsight", true);
-		__instance.QueueImmediate([
-			new AStatus
-			{
-				targetPlayer = true,
-				status = InsightStatus.Status,
-				statusAmount = -maxInsight,
-				statusPulse = maxInsight > 1 ? IntensifyStatus.Status : null,
-			},
-			new ScryAction
-			{
-				Amount = maxInsight,
-				FromInsight = true,
-				statusPulse = InsightStatus.Status,
-			},
-			new ADrawCard { count = count }
-		]);
-		return false;
 	}
 
 	public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
