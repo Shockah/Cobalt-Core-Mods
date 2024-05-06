@@ -48,6 +48,8 @@ internal sealed class OnDiscardManager : IWrappedActionHook
 			return;
 		if (card == LastCardPlayed)
 			return;
+		if (s.CharacterIsMissing(card.GetMeta().deck))
+			return;
 
 		var meta = card.GetMeta();
 		__instance.QueueImmediate(

@@ -42,6 +42,11 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Prefix))
 		);
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.SaveThemFromTheVoid)),
+			prefix: new HarmonyMethod(GetType(), nameof(Combat_SaveThemFromTheVoid_Prefix))
+		);
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnTurnStart), (State state, Combat combat) =>
 		{
@@ -72,6 +77,7 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 		combat.cardActions.InsertRange(
 			indexToInsertAt,
 			cards
+				.Where(card => !state.CharacterIsMissing(card.GetMeta().deck))
 				.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, SpontaneousTriggeredTrait))
 				.Select(card => (Card: card, Actions: card.GetActionsOverridden(state, combat).Where(action => !action.disabled).OfType<TriggerAction>().Select(triggerAction => triggerAction.Action).ToList()))
 				.Where(e => e.Actions.Count != 0)
@@ -124,6 +130,9 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 		return false;
 	}
 
+	private static void Combat_SaveThemFromTheVoid_Prefix(Combat __instance, Deck d)
+		=> __instance.QueueImmediate(new RequeueActionsAfterSavingFromTheVoidAction { Deck = d });
+
 	public List<CardAction>? GetWrappedCardActions(CardAction action)
 		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
 
@@ -160,7 +169,7 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 		}
 	}
 
-	internal sealed class MarkCardAsTriggeredAction : CardAction
+	private sealed class MarkCardAsTriggeredAction : CardAction
 	{
 		public required int CardId;
 
@@ -172,6 +181,22 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 			if (s.FindCard(CardId) is not { } card)
 				return;
 			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, SpontaneousTriggeredTrait, true, permanent: false);
+		}
+	}
+
+	private sealed class RequeueActionsAfterSavingFromTheVoidAction : CardAction
+	{
+		public required Deck Deck;
+
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+			timer = 0;
+
+			if (s.CharacterIsMissing(Deck))
+				return;
+
+			QueueSpontaneousActions(s, c, c.hand.Where(card => card.GetMeta().deck == Deck));
 		}
 	}
 }

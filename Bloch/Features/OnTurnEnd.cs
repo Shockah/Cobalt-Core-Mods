@@ -35,6 +35,7 @@ internal sealed class OnTurnEndManager : IWrappedActionHook
 
 		c.QueueImmediate(
 			c.hand
+				.Where(card => !s.CharacterIsMissing(card.GetMeta().deck))
 				.SelectMany(card =>
 				{
 					var meta = card.GetMeta();
