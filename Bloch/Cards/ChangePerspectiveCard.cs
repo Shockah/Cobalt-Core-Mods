@@ -50,7 +50,10 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 			];
 
 		public override Route? BeginWithRoute(G g, State s, Combat c)
-			=> new CardRoute();
+		{
+			var route = new CardRoute();
+			return route.ShouldDisplay(s) ? route : null;
+		}
 	}
 
 	private sealed class CardRoute : Route
@@ -79,10 +82,13 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 		public override bool CanBePeeked()
 			=> true;
 
+		internal bool ShouldDisplay(State state)
+			=> ConvertFrom.Any(e => state.ship.Get(e.Status) >= e.Amount);
+
 		public override void Render(G g)
 		{
 			base.Render(g);
-			if (!ConvertFrom.Any(e => g.state.ship.Get(e.Status) >= e.Amount))
+			if (!ShouldDisplay(g.state))
 			{
 				g.CloseRoute(this);
 				return;

@@ -186,6 +186,16 @@
             "name": "Prismatic Aura",
             "description": {
                 "B": "Gain 1 of each <c=C2FF60>Aura</c>. <c=action>On Discard</c>, gain 1 of each <c=C2FF60>Aura</c>."
+            },
+            "action": {
+                "name": "Choose Aura",
+                "description": "Choose an <c=C2FF60>Aura</c> to replace this action with until end of combat. Gain <c=boldPink>{{Amount}}</c> of this <c=C2FF60>Aura</c>."
+            },
+            "uiTitle": "CHOOSE AURA",
+            "uiSubtitle": {
+                "Play": "You will gain this <c=C2FF60>Aura</c> when playing this card.",
+                "OnDiscard": "You will gain this <c=C2FF60>Aura</c> when discarding this card.",
+                "OnTurnEnd": "You will gain this <c=C2FF60>Aura</c> when you end your turn with this card in hand."
             }
         },
         "PsionicShield": {
