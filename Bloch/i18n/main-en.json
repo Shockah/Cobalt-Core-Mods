@@ -7,10 +7,6 @@
         ]
     },
     "action": {
-        "DiscardOther": {
-            "name": "Discard Other",
-            "description": "Discard {{Count}} random cards, other than this one."
-        },
         "OnDiscard": {
             "name": "On Discard",
             "description": "This action only triggers whenever this card is discarded during your turn without playing it."
@@ -27,6 +23,16 @@
             "name": "Scry",
             "description": "Look at the top <c=boldPink>{{Amount}}</c> cards of your <c=keyword>draw pile</c>. If needed, reshuffle the <c=keyword>discard pile</c> first. Choose cards to discard.",
             "browseText": "Choose cards to discard."
+        },
+        "ChooseAura": {
+            "name": "Choose Aura",
+            "description": "Choose an <c=C2FF60>Aura</c> to replace this action with until end of combat. Gain <c=boldPink>{{Amount}}</c> of this <c=C2FF60>Aura</c>.",
+            "uiTitle": "CHOOSE AURA",
+            "uiSubtitle": {
+                "OnPlay": "You will gain this <c=C2FF60>Aura</c> when playing this card.",
+                "OnDiscard": "You will gain this <c=C2FF60>Aura</c> when discarding this card.",
+                "OnTurnEnd": "You will gain this <c=C2FF60>Aura</c> when you end your turn with this card in hand."
+            }
         }
     },
     "route": {
@@ -186,16 +192,6 @@
             "name": "Prismatic Aura",
             "description": {
                 "B": "Gain 1 of each <c=C2FF60>Aura</c>. <c=action>On Discard</c>, gain 1 of each <c=C2FF60>Aura</c>."
-            },
-            "action": {
-                "name": "Choose Aura",
-                "description": "Choose an <c=C2FF60>Aura</c> to replace this action with until end of combat. Gain <c=boldPink>{{Amount}}</c> of this <c=C2FF60>Aura</c>."
-            },
-            "uiTitle": "CHOOSE AURA",
-            "uiSubtitle": {
-                "Play": "You will gain this <c=C2FF60>Aura</c> when playing this card.",
-                "OnDiscard": "You will gain this <c=C2FF60>Aura</c> when discarding this card.",
-                "OnTurnEnd": "You will gain this <c=C2FF60>Aura</c> when you end your turn with this card in hand."
             }
         },
         "PsionicShield": {
@@ -204,11 +200,11 @@
         "PsychicDamage": {
             "name": "Psychic Damage"
         },
+        "RealityBending": {
+            "name": "Reality Bending"
+        },
         "SplitPersonality": {
             "name": "Personality Split"
-        },
-        "ThoughtFilter": {
-            "name": "Thought Filter"
         }
     }
 }

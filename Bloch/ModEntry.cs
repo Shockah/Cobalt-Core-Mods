@@ -42,8 +42,8 @@ public sealed class ModEntry : SimpleMod
 		typeof(MindBlastCard),
 		typeof(MindPurgeCard),
 		typeof(OverstimulationCard),
+		typeof(RealityBendingCard),
 		typeof(SplitPersonalityCard),
-		typeof(ThoughtFilterCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [

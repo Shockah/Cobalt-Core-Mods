@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using daisyowl.text;
+using HarmonyLib;
 using Nickel;
 using Shockah.Shared;
 using System;
@@ -9,6 +10,8 @@ namespace Shockah.Bloch;
 
 internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 {
+	private static ISpriteEntry ChooseAuraIcon = null!;
+
 	internal static IStatusEntry VeilingStatus { get; private set; } = null!;
 	internal static IStatusEntry FeedbackStatus { get; private set; } = null!;
 	internal static IStatusEntry InsightStatus { get; private set; } = null!;
@@ -19,6 +22,8 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 
 	public AuraManager()
 	{
+		ChooseAuraIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Actions/ChooseAura.png"));
+
 		VeilingStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Veiling", new()
 		{
 			Definition = new()
@@ -70,14 +75,20 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 			ModEntry.Instance.Helper.ModData.RemoveModData(combat, "TriggeredInsight");
 		}, 0);
 
+		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnEnd), (Combat combat) =>
+		{
+			ModEntry.Instance.Helper.ModData.RemoveModData(combat, "TriggeredInsight");
+		}, 0);
+
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatStart), (Combat combat) =>
 		{
 			ModEntry.Instance.Helper.ModData.RemoveModData(combat, "TriggeredInsight");
 		}, 0);
 
-		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnEnd), (Combat combat) =>
+		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
-			ModEntry.Instance.Helper.ModData.RemoveModData(combat, "TriggeredInsight");
+			foreach (var card in state.deck)
+				ModEntry.Instance.Helper.ModData.RemoveModData(card, "ChosenAuras");
 		}, 0);
 
 		ModEntry.Instance.Harmony.TryPatch(
@@ -224,5 +235,124 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 		if (status == InsightStatus.Status)
 			return [..tooltips, ..new ScryAction { Amount = 1 }.GetTooltips(DB.fakeState)];
 		return tooltips;
+	}
+
+	internal sealed class ChooseAuraAction : CardAction
+	{
+		public required int CardId;
+		public required int ActionId;
+		public required int Amount;
+		public required string UISubtitle;
+
+		public override Icon? GetIcon(State s)
+			=> new(ChooseAuraIcon.Sprite, Amount, Colors.textMain);
+
+		public override List<Tooltip> GetTooltips(State s)
+			=> [
+				new GlossaryTooltip($"action.{GetType().Namespace!}::ChooseAura")
+				{
+					Icon = ChooseAuraIcon.Sprite,
+					TitleColor = Colors.action,
+					Title = ModEntry.Instance.Localizations.Localize(["action", "ChooseAura", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["action", "ChooseAura", "description"], new { Amount }),
+				},
+				..StatusMeta.GetTooltips(VeilingStatus.Status, Math.Max(s.ship.Get(VeilingStatus.Status), Amount)),
+				..StatusMeta.GetTooltips(FeedbackStatus.Status, Math.Max(s.ship.Get(FeedbackStatus.Status), Amount)),
+				..StatusMeta.GetTooltips(InsightStatus.Status, Math.Max(s.ship.Get(InsightStatus.Status), Amount)),
+			];
+
+		public override Route? BeginWithRoute(G g, State s, Combat c)
+			=> new ChooseAuraRoute { CardId = CardId, ActionId = ActionId, Amount = Amount, UISubtitle = UISubtitle };
+	}
+
+	private sealed class ChooseAuraRoute : Route
+	{
+		private const UK ChoiceKey = (UK)2137522;
+
+		public required int CardId;
+		public required int ActionId;
+		public required int Amount;
+		public required string UISubtitle;
+
+		public List<Status> Statuses = [
+			VeilingStatus.Status,
+			FeedbackStatus.Status,
+			InsightStatus.Status
+		];
+
+		public override bool GetShowOverworldPanels()
+			=> true;
+
+		public override bool CanBePeeked()
+			=> true;
+
+		public override void Render(G g)
+		{
+			base.Render(g);
+
+			int centerX = 240;
+			int topY = 80;
+
+			int choiceWidth = 56;
+			int choiceHeight = 24;
+			int choiceSpacing = 4;
+			int actionSpacing = 4;
+			int actionYOffset = 7;
+			int actionHoverYOffset = 1;
+
+			SharedArt.DrawEngineering(g);
+
+			Draw.Text(ModEntry.Instance.Localizations.Localize((["action", "ChooseAura", "uiTitle"])), centerX, topY, font: DB.stapler, color: Colors.textMain, align: TAlign.Center);
+			Draw.Text(UISubtitle, centerX, topY + 24, color: Colors.textMain, align: TAlign.Center);
+
+			var rowWidth = Statuses.Count * choiceWidth + Math.Max(Statuses.Count - 1, 0) * choiceSpacing;
+			var rowStartX = centerX - rowWidth / 2;
+			for (var i = 0; i < Statuses.Count; i++)
+			{
+				var ii = i;
+				var choice = Statuses[i];
+				var fakeAction = new AStatus { targetPlayer = true, status = choice, statusAmount = Amount };
+				var choiceStartX = rowStartX + (choiceWidth + choiceSpacing) * i;
+				var choiceTopY = topY + 48;
+
+				var buttonRect = new Rect(choiceStartX, choiceTopY, choiceWidth, choiceHeight);
+				var buttonResult = SharedArt.ButtonText(
+					g, Vec.Zero, new UIKey(ChoiceKey, i), "", rect: buttonRect,
+					onMouseDown: new MouseDownHandler(() => OnFinishChoosing(g, ii))
+				);
+
+				var isHover = g.boxes.FirstOrDefault(b => b.key == new UIKey(ChoiceKey, i))?.IsHover() == true;
+				if (isHover)
+					g.tooltips.Add(new Vec(buttonRect.x + buttonRect.w, buttonRect.y + buttonRect.h), StatusMeta.GetTooltips(choice, Amount));
+
+				var actionWidth = Card.RenderAction(g, g.state, fakeAction, dontDraw: true);
+				var actionStartX = choiceStartX + 3 + choiceWidth / 2 - actionWidth / 2;
+				var actionXOffset = 0;
+
+				g.Push(rect: new(actionStartX + actionXOffset, choiceTopY + actionYOffset + (isHover ? actionHoverYOffset : 0)));
+				actionXOffset += Card.RenderAction(g, g.state, fakeAction, dontDraw: false) + actionSpacing;
+				g.Pop();
+			}
+		}
+
+		private void OnFinishChoosing(G g, int choiceIndex)
+		{
+			if (g.state.FindCard(CardId) is not { } card)
+			{
+				g.CloseRoute(this);
+				return;
+			}
+
+			var choice = Statuses[choiceIndex];
+			(g.state.route as Combat)?.QueueImmediate(new AStatus
+			{
+				targetPlayer = true,
+				status = choice,
+				statusAmount = Amount
+			});
+
+			ModEntry.Instance.Helper.ModData.ObtainModData<Dictionary<int, Status>>(card, "ChosenAuras")[ActionId] = choice;
+			g.CloseRoute(this);
+		}
 	}
 }

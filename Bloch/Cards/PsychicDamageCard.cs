@@ -42,8 +42,6 @@ internal sealed class PsychicDamageCard : Card, IRegisterable
 				{
 					Action = new AAttack { damage = GetDmg(s, 2) }
 				},
-				new ADummyAction(),
-				new ADummyAction(),
 			],
 			Upgrade.A => [
 				new AAttack { damage = GetDmg(s, 2) },
@@ -51,8 +49,6 @@ internal sealed class PsychicDamageCard : Card, IRegisterable
 				{
 					Action = new AAttack { damage = GetDmg(s, 3) }
 				},
-				new ADummyAction(),
-				new ADummyAction(),
 			],
 			_ => [
 				new AAttack { damage = GetDmg(s, 1) },
@@ -60,8 +56,6 @@ internal sealed class PsychicDamageCard : Card, IRegisterable
 				{
 					Action = new AAttack { damage = GetDmg(s, 2) }
 				},
-				new ADummyAction(),
-				new ADummyAction(),
 			]
 		};
 }

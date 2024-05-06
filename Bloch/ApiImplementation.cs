@@ -1,4 +1,5 @@
 ﻿using Nickel;
+using System.Collections.Generic;
 
 namespace Shockah.Bloch;
 
@@ -31,6 +32,19 @@ public sealed class ApiImplementation : IBlochApi
 	public ICardTraitEntry SpontaneousTriggeredTrait
 		=> SpontaneousManager.SpontaneousTriggeredTrait;
 
+	public CardAction MakeChooseAura(Card card, int amount, string? uiSubtitle = null, int actionId = 0)
+	{
+		if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<Dictionary<int, Status>>(card, "ChosenAuras").TryGetValue(actionId, out var chosenAura))
+			return new AStatus
+			{
+				targetPlayer = true,
+				status = chosenAura,
+				statusAmount = amount
+			};
+		else
+			return new AuraManager.ChooseAuraAction { CardId = card.uuid, ActionId = actionId, Amount = amount, UISubtitle = uiSubtitle ?? GetChooseAuraOnPlayUISubtitle(amount) };
+	}
+
 	public CardAction MakeScryAction(int amount)
 		=> new ScryAction { Amount = amount };
 
@@ -42,6 +56,15 @@ public sealed class ApiImplementation : IBlochApi
 
 	public CardAction MakeSpontaneousAction(CardAction action)
 		=> new SpontaneousManager.TriggerAction { Action = action };
+
+	public string GetChooseAuraOnPlayUISubtitle(int amount)
+		=> ModEntry.Instance.Localizations.Localize(["action", "ChooseAura", "uiSubtitle", "OnPlay"]);
+
+	public string GetChooseAuraOnDiscardUISubtitle(int amount)
+		=> ModEntry.Instance.Localizations.Localize(["action", "ChooseAura", "uiSubtitle", "OnDiscard"]);
+
+	public string GetChooseAuraOnTurnEndUISubtitle(int amount)
+		=> ModEntry.Instance.Localizations.Localize(["action", "ChooseAura", "uiSubtitle", "OnTurnEnd"]);
 
 	public void RegisterHook(IBlochHook hook, double priority)
 		=> ModEntry.Instance.HookManager.Register(hook, priority);
