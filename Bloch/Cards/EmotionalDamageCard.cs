@@ -36,7 +36,7 @@ internal sealed class EmotionalDamageCard : Card, IRegisterable
 			{
 				Action = new AAttack
 				{
-					damage = GetDmg(s, upgrade == Upgrade.B ? 4 : 1),
+					damage = GetDmg(s, upgrade == Upgrade.B ? 3 : 1),
 					stunEnemy = true
 				}
 			},

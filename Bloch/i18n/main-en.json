@@ -25,7 +25,7 @@
         },
         "Scry": {
             "name": "Scry",
-            "description": "Look at the top <c=boldPink>{{Amount}}</c> cards of your <c=keyword>draw pile</c>. If there aren't enough cards, reshuffle the <c=keyword>discard pile</c> first. Choose cards to discard.",
+            "description": "Look at the top <c=boldPink>{{Amount}}</c> cards of your <c=keyword>draw pile</c>. If needed, reshuffle the <c=keyword>discard pile</c> first. Choose cards to discard.",
             "browseText": "Choose cards to discard."
         }
     },
@@ -45,11 +45,7 @@
         },
         "Insight": {
             "name": "Insight Aura",
-            "description": [
-                "If you <c=action>Scry</c>, <c=action>Scry</c> +1.",
-                "If you draw, <c=action>Scry 1</c>.",
-                "<c=downside>Decrease this by 1</c>."
-            ]
+            "description": "Boosts <c=action>Scry</c> by 1, or <c=action>Scry 1</c> when drawing, then <c=downside>decrease this by 1</c>."
         },
         "Intensify": {
             "name": "Intensify",
@@ -200,6 +196,9 @@
         },
         "SplitPersonality": {
             "name": "Personality Split"
+        },
+        "ThoughtFilter": {
+            "name": "Thought Filter"
         }
     }
 }

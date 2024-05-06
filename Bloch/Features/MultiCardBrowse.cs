@@ -85,15 +85,8 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 			ModEntry.Instance.Localizations.Localize(["route", "MultiCardBrowse", "doneButton"]),
 			boxColor: inactive ? Colors.buttonInactive : null, 
 			inactive: inactive,
-			onMouseDown: this,
-			platformButtonHint: Btn.Y
+			onMouseDown: this
 		);
-		if (g.boxes.FirstOrDefault(b => b.key == new UIKey((UK)21370001)) is { } box)
-			box.onInputPhase = new InputPhaseHandler(() =>
-			{
-				if (Input.GetGpDown(Btn.Y))
-					Finish(g);
-			});
 	}
 
 	private void Finish(G g)

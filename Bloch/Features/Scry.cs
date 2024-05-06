@@ -23,10 +23,10 @@ internal sealed class ScryAction : CardAction
 	public bool FromInsight;
 
 	[JsonProperty]
-	private int ModifiedAmount;
+	private int InsightToUse;
 
-	[JsonProperty]
-	private int InsightToReduce;
+	private int ModifiedAmount
+		=> Amount + InsightToUse;
 
 	public override Icon? GetIcon(State s)
 		=> new(ScryManager.ActionIcon.Sprite, Amount, Colors.textMain);
@@ -45,18 +45,10 @@ internal sealed class ScryAction : CardAction
 	public override void Begin(G g, State s, Combat c)
 	{
 		base.Begin(g, s, c);
-		ModifiedAmount = Amount;
 
-		if (!ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(c, "TriggeredInsight"))
-		{
-			ModEntry.Instance.Helper.ModData.SetModData(c, "TriggeredInsight", true);
-
-			var insight = s.ship.Get(AuraManager.InsightStatus.Status);
-			var maxInsight = Math.Max(Math.Min(Math.Min(insight, s.ship.Get(AuraManager.IntensifyStatus.Status) + 1), s.deck.Count + c.discard.Count - Amount), 0);
-
-			ModifiedAmount += maxInsight;
-			InsightToReduce = maxInsight;
-		}
+		var insight = s.ship.Get(AuraManager.InsightStatus.Status);
+		var maxInsight = Math.Max(Math.Min(Math.Min(insight, s.ship.Get(AuraManager.IntensifyStatus.Status) + 1), s.deck.Count + c.discard.Count - Amount), 0);
+		InsightToUse = maxInsight;
 
 		if (ModifiedAmount <= 0)
 			return;
@@ -90,15 +82,15 @@ internal sealed class ScryAction : CardAction
 			return null;
 		}
 
-		if (InsightToReduce > 0)
+		if (InsightToUse > 0)
 		{
 			ModEntry.Instance.Helper.ModData.SetModData(c, "TriggeredInsight", true);
 			c.QueueImmediate(new AStatus
 			{
 				targetPlayer = true,
 				status = AuraManager.InsightStatus.Status,
-				statusAmount = -InsightToReduce,
-				statusPulse = InsightToReduce > 1 ? AuraManager.IntensifyStatus.Status : null,
+				statusAmount = -InsightToUse,
+				statusPulse = InsightToUse > 1 ? AuraManager.IntensifyStatus.Status : null,
 			});
 		}
 

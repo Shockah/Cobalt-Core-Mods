@@ -14,8 +14,8 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 
 	public SpontaneousManager()
 	{
-		ActionIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Actions/OncePerTurn.png"));
-		TriggeredIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Actions/OncePerTurnTriggered.png"));
+		ActionIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Actions/Spontaneous.png"));
+		TriggeredIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Actions/SpontaneousTriggered.png"));
 
 		SpontaneousTriggeredTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Spontaneous", new()
 		{
@@ -48,7 +48,7 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 			if (!combat.isPlayerTurn)
 				return;
 
-			QueueOncePerTurnActions(state, combat, combat.hand);
+			QueueSpontaneousActions(state, combat, combat.hand);
 		}, -1000);
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnTurnEnd), (State state, Combat combat) =>
@@ -64,8 +64,13 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 		ModEntry.Instance.KokoroApi.Actions.RegisterWrappedActionHook(this, 0);
 	}
 
-	private static void QueueOncePerTurnActions(State state, Combat combat, IEnumerable<Card> cards)
-		=> combat.QueueImmediate(
+	private static void QueueSpontaneousActions(State state, Combat combat, IEnumerable<Card> cards)
+	{
+		var firstNonSpontanenousIndex = combat.cardActions.FindIndex(action => !ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(action, "Spontaneous"));
+		var indexToInsertAt = firstNonSpontanenousIndex < 0 ? 0 : firstNonSpontanenousIndex;
+
+		combat.cardActions.InsertRange(
+			indexToInsertAt,
 			cards
 				.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, SpontaneousTriggeredTrait))
 				.Select(card => (Card: card, Actions: card.GetActionsOverridden(state, combat).Where(action => !action.disabled).OfType<TriggerAction>().Select(triggerAction => triggerAction.Action).ToList()))
@@ -74,21 +79,23 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 				{
 					var meta = e.Card.GetMeta();
 					return e.Actions
-						.Append(new MarkCardAsTriggeredAction { CardId = e.Card.uuid })
+						.Prepend(new MarkCardAsTriggeredAction { CardId = e.Card.uuid })
 						.Select(action =>
 						{
 							action.whoDidThis = meta.deck;
+							ModEntry.Instance.Helper.ModData.SetModData(action, "Spontaneous", true);
 							return action;
 						});
 				})
 		);
+	}
 
 	private static void Combat_SendCardToHand_Postfix(Combat __instance, State s, Card card)
 	{
 		if (!__instance.hand.Contains(card))
 			return;
 
-		QueueOncePerTurnActions(s, __instance, [card]);
+		QueueSpontaneousActions(s, __instance, [card]);
 	}
 
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)

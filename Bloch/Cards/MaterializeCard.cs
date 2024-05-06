@@ -1,7 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -24,7 +23,9 @@ internal sealed class MaterializeCard : Card, IRegisterable
 			{
 				deck = ModEntry.Instance.BlochDeck.Deck,
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
-				upgradesTo = [Upgrade.A, Upgrade.B]
+				upgradesTo = [Upgrade.A, Upgrade.B],
+				dontOffer = true,
+				unreleased = true,
 			},
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Materialize.png"), StableSpr.cards_Flux).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Materialize", "name"]).Localize
