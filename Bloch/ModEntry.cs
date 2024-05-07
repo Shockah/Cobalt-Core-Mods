@@ -40,17 +40,17 @@ public sealed class ModEntry : SimpleMod
 		typeof(DelveDeepCard),
 		typeof(MindBlastCard),
 		typeof(MindPurgeCard),
+		typeof(OutburstCard),
 		typeof(OverstimulationCard),
 		typeof(RealityBendingCard),
-		typeof(SplitPersonalityCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
 		typeof(CalmCard),
 		typeof(IntrusiveThoughtCard),
 		typeof(MindMapCard),
-		typeof(OutburstCard),
 		typeof(EmotionalDamageCard),
+		typeof(SplitPersonalityCard),
 	];
 
 	internal static readonly IEnumerable<Type> AllCardTypes
