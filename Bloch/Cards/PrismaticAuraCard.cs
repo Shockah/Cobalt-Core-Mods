@@ -98,7 +98,7 @@ internal sealed class PrismaticAuraCard : Card, IRegisterable
 					Action = ModEntry.Instance.Api.MakeChooseAura(
 						card: this,
 						amount: upgrade == Upgrade.A ? 2 : 1,
-						uiSubtitle: ModEntry.Instance.Api.GetChooseAuraOnPlayUISubtitle(upgrade == Upgrade.A ? 2 : 1),
+						uiSubtitle: ModEntry.Instance.Api.GetChooseAuraOnTurnEndUISubtitle(upgrade == Upgrade.A ? 2 : 1),
 						actionId: OnTurnEndID
 					)
 				},
@@ -107,7 +107,7 @@ internal sealed class PrismaticAuraCard : Card, IRegisterable
 					Action = ModEntry.Instance.Api.MakeChooseAura(
 						card: this,
 						amount: upgrade == Upgrade.A ? 2 : 1,
-						uiSubtitle: ModEntry.Instance.Api.GetChooseAuraOnPlayUISubtitle(upgrade == Upgrade.A ? 2 : 1),
+						uiSubtitle: ModEntry.Instance.Api.GetChooseAuraOnDiscardUISubtitle(upgrade == Upgrade.A ? 2 : 1),
 						actionId: OnDiscardID
 					)
 				},
