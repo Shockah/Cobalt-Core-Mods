@@ -27,8 +27,9 @@ internal sealed class IntrusiveThoughtCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = 1,
+			cost = upgrade == Upgrade.B ? 0 : 1,
 			retain = true,
+			recycle = upgrade == Upgrade.B,
 			unplayable = upgrade != Upgrade.B
 		};
 
@@ -39,18 +40,6 @@ internal sealed class IntrusiveThoughtCard : Card, IRegisterable
 				new OnDiscardManager.TriggerAction
 				{
 					Action = new ADrawCard { count = 3 }
-				}
-			],
-			Upgrade.B => [
-				new ADrawCard { count = 3 },
-				new OnTurnEndManager.TriggerAction
-				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = Status.drawLessNextTurn,
-						statusAmount = 1
-					}
 				}
 			],
 			_ => [
