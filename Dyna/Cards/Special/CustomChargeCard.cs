@@ -74,7 +74,6 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 			exhaust = upgrade != Upgrade.B,
 			floppable = true,
 			temporary = true,
-			artTint = "CC390B",
 			art = upgrade == Upgrade.A
 				? TriadArt[FlipIndex % 3].Sprite
 				: (FlipIndex % 2 == 0 ? TopArt.Sprite : BottomArt.Sprite)
