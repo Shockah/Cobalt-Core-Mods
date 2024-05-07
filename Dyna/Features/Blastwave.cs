@@ -325,8 +325,11 @@ internal sealed class BlastwaveManager
 
 				if (IsStunwave || part.stunModifier == PStunMod.stunnable)
 					new AStunPart { worldX = worldX }.FullyRun(g, state, combat);
+
 				if (Damage is { } damage)
 					damageDone = targetShip.NormalDamage(state, combat, damage, worldX, piercing: IsPiercing);
+				else if (IsStunwave)
+					ChargeManager.TriggerChargeIfAny(state, combat, part, TargetPlayer);
 
 				var raycastResult = new RaycastResult
 				{
