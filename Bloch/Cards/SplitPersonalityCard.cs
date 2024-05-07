@@ -28,7 +28,8 @@ internal sealed class SplitPersonalityCard : Card, IRegisterable
 		=> new()
 		{
 			cost = 1,
-			exhaust = upgrade != Upgrade.A
+			exhaust = upgrade != Upgrade.A,
+			artTint = "ffffff"
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
