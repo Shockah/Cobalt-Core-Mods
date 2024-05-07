@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 
@@ -13,41 +14,55 @@ internal sealed class CardRenderer
 
 	public void Render(G g, bool withScreenFilter, Card card, Stream stream)
 	{
-		var imageSize = GetImageSize(card);
-		if (CurrentRenderTarget is null || CurrentRenderTarget.Width != (int)(imageSize.x * g.mg.PIX_SCALE) || CurrentRenderTarget.Height != (int)(imageSize.y * g.mg.PIX_SCALE))
-		{
-			CurrentRenderTarget?.Dispose();
-			CurrentRenderTarget = new(g.mg.GraphicsDevice, (int)(imageSize.x * g.mg.PIX_SCALE), (int)(imageSize.y * g.mg.PIX_SCALE));
-		}
+		var oldPixScale = g.mg.PIX_SCALE;
+		var oldCameraMatrix = g.mg.cameraMatrix;
 
-		var oldRenderTargets = g.mg.GraphicsDevice.GetRenderTargets();
+		g.mg.PIX_SCALE = 4;
+		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
 
-		g.mg.GraphicsDevice.SetRenderTarget(CurrentRenderTarget);
-
-		g.mg.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Transparent);
-		Draw.StartAutoBatchFrame();
 		try
 		{
-			card.Render(g, posOverride: new((imageSize.x - BaseCardSize.x) / 2 + 1, (imageSize.y - BaseCardSize.y) / 2 + 1), fakeState: DB.fakeState, ignoreAnim: true, ignoreHover: true);
-		}
-		catch
-		{
-			ModEntry.Instance.Logger.LogError("There was an error exporting card {Card}.", card.Key());
-		}
-		if (withScreenFilter)
-			Draw.Rect(0, 0, (int)(imageSize.x * g.mg.PIX_SCALE), (int)(imageSize.y * g.mg.PIX_SCALE), Colors.screenOverlay, new BlendState
+			var imageSize = GetImageSize(card);
+			if (CurrentRenderTarget is null || CurrentRenderTarget.Width != (int)(imageSize.x * g.mg.PIX_SCALE) || CurrentRenderTarget.Height != (int)(imageSize.y * g.mg.PIX_SCALE))
 			{
-				ColorBlendFunction = BlendFunction.Add,
-				ColorSourceBlend = Blend.One,
-				ColorDestinationBlend = Blend.InverseSourceColor,
-				AlphaSourceBlend = Blend.DestinationAlpha,
-				AlphaDestinationBlend = Blend.DestinationAlpha
-			});
-		Draw.EndAutoBatchFrame();
+				CurrentRenderTarget?.Dispose();
+				CurrentRenderTarget = new(g.mg.GraphicsDevice, (int)(imageSize.x * g.mg.PIX_SCALE), (int)(imageSize.y * g.mg.PIX_SCALE));
+			}
 
-		g.mg.GraphicsDevice.SetRenderTargets(oldRenderTargets);
+			var oldRenderTargets = g.mg.GraphicsDevice.GetRenderTargets();
 
-		CurrentRenderTarget.SaveAsPng(stream, (int)(imageSize.x * g.mg.PIX_SCALE), (int)(imageSize.y * g.mg.PIX_SCALE));
+			g.mg.GraphicsDevice.SetRenderTarget(CurrentRenderTarget);
+
+			g.mg.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Transparent);
+			Draw.StartAutoBatchFrame();
+			try
+			{
+				card.Render(g, posOverride: new((imageSize.x - BaseCardSize.x) / 2 + 1, (imageSize.y - BaseCardSize.y) / 2 + 1), fakeState: DB.fakeState, ignoreAnim: true, ignoreHover: true);
+			}
+			catch
+			{
+				ModEntry.Instance.Logger.LogError("There was an error exporting card {Card}.", card.Key());
+			}
+			if (withScreenFilter)
+				Draw.Rect(0, 0, (int)(imageSize.x * g.mg.PIX_SCALE), (int)(imageSize.y * g.mg.PIX_SCALE), Colors.screenOverlay, new BlendState
+				{
+					ColorBlendFunction = BlendFunction.Add,
+					ColorSourceBlend = Blend.One,
+					ColorDestinationBlend = Blend.InverseSourceColor,
+					AlphaSourceBlend = Blend.DestinationAlpha,
+					AlphaDestinationBlend = Blend.DestinationAlpha
+				});
+			Draw.EndAutoBatchFrame();
+
+			g.mg.GraphicsDevice.SetRenderTargets(oldRenderTargets);
+
+			CurrentRenderTarget.SaveAsPng(stream, (int)(imageSize.x * g.mg.PIX_SCALE), (int)(imageSize.y * g.mg.PIX_SCALE));
+		}
+		finally
+		{
+			g.mg.PIX_SCALE = oldPixScale;
+			g.mg.cameraMatrix = oldCameraMatrix;
+		}
 	}
 
 	private Vec GetImageSize(Card card)
