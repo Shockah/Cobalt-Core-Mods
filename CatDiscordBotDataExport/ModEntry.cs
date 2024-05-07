@@ -16,12 +16,14 @@ internal sealed class ModEntry : SimpleMod
 
 	private readonly Queue<Action<G>> QueuedTasks = new();
 	internal readonly CardRenderer CardRenderer = new();
+	internal readonly CardTooltipRenderer CardTooltipRenderer = new();
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
 
 		var harmony = new Harmony(package.Manifest.UniqueName);
+		CardPatches.Apply(harmony);
 		EditorPatches.Apply(harmony);
 		GPatches.Apply(harmony);
 	}
@@ -110,10 +112,13 @@ internal sealed class ModEntry : SimpleMod
 
 				foreach (var upgrade in upgrades)
 				{
-					var exportPath = Path.Combine(entry.Meta.unreleased ? unreleasedCardsExportPath : deckExportPath, $"{fileSafeCardKey}{GetUpgradePathAffix(upgrade)}.png");
 					var card = (Card)Activator.CreateInstance(entry.Type)!;
 					card.upgrade = upgrade;
-					QueueTask(g => CardExportTask(g, withScreenFilter, card, exportPath));
+
+					var cardExportPath = Path.Combine(entry.Meta.unreleased ? unreleasedCardsExportPath : deckExportPath, $"{fileSafeCardKey}{GetUpgradePathAffix(upgrade)}.png");
+					var tooltipExportPath = Path.Combine(entry.Meta.unreleased ? unreleasedCardsExportPath : deckExportPath, $"{fileSafeCardKey}{GetUpgradePathAffix(upgrade)}-TT.png");
+					QueueTask(g => CardExportTask(g, withScreenFilter, card, cardExportPath));
+					QueueTask(g => TooltipExportTask(g, withScreenFilter, card, tooltipExportPath));
 				}
 			}
 		}
@@ -123,5 +128,11 @@ internal sealed class ModEntry : SimpleMod
 	{
 		using var stream = new FileStream(path, FileMode.Create);
 		CardRenderer.Render(g, withScreenFilter, card, stream);
+	}
+
+	private void TooltipExportTask(G g, bool withScreenFilter, Card card, string path)
+	{
+		using var stream = new FileStream(path, FileMode.Create);
+		CardTooltipRenderer.Render(g, withScreenFilter, card, stream);
 	}
 }
