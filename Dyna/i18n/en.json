@@ -26,9 +26,9 @@
                 "OffsetRight": "Fire Charge Offset"
             },
             "description": {
-                "Normal": "Fire a <c=parttrait>charge</c> from your missile bay. The charge will stick to the enemy ship and trigger when shot upon or upon collision with another charge.",
-                "OffsetLeft": "Fire a <c=parttrait>charge</c> {{Offset}} spaces to the left of your missile bay. The charge will stick to the enemy ship and trigger when shot upon or upon collision with another charge.",
-                "OffsetRight": "Fire a <c=parttrait>charge</c> {{Offset}} spaces to the right of your missile bay. The charge will stick to the enemy ship and trigger when shot upon or upon collision with another charge."
+                "Normal": "Fire a <c=parttrait>charge</c> from your missile bay. It will stick to the enemy ship and trigger when shot upon or upon collision with another charge.",
+                "OffsetLeft": "Fire a <c=parttrait>charge</c> {{Offset}} spaces to the left of your missile bay. It will stick to the enemy ship and trigger when shot upon or upon collision with another charge.",
+                "OffsetRight": "Fire a <c=parttrait>charge</c> {{Offset}} spaces to the right of your missile bay. It will stick to the enemy ship and trigger when shot upon or upon collision with another charge."
             }
         }
     },
