@@ -90,7 +90,7 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 					statusAmount = -maxInsight,
 					statusPulse = maxInsight > 1 ? IntensifyStatus.Status : null,
 				},
-				new ScryAction { Amount = maxInsight },
+				new ScryAction { Amount = maxInsight, FromInsight = true },
 				new ADrawCard { count = maxInsight }
 			]);
 		}, 0);
