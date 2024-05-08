@@ -52,7 +52,7 @@ internal sealed class ModEntry : SimpleMod
 			{
 				Upgrade.A => "A",
 				Upgrade.B => "B",
-				_ => ""
+				_ => "0"
 			};
 
 		List<Upgrade> noUpgrades = [Upgrade.None];
@@ -115,10 +115,12 @@ internal sealed class ModEntry : SimpleMod
 					var card = (Card)Activator.CreateInstance(entry.Type)!;
 					card.upgrade = upgrade;
 
-					var cardExportPath = Path.Combine(entry.Meta.unreleased ? unreleasedCardsExportPath : deckExportPath, $"{fileSafeCardKey}{GetUpgradePathAffix(upgrade)}.png");
-					var tooltipExportPath = Path.Combine(entry.Meta.unreleased ? unreleasedCardsExportPath : deckExportPath, $"{fileSafeCardKey}{GetUpgradePathAffix(upgrade)}-TT.png");
+					var cardExportPath = Path.Combine(entry.Meta.unreleased ? unreleasedCardsExportPath : deckExportPath, $"{fileSafeCardKey}-{GetUpgradePathAffix(upgrade)}-Card.png");
+					var tooltipExportPath = Path.Combine(entry.Meta.unreleased ? unreleasedCardsExportPath : deckExportPath, $"{fileSafeCardKey}-{GetUpgradePathAffix(upgrade)}-TT.png");
+					var cardAndTooltipExportPath = Path.Combine(entry.Meta.unreleased ? unreleasedCardsExportPath : deckExportPath, $"{fileSafeCardKey}-{GetUpgradePathAffix(upgrade)}-TT-Card.png");
 					QueueTask(g => CardExportTask(g, withScreenFilter, card, cardExportPath));
-					QueueTask(g => TooltipExportTask(g, withScreenFilter, card, tooltipExportPath));
+					QueueTask(g => TooltipExportTask(g, withScreenFilter, card, withTheCard: false, tooltipExportPath));
+					QueueTask(g => TooltipExportTask(g, withScreenFilter, card, withTheCard: true, cardAndTooltipExportPath));
 				}
 			}
 		}
@@ -130,9 +132,9 @@ internal sealed class ModEntry : SimpleMod
 		CardRenderer.Render(g, withScreenFilter, card, stream);
 	}
 
-	private void TooltipExportTask(G g, bool withScreenFilter, Card card, string path)
+	private void TooltipExportTask(G g, bool withScreenFilter, Card card, bool withTheCard, string path)
 	{
 		using var stream = new FileStream(path, FileMode.Create);
-		CardTooltipRenderer.Render(g, withScreenFilter, card, stream);
+		CardTooltipRenderer.Render(g, withScreenFilter, card, withTheCard, stream);
 	}
 }
