@@ -11,7 +11,7 @@ internal sealed class CardTooltipRenderer
 {
 	private RenderTarget2D? CurrentRenderTarget;
 
-	public void Render(G g, bool withScreenFilter, Card card, Stream stream)
+	public void Render(G g, bool withScreenFilter, Card card, bool withTheCard, Stream stream)
 	{
 		var oldPixScale = g.mg.PIX_SCALE;
 		var oldCameraMatrix = g.mg.cameraMatrix;
@@ -30,6 +30,9 @@ internal sealed class CardTooltipRenderer
 			var tooltips = new Tooltips();
 			tooltips.Add(Vec.Zero, cardTooltips);
 			tooltips.Render(g);
+
+			if (withTheCard)
+				Tooltips._tooltipScratch.Insert(0, new TTCard { card = card, showCardTraitTooltips = false });
 
 			var margins = 6;
 			var tooltipWidth = 0;
@@ -59,8 +62,7 @@ internal sealed class CardTooltipRenderer
 			Draw.StartAutoBatchFrame();
 			try
 			{
-				tooltips.tooltipTimer = double.PositiveInfinity;
-				tooltips.Render(g);
+				Tooltip.RenderMultiple(g, tooltips.pos, Tooltips._tooltipScratch);
 			}
 			catch
 			{

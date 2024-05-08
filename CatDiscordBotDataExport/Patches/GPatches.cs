@@ -18,7 +18,7 @@ internal sealed class GPatches
 
 	private static void G_Render_Prefix(G __instance)
 	{
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < 2; i++)
 			Instance.RunNextTask(__instance);
 	}
 }
