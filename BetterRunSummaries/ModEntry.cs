@@ -47,8 +47,8 @@ public sealed class ModEntry : SimpleMod
 		);
 		Harmony.TryPatch(
 			logger: Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(State), nameof(State.Update)),
-			postfix: new HarmonyMethod(GetType(), nameof(State_Update_Postfix))
+			original: () => AccessTools.DeclaredMethod(typeof(Artifact), nameof(Artifact.Pulse)),
+			postfix: new HarmonyMethod(GetType(), nameof(Artifact_Pulse_Postfix))
 		);
 		Harmony.TryPatch(
 			logger: Logger,
@@ -87,14 +87,8 @@ public sealed class ModEntry : SimpleMod
 	private static void State_PopulateRun_Prefix(State __instance)
 		=> Instance.Helper.ModData.RemoveModData(__instance, "TimesCardsPlayed");
 
-	private static void State_Update_Postfix(State __instance, G g)
-	{
-		foreach (var artifact in __instance.EnumerateAllArtifacts())
-			// some artifacts trigger at a weird time in game's lifecycle and get decreased before getting to check
-			// noticed with Rerolls
-			if (artifact.glowTimer == 0.5 - g.dt)
-				artifact.IncrementTimesTriggered();
-	}
+	private static void Artifact_Pulse_Postfix(Artifact __instance)
+		=> __instance.IncrementTimesTriggered();
 
 	private static void Combat_TryPlayCard_Postfix(State s, Card card, bool __result)
 	{
