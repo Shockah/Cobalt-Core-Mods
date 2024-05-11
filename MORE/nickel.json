@@ -4,7 +4,7 @@
     "DisplayName": "Mix Of Random Elements",
     "Description": "Adds various content all around.",
     "Author": "Shockah",
-    "RequiredApiVersion": "0.8.0",
+    "RequiredApiVersion": "0.11.0",
     "EntryPointAssembly": "MORE.dll",
     "LoadPhase": "AfterDbInit",
     "Dependencies": [

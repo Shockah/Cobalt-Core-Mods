@@ -58,12 +58,6 @@ internal sealed class ModEntry : SimpleMod
 
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
-
-		helper.Events.OnLoadStringsForLocale += (_, e) =>
-		{
-			foreach (var type in RegisterableTypes)
-				AccessTools.DeclaredMethod(type, nameof(IRegisterable.OnLoadStringsForLocale))?.Invoke(null, [package, helper, e]);
-		};
 	}
 
 	public override object? GetApi(IModManifest requestingMod)

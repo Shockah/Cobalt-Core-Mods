@@ -1,8 +1,6 @@
-﻿using HarmonyLib;
-using Nanoray.PluginManager;
+﻿using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
-using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -10,33 +8,17 @@ namespace Shockah.MORE;
 
 internal sealed class VolatileOverdriveEnemy : AI, IRegisterable
 {
-	private static readonly string MyKey = $"{typeof(VolatileOverdriveEnemy).Namespace!}::VolatileOverdrive";
-
 	[JsonProperty]
 	private int AiCounter;
 
-	public override string Key()
-		=> MyKey;
-
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		DB.enemies[MyKey] = MethodBase.GetCurrentMethod()!.DeclaringType!;
-
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(MapFirst), nameof(MapFirst.GetEnemyPools)),
-			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Map_GetEnemyPools_Postfix)))
-		);
-	}
-
-	public static void OnLoadStringsForLocale(IPluginPackage<IModManifest> package, IModHelper helper, LoadStringsForLocaleEventArgs e)
-	{
-		e.Localizations[$"enemy.{MyKey}.name"] = ModEntry.Instance.Localizations.Localize(["enemy", "VolatileOverdrive", "name"]);
-	}
-
-	private static void Map_GetEnemyPools_Postfix(ref MapBase.MapEnemyPool __result)
-	{
-		__result.normal.Add(new VolatileOverdriveEnemy());
+		helper.Content.Enemies.RegisterEnemy(new()
+		{
+			EnemyType = MethodBase.GetCurrentMethod()!.DeclaringType!,
+			ShouldAppearOnMap = (_, map) => map is MapFirst ? BattleType.Normal : null,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["enemy", "VolatileOverdrive", "name"]).Localize
+		});
 	}
 
 	public override Ship BuildShipForSelf(State s)

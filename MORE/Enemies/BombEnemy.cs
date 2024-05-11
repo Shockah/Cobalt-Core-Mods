@@ -1,11 +1,8 @@
-﻿using HarmonyLib;
-using Nanoray.PluginManager;
+﻿using Nanoray.PluginManager;
 using Nickel;
-using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Shockah.MORE;
 
@@ -22,11 +19,6 @@ internal abstract class BombEnemy : AI, IRegisterable
 		Third
 	}
 
-	private static readonly string MyBaseKey = $"{typeof(BombEnemy).Namespace!}::Bomb";
-	private static readonly string MyKey1 = $"{MyBaseKey}::Zone1";
-	private static readonly string MyKey2 = $"{MyBaseKey}::Zone2";
-	private static readonly string MyKey3 = $"{MyBaseKey}::Zone3";
-
 	private static ISpriteEntry SwitchBrittlePartIntentSprite = null!;
 	private static ISpriteEntry SelfDestructIntentSprite = null!;
 
@@ -37,47 +29,29 @@ internal abstract class BombEnemy : AI, IRegisterable
 		this.Zone = zone;
 	}
 
-	public override string Key()
-		=> Zone switch
-		{
-			ZoneType.First => MyKey1,
-			ZoneType.Second => MyKey2,
-			ZoneType.Third => MyKey3,
-			_ => throw new ArgumentException()
-		};
-
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		DB.enemies[MyKey1] = typeof(BombZone1Enemy);
-		DB.enemies[MyKey2] = typeof(BombZone2Enemy);
-		DB.enemies[MyKey3] = typeof(BombZone3Enemy);
-
-		foreach (Type type in new Type[] { typeof(MapFirst), typeof(MapLawless), typeof(MapThree) })
-			ModEntry.Instance.Harmony.TryPatch(
-				logger: ModEntry.Instance.Logger,
-				original: () => AccessTools.DeclaredMethod(type, nameof(MapBase.GetEnemyPools)),
-				postfix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Map_GetEnemyPools_Postfix)))
-			);
-
 		SwitchBrittlePartIntentSprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Intent/SwitchBrittlePart.png"));
 		SelfDestructIntentSprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Intent/SelfDestruct.png"));
-	}
 
-	public static void OnLoadStringsForLocale(IPluginPackage<IModManifest> package, IModHelper helper, LoadStringsForLocaleEventArgs e)
-	{
-		e.Localizations[$"enemy.{MyKey1}.name"] = ModEntry.Instance.Localizations.Localize(["enemy", "Bomb", "0", "name"]);
-		e.Localizations[$"enemy.{MyKey2}.name"] = ModEntry.Instance.Localizations.Localize(["enemy", "Bomb", "1", "name"]);
-		e.Localizations[$"enemy.{MyKey3}.name"] = ModEntry.Instance.Localizations.Localize(["enemy", "Bomb", "2", "name"]);
-	}
-
-	private static void Map_GetEnemyPools_Postfix(MapBase __instance, ref MapBase.MapEnemyPool __result)
-	{
-		if (__instance is MapFirst)
-			__result.normal.Add(new BombZone1Enemy());
-		else if (__instance is MapLawless)
-			__result.normal.Add(new BombZone2Enemy());
-		else if (__instance is MapThree)
-			__result.normal.Add(new BombZone3Enemy());
+		helper.Content.Enemies.RegisterEnemy(new()
+		{
+			EnemyType = typeof(BombZone1Enemy),
+			ShouldAppearOnMap = (_, map) => map is MapFirst ? BattleType.Normal : null,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["enemy", "Bomb", "0", "name"]).Localize
+		});
+		helper.Content.Enemies.RegisterEnemy(new()
+		{
+			EnemyType = typeof(BombZone2Enemy),
+			ShouldAppearOnMap = (_, map) => map is MapLawless ? BattleType.Normal : null,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["enemy", "Bomb", "1", "name"]).Localize
+		});
+		helper.Content.Enemies.RegisterEnemy(new()
+		{
+			EnemyType = typeof(BombZone3Enemy),
+			ShouldAppearOnMap = (_, map) => map is MapThree ? BattleType.Normal : null,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["enemy", "Bomb", "2", "name"]).Localize
+		});
 	}
 
 	public override Ship BuildShipForSelf(State s)
