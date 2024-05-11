@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.1
+Released 11 May 2024.
 
 * Changed how artifact triggers are counted, which should hopefully result in correct amounts.
 
