@@ -29,7 +29,8 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 			Definition = new()
 			{
 				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/Veiling.png")).Sprite,
-				color = new("A17FFF")
+				color = new("A17FFF"),
+				isGood = true,
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Veiling", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Veiling", "description"]).Localize
@@ -40,7 +41,8 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 			Definition = new()
 			{
 				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/Feedback.png")).Sprite,
-				color = new("A17FFF")
+				color = new("A17FFF"),
+				isGood = true,
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Feedback", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Feedback", "description"]).Localize
@@ -51,7 +53,8 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 			Definition = new()
 			{
 				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/Insight.png")).Sprite,
-				color = new("A17FFF")
+				color = new("A17FFF"),
+				isGood = true,
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Insight", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Insight", "description"]).Localize
@@ -64,7 +67,7 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/Intensify.png")).Sprite,
 				color = new("DBC6FF"),
 				affectedByTimestop = true,
-				isGood = true
+				isGood = true,
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Intensify", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Intensify", "description"]).Localize

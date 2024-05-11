@@ -17,6 +17,7 @@ internal sealed class DrawEachTurnManager
 				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/DrawEachTurn.png")).Sprite,
 				color = DB.statuses[Status.drawNextTurn].color,
 				border = DB.statuses[Status.drawNextTurn].border,
+				isGood = true,
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "DrawEachTurn", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "DrawEachTurn", "description"]).Localize
