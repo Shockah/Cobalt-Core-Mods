@@ -121,9 +121,12 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 	}
 
 	private static void Ship_NormalDamage_Prefix()
-		=> IsDuringNormalDamage = true;
+	{
+		IsDuringNormalDamage = true;
+		ReducedDamage = 0;
+	}
 
-	private static void Ship_NormalDamage_Finalizer(Ship __instance, Combat c, ref DamageDone __result)
+	private static void Ship_NormalDamage_Finalizer(Ship __instance, Combat c)
 	{
 		IsDuringNormalDamage = false;
 
