@@ -9,6 +9,7 @@
 * The CAT duo now counts various other cards as Basic Shots.
 * Fixed Stunwave not triggering charges.
 * Changed the Flux ship part trait icon.
+* Correctly marked Dyna statuses as "good".
 
 ## 1.0.6
 Released 27 April 2024.
