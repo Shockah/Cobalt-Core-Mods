@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.0
+Released 12 May 2024.
 
 * Added custom card art for all cards.
 * The Burst Charge now counts as 3 damage against the Sport Orb.
