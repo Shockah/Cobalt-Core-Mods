@@ -11,10 +11,14 @@ internal sealed class FluxPartModManager : IDynaHook
 {
 	internal const PDamMod FluxDamageModifier = (PDamMod)2137401;
 
+	internal static ISpriteEntry FluxTraitIcon { get; private set; } = null!;
+
 	private static AAttack? AttackContext;
 
 	public FluxPartModManager()
 	{
+		FluxTraitIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icons/FluxTrait.png"));
+
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
@@ -50,19 +54,16 @@ internal sealed class FluxPartModManager : IDynaHook
 	}
 
 	internal static IEnumerable<Tooltip> MakeFluxPartModTooltips()
-	{
-		List<Tooltip> tooltips = [
+		=> [
 			new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::PartDamageModifier::Flux")
 			{
-				Icon = StableSpr.icons_libra,
+				Icon = FluxTraitIcon.Sprite,
 				TitleColor = Colors.parttrait,
 				Title = ModEntry.Instance.Localizations.Localize(["partModifier", "Flux", "name"]),
 				Description = ModEntry.Instance.Localizations.Localize(["partModifier", "Flux", "description"])
-			}
+			},
+			..StatusMeta.GetTooltips(Status.tempShield, 1)
 		];
-		tooltips.AddRange(StatusMeta.GetTooltips(Status.tempShield, 1));
-		return tooltips;
-	}
 
 	private static void TriggerFluxIfNeeded(State state, Combat combat, Part? part, bool targetPlayer)
 	{
@@ -102,7 +103,7 @@ internal sealed class FluxPartModManager : IDynaHook
 		var v = box.rect.xy + new Vec(0, __instance.isPlayerShip ? (offset - 16) : 8);
 
 		var color = new Color(1, 1, 1, 0.8 + Math.Sin(g.state.time * 4.0) * 0.3);
-		Draw.Sprite(StableSpr.icons_libra, v.x, v.y, color: color);
+		Draw.Sprite(FluxTraitIcon.Sprite, v.x, v.y, color: color);
 
 		if (!box.IsHover())
 			return;

@@ -8,6 +8,7 @@
 * The Burst Charge now counts as 3 damage against the Sport Orb.
 * The CAT duo now counts various other cards as Basic Shots.
 * Fixed Stunwave not triggering charges.
+* Changed the Flux ship part trait icon.
 
 ## 1.0.6
 Released 27 April 2024.
