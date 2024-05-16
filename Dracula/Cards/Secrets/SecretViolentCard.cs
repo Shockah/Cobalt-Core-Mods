@@ -26,9 +26,6 @@ internal sealed class SecretViolentCard : SecretCard, IDraculaCard
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new AAttack
-			{
-				damage = GetDmg(s, 2)
-			}
+			new AAttack { damage = GetDmg(s, 2) }
 		];
 }

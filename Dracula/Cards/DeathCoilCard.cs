@@ -1,5 +1,4 @@
 ﻿using Nanoray.PluginManager;
-using Newtonsoft.Json;
 using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
@@ -37,10 +36,7 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 			Upgrade.A => [
 				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
 					expression: new HullCondition { BelowHalf = false },
-					action: new AAttack
-					{
-						damage = GetDmg(s, 2)
-					}
+					action: new AAttack { damage = GetDmg(s, 2) }
 				),
 				new AHeal
 				{
@@ -55,10 +51,7 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 				}
 			],
 			Upgrade.B => [
-				new AAttack
-				{
-					damage = GetDmg(s, 2)
-				},
+				new AAttack { damage = GetDmg(s, 2) },
 				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
 					expression: new HullCondition { BelowHalf = true },
 					action: new AHeal
@@ -77,10 +70,7 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 			_ => [
 				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
 					expression: new HullCondition { BelowHalf = false },
-					action: new AAttack
-					{
-						damage = GetDmg(s, 2)
-					}
+					action: new AAttack { damage = GetDmg(s, 2) }
 				),
 				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
 					expression: new HullCondition { BelowHalf = true },
@@ -101,8 +91,7 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 
 	private sealed class HullCondition : IKokoroApi.IConditionalActionApi.IBoolExpression
 	{
-		[JsonProperty]
-		public required bool BelowHalf { get; set; }
+		public required bool BelowHalf;
 
 		public bool GetValue(State state, Combat combat)
 			=> BelowHalf ? state.ship.hull <= state.ship.hullMax / 2 : state.ship.hull > state.ship.hullMax / 2;

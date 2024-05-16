@@ -54,9 +54,10 @@ internal sealed class DraculaBooksArtifact : Artifact, IRegisterable
 		=> (TriggeredThisCombat ? InactiveSprite : ActiveSprite).Sprite;
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> StatusMeta.GetTooltips(Status.shard, (MG.inst.g.state?.ship ?? DB.fakeState.ship).GetMaxShard())
-			.Concat(new AHeal { targetPlayer = true, healAmount = HealAmount }.GetTooltips(MG.inst.g.state ?? DB.fakeState))
-			.ToList();
+		=> [
+			..StatusMeta.GetTooltips(Status.shard, (MG.inst.g.state?.ship ?? DB.fakeState.ship).GetMaxShard()),
+			..new AHeal { targetPlayer = true, healAmount = HealAmount }.GetTooltips(MG.inst.g.state ?? DB.fakeState),
+		];
 
 	public override void OnCombatStart(State state, Combat combat)
 	{

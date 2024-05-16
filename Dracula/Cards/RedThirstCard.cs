@@ -56,14 +56,8 @@ internal sealed class RedThirstCard : Card, IDraculaCard
 				}
 			],
 			_ => [
-				new AEnergy
-				{
-					changeAmount = 2
-				},
-				new ADrawCard
-				{
-					count = 1
-				},
+				new AEnergy { changeAmount = 2 },
+				new ADrawCard { count = 1 },
 				new AStatus
 				{
 					targetPlayer = false,

@@ -53,10 +53,7 @@ internal sealed class AuraOfDarknessCard : Card, IDraculaCard
 						status = ModEntry.Instance.BleedingStatus.Status,
 						statusAmount = 1
 					},
-					new ADrawCard
-					{
-						count = 1
-					}
+					new ADrawCard { count = 1 }
 				])
 			],
 			Upgrade.A => [

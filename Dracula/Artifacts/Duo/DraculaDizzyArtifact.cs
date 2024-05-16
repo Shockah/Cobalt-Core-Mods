@@ -34,10 +34,11 @@ internal sealed class DraculaDizzyArtifact : Artifact, IRegisterable, IStatusLog
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> StatusMeta.GetTooltips(ModEntry.Instance.BleedingStatus.Status, 1)
-			.Concat(StatusMeta.GetTooltips(ModEntry.Instance.OxidationStatus.Status, ResultingOxidation))
-			.Concat(StatusMeta.GetTooltips(Status.corrode, 1))
-			.ToList();
+		=> [
+			..StatusMeta.GetTooltips(ModEntry.Instance.BleedingStatus.Status, 1),
+			..StatusMeta.GetTooltips(ModEntry.Instance.OxidationStatus.Status, ResultingOxidation),
+			..StatusMeta.GetTooltips(Status.corrode, 1),
+		];
 
 	public double HookPriority
 		=> 1;

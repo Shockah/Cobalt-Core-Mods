@@ -1,5 +1,4 @@
 ﻿using Nanoray.PluginManager;
-using Newtonsoft.Json;
 using Nickel;
 using System.Collections.Generic;
 using System.Reflection;
@@ -98,10 +97,7 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 
 	public sealed class AEnshroudPart : CardAction
 	{
-		[JsonProperty]
 		public required bool TargetPlayer;
-
-		[JsonProperty]
 		public required int WorldX;
 
 		public override List<Tooltip> GetTooltips(State s)

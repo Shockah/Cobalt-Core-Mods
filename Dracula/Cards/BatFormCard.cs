@@ -127,44 +127,51 @@ internal sealed class BatFormCard : Card, IDraculaCard
 					targetPlayer = true,
 					dir = 1,
 					isRandom = true,
-				}.Disabled(FlipIndex % 3 != 0),
+					disabled = FlipIndex % 3 != 0,
+				},
 				new AMove
 				{
 					targetPlayer = true,
 					dir = 2,
-					isRandom = true
-				}.Disabled(FlipIndex % 3 != 1),
+					isRandom = true,
+					disabled = FlipIndex % 3 != 1,
+				},
 				new AMove				{
 					targetPlayer = true,
 					dir = 3,
-					isRandom = true
-				}.Disabled(FlipIndex % 3 != 2)
+					isRandom = true,
+					disabled = FlipIndex % 3 != 2,
+				}
 			],
 			_ => [
 				new AMove
 				{
 					targetPlayer = true,
 					dir = -1,
-					ignoreFlipped = true
-				}.Disabled(FlipIndex % 4 != 0),
+					ignoreFlipped = true,
+					disabled = FlipIndex % 4 != 0,
+				},
 				new AMove
 				{
 					targetPlayer = true,
 					dir = 1,
-					ignoreFlipped = true
-				}.Disabled(FlipIndex % 4 != 1),
+					ignoreFlipped = true,
+					disabled = FlipIndex % 4 != 1,
+				},
 				new AMove
 				{
 					targetPlayer = true,
 					dir = 2,
-					ignoreFlipped = true
-				}.Disabled(FlipIndex % 4 != 2),
+					ignoreFlipped = true,
+					disabled = FlipIndex % 4 != 2,
+				},
 				new AMove
 				{
 					targetPlayer = true,
 					dir = -2,
-					ignoreFlipped = true
-				}.Disabled(FlipIndex % 4 != 3)
+					ignoreFlipped = true,
+					disabled = FlipIndex % 4 != 3,
+				}
 			]
 		};
 

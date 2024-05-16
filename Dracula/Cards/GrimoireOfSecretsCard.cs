@@ -53,34 +53,6 @@ internal sealed class GrimoireOfSecretsCard : Card, IDraculaCard
 			}
 		];
 
-	private List<Card> GenerateCards(State state)
-	{
-		List<Type> typeResults = [];
-
-		if (typeResults.Count < CardCount)
-			typeResults.Add(ModEntry.SecretAttackCardTypes[state.rngCardOfferings.NextInt() % ModEntry.SecretAttackCardTypes.Count]);
-
-		while (typeResults.Count < CardCount)
-		{
-			var chosen = ModEntry.SecretNonAttackCardTypes[state.rngCardOfferings.NextInt() % ModEntry.SecretNonAttackCardTypes.Count];
-			if (!typeResults.Contains(chosen))
-				typeResults.Add(chosen);
-		}
-
-		var cardResults = typeResults.Select(t => (Card)Activator.CreateInstance(t)!).ToList();
-		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is DraculaCatArtifact) is { } artifact)
-		{
-			artifact.Pulse();
-			var exeCardTypes = ModEntry.Instance.GetExeCardTypes().ToList();
-			var exeCardType = exeCardTypes[state.rngCardOfferings.NextInt() % exeCardTypes.Count];
-			var exeCard = (Card)Activator.CreateInstance(exeCardType)!;
-			exeCard.discount = -1;
-			cardResults.Add(exeCard);
-		}
-
-		return cardResults;
-	}
-
 	private sealed class Action : CardAction
 	{
 		public enum ModeEnum

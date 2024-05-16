@@ -1,5 +1,4 @@
 ﻿using Nanoray.PluginManager;
-using Newtonsoft.Json;
 using Nickel;
 using System;
 using System.Collections.Generic;
@@ -102,7 +101,6 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 			{
 				Dir = alignment,
 				Return = upgrade == Upgrade.B,
-				omitFromTooltips = true,
 			});
 		actions.Add(
 			new ATooltipAction
@@ -118,10 +116,7 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 
 	public sealed class AEcholocationMove : CardAction
 	{
-		[JsonProperty]
 		public required int Dir;
-
-		[JsonProperty]
 		public required bool Return;
 
 		public override void Begin(G g, State s, Combat c)

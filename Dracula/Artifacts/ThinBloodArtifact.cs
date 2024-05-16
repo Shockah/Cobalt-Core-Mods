@@ -1,7 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dracula;
@@ -25,8 +24,9 @@ internal sealed class ThinBloodArtifact : Artifact, IRegisterable
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> StatusMeta.GetTooltips(ModEntry.Instance.BleedingStatus.Status, 1)
-			.Concat(StatusMeta.GetTooltips(ModEntry.Instance.TransfusionStatus.Status, 1))
-			.Concat(StatusMeta.GetTooltips(ModEntry.Instance.TransfusingStatus.Status, 0))
-			.ToList();
+		=> [
+			..StatusMeta.GetTooltips(ModEntry.Instance.BleedingStatus.Status, 1),
+			..StatusMeta.GetTooltips(ModEntry.Instance.TransfusionStatus.Status, 1),
+			..StatusMeta.GetTooltips(ModEntry.Instance.TransfusingStatus.Status, 0),
+		];
 }

@@ -46,9 +46,7 @@ internal sealed class PurgatoryArtifact : Artifact, IRegisterable
 		=> (TriggeredThisCombat ? InactiveSprite : ActiveSprite).Sprite;
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> [
-			new TTGlossary($"status.{Status.perfectShield.Key()}")
-		];
+		=> StatusMeta.GetTooltips(Status.perfectShield, 1);
 
 	public override void OnCombatStart(State state, Combat combat)
 	{

@@ -1,5 +1,4 @@
 ﻿using Nanoray.PluginManager;
-using Newtonsoft.Json;
 using Nickel;
 using System;
 using System.Collections.Generic;
@@ -47,10 +46,7 @@ internal sealed class BatmobileBasicRepairsCard : Card, IDraculaCard
 				}
 			],
 			Upgrade.B => [
-				new ABatDebitCharge
-				{
-					Charges = 3
-				}
+				new ABatDebitCharge { Charges = 3 }
 			],
 			_ => [
 				new AHeal
@@ -69,8 +65,7 @@ internal sealed class BatmobileBasicRepairsCard : Card, IDraculaCard
 
 	public sealed class ABatDebitCharge : CardAction
 	{
-		[JsonProperty]
-		public int Charges;
+		public required int Charges;
 
 		public override void Begin(G g, State s, Combat c)
 		{

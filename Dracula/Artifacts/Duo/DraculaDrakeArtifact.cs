@@ -3,7 +3,6 @@ using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dracula;
@@ -41,13 +40,11 @@ internal sealed class DraculaDrakeArtifact : Artifact, IRegisterable
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> new List<Tooltip>
-		{
+		=> [
 			new TTGlossary("action.attackPiercing"),
-			new TTGlossary("action.stun")
-		}
-		.Concat(StatusMeta.GetTooltips(ModEntry.Instance.BleedingStatus.Status, 1))
-		.ToList();
+			new TTGlossary("action.stun"),
+			..StatusMeta.GetTooltips(ModEntry.Instance.BleedingStatus.Status, 1),
+		];
 
 	public override void OnEnemyGetHit(State state, Combat combat, Part? part)
 	{

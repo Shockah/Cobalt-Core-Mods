@@ -80,11 +80,12 @@ internal sealed class BatmobileArtifact : Artifact, IRegisterable
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> StatusMeta.GetTooltips(Status.maxShield, 1)
-			.Concat(StatusMeta.GetTooltips(Status.evade, 1))
-			.Concat(StatusMeta.GetTooltips(Status.shield, 1))
-			.Append(new TTGlossary("parttrait.weak"))
-			.ToList();
+		=> [
+			..StatusMeta.GetTooltips(Status.maxShield, 1),
+			..StatusMeta.GetTooltips(Status.evade, 1),
+			..StatusMeta.GetTooltips(Status.shield, 1),
+			new TTGlossary("parttrait.weak"),
+		];
 
 	public override void OnCombatStart(State state, Combat combat)
 		=> this.InCombat = true;
@@ -210,9 +211,7 @@ internal sealed class BatmobileArtifact : Artifact, IRegisterable
 	public sealed class ABatmobileArmor : CardAction
 	{
 		public int WorldX { get; init; }
-
 		public bool TargetPlayer { get; init; }
-
 		public bool Weaken { get; init; }
 
 		public override void Begin(G g, State s, Combat c)
