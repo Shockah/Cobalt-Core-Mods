@@ -31,7 +31,6 @@ public sealed class ModEntry : SimpleMod
 	internal IStatusEntry BloodMirrorStatus { get; }
 	internal IStatusEntry TransfusionStatus { get; }
 	internal IStatusEntry TransfusingStatus { get; }
-	internal IStatusEntry OxidationStatus { get; }
 
 	internal ISpriteEntry ShieldCostOff { get; }
 	internal ISpriteEntry ShieldCostOn { get; }
@@ -102,15 +101,16 @@ public sealed class ModEntry : SimpleMod
 		typeof(BatDebitCard),
 	];
 
-	internal static IEnumerable<Type> AllCardTypes
-		=> CommonCardTypes
-			.Concat(UncommonCardTypes)
-			.Concat(RareCardTypes)
-			.Append(typeof(DraculaExeCard))
-			.Append(typeof(PlaceholderSecretCard))
-			.Concat(SecretAttackCardTypes)
-			.Concat(SecretNonAttackCardTypes)
-			.Concat(ShipCards);
+	internal static IEnumerable<Type> AllCardTypes = [
+		..CommonCardTypes,
+		..UncommonCardTypes,
+		..RareCardTypes,
+		typeof(DraculaExeCard),
+		typeof(PlaceholderSecretCard),
+		..SecretAttackCardTypes,
+		..SecretNonAttackCardTypes,
+		..ShipCards
+	];
 
 	internal static IReadOnlyList<Type> CommonArtifacts { get; } = [
 		typeof(MasochismArtifact),
@@ -145,7 +145,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static readonly IEnumerable<Type> RegisterableTypes
-		= [.. AllCardTypes, .. AllArtifactTypes];
+		= [..AllCardTypes, ..AllArtifactTypes];
 
 	internal static readonly IEnumerable<Type> LateRegisterableTypes
 		= DuoArtifactTypes;
@@ -225,7 +225,9 @@ public sealed class ModEntry : SimpleMod
 			Definition = new()
 			{
 				icon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/Bleeding.png")).Sprite,
-				color = new("BE0000")
+				color = new("BE0000"),
+				affectedByTimestop = true,
+				isGood = false,
 			},
 			Name = this.AnyLocalizations.Bind(["status", "Bleeding", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["status", "Bleeding", "description"]).Localize
@@ -235,7 +237,9 @@ public sealed class ModEntry : SimpleMod
 			Definition = new()
 			{
 				icon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/BloodMirror.png")).Sprite,
-				color = new("FF7F7F")
+				color = new("FF7F7F"),
+				affectedByTimestop = true,
+				isGood = true,
 			},
 			Name = this.AnyLocalizations.Bind(["status", "BloodMirror", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["status", "BloodMirror", "description"]).Localize
@@ -245,7 +249,8 @@ public sealed class ModEntry : SimpleMod
 			Definition = new()
 			{
 				icon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/Transfusion.png")).Sprite,
-				color = new("FFAFAF")
+				color = new("FFAFAF"),
+				isGood = true,
 			},
 			Name = this.AnyLocalizations.Bind(["status", "Transfusion", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["status", "Transfusion", "description"]).Localize
@@ -255,13 +260,12 @@ public sealed class ModEntry : SimpleMod
 			Definition = new()
 			{
 				icon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Status/Transfusing.png")).Sprite,
-				color = new("FFAFAF")
+				color = new("FFAFAF"),
+				isGood = true,
 			},
 			Name = this.AnyLocalizations.Bind(["status", "Transfusing", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["status", "Transfusing", "description"]).Localize
 		});
-		// TODO: replace with API
-		OxidationStatus = helper.Content.Statuses.LookupByUniqueName("Shockah.Kokoro::Shockah.Kokoro.Status.Oxidation")!;
 
 		foreach (var registerableType in RegisterableTypes)
 			AccessTools.DeclaredMethod(registerableType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);

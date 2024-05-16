@@ -36,7 +36,7 @@ internal sealed class DraculaDizzyArtifact : Artifact, IRegisterable, IStatusLog
 	public override List<Tooltip>? GetExtraTooltips()
 		=> [
 			..StatusMeta.GetTooltips(ModEntry.Instance.BleedingStatus.Status, 1),
-			..StatusMeta.GetTooltips(ModEntry.Instance.OxidationStatus.Status, ResultingOxidation),
+			..StatusMeta.GetTooltips(ModEntry.Instance.KokoroApi.OxidationVanillaStatus, ResultingOxidation),
 			..StatusMeta.GetTooltips(Status.corrode, 1),
 		];
 
@@ -45,7 +45,7 @@ internal sealed class DraculaDizzyArtifact : Artifact, IRegisterable, IStatusLog
 
 	public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
 	{
-		if (status != ModEntry.Instance.OxidationStatus.Status)
+		if (status != ModEntry.Instance.KokoroApi.OxidationVanillaStatus)
 			return false;
 		if (timing != StatusTurnTriggerTiming.TurnEnd)
 			return false;
