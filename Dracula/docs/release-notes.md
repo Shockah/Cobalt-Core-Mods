@@ -6,6 +6,7 @@
 
 * Aura of Darkness B is now unplayable at 3+ Bleeding (no more infinite free Autopilot).
 * The Echolocation card now specifies the exact move it will make in its tooltip.
+* The Blood Tap card now lets you preview the options by right-clicking it in hand.
 * Fixed some cards using `Spr` directly, making them use completely different art in various game versions.
 * Fixed Bleeding and Blood Mirror not being affected by Timestop.
 * Fixed Blood Mirror not being marked as a "good" status.

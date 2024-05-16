@@ -8,8 +8,6 @@ public partial interface IKokoroApi
 
 public interface IStatusLogicHook
 {
-	int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount) => newAmount;
-	bool? IsAffectedByBoost(State state, Combat combat, Ship ship, Status status) => null;
 	void OnStatusTurnTrigger(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount) { }
 	bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy) => false;
 }

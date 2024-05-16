@@ -10,9 +10,9 @@ internal sealed class ActionChoiceRoute : Route
 {
 	private const UK ChoiceKey = (UK)2137021;
 
-	public string? Title;
-
+	public required string Title;
 	public List<List<CardAction>> Choices = [];
+	public bool IsPreview;
 
 	public override bool GetShowOverworldPanels()
 		=> true;
@@ -45,7 +45,7 @@ internal sealed class ActionChoiceRoute : Route
 
 		SharedArt.DrawEngineering(g);
 
-		Draw.Text(Title ?? "PICK A CHOICE", centerX, topY, font: DB.stapler, color: Colors.textMain, align: TAlign.Center);
+		Draw.Text(Title, centerX, topY, font: DB.stapler, color: Colors.textMain, align: TAlign.Center);
 
 		var rows = Choices.Chunk(columns).ToList();
 		for (var rowIndex = 0; rowIndex < rows.Count; rowIndex++)
@@ -87,15 +87,29 @@ internal sealed class ActionChoiceRoute : Route
 				}
 			}
 		}
+
+		if (IsPreview)
+			SharedArt.ButtonText(
+				g,
+				new Vec(210, 230),
+				StableUK.upgradeCard_cancel,
+				Loc.T("uiShared.btnBack"),
+				onMouseDown: new MouseDownHandler(() => g.CloseRoute(this)),
+				platformButtonHint: Btn.B
+			);
 	}
 
 	private void OnChoice(G g, List<CardAction> actions)
 	{
+		if (IsPreview)
+			return;
 		if (g.state.route is not Combat combat)
 			return;
+
 		combat.Queue(new ADelay());
 		foreach (var action in actions)
 			combat.Queue(action);
+
 		g.CloseRoute(this);
 	}
 }

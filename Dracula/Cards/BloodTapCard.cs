@@ -39,6 +39,32 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 			new ABloodTap { IncludeEnemy = upgrade == Upgrade.B }
 		];
 
+	public override void ExtraRender(G g, Vec v)
+	{
+		base.ExtraRender(g, v);
+		if (g.state.route is not Combat combat)
+			return;
+		if (combat.routeOverride is not null)
+			return;
+		if (combat.currentCardAction is not null || combat.cardActions.Count != 0)
+			return;
+		if (!combat.hand.Contains(this))
+			return;
+		if (g.boxes.FirstOrDefault(b => b.key?.k == StableUK.card && b.key?.v == uuid) is not { } box)
+			return;
+		if (!box.IsHover())
+			return;
+		if (!(Input.mouseRightDown || (Input.mouseLeftDown && Input.ctrl) || Input.GetGpDown(Btn.X)))
+			return;
+
+		combat.routeOverride = new ActionChoiceRoute
+		{
+			Title = ModEntry.Instance.Localizations.Localize(["card", "BloodTap", "ui", "title"]),
+			Choices = ModEntry.Instance.BloodTapManager.MakeChoices(g.state, combat, includeEnemy: upgrade == Upgrade.B).ToList(),
+			IsPreview = true,
+		};
+	}
+
 	public sealed class ABloodTap : CardAction
 	{
 		public List<List<CardAction>>? Choices;
