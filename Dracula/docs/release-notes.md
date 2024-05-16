@@ -5,6 +5,8 @@
 ## Upcoming release
 
 * Aura of Darkness B is now unplayable at 3+ Bleeding (no more infinite free Autopilot).
+* Fixed some cards using `Spr` directly, making them use completely different art in various game versions.
+* Added information required to perform update checks for the mod.
 
 ## 1.1.4
 Released 5 May 2024.

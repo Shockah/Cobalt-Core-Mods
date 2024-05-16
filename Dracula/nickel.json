@@ -14,5 +14,10 @@
             "Version": "1.3.0",
             "IsRequired": false
         }
-    ]
+    ],
+    "UpdateChecks": {
+        "NexusMods": {
+            "ID": 12
+        }
+    }
 }

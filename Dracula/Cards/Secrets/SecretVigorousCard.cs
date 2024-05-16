@@ -19,7 +19,7 @@ internal sealed class SecretVigorousCard : SecretCard, IDraculaCard
 				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true
 			},
-			Art = Spr.cards_Dodge,
+			Art = StableSpr.cards_Dodge,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Secret", "Vigorous", "name"]).Localize
 		});
 	}

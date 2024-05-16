@@ -19,7 +19,7 @@ internal sealed class SecretRestorativeCard : SecretCard, IDraculaCard
 				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true
 			},
-			Art = Spr.cards_Repairs,
+			Art = StableSpr.cards_Repairs,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Secret", "Restorative", "name"]).Localize
 		});
 	}
