@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Aura of Darkness B is now unplayable at 3+ Bleeding (no more infinite free Autopilot).
+* The Echolocation card now specifies the exact move it will make in its tooltip.
 * Fixed some cards using `Spr` directly, making them use completely different art in various game versions.
 * Added information required to perform update checks for the mod.
 

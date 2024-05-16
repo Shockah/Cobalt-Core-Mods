@@ -101,6 +101,7 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 			{
 				Dir = alignment,
 				Return = upgrade == Upgrade.B,
+				omitFromTooltips = s == DB.fakeState,
 			});
 		actions.Add(
 			new ATooltipAction
@@ -118,6 +119,15 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 	{
 		public required int Dir;
 		public required bool Return;
+
+		public override List<Tooltip> GetTooltips(State s)
+			=> new AMove
+			{
+				targetPlayer = true,
+				dir = Dir,
+				ignoreFlipped = true,
+				ignoreHermes = true
+			}.GetTooltips(s);
 
 		public override void Begin(G g, State s, Combat c)
 		{
