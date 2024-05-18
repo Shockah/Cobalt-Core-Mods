@@ -54,10 +54,10 @@ internal static class EditorPatches
 	{
 		ImGui.SameLine();
 		if (ImGui.Button("CAT card export"))
-			Instance.QueueTask(g => Instance.AllCardExportTask(g, withScreenFilter: false));
+			Instance.QueueTask(g => Instance.QueueSelectedDecksExportTask(g, withScreenFilter: false));
 
 		ImGui.SameLine();
 		if (ImGui.Button("(bluish)"))
-			Instance.QueueTask(g => Instance.AllCardExportTask(g, withScreenFilter: true));
+			Instance.QueueTask(g => Instance.QueueSelectedDecksExportTask(g, withScreenFilter: true));
 	}
 }

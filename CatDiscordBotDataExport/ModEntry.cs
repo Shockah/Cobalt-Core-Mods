@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
+using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,85 +44,128 @@ internal sealed class ModEntry : SimpleMod
 			Logger!.LogInformation("Tasks left in the queue: {TaskCount}", QueuedTasks.Count);
 	}
 
-	internal void AllCardExportTask(G g, bool withScreenFilter)
+	internal void QueueSelectedDecksExportTask(G g, bool withScreenFilter)
+	{
+		if (g.metaRoute?.subRoute is Codex { subRoute: CardBrowse cardCodex })
+		{
+			foreach (var deck in cardCodex.GetCardList(g).Select(c => c.GetMeta().deck).ToHashSet())
+				QueueDeckExportTask(g, withScreenFilter, deck);
+		}
+		else if (g.state.IsOutsideRun())
+		{
+			foreach (var deck in g.state.runConfig.selectedChars)
+				QueueDeckExportTask(g, withScreenFilter, deck);
+		}
+		else
+		{
+			foreach (var character in g.state.characters)
+				if (character.deckType is { } deck)
+					QueueDeckExportTask(g, withScreenFilter, deck);
+		}
+	}
+
+	internal void QueueDeckExportTask(G g, bool withScreenFilter, Deck deck)
 	{
 		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
 
-		static string GetUpgradePathAffix(Upgrade upgrade)
-			=> upgrade switch
-			{
-				Upgrade.A => "A",
-				Upgrade.B => "B",
-				_ => "0"
-			};
+		static string MakeFileSafe(string path)
+		{
+			foreach (var unsafeChar in Path.GetInvalidFileNameChars())
+				path = path.Replace(unsafeChar, '_');
+			return path;
+		}
+
+		static string? GetModName(IModOwned? entry)
+			=> entry is null ? null : $"{entry.ModOwner.DisplayName ?? entry.ModOwner.UniqueName}{(string.IsNullOrEmpty(entry.ModOwner.Author) ? "" : $" by {entry.ModOwner.Author}")}";
 
 		List<Upgrade> noUpgrades = [Upgrade.None];
 
-		var groupedCards = DB.cards
+		var cards = DB.cards
 			.Select(kvp => (Key: kvp.Key, Type: kvp.Value, Meta: DB.cardMetas.GetValueOrDefault(kvp.Key)))
 			.Where(e => e.Meta is not null)
 			.Select(e => (Key: e.Key, Type: e.Type, Meta: e.Meta!))
+			.Where(e => e.Meta.deck == deck)
 			.Where(e => DB.currentLocale.strings.ContainsKey($"card.{e.Key}.name"))
-			.GroupBy(e => e.Meta.deck)
-			.Select(g => (Deck: g.Key, HasUnreleased: g.Any(e => e.Meta.unreleased), Entries: g))
 			.ToList();
 
-		var exportableData = groupedCards
-			.Select(group => new ExportDeckData(
-				group.Deck.Key(),
-				Loc.T($"char.{group.Deck.Key()}"),
-				group.Entries
-					.Select(e => new ExportCardData(
-						e.Key,
-						Loc.T($"card.{e.Key}.name"),
-						e.Meta.unreleased,
-						e.Meta.rarity,
-						noUpgrades.Concat(e.Meta.upgradesTo).ToHashSet(),
-						(Activator.CreateInstance(e.Type) as Card)?.GetData(g.state).description
-					)).ToList()
-			)).ToList();
+		var exportableData = new ExportDeckData(
+			Key: deck.Key(),
+			Name: Loc.T($"char.{deck.Key()}"),
+			PlayableCharacter: NewRunOptions.allChars.Contains(deck),
+			Mod: Enum.GetValues<Deck>().Contains(deck) ? null : GetModName(Helper.Content.Decks.LookupByDeck(deck)),
+			Cards: cards.Select(e =>
+			{
+				var card = (Card)Activator.CreateInstance(e.Type)!;
+				return new ExportCardData(
+					Key: e.Key,
+					Name: Loc.T($"card.{e.Key}.name"),
+					Rarity: e.Meta.rarity,
+					Released: !e.Meta.unreleased,
+					Offered: !e.Meta.dontOffer,
+					Mod: e.Type.Assembly == typeof(G).Assembly ? null : GetModName(Helper.Content.Cards.LookupByCardType(e.Type)),
+					Upgrades: new List<Upgrade> { Upgrade.None }.Concat(e.Meta.upgradesTo).Select(upgrade =>
+					{
+						var cardAtUpgrade = Mutil.DeepCopy(card);
+						cardAtUpgrade.upgrade = upgrade;
+						var data = cardAtUpgrade.GetData(DB.fakeState);
+						var traits = Helper.Content.Cards.GetActiveCardTraits(DB.fakeState, cardAtUpgrade);
+						return (
+							Upgrade: upgrade,
+							Model: new ExportCardUpgradeData(
+								Description: data.description,
+								Cost: data.cost,
+								Traits: traits.Select(t =>
+								{
+									if (t.Configuration.Name is not { } nameProvider || nameProvider("en") is not { } name || string.IsNullOrEmpty(name))
+										return null;
+									return new ExportCardTraitData(Key: t.UniqueName, Name: name);
+								}).WhereNotNull().ToList(),
+								BaseImagePath: e.Meta.unreleased
+									? $"unreleased/{MakeFileSafe(e.Key)}-Base-{(upgrade == Upgrade.None ? "0" : upgrade.ToString())}.png"
+									: (
+										e.Meta.dontOffer
+											? $"unoffered/{MakeFileSafe(e.Key)}-Base-{(upgrade == Upgrade.None ? "0" : upgrade.ToString())}.png"
+											: $"{MakeFileSafe(e.Key)}-Base-{(upgrade == Upgrade.None ? "0" : upgrade.ToString())}.png"
+									),
+								TooltipImagePath: e.Meta.unreleased
+									? $"unreleased/{MakeFileSafe(e.Key)}-Tooltip-{(upgrade == Upgrade.None ? "0" : upgrade.ToString())}.png"
+									: (
+										e.Meta.dontOffer
+											? $"unoffered/{MakeFileSafe(e.Key)}-Tooltip-{(upgrade == Upgrade.None ? "0" : upgrade.ToString())}.png"
+											: $"{MakeFileSafe(e.Key)}-Tooltip-{(upgrade == Upgrade.None ? "0" : upgrade.ToString())}.png"
+									)
+							)
+						);
+					}).ToDictionary(e => e.Upgrade, e => e.Model)
+				);
+			}).ToList()
+		);
 
 		var exportableDataPath = Path.Combine(modloaderFolder, "CatDiscordBotDataExport", "cards");
 		Directory.CreateDirectory(exportableDataPath);
-		File.WriteAllText(Path.Combine(exportableDataPath, "data.json"), JsonConvert.SerializeObject(exportableData, new JsonSerializerSettings
+		var deckExportPath = Path.Combine(exportableDataPath, MakeFileSafe(deck.Key()));
+		Directory.CreateDirectory(deckExportPath);
+
+		File.WriteAllText(Path.Combine(deckExportPath, "data.json"), JsonConvert.SerializeObject(exportableData, new JsonSerializerSettings
 		{
 			Formatting = Formatting.Indented
 		}));
 
-		foreach (var group in groupedCards)
+		if (exportableData.Cards.Any(m => !m.Released))
+			Directory.CreateDirectory(Path.Combine(deckExportPath, "unreleased"));
+		if (exportableData.Cards.Any(m => m.Released && !m.Offered))
+			Directory.CreateDirectory(Path.Combine(deckExportPath, "unoffered"));
+
+		foreach (var exportableCard in exportableData.Cards)
 		{
-			var fileSafeDeckKey = group.Deck.Key();
-			foreach (var unsafeChar in Path.GetInvalidFileNameChars())
-				fileSafeDeckKey = fileSafeDeckKey.Replace(unsafeChar, '_');
-
-			var deckExportPath = Path.Combine(modloaderFolder, "CatDiscordBotDataExport", "cards", fileSafeDeckKey);
-			var unreleasedCardsExportPath = Path.Combine(deckExportPath, "unreleased");
-
-			Directory.CreateDirectory(deckExportPath);
-			if (group.HasUnreleased)
-				Directory.CreateDirectory(unreleasedCardsExportPath);
-
-			foreach (var entry in group.Entries)
+			var card = (Card)Activator.CreateInstance(DB.cards.First(e => e.Key == exportableCard.Key).Value)!;
+			foreach (var exportableUpgrade in exportableCard.Upgrades)
 			{
-				var fileSafeCardKey = entry.Key;
-				foreach (var unsafeChar in Path.GetInvalidFileNameChars())
-					fileSafeCardKey = fileSafeCardKey.Replace(unsafeChar, '_');
+				var cardAtUpgrade = Mutil.DeepCopy(card);
+				cardAtUpgrade.upgrade = exportableUpgrade.Key;
 
-				List<Upgrade> upgrades = [Upgrade.None];
-				upgrades.AddRange(entry.Meta.upgradesTo);
-
-				foreach (var upgrade in upgrades)
-				{
-					var card = (Card)Activator.CreateInstance(entry.Type)!;
-					card.upgrade = upgrade;
-
-					var cardExportPath = Path.Combine(entry.Meta.unreleased ? unreleasedCardsExportPath : deckExportPath, $"{fileSafeCardKey}-{GetUpgradePathAffix(upgrade)}-Card.png");
-					var tooltipExportPath = Path.Combine(entry.Meta.unreleased ? unreleasedCardsExportPath : deckExportPath, $"{fileSafeCardKey}-{GetUpgradePathAffix(upgrade)}-TT.png");
-					var cardAndTooltipExportPath = Path.Combine(entry.Meta.unreleased ? unreleasedCardsExportPath : deckExportPath, $"{fileSafeCardKey}-{GetUpgradePathAffix(upgrade)}-TT-Card.png");
-					QueueTask(g => CardExportTask(g, withScreenFilter, card, cardExportPath));
-					QueueTask(g => TooltipExportTask(g, withScreenFilter, card, withTheCard: false, tooltipExportPath));
-					QueueTask(g => TooltipExportTask(g, withScreenFilter, card, withTheCard: true, cardAndTooltipExportPath));
-				}
+				QueueTask(g => CardExportTask(g, withScreenFilter, cardAtUpgrade, Path.Combine(deckExportPath, exportableUpgrade.Value.BaseImagePath)));
+				QueueTask(g => TooltipExportTask(g, withScreenFilter, cardAtUpgrade, withTheCard: true, Path.Combine(deckExportPath, exportableUpgrade.Value.TooltipImagePath)));
 			}
 		}
 	}
