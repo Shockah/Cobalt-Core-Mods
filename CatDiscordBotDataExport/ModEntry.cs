@@ -17,11 +17,13 @@ internal sealed class ModEntry : SimpleMod
 
 	private readonly Queue<Action<G>> QueuedTasks = new();
 	internal readonly CardRenderer CardRenderer = new();
+	internal readonly ArtifactTooltipRenderer ArtifactTooltipRenderer;
 	internal readonly CardTooltipRenderer CardTooltipRenderer = new();
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
+		ArtifactTooltipRenderer = new(helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/ArtifactGlow.png")));
 
 		var harmony = new Harmony(package.Manifest.UniqueName);
 		CardPatches.Apply(harmony);
@@ -49,22 +51,22 @@ internal sealed class ModEntry : SimpleMod
 		if (g.metaRoute?.subRoute is Codex { subRoute: CardBrowse cardCodex })
 		{
 			foreach (var deck in cardCodex.GetCardList(g).Select(c => c.GetMeta().deck).ToHashSet())
-				QueueDeckExportTask(g, withScreenFilter, deck);
+				QueueDeckCardsExportTask(g, withScreenFilter, deck);
 		}
 		else if (g.state.IsOutsideRun())
 		{
 			foreach (var deck in g.state.runConfig.selectedChars)
-				QueueDeckExportTask(g, withScreenFilter, deck);
+				QueueDeckCardsExportTask(g, withScreenFilter, deck);
 		}
 		else
 		{
 			foreach (var character in g.state.characters)
 				if (character.deckType is { } deck)
-					QueueDeckExportTask(g, withScreenFilter, deck);
+					QueueDeckCardsExportTask(g, withScreenFilter, deck);
 		}
 	}
 
-	internal void QueueDeckExportTask(G g, bool withScreenFilter, Deck deck)
+	internal void QueueDeckCardsExportTask(G g, bool withScreenFilter, Deck deck)
 	{
 		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
 
@@ -78,8 +80,6 @@ internal sealed class ModEntry : SimpleMod
 		static string? GetModName(IModOwned? entry)
 			=> entry is null ? null : $"{entry.ModOwner.DisplayName ?? entry.ModOwner.UniqueName}{(string.IsNullOrEmpty(entry.ModOwner.Author) ? "" : $" by {entry.ModOwner.Author}")}";
 
-		List<Upgrade> noUpgrades = [Upgrade.None];
-
 		var cards = DB.cards
 			.Select(kvp => (Key: kvp.Key, Type: kvp.Value, Meta: DB.cardMetas.GetValueOrDefault(kvp.Key)))
 			.Where(e => e.Meta is not null)
@@ -88,7 +88,7 @@ internal sealed class ModEntry : SimpleMod
 			.Where(e => DB.currentLocale.strings.ContainsKey($"card.{e.Key}.name"))
 			.ToList();
 
-		var exportableData = new ExportDeckData(
+		var exportableData = new ExportDeckCardData(
 			Key: deck.Key(),
 			Name: Loc.T($"char.{deck.Key()}"),
 			PlayableCharacter: NewRunOptions.allChars.Contains(deck),
@@ -164,21 +164,100 @@ internal sealed class ModEntry : SimpleMod
 				var cardAtUpgrade = Mutil.DeepCopy(card);
 				cardAtUpgrade.upgrade = exportableUpgrade.Key;
 
-				QueueTask(g => CardExportTask(g, withScreenFilter, cardAtUpgrade, Path.Combine(deckExportPath, exportableUpgrade.Value.BaseImagePath)));
-				QueueTask(g => TooltipExportTask(g, withScreenFilter, cardAtUpgrade, withTheCard: true, Path.Combine(deckExportPath, exportableUpgrade.Value.TooltipImagePath)));
+				QueueTask(g => CardBaseExportTask(g, withScreenFilter, cardAtUpgrade, Path.Combine(deckExportPath, exportableUpgrade.Value.BaseImagePath)));
+				QueueTask(g => CardTooltipExportTask(g, withScreenFilter, cardAtUpgrade, withTheCard: true, Path.Combine(deckExportPath, exportableUpgrade.Value.TooltipImagePath)));
 			}
 		}
 	}
 
-	private void CardExportTask(G g, bool withScreenFilter, Card card, string path)
+	internal void QueueAllArtifactsExportTask(G g, bool withScreenFilter)
+	{
+		foreach (var deck in DB.artifactMetas.Values.Select(meta => meta.owner).ToHashSet())
+			QueueDeckArtifactsExportTask(g, withScreenFilter, deck);
+	}
+
+	internal void QueueDeckArtifactsExportTask(G g, bool withScreenFilter, Deck deck)
+	{
+		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
+
+		static string MakeFileSafe(string path)
+		{
+			foreach (var unsafeChar in Path.GetInvalidFileNameChars())
+				path = path.Replace(unsafeChar, '_');
+			return path;
+		}
+
+		static string? GetModName(IModOwned? entry)
+			=> entry is null ? null : $"{entry.ModOwner.DisplayName ?? entry.ModOwner.UniqueName}{(string.IsNullOrEmpty(entry.ModOwner.Author) ? "" : $" by {entry.ModOwner.Author}")}";
+
+		var artifacts = DB.artifacts
+			.Select(kvp => (Key: kvp.Key, Type: kvp.Value, Meta: DB.artifactMetas.GetValueOrDefault(kvp.Key)))
+			.Where(e => e.Meta is not null)
+			.Select(e => (Key: e.Key, Type: e.Type, Meta: e.Meta!))
+			.Where(e => e.Meta.owner == deck)
+			.Where(e => DB.currentLocale.strings.ContainsKey($"artifact.{e.Key}.name"))
+			.ToList();
+
+		var exportableData = new ExportDeckArtifactData(
+			Key: deck.Key(),
+			Name: Loc.T($"char.{deck.Key()}"),
+			PlayableCharacter: NewRunOptions.allChars.Contains(deck),
+			Mod: Enum.GetValues<Deck>().Contains(deck) ? null : GetModName(Helper.Content.Decks.LookupByDeck(deck)),
+			Artifacts: artifacts.Select(e =>
+			{
+				var card = (Artifact)Activator.CreateInstance(e.Type)!;
+				return new ExportArtifactData(
+					Key: e.Key,
+					Name: Loc.T($"artifact.{e.Key}.name"),
+					Description: Loc.T($"artifact.{e.Key}.desc"),
+					Common: e.Meta.pools.Contains(ArtifactPool.Common),
+					Boss: e.Meta.pools.Contains(ArtifactPool.Boss),
+					EventOnly: e.Meta.pools.Contains(ArtifactPool.EventOnly),
+					Released: !e.Meta.pools.Contains(ArtifactPool.Unreleased),
+					Removable: !e.Meta.unremovable,
+					Mod: e.Type.Assembly == typeof(G).Assembly ? null : GetModName(Helper.Content.Cards.LookupByCardType(e.Type)),
+					TooltipImagePath: e.Meta.pools.Contains(ArtifactPool.Unreleased)
+						? $"unreleased/{MakeFileSafe(e.Key)}.png"
+						: $"{MakeFileSafe(e.Key)}.png"
+				);
+			}).ToList()
+		);
+
+		var exportableDataPath = Path.Combine(modloaderFolder, "CatDiscordBotDataExport", "artifacts");
+		Directory.CreateDirectory(exportableDataPath);
+		var deckExportPath = Path.Combine(exportableDataPath, MakeFileSafe(deck.Key()));
+		Directory.CreateDirectory(deckExportPath);
+
+		File.WriteAllText(Path.Combine(deckExportPath, "data.json"), JsonConvert.SerializeObject(exportableData, new JsonSerializerSettings
+		{
+			Formatting = Formatting.Indented
+		}));
+
+		if (exportableData.Artifacts.Any(m => !m.Released))
+			Directory.CreateDirectory(Path.Combine(deckExportPath, "unreleased"));
+
+		foreach (var exportableArtifact in exportableData.Artifacts)
+		{
+			var artifact = (Artifact)Activator.CreateInstance(DB.artifacts.First(e => e.Key == exportableArtifact.Key).Value)!;
+			QueueTask(g => ArtifactExportTask(g, withScreenFilter, artifact, Path.Combine(deckExportPath, exportableArtifact.TooltipImagePath)));
+		}
+	}
+
+	private void CardBaseExportTask(G g, bool withScreenFilter, Card card, string path)
 	{
 		using var stream = new FileStream(path, FileMode.Create);
 		CardRenderer.Render(g, withScreenFilter, card, stream);
 	}
 
-	private void TooltipExportTask(G g, bool withScreenFilter, Card card, bool withTheCard, string path)
+	private void CardTooltipExportTask(G g, bool withScreenFilter, Card card, bool withTheCard, string path)
 	{
 		using var stream = new FileStream(path, FileMode.Create);
 		CardTooltipRenderer.Render(g, withScreenFilter, card, withTheCard, stream);
+	}
+
+	private void ArtifactExportTask(G g, bool withScreenFilter, Artifact artifact, string path)
+	{
+		using var stream = new FileStream(path, FileMode.Create);
+		ArtifactTooltipRenderer.Render(g, withScreenFilter, artifact, stream);
 	}
 }
