@@ -59,5 +59,12 @@ internal static class EditorPatches
 		ImGui.SameLine();
 		if (ImGui.Button("(bluish)"))
 			Instance.QueueTask(g => Instance.QueueSelectedDecksExportTask(g, withScreenFilter: true));
+
+		if (ImGui.Button("CAT artifact export"))
+			Instance.QueueTask(g => Instance.QueueAllArtifactsExportTask(g, withScreenFilter: false));
+
+		ImGui.SameLine();
+		if (ImGui.Button("(bluish2)"))
+			Instance.QueueTask(g => Instance.QueueAllArtifactsExportTask(g, withScreenFilter: true));
 	}
 }
