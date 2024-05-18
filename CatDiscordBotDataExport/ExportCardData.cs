@@ -5,8 +5,9 @@ namespace Shockah.CatDiscordBotDataExport;
 internal sealed record class ExportCardData(
 	string Key,
 	string Name,
-	bool Unreleased,
 	Rarity Rarity,
-	IReadOnlySet<Upgrade> Upgrades,
-	string? Description
+	bool Released,
+	bool Offered,
+	string? Mod,
+	IReadOnlyDictionary<Upgrade, ExportCardUpgradeData> Upgrades
 );
