@@ -2,10 +2,10 @@
 
 namespace Shockah.CatDiscordBotDataExport;
 
-internal sealed record class ExportDeckData(
+internal sealed record class ExportDeckArtifactData(
 	string Key,
 	string Name,
 	bool PlayableCharacter,
 	string? Mod,
-	IReadOnlyList<ExportCardData> Cards
+	IReadOnlyList<ExportArtifactData> Artifacts
 );
