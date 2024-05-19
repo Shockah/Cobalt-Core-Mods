@@ -67,7 +67,6 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 
 	public sealed class ABloodTap : CardAction
 	{
-		public List<List<CardAction>>? Choices;
 		public List<Status>? Statuses;
 		public bool IncludeEnemy;
 
@@ -75,7 +74,7 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 			=> new ActionChoiceRoute
 			{
 				Title = ModEntry.Instance.Localizations.Localize(["card", "BloodTap", "ui", "title"]),
-				Choices = Choices ?? ModEntry.Instance.BloodTapManager.MakeChoices(s, c, includeEnemy: IncludeEnemy).ToList()
+				Choices = ModEntry.Instance.BloodTapManager.MakeChoices(s, c, includeEnemy: IncludeEnemy).ToList()
 			};
 
 		private List<Status> GetStatuses(State s)

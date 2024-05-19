@@ -13,7 +13,7 @@
 	<!-- References -->
 	<Import Project="_Shared\_Shared.projitems" Label="Shared" />
 	<ItemGroup>
-		<PackageReference Include="Nickel.ModBuildConfig" Version="0.8.0-alpha1" />
+		<PackageReference Include="Nickel.ModBuildConfig" Version="0.12.0" />
 		<PackageReference Condition="!$(IsLegacyMod)" Include="Nanoray.ExtractSingleFileApplicationResourceTask" Version="1.0.0" PrivateAssets="All" ExcludeAssets="runtime" />
 		<PackageReference Condition="!$(IsLegacyMod)" Include="MakeTypesPublic" Version="1.0.3" PrivateAssets="All" ExcludeAssets="runtime" />
 		<PackageReference Condition="$(IsLegacyMod)" Include="Shrike" Version="3.0.0" />
