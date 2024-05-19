@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.5
+Released 19 May 2024.
 
 * Aura of Darkness B is now unplayable at 3+ Bleeding (no more infinite free Autopilot).
 * The Echolocation card now specifies the exact move it will make in its tooltip.
