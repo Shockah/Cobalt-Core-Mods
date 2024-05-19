@@ -43,7 +43,7 @@ internal sealed class InsightCard : Card, IRegisterable
 				new AStatus
 				{
 					targetPlayer = true,
-					status = DrawEachTurnManager.DrawEachTurnStatus.Status,
+					status = IntuitionManager.IntuitionStatus.Status,
 					statusAmount = 1
 				}
 			],

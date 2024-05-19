@@ -113,8 +113,8 @@ public sealed class ModEntry : SimpleMod
 		);
 
 		_ = new AuraManager();
-		_ = new DrawEachTurnManager();
 		_ = new InfiniteCharacterAnimationManager();
+		_ = new IntuitionManager();
 		_ = new OnDiscardManager();
 		_ = new OnTurnEndManager();
 		_ = new SpontaneousManager();
@@ -246,7 +246,7 @@ public sealed class ModEntry : SimpleMod
 					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
 					new AStatus { targetPlayer = true, status = AuraManager.IntensifyStatus.Status, statusAmount = 1 },
 				]);
-				draculaApi.RegisterBloodTapOptionProvider(DrawEachTurnManager.DrawEachTurnStatus.Status, (_, _, status) => [
+				draculaApi.RegisterBloodTapOptionProvider(IntuitionManager.IntuitionStatus.Status, (_, _, status) => [
 					new AHurt { targetPlayer = true, hurtAmount = 1 },
 					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 				]);

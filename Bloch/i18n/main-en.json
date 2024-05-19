@@ -57,9 +57,9 @@
             "name": "Intensify",
             "description": "All of your <c=C2FF60>Auras</c> trigger again for each stack of this. <c=downside>Goes away at start of next turn.</c>"
         },
-        "DrawEachTurn": {
-            "name": "Draw Each Turn",
-            "description": "Draw {0} extra cards each turn."
+        "Intuition": {
+            "name": "Intuition",
+            "description": "At the end of each turn, gain 1 <c=status>INSIGHT AURA</c>."
         },
         "Retain": {
             "name": "Mind Map",

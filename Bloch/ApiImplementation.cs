@@ -21,7 +21,7 @@ public sealed class ApiImplementation : IBlochApi
 		=> AuraManager.IntensifyStatus;
 
 	public IStatusEntry DrawEachTurnStatus
-		=> DrawEachTurnManager.DrawEachTurnStatus;
+		=> IntuitionManager.IntuitionStatus;
 
 	public IStatusEntry MindMapStatus
 		=> RetainManager.RetainStatus;
