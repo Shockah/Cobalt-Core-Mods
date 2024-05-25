@@ -1,0 +1,29 @@
+{
+    "UniqueName": "Shockah.CodexHelper",
+    "Version": "1.1.3",
+    "DisplayName": "Codex Helper",
+    "Description": "Helps with Codex completion, by showing which cards or artifacts you're missing, and whether you've beaten a difficulty with the chosen crew.",
+    "Author": "Shockah",
+    "RequiredApiVersion": "0.7.0",
+    "ModType": "Nickel.Legacy",
+    "EntryPointAssembly": "CodexHelper.dll",
+    "AssemblyReferences": [
+        {
+            "Name": "Shrike"
+        },
+        {
+            "Name": "Shrike.Harmony"
+        }
+    ],
+    "Dependencies": [
+        {
+            "UniqueName": "Nickel.Legacy",
+            "Version": "0.7.0"
+        }
+    ],
+    "UpdateChecks": {
+        "NexusMods": {
+            "ID": 20
+        }
+    }
+}

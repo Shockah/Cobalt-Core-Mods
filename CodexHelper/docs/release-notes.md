@@ -2,6 +2,11 @@
 
 # Release notes
 
+## 1.1.3
+Released 25 May 2024.
+
+* Added update check information for Nickel.
+
 ## 1.1.2
 Released 29 November 2023.
 

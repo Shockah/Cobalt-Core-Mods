@@ -5,7 +5,7 @@ This is a list of all Cobalt Core mods I made. Issues or ideas can be reported v
 # Codex Helper
 
 Displays a "NEW!" indicator next to cards and artifacts you've never picked (which are missing from the Codex). Additionally, displays stars next to difficulties you've beaten (with the chosen crew) in the new run menu.  
-\[[latest release](https://github.com/Shockah/Cobalt-Core-Mods/releases/tag/release%2Fcodex-helper-1.1.2)] \[[release notes](CodexHelper/docs/release-notes.md)] \[[README/source code](CodexHelper)]
+\[[NexusMods](https://www.nexusmods.com/cobaltcore/mods/20)] \[[release notes](CodexHelper/docs/release-notes.md)] \[[README/source code](CodexHelper)]
 
 [![Card reward screenshot](CodexHelper/docs/images/card-reward-thumb.png)](CodexHelper/docs/images/card-reward.png)
 [![Artifact reward screenshot](CodexHelper/docs/images/artifact-reward-thumb.png)](CodexHelper/docs/images/artifact-reward.png)
