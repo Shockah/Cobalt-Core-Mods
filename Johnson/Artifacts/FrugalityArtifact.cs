@@ -53,8 +53,9 @@ internal sealed class FrugalityArtifact : Artifact, IRegisterable
 
 	private static void MapShop_MakeRoute_Postfix(State s, ref Route __result)
 	{
-		if (!s.EnumerateAllArtifacts().Any(a => a is FrugalityArtifact))
+		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is FrugalityArtifact) is not { } artifact)
 			return;
 		__result = Dialogue.MakeDialogueRouteOrSkip(s, DB.story.QuickLookup(s, $"ShopkeeperInfinite_{ModEntry.Instance.JohnsonDeck.Deck.Key()}_Frugality"), OnDone.map);
+		artifact.Pulse();
 	}
 }
