@@ -33,43 +33,57 @@ internal sealed class SupplimentCard : Card, IRegisterable
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		List<CardAction> actions = [
+		=> [
 			new AStatus
 			{
 				targetPlayer = true,
 				status = Status.shield,
-				statusAmount = upgrade == Upgrade.A ? 2 : 1
+				statusAmount = 1,
 			},
-			new ADiscount
+			new PositionalAction
 			{
-				CardId = c.hand.LastOrDefault(card => card.uuid != uuid)?.uuid
+				Leftmost = upgrade == Upgrade.A,
+				Rightmost = true,
+				Discount = true,
+				Strengthen = upgrade == Upgrade.B,
 			}
 		];
-		if (upgrade == Upgrade.B)
-			actions.Add(new ADiscount
-			{
-				CardId = c.hand.FirstOrDefault(card => card.uuid != uuid)?.uuid
-			});
-		return actions;
-	}
 
-	public sealed class ADiscount : CardAction
+	private sealed class PositionalAction : CardAction
 	{
-		public required int? CardId;
+		public bool Leftmost;
+		public bool Rightmost;
+		public bool Discount = true;
+		public bool Strengthen = false;
 
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
-			timer = 0;
-			if (CardId is not { } cardId || s.FindCard(cardId) is not { } card)
-				return;
-			card.discount--;
+
+			if (Leftmost && c.hand.LastOrDefault() is { } leftmostCard)
+			{
+				if (Discount)
+					leftmostCard.discount--;
+				if (Strengthen)
+					leftmostCard.AddStrengthen(1);
+			}
+			if (Rightmost && c.hand.LastOrDefault() is { } rightmostCard)
+			{
+				if (Discount)
+					rightmostCard.discount--;
+				if (Strengthen)
+					rightmostCard.AddStrengthen(1);
+			}
 		}
 
 		public override List<Tooltip> GetTooltips(State s)
-			=> [
-				new TTGlossary("cardtrait.discount", 1)
-			];
+		{
+			var tooltips = new List<Tooltip>();
+			if (Discount)
+				tooltips.Add(new TTGlossary("cardtrait.discount", 1));
+			if (Strengthen)
+				tooltips.Add(ModEntry.Instance.Api.GetStrengthenTooltip(1));
+			return tooltips;
+		}
 	}
 }

@@ -227,8 +227,8 @@
             "name": "Supplement",
             "description": {
                 "None": "Gain 1 <c=status>shield</c>. <c=cardtrait>Discount</c> the rightmost card.",
-                "A": "Gain 2 <c=status>shield</c>. <c=cardtrait>Discount</c> the rightmost card.",
-                "B": "Gain 1 <c=status>shield</c>. <c=cardtrait>Discount</c> the left and rightmost card."
+                "A": "Gain 1 <c=status>shield</c>. <c=cardtrait>Discount</c> the left and rightmost card.",
+                "B": "Gain 1 <c=status>shield</c>. <c=cardtrait>Discount</c> and <c=cardtrait>strengthen</c> the rightmost card."
             }
         },
         "TheWorks": {
