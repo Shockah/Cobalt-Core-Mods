@@ -31,19 +31,27 @@ internal sealed class JumpTheCurveArtifact : Artifact, IRegisterable
 		);
 	}
 
+	public override void OnCombatStart(State state, Combat combat)
+	{
+		base.OnCombatStart(state, combat);
+		foreach (var card in state.GetAllCards())
+			ModEntry.Instance.Helper.ModData.RemoveModData(card, "JumpedTheCurve");
+	}
+
 	private static void State_SendCardToDeck_Postfix(State __instance, Card card)
 	{
 		if (__instance.IsOutsideRun())
 			return;
 		if (__instance.route is Combat combat && !combat.EitherShipIsDead(__instance))
 			return;
-
-		var artifact = __instance.EnumerateAllArtifacts().FirstOrDefault(a => a is JumpTheCurveArtifact);
-		if (artifact is null)
+		if (__instance.EnumerateAllArtifacts().FirstOrDefault(a => a is JumpTheCurveArtifact) is not { } artifact)
+			return;
+		if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(card, "JumpedTheCurve"))
 			return;
 
-		card.discount--;
 		artifact.Pulse();
+		ModEntry.Instance.Helper.ModData.SetModData(card, "JumpedTheCurve", true);
+		card.discount--;
 		if (card.IsUpgradable())
 			__instance.GetCurrentQueue().QueueImmediate(new ATemporarilyUpgrade
 			{
