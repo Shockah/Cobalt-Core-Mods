@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * The Frugality artifact now pulses when it stops you from using a repair yard.
+* Updated Johnson's mini portrait.
 
 ## 1.1.3
 Released 27 April 2024.
