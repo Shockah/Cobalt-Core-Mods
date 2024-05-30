@@ -27,7 +27,7 @@ internal sealed class OvertimeCard : Card, IRegisterable
 		=> new()
 		{
 			artTint = "FFFFFF",
-			cost = upgrade == Upgrade.A ? 1 : 2,
+			cost = upgrade == Upgrade.A ? 2 : 3,
 			exhaust = true
 		};
 
@@ -35,20 +35,11 @@ internal sealed class OvertimeCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new ADrawCard
-				{
-					count = 2
-				},
-				new ADiscountHand
-				{
-					Amount = -1
-				}
+				new ADrawCard { count = 2 },
+				new ADiscountHand { Amount = -1 }
 			],
 			_ => [
-				new ADiscountHand
-				{
-					Amount = -1
-				}
+				new ADiscountHand { Amount = -1 }
 			],
 		};
 }
