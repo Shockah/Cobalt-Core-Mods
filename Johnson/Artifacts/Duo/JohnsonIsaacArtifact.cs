@@ -92,7 +92,6 @@ internal sealed class JohnsonIsaacArtifact : Artifact, IRegisterable
 						thing = new ShieldDrone
 						{
 							targetPlayer = true,
-							bubbleShield = true,
 						},
 						offset = -1
 					},
@@ -101,7 +100,6 @@ internal sealed class JohnsonIsaacArtifact : Artifact, IRegisterable
 						thing = new ShieldDrone
 						{
 							targetPlayer = true,
-							bubbleShield = true
 						}
 					},
 					new ASpawn
@@ -109,7 +107,6 @@ internal sealed class JohnsonIsaacArtifact : Artifact, IRegisterable
 						thing = new ShieldDrone
 						{
 							targetPlayer = true,
-							bubbleShield = true
 						},
 						offset = 1
 					}
@@ -120,7 +117,6 @@ internal sealed class JohnsonIsaacArtifact : Artifact, IRegisterable
 						thing = new ShieldDrone
 						{
 							targetPlayer = true,
-							bubbleShield = true
 						},
 						offset = -1
 					},
@@ -129,7 +125,6 @@ internal sealed class JohnsonIsaacArtifact : Artifact, IRegisterable
 						thing = new ShieldDrone
 						{
 							targetPlayer = true,
-							bubbleShield = true
 						},
 						offset = 1
 					}
@@ -169,7 +164,6 @@ internal sealed class JohnsonIsaacArtifact : Artifact, IRegisterable
 				{
 					thing = new AttackDrone
 					{
-						bubbleShield = true,
 						upgraded = upgrade == Upgrade.B
 					},
 					offset = -1
@@ -178,7 +172,6 @@ internal sealed class JohnsonIsaacArtifact : Artifact, IRegisterable
 				{
 					thing = new AttackDrone
 					{
-						bubbleShield = true,
 						upgraded = upgrade == Upgrade.B
 					},
 					offset = 1

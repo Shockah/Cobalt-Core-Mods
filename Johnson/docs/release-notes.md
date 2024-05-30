@@ -7,6 +7,7 @@
 * Changed the Layout card's upgrade tree.
 * The Overtime card is now more expensive.
 * The Frugality artifact now pulses when it stops you from using a repair yard.
+* The drones coming from the Isaac duo artifact are no longer bubbled.
 * Updated Johnson's mini portrait.
 
 ## 1.1.3
