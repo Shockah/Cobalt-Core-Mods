@@ -27,27 +27,42 @@ internal sealed class LayoutCard : Card, IRegisterable
 		=> new()
 		{
 			artTint = "FFFFFF",
-			cost = 1,
-			exhaust = upgrade != Upgrade.B,
+			cost = upgrade == Upgrade.A ? 0 : 1,
+			exhaust = true,
 			description = ModEntry.Instance.Localizations.Localize(["card", "Layout", "description", upgrade.ToString()])
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new ASpecificCardOffering
-			{
-				Destination = upgrade == Upgrade.A ? CardDestination.Hand : CardDestination.Deck,
-				Cards = [
-					new BulletPointCard(),
-					new SlideTransitionCard(),
-				],
-			},
-			new ATooltipAction
-			{
-				Tooltips = [
-					new TTCard { card = new BulletPointCard() },
-					new TTCard { card = new SlideTransitionCard() },
-				]
-			}
-		];
+		=> upgrade switch
+		{
+			Upgrade.B => [
+				new AAddCard
+				{
+					card = new BulletPointCard(),
+					destination = CardDestination.Discard,
+				},
+				new AAddCard
+				{
+					card = new SlideTransitionCard(),
+					destination = CardDestination.Discard,
+				}
+			],
+			_ => [
+				new ASpecificCardOffering
+				{
+					Destination = CardDestination.Deck,
+					Cards = [
+						new BulletPointCard(),
+						new SlideTransitionCard(),
+					]
+				},
+				new ATooltipAction
+				{
+					Tooltips = [
+						new TTCard { card = new BulletPointCard() },
+						new TTCard { card = new SlideTransitionCard() },
+					]
+				}
+			]
+		};
 }

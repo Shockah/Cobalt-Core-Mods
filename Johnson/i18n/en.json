@@ -171,8 +171,8 @@
             "name": "Layout",
             "description": {
                 "None": "Add either a <c=card>Bullet Point</c> or a <c=card>Slide Transition</c> to your <c=keyword>draw pile</c>.",
-                "A": "Add either a <c=card>Bullet Point</c> or a <c=card>Slide Transition</c> to your <c=keyword>hand</c>.",
-                "B": "Add either a <c=card>Bullet Point</c> or a <c=card>Slide Transition</c> to your <c=keyword>draw pile</c>."
+                "A": "Add either a <c=card>Bullet Point</c> or a <c=card>Slide Transition</c> to your <c=keyword>draw pile</c>.",
+                "B": "Add a <c=card>Bullet Point</c> and a <c=card>Slide Transition</c> to your <c=keyword>discard pile</c>."
             }
         },
         "Merger": {

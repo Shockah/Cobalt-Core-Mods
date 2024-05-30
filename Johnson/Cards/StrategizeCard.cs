@@ -33,39 +33,36 @@ internal sealed class StrategizeCard : Card, IRegisterable
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		List<CardAction> actions = [];
-		if (upgrade == Upgrade.B)
+		=> upgrade switch
 		{
-			actions.Add(new AAddCard
-			{
-				card = new LeverageCard(),
-				destination = CardDestination.Discard
-			});
-			actions.Add(new AAddCard
-			{
-				card = new BrainstormCard(),
-				destination = CardDestination.Discard
-			});
-		}
-		else
-		{
-			actions.Add(new ASpecificCardOffering
-			{
-				Destination = CardDestination.Deck,
-				Cards = [
-					new LeverageCard(),
-					new BrainstormCard(),
-				],
-			});
-			actions.Add(new ATooltipAction
-			{
-				Tooltips = [
-					new TTCard { card = new LeverageCard() },
-					new TTCard { card = new BrainstormCard() },
-				]
-			});
-		}
-		return actions;
-	}
+			Upgrade.B => [
+				new AAddCard
+				{
+					card = new LeverageCard(),
+					destination = CardDestination.Discard,
+				},
+				new AAddCard
+				{
+					card = new BrainstormCard(),
+					destination = CardDestination.Discard,
+				}
+			],
+			_ => [
+				new ASpecificCardOffering
+				{
+					Destination = CardDestination.Deck,
+					Cards = [
+						new LeverageCard(),
+						new BrainstormCard(),
+					]
+				},
+				new ATooltipAction
+				{
+					Tooltips = [
+						new TTCard { card = new LeverageCard() },
+						new TTCard { card = new BrainstormCard() },
+					]
+				}
+			]
+		};
 }
