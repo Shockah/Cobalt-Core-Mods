@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added Temp Shield Next Turn and Shield Next Turn statuses.
+
 ## 1.8.1
 Released 5 May 2024.
 

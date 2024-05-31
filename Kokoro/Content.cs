@@ -52,6 +52,11 @@ internal sealed class Content
 	internal ExternalSprite ContinueSprite { get; private set; } = null!;
 	internal ExternalSprite StopSprite { get; private set; } = null!;
 
+	internal ExternalSprite TempShieldNextTurnSprite { get; private set; } = null!;
+	internal ExternalStatus TempShieldNextTurnStatus { get; private set; } = null!;
+	internal ExternalSprite ShieldNextTurnSprite { get; private set; } = null!;
+	internal ExternalStatus ShieldNextTurnStatus { get; private set; } = null!;
+
 	internal Font PinchCompactFont { get; private set; } = null!;
 
 	internal void RegisterArt(ISpriteRegistry registry)
@@ -124,6 +129,14 @@ internal sealed class Content
 			id: $"{typeof(ModEntry).Namespace}.Stop",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Stop.png"))
 		);
+		TempShieldNextTurnSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.TempShieldNextTurn",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "TempShieldNextTurn.png"))
+		);
+		ShieldNextTurnSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.ShieldNextTurn",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "ShieldNextTurn.png"))
+		);
 
 		PinchCompactFont = LoadFont(
 			registry: registry,
@@ -177,6 +190,30 @@ internal sealed class Content
 			);
 			RedrawStatus.AddLocalisation(I18n.RedrawStatusName, I18n.RedrawStatusDescription);
 			registry.RegisterStatus(RedrawStatus);
+		}
+		{
+			TempShieldNextTurnStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.TempShieldNextTurn",
+				isGood: true,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFB500BE)),
+				borderColor: null,
+				TempShieldNextTurnSprite,
+				affectedByTimestop: false
+			);
+			TempShieldNextTurnStatus.AddLocalisation(I18n.TempShieldNextTurnStatusName, I18n.TempShieldNextTurnStatusDescription);
+			registry.RegisterStatus(TempShieldNextTurnStatus);
+		}
+		{
+			ShieldNextTurnStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.ShieldNextTurn",
+				isGood: true,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF9FD0FF)),
+				borderColor: null,
+				ShieldNextTurnSprite,
+				affectedByTimestop: false
+			);
+			ShieldNextTurnStatus.AddLocalisation(I18n.ShieldNextTurnStatusName, I18n.ShieldNextTurnStatusDescription);
+			registry.RegisterStatus(ShieldNextTurnStatus);
 		}
 	}
 

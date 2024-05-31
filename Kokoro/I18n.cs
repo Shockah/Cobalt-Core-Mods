@@ -16,6 +16,11 @@ internal static class I18n
 	public static string RedrawStatusName => "REDRAW";
 	public static string RedrawStatusDescription => "Lets you discard a card and draw a new one. Costs 1 redraw per discard.";
 
+	public static string TempShieldNextTurnStatusName => "TEMP SHIELD NEXT TURN";
+	public static string TempShieldNextTurnStatusDescription => "Gain {0} <c=status>TEMP SHIELD</c> next turn.";
+	public static string ShieldNextTurnStatusName => "SHIELD NEXT TURN";
+	public static string ShieldNextTurnStatusDescription => "Gain {0} <c=status>SHIELD</c> next turn.";
+
 	public static string ConditionalActionName => "CONDITIONAL";
 	public static string ConditionalActionDescription => "This action will only trigger if {0}.";
 	public static string ConditionalHandDescription => "cards in your hand";

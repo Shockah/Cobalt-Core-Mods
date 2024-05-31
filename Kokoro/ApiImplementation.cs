@@ -140,6 +140,20 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 		=> Kokoro.StandardRedrawStatusActionHook.Instance;
 	#endregion
 
+	#region StatusNextTurn
+	public ExternalStatus TempShieldNextTurnStatus
+		=> Instance.Content.TempShieldNextTurnStatus;
+
+	public Status TempShieldNextTurnVanillaStatus
+		=> (Status)TempShieldNextTurnStatus.Id!.Value;
+
+	public ExternalStatus ShieldNextTurnStatus
+		=> Instance.Content.ShieldNextTurnStatus;
+
+	public Status ShieldNextTurnVanillaStatus
+		=> (Status)ShieldNextTurnStatus.Id!.Value;
+	#endregion
+
 	#region OxidationStatus
 	public ExternalStatus OxidationStatus
 		=> Instance.Content.OxidationStatus;

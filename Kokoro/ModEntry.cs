@@ -44,6 +44,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	public WormStatusManager WormStatusManager { get; private init; } = new();
 	public OxidationStatusManager OxidationStatusManager { get; private init; } = new();
 	public RedrawStatusManager RedrawStatusManager { get; private init; } = new();
+	public StatusNextTurnManager StatusNextTurnManager { get; private init; } = new();
 
 	internal TimeSpan TotalGameTime;
 
@@ -71,7 +72,9 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 		StatusLogicManager.Register(WormStatusManager, 0);
 		StatusLogicManager.Register(OxidationStatusManager, 0);
+		StatusLogicManager.Register(StatusNextTurnManager, 0);
 		StatusRenderManager.Register(OxidationStatusManager, 0);
+		StatusRenderManager.Register(StatusNextTurnManager, 0);
 
 		Harmony = new(Name);
 
