@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.4
+Released 31 May 2024.
 
 * Changed the Layout card's upgrade tree.
 * Changed the Supplement card's upgrade tree and art.
