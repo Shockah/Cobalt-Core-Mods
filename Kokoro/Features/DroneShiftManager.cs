@@ -8,8 +8,8 @@ public sealed class DroneShiftManager : HookManager<IDroneShiftHook>
 	internal DroneShiftManager() : base()
 	{
 		Register(VanillaDroneShiftHook.Instance, 0);
-		Register(VanillaDebugDroneShiftHook.Instance, int.MaxValue);
-		Register(VanillaMidrowCheckDroneShiftHook.Instance, int.MaxValue);
+		Register(VanillaDebugDroneShiftHook.Instance, 1_000_000_000);
+		Register(VanillaMidrowCheckDroneShiftHook.Instance, 1_000_000_000);
 	}
 
 	public bool IsDroneShiftPossible(State state, Combat combat, int direction, DroneShiftHookContext context)

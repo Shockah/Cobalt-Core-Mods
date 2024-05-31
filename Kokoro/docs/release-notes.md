@@ -2,9 +2,11 @@
 
 # Release notes
 
-## Upcoming release
+## 1.9.0
+Released 31 May 2024.
 
 * Added Temp Shield Next Turn and Shield Next Turn statuses.
+* Changed Evade/Droneshift hook priorities a bit.
 
 ## 1.8.1
 Released 5 May 2024.

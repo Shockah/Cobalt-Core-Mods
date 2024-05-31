@@ -9,7 +9,7 @@ public sealed class EvadeManager : HookManager<IEvadeHook>
 	internal EvadeManager() : base()
 	{
 		Register(VanillaEvadeHook.Instance, 0);
-		Register(VanillaDebugEvadeHook.Instance, int.MaxValue);
+		Register(VanillaDebugEvadeHook.Instance, 1_000_000_000);
 		Register(VanillaTrashAnchorEvadeHook.Instance, 1000);
 		Register(VanillaLockdownEvadeHook.Instance, 1001);
 	}
