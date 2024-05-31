@@ -2,9 +2,11 @@
 
 # Release notes
 
-## Upcoming release
+## 1.2.0
+Released 31 May 2024.
 
 * Replaced the Blown Fuse artifact with a new Pyromania artifact.
+* Changed the Hard Hat artifact to give Temp Shield on the next turn instead.
 
 ## 1.1.0
 Released 12 May 2024.
