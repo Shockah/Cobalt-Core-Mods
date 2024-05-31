@@ -2,7 +2,6 @@
 using Nickel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dyna;
@@ -26,9 +25,10 @@ internal sealed class HardHatArtifact : Artifact, IRegisterable
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> StatusMeta.GetTooltips(Status.energyLessNextTurn, Math.Max(MG.inst.g.state.ship.Get(Status.energyLessNextTurn), 1))
-			.Concat(StatusMeta.GetTooltips(Status.tempShield, 2))
-			.ToList();
+		=> [
+			.. StatusMeta.GetTooltips(Status.energyLessNextTurn, Math.Max(MG.inst.g.state.ship.Get(Status.energyLessNextTurn), 1)),
+			.. StatusMeta.GetTooltips(ModEntry.Instance.KokoroApi.TempShieldNextTurnVanillaStatus, 2),
+		];
 
 	public override void OnTurnEnd(State state, Combat combat)
 	{
@@ -41,7 +41,7 @@ internal sealed class HardHatArtifact : Artifact, IRegisterable
 		combat.QueueImmediate(new AStatus
 		{
 			targetPlayer = true,
-			status = Status.tempShield,
+			status = ModEntry.Instance.KokoroApi.TempShieldNextTurnVanillaStatus,
 			statusAmount = 2,
 			artifactPulse = Key()
 		});
