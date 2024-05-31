@@ -7,6 +7,7 @@
 * Changed the Layout card's upgrade tree.
 * Changed the Supplement card's upgrade tree and art.
 * The Overtime card is now more expensive.
+* The Downsize B card is now less expensive.
 * The Frugality artifact now pulses when it stops you from using a repair yard.
 * The drones coming from the Isaac duo artifact are no longer bubbled.
 * Updated the Number Cruncher card's art.

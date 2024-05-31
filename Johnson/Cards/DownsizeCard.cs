@@ -29,7 +29,7 @@ internal sealed class DownsizeCard : Card, IRegisterable
 		=> new()
 		{
 			artTint = "FFFFFF",
-			cost = upgrade == Upgrade.B ? 1 : 2,
+			cost = upgrade == Upgrade.B ? 0 : 2,
 			singleUse = upgrade != Upgrade.A,
 			exhaust = upgrade == Upgrade.A,
 			retain = upgrade == Upgrade.B,
