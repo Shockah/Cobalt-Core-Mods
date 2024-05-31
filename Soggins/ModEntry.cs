@@ -85,6 +85,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		typeof(MoveApologyCard),
 		typeof(EnergyApologyCard),
 		typeof(DrawApologyCard),
+		typeof(RedrawApologyCard),
 		typeof(AsteroidApologyCard),
 		typeof(MissileApologyCard),
 		typeof(MineApologyCard),
