@@ -75,6 +75,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static readonly IReadOnlyList<Type> BossArtifacts = [
 		typeof(BlownFuseArtifact),
+		typeof(PyromaniaArtifact),
 		typeof(UnstableCompoundArtifact),
 	];
 

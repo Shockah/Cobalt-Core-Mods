@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Replaced the Blown Fuse artifact with a new Pyromania artifact.
+
 ## 1.1.0
 Released 12 May 2024.
 

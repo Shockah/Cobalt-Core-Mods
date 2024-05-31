@@ -114,6 +114,10 @@
             "name": "HARD HAT",
             "description": "If you end your turn with <c=status>LESS ENERGY NEXT TURN</c>, gain 2 <c=status>TEMP SHIELD</c>."
         },
+        "Pyromania": {
+            "name": "PYROMANIA",
+            "description": "The first each turn you trigger a <c=parttrait>charge</c>, gain 1 <c=energy>energy</c>."
+        },
         "UnstableCompound": {
             "name": "UNSTABLE COMPOUND",
             "description": "All <c=action>Blastwave</c> attacks are <c=action>Wide Blastwave</c>. <c=downside>Whenever you trigger <c=action>Blastwave</c>, take 1 damage.</c>"

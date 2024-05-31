@@ -14,7 +14,7 @@ internal sealed class BlownFuseArtifact : Artifact, IRegisterable
 			Meta = new()
 			{
 				owner = ModEntry.Instance.DynaDeck.Deck,
-				pools = ModEntry.GetArtifactPools(MethodBase.GetCurrentMethod()!.DeclaringType!)
+				pools = [.. ModEntry.GetArtifactPools(MethodBase.GetCurrentMethod()!.DeclaringType!), ArtifactPool.Unreleased],
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/BlownFuse.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "BlownFuse", "name"]).Localize,
