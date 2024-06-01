@@ -17,7 +17,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 	{
 		public int ModifyApologyAmountForBotchingBySmug(State state, Combat combat, Card card, int amount)
 		{
-			int extraApologies = state.ship.Get((Status)Instance.ExtraApologiesStatus.Id!.Value);
+			var extraApologies = state.ship.Get((Status)Instance.ExtraApologiesStatus.Id!.Value);
 			return Math.Max(amount + extraApologies, 1);
 		}
 	}
@@ -97,9 +97,9 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		var smug = Instance.Api.GetSmug(state, ship);
 		if (smug is null)
 			return 0;
-		else if (ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0)
+		if (ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0)
 			return 0;
-		else if (smug.Value > Instance.Api.GetMaxSmug(ship))
+		if (smug.Value > Instance.Api.GetMaxSmug(ship))
 			return 1; // oversmug
 
 		var chance = smug.Value < Instance.Api.GetMinSmug(ship) ? Constants.BotchChances[0] : Constants.BotchChances[smug.Value - Instance.Api.GetMinSmug(ship)];
@@ -113,9 +113,9 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		var smug = Instance.Api.GetSmug(state, ship);
 		if (smug is null)
 			return 0;
-		else if (ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0)
+		if (ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0)
 			return 1;
-		else if (smug.Value > Instance.Api.GetMaxSmug(ship))
+		if (smug.Value > Instance.Api.GetMaxSmug(ship))
 			return 0; // oversmug
 
 		var chance = smug.Value < Instance.Api.GetMinSmug(ship) ? Constants.DoubleChances[0] : Constants.DoubleChances[smug.Value - Instance.Api.GetMinSmug(ship)];
@@ -163,7 +163,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		}
 		else
 		{
-			WeightedRandom<ApologyCard> weightedRandom = new();
+			var weightedRandom = new WeightedRandom<ApologyCard>();
 			foreach (var apologyType in ModEntry.ApologyCards)
 			{
 				if (forDual && apologyType == typeof(DualApologyCard))
@@ -179,7 +179,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			apology = weightedRandom.Next(rng);
 		}
 
-		int totalApologies = timesApologyWasGiven.Values.Sum() - timesApologyWasGiven.GetValueOrDefault(typeof(DualApologyCard).FullName!);
+		var totalApologies = timesApologyWasGiven.Values.Sum() - timesApologyWasGiven.GetValueOrDefault(typeof(DualApologyCard).FullName!);
 		if (!forDual)
 			apology.ApologyFlavorText = $"<c={I18n.SogginsColor}>{string.Format(I18n.ApologyFlavorTexts[rng.NextInt() % I18n.ApologyFlavorTexts.Length], totalApologies)}</c>";
 		timesApologyWasGiven[apology.GetType().FullName!] = timesApologyWasGiven.GetValueOrDefault(apology.GetType().FullName!) + 1;
@@ -244,17 +244,14 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		if (frogproofType is FrogproofType.Innate or FrogproofType.InnateHiddenIfNotNeeded)
 			return actions;
 
-		double botchChance = Instance.Api.GetSmugBotchChance(state, state.ship, card);
+		var botchChance = Instance.Api.GetSmugBotchChance(state, state.ship, card);
 		if (frogproofType == FrogproofType.Paid && botchChance > 0)
 		{
 			handlingHook?.PayForFrogproof(state, combat, card);
 			return actions;
 		}
 
-		var deck = card.GetMeta().deck;
-		var deckKey = deck == Deck.colorless ? "comp" : deck.Key();
-
-		double doubleChance = Instance.Api.GetSmugDoubleChance(state, state.ship, card);
+		var doubleChance = Instance.Api.GetSmugDoubleChance(state, state.ship, card);
 		var result = GetSmugResult(state.rngActions, botchChance, doubleChance);
 		var swing = Math.Max(card.GetCurrentCost(state), 1);
 		switch (result)
@@ -271,10 +268,10 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 					status = (Status)Instance.BotchesStatus.Id!.Value,
 					statusAmount = 1,
 					targetPlayer = true,
-					whoDidThis = deck
+					whoDidThis = card.GetMeta().deck
 				});
 
-				bool isOversmug = Instance.Api.IsOversmug(state, state.ship);
+				var isOversmug = Instance.Api.IsOversmug(state, state.ship);
 				actions.Add(new AStatus
 				{
 					status = (Status)Instance.SmugStatus.Id!.Value,
@@ -283,18 +280,15 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 					targetPlayer = true
 				});
 
-				int apologies = swing;
+				var apologies = swing;
 				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
 					apologies = hook.ModifyApologyAmountForBotchingBySmug(state, combat, card, apologies);
-				
-				for (int i = 0; i < apologies; i++)
+
+				actions.AddRange(Enumerable.Range(0, apologies).Select(_ => new AAddCard
 				{
-					actions.Add(new AAddCard
-					{
-						card = GenerateAndTrackApology(state, combat, state.rngActions),
-						destination = CardDestination.Hand
-					});
-				}
+					card = GenerateAndTrackApology(state, combat, state.rngActions),
+					destination = CardDestination.Hand
+				}));
 
 				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
 					hook.OnCardBotchedBySmug(state, combat, card);
@@ -307,7 +301,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 				if (isSpawnAction)
 					toAdd.Add(new ADroneMove { dir = 1 });
 
-				bool hasDoubleTime = state.ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0;
+				var hasDoubleTime = state.ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0;
 				toAdd.Insert(0, new AShakeShip
 				{
 					statusPulse = hasDoubleTime ? (Status)Instance.DoubleTimeStatus.Id!.Value : (Status)Instance.SmugStatus.Id!.Value
@@ -367,8 +361,8 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 				});
 		}
 
-		int constantApologies = s.ship.Get((Status)Instance.ConstantApologiesStatus.Id!.Value);
-		for (int i = 0; i < constantApologies; i++)
+		var constantApologies = s.ship.Get((Status)Instance.ConstantApologiesStatus.Id!.Value);
+		for (var i = 0; i < constantApologies; i++)
 			c.Queue(new AAddCard
 			{
 				card = GenerateAndTrackApology(s, c, s.rngActions),
@@ -383,7 +377,6 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			return;
 
 		if (s.ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0)
-		{
 			c.Queue(new AStatus
 			{
 				status = (Status)Instance.DoubleTimeStatus.Id!.Value,
@@ -391,7 +384,6 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 				statusAmount = 0,
 				targetPlayer = true
 			});
-		}
 	}
 
 	private static void Card_GetAllTooltips_Postfix(Card __instance, ref IEnumerable<Tooltip> __result)
@@ -404,7 +396,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 		IEnumerable<Tooltip> ModifyTooltips(IEnumerable<Tooltip> tooltips)
 		{
-			bool yieldedFlavorText = false;
+			var yieldedFlavorText = false;
 
 			foreach (var tooltip in tooltips)
 			{

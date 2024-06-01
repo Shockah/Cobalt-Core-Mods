@@ -53,9 +53,6 @@ public sealed class ZenCard : Card, IRegisterableCard, IFrogproofCard
 				statusAmount = 0,
 				targetPlayer = true
 			},
-			new ADrawCard
-			{
-				count = 1
-			}
+			new ADrawCard { count = 1 }
 		];
 }

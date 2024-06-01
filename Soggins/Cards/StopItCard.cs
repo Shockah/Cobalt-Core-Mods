@@ -54,10 +54,7 @@ public sealed class StopItCard : Card, IRegisterableCard, IFrogproofCard
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new ADrawCard
-				{
-					count = 2
-				},
+				new ADrawCard { count = 2 },
 				new AStatus
 				{
 					status = (Status)Instance.FrogproofingStatus.Id!.Value,

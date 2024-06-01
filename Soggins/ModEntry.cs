@@ -322,7 +322,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		{
 			SmugStatus = new(
 				$"{typeof(ModEntry).Namespace}.Status.Smug",
-				isGood: false,
+				isGood: true,
 				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF483C57)),
 				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF483C57)),
 				SmugStatusSprite,
@@ -346,7 +346,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		{
 			BotchesStatus = new(
 				$"{typeof(ModEntry).Namespace}.Status.Botches",
-				isGood: false,
+				isGood: true,
 				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF7E503C)),
 				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF7E503C)),
 				BotchesStatusSprite,
