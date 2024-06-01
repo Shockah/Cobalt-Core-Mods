@@ -21,11 +21,10 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	private Harmony Harmony { get; set; } = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
-	public IEnumerable<DependencyEntry> Dependencies => new DependencyEntry[]
-	{
+	public IEnumerable<DependencyEntry> Dependencies => [
 		new DependencyEntry<IModManifest>("Shockah.Kokoro", ignoreIfMissing: false),
 		new DependencyEntry<IModManifest>("Shockah.DuoArtifacts", ignoreIfMissing: true)
-	};
+	];
 
 	public DirectoryInfo? GameRootFolder { get; set; }
 	public DirectoryInfo? ModRootFolder { get; set; }
@@ -359,7 +358,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		{
 			ExtraApologiesStatus = new(
 				$"{typeof(ModEntry).Namespace}.Status.ExtraApologies",
-				isGood: false,
+				isGood: true,
 				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF2B5549)),
 				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF2B5549)),
 				ExtraApologiesStatusSprite,
@@ -371,7 +370,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		{
 			ConstantApologiesStatus = new(
 				$"{typeof(ModEntry).Namespace}.Status.ConstantApologies",
-				isGood: false,
+				isGood: true,
 				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF2B5549)),
 				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF2B5549)),
 				ConstantApologiesStatusSprite,
@@ -383,7 +382,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		{
 			BidingTimeStatus = new(
 				$"{typeof(ModEntry).Namespace}.Status.BidingTime",
-				isGood: false,
+				isGood: true,
 				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF639BFF)),
 				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF639BFF)),
 				BidingTimeStatusSprite,
@@ -395,7 +394,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		{
 			DoubleTimeStatus = new(
 				$"{typeof(ModEntry).Namespace}.Status.DoubleTime",
-				isGood: false,
+				isGood: true,
 				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFCC503D)),
 				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFCC503D)),
 				DoubleTimeStatusSprite,
@@ -407,7 +406,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		{
 			DoublersLuckStatus = new(
 				$"{typeof(ModEntry).Namespace}.Status.DoublersLuck",
-				isGood: false,
+				isGood: true,
 				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF0C560E)),
 				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF0C560E)),
 				DoublersLuckStatusSprite,
