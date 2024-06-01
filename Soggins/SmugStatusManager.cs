@@ -301,9 +301,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 				Instance.NarrativeManager.DidBotchCard = true;
 				break;
 			case SmugResult.Double:
-				var toAdd = card.GetActionsOverridden(state, combat)
-					.Where(a => a is not AEndTurn)
-					.ToList();
+				var toAdd = card.GetActionsOverridden(state, combat);
 
 				var isSpawnAction = actions.SelectMany(Instance.KokoroApi.Actions.GetWrappedCardActionsRecursively).Any(a => a is ASpawn);
 				if (isSpawnAction)
@@ -396,7 +394,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		}
 	}
 
-	private static void Card_GetAllTooltips_Postfix(Card __instance, G g, State s, bool showCardTraits, ref IEnumerable<Tooltip> __result)
+	private static void Card_GetAllTooltips_Postfix(Card __instance, ref IEnumerable<Tooltip> __result)
 	{
 		if (__instance is not ApologyCard apology)
 			return;

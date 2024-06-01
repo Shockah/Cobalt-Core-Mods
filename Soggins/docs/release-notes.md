@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Added a Redraw apology card.
+* Removed special handling of end turn effects, since they're handled by the game itself now.
 
 ## 1.3.3
 Released 5 May 2024.
