@@ -2,6 +2,13 @@
 
 This is a list of all Cobalt Core mods I made. Issues or ideas can be reported via [the GitHub issues page](https://github.com/Shockah/Cobalt-Core-Mods/issues), or via Discord (you can find me on the official Cobalt Core server in the `#cobalt-modding` channel, as well as the mod-specific threads in the `#cc-mod-showcase` forum; my tag is `@shockah`).
 
+# Bloch
+
+**Bloch** -- Your ship's mentalist. Specializes in reducing incoming damage, card draw manipulation and discard effects.  
+\[[NexusMods](https://www.nexusmods.com/cobaltcore/mods/21)] \[[release notes](Bloch/docs/release-notes.md)] \[[source code](Bloch)]
+
+[![Banner](Bloch/Banner.png)](https://www.nexusmods.com/cobaltcore/mods/21)
+
 # Codex Helper
 
 Displays a "NEW!" indicator next to cards and artifacts you've never picked (which are missing from the Codex). Additionally, displays stars next to difficulties you've beaten (with the chosen crew) in the new run menu.  
