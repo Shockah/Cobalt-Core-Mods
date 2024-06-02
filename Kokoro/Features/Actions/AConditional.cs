@@ -29,13 +29,15 @@ public sealed class AConditional : CardAction
 		{
 			var description = Expression.GetTooltipDescription(s, s.route as Combat);
 			var formattedDescription = string.Format(I18n.ConditionalActionDescription, description);
-			tooltips.Add(new CustomTTGlossary(
+			var defaultTooltip = new CustomTTGlossary(
 				CustomTTGlossary.GlossaryType.action,
 				() => (Spr)ModEntry.Instance.Content.QuestionMarkSprite.Id!.Value,
 				() => I18n.ConditionalActionName,
 				() => formattedDescription,
 				key: $"AConditional::{formattedDescription}"
-			));
+			);
+
+			tooltips.AddRange(Expression.OverrideConditionalTooltip(s, s.route as Combat, defaultTooltip, formattedDescription));
 			tooltips.AddRange(Expression.GetTooltips(s, s.route as Combat));
 		}
 		if (Action is not null && !Action.omitFromTooltips)

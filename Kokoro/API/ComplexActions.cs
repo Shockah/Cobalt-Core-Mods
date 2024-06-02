@@ -33,13 +33,14 @@ public partial interface IKokoroApi
 		{
 			void Render(G g, ref Vec position, bool isDisabled, bool dontRender);
 			string GetTooltipDescription(State state, Combat? combat);
-			List<Tooltip> GetTooltips(State state, Combat? combat) => new();
+			List<Tooltip> GetTooltips(State state, Combat? combat) => [];
 		}
 
 		public interface IBoolExpression : IExpression
 		{
 			bool GetValue(State state, Combat combat);
 			bool ShouldRenderQuestionMark(State state, Combat? combat) => true;
+			IEnumerable<Tooltip> OverrideConditionalTooltip(State state, Combat? combat, Tooltip defaultTooltip, string defaultTooltipDescription) => [defaultTooltip];
 		}
 
 		public interface IIntExpression : IExpression
@@ -90,7 +91,7 @@ public partial interface IKokoroApi
 			void RenderPrefix(G g, ref Vec position, bool isDisabled, bool dontRender) { }
 			void RenderSuffix(G g, ref Vec position, bool isDisabled, bool dontRender) { }
 			void Render(G g, ref Vec position, bool isSatisfied, bool isDisabled, bool dontRender);
-			List<Tooltip> GetTooltips(State state, Combat? combat, int amount) => new();
+			List<Tooltip> GetTooltips(State state, Combat? combat, int amount) => [];
 		}
 
 		public enum StatusResourceTarget

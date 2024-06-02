@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added an API to override conditional action tooltips.
 * Fixed not being able to force the droneshift buttons to appear if needed.
 
 ## 1.9.0
