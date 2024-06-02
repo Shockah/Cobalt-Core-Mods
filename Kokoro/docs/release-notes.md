@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed not being able to force the droneshift buttons to appear if needed.
+
 ## 1.9.0
 Released 31 May 2024.
 

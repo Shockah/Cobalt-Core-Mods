@@ -1,5 +1,6 @@
 ﻿using FSPRO;
 using Shockah.Shared;
+using System.Linq;
 
 namespace Shockah.Kokoro;
 
@@ -9,7 +10,7 @@ public sealed class DroneShiftManager : HookManager<IDroneShiftHook>
 	{
 		Register(VanillaDroneShiftHook.Instance, 0);
 		Register(VanillaDebugDroneShiftHook.Instance, 1_000_000_000);
-		Register(VanillaMidrowCheckDroneShiftHook.Instance, 1_000_000_000);
+		Register(VanillaMidrowCheckDroneShiftHook.Instance, 2_000_000_000);
 	}
 
 	public bool IsDroneShiftPossible(State state, Combat combat, int direction, DroneShiftHookContext context)
@@ -70,11 +71,10 @@ public sealed class VanillaMidrowCheckDroneShiftHook : IDroneShiftHook
 			return null;
 		if (combat.stuff.Count != 0)
 			return null;
+		if (combat.stuff.Any(s => !s.Value.Immovable()))
+			return null;
 
 		Audio.Play(Event.Status_PowerDown);
 		return false;
 	}
-
-	public void PayForDroneShift(State state, Combat combat, int direction)
-		=> state.ship.Add(Status.droneShift, -1);
 }

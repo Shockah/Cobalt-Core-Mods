@@ -138,6 +138,19 @@ internal static class CombatPatches
 					new CodeInstruction(OpCodes.Nop).WithLabels(labels)
 				)
 				.Find(
+					ILMatches.Ldloc<Combat>(originalMethod),
+					ILMatches.Ldfld("stuff"),
+					ILMatches.Call("get_Count"),
+					ILMatches.Brfalse
+				)
+				.EncompassUntil(
+					SequenceMatcherPastBoundsDirection.After,
+					ILMatches.Call("Any"),
+					ILMatches.Brtrue,
+					ILMatches.Instruction(OpCodes.Ret)
+				)
+				.Remove()
+				.Find(
 					SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.WholeSequence,
 					ILMatches.Ldarg(1).Anchor(out var gPointer1),
 					ILMatches.Stloc<G>(originalMethod),
