@@ -1,6 +1,8 @@
 ﻿using FSPRO;
 using HarmonyLib;
+using Newtonsoft.Json;
 using Shockah.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,12 +17,22 @@ internal static class CardActionExt
 
 internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 {
+	[method: JsonConstructor]
+	internal record struct CustomAction(
+		CardAction? Action,
+		string Title,
+		int MinSelected = 0,
+		int MaxSelected = int.MaxValue
+	);
+
 	private static bool IsHarmonySetup = false;
 	private static MultiCardBrowse? CurrentlyRenderedMenu;
 
+	public List<CustomAction>? CustomActions = null;
 	public int MinSelected = 0;
 	public int MaxSelected = int.MaxValue;
 	public bool EnabledSorting = true;
+	public bool BrowseActionIsOnlyForTitle = false;
 	public List<Card>? CardsOverride;
 
 	private readonly HashSet<int> SelectedCards = [];
@@ -49,6 +61,16 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 		IsHarmonySetup = true;
 	}
 
+	private List<CustomAction> GetAllActions()
+	{
+		var results = new List<CustomAction>(Math.Max((browseAction is null ? 0 : 1) + (CustomActions?.Count ?? 0), 1));
+		if (CustomActions is not null)
+			results.AddRange(CustomActions);
+		if ((browseAction is not null && !BrowseActionIsOnlyForTitle) || results.Count == 0)
+			results.Add(new CustomAction(browseAction, ModEntry.Instance.Localizations.Localize(["route", "MultiCardBrowse", "doneButton"]), MinSelected, MaxSelected));
+		return results;
+	}
+
 	void OnMouseDown.OnMouseDown(G g, Box b)
 	{
 		if (b.key?.ValueFor(StableUK.card) is { } uuid)
@@ -65,7 +87,12 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 		}
 		else if (b.key?.k == (UIKey)(UK)21375001)
 		{
-			Finish(g);
+			var actions = GetAllActions();
+			Finish(g, actions[b.key?.v ?? 0]);
+		}
+		else
+		{
+			this.OnMouseDown(g, b);
 		}
 	}
 
@@ -82,27 +109,32 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 			enabledSortModes.AddRange(oldEnabledSortModes);
 		CurrentlyRenderedMenu = null;
 
-		var inactive = SelectedCards.Count < MinSelected || SelectedCards.Count > MaxSelected;
-		SharedArt.ButtonText(
-			g,
-			new Vec(390, GetBackButtonMode() == BackMode.None ? 228 : 202),
-			(UIKey)(UK)21375001,
-			ModEntry.Instance.Localizations.Localize(["route", "MultiCardBrowse", "doneButton"]),
-			boxColor: inactive ? Colors.buttonInactive : null, 
-			inactive: inactive,
-			onMouseDown: this
-		);
+		var allActions = GetAllActions();
+		for (var i = 0; i < allActions.Count; i++)
+		{
+			var action = allActions[i];
+			var inactive = SelectedCards.Count < action.MinSelected || SelectedCards.Count > action.MaxSelected;
+			SharedArt.ButtonText(
+				g,
+				new Vec(390, (GetBackButtonMode() == BackMode.None ? 228 : 202) - (allActions.Count - 1 - i) * 26),
+				new UIKey((UK)21375001, i),
+				action.Title,
+				boxColor: inactive ? Colors.buttonInactive : null,
+				inactive: inactive,
+				onMouseDown: this
+			);
+		}
 	}
 
-	private void Finish(G g)
+	private void Finish(G g, CustomAction action)
 	{
-		if (SelectedCards.Count < MinSelected || SelectedCards.Count > MaxSelected)
+		if (SelectedCards.Count < action.MinSelected || SelectedCards.Count > action.MaxSelected)
 		{
 			Audio.Play(Event.ZeroEnergy);
 			return;
 		}
 
-		if (browseAction is not null)
+		if (action.Action is { } browseAction)
 		{
 			browseAction.GetSelectedCards().AddRange(_listCache.Where(card => SelectedCards.Contains(card.uuid)));
 			g.state.GetCurrentQueue().QueueImmediate(browseAction);
@@ -134,7 +166,9 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 
 	private static void Loc_GetLocString_Postfix(string key, ref string __result)
 	{
-		if (CurrentlyRenderedMenu is null)
+		if (CurrentlyRenderedMenu is not { } menu)
+			return;
+		if (menu.EnabledSorting)
 			return;
 		if (key == "codex.sortBy")
 			__result = "";

@@ -7,13 +7,13 @@ using System.Linq;
 
 namespace Shockah.Bloch;
 
-internal sealed class RetainManager : IStatusRenderHook
+internal sealed class MindMapManager : IStatusRenderHook
 {
-	internal static IStatusEntry RetainStatus { get; private set; } = null!;
+	internal static IStatusEntry MindMapStatus { get; private set; } = null!;
 
-	public RetainManager()
+	public MindMapManager()
 	{
-		RetainStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Retain", new()
+		MindMapStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("MindMap", new()
 		{
 			Definition = new()
 			{
@@ -21,8 +21,8 @@ internal sealed class RetainManager : IStatusRenderHook
 				color = new("F82E2E"),
 				isGood = true,
 			},
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Retain", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Retain", "description"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "MindMap", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "MindMap", "description"]).Localize
 		});
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnStart), RemoveTemporaryRetainTraits, 0);
@@ -54,7 +54,7 @@ internal sealed class RetainManager : IStatusRenderHook
 		if (c.cardActions.Any(a => a is AEndTurn))
 			return;
 
-		var retain = s.ship.Get(RetainStatus.Status);
+		var retain = s.ship.Get(MindMapStatus.Status);
 		if (retain <= 0)
 			return;
 
@@ -63,7 +63,7 @@ internal sealed class RetainManager : IStatusRenderHook
 
 	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
 	{
-		if (status == RetainStatus.Status)
+		if (status == MindMapStatus.Status)
 			return [..tooltips, new TTGlossary("cardtrait.retain")];
 		return tooltips;
 	}

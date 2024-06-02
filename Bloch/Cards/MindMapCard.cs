@@ -36,7 +36,7 @@ internal sealed class MindMapCard : Card, IRegisterable
 			new AStatus
 			{
 				targetPlayer = true,
-				status = RetainManager.RetainStatus.Status,
+				status = MindMapManager.MindMapStatus.Status,
 				statusAmount = upgrade == Upgrade.B ? 2 : 1
 			}
 		];

@@ -24,7 +24,7 @@ public sealed class ApiImplementation : IBlochApi
 		=> IntuitionManager.IntuitionStatus;
 
 	public IStatusEntry MindMapStatus
-		=> RetainManager.RetainStatus;
+		=> MindMapManager.MindMapStatus;
 
 	public IStatusEntry PersonalitySplitStatus
 		=> SplitPersonalityManager.SplitPersonalityStatus;

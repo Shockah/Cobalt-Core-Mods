@@ -1,12 +1,20 @@
-﻿using Nanoray.PluginManager;
+﻿using FSPRO;
+using HarmonyLib;
+using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Shared;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Bloch;
 
 internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 {
+	private int RetainCooldown = 0;
+	private int DiscardCooldown = 0;
+
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Artifacts.RegisterArtifact("LongTermMemory", new()
@@ -19,22 +27,183 @@ internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/LongTermMemory.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "LongTermMemory", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "LongTermMemory", "description"]).Localize
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "LongTermMemory", "description", "stateless"]).Localize
 		});
+
+
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(Artifact), nameof(GetTooltips)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Artifact_GetTooltips_Postfix))
+		);
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(AEndTurn), nameof(AEndTurn.Begin)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AEndTurn_Begin_Prefix))
+		);
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> StatusMeta.GetTooltips(RetainManager.RetainStatus.Status, 1);
+		=> [new TTGlossary("cardtrait.retain")];
 
 	public override void OnCombatStart(State state, Combat combat)
 	{
 		base.OnCombatStart(state, combat);
-		combat.Queue(new AStatus
+		RetainCooldown = 0;
+		DiscardCooldown = 0;
+	}
+
+	public override void OnTurnEnd(State state, Combat combat)
+	{
+		base.OnTurnEnd(state, combat);
+		RetainCooldown = Math.Max(RetainCooldown - 1, 0);
+		DiscardCooldown = Math.Max(DiscardCooldown - 1, 0);
+	}
+
+	private static void Artifact_GetTooltips_Postfix(Artifact __instance, ref List<Tooltip> __result)
+	{
+		if (__instance is not LongTermMemoryArtifact artifact)
+			return;
+
+		var textTooltip = __result.OfType<TTText>().FirstOrDefault(t => t.text.StartsWith("<c=artifact>"));
+		if (textTooltip is null)
+			return;
+
+		if (MG.inst.g?.state is not { } state || state.IsOutsideRun())
+			return;
+		textTooltip.text = DB.Join(
+			"<c=artifact>{0}</c>\n".FF(__instance.GetLocName()),
+			ModEntry.Instance.Localizations.Localize(["artifact", "LongTermMemory", "description", "stateful"], new
+			{
+				RetainColor = (artifact.RetainCooldown > 0 ? Colors.disabledText : Colors.textBold).ToString(),
+				DiscardColor = (artifact.DiscardCooldown > 0 ? Colors.disabledText : Colors.textBold).ToString(),
+			})
+		);
+	}
+
+	private static void AEndTurn_Begin_Prefix(State s, Combat c)
+	{
+		if (c.hand.Count == 0)
+			return;
+		if (s.EnumerateAllArtifacts().OfType<LongTermMemoryArtifact>().FirstOrDefault() is not { } artifact)
+			return;
+		if (artifact.RetainCooldown > 0 && artifact.DiscardCooldown > 0)
+			return;
+
+		c.QueueImmediate(new Action
 		{
-			targetPlayer = true,
-			status = RetainManager.RetainStatus.Status,
-			statusAmount = 1,
-			artifactPulse = Key()
+			artifactPulse = artifact.Key()
 		});
+	}
+
+	private sealed class Action : CardAction
+	{
+		public override Route? BeginWithRoute(G g, State s, Combat c)
+		{
+			if (s.EnumerateAllArtifacts().OfType<LongTermMemoryArtifact>().FirstOrDefault() is not { } artifact)
+				return null;
+
+			var customActions = new List<MultiCardBrowse.CustomAction>(capacity: 2);
+			if (artifact.RetainCooldown <= 0)
+				customActions.Add(new(
+					new RetainAction(),
+					ModEntry.Instance.Localizations.Localize(["artifact", "LongTermMemory", "retainAction"]),
+					MinSelected: 1,
+					MaxSelected: 1
+				));
+			if (artifact.DiscardCooldown <= 0)
+				customActions.Add(new(
+					new DiscardAction(),
+					ModEntry.Instance.Localizations.Localize(["artifact", "LongTermMemory", "discardAction"]),
+					MinSelected: 1,
+					MaxSelected: 1
+				));
+
+			if (customActions.Count == 0)
+				return null;
+
+			var route = new MultiCardBrowse()
+			{
+				mode = CardBrowse.Mode.Browse,
+				browseSource = CardBrowse.Source.Hand,
+				EnabledSorting = false,
+				allowCancel = true,
+				BrowseActionIsOnlyForTitle = true,
+				browseAction = new TitleAction(),
+				CustomActions = customActions,
+			};
+			c.Queue(new ADelay
+			{
+				time = 0.0,
+				timer = 0.0
+			});
+			if (route.GetCardList(g).Count == 0)
+			{
+				timer = 0.0;
+				return null;
+			}
+			return route;
+		}
+	}
+
+	private sealed class TitleAction : CardAction
+	{
+		public override string? GetCardSelectText(State s)
+			=> ModEntry.Instance.Localizations.Localize(["artifact", "LongTermMemory", "browseText"]);
+	}
+
+	private sealed class RetainAction : CardAction
+	{
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+
+			var affectedCards = c.hand
+				.Where(card => this.GetSelectedCards().Any(selectedCard => selectedCard.uuid == card.uuid))
+				.ToList();
+
+			foreach (var card in affectedCards)
+			{
+				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, ModEntry.Instance.Helper.Content.Cards.RetainCardTrait, true, permanent: false);
+				ModEntry.Instance.Helper.ModData.SetModData(card, "ShouldRemoveRetain", true);
+			}
+
+			if (affectedCards.Count != 0)
+			{
+				Audio.Play(Event.CardHandling);
+				if (s.EnumerateAllArtifacts().OfType<LongTermMemoryArtifact>().FirstOrDefault() is { } artifact)
+					artifact.RetainCooldown = 2;
+			}
+		}
+	}
+
+	private sealed class DiscardAction : CardAction
+	{
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+
+			var affectedCards = c.hand
+				.Where(card => this.GetSelectedCards().Any(selectedCard => selectedCard.uuid == card.uuid))
+				.ToList();
+
+			c.isPlayerTurn = true;
+			for (var i = 0; i < affectedCards.Count; i++)
+			{
+				var card = affectedCards[i];
+				c.hand.Remove(card);
+				card.waitBeforeMoving = i * 0.05;
+				card.OnDiscard(s, c);
+				c.SendCardToDiscard(s, card);
+			}
+			c.isPlayerTurn = false;
+
+			if (affectedCards.Count != 0)
+			{
+				Audio.Play(Event.CardHandling);
+				if (s.EnumerateAllArtifacts().OfType<LongTermMemoryArtifact>().FirstOrDefault() is { } artifact)
+					artifact.DiscardCooldown = 2;
+			}
+		}
 	}
 }

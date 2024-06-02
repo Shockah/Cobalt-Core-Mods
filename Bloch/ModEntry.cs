@@ -118,7 +118,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new OnDiscardManager();
 		_ = new OnTurnEndManager();
 		_ = new SpontaneousManager();
-		_ = new RetainManager();
+		_ = new MindMapManager();
 		_ = new ScryManager();
 		_ = new SplitPersonalityManager();
 		_ = new WavyDialogueManager();
@@ -250,7 +250,7 @@ public sealed class ModEntry : SimpleMod
 					new AHurt { targetPlayer = true, hurtAmount = 1 },
 					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 				]);
-				draculaApi.RegisterBloodTapOptionProvider(RetainManager.RetainStatus.Status, (_, _, status) => [
+				draculaApi.RegisterBloodTapOptionProvider(MindMapManager.MindMapStatus.Status, (_, _, status) => [
 					new AHurt { targetPlayer = true, hurtAmount = 1 },
 					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 				]);

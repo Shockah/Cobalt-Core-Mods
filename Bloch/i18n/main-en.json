@@ -61,7 +61,7 @@
             "name": "Intuition",
             "description": "At the end of each turn, gain 1 <c=status>INSIGHT AURA</c>."
         },
-        "Retain": {
+        "MindMap": {
             "name": "Mind Map",
             "description": "At the end of your turn, choose up to {0} cards to <c=cardtrait>retain</c>.",
             "browseText": "Choose up to {{Amount}} cards to <c=cardtrait>retain</c>."
@@ -96,7 +96,13 @@
         },
         "LongTermMemory": {
             "name": "LONG-TERM MEMORY",
-            "description": "Start each combat with 1 <c=status>MIND MAP</c>."
+            "description": {
+                "stateless": "At the end of your turn, you may choose a card to retain or discard. Each action can only be selected once every 2 turns.",
+                "stateful": "At the end of your turn, you may choose a card to <c={{RetainColor}}>retain</c> or <c={{DiscardColor}}>discard</c>. Each action can only be selected once every 2 turns."
+            },
+            "browseText": "Choose a card to retain or discard.",
+            "retainAction": "RETAIN",
+            "discardAction": "DISCARD"
         },
         "MuscleMemory": {
             "name": "MUSCLE MEMORY",
