@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.10.0
+Released 2 June 2024.
 
 * Added an API to override conditional action tooltips.
 * Fixed not being able to force the droneshift buttons to appear if needed.
