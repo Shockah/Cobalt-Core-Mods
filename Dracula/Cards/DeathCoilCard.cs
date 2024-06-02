@@ -115,5 +115,16 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 				);
 			position.x += 8;
 		}
+
+		public IEnumerable<Tooltip> OverrideConditionalTooltip(State state, Combat? combat, Tooltip defaultTooltip, string defaultTooltipDescription)
+			=> [
+				new GlossaryTooltip($"AConditional::{ModEntry.Instance.Package.Manifest.UniqueName}::HullCondition::BelowHalf={BelowHalf}")
+				{
+					Icon = (BelowHalf ? ModEntry.Instance.HullBelowHalf : ModEntry.Instance.HullAboveHalf).Sprite,
+					TitleColor = Colors.action,
+					Title = ModEntry.Instance.Localizations.Localize(["condition", "hull", BelowHalf ? "below" : "above", "title"]),
+					Description = defaultTooltipDescription,
+				}
+			];
 	}
 }

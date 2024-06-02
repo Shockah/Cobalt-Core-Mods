@@ -82,10 +82,12 @@
     "condition": {
         "hull": {
             "below": {
+                "title": "Hull Below Half",
                 "stateless": "you are at or below half hull",
                 "stateful": "you are at or below half (<c=boldPink>{{Hull}}</c>) hull"
             },
             "above": {
+                "title": "Hull Above Half",
                 "stateless": "you are above half hull",
                 "stateful": "you are above half (<c=boldPink>{{Hull}}</c>) hull"
             }

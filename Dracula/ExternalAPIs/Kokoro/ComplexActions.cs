@@ -40,6 +40,7 @@ public partial interface IKokoroApi
 		{
 			bool GetValue(State state, Combat combat);
 			bool ShouldRenderQuestionMark(State state, Combat? combat) => true;
+			IEnumerable<Tooltip> OverrideConditionalTooltip(State state, Combat? combat, Tooltip defaultTooltip, string defaultTooltipDescription) => [defaultTooltip];
 		}
 
 		public interface IIntExpression : IExpression
