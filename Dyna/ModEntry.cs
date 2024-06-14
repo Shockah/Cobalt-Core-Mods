@@ -231,6 +231,8 @@ public sealed class ModEntry : SimpleMod
 					new AStatus { targetPlayer = true, status = status, statusAmount = 1 }
 				]);
 			}
+
+			helper.ModRegistry.GetApi<IAppleShipyardApi>("APurpleApple.Shipyard", new SemanticVersion(1, 6, 7))?.RegisterActionLooksForPartType(typeof(FireChargeAction), PType.missiles);
 		};
 	}
 

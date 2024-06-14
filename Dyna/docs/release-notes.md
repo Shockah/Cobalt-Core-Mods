@@ -6,6 +6,7 @@
 
 * Changed Light It Up A.
 * Fixed the old Blown Fuse boss artifact still being offered by the game.
+* Added compatibility for the Squadron ship from the APurpleApple's Shipyard mod.
 * Updated mini portrait to better fit the frame.
 
 ## 1.2.0
