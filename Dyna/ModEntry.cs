@@ -74,7 +74,6 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static readonly IReadOnlyList<Type> BossArtifacts = [
-		typeof(BlownFuseArtifact),
 		typeof(PyromaniaArtifact),
 		typeof(UnstableCompoundArtifact),
 	];
@@ -92,8 +91,16 @@ public sealed class ModEntry : SimpleMod
 		typeof(DynaSogginsArtifact),
 	];
 
+	internal static readonly IReadOnlyList<Type> DisabledArtifacts = [
+		typeof(BlownFuseArtifact), // Boss
+	];
+
 	internal static readonly IEnumerable<Type> AllArtifactTypes
-		= CommonArtifacts.Concat(BossArtifacts);
+		= [
+			.. CommonArtifacts,
+			.. BossArtifacts,
+			.. DisabledArtifacts,
+		];
 
 	internal static readonly IReadOnlyList<Type> ChargeTypes = [
 		typeof(BurstCharge),
@@ -245,6 +252,8 @@ public sealed class ModEntry : SimpleMod
 			return [ArtifactPool.Boss];
 		if (CommonArtifacts.Contains(type))
 			return [ArtifactPool.Common];
+		if (DisabledArtifacts.Contains(type))
+			return [ArtifactPool.Unreleased];
 		return [];
 	}
 }

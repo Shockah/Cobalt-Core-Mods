@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the old Blown Fuse boss artifact still being offered by the game.
+
 ## 1.2.0
 Released 31 May 2024.
 
