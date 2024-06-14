@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.2.1
+Released 14 June 2024.
 
 * Changed Light It Up A.
 * Fixed the old Blown Fuse boss artifact still being offered by the game.
