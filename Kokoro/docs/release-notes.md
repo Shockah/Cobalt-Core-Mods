@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.10.1
+Released 14 June 2024.
 
 * Fixed the compact font being scaled out of proportions when currently using the non-pixel font.
 
