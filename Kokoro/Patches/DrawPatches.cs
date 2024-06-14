@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using daisyowl.text;
+using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
@@ -18,18 +19,35 @@ internal static class DrawPatches
 	{
 		harmony.TryPatch(
 			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Draw), "RenderCharacter"),
+			original: () => AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.Text)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Draw_Text_Prefix))
+		);
+		harmony.TryPatch(
+			logger: Instance.Logger!,
+			original: () => AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.RenderCharacter)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Draw_RenderCharacter_Transpiler))
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Draw), "RenderCharacterOutline"),
+			original: () => AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.RenderCharacterOutline)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Draw_RenderCharacterOutline_Transpiler))
 		);
 	}
 
 	private static bool ShouldAlsoUsePointClamp(Spr atlas)
 		=> atlas == Instance.Content.PinchCompactFont.atlas || atlas == Instance.Content.PinchCompactFont.outlined?.atlas;
+
+	private static void Draw_Text_Prefix(Font? font, bool dontSubstituteLocFont, ref double extraScale)
+	{
+		if (!DB.currentLocale.isHighRes)
+			return;
+		if (dontSubstituteLocFont)
+			return;
+		if (font != Instance.Content.PinchCompactFont && font != Instance.Content.PinchCompactFont.outlined)
+			return;
+
+		extraScale *= 10.0 / 48;
+	}
 
 	private static IEnumerable<CodeInstruction> Draw_RenderCharacter_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
