@@ -6,6 +6,7 @@
 
 * Changed Light It Up A.
 * Fixed the old Blown Fuse boss artifact still being offered by the game.
+* Updated mini portrait to better fit the frame.
 
 ## 1.2.0
 Released 31 May 2024.
