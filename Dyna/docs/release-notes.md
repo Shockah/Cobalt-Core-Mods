@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Changed Light It Up A.
 * Fixed the old Blown Fuse boss artifact still being offered by the game.
 
 ## 1.2.0

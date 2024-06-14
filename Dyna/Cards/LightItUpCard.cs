@@ -26,12 +26,7 @@ internal sealed class LightItUpCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = upgrade switch
-			{
-				Upgrade.A => 0,
-				Upgrade.B => 2,
-				_ => 1
-			},
+			cost = upgrade == Upgrade.B ? 2 : 1,
 			exhaust = true
 		};
 
@@ -43,7 +38,7 @@ internal sealed class LightItUpCard : Card, IRegisterable
 				{
 					targetPlayer = true,
 					status = Status.overdrive,
-					statusAmount = 1
+					statusAmount = 2
 				},
 				new AStatus
 				{
