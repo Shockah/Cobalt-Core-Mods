@@ -23,7 +23,7 @@ internal sealed class ModEntry : SimpleMod
 	];
 
 	internal static IReadOnlyList<Type> EnemyTypes { get; } = [
-		typeof(ActionReactionEnemy),
+		//typeof(ActionReactionEnemy),
 		typeof(BombEnemy),
 		typeof(VolatileOverdriveEnemy),
 	];

@@ -112,7 +112,7 @@ internal sealed class ActionReactionEnemy : AI, IRegisterable
 		AiCounter++;
 		return new EnemyDecision
 		{
-			actions = AIHelpers.MoveToAimAt(s, ownShip, s.ship, 2),
+			actions = AIHelpers.MoveToAimAt(s, ownShip, s.ship, "cockpit"),
 			intents = intents
 		};
 	}

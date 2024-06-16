@@ -131,7 +131,7 @@ internal sealed class VolatileOverdriveEnemy : AI, IRegisterable
 		AiCounter++;
 		return new EnemyDecision
 		{
-			actions = AIHelpers.MoveToAimAt(s, ownShip, s.ship, 2),
+			actions = AIHelpers.MoveToAimAt(s, ownShip, s.ship, "generator"),
 			intents = intents
 		};
 	}
