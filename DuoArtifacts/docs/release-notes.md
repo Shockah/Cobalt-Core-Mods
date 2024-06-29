@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Smart Launch System (the CAT-Isaac duo) breaking on multi-bay ships.
+
 ## 1.0.9
 Released 27 April 2024.
 

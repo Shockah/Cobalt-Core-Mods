@@ -35,7 +35,7 @@ internal sealed class CatIsaacArtifact : DuoArtifact
 		if (a is not ASpawn action || !action.fromPlayer)
 			return true;
 
-		int siloPartX = g.state.ship.parts.FindIndex(p => p.active && p.type == PType.missiles);
+		var siloPartX = action.fromX ?? g.state.ship.parts.FindIndex(p => p.active && p.type == PType.missiles);
 		if (siloPartX == -1)
 			return true;
 
@@ -56,7 +56,7 @@ internal sealed class CatIsaacArtifact : DuoArtifact
 			return true;
 		}
 
-		int launchX = g.state.ship.x + siloPartX + action.offset;
+		var launchX = g.state.ship.x + siloPartX + action.offset;
 		if (CanLaunch(launchX))
 			return true;
 
