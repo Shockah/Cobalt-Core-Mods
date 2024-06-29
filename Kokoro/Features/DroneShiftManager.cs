@@ -67,14 +67,12 @@ public sealed class VanillaMidrowCheckDroneShiftHook : IDroneShiftHook
 
 	public bool? IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
 	{
-		if (context != DroneShiftHookContext.Action)
+		if (context == DroneShiftHookContext.Action)
 			return null;
 		if (combat.stuff.Count != 0)
 			return null;
 		if (combat.stuff.Any(s => !s.Value.Immovable()))
 			return null;
-
-		Audio.Play(Event.Status_PowerDown);
 		return false;
 	}
 }

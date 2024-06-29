@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Droneshift being usable with no midrow objects.
+
 ## 1.10.1
 Released 14 June 2024.
 
