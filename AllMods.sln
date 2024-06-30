@@ -32,7 +32,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Johnson", "Johnson\Johnson.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dyna", "Dyna\Dyna.csproj", "{CF83B02E-C4DC-4F8C-BB84-6BDDE883F5C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bloch", "Bloch\Bloch.csproj", "{57783051-6882-4F42-A260-E557D788B64D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bloch", "Bloch\Bloch.csproj", "{57783051-6882-4F42-A260-E557D788B64D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetterRunSummaries", "BetterRunSummaries\BetterRunSummaries.csproj", "{224C4F0C-5499-413B-839F-F13A7DE1A5E7}"
 EndProject
