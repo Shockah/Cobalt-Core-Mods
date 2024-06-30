@@ -17,6 +17,9 @@ internal sealed class RunStartManager
 
 	private static void State_PopulateRun_Delegate_Postfix(object __instance)
 	{
+		if (!DB.artifactMetas.ContainsKey(new RerollArtifact().Key()))
+			return; // game not yet ready - probably non-debug warmup
+
 		var delegateType = __instance.GetType();
 		var stateField = delegateType.GetFields(AccessTools.all).First(f => f.FieldType == typeof(State));
 		var state = (State)stateField.GetValue(__instance)!;

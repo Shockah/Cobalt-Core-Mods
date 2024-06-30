@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed a crash when running the mod in non-debug mode.
+
 ## 2.0.0
 
 * Completely rewritten.
