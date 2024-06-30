@@ -4,7 +4,7 @@ namespace Shockah.Rerolls;
 
 internal sealed class RerollArtifact : Artifact
 {
-	public int RerollsLeft = 1;
+	public int RerollsLeft = ModEntry.Instance.Settings.ProfileBased.Current.InitialRerolls;
 
 	public override int? GetDisplayNumber(State s)
 		=> RerollsLeft;

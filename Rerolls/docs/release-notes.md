@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added mod settings.
 * Fixed a crash when running the mod in non-debug mode.
 
 ## 2.0.0

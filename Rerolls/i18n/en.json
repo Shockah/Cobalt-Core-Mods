@@ -18,5 +18,10 @@
         }
     },
     "button": "REROLL",
-    "shopChoice": "Grant an extra reroll"
+    "shopChoice": "Grant an extra reroll",
+    "modSettings": {
+        "initialRerolls": "Initial rerolls",
+        "rerollsAfterZone": "Rerolls after zone",
+        "shopRerolls": "Offer rerolls at repair yards"
+    }
 }

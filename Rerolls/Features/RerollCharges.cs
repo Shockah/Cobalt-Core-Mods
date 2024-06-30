@@ -21,17 +21,21 @@ internal sealed class RerollChargeManager
 		);
 	}
 
-	private static void GrantReroll(State state)
+	private static void GrantRerolls(State state, int amount)
 	{
+		if (amount <= 0)
+			return;
 		if (state.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault() is not { } artifact)
 			return;
 
-		artifact.RerollsLeft++;
+		artifact.RerollsLeft += amount;
 		artifact.Pulse();
 	}
 
 	private static void Events_NewShop_Postfix(State s, ref List<Choice> __result)
 	{
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.ShopRerolls)
+			return;
 		if (s.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault() is not { } artifact)
 			return;
 
@@ -48,7 +52,7 @@ internal sealed class RerollChargeManager
 	}
 
 	private static void MapExit_MakeRoute_Postfix(State s)
-		=> GrantReroll(s);
+		=> GrantRerolls(s, ModEntry.Instance.Settings.ProfileBased.Current.RerollsAfterZone);
 
 	private sealed class GrantRerollAction : CardAction
 	{
@@ -56,7 +60,7 @@ internal sealed class RerollChargeManager
 		{
 			base.Begin(g, s, c);
 			timer = 0;
-			GrantReroll(s);
+			GrantRerolls(s, 1);
 		}
 	}
 }

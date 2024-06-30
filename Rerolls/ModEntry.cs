@@ -9,9 +9,13 @@ namespace Shockah.Rerolls;
 public sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
-	internal Harmony Harmony { get; }
-	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
-	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
+	internal readonly Harmony Harmony;
+	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
+	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
+	internal readonly Settings Settings;
+
+	private IWritableFileInfo SettingsFile
+		=> this.Helper.Storage.GetMainStorageFile("json");
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
@@ -25,6 +29,7 @@ public sealed class ModEntry : SimpleMod
 		this.Localizations = new MissingPlaceholderLocalizationProvider<IReadOnlyList<string>>(
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
 		);
+		this.Settings = helper.Storage.LoadJson<Settings>(this.SettingsFile);
 
 		helper.Content.Artifacts.RegisterArtifact("Rerolls", new()
 		{
@@ -44,5 +49,35 @@ public sealed class ModEntry : SimpleMod
 		_ = new CardRerollManager();
 		_ = new RunStartManager();
 		_ = new RerollChargeManager();
+
+		helper.ModRegistry.AwaitApi<IModSettingsApi>(
+			"Nickel.ModSettings",
+			api => api.RegisterModSettings(api.MakeList([
+				api.MakeProfileSelector(
+					() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
+					Settings.ProfileBased
+				),
+				api.MakeNumericStepper(
+					() => Localizations.Localize(["modSettings", "initialRerolls"]),
+					() => Settings.ProfileBased.Current.InitialRerolls,
+					value => Settings.ProfileBased.Current.InitialRerolls = value,
+					minValue: 0
+				),
+				api.MakeNumericStepper(
+					() => Localizations.Localize(["modSettings", "rerollsAfterZone"]),
+					() => Settings.ProfileBased.Current.RerollsAfterZone,
+					value => Settings.ProfileBased.Current.RerollsAfterZone = value,
+					minValue: 0
+				),
+				api.MakeCheckbox(
+					() => Localizations.Localize(["modSettings", "shopRerolls"]),
+					() => Settings.ProfileBased.Current.ShopRerolls,
+					(_, _, value) => Settings.ProfileBased.Current.ShopRerolls = value
+				)
+			]).SubscribeToOnMenuClose(_ =>
+			{
+				helper.Storage.SaveJson(this.SettingsFile, this.Settings);
+			}))
+		);
 	}
 }
