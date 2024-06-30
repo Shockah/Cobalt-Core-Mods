@@ -58,6 +58,7 @@ public sealed class ModEntry : SimpleMod
 			..CommonCardTypes,
 			..UncommonCardTypes,
 			..RareCardTypes,
+			typeof(BlochExeCard)
 		];
 
 	internal static readonly IReadOnlyList<Type> CommonArtifacts = [
@@ -161,7 +162,8 @@ public sealed class ModEntry : SimpleMod
 					new DistressCard(),
 					new PsychicDamageCard(),
 				]
-			}
+			},
+			ExeCardType = typeof(BlochExeCard)
 		});
 
 		helper.Content.Characters.RegisterCharacterAnimation(new()

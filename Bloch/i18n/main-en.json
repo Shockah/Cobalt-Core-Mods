@@ -208,6 +208,16 @@
         },
         "SplitPersonality": {
             "name": "Personality Split"
+        },
+
+
+        "BlochExe": {
+            "name": "Bloch.EXE",
+            "description": {
+                "None": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=C2FF60>Bloch</c> cards to your hand.",
+                "A": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=C2FF60>Bloch</c> cards to your hand.",
+                "B": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=C2FF60>Bloch</c> cards to your hand."
+            }
         }
     }
 }

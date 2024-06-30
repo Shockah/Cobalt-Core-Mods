@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added the Bloch.EXE card.
 * Fixed Veiling Aura armored/weak part calculation.
 
 ## 1.0.0
