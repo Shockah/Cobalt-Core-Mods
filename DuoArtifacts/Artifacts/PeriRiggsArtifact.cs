@@ -16,7 +16,7 @@ internal sealed class PeriRiggsArtifact : DuoArtifact, IEvadeHook
 		base.ApplyPatches(harmony);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(AccessTools.TypeByName("Shockah.Kokoro.VanillaEvadeHook"), nameof(IEvadeHook.IsEvadePossible)),
+			original: () => AccessTools.DeclaredMethod(AccessTools.AllAssemblies().First(a => (a.GetName().Name ?? a.GetName().FullName) == "Kokoro").GetType("Shockah.Kokoro.VanillaEvadeHook"), nameof(IEvadeHook.IsEvadePossible)),
 			postfix: new HarmonyMethod(GetType(), nameof(VanillaEvadeHook_IsEvadePossible_Postfix))
 		);
 	}
