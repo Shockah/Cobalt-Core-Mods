@@ -2,18 +2,21 @@
 
 # Release notes
 
-## Upcoming release
+## 2.1.0
+Released 3 July 2024.
 
 * Added mod settings.
 * Fixed a crash when running the mod in non-debug mode.
 
 ## 2.0.0
+Released 27 April 2024.
 
 * Completely rewritten.
 * Fixed appearing in some combat-specific artifact and card reward screens.
 * Rerolling multiple times in a row will now prevent ANY earlier rewards from being presented, instead of only the previous roll.
 
 ## 1.0.3
+Released 3 February 2024.
 
 * Now comes with a `nickel.json` file.
 * The Y controller button now correctly does the Reroll functionality.

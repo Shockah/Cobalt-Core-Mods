@@ -1,9 +1,9 @@
 {
     "UniqueName": "Shockah.Rerolls",
-    "Version": "2.0.0",
+    "Version": "2.1.0",
     "DisplayName": "Rerolls",
     "Description": "Adds a way to reroll artifact and card rewards.",
     "Author": "Shockah",
-    "RequiredApiVersion": "0.9.0",
+    "RequiredApiVersion": "1.0.0",
     "EntryPointAssembly": "Rerolls.dll"
 }
