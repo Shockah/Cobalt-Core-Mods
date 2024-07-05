@@ -95,7 +95,7 @@ internal sealed class ScryAction : CardAction
 			base.Begin(g, s, c);
 
 			var cardsToDiscard = s.deck
-				.Where(card => this.GetSelectedCards().Any(selectedCard => selectedCard.uuid == card.uuid))
+				.Where(card => (ModEntry.Instance.Api.GetSelectedMultiCardBrowseCards(this) ?? []).Any(selectedCard => selectedCard.uuid == card.uuid))
 				.ToList();
 
 			for (var i = 0; i < cardsToDiscard.Count; i++)

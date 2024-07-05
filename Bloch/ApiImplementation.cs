@@ -57,6 +57,12 @@ public sealed class ApiImplementation : IBlochApi
 	public CardAction MakeSpontaneousAction(CardAction action)
 		=> new SpontaneousManager.TriggerAction { Action = action };
 
+	public IBlochApi.IMultiCardBrowseRoute MakeMultiCardBrowseRoute()
+		=> new MultiCardBrowse();
+
+	public IReadOnlyList<Card>? GetSelectedMultiCardBrowseCards(CardAction action)
+		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<IReadOnlyList<Card>>(action, "SelectedCards");
+
 	public string GetChooseAuraOnPlayUISubtitle(int amount)
 		=> ModEntry.Instance.Localizations.Localize(["action", "ChooseAura", "uiSubtitle", "OnPlay"]);
 

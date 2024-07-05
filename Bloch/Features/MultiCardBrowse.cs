@@ -1,6 +1,5 @@
 ﻿using FSPRO;
 using HarmonyLib;
-using Newtonsoft.Json;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -9,33 +8,58 @@ using System.Reflection;
 
 namespace Shockah.Bloch;
 
-internal static class CardActionExt
+internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown, IBlochApi.IMultiCardBrowseRoute
 {
-	public static List<Card> GetSelectedCards(this CardAction self)
-		=> ModEntry.Instance.Helper.ModData.ObtainModData<List<Card>>(self, "SelectedCards");
-}
-
-internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
-{
-	[method: JsonConstructor]
-	internal record struct CustomAction(
-		CardAction? Action,
-		string Title,
-		int MinSelected = 0,
-		int MaxSelected = int.MaxValue
-	);
-
 	private static bool IsHarmonySetup = false;
 	private static MultiCardBrowse? CurrentlyRenderedMenu;
 
-	public List<CustomAction>? CustomActions = null;
-	public int MinSelected = 0;
-	public int MaxSelected = int.MaxValue;
-	public bool EnabledSorting = true;
-	public bool BrowseActionIsOnlyForTitle = false;
-	public List<Card>? CardsOverride;
+	public IReadOnlyList<IBlochApi.IMultiCardBrowseRoute.CustomAction>? CustomActions { get; set; }
+	public int MinSelected { get; set; } = 0;
+	public int MaxSelected { get; set; } = int.MaxValue;
+	public bool EnabledSorting { get; set; } = true;
+	public bool BrowseActionIsOnlyForTitle { get; set; } = false;
+	public IReadOnlyList<Card>? CardsOverride { get; set; }
 
 	private readonly HashSet<int> SelectedCards = [];
+
+	Route IBlochApi.IMultiCardBrowseRoute.AsRoute
+		=> this;
+
+	IBlochApi.IMultiCardBrowseRoute IBlochApi.IMultiCardBrowseRoute.SetCustomActions(IReadOnlyList<IBlochApi.IMultiCardBrowseRoute.CustomAction>? value)
+	{
+		this.CustomActions = value;
+		return this;
+	}
+
+	IBlochApi.IMultiCardBrowseRoute IBlochApi.IMultiCardBrowseRoute.SetMinSelected(int value)
+	{
+		this.MinSelected = value;
+		return this;
+	}
+
+	IBlochApi.IMultiCardBrowseRoute IBlochApi.IMultiCardBrowseRoute.SetMaxSelected(int value)
+	{
+		this.MaxSelected = value;
+		return this;
+	}
+
+	IBlochApi.IMultiCardBrowseRoute IBlochApi.IMultiCardBrowseRoute.SetEnabledSorting(bool value)
+	{
+		this.EnabledSorting = value;
+		return this;
+	}
+
+	IBlochApi.IMultiCardBrowseRoute IBlochApi.IMultiCardBrowseRoute.SetBrowseActionIsOnlyForTitle(bool value)
+	{
+		this.BrowseActionIsOnlyForTitle = value;
+		return this;
+	}
+
+	IBlochApi.IMultiCardBrowseRoute IBlochApi.IMultiCardBrowseRoute.SetCardsOverride(IReadOnlyList<Card>? value)
+	{
+		this.CardsOverride = value;
+		return this;
+	}
 
 	private static void SetupHarmonyIfNeeded()
 	{
@@ -61,13 +85,13 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 		IsHarmonySetup = true;
 	}
 
-	private List<CustomAction> GetAllActions()
+	private List<IBlochApi.IMultiCardBrowseRoute.CustomAction> GetAllActions()
 	{
-		var results = new List<CustomAction>(Math.Max((browseAction is null ? 0 : 1) + (CustomActions?.Count ?? 0), 1));
+		var results = new List<IBlochApi.IMultiCardBrowseRoute.CustomAction>(Math.Max((browseAction is null ? 0 : 1) + (CustomActions?.Count ?? 0), 1));
 		if (CustomActions is not null)
 			results.AddRange(CustomActions);
 		if ((browseAction is not null && !BrowseActionIsOnlyForTitle) || results.Count == 0)
-			results.Add(new CustomAction(browseAction, ModEntry.Instance.Localizations.Localize(["route", "MultiCardBrowse", "doneButton"]), MinSelected, MaxSelected));
+			results.Add(new IBlochApi.IMultiCardBrowseRoute.CustomAction(browseAction, ModEntry.Instance.Localizations.Localize(["route", "MultiCardBrowse", "doneButton"]), MinSelected, MaxSelected));
 		return results;
 	}
 
@@ -126,7 +150,7 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 		}
 	}
 
-	private void Finish(G g, CustomAction action)
+	private void Finish(G g, IBlochApi.IMultiCardBrowseRoute.CustomAction action)
 	{
 		if (SelectedCards.Count < action.MinSelected || SelectedCards.Count > action.MaxSelected)
 		{
@@ -136,7 +160,7 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 
 		if (action.Action is { } browseAction)
 		{
-			browseAction.GetSelectedCards().AddRange(_listCache.Where(card => SelectedCards.Contains(card.uuid)));
+			ModEntry.Instance.Helper.ModData.SetModData<IReadOnlyList<Card>>(browseAction, "SelectedCards", _listCache.Where(card => SelectedCards.Contains(card.uuid)).ToList());
 			g.state.GetCurrentQueue().QueueImmediate(browseAction);
 		}
 		g.CloseRoute(this, CBResult.Done);
@@ -150,7 +174,7 @@ internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown
 		if (route.CardsOverride is null)
 			return true;
 
-		__result = route.CardsOverride;
+		__result = [.. route.CardsOverride];
 		__instance._listCache.Clear();
 		__instance._listCache.AddRange(route.CardsOverride);
 		return false;

@@ -103,7 +103,7 @@ internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 			if (s.EnumerateAllArtifacts().OfType<LongTermMemoryArtifact>().FirstOrDefault() is not { } artifact)
 				return null;
 
-			var customActions = new List<MultiCardBrowse.CustomAction>(capacity: 2);
+			var customActions = new List<IBlochApi.IMultiCardBrowseRoute.CustomAction>(capacity: 2);
 			if (artifact.RetainCooldown <= 0)
 				customActions.Add(new(
 					new RetainAction(),
@@ -159,7 +159,7 @@ internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 			base.Begin(g, s, c);
 
 			var affectedCards = c.hand
-				.Where(card => this.GetSelectedCards().Any(selectedCard => selectedCard.uuid == card.uuid))
+				.Where(card => (ModEntry.Instance.Api.GetSelectedMultiCardBrowseCards(this) ?? []).Any(selectedCard => selectedCard.uuid == card.uuid))
 				.ToList();
 
 			foreach (var card in affectedCards)
@@ -184,7 +184,7 @@ internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 			base.Begin(g, s, c);
 
 			var affectedCards = c.hand
-				.Where(card => this.GetSelectedCards().Any(selectedCard => selectedCard.uuid == card.uuid))
+				.Where(card => (ModEntry.Instance.Api.GetSelectedMultiCardBrowseCards(this) ?? []).Any(selectedCard => selectedCard.uuid == card.uuid))
 				.ToList();
 
 			c.isPlayerTurn = true;

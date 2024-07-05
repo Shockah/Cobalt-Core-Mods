@@ -106,7 +106,7 @@ internal sealed class MindMapManager : IStatusRenderHook
 		{
 			base.Begin(g, s, c);
 
-			var cards = this.GetSelectedCards();
+			var cards = ModEntry.Instance.Api.GetSelectedMultiCardBrowseCards(this) ?? [];
 			foreach (var card in cards)
 			{
 				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, ModEntry.Instance.Helper.Content.Cards.RetainCardTrait, true, permanent: false);
