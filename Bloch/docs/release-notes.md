@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.1
+Released 5 July 2024.
 
 * Added the Bloch.EXE card.
 * Fixed Veiling Aura armored/weak/brittle part calculation.
