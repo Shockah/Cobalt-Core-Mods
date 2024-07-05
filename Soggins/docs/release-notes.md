@@ -8,6 +8,7 @@
 * Properly marked most Soggins statuses as good.
 * Removed special handling of end turn effects, since they're handled by the game itself now.
 * Apologies are now technically their own deck/color.
+* Added support for the Painter's Palette artifact from the APurpleApple's Generic Artifacts mod.
 
 ## 1.3.3
 Released 5 May 2024.

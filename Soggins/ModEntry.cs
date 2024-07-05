@@ -602,6 +602,27 @@ public sealed partial class ModEntry : CobaltCoreModding.Definitions.ModManifest
 					}
 				)
 			);
+
+			helper.ModRegistry.AwaitApi<IAppleArtifactApi>(
+				"APurpleApple.GenericArtifacts",
+				api => api.SetPaletteAction(
+					(Deck)SogginsDeck.Id!.Value,
+					state => Instance.KokoroApi.Actions.MakeSpoofed(
+						renderAction: new AAddCard
+						{
+							card = new RandomPlaceholderApologyCard(),
+							destination = CardDestination.Hand,
+							amount = 1
+						},
+						realAction: new AAddApologyCard
+						{
+							Destination = CardDestination.Hand,
+							Amount = 1
+						}
+					),
+					new TTText(I18n.PaletteTooltip)
+				)
+			);
 		};
 	}
 }
