@@ -181,18 +181,17 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 		if (maxVeiling <= 0)
 			return;
 
-		var finalDamage = Math.Max(modifier switch
+		var preMultiplicationDamage = Math.Max(modifier switch
 		{
 			PDamMod.weak => incomingDamage + 1,
-			PDamMod.brittle => incomingDamage * 2,
 			PDamMod.armor => incomingDamage - 1,
 			_ => incomingDamage
 		}, 0) - __instance.Get(Status.tempShield);
 
-		if (finalDamage <= 0)
+		if (preMultiplicationDamage <= 0)
 			return;
 
-		var toReduce = Math.Min(maxVeiling, finalDamage);
+		var toReduce = Math.Min(maxVeiling, preMultiplicationDamage);
 		if (toReduce <= 0)
 			return;
 
