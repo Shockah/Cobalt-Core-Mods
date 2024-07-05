@@ -135,14 +135,14 @@ public sealed class ModEntry : SimpleMod
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
 
-		helper.Content.Characters.RegisterCharacter("Bloch", new()
+		helper.Content.Characters.V2.RegisterPlayableCharacter("Bloch", new()
 		{
 			Deck = BlochDeck.Deck,
 			Description = this.AnyLocalizations.Bind(["character", "description"]).Localize,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CharacterFrame.png")).Sprite,
 			NeutralAnimation = new()
 			{
-				Deck = BlochDeck.Deck,
+				CharacterType = BlochDeck.UniqueName,
 				LoopTag = "neutral",
 				Frames = Enumerable.Range(0, 8)
 					.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Neutral/{i}.png")).Sprite)
@@ -150,7 +150,7 @@ public sealed class ModEntry : SimpleMod
 			},
 			MiniAnimation = new()
 			{
-				Deck = BlochDeck.Deck,
+				CharacterType = BlochDeck.UniqueName,
 				LoopTag = "mini",
 				Frames = [
 					helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Character/Mini.png")).Sprite
@@ -166,49 +166,49 @@ public sealed class ModEntry : SimpleMod
 			ExeCardType = typeof(BlochExeCard)
 		});
 
-		helper.Content.Characters.RegisterCharacterAnimation(new()
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
-			Deck = BlochDeck.Deck,
+			CharacterType = BlochDeck.UniqueName,
 			LoopTag = "gameover",
 			Frames = Enumerable.Range(0, 1)
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/GameOver/{i}.png")).Sprite)
 				.ToList()
 		});
-		helper.Content.Characters.RegisterCharacterAnimation(new()
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
-			Deck = BlochDeck.Deck,
+			CharacterType = BlochDeck.UniqueName,
 			LoopTag = "squint",
 			Frames = Enumerable.Range(0, 7)
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Squint/{i}.png")).Sprite)
 				.ToList()
 		});
-		helper.Content.Characters.RegisterCharacterAnimation(new()
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
-			Deck = BlochDeck.Deck,
+			CharacterType = BlochDeck.UniqueName,
 			LoopTag = "glerp",
 			Frames = Enumerable.Range(0, 10)
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Glerp/{i}.png")).Sprite)
 				.ToList()
 		});
-		helper.Content.Characters.RegisterCharacterAnimation(new()
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
-			Deck = BlochDeck.Deck,
+			CharacterType = BlochDeck.UniqueName,
 			LoopTag = "gloop",
 			Frames = Enumerable.Range(0, 10)
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Gloop/{i}.png")).Sprite)
 				.ToList()
 		});
-		helper.Content.Characters.RegisterCharacterAnimation(new()
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
-			Deck = BlochDeck.Deck,
+			CharacterType = BlochDeck.UniqueName,
 			LoopTag = "glorp",
 			Frames = Enumerable.Range(0, 13)
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Glorp/{i}.png")).Sprite)
 				.ToList()
 		});
-		helper.Content.Characters.RegisterCharacterAnimation(new()
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
-			Deck = BlochDeck.Deck,
+			CharacterType = BlochDeck.UniqueName,
 			LoopTag = "talking",
 			Frames = Enumerable.Range(0, 4)
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Talking/{i}.png")).Sprite)
