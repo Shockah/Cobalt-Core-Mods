@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.0
+Released 5 July 2024.
 
 * Added mod settings.
 * Fixed Smart Launch System (the CAT-Isaac duo) breaking on multi-bay ships.

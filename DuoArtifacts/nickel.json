@@ -1,24 +1,16 @@
 {
     "UniqueName": "Shockah.DuoArtifacts",
-    "Version": "1.0.9",
+    "Version": "1.1.0",
     "DisplayName": "Duo Artifacts",
     "Description": "Adds a new artifact pool: duo artifacts, which are pretty powerful artifacts, synergizing between two different crew members.",
     "Author": "Shockah",
-    "RequiredApiVersion": "0.8.0",
+    "RequiredApiVersion": "1.0.0",
     "ModType": "Nickel.Legacy",
     "EntryPointAssembly": "DuoArtifacts.dll",
-    "AssemblyReferences": [
-        {
-            "Name": "Shrike"
-        },
-        {
-            "Name": "Shrike.Harmony"
-        }
-    ],
     "Dependencies": [
         {
             "UniqueName": "Nickel.Legacy",
-            "Version": "0.8.0"
+            "Version": "1.0.0"
         },
         {
             "UniqueName": "Shockah.Kokoro",
