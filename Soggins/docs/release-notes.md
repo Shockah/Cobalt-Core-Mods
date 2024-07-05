@@ -7,6 +7,7 @@
 * Added a Redraw apology card.
 * Properly marked most Soggins statuses as good.
 * Removed special handling of end turn effects, since they're handled by the game itself now.
+* Apologies are now technically their own deck/color.
 
 ## 1.3.3
 Released 5 May 2024.

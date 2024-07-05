@@ -12,7 +12,7 @@ public sealed class RedrawApologyCard : ApologyCard, IRegisterableCard
 			globalName: $"{GetType().Namespace}.Card.Apology.Redraw",
 			cardType: GetType(),
 			cardArt: Art,
-			actualDeck: ModEntry.Instance.SogginsDeck
+			actualDeck: ModEntry.Instance.ApologiesDeck
 		);
 		card.AddLocalisation(I18n.ApologyCardName);
 		registry.RegisterCard(card);

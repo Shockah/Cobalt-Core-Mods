@@ -4,6 +4,9 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using CobaltCoreModding.Definitions.ModManifests;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
+using Nanoray.PluginManager;
+using Nickel;
+using Nickel.Legacy;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -12,7 +15,7 @@ using System.Linq;
 
 namespace Shockah.Soggins;
 
-public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IStatusManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest, ICustomEventManifest
+public sealed partial class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IStatusManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest, INickelManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = null!;
@@ -22,8 +25,8 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
 	public IEnumerable<DependencyEntry> Dependencies => [
-		new DependencyEntry<IModManifest>("Shockah.Kokoro", ignoreIfMissing: false),
-		new DependencyEntry<IModManifest>("Shockah.DuoArtifacts", ignoreIfMissing: true)
+		new DependencyEntry<CobaltCoreModding.Definitions.ModManifests.IModManifest>("Shockah.Kokoro", ignoreIfMissing: false),
+		new DependencyEntry<CobaltCoreModding.Definitions.ModManifests.IModManifest>("Shockah.DuoArtifacts", ignoreIfMissing: true)
 	];
 
 	public DirectoryInfo? GameRootFolder { get; set; }
@@ -39,6 +42,7 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	internal ExternalSprite SogginsDeckBorder { get; private set; } = null!;
 	internal ExternalSprite SogginsCharacterBorder { get; private set; } = null!;
 	internal ExternalDeck SogginsDeck { get; private set; } = null!;
+	internal ExternalDeck ApologiesDeck { get; private set; } = null!;
 	internal ExternalCharacter SogginsCharacter { get; private set; } = null!;
 
 	internal ExternalSprite MiniPortraitSprite { get; private set; } = null!;
@@ -153,8 +157,6 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 	public void BootMod(IModLoaderContact contact)
 	{
 		Instance = this;
-		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
-		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 		KokoroApi.RegisterTypeForExtensionData(typeof(State));
 		KokoroApi.RegisterTypeForExtensionData(typeof(Combat));
@@ -315,6 +317,16 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 			bordersOverSprite: null
 		);
 		registry.RegisterDeck(SogginsDeck);
+
+		ApologiesDeck = new(
+			globalName: $"{GetType().Namespace}.Deck.Apologies",
+			deckColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFB79CE5)), // 0xFF6A9C59
+			titleColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF000000)),
+			cardArtDefault: ExternalSprite.GetRaw((int)StableSpr.cards_colorless),
+			borderSprite: SogginsDeckBorder,
+			bordersOverSprite: null
+		);
+		registry.RegisterDeck(ApologiesDeck);
 	}
 
 	public void LoadManifest(IStatusRegistry registry)
@@ -536,53 +548,60 @@ public sealed partial class ModEntry : IModManifest, IApiProviderManifest, ISpri
 		registry.RegisterCharacter(SogginsCharacter);
 	}
 
-	public void LoadManifest(ICustomEventHub eventHub)
+	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
 	{
-		eventHub.ConnectToEvent<Func<IManifest, IPrelaunchContactPoint>>("Nickel::OnAfterDbInitPhaseFinished", contactPointProvider =>
+		helper.Events.OnModLoadPhaseFinished += (_, phase) =>
 		{
-			var contactPoint = contactPointProvider(this);
+			if (phase != ModLoadPhase.AfterDbInit)
+				return;
 
-			if (contactPoint.GetApi<IDraculaApi>("Shockah.Dracula") is { } draculaApi)
-			{
-				draculaApi.RegisterBloodTapOptionProvider((Status)FrogproofingStatus.Id!.Value, (_, _, status) => [
-					new AHurt { targetPlayer = true, hurtAmount = 1 },
-					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
-				]);
-				draculaApi.RegisterBloodTapOptionProvider((Status)ExtraApologiesStatus.Id!.Value, (_, _, status) => [
-					new AHurt { targetPlayer = true, hurtAmount = 1 },
-					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
-				]);
-				draculaApi.RegisterBloodTapOptionProvider((Status)ConstantApologiesStatus.Id!.Value, (_, _, status) => [
-					new AHurt { targetPlayer = true, hurtAmount = 2 },
-					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
-				]);
-				draculaApi.RegisterBloodTapOptionProvider((Status)BidingTimeStatus.Id!.Value, (_, _, status) => [
-					new AHurt { targetPlayer = true, hurtAmount = 1 },
-					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
-				]);
-				draculaApi.RegisterBloodTapOptionProvider((Status)DoublersLuckStatus.Id!.Value, (_, _, status) => [
-					new AHurt { targetPlayer = true, hurtAmount = 1 },
-					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
-				]);
-				draculaApi.RegisterBloodTapOptionProvider(Status.backwardsMissiles, (_, _, status) => [
-					new AHurt { targetPlayer = true, hurtAmount = 1 },
-					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
-				]);
-			}
-
-			contactPoint.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties")?.RegisterAltStarters(
-				deck: (Deck)SogginsDeck.Id!.Value,
-				starterDeck: new StarterDeck
+			helper.ModRegistry.AwaitApi<IDraculaApi>(
+				"Shockah.Dracula",
+				api =>
 				{
-					cards = [
-						new TakeCoverCard(),
-						new ThoughtsAndPrayersCard()
-					],
-					artifacts = [
-						new SmugArtifact()
-					]
+					api.RegisterBloodTapOptionProvider((Status)FrogproofingStatus.Id!.Value, (_, _, status) => [
+						new AHurt { targetPlayer = true, hurtAmount = 1 },
+						new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+					]);
+					api.RegisterBloodTapOptionProvider((Status)ExtraApologiesStatus.Id!.Value, (_, _, status) => [
+						new AHurt { targetPlayer = true, hurtAmount = 1 },
+						new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+					]);
+					api.RegisterBloodTapOptionProvider((Status)ConstantApologiesStatus.Id!.Value, (_, _, status) => [
+						new AHurt { targetPlayer = true, hurtAmount = 2 },
+						new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+					]);
+					api.RegisterBloodTapOptionProvider((Status)BidingTimeStatus.Id!.Value, (_, _, status) => [
+						new AHurt { targetPlayer = true, hurtAmount = 1 },
+						new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+					]);
+					api.RegisterBloodTapOptionProvider((Status)DoublersLuckStatus.Id!.Value, (_, _, status) => [
+						new AHurt { targetPlayer = true, hurtAmount = 1 },
+						new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+					]);
+					api.RegisterBloodTapOptionProvider(Status.backwardsMissiles, (_, _, status) => [
+						new AHurt { targetPlayer = true, hurtAmount = 1 },
+						new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+					]);
 				}
 			);
-		});
+
+			helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>(
+				"TheJazMaster.MoreDifficulties",
+				api => api.RegisterAltStarters(
+					deck: (Deck)SogginsDeck.Id!.Value,
+					starterDeck: new StarterDeck
+					{
+						cards = [
+							new TakeCoverCard(),
+							new ThoughtsAndPrayersCard()
+						],
+						artifacts = [
+							new SmugArtifact()
+						]
+					}
+				)
+			);
+		};
 	}
 }

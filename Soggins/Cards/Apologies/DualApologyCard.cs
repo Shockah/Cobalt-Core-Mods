@@ -40,7 +40,7 @@ public sealed class DualApologyCard : ApologyCard, IRegisterableCard
 			globalName: $"{GetType().Namespace}.Card.Apology.Dual",
 			cardType: GetType(),
 			cardArt: TopArt,
-			actualDeck: ModEntry.Instance.SogginsDeck
+			actualDeck: ModEntry.Instance.ApologiesDeck
 		);
 		card.AddLocalisation(I18n.ApologyCardName);
 		registry.RegisterCard(card);
