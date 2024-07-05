@@ -215,53 +215,68 @@ public sealed class ModEntry : SimpleMod
 				.ToList()
 		});
 
-		helper.ModRegistry.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", new SemanticVersion(1, 3, 0))?.RegisterAltStarters(
-			deck: BlochDeck.Deck,
-			starterDeck: new StarterDeck
+		helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>(
+			"TheJazMaster.MoreDifficulties",
+			new SemanticVersion(1, 3, 0),
+			api => api.RegisterAltStarters(
+				deck: BlochDeck.Deck,
+				starterDeck: new StarterDeck
+				{
+					cards = [
+						new FocusCard(),
+						new FeedbackCard()
+					]
+				}
+			)
+		);
+
+		helper.ModRegistry.AwaitApi<IDraculaApi>(
+			"Shockah.Dracula",
+			api =>
 			{
-				cards = [
-					new FocusCard(),
-					new FeedbackCard()
-				]
+				api.RegisterBloodTapOptionProvider(AuraManager.VeilingStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+					new AStatus { targetPlayer = true, status = AuraManager.IntensifyStatus.Status, statusAmount = 1 },
+				]);
+				api.RegisterBloodTapOptionProvider(AuraManager.FeedbackStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+					new AStatus { targetPlayer = true, status = AuraManager.IntensifyStatus.Status, statusAmount = 1 },
+				]);
+				api.RegisterBloodTapOptionProvider(AuraManager.InsightStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+					new AStatus { targetPlayer = true, status = AuraManager.IntensifyStatus.Status, statusAmount = 1 },
+				]);
+				api.RegisterBloodTapOptionProvider(IntuitionManager.IntuitionStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+				]);
+				api.RegisterBloodTapOptionProvider(MindMapManager.MindMapStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+				]);
+				api.RegisterBloodTapOptionProvider(SplitPersonalityManager.SplitPersonalityStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+				]);
 			}
 		);
 
-		helper.Events.OnModLoadPhaseFinished += (_, phase) =>
-		{
-			if (phase != ModLoadPhase.AfterDbInit)
-				return;
-
-			if (helper.ModRegistry.GetApi<IDraculaApi>("Shockah.Dracula") is { } draculaApi)
-			{
-				draculaApi.RegisterBloodTapOptionProvider(AuraManager.VeilingStatus.Status, (_, _, status) => [
-					new AHurt { targetPlayer = true, hurtAmount = 1 },
-					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
-					new AStatus { targetPlayer = true, status = AuraManager.IntensifyStatus.Status, statusAmount = 1 },
-				]);
-				draculaApi.RegisterBloodTapOptionProvider(AuraManager.FeedbackStatus.Status, (_, _, status) => [
-					new AHurt { targetPlayer = true, hurtAmount = 1 },
-					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
-					new AStatus { targetPlayer = true, status = AuraManager.IntensifyStatus.Status, statusAmount = 1 },
-				]);
-				draculaApi.RegisterBloodTapOptionProvider(AuraManager.InsightStatus.Status, (_, _, status) => [
-					new AHurt { targetPlayer = true, hurtAmount = 1 },
-					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
-					new AStatus { targetPlayer = true, status = AuraManager.IntensifyStatus.Status, statusAmount = 1 },
-				]);
-				draculaApi.RegisterBloodTapOptionProvider(IntuitionManager.IntuitionStatus.Status, (_, _, status) => [
-					new AHurt { targetPlayer = true, hurtAmount = 1 },
-					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
-				]);
-				draculaApi.RegisterBloodTapOptionProvider(MindMapManager.MindMapStatus.Status, (_, _, status) => [
-					new AHurt { targetPlayer = true, hurtAmount = 1 },
-					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
-				]);
-				draculaApi.RegisterBloodTapOptionProvider(SplitPersonalityManager.SplitPersonalityStatus.Status, (_, _, status) => [
-					new AHurt { targetPlayer = true, hurtAmount = 1 },
-					new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
-				]);
-			}
-		};
+		helper.ModRegistry.AwaitApi<IAppleArtifactApi>(
+			"APurpleApple.GenericArtifacts",
+			api => api.SetPaletteAction(
+				BlochDeck.Deck,
+				state => new AStatus
+				{
+					targetPlayer = true,
+					status = AuraManager.VeilingStatus.Status,
+					statusAmount = 1,
+				},
+				new TTText(Localizations.Localize(["integration", "palette"]))
+			)
+		);
 
 		_ = new BasicDialogue();
 		_ = new CombatDialogue();

@@ -219,5 +219,11 @@
                 "B": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=C2FF60>Bloch</c> cards to your hand."
             }
         }
+    },
+    "integration": {
+        "palette": [
+            "<c=C2FF60>BLOCH PIGMENT</c>",
+            "Your next colorless card also grants you <c=value>1</c> <c=status>VEILING AURA</c>."
+        ]
     }
 }

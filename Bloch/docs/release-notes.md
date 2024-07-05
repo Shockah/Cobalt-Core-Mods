@@ -7,6 +7,7 @@
 * Added the Bloch.EXE card.
 * Fixed Veiling Aura armored/weak/brittle part calculation.
 * Added APIs for `MultiCardBrowse`.
+* Added support for the Painter's Palette artifact from the APurpleApple's Generic Artifacts mod.
 
 ## 1.0.0
 Released 2 June 2024.
