@@ -39,6 +39,16 @@ internal static class I18n
 		};
 	}
 
+	public static string ArtifactsConditionSettingName = "Crew artifacts condition";
+	public static string ArtifactsConditionSettingDescription = "If enabled, duo artifacts will become available if the crew members have at least the given amount of artifacts.";
+	public static string MinArtifactsSettingName = "Minimum artifacts";
+	public static string RareCardsConditionSettingName = "Crew rare cards condition";
+	public static string RareCardsConditionSettingDescription = "If enabled, duo artifacts will become available if the crew members have at least the given amount of rare cards.";
+	public static string MinRareCardsSettingName = "Minimum rare cards";
+	public static string AnyCardsConditionSettingName = "Crew cards condition";
+	public static string AnyCardsConditionSettingDescription = "If enabled, duo artifacts will become available if the crew members have at least the given amount of cards of any rarity.";
+	public static string MinCardsSettingName = "Minimum cards";
+
 	public static string FluxAltGlossaryName => "Flux";
 	public static string FluxAltGlossaryDescription => "Whenever this ship attacks, it gains <c=status>TEMP SHIELD</c>. <c=downside>Decreases by 1 at end of turn.</c>";
 	public static CustomTTGlossary FluxAltGlossary = new(CustomTTGlossary.GlossaryType.status, () => StableSpr.icons_libra, () => FluxAltGlossaryName, () => FluxAltGlossaryDescription);

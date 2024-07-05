@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added mod settings.
 * Fixed Smart Launch System (the CAT-Isaac duo) breaking on multi-bay ships.
 * Improved load time a bit.
 

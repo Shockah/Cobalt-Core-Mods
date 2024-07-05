@@ -7,6 +7,6 @@
 	</PropertyGroup>
 	<Import Project="..\Configuration.Mod.props" />
 	<ItemGroup>
-		<PackageReference Include="Pintail" Version="2.4.2" PrivateAssets="all" ExcludeAssets="runtime" />
+		<PackageReference Include="Pintail" Version="2.4.3" PrivateAssets="all" ExcludeAssets="runtime" />
 	</ItemGroup>
 </Project>

@@ -4,6 +4,9 @@ using CobaltCoreModding.Definitions.ModContactPoints;
 using CobaltCoreModding.Definitions.ModManifests;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
+using Nanoray.PluginManager;
+using Nickel;
+using Nickel.Legacy;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -12,16 +15,12 @@ using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IStatusManifest, IDeckManifest, IArtifactManifest, ICardManifest
+public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IStatusManifest, IDeckManifest, IArtifactManifest, ICardManifest, INickelManifest
 {
-	private const int ArtifactsRequiredForEligibility = 1;
-	private const int RareCardsRequiredForEligibility = 1;
-	private const int AnyCardsRequiredForEligibility = 5;
-
 	internal static ModEntry Instance { get; private set; } = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
-	public IEnumerable<DependencyEntry> Dependencies => [new DependencyEntry<IModManifest>("Shockah.Kokoro", ignoreIfMissing: false)];
+	public IEnumerable<DependencyEntry> Dependencies => [new DependencyEntry<CobaltCoreModding.Definitions.ModManifests.IModManifest>("Shockah.Kokoro", ignoreIfMissing: false)];
 
 	public DirectoryInfo? GameRootFolder { get; set; }
 	public DirectoryInfo? ModRootFolder { get; set; }
@@ -35,12 +34,12 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	private Harmony Harmony { get; set; } = null!;
 	private readonly Dictionary<HashSet<string>, ExternalSprite> DuoArtifactSprites = new(HashSet<string>.CreateSetComparer());
 
+	internal Settings Settings { get; private set; } = new();
+
 	public void BootMod(IModLoaderContact contact)
 	{
 		Instance = this;
 		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
-		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
-		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 
 		Harmony = new(Name);
 		ArtifactPatches.Apply(Harmony);
@@ -51,6 +50,85 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 		foreach (var definition in DuoArtifactDefinition.Definitions)
 			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.ApplyPatches(Harmony);
+	}
+
+	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
+	{
+		Settings = helper.Storage.LoadJson<Settings>(helper.Storage.GetMainStorageFile(".json"));
+
+		helper.ModRegistry.AwaitApi<IModSettingsApi>(
+			"Nickel.ModSettings",
+			api => api.RegisterModSettings(api.MakeList([
+				api.MakeCheckbox(
+					() => I18n.ArtifactsConditionSettingName,
+					() => Settings.ArtifactsCondition,
+					(_, _, value) => Settings.ArtifactsCondition = value
+				).SetTooltips(() => [
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(Settings.ArtifactsCondition)}")
+					{
+						TitleColor = Colors.textBold,
+						Title = I18n.ArtifactsConditionSettingName,
+						Description = I18n.ArtifactsConditionSettingDescription
+					}
+				]),
+				api.MakeConditional(
+					api.MakeNumericStepper(
+						() => I18n.MinArtifactsSettingName,
+						() => Settings.MinArtifacts,
+						value => Settings.MinArtifacts = value,
+						minValue: 1
+					),
+					() => Settings.ArtifactsCondition
+				),
+
+				api.MakeCheckbox(
+					() => I18n.RareCardsConditionSettingName,
+					() => Settings.RareCardsCondition,
+					(_, _, value) => Settings.RareCardsCondition = value
+				).SetTooltips(() => [
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(Settings.RareCardsCondition)}")
+					{
+						TitleColor = Colors.textBold,
+						Title = I18n.RareCardsConditionSettingName,
+						Description = I18n.RareCardsConditionSettingDescription
+					}
+				]),
+				api.MakeConditional(
+					api.MakeNumericStepper(
+						() => I18n.MinRareCardsSettingName,
+						() => Settings.MinRareCards,
+						value => Settings.MinRareCards = value,
+						minValue: 1
+					),
+					() => Settings.RareCardsCondition
+				),
+
+				api.MakeCheckbox(
+					() => I18n.AnyCardsConditionSettingName,
+					() => Settings.AnyCardsCondition,
+					(_, _, value) => Settings.AnyCardsCondition = value
+				).SetTooltips(() => [
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(Settings.AnyCardsCondition)}")
+					{
+						TitleColor = Colors.textBold,
+						Title = I18n.AnyCardsConditionSettingName,
+						Description = I18n.AnyCardsConditionSettingDescription
+					}
+				]),
+				api.MakeConditional(
+					api.MakeNumericStepper(
+						() => I18n.MinCardsSettingName,
+						() => Settings.MinCards,
+						value => Settings.MinCards = value,
+						minValue: 1
+					),
+					() => Settings.AnyCardsCondition
+				)
+			]).SubscribeToOnMenuClose(_ =>
+			{
+				helper.Storage.SaveJson(helper.Storage.GetMainStorageFile(".json"), Settings);
+			}))
+		);
 	}
 
 	public void FinalizePreperations(IPrelaunchContactPoint contact)
@@ -195,20 +273,27 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 			.Where(a => a.GetMeta().pools.Contains(ArtifactPool.Boss) || !a.GetMeta().unremovable)
 			.ToList();
 
-		if (eligibleArtifacts.Count >= ArtifactsRequiredForEligibility)
+		if (Settings.ArtifactsCondition && eligibleArtifacts.Count >= Settings.MinArtifacts)
 			return CheckDetailedEligibity();
 
-		var characterCardsInDeck = state.GetAllCards()
-			.Where(c => !c.GetDataWithOverrides(state).temporary)
-			.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && !meta.dontOffer && meta.deck == character.deckType)
-			.ToList();
-		if (characterCardsInDeck.Count >= AnyCardsRequiredForEligibility)
-			return CheckDetailedEligibity();
+		if (Settings.RareCardsCondition || Settings.AnyCardsCondition)
+		{
+			var characterCardsInDeck = state.GetAllCards()
+				.Where(c => !c.GetDataWithOverrides(state).temporary)
+				.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && !meta.dontOffer && meta.deck == character.deckType)
+				.ToList();
 
-		var rareCharacterCardsInDeck = characterCardsInDeck
-			.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && (int)meta.rarity >= (int)Rarity.rare)
-			.ToList();
-		if (rareCharacterCardsInDeck.Count >= RareCardsRequiredForEligibility)
+			if (Settings.AnyCardsCondition && characterCardsInDeck.Count >= Settings.MinCards)
+				return CheckDetailedEligibity();
+
+			var rareCharacterCardsInDeck = characterCardsInDeck
+				.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && (int)meta.rarity >= (int)Rarity.rare)
+				.ToList();
+			if (Settings.RareCardsCondition && rareCharacterCardsInDeck.Count >= Settings.MinRareCards)
+				return CheckDetailedEligibity();
+		}
+
+		if (!Settings.ArtifactsCondition && !Settings.RareCardsCondition && !Settings.AnyCardsCondition)
 			return CheckDetailedEligibity();
 
 		return DuoArtifactEligibity.RequirementsNotSatisfied;
