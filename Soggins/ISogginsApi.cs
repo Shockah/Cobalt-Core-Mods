@@ -1,4 +1,5 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
+using Nickel;
 
 namespace Shockah.Soggins;
 
@@ -7,6 +8,7 @@ public interface ISogginsApi
 	ExternalDeck SogginsDeck { get; }
 	Deck SogginsVanillaDeck { get; }
 
+	ICardTraitEntry FrogproofTrait { get; }
 	Tooltip FrogproofCardTraitTooltip { get; }
 
 	ExternalStatus FrogproofingStatus { get; }

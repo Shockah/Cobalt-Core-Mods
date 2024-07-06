@@ -8,6 +8,7 @@
 * Properly marked most Soggins statuses as good.
 * Removed special handling of end turn effects, since they're handled by the game itself now.
 * Apologies are now technically their own deck/color.
+* The Frogproof trait now technically uses Nickel's card trait system.
 * Added support for the Painter's Palette artifact from the APurpleApple's Generic Artifacts mod.
 
 ## 1.3.3

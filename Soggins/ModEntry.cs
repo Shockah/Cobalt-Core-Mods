@@ -32,6 +32,7 @@ public sealed partial class ModEntry : CobaltCoreModding.Definitions.ModManifest
 	public DirectoryInfo? GameRootFolder { get; set; }
 	public DirectoryInfo? ModRootFolder { get; set; }
 	public ILogger? Logger { get; set; }
+	public IModHelper Helper { get; private set; } = null!;
 
 	internal SmugStatusManager SmugStatusManager { get; private set; } = null!;
 	internal FrogproofManager FrogproofManager { get; private set; } = null!;
@@ -44,6 +45,7 @@ public sealed partial class ModEntry : CobaltCoreModding.Definitions.ModManifest
 	internal ExternalDeck SogginsDeck { get; private set; } = null!;
 	internal ExternalDeck ApologiesDeck { get; private set; } = null!;
 	internal ExternalCharacter SogginsCharacter { get; private set; } = null!;
+	internal ICardTraitEntry FrogproofTrait { get; private set; } = null!;
 
 	internal ExternalSprite MiniPortraitSprite { get; private set; } = null!;
 	internal Dictionary<int, List<ExternalSprite>> SmugPortraitSprites { get; private init; } = [];
@@ -550,6 +552,29 @@ public sealed partial class ModEntry : CobaltCoreModding.Definitions.ModManifest
 
 	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
 	{
+		this.Helper = helper;
+
+		this.FrogproofTrait = helper.Content.Cards.RegisterTrait("Frogproof", new()
+		{
+			Icon = (state, card) => (Spr)Instance.FrogproofSprite.Id!.Value,
+			Name = _ => I18n.FrogproofCardTraitName,
+			Tooltips = (state, card) => [Api.FrogproofCardTraitTooltip]
+		});
+
+		helper.Content.Cards.OnGetDynamicInnateCardTraitOverrides += (_, e) =>
+		{
+			switch (FrogproofManager.GetFrogproofType(e.State, e.State.route as Combat, e.Card, FrogproofHookContext.Rendering))
+			{
+				case FrogproofType.Innate:
+					e.SetOverride(FrogproofTrait, true);
+					break;
+				case FrogproofType.InnateHiddenIfNotNeeded:
+					if (!(StateExt.Instance ?? e.State).IsOutsideRun() && Instance.Api.IsRunWithSmug(StateExt.Instance ?? e.State))
+						e.SetOverride(FrogproofTrait, true);
+					break;
+			}
+		};
+
 		helper.Events.OnModLoadPhaseFinished += (_, phase) =>
 		{
 			if (phase != ModLoadPhase.AfterDbInit)

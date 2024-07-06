@@ -1,4 +1,5 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
+using Nickel;
 
 namespace Shockah.Soggins;
 
@@ -14,6 +15,9 @@ public sealed class ApiImplementation : ISogginsApi
 
 	public Deck SogginsVanillaDeck
 		=> (Deck)Instance.SogginsDeck.Id!.Value;
+
+	public ICardTraitEntry FrogproofTrait
+		=> Instance.FrogproofTrait;
 
 	public Tooltip FrogproofCardTraitTooltip
 		=> new CustomTTGlossary(CustomTTGlossary.GlossaryType.cardtrait, () => (Spr)Instance.FrogproofSprite.Id!.Value, () => I18n.FrogproofCardTraitName, () => I18n.FrogproofCardTraitText);
