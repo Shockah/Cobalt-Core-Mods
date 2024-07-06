@@ -14,7 +14,7 @@ internal sealed class ShipSwapEvent : IRegisterable
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		EventName = $"{package.Manifest.UniqueName}::{typeof(ShipSwapEvent).Name}";
+		EventName = $"{package.Manifest.UniqueName}::{MethodBase.GetCurrentMethod()!.DeclaringType!.Name}";
 
 		DB.story.all[EventName] = new()
 		{

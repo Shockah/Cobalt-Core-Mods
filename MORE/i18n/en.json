@@ -1,4 +1,59 @@
 {
+    "enemy": {
+        "ActionReaction": {
+            "name": "PCP-08 \"PORCUPINE\" Interceptor"
+        },
+        "VolatileOverdrive": {
+            "name": "BTL-13 \"BEETLE\" Interceptor"
+        }
+    },
+    "status": {
+        "ActionReaction": {
+            "name": "Action-Reaction",
+            "description": "<c=downside>Whenever you play a card, receive 1 damage.</c> Decreases by 1 at end of turn."
+        },
+        "SelfDestructTimer": {
+            "name": "Self-destruct",
+            "description": "In {0} turns, this ship will... <c=hurt>try to self-destruct, dealing hull damage to the player?!</c>"
+        },
+        "VolatileOverdrive": {
+            "name": "Volatile Overdrive",
+            "description": "Add {0} damage to all attacks. <c=downside>Decreases by 1 at end of turn. Whenever your cockpit is hit, lose 1 and your opponent gains 1 <c=status>OVERDRIVE</c>.</c>"
+        }
+    },
+    "intent": {
+        "SwitchBrittlePart": "This part will become <c=parttrait>brittle</c>, instead of the current one.",
+        "SelfDestruct": "The enemy will... <c=hurt>self-destruct, dealing {{Damage}} hull damage to you?!</c>"
+    },
+    "action": {
+        "RemoveThisCard": {
+            "name": "Remove this card",
+            "description": "Playing this card <c=downside>completely removes it from your deck.</c>"
+        }
+    },
+    "settings": {
+        "events": {
+            "name": "Map events",
+            "values": {
+                "AbyssalPower": "Abyssal Power",
+                "CombatDataCalibration": "Combat Data Calibration",
+                "DraculaDeckTrial": "Dracula's Deck Trial",
+                "ShipSwap": "Ship Swap"
+            }
+        },
+        "ephemeralUpgrades": {
+            "name": "Ephemeral upgrades",
+            "description": "Whether Ephemeral cards should be upgradable."
+        },
+        "releaseUpgrades": {
+            "name": "Release upgrades",
+            "description": "Whether Books' Release card should be upgradable."
+        },
+        "flippableRelease": {
+            "name": "Flippable Release",
+            "description": "Whether Books' Release card should be flippable."
+        }
+    },
     "event": {
         "AbyssalPower": {
             "1-Tentacle": "GLORP!!",
@@ -49,15 +104,99 @@
                 "description": "<c=downside>Give 1 <c=status>POWERDRIVE</c> to your enemy each combat.</c> After beating a boss, transforms into a random boss artifact of your choice."
             }
         },
+        "DraculaDeckTrial": {
+            "5-Dracula": "I'm doing some deck trials today. May I interest you in one?",
+            "Choice": {
+                "Crew": {
+                    "name": "The {{Deck}} Trial",
+                    "description": "Your drawn hand must contain at least 2 <c={{DeckColor}}>{{Deck}}</c> cards."
+                },
+                "Trait": {
+                    "name": "The {{Trait}} Trial",
+                    "description": {
+                        "one": [
+                            "<c=textBold>The {{Trait}} Trial.</c>",
+                            "Your drawn hand must contain at least 1 {{Trait}} card."
+                        ],
+                        "other": [
+                            "<c=textBold>The {{Trait}} Trial.</c>",
+                            "Your drawn hand must contain at least {{Count}} {{Trait}} cards."
+                        ]
+                    }
+                },
+                "Cheap": {
+                    "name": "The Cheap Trial",
+                    "description": "Your drawn hand must have a total cost of 3 or less."
+                },
+                "Expensive": {
+                    "name": "The Expensive Trial",
+                    "description": "Your drawn hand must have a total cost of 7 or more."
+                },
+                "Exotic": {
+                    "name": "The Exotic Trial",
+                    "description": "Your drawn hand must contain at least 2 non-colorless, non-crew cards."
+                },
+                "Duplicates": {
+                    "name": "The Duplicates Trial",
+                    "description": "Your drawn hand must contain at least 2 same of the same card (excluding upgrades)."
+                },
+                "Upgrades": {
+                    "name": "The Upgrades Trial",
+                    "description": "Your drawn hand must contain at least 3 upgraded cards."
+                },
+                "Reader": {
+                    "name": "The Reader Trial",
+                    "description": "Your drawn hand must contain at least 2 text cards."
+                },
+                "Pauper": {
+                    "name": "The Pauper Trial",
+                    "description": "Your drawn hand must only contain common cards."
+                },
+                "Connoisseur": {
+                    "name": "The Connoisseur Trial",
+                    "description": "Your drawn hand must contain at least 2 uncommon cards."
+                },
+                "Collector": {
+                    "name": "The Collector Trial",
+                    "description": "Your drawn hand must contain at least 2 rare cards."
+                }
+            },
+            "Success-1-Dracula": "The trial was successful! You may choose your reward, my friend.",
+            "Success-Choice": {
+                "AddRecycle": {
+                    "choice": "Add <c=cardtrait>recycle</c> to a non-free card.",
+                    "title": "Select a card to add <c=cardtrait>recycle</c> to, forever.",
+                    "done": "Added <c=cardtrait>recycle</c>!"
+                },
+                "AddRetain": {
+                    "choice": "Add <c=cardtrait>retain</c> to a card.",
+                    "title": "Select a card to add <c=cardtrait>retain</c> to, forever.",
+                    "done": "Added <c=cardtrait>retain</c>!"
+                },
+                "AddBuoyant": {
+                    "choice": "Add <c=cardtrait>buoyant</c> to a card.",
+                    "title": "Select a card to add <c=cardtrait>buoyant</c> to, forever.",
+                    "done": "Added <c=cardtrait>buoyant</c>!"
+                },
+                "RemoveExhaust": {
+                    "choice": "Remove <c=cardtrait>exhaust</c> from a card.",
+                    "title": "Select a card to remove <c=cardtrait>exhaust</c> from, forever.",
+                    "done": "Removed <c=cardtrait>exhaust</c>!"
+                },
+                "None": "Nah, we're good."
+            },
+            "Failure-1-Dracula": "You failed the trial, my friend. You may pick a card as your consolation prize. Better luck next time.",
+            "Failure-Choice-OK": "Okay..."
+        },
         "ShipSwap": {
             "1-Selene": "Hey, could I ask you for a favor?",
             "2-Selene": "We've got an order for a ship with very specific parts, which we don't have in stock right now...",
             "3-Selene": "And who would have thought, your ship has exactly the parts we need!",
             "4-Selene": "We could swap you for another ship.",
             "Choice-Yes": [
-                "Sure, we'll take {{ShipName}}.",
-                "Give us {{ShipName}}.",
-                "{{ShipName}} isn't half bad."
+                "Sure, we'll take <c=textBold>{{ShipName}}</c>.",
+                "Give us <c=textBold>{{ShipName}}</c>.",
+                "<c=textBold>{{ShipName}}</c> isn't half bad."
             ],
             "Choice-No": "Please leave my ship alone.",
             "Yes-1-Selene": "Thanks a lot.",
@@ -67,60 +206,6 @@
                 "Swap your ship to a different one. Lose all ship-specific artifacts for your current ship. Gain all starting and an equivalent amount of random ship-specific artifacts for the new ship. Optionally gain any starting cards for the new ship."
             ],
             "Action-UpgradeText": "Swap to a new ship"
-        }
-    },
-    "enemy": {
-        "ActionReaction": {
-            "name": "PCP-08 \"PORCUPINE\" Interceptor"
-        },
-        "VolatileOverdrive": {
-            "name": "BTL-13 \"BEETLE\" Interceptor"
-        }
-    },
-    "status": {
-        "ActionReaction": {
-            "name": "Action-Reaction",
-            "description": "<c=downside>Whenever you play a card, receive 1 damage.</c> Decreases by 1 at end of turn."
-        },
-        "SelfDestructTimer": {
-            "name": "Self-destruct",
-            "description": "In {0} turns, this ship will... <c=hurt>try to self-destruct, dealing hull damage to the player?!</c>"
-        },
-        "VolatileOverdrive": {
-            "name": "Volatile Overdrive",
-            "description": "Add {0} damage to all attacks. <c=downside>Decreases by 1 at end of turn. Whenever your cockpit is hit, lose 1 and your opponent gains 1 <c=status>OVERDRIVE</c>.</c>"
-        }
-    },
-    "intent": {
-        "SwitchBrittlePart": "This part will become <c=parttrait>brittle</c>, instead of the current one.",
-        "SelfDestruct": "The enemy will... <c=hurt>self-destruct, dealing {{Damage}} hull damage to you?!</c>"
-    },
-    "action": {
-        "RemoveThisCard": {
-            "name": "Remove this card",
-            "description": "Playing this card <c=downside>completely removes it from your deck.</c>"
-        }
-    },
-    "settings": {
-        "events": {
-            "name": "Map events",
-            "values": {
-                "AbyssalPower": "Abyssal Power",
-                "CombatDataCalibration": "Combat Data Calibration",
-                "ShipSwap": "Ship Swap"
-            }
-        },
-        "ephemeralUpgrades": {
-            "name": "Ephemeral upgrades",
-            "description": "Whether Ephemeral cards should be upgradable."
-        },
-        "releaseUpgrades": {
-            "name": "Release upgrades",
-            "description": "Whether Books' Release card should be upgradable."
-        },
-        "flippableRelease": {
-            "name": "Flippable Release",
-            "description": "Whether Books' Release card should be flippable."
         }
     }
 }

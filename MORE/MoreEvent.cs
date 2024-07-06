@@ -4,5 +4,6 @@ internal enum MoreEvent
 {
 	AbyssalPower,
 	CombatDataCalibration,
+	DraculaDeckTrial,
 	ShipSwap
 }

@@ -16,7 +16,7 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 	{
 		CombatAnalyzerGadgetArtifact.Register(package, helper);
 
-		EventName = $"{package.Manifest.UniqueName}::{typeof(CombatDataCalibrationEvent).Name}";
+		EventName = $"{package.Manifest.UniqueName}::{MethodBase.GetCurrentMethod()!.DeclaringType!.Name}";
 
 		DB.story.all[EventName] = new()
 		{

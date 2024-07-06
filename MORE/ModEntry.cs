@@ -67,6 +67,7 @@ internal sealed class ModEntry : SimpleMod
 	internal static IReadOnlyList<Type> EventTypes { get; } = [
 		typeof(AbyssalPowerEvent),
 		typeof(CombatDataCalibrationEvent),
+		typeof(DraculaDeckTrialEvent),
 		typeof(ShipSwapEvent),
 	];
 
@@ -74,8 +75,10 @@ internal sealed class ModEntry : SimpleMod
 		= [
 			..StatusTypes,
 			..EnemyTypes,
+			..EventTypes,
 			typeof(EphemeralUpgrades),
 			typeof(ReleaseUpgrades),
+			typeof(CardSelectFilters),
 		];
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
