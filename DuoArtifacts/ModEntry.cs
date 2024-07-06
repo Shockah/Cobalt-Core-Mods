@@ -25,6 +25,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	public DirectoryInfo? GameRootFolder { get; set; }
 	public DirectoryInfo? ModRootFolder { get; set; }
 	public ILogger? Logger { get; set; }
+	internal IModHelper Helper { get; private set; } = null!;
 
 	internal IKokoroApi KokoroApi { get; private set; } = null!;
 	internal readonly DuoArtifactDatabase Database = new();
@@ -54,17 +55,22 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 
 	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
 	{
+		this.Helper = helper;
 		Settings = helper.Storage.LoadJson<Settings>(helper.Storage.GetMainStorageFile(".json"));
 
 		helper.ModRegistry.AwaitApi<IModSettingsApi>(
 			"Nickel.ModSettings",
 			api => api.RegisterModSettings(api.MakeList([
+				api.MakeProfileSelector(
+					() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
+					Settings.ProfileBased
+				),
 				api.MakeCheckbox(
 					() => I18n.ArtifactsConditionSettingName,
-					() => Settings.ArtifactsCondition,
-					(_, _, value) => Settings.ArtifactsCondition = value
+					() => Settings.ProfileBased.Current.ArtifactsCondition,
+					(_, _, value) => Settings.ProfileBased.Current.ArtifactsCondition = value
 				).SetTooltips(() => [
-					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(Settings.ArtifactsCondition)}")
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.ArtifactsCondition)}")
 					{
 						TitleColor = Colors.textBold,
 						Title = I18n.ArtifactsConditionSettingName,
@@ -74,19 +80,19 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 				api.MakeConditional(
 					api.MakeNumericStepper(
 						() => I18n.MinArtifactsSettingName,
-						() => Settings.MinArtifacts,
-						value => Settings.MinArtifacts = value,
+						() => Settings.ProfileBased.Current.MinArtifacts,
+						value => Settings.ProfileBased.Current.MinArtifacts = value,
 						minValue: 1
 					),
-					() => Settings.ArtifactsCondition
+					() => Settings.ProfileBased.Current.ArtifactsCondition
 				),
 
 				api.MakeCheckbox(
 					() => I18n.RareCardsConditionSettingName,
-					() => Settings.RareCardsCondition,
-					(_, _, value) => Settings.RareCardsCondition = value
+					() => Settings.ProfileBased.Current.RareCardsCondition,
+					(_, _, value) => Settings.ProfileBased.Current.RareCardsCondition = value
 				).SetTooltips(() => [
-					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(Settings.RareCardsCondition)}")
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.RareCardsCondition)}")
 					{
 						TitleColor = Colors.textBold,
 						Title = I18n.RareCardsConditionSettingName,
@@ -96,19 +102,19 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 				api.MakeConditional(
 					api.MakeNumericStepper(
 						() => I18n.MinRareCardsSettingName,
-						() => Settings.MinRareCards,
-						value => Settings.MinRareCards = value,
+						() => Settings.ProfileBased.Current.MinRareCards,
+						value => Settings.ProfileBased.Current.MinRareCards = value,
 						minValue: 1
 					),
-					() => Settings.RareCardsCondition
+					() => Settings.ProfileBased.Current.RareCardsCondition
 				),
 
 				api.MakeCheckbox(
 					() => I18n.AnyCardsConditionSettingName,
-					() => Settings.AnyCardsCondition,
-					(_, _, value) => Settings.AnyCardsCondition = value
+					() => Settings.ProfileBased.Current.AnyCardsCondition,
+					(_, _, value) => Settings.ProfileBased.Current.AnyCardsCondition = value
 				).SetTooltips(() => [
-					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(Settings.AnyCardsCondition)}")
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.AnyCardsCondition)}")
 					{
 						TitleColor = Colors.textBold,
 						Title = I18n.AnyCardsConditionSettingName,
@@ -118,11 +124,11 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 				api.MakeConditional(
 					api.MakeNumericStepper(
 						() => I18n.MinCardsSettingName,
-						() => Settings.MinCards,
-						value => Settings.MinCards = value,
+						() => Settings.ProfileBased.Current.MinCards,
+						value => Settings.ProfileBased.Current.MinCards = value,
 						minValue: 1
 					),
-					() => Settings.AnyCardsCondition
+					() => Settings.ProfileBased.Current.AnyCardsCondition
 				)
 			]).SubscribeToOnMenuClose(_ =>
 			{
@@ -273,27 +279,27 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 			.Where(a => a.GetMeta().pools.Contains(ArtifactPool.Boss) || !a.GetMeta().unremovable)
 			.ToList();
 
-		if (Settings.ArtifactsCondition && eligibleArtifacts.Count >= Settings.MinArtifacts)
+		if (Settings.ProfileBased.Current.ArtifactsCondition && eligibleArtifacts.Count >= Settings.ProfileBased.Current.MinArtifacts)
 			return CheckDetailedEligibity();
 
-		if (Settings.RareCardsCondition || Settings.AnyCardsCondition)
+		if (Settings.ProfileBased.Current.RareCardsCondition || Settings.ProfileBased.Current.AnyCardsCondition)
 		{
 			var characterCardsInDeck = state.GetAllCards()
 				.Where(c => !c.GetDataWithOverrides(state).temporary)
 				.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && !meta.dontOffer && meta.deck == character.deckType)
 				.ToList();
 
-			if (Settings.AnyCardsCondition && characterCardsInDeck.Count >= Settings.MinCards)
+			if (Settings.ProfileBased.Current.AnyCardsCondition && characterCardsInDeck.Count >= Settings.ProfileBased.Current.MinCards)
 				return CheckDetailedEligibity();
 
 			var rareCharacterCardsInDeck = characterCardsInDeck
 				.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && (int)meta.rarity >= (int)Rarity.rare)
 				.ToList();
-			if (Settings.RareCardsCondition && rareCharacterCardsInDeck.Count >= Settings.MinRareCards)
+			if (Settings.ProfileBased.Current.RareCardsCondition && rareCharacterCardsInDeck.Count >= Settings.ProfileBased.Current.MinRareCards)
 				return CheckDetailedEligibity();
 		}
 
-		if (!Settings.ArtifactsCondition && !Settings.RareCardsCondition && !Settings.AnyCardsCondition)
+		if (!Settings.ProfileBased.Current.ArtifactsCondition && !Settings.ProfileBased.Current.RareCardsCondition && !Settings.ProfileBased.Current.AnyCardsCondition)
 			return CheckDetailedEligibity();
 
 		return DuoArtifactEligibity.RequirementsNotSatisfied;
