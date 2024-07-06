@@ -13,19 +13,52 @@ internal sealed class ModEntry : SimpleMod
 	internal Harmony Harmony { get; }
 	internal IKokoroApi KokoroApi { get; }
 
-	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
-	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
+	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
+	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
+
+	internal readonly HashSet<string> AltruisticArtifactKeys = [
+		// Dizzy
+		typeof(ReboundReagent).Name,
+		typeof(ShieldReserves).Name,
+		typeof(ShieldBurst).Name,
+		typeof(Prototype22).Name,
+
+		// Riggs
+		typeof(Quickdraw).Name,
+		typeof(PerpetualMotionDevice).Name,
+		typeof(CaffeineRush).Name,
+		typeof(DemonThrusters).Name,
+		typeof(Flywheel).Name,
+
+		// Peri
+		typeof(RevengeDrive).Name,
+		typeof(Premeditation).Name,
+		typeof(BerserkerDrive).Name,
+
+		// Max
+		typeof(SafetyLock).Name,
+		typeof(StickyNote).Name,
+		typeof(StrongStart).Name,
+		typeof(RightClickArtifact).Name,
+		typeof(FlowState).Name,
+		typeof(TridimensionalCockpit).Name,
+		typeof(LightspeedBootDisk).Name,
+
+		// CAT
+		typeof(StandbyMode).Name,
+		typeof(InitialBooster).Name,
+	];
 
 	internal static IReadOnlyList<Type> StatusTypes { get; } = [
 		typeof(ActionReactionStatus),
-		typeof(BombEnemy.SelfDestructTimerStatus),
+		//typeof(BombEnemy.SelfDestructTimerStatus),
 		typeof(VolatileOverdriveStatus),
 	];
 
 	internal static IReadOnlyList<Type> EnemyTypes { get; } = [
 		//typeof(ActionReactionEnemy),
-		typeof(BombEnemy),
-		typeof(VolatileOverdriveEnemy),
+		//typeof(BombEnemy),
+		//typeof(VolatileOverdriveEnemy),
 	];
 
 	internal static IReadOnlyList<Type> EventTypes { get; } = [

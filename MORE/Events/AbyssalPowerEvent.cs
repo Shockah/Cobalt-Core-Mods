@@ -14,7 +14,7 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 	{
 		AbyssalPowerCard.Register(package, helper);
 
-		EventName = $"{package.Manifest.UniqueName}::{typeof(AbyssalPowerEvent).Name}";
+		EventName = $"{package.Manifest.UniqueName}::{MethodBase.GetCurrentMethod()!.DeclaringType!.Name}";
 
 		DB.story.all[EventName] = new()
 		{

@@ -7,9 +7,11 @@ public interface IMoreApi
 	IStatusEntry ActionReactionStatus { get; }
 	IStatusEntry VolatileOverdriveStatus { get; }
 
-	#region Self-destruct
-	IStatusEntry SelfDestructTimerStatus { get; }
+	void RegisterAltruisticArtifact(string key);
 
-	Intent MakeSelfDestructIntent(int flatDamage = 0, double percentCurrentDamage = 0, double percentMaxDamage = 0, bool preventDeath = false);
-	#endregion
+	//#region Self-destruct
+	//IStatusEntry SelfDestructTimerStatus { get; }
+
+	//Intent MakeSelfDestructIntent(int flatDamage = 0, double percentCurrentDamage = 0, double percentMaxDamage = 0, bool preventDeath = false);
+	//#endregion
 }

@@ -17,6 +17,24 @@
                 "name": "Abyssal Power"
             }
         },
+        "Bomb": {
+            "1-Chunk": "DETECTED HEAT SIGNATURES. ARMING THE PAYLOAD.",
+            "2-CAT": "Huh...?",
+            "3-CAT": "HUUUH???",
+            "Choice-EnterCombat": "Enter combat...",
+            "Win-1-CAT": "It seems some components were left in-tact. Maybe we could use these?",
+            "enemy": [
+                {
+                    "name": "N1 Bomb"
+                },
+                {
+                    "name": "N2 Bomb"
+                },
+                {
+                    "name": "N3 Bomb"
+                }
+            ]
+        },
         "CombatDataCalibration": {
             "1-CAT": "Getting a hail from a research vessel.",
             "2-Bjorn": "Hail! I, the great Dr. Bjorn, need help calibrating my new gadget. Just bring it near a powerful energy source and let it do the analysis.",
@@ -55,17 +73,6 @@
         "ActionReaction": {
             "name": "PCP-08 \"PORCUPINE\" Interceptor"
         },
-        "Bomb": [
-            {
-                "name": "N1 Bomb"
-            },
-            {
-                "name": "N2 Bomb"
-            },
-            {
-                "name": "N3 Bomb"
-            }
-        ],
         "VolatileOverdrive": {
             "name": "BTL-13 \"BEETLE\" Interceptor"
         }
