@@ -114,14 +114,8 @@
                 "Trait": {
                     "name": "The {{Trait}} Trial",
                     "description": {
-                        "one": [
-                            "<c=textBold>The {{Trait}} Trial.</c>",
-                            "Your drawn hand must contain at least 1 {{Trait}} card."
-                        ],
-                        "other": [
-                            "<c=textBold>The {{Trait}} Trial.</c>",
-                            "Your drawn hand must contain at least {{Count}} {{Trait}} cards."
-                        ]
+                        "one": "Your drawn hand must contain at least 1 <c=cardtrait>{{Trait}}</c> card.",
+                        "other": "Your drawn hand must contain at least {{Count}} <c=cardtrait>{{Trait}}</c> cards."
                     }
                 },
                 "Cheap": {
@@ -186,7 +180,8 @@
                 "None": "Nah, we're good."
             },
             "Failure-1-Dracula": "You failed the trial, my friend. You may pick a card as your consolation prize. Better luck next time.",
-            "Failure-Choice-OK": "Okay..."
+            "Failure-Choice-OK": "Okay...",
+            "TrialEnemy": "???"
         },
         "ShipSwap": {
             "1-Selene": "Hey, could I ask you for a favor?",

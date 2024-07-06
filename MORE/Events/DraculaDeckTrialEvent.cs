@@ -4,6 +4,7 @@ using Nickel;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
@@ -94,6 +95,13 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 		DB.eventChoiceFns[EventName] = AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(GetChoices));
 		DB.eventChoiceFns[$"{EventName}::Success"] = AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(GetSuccessChoices));
 		DB.eventChoiceFns[$"{EventName}::Failure"] = AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(GetFailureChoices));
+
+		helper.Content.Enemies.RegisterEnemy(new()
+		{
+			EnemyType = typeof(TrialEnemy),
+			ShouldAppearOnMap = (_, _) => null,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["event", "DraculaDeckTrial", "TrialEnemy"]).Localize
+		});
 
 		helper.Events.OnModLoadPhaseFinished += (_, phase) =>
 		{
@@ -283,9 +291,10 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 				return null;
 
 			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, trait, OverrideValue, permanent: true);
-			return new ShowCards
+			return new CustomShowCards
 			{
-				messageKey = DoneTitle,
+				messageKey = $"{ModEntry.Instance.Package.Manifest.UniqueName}::{GetType().Name}::ShowCards::{TraitUniqueName}",
+				Message = DoneTitle,
 				cardIds = [selectedCard.uuid]
 			};
 		}
@@ -294,6 +303,16 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 			=> Title;
 	}
 
+	private sealed class CustomShowCards : ShowCards
+	{
+		public required string Message;
+
+		public override void Render(G g)
+		{
+			DB.currentLocale.strings[messageKey] = Message;
+			base.Render(g);
+		}
+	}
 
 	public sealed class TrialEnemy : AI
 	{
@@ -376,6 +395,8 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 			timer = 0;
 			if (c.otherShip.ai is not TrialEnemy trialEnemy)
 				return;
+			if (trialEnemy.Trial is null) // someone is screwing with the debug menu...
+				return;
 
 			var success = trialEnemy.Trial.TestCards(s, c.hand);
 			c.QueueImmediate([
@@ -430,27 +451,47 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 			try
 			{
 				var traitName = nameProvider(DB.currentLocale.locale);
+				if (string.IsNullOrEmpty(traitName))
+					return null;
+				var traitCapitalizedName = CultureInfo.GetCultureInfo("en-GB").TextInfo.ToTitleCase(traitName);
+
 				if (Count == 1)
 					return new()
 					{
-						label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "name"], new { Trait = traitName }),
-						actions = [new ATooltipAction { Tooltips = [new GlossaryTooltip($"event.{ModEntry.Instance.Package.Manifest.UniqueName}::{GetType().Name}")
-						{
-							TitleColor = Colors.textChoice,
-							Title = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "name"], new { Trait = traitName }),
-							Description = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "description"], new { Trait = traitName }),
-						}] }]
+						label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "name"], new { Trait = traitCapitalizedName }),
+						actions = [
+							new ATooltipAction
+							{
+								Tooltips = [
+									new GlossaryTooltip($"event.{ModEntry.Instance.Package.Manifest.UniqueName}::{GetType().Name}")
+									{
+										TitleColor = Colors.textChoice,
+										Title = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "name"], new { Trait = traitCapitalizedName }),
+										Description = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "description", "one"], new { Trait = traitName }),
+									},
+									.. (trait.Configuration.Tooltips?.Invoke(state, null) ?? [])
+								]
+							}
+						]
 					};
 				else
 					return new()
 					{
-						label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "name"], new { Trait = traitName }),
-						actions = [new ATooltipAction { Tooltips = [new GlossaryTooltip($"event.{ModEntry.Instance.Package.Manifest.UniqueName}::{GetType().Name}")
-						{
-							TitleColor = Colors.textChoice,
-							Title = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "name"], new { Trait = traitName }),
-							Description = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "description"], new { Trait = traitName, Count = Count }),
-						}] }]
+						label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "name"], new { Trait = traitCapitalizedName }),
+						actions = [
+							new ATooltipAction
+							{
+								Tooltips = [
+									new GlossaryTooltip($"event.{ModEntry.Instance.Package.Manifest.UniqueName}::{GetType().Name}")
+									{
+										TitleColor = Colors.textChoice,
+										Title = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "name"], new { Trait = traitCapitalizedName }),
+										Description = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "description", "other"], new { Trait = traitName, Count = Count }),
+									},
+									.. (trait.Configuration.Tooltips?.Invoke(state, null) ?? [])
+								]
+							}
+						]
 					};
 			}
 			catch
@@ -587,9 +628,6 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 
 	public sealed class PauperTrial : IDeckTrial
 	{
-		public bool IsTrialApplicable(State state)
-			=> state.deck.Any(c => c.GetMeta().rarity == Rarity.common);
-
 		public Choice? MakeChoice(State state)
 			=> new()
 			{
