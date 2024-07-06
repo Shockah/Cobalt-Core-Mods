@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Changed the Clear a Path card.
+* Changed the Lock and Load card's upgrade paths.
 
 ## 1.2.1
 Released 14 June 2024.

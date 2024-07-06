@@ -1,4 +1,5 @@
-﻿using Nanoray.PluginManager;
+﻿using daisyowl.text;
+using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
 using System.Reflection;
@@ -21,6 +22,8 @@ internal sealed class LockAndLoadCard : Card, IRegisterable
 			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/LockAndLoad.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "LockAndLoad", "name"]).Localize
 		});
+
+		ModEntry.Instance.KokoroApi.RegisterCardRenderHook(new Hook(), 0);
 	}
 
 	public override CardData GetData(State state)
@@ -31,21 +34,74 @@ internal sealed class LockAndLoadCard : Card, IRegisterable
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new AAddCard
-			{
-				destination = CardDestination.Hand,
-				card = new CustomChargeCard
+		=> upgrade switch
+		{
+			Upgrade.B => [
+				new AAddCard
 				{
-					upgrade = upgrade == Upgrade.A ? Upgrade.A : Upgrade.None
+					destination = CardDestination.Hand,
+					card = new DemoChargeCard
+					{
+						discount = -1,
+						temporaryOverride = true,
+						exhaustOverride = true,
+					},
+					amount = 1
 				},
-				amount = 2
-			},
-			new AStatus
-			{
-				targetPlayer = true,
-				status = Status.evade,
-				statusAmount = upgrade == Upgrade.B ? 2 : 1
-			}
-		];
+				new AAddCard
+				{
+					destination = CardDestination.Hand,
+					card = new FluxChargeCard
+					{
+						discount = -1,
+						temporaryOverride = true,
+						exhaustOverride = true,
+					},
+					amount = 1
+				},
+				new AAddCard
+				{
+					destination = CardDestination.Hand,
+					card = new BurstChargeCard
+					{
+						discount = -1,
+						temporaryOverride = true,
+						exhaustOverride = true,
+					},
+					amount = 1
+				},
+				new AStatus
+				{
+					targetPlayer = true,
+					status = Status.evade,
+					statusAmount = 1
+				}
+			],
+			_ => [
+				new AAddCard
+				{
+					destination = CardDestination.Hand,
+					card = new CustomChargeCard(),
+					amount = 2
+				},
+				new AStatus
+				{
+					targetPlayer = true,
+					status = Status.evade,
+					statusAmount = upgrade == Upgrade.A ? 2 : 1
+				}
+			]
+		};
+
+	private sealed class Hook : ICardRenderHook
+	{
+		public Font? ReplaceTextCardFont(G g, Card card)
+		{
+			if (card is not LockAndLoadCard)
+				return null;
+			if (card.upgrade != Upgrade.B)
+				return null;
+			return ModEntry.Instance.KokoroApi.PinchCompactFont;
+		}
+	}
 }

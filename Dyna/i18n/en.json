@@ -220,8 +220,8 @@
             "name": "Lock and Load",
             "description": {
                 "None": "Add two <c=card>Custom Charge</c>s to your hand. Gain 1 <c=status>evade</c>.",
-                "A": "Add two <c=card>Custom Charge A</c>s to your hand. Gain 1 <c=status>evade</c>.",
-                "B": "Add two <c=card>Custom Charge</c>s to your hand. Gain 2 <c=status>evade</c>."
+                "A": "Add two <c=card>Custom Charge</c>s to your hand. Gain 2 <c=status>evade</c>.",
+                "B": "Add free <c=cardtrait>temp</c> <c=card>Demo</c>, <c=card>Flux</c> and <c=card>Burst Charge</c>s with <c=cardtrait>exhaust</c> to hand. Gain 1 <c=status>evade</c>."
             }
         },
         "MegatonBlast": {
