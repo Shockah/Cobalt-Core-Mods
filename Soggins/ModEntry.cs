@@ -41,6 +41,7 @@ public sealed partial class ModEntry : CobaltCoreModding.Definitions.ModManifest
 	internal StatusLogicManager StatusLogicManager { get; private set; } = null!;
 
 	internal ExternalSprite SogginsDeckBorder { get; private set; } = null!;
+	internal ExternalSprite ApologyDeckBorder { get; private set; } = null!;
 	internal ExternalSprite SogginsCharacterBorder { get; private set; } = null!;
 	internal ExternalDeck SogginsDeck { get; private set; } = null!;
 	internal ExternalDeck ApologiesDeck { get; private set; } = null!;
@@ -192,6 +193,10 @@ public sealed partial class ModEntry : CobaltCoreModding.Definitions.ModManifest
 			id: $"{GetType().Namespace}.Sprite.DeckBorder",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "DeckBorder.png"))
 		);
+		ApologyDeckBorder = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.Sprite.ApologyDeckBorder",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "ApologyDeckBorder.png"))
+		);
 		SogginsCharacterBorder = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Sprite.CharacterBorder",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "CharacterBorder.png"))
@@ -325,7 +330,7 @@ public sealed partial class ModEntry : CobaltCoreModding.Definitions.ModManifest
 			deckColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFB79CE5)), // 0xFF6A9C59
 			titleColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF000000)),
 			cardArtDefault: ExternalSprite.GetRaw((int)StableSpr.cards_colorless),
-			borderSprite: SogginsDeckBorder,
+			borderSprite: ApologyDeckBorder,
 			bordersOverSprite: null
 		);
 		registry.RegisterDeck(ApologiesDeck);
