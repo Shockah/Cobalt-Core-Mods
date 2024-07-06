@@ -101,7 +101,7 @@
             "No-1-Bjorn": "Ah, well. Nevertheless!",
             "artifact": {
                 "name": "COMBAT ANALYZER GADGET",
-                "description": "<c=downside>Give 1 <c=status>POWERDRIVE</c> to your enemy each combat.</c> After beating a boss, transforms into a random boss artifact of your choice."
+                "description": "<c=downside>Give 1 <c=status>POWERDRIVE</c> to your enemy each combat.</c> After beating a boss, pick 1 of 3 boss artifacts to transform it into."
             }
         },
         "DraculaDeckTrial": {

@@ -57,6 +57,13 @@ The mod adds a new artifact pool: duo artifacts, which are pretty powerful artif
 Kokoro is a utility/library mod - a little bit for players, and a lot for modders.  
 \[[NexusMods](https://www.nexusmods.com/cobaltcore/mods/4)] \[[release notes](Kokoro/docs/release-notes.md)] \[[README/source code](Kokoro)]
 
+# MORE (Mix Of Random Elements)
+
+Adds various content all around, but most notably new map events.  
+\[[NexusMods](https://www.nexusmods.com/cobaltcore/mods/31)] \[[release notes](MORE/docs/release-notes.md)] \[[source code](MORE)]
+
+[![Banner](MORE/Banner.png)](https://www.nexusmods.com/cobaltcore/mods/31)
+
 # Rerolls
 
 Adds a way to reroll artifact and card rewards.  
