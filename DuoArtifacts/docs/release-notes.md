@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.1
+Released 6 July 2024.
 
 * Implemented mod setting profiles.
 
