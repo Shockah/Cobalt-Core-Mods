@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the wrong settings file being used.
+
 ## 1.1.1
 Released 6 July 2024.
 

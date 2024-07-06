@@ -56,7 +56,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
 	{
 		this.Helper = helper;
-		Settings = helper.Storage.LoadJson<Settings>(helper.Storage.GetMainStorageFile(".json"));
+		Settings = helper.Storage.LoadJson<Settings>(helper.Storage.GetMainStorageFile("json"));
 
 		helper.ModRegistry.AwaitApi<IModSettingsApi>(
 			"Nickel.ModSettings",
@@ -132,7 +132,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 				)
 			]).SubscribeToOnMenuClose(_ =>
 			{
-				helper.Storage.SaveJson(helper.Storage.GetMainStorageFile(".json"), Settings);
+				helper.Storage.SaveJson(helper.Storage.GetMainStorageFile("json"), Settings);
 			}))
 		);
 	}
