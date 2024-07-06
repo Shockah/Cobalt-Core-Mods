@@ -1,28 +1,25 @@
 {
     "UniqueName": "Shockah.Soggins",
-    "Version": "1.3.3",
+    "Version": "1.3.4",
     "DisplayName": "Soggins",
     "Description": "Unavoidable bumbling idiocy. A completely disruptive crewmate, he makes most cards completely unreliable by just being aboard your ship, any single card played could turn out to work in unintended (but fun!) ways.",
     "Author": "Arin, Shockah",
-    "RequiredApiVersion": "0.7.0",
+    "RequiredApiVersion": "1.0.0",
     "ModType": "Nickel.Legacy",
     "EntryPointAssembly": "Soggins.dll",
-    "AssemblyReferences": [
-        {
-            "Name": "Shrike"
-        },
-        {
-            "Name": "Shrike.Harmony"
-        }
-    ],
     "Dependencies": [
         {
             "UniqueName": "Nickel.Legacy",
-            "Version": "0.7.0"
+            "Version": "1.0.0"
         },
         {
             "UniqueName": "Shockah.Kokoro",
             "Version": "1.8.0"
         }
-    ]
+    ],
+    "UpdateChecks": {
+        "NexusMods": {
+            "ID": 5
+        }
+    }
 }

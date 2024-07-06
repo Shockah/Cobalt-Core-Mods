@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.4
+Released 6 July 2024.
 
 * Added a Redraw apology card.
 * Properly marked most Soggins statuses as good.
