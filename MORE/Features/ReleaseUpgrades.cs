@@ -21,12 +21,17 @@ internal sealed class ReleaseUpgrades : IRegisterable
 			original: () => AccessTools.DeclaredMethod(typeof(ReleaseCard), nameof(ReleaseCard.GetActions)),
 			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ReleaseCard_GetActions_Postfix)))
 		);
-		DB.cardMetas[typeof(ReleaseCard).Name].upgradesTo = [Upgrade.A];
+	}
+
+	public static void UpdateSettings(IPluginPackage<IModManifest> package, IModHelper helper, ProfileSettings settings)
+	{
+		DB.cardMetas[typeof(ReleaseCard).Name].upgradesTo = settings.EnabledReleaseUpgrades ? [Upgrade.A] : [];
 	}
 
 	private static void ReleaseCard_GetData_Postfix(Card __instance, ref CardData __result)
 	{
-		__result.flippable = true;
+		if (ModEntry.Instance.Settings.ProfileBased.Current.EnabledFlippableRelease)
+			__result.flippable = true;
 
 		if (__instance.upgrade != Upgrade.A)
 			return;
@@ -35,7 +40,7 @@ internal sealed class ReleaseUpgrades : IRegisterable
 		__result.exhaust = true;
 	}
 
-	private static void ReleaseCard_GetActions_Postfix(Card __instance, State s, ref List<CardAction> __result)
+	private static void ReleaseCard_GetActions_Postfix(Card __instance, ref List<CardAction> __result)
 	{
 		if (!__instance.flipped)
 			return;

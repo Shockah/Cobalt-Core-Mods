@@ -89,6 +89,13 @@ internal sealed class ShipSwapEvent : IRegisterable
 		DB.eventChoiceFns[EventName] = AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(GetChoices));
 	}
 
+	public static void UpdateSettings(IPluginPackage<IModManifest> package, IModHelper helper, ProfileSettings settings)
+	{
+		var node = DB.story.all[EventName];
+		node.never = settings.DisabledEvents.Contains(MoreEvent.ShipSwap) ? true : null;
+		node.dontCountForProgression = settings.DisabledEvents.Contains(MoreEvent.ShipSwap);
+	}
+
 	private static List<Choice> GetChoices(State state)
 	{
 		var currentShipKey = state.ship.key;

@@ -4,6 +4,7 @@ using Nanoray.PluginManager;
 using Nickel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Shockah.MORE;
 
@@ -15,6 +16,8 @@ internal sealed class ModEntry : SimpleMod
 
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
+
+	internal Settings Settings { get; private set; } = new();
 
 	internal readonly HashSet<string> AltruisticArtifactKeys = [
 		// Dizzy
@@ -89,8 +92,92 @@ internal sealed class ModEntry : SimpleMod
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
 		);
 
+		this.Settings = helper.Storage.LoadJson<Settings>(helper.Storage.GetMainStorageFile("json"));
+
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
+		UpdateSettings();
+
+		helper.ModRegistry.AwaitApi<IModSettingsApi>(
+			"Nickel.ModSettings",
+			api => api.RegisterModSettings(api.MakeList([
+				api.MakeProfileSelector(
+					() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
+					Settings.ProfileBased
+				),
+				api.MakeButton(
+					() => Localizations.Localize(["settings", "events", "name"]),
+					(g, route) => route.OpenSubroute(g, api.MakeModSettingsRoute(api.MakeList([
+						api.MakeHeader(
+							() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
+							() => Localizations.Localize(["settings", "events", "name"])
+						),
+						api.MakeList(
+							Enum.GetValues<MoreEvent>()
+								.Select(e => (IModSettingsApi.IModSetting)api.MakeCheckbox(
+									() => Localizations.Localize(["settings", "events", "values", e.ToString()]),
+									() => !Settings.ProfileBased.Current.DisabledEvents.Contains(e),
+									(_, _, value) =>
+									{
+										if (value)
+											Settings.ProfileBased.Current.DisabledEvents.Remove(e);
+										else
+											Settings.ProfileBased.Current.DisabledEvents.Add(e);
+									}
+								))
+								.ToList()
+						),
+						api.MakeBackButton()
+					]).SetSpacing(8)))
+				),
+				api.MakeCheckbox(
+					() => Localizations.Localize(["settings", "ephemeralUpgrades", "name"]),
+					() => Settings.ProfileBased.Current.EnabledEphemeralUpgrades,
+					(_, _, value) => Settings.ProfileBased.Current.EnabledEphemeralUpgrades = value
+				).SetTooltips(() => [
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.EnabledEphemeralUpgrades)}")
+					{
+						TitleColor = Colors.textBold,
+						Title = Localizations.Localize(["settings", "ephemeralUpgrades", "name"]),
+						Description = Localizations.Localize(["settings", "ephemeralUpgrades", "description"])
+					}
+				]),
+				api.MakeCheckbox(
+					() => Localizations.Localize(["settings", "releaseUpgrades", "name"]),
+					() => Settings.ProfileBased.Current.EnabledReleaseUpgrades,
+					(_, _, value) => Settings.ProfileBased.Current.EnabledReleaseUpgrades = value
+				).SetTooltips(() => [
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.EnabledReleaseUpgrades)}")
+					{
+						TitleColor = Colors.textBold,
+						Title = Localizations.Localize(["settings", "releaseUpgrades", "name"]),
+						Description = Localizations.Localize(["settings", "releaseUpgrades", "description"])
+					}
+				]),
+				api.MakeCheckbox(
+					() => Localizations.Localize(["settings", "flippableRelease", "name"]),
+					() => Settings.ProfileBased.Current.EnabledFlippableRelease,
+					(_, _, value) => Settings.ProfileBased.Current.EnabledFlippableRelease = value
+				).SetTooltips(() => [
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.EnabledFlippableRelease)}")
+					{
+						TitleColor = Colors.textBold,
+						Title = Localizations.Localize(["settings", "flippableRelease", "name"]),
+						Description = Localizations.Localize(["settings", "flippableRelease", "description"])
+					}
+				])
+			]).SubscribeToOnMenuClose(_ =>
+			{
+				helper.Storage.SaveJson(helper.Storage.GetMainStorageFile("json"), Settings);
+				UpdateSettings();
+			}))
+		);
+	}
+
+	private void UpdateSettings()
+	{
+		foreach (var type in RegisterableTypes)
+			AccessTools.DeclaredMethod(type, nameof(IRegisterable.UpdateSettings))?.Invoke(null, [Package, Helper, Settings.ProfileBased.Current]);
 	}
 
 	public override object? GetApi(IModManifest requestingMod)

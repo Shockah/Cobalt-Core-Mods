@@ -21,7 +21,6 @@ internal sealed class EphemeralUpgrades : IRegisterable
 			original: () => AccessTools.DeclaredMethod(typeof(EphemeralCannon), nameof(EphemeralCannon.GetData)),
 			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(EphemeralCannon_GetData_Postfix)))
 		);
-		DB.cardMetas[typeof(EphemeralCannon).Name].upgradesTo = [Upgrade.A, Upgrade.B];
 
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
@@ -33,7 +32,6 @@ internal sealed class EphemeralUpgrades : IRegisterable
 			original: () => AccessTools.DeclaredMethod(typeof(EphemeralDodge), nameof(EphemeralDodge.GetData)),
 			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(EphemeralDodge_GetData_Postfix)))
 		);
-		DB.cardMetas[typeof(EphemeralDodge).Name].upgradesTo = [Upgrade.A, Upgrade.B];
 
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
@@ -45,7 +43,13 @@ internal sealed class EphemeralUpgrades : IRegisterable
 			original: () => AccessTools.DeclaredMethod(typeof(EphemeralRepairs), nameof(EphemeralRepairs.GetData)),
 			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(EphemeralRepairs_GetData_Postfix)))
 		);
-		DB.cardMetas[typeof(EphemeralRepairs).Name].upgradesTo = [Upgrade.A, Upgrade.B];
+	}
+
+	public static void UpdateSettings(IPluginPackage<IModManifest> package, IModHelper helper, ProfileSettings settings)
+	{
+		DB.cardMetas[typeof(EphemeralCannon).Name].upgradesTo = settings.EnabledEphemeralUpgrades ? [Upgrade.A, Upgrade.B] : [];
+		DB.cardMetas[typeof(EphemeralDodge).Name].upgradesTo = settings.EnabledEphemeralUpgrades ? [Upgrade.A, Upgrade.B] : [];
+		DB.cardMetas[typeof(EphemeralRepairs).Name].upgradesTo = settings.EnabledEphemeralUpgrades ? [Upgrade.A, Upgrade.B] : [];
 	}
 
 	private static void EphemeralCannon_GetActions_Postfix(Card __instance, State s, ref List<CardAction> __result)

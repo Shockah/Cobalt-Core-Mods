@@ -9,6 +9,7 @@ namespace Shockah.MORE;
 internal sealed class AbyssalPowerEvent : IRegisterable
 {
 	private static string EventName = null!;
+	private static ICardEntry AbyssalPowerCardEntry = null!;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -152,6 +153,14 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 		DB.eventChoiceFns[$"{EventName}::EnterCombat"] = AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(GetEnterCombatChoices));
 	}
 
+	public static void UpdateSettings(IPluginPackage<IModManifest> package, IModHelper helper, ProfileSettings settings)
+	{
+		var node = DB.story.all[EventName];
+		node.never = settings.DisabledEvents.Contains(MoreEvent.AbyssalPower) ? true : null;
+		node.dontCountForProgression = settings.DisabledEvents.Contains(MoreEvent.AbyssalPower);
+		AbyssalPowerCardEntry.Configuration.Meta.unreleased = settings.DisabledEvents.Contains(MoreEvent.AbyssalPower);
+	}
+
 	private static List<Choice> GetChoices(State state)
 		=> [
 			new Choice
@@ -228,7 +237,7 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 	{
 		public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 		{
-			helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
+			AbyssalPowerCardEntry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 			{
 				CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 				Meta = new()

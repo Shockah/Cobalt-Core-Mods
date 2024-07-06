@@ -100,5 +100,27 @@
             "name": "Remove this card",
             "description": "Playing this card <c=downside>completely removes it from your deck.</c>"
         }
+    },
+    "settings": {
+        "events": {
+            "name": "Map events",
+            "values": {
+                "AbyssalPower": "Abyssal Power",
+                "CombatDataCalibration": "Combat Data Calibration",
+                "ShipSwap": "Ship Swap"
+            }
+        },
+        "ephemeralUpgrades": {
+            "name": "Ephemeral upgrades",
+            "description": "Whether Ephemeral cards should be upgradable."
+        },
+        "releaseUpgrades": {
+            "name": "Release upgrades",
+            "description": "Whether Books' Release card should be upgradable."
+        },
+        "flippableRelease": {
+            "name": "Flippable Release",
+            "description": "Whether Books' Release card should be flippable."
+        }
     }
 }

@@ -2,6 +2,7 @@
 using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Shockah.MORE;
@@ -9,6 +10,7 @@ namespace Shockah.MORE;
 internal sealed class CombatDataCalibrationEvent : IRegisterable
 {
 	private static string EventName = null!;
+	private static IArtifactEntry ArtifactEntry = null!;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -85,6 +87,17 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 		DB.eventChoiceFns[EventName] = AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(GetChoices));
 	}
 
+	public static void UpdateSettings(IPluginPackage<IModManifest> package, IModHelper helper, ProfileSettings settings)
+	{
+		var node = DB.story.all[EventName];
+		node.never = settings.DisabledEvents.Contains(MoreEvent.CombatDataCalibration) ? true : null;
+		node.dontCountForProgression = settings.DisabledEvents.Contains(MoreEvent.CombatDataCalibration);
+		ArtifactEntry.Configuration.Meta.pools = ArtifactEntry.Configuration.Meta.pools
+			.Where(p => p != ArtifactPool.Unreleased)
+			.Concat(settings.DisabledEvents.Contains(MoreEvent.CombatDataCalibration) ? [ArtifactPool.Unreleased] : [])
+			.ToArray();
+	}
+
 	private static List<Choice> GetChoices(State state)
 		=> [
 			new Choice
@@ -106,7 +119,7 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 	{
 		public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 		{
-			helper.Content.Artifacts.RegisterArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
+			ArtifactEntry = helper.Content.Artifacts.RegisterArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 			{
 				ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 				Meta = new()
