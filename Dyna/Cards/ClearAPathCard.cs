@@ -26,7 +26,7 @@ internal sealed class ClearAPathCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = 0,
+			cost = 1,
 			exhaust = upgrade == Upgrade.B
 		};
 
@@ -35,6 +35,12 @@ internal sealed class ClearAPathCard : Card, IRegisterable
 			new AAttack
 			{
 				damage = GetDmg(s, upgrade == Upgrade.A ? 1 : 0)
+			},
+			new AStatus
+			{
+				targetPlayer = true,
+				status = Status.evade,
+				statusAmount = upgrade == Upgrade.B ? 2 : 1
 			},
 			new AStatus
 			{

@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Changed the Clear a Path card.
+
 ## 1.2.1
 Released 14 June 2024.
 
