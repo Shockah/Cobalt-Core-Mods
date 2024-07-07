@@ -149,7 +149,7 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 		public override void OnCombatEnd(State state)
 		{
 			base.OnCombatEnd(state);
-			if (state.map.markers[state.map.currentLocation].contents is not MapBattle)
+			if (state.map.markers[state.map.currentLocation].contents is not MapBattle node || node.battleType != BattleType.Boss)
 				return;
 
 			state.rewardsQueue.Queue(new ALoseArtifact { artifactType = Key() });
