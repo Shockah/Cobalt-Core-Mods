@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.1
+Released 7 July 2024.
 
 * Fixed the Combat Data Calibration artifact transforming after any battle instead of a boss battle.
 
