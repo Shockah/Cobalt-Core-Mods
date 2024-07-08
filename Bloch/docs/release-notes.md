@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Aura Mastery triggering when decreasing Veiling Aura.
+
 ## 1.0.1
 Released 5 July 2024.
 

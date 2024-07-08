@@ -40,7 +40,7 @@ internal sealed class AuraMasteryArtifact : Artifact, IRegisterable
 	public override void AfterPlayerStatusAction(State state, Combat combat, Status status, AStatusMode mode, int statusAmount)
 	{
 		base.AfterPlayerStatusAction(state, combat, status, mode, statusAmount);
-		if (status != AuraManager.VeilingStatus.Status || mode != AStatusMode.Add)
+		if (status != AuraManager.VeilingStatus.Status || mode != AStatusMode.Add || statusAmount <= 0)
 			return;
 
 		Counter++;
