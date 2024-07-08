@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.2
+Released 8 July 2024.
 
 * Fixed Aura Mastery triggering when decreasing Veiling Aura.
 * Fixed calculations of Veiling Aura + Temp Shield + brittle.
