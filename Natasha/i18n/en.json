@@ -20,14 +20,8 @@
         }
     },
     "x": {
-        "TimesPlayed": {
-            "name": "Times Played",
-            "description": "Times this card was played this combat, including this play."
-        },
-        "Uses": {
-            "name": "Uses",
-            "description": "Times this <c=cardtrait>limited</c> card can still be played, excluding this play."
-        }
+        "TimesPlayed": "<c=action>X</c> = times this card was played this combat, including this play.",
+        "LimitedUses": "<c=action>X</c> = times this <c=cardtrait>limited</c> card can still be played, excluding this play."
     },
     "status": {
         "Veiling": {
@@ -51,11 +45,26 @@
         }
     },
     "card": {
+        "BufferOverflow": {
+            "name": "Buffer Overflow"
+        },
+        "Concurrency": {
+            "name": "Concurrency"
+        },
         "DenialOfService": {
             "name": "Denial of Service"
         },
+        "HijackEngines": {
+            "name": "Hijack Engines"
+        },
         "RestartEngines": {
             "name": "Restart Engines"
+        },
+        "Spyware": {
+            "name": "Spyware"
+        },
+        "ZeroDayExploit": {
+            "name": "Zero-Day Exploit"
         },
 
         "ChangePerspective": {

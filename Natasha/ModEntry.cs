@@ -12,32 +12,26 @@ public sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly Harmony Harmony;
+	internal readonly IKokoroApi KokoroApi;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
 	internal readonly IDeckEntry NatashaDeck;
 
 	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
+		typeof(BufferOverflowCard),
 		typeof(DenialOfServiceCard),
 		typeof(RestartEnginesCard),
+		typeof(SpywareCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
-		//typeof(ChangePerspectiveCard),
-		//typeof(DelveDeepCard),
-		//typeof(MindBlastCard),
-		//typeof(MindPurgeCard),
-		//typeof(OutburstCard),
-		//typeof(OverstimulationCard),
-		//typeof(RealityBendingCard),
+		typeof(ConcurrencyCard),
+		typeof(HijackEnginesCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
-		//typeof(CalmCard),
-		//typeof(IntrusiveThoughtCard),
-		//typeof(MindMapCard),
-		//typeof(EmotionalDamageCard),
-		//typeof(SplitPersonalityCard),
+		typeof(ZeroDayExploitCard),
 	];
 
 	internal static readonly IEnumerable<Type> AllCardTypes
@@ -74,6 +68,7 @@ public sealed class ModEntry : SimpleMod
 	internal static readonly IEnumerable<Type> RegisterableTypes
 		= [
 			typeof(Limited),
+			typeof(TimesPlayed),
 			.. AllCardTypes,
 			.. AllArtifactTypes,
 			.. DuoArtifacts,
@@ -83,6 +78,7 @@ public sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = new(package.Manifest.UniqueName);
+		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -128,7 +124,7 @@ public sealed class ModEntry : SimpleMod
 			{
 				cards = [
 					new DenialOfServiceCard(),
-					new RestartEnginesCard(),
+					new SpywareCard(),
 				]
 			},
 			//ExeCardType = typeof(BlochExeCard)

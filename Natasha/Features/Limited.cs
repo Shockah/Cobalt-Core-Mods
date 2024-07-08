@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Nanoray.PluginManager;
+﻿using Nanoray.PluginManager;
 using Nickel;
 using System;
 using System.Collections.Generic;
@@ -104,7 +103,7 @@ internal sealed class Limited : IRegisterable
 		icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite($"Limited{amount}", () =>
 		{
 			var exhaustIcon = SpriteLoader.Get(StableSpr.icons_exhaust)!;
-			return CreateTexture(exhaustIcon.Width, exhaustIcon.Height, () =>
+			return TextureUtils.CreateTexture(exhaustIcon.Width, exhaustIcon.Height, () =>
 			{
 				Draw.Sprite(exhaustIcon, 0, 0);
 
@@ -117,57 +116,23 @@ internal sealed class Limited : IRegisterable
 		LimitedIcons[amount] = icon;
 		return icon;
 	}
+}
 
-	private static Texture2D CreateTexture(int width, int height, Action actions)
+internal sealed class LimitedUsesVariableHint : AVariableHint
+{
+	public LimitedUsesVariableHint()
 	{
-		var oldRenderTargets = MG.inst.GraphicsDevice.GetRenderTargets();
-		if (oldRenderTargets.Length == 0 && MG.inst.renderTarget is null)
-			throw new InvalidOperationException("Cannot create texture - no render target");
-		var oldRenderTarget = (oldRenderTargets.Length == 0 ? MG.inst.renderTarget : oldRenderTargets[0].RenderTarget as RenderTarget2D) ?? MG.inst.renderTarget;
-
-		Draw.EndAutoBatchFrame();
-
-		var oldCamera = MG.inst.cameraMatrix;
-		var oldBatch = MG.inst.sb;
-
-		using var backupTarget = new RenderTarget2D(MG.inst.GraphicsDevice, oldRenderTarget.Width, oldRenderTarget.Height);
-		MG.inst.GraphicsDevice.SetRenderTargets(backupTarget);
-		MG.inst.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Black);
-
-		using var backupBatch = new SpriteBatch(MG.inst.GraphicsDevice);
-		backupBatch.Begin();
-		backupBatch.Draw(oldRenderTarget, Microsoft.Xna.Framework.Vector2.Zero, Microsoft.Xna.Framework.Color.White);
-		backupBatch.End();
-
-		try
-		{
-			using var resultTarget = new RenderTarget2D(MG.inst.GraphicsDevice, width, height);
-			MG.inst.GraphicsDevice.SetRenderTargets(resultTarget);
-			MG.inst.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Black);
-
-			using var resultBatch = new SpriteBatch(MG.inst.GraphicsDevice);
-			MG.inst.cameraMatrix = MG.inst.g.GetMatrix();
-			MG.inst.sb = resultBatch;
-
-			Draw.StartAutoBatchFrame();
-			actions();
-			Draw.EndAutoBatchFrame();
-
-			var data = new Microsoft.Xna.Framework.Color[width * height];
-			var texture = new Texture2D(MG.inst.GraphicsDevice, width, height);
-			resultTarget.GetData(data);
-			texture.SetData(data);
-			return texture;
-		}
-		finally
-		{
-			MG.inst.GraphicsDevice.SetRenderTargets(oldRenderTarget);
-			MG.inst.cameraMatrix = oldCamera;
-			MG.inst.sb = oldBatch;
-			oldBatch.Begin();
-			oldBatch.Draw(backupTarget, Microsoft.Xna.Framework.Vector2.Zero, Microsoft.Xna.Framework.Color.White);
-			oldBatch.End();
-			Draw.StartAutoBatchFrame();
-		}
+		this.hand = true;
 	}
+
+	public override Icon? GetIcon(State s)
+		=> new() { path = Limited.ObtainIcon(10) };
+
+	public override List<Tooltip> GetTooltips(State s)
+		=> [
+			new GlossaryTooltip("action.xHintLimitedUses.desc")
+			{
+				Description = ModEntry.Instance.Localizations.Localize(["x", "LimitedUses"])
+			}
+		];
 }
