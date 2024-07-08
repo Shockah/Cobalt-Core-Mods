@@ -24,5 +24,13 @@ public partial interface IKokoroApi
 
 		ACardOffering WithDestination(ACardOffering action, CardDestination? destination, bool? insertRandomly = null);
 		CardReward WithDestination(CardReward route, CardDestination? destination, bool? insertRandomly = null);
+
+		void RegisterWrappedActionHook(IWrappedActionHook hook, double priority);
+		void UnregisterWrappedActionHook(IWrappedActionHook hook);
 	}
+}
+
+public interface IWrappedActionHook
+{
+	List<CardAction>? GetWrappedCardActions(CardAction action);
 }

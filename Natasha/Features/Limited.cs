@@ -23,7 +23,7 @@ internal sealed class Limited : IRegisterable
 	internal static ICardTraitEntry Trait = null!;
 
 	private static readonly Dictionary<string, Dictionary<Upgrade, int>> DefaultLimitedUses = [];
-	private static readonly Dictionary<int, Spr> LimitedIcons = [];
+	private static readonly Dictionary<int, Spr> Icons = [];
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -97,7 +97,7 @@ internal sealed class Limited : IRegisterable
 	internal static Spr ObtainIcon(int amount)
 	{
 		amount = Math.Clamp(amount, 0, 10);
-		if (LimitedIcons.TryGetValue(amount, out var icon))
+		if (Icons.TryGetValue(amount, out var icon))
 			return icon;
 
 		icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite($"Limited{amount}", () =>
@@ -113,7 +113,7 @@ internal sealed class Limited : IRegisterable
 			});
 		}).Sprite;
 
-		LimitedIcons[amount] = icon;
+		Icons[amount] = icon;
 		return icon;
 	}
 }

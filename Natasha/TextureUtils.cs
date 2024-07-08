@@ -30,7 +30,7 @@ internal static class TextureUtils
 		{
 			using var resultTarget = new RenderTarget2D(MG.inst.GraphicsDevice, width, height);
 			MG.inst.GraphicsDevice.SetRenderTargets(resultTarget);
-			MG.inst.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Black);
+			MG.inst.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Transparent);
 
 			using var resultBatch = new SpriteBatch(MG.inst.GraphicsDevice);
 			MG.inst.cameraMatrix = MG.inst.g.GetMatrix();

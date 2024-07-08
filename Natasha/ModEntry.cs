@@ -21,6 +21,7 @@ public sealed class ModEntry : SimpleMod
 	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
 		typeof(BufferOverflowCard),
 		typeof(DenialOfServiceCard),
+		typeof(PingCard),
 		typeof(RestartEnginesCard),
 		typeof(SpywareCard),
 	];
@@ -69,6 +70,7 @@ public sealed class ModEntry : SimpleMod
 		= [
 			typeof(Limited),
 			typeof(TimesPlayed),
+			typeof(Step),
 			.. AllCardTypes,
 			.. AllArtifactTypes,
 			.. DuoArtifacts,
@@ -123,8 +125,8 @@ public sealed class ModEntry : SimpleMod
 			Starters = new()
 			{
 				cards = [
-					new DenialOfServiceCard(),
 					new SpywareCard(),
+					new PingCard(),
 				]
 			},
 			//ExeCardType = typeof(BlochExeCard)

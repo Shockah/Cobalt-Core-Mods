@@ -8,10 +8,10 @@
     },
     "action": {
         "Step": {
-            "name": "Step",
+            "name": "  Step",
             "description": {
-                "stateful": "This action triggers every {{N}} of {{M}} times this card is played (currently {{Current}}/{{M}}).",
-                "stateless": "This action triggers every {{N}} of {{M}} times this card is played."
+                "stateful": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played (currently <c=boldPink>{{Current}}</c>/<c=boldPink>{{Steps}}</c>).",
+                "stateless": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played."
             }
         },
         "AddUses": {
@@ -56,6 +56,9 @@
         },
         "HijackEngines": {
             "name": "Hijack Engines"
+        },
+        "Ping": {
+            "name": "Ping"
         },
         "RestartEngines": {
             "name": "Restart Engines"
