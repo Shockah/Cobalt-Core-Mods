@@ -60,11 +60,21 @@
         "Ping": {
             "name": "Ping"
         },
+        "PortScanning": {
+            "name": "Port Scanning"
+        },
         "RestartEngines": {
             "name": "Restart Engines"
         },
         "Spyware": {
             "name": "Spyware"
+        },
+        "Typo": {
+            "name": "Typo",
+            "discardSelfAction": {
+                "name": "Discard Self",
+                "description": "Discard this card."
+            }
         },
         "ZeroDayExploit": {
             "name": "Zero-Day Exploit"

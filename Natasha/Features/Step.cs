@@ -103,7 +103,7 @@ internal sealed class StepAction : CardAction
 			currentStep = -1;
 
 		return [
-			new GlossaryTooltip($"action.{GetType().Namespace!}::Step{Step}of{Steps}")
+			new GlossaryTooltip($"action.{GetType().Namespace!}::Step{Steps}")
 				{
 					Icon = Natasha.Step.ObtainIcon(Step, Steps),
 					TitleColor = Colors.action,
