@@ -38,6 +38,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetterRunSummaries", "Bette
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MORE", "MORE\MORE.csproj", "{A324EDAF-B4B3-4F19-AFF6-81A8B90E8CE4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Natasha", "Natasha\Natasha.csproj", "{6E364255-1F38-4004-AD23-E64CFE7AEC47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,6 +94,10 @@ Global
 		{A324EDAF-B4B3-4F19-AFF6-81A8B90E8CE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A324EDAF-B4B3-4F19-AFF6-81A8B90E8CE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A324EDAF-B4B3-4F19-AFF6-81A8B90E8CE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E364255-1F38-4004-AD23-E64CFE7AEC47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E364255-1F38-4004-AD23-E64CFE7AEC47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E364255-1F38-4004-AD23-E64CFE7AEC47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E364255-1F38-4004-AD23-E64CFE7AEC47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,6 +111,7 @@ Global
 		_Shared\_Shared.projitems*{26f4b3c4-c636-4358-8e4f-ed592e2629bb}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{57783051-6882-4f42-a260-e557d788b64d}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{5820f297-795c-414f-9d2d-6b401165828b}*SharedItemsImports = 5
+		_Shared\_Shared.projitems*{6e364255-1f38-4004-ad23-e64cfe7aec47}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{a0276a09-5fdf-4352-adf4-ed072da21953}*SharedItemsImports = 13
 		_Shared\_Shared.projitems*{a324edaf-b4b3-4f19-aff6-81a8b90e8ce4}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{ad25e0f4-175f-4fb8-927f-f07433bce6b3}*SharedItemsImports = 5

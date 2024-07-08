@@ -1,0 +1,15 @@
+{
+    "UniqueName": "Shockah.Natasha",
+    "Version": "0.1.0",
+    "DisplayName": "Natasha",
+    "Author": "Shockah",
+    "RequiredApiVersion": "1.0.0",
+    "EntryPointAssembly": "Natasha.dll",
+    "LoadPhase": "AfterDbInit",
+    "Dependencies": [
+        {
+            "UniqueName": "Shockah.Kokoro",
+            "Version": "1.7.0"
+        }
+    ]
+}

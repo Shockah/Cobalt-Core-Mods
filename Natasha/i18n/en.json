@@ -1,0 +1,67 @@
+{
+    "character": {
+        "name": "Natasha",
+        "description": [
+            "<c=E1FFCF>NATASHA</c>",
+            "An <c=textBold>actual</c> hacker. Her cards often <c=keyword>exhaust after several uses</c> and <c=keyword>apply negative statuses to enemies</c>."
+        ]
+    },
+    "action": {
+        "Step": {
+            "name": "Step",
+            "description": {
+                "stateful": "This action triggers every {{N}} of {{M}} times this card is played (currently {{Current}}/{{M}}).",
+                "stateless": "This action triggers every {{N}} of {{M}} times this card is played."
+            }
+        },
+        "AddUses": {
+            "name": "Add Uses",
+            "description": "Add <c=boldPink>{{Count}}</c> <c=cardtrait>limited</c> uses to this card."
+        }
+    },
+    "x": {
+        "TimesPlayed": {
+            "name": "Times Played",
+            "description": "Times this card was played this combat, including this play."
+        },
+        "Uses": {
+            "name": "Uses",
+            "description": "Times this <c=cardtrait>limited</c> card can still be played, excluding this play."
+        }
+    },
+    "status": {
+        "Veiling": {
+            "name": "Veiling Aura",
+            "description": "Reduce incoming hits by <c=C2FF60>1</c> and <c=downside>decrease this by <c=C2FF60>1</c></c>."
+        }
+    },
+    "cardTrait": {
+        "Limited": {
+            "name": "Limited",
+            "description": {
+                "stateful": "This card can be used <c=boldPink>{{Count}}</c> times this combat before it gets <c=cardtrait>exhausted</c>.",
+                "stateless": "This card can be used <c=boldPink>{{Count}}</c> times each combat before it gets <c=cardtrait>exhausted</c>."
+            }
+        }
+    },
+    "artifact": {
+        "AuraMastery": {
+            "name": "AURA MASTERY",
+            "description": "Every 2 <c=status>VEILING AURA</c> you gain, gain 1 <c=status>FEEDBACK AURA</c> or <c=status>INSIGHT AURA</c> at random."
+        }
+    },
+    "card": {
+        "DenialOfService": {
+            "name": "Denial of Service"
+        },
+        "RestartEngines": {
+            "name": "Restart Engines"
+        },
+
+        "ChangePerspective": {
+            "name": "Perspective Change",
+            "description": "Convert any <c=C2FF60>Aura</c> into {{ConvertToIntensifyAmount}} <c=status>intensify</c> or {{ConvertToAuraAmount}} of a different <c=C2FF60>Aura</c>.",
+            "uiTitle": "CONVERT AURA"
+        }
+    }
+}
