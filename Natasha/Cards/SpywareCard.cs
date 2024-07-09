@@ -38,12 +38,12 @@ internal sealed class SpywareCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new LimitedUsesVariableHint(),
+				new LimitedUsesVariableHint { CardId = uuid },
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = this.GetLimitedUses(), xHint = 1 },
 				new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 2 },
 			],
 			_ => [
-				new LimitedUsesVariableHint(),
+				new LimitedUsesVariableHint { CardId = uuid },
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = this.GetLimitedUses(), xHint = 1 },
 			]
 		};

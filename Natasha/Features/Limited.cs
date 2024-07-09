@@ -1,5 +1,7 @@
-﻿using Nanoray.PluginManager;
+﻿using HarmonyLib;
+using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -56,6 +58,12 @@ internal sealed class Limited : IRegisterable
 		}, 0);
 
 		helper.Content.Cards.OnGetFinalDynamicCardTraitOverrides += OnGetFinalDynamicCardTraitOverrides;
+
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
+		);
 	}
 
 	[EventPriority(double.MaxValue)]
@@ -116,10 +124,42 @@ internal sealed class Limited : IRegisterable
 		Icons[amount] = icon;
 		return icon;
 	}
+
+	private static bool Card_RenderAction_Prefix(G g, CardAction action, bool dontDraw, ref int __result)
+	{
+		if (action is not ChangeLimitedUsesAction usesAction)
+			return true;
+
+		var position = g.Push(rect: new()).rect.xy;
+		int initialX = (int)position.x;
+
+		if (!dontDraw)
+			Draw.Sprite(ObtainIcon(10), position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
+		position.x += 10;
+
+		if (usesAction.Mode == AStatusMode.Set)
+		{
+			position.x += 1;
+			if (!dontDraw)
+				Draw.Text("=", position.x, position.y, dontSubstituteLocFont: true);
+			position.x += 6;
+		}
+
+		if (!dontDraw)
+			BigNumbers.Render(usesAction.Amount, position.x, position.y, usesAction.disabled ? Colors.disabledText : Colors.textMain);
+		position.x += usesAction.Amount.ToString().Length * 6;
+
+		__result = (int)position.x - initialX;
+		g.Pop();
+
+		return false;
+	}
 }
 
 internal sealed class LimitedUsesVariableHint : AVariableHint
 {
+	public required int CardId;
+
 	public LimitedUsesVariableHint()
 	{
 		this.hand = true;
@@ -132,7 +172,62 @@ internal sealed class LimitedUsesVariableHint : AVariableHint
 		=> [
 			new GlossaryTooltip("action.xHintLimitedUses.desc")
 			{
-				Description = ModEntry.Instance.Localizations.Localize(["x", "LimitedUses"])
+				Description = ModEntry.Instance.Localizations.Localize(["x", "LimitedUses", s.route is Combat ? "stateful" : "stateless"], new { Count = s.FindCard(CardId)?.GetLimitedUses() ?? 0 })
 			}
 		];
+}
+
+internal sealed class ChangeLimitedUsesAction : CardAction
+{
+	public required int CardId;
+	public required int Amount;
+	public AStatusMode Mode;
+
+	public override Icon? GetIcon(State s)
+		=> new(Limited.ObtainIcon(10), Amount, Colors.textMain);
+
+	public override List<Tooltip> GetTooltips(State s)
+		=> [
+			new GlossaryTooltip($"action.{GetType().Namespace!}::ChangeLimitedUses::{Mode}")
+			{
+				Icon = Limited.ObtainIcon(10),
+				TitleColor = Colors.action,
+				Title = Mode switch
+				{
+					AStatusMode.Add => ModEntry.Instance.Localizations.Localize(["action", "ChangeLimitedUses", "Add", "name", Amount >= 0 ? "positive" : "negative"]),
+					_ => ModEntry.Instance.Localizations.Localize(["action", "ChangeLimitedUses", Mode.ToString(), "name"])
+				},
+				Description = Mode switch
+				{
+					AStatusMode.Add => ModEntry.Instance.Localizations.Localize(["action", "ChangeLimitedUses", "Add", "description", Amount >= 0 ? "positive" : "negative"], new { Amount = Math.Abs(Amount) }),
+					_ => ModEntry.Instance.Localizations.Localize(["action", "ChangeLimitedUses", Mode.ToString(), "description"], new { Amount = Amount })
+				}
+			}
+		];
+
+	public override void Begin(G g, State s, Combat c)
+	{
+		base.Begin(g, s, c);
+
+		if (s.FindCard(CardId) is not { } card)
+		{
+			timer = 0;
+			return;
+		}
+
+		var currentAmount = card.GetLimitedUses();
+		var newAmount = Mode switch
+		{
+			AStatusMode.Add => currentAmount + Amount,
+			AStatusMode.Mult => currentAmount * Amount,
+			_ => Amount,
+		};
+
+		card.SetLimitedUses(newAmount);
+		if (newAmount <= 0 && !c.exhausted.Contains(card))
+		{
+			s.RemoveCardFromWhereverItIs(CardId);
+			c.SendCardToExhaust(s, card);
+		}
+	}
 }

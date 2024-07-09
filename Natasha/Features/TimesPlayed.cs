@@ -40,6 +40,8 @@ internal sealed class TimesPlayed : IRegisterable
 
 internal sealed class TimesPlayedVariableHint : AVariableHint
 {
+	public required int CardId;
+
 	public TimesPlayedVariableHint()
 	{
 		this.hand = true;
@@ -52,7 +54,7 @@ internal sealed class TimesPlayedVariableHint : AVariableHint
 		=> [
 			new GlossaryTooltip("action.xHintTimesPlayed.desc")
 			{
-				Description = ModEntry.Instance.Localizations.Localize(["x", "TimesPlayed"])
+				Description = ModEntry.Instance.Localizations.Localize(["x", "TimesPlayed", s.route is Combat ? "stateful" : "stateless"], new { Count = (s.FindCard(CardId)?.GetTimesPlayed() ?? 0) + 1 })
 			}
 		];
 }

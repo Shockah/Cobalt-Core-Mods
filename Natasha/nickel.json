@@ -10,6 +10,10 @@
         {
             "UniqueName": "Shockah.Kokoro",
             "Version": "1.7.0"
+        },
+        {
+            "UniqueName": "Shockah.Bloch",
+            "Version": "1.0.0"
         }
     ]
 }

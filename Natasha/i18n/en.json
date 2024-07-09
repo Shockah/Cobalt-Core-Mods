@@ -14,14 +14,32 @@
                 "stateless": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played."
             }
         },
-        "AddUses": {
-            "name": "Add Uses",
-            "description": "Add <c=boldPink>{{Count}}</c> <c=cardtrait>limited</c> uses to this card."
+        "ChangeLimitedUses": {
+            "Add": {
+                "name": {
+                    "positive": "Add Uses",
+                    "negative": "Remove Uses"
+                },
+                "description": {
+                    "positive": "Add <c=boldPink>{{Amount}}</c> <c=cardtrait>limited</c> uses to this card.",
+                    "negative": "Remove <c=boldPink>{{Amount}}</c> <c=cardtrait>limited</c> uses from this card."
+                }
+            },
+            "Set": {
+                "name": "Set Uses",
+                "description": "Set <c=cardtrait>limited</c> uses on this card to <c=boldPink>{{Amount}}</c>."
+            }
         }
     },
     "x": {
-        "TimesPlayed": "<c=action>X</c> = times this card was played this combat, including this play.",
-        "LimitedUses": "<c=action>X</c> = times this <c=cardtrait>limited</c> card can still be played, excluding this play."
+        "TimesPlayed": {
+            "stateful": "<c=action>X</c> = Times this card was played this combat, including this play (<c=boldPink>{{Count}}</c>).",
+            "stateless": "<c=action>X</c> = Times this card was played this combat, including this play."
+        },
+        "LimitedUses": {
+            "stateful": "<c=action>X</c> = Times this <c=cardtrait>limited</c> card can still be played, excluding this play (<c=boldPink>{{Count}}</c>).",
+            "stateless": "<c=action>X</c> = Times this <c=cardtrait>limited</c> card can still be played, excluding this play."
+        }
     },
     "status": {
         "Veiling": {
@@ -48,6 +66,9 @@
         "Botnet": {
             "name": "Botnet"
         },
+        "Buffer": {
+            "name": "Buffer"
+        },
         "BufferOverflow": {
             "name": "Buffer Overflow"
         },
@@ -63,11 +84,23 @@
         "IfElse": {
             "name": "If Else"
         },
+        "Limiter": {
+            "name": "Limiter"
+        },
+        "Parallelism": {
+            "name": "Parallelism"
+        },
         "Ping": {
             "name": "Ping"
         },
         "PortScanning": {
             "name": "Port Scanning"
+        },
+        "Reboot": {
+            "name": "Reboot"
+        },
+        "RemoveLimiter": {
+            "name": "Remove Limiter"
         },
         "RestartEngines": {
             "name": "Restart Engines"
@@ -81,6 +114,9 @@
                 "name": "Discard Self",
                 "description": "Discard this card."
             }
+        },
+        "VoltageTuning": {
+            "name": "Voltage Tuning"
         },
         "ZeroDayExploit": {
             "name": "Zero-Day Exploit"

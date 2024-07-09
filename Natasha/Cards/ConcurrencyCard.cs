@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Shockah.Natasha;
 
-internal sealed class ConcurrencyCard : Card, IRegisterable, IHasCustomCardTraits
+internal sealed class ConcurrencyCard : Card, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -19,22 +19,15 @@ internal sealed class ConcurrencyCard : Card, IRegisterable, IHasCustomCardTrait
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Concurrency.png"), StableSpr.cards_MultiBlast).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Concurrency.png"), StableSpr.cards_MultiShot).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Concurrency", "name"]).Localize
 		});
-
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.None, 3);
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.A, 4);
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.B, 4);
 	}
-
-	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-		=> new HashSet<ICardTraitEntry> { Limited.Trait };
 
 	public override CardData GetData(State state)
 		=> upgrade switch
 		{
-			Upgrade.B => new() { cost = 1, infinite = true, floppable = true },
+			Upgrade.B => new() { cost = 1, floppable = true },
 			_ => new() { cost = 2 }
 		};
 
@@ -42,17 +35,21 @@ internal sealed class ConcurrencyCard : Card, IRegisterable, IHasCustomCardTrait
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new LimitedUsesVariableHint().Disabled(flipped),
-				new AAttack { damage = GetDmg(s, this.GetLimitedUses()), xHint = 1, disabled = flipped },
+				new AAttack { damage = GetDmg(s, 1), disabled = flipped },
+				new StepAction { CardId = uuid, Step = 2, Steps = 2, Action = new AAttack { damage = GetDmg(s, 2) }, disabled = flipped },
+				new StepAction { CardId = uuid, Step = 3, Steps = 3, Action = new AAttack { damage = GetDmg(s, 3) }, disabled = flipped },
 				new ADummyAction(),
-				new TimesPlayedVariableHint().Disabled(!flipped),
-				new AAttack { damage = GetDmg(s, this.GetTimesPlayed() + 1), xHint = 1, disabled = !flipped },
+				new AEnergy { changeAmount = 1, disabled = !flipped },
+			],
+			Upgrade.A => [
+				new StepAction { CardId = uuid, Step = 1, Steps = 3, Action = new AAttack { damage = GetDmg(s, 1) } },
+				new StepAction { CardId = uuid, Step = 1, Steps = 2, Action = new AAttack { damage = GetDmg(s, 2) } },
+				new AAttack { damage = GetDmg(s, 3) },
 			],
 			_ => [
-				new LimitedUsesVariableHint(),
-				new AAttack { damage = GetDmg(s, this.GetLimitedUses()), xHint = 1 },
-				new TimesPlayedVariableHint(),
-				new AAttack { damage = GetDmg(s, this.GetTimesPlayed() + 1), xHint = 1 },
+				new StepAction { CardId = uuid, Step = 3, Steps = 3, Action = new AAttack { damage = GetDmg(s, 1) } },
+				new StepAction { CardId = uuid, Step = 2, Steps = 2, Action = new AAttack { damage = GetDmg(s, 2) } },
+				new AAttack { damage = GetDmg(s, 3) },
 			]
 		};
 }

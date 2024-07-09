@@ -13,29 +13,35 @@ public sealed class ModEntry : SimpleMod
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly Harmony Harmony;
 	internal readonly IKokoroApi KokoroApi;
+	internal readonly IBlochApi BlochApi;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
 	internal readonly IDeckEntry NatashaDeck;
 
 	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
+		typeof(BufferCard),
 		typeof(BufferOverflowCard),
+		typeof(ConcurrencyCard),
 		typeof(DenialOfServiceCard),
 		typeof(IfElseCard),
 		typeof(PingCard),
-		typeof(RestartEnginesCard),
+		typeof(RemoveLimiterCard),
+		//typeof(RestartEnginesCard),
 		typeof(SpywareCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
-		typeof(ConcurrencyCard),
 		typeof(HijackEnginesCard),
+		typeof(ParallelismCard),
 		typeof(TypoCard),
+		typeof(VoltageTuningCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
 		typeof(BotnetCard),
 		typeof(PortScanningCard),
+		typeof(RebootCard),
 		typeof(ZeroDayExploitCard),
 	];
 
@@ -44,6 +50,7 @@ public sealed class ModEntry : SimpleMod
 			.. CommonCardTypes,
 			.. UncommonCardTypes,
 			.. RareCardTypes,
+			typeof(LimiterCard),
 			//typeof(BlochExeCard)
 		];
 
@@ -86,6 +93,7 @@ public sealed class ModEntry : SimpleMod
 		Instance = this;
 		Harmony = new(package.Manifest.UniqueName);
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+		BlochApi = helper.ModRegistry.GetApi<IBlochApi>("Shockah.Bloch")!;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),

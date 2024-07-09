@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Shockah.Natasha;
 
-internal sealed class BufferOverflowCard : Card, IRegisterable, IHasCustomCardTraits
+internal sealed class ParallelismCard : Card, IRegisterable, IHasCustomCardTraits
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -19,29 +19,38 @@ internal sealed class BufferOverflowCard : Card, IRegisterable, IHasCustomCardTr
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/BufferOverflow.png"), StableSpr.cards_HandCannon).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BufferOverflow", "name"]).Localize
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Parallelism.png"), StableSpr.cards_MultiBlast).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Parallelism", "name"]).Localize
 		});
 
 		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.None, 3);
 		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.A, 4);
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.B, 2);
+		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.B, 4);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> new HashSet<ICardTraitEntry> { Limited.Trait };
 
 	public override CardData GetData(State state)
-		=> new() { cost = 1 };
+		=> upgrade switch
+		{
+			Upgrade.B => new() { cost = 1, infinite = true, floppable = true },
+			_ => new() { cost = 2 }
+		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new TimesPlayedVariableHint { CardId = uuid },
-				new AAttack { damage = GetDmg(s, (this.GetTimesPlayed() + 1) * 2), xHint = 2 },
+				new LimitedUsesVariableHint { CardId = uuid, disabled = flipped },
+				new AAttack { damage = GetDmg(s, this.GetLimitedUses()), xHint = 1, disabled = flipped },
+				new ADummyAction(),
+				new TimesPlayedVariableHint { CardId = uuid, disabled = !flipped },
+				new AAttack { damage = GetDmg(s, this.GetTimesPlayed() + 1), xHint = 1, disabled = !flipped },
 			],
 			_ => [
+				new LimitedUsesVariableHint { CardId = uuid },
+				new AAttack { damage = GetDmg(s, this.GetLimitedUses()), xHint = 1 },
 				new TimesPlayedVariableHint { CardId = uuid },
 				new AAttack { damage = GetDmg(s, this.GetTimesPlayed() + 1), xHint = 1 },
 			]
