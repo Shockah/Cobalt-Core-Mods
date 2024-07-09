@@ -31,17 +31,29 @@ internal sealed class Limited : IRegisterable
 	{
 		Trait = helper.Content.Cards.RegisterTrait("Limited", new()
 		{
-			Icon = (state, card) => ObtainIcon(card?.GetLimitedUses() ?? 2),
+			Icon = (state, card) => ObtainIcon(card?.GetLimitedUses() ?? 10),
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Limited", "name"]).Localize,
-			Tooltips = (state, card) => [
-				new GlossaryTooltip($"cardtrait.{MethodBase.GetCurrentMethod()!.DeclaringType!.Namespace!}::Limited")
-				{
-					Icon = ObtainIcon(card?.GetLimitedUses() ?? 2),
-					TitleColor = Colors.cardtrait,
-					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Limited", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Limited", "description", state.route is Combat ? "stateful" : "stateless"], new { Count = card?.GetLimitedUses() ?? 2 }),
-				}
-			]
+			Tooltips = (state, card) =>
+			{
+				string description;
+				if (card is null)
+					description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Limited", "description", "withoutCard"]);
+				else if (state.route is Combat)
+					description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Limited", "description", "stateful"], new { Count = card.GetLimitedUses() });
+				else
+					description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Limited", "description", "outOfCombat"], new { Count = GetDefaultLimitedUses(card.Key(), card.upgrade) });
+
+				return [
+					new GlossaryTooltip($"cardtrait.{MethodBase.GetCurrentMethod()!.DeclaringType!.Namespace!}::Limited")
+					{
+						Icon = ObtainIcon(card?.GetLimitedUses() ?? 10),
+						TitleColor = Colors.cardtrait,
+						Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Limited", "name"]),
+						Description = description,
+					},
+					new TTGlossary("cardtrait.exhaust"),
+				];
+			}
 		});
 
 		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>

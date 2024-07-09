@@ -28,10 +28,12 @@ public sealed class ModEntry : SimpleMod
 		typeof(PingCard),
 		typeof(RemoveLimiterCard),
 		//typeof(RestartEnginesCard),
+		typeof(SelfAlteringCodeCard),
 		typeof(SpywareCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
+		typeof(AccessViolationCard),
 		typeof(HijackEnginesCard),
 		typeof(ParallelismCard),
 		typeof(TypoCard),

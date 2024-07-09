@@ -52,7 +52,8 @@
             "name": "Limited",
             "description": {
                 "stateful": "This card can be used <c=boldPink>{{Count}}</c> times this combat before it gets <c=cardtrait>exhausted</c>.",
-                "stateless": "This card can be used <c=boldPink>{{Count}}</c> times each combat before it gets <c=cardtrait>exhausted</c>."
+                "outOfCombat": "This card can be used <c=boldPink>{{Count}}</c> times each combat before it gets <c=cardtrait>exhausted</c>.",
+                "withoutCard": "This card can be used multiple times each combat before it gets <c=cardtrait>exhausted</c>.",
             }
         }
     },
@@ -63,6 +64,10 @@
         }
     },
     "card": {
+        "AccessViolation": {
+            "name": "Access Violation",
+            "description": "Put all <c=cardtrait>exhausted limited</c> cards in your <c=keyword>discard pile</c>. Give them +1 use."
+        },
         "Botnet": {
             "name": "Botnet"
         },
@@ -104,6 +109,14 @@
         },
         "RestartEngines": {
             "name": "Restart Engines"
+        },
+        "SelfAlteringCode": {
+            "name": "Self-altering Code",
+            "description": {
+                "None": "Give +1 use to <c=cardtrait>limited</c> cards in hand.",
+                "A": "Give +2 uses to <c=cardtrait>limited</c> cards in hand.",
+                "B": "Give +1 use to <c=cardtrait>limited</c> cards in hand."
+            }
         },
         "Spyware": {
             "name": "Spyware"
