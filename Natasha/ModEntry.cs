@@ -21,6 +21,7 @@ public sealed class ModEntry : SimpleMod
 	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
 		typeof(BufferOverflowCard),
 		typeof(DenialOfServiceCard),
+		typeof(IfElseCard),
 		typeof(PingCard),
 		typeof(RestartEnginesCard),
 		typeof(SpywareCard),
@@ -33,6 +34,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
+		typeof(BotnetCard),
 		typeof(PortScanningCard),
 		typeof(ZeroDayExploitCard),
 	];
@@ -73,6 +75,7 @@ public sealed class ModEntry : SimpleMod
 			typeof(Limited),
 			typeof(TimesPlayed),
 			typeof(Step),
+			typeof(OneLiners),
 			.. AllCardTypes,
 			.. AllArtifactTypes,
 			.. DuoArtifacts,

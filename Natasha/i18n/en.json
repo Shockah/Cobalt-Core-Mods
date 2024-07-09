@@ -45,6 +45,9 @@
         }
     },
     "card": {
+        "Botnet": {
+            "name": "Botnet"
+        },
         "BufferOverflow": {
             "name": "Buffer Overflow"
         },
@@ -56,6 +59,9 @@
         },
         "HijackEngines": {
             "name": "Hijack Engines"
+        },
+        "IfElse": {
+            "name": "If Else"
         },
         "Ping": {
             "name": "Ping"
