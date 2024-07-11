@@ -1,24 +1,16 @@
 {
 	"UniqueName": "Shockah.Kokoro",
-	"Version": "1.10.2",
+	"Version": "1.11.0",
 	"DisplayName": "Kokoro",
 	"Description": "A utility/library mod - a little bit for players, and a lot for modders.",
 	"Author": "Shockah",
-	"RequiredApiVersion": "0.8.0",
+	"RequiredApiVersion": "1.0.0",
 	"ModType": "Nickel.Legacy",
 	"EntryPointAssembly": "Kokoro.dll",
-	"AssemblyReferences": [
-		{
-			"Name": "Shrike"
-		},
-		{
-			"Name": "Shrike.Harmony"
-		}
-	],
 	"Dependencies": [
 		{
 			"UniqueName": "Nickel.Legacy",
-			"Version": "0.8.0"
+			"Version": "1.0.0"
 		}
 	]
 }

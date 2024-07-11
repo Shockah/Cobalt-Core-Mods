@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.11.0
+Released 11 July 2024.
 
 * Removed debug menu patches that are now part of vanilla (which stops Kokoro from erroring).
 * Added a proper tooltip for a `HasStatus` conditional description for enemies.
