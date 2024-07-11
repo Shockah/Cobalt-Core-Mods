@@ -228,7 +228,7 @@ internal static class CardPatches
 
 		CardRenderMatrixStack.Push(g.mg.cameraMatrix);
 		var box = g.uiStack.TryPeek(out var existingRect) ? existingRect : new();
-		Vector3 translation = new Vector3((float)box.rect.x + 2f, (float)box.rect.y + 31f, 0f) * g.mg.PIX_SCALE;
+		var translation = new Vector3((float)box.rect.x + 2f, (float)box.rect.y + 31f, 0f) * g.mg.PIX_SCALE;
 		MG.inst.cameraMatrix *= Matrix.CreateTranslation(-translation);
 		MG.inst.cameraMatrix *= Matrix.CreateScale((float)modifiedScale.x, (float)modifiedScale.y, 1f);
 		MG.inst.cameraMatrix *= Matrix.CreateTranslation(translation);
@@ -292,11 +292,11 @@ internal static class CardPatches
 		var resources = actions
 			.SelectMany(a => Instance.WrappedActionManager.GetWrappedCardActionsRecursively(a, includingWrapperActions: true))
 			.OfType<AResourceCost>()
-			.SelectMany(a => a.Costs ?? new())
+			.SelectMany(a => a.Costs ?? [])
 			.SelectMany(c => c.PotentialResources)
 			.ToList();
 
-		CurrentResourceState = resources.Count == 0 ? new() : AResourceCost.GetCurrentResourceState(state, state.route as Combat ?? DB.fakeCombat, resources);
+		CurrentResourceState = resources.Count == 0 ? [] : AResourceCost.GetCurrentResourceState(state, state.route as Combat ?? DB.fakeCombat, resources);
 		if (CurrentResourceState.ContainsKey("Energy"))
 			CurrentResourceState["Energy"] -= card.GetDataWithOverrides(state).cost;
 		CurrentNonDrawingResourceState = new(CurrentResourceState);
@@ -326,7 +326,7 @@ internal static class CardPatches
 
 		CardRenderMatrixStack.Push(g.mg.cameraMatrix);
 		var box = g.uiStack.TryPeek(out var existingRect) ? existingRect : new();
-		Vector3 translation = new Vector3((float)box.rect.x + 30f, (float)box.rect.y + 50f, 0f) * g.mg.PIX_SCALE;
+		var translation = new Vector3((float)box.rect.x + 30f, (float)box.rect.y + 50f, 0f) * g.mg.PIX_SCALE;
 		MG.inst.cameraMatrix *= Matrix.CreateTranslation(-translation);
 		MG.inst.cameraMatrix *= modifiedMatrix;
 		MG.inst.cameraMatrix *= Matrix.CreateTranslation(translation);
@@ -363,12 +363,12 @@ internal static class CardPatches
 			if (conditional.Action is not { } wrappedAction)
 				return false;
 
-			bool oldActionDisabled = wrappedAction.disabled;
-			bool faded = action.disabled || (conditional.FadeUnsatisfied && state.route is Combat combat && conditional.Expression?.GetValue(state, combat) == false);
+			var oldActionDisabled = wrappedAction.disabled;
+			var faded = action.disabled || (conditional.FadeUnsatisfied && state.route is Combat combat && conditional.Expression?.GetValue(state, combat) == false);
 			wrappedAction.disabled = faded;
 
 			var position = g.Push(rect: new()).rect.xy;
-			int initialX = (int)position.x;
+			var initialX = (int)position.x;
 
 			conditional.Expression?.Render(g, ref position, faded, dontDraw);
 			if (conditional.Expression?.ShouldRenderQuestionMark(state, state.route as Combat) == true)
@@ -403,11 +403,11 @@ internal static class CardPatches
 				return false;
 			var resourceState = (dontDraw ? CurrentNonDrawingResourceState : CurrentResourceState) ?? new();
 
-			bool oldActionDisabled = wrappedAction.disabled;
+			var oldActionDisabled = wrappedAction.disabled;
 			wrappedAction.disabled = action.disabled;
 
 			var position = g.Push(rect: new()).rect.xy;
-			int initialX = (int)position.x;
+			var initialX = (int)position.x;
 
 			var (payment, groupedPayment, _) = AResourceCost.GetResourcePayment(resourceState, resourceCostAction.Costs ?? new());
 			resourceCostAction.RenderCosts(g, ref position, action.disabled, dontDraw, payment);
@@ -438,11 +438,11 @@ internal static class CardPatches
 			if (continuedAction.Action is not { } wrappedAction)
 				return false;
 
-			bool oldActionDisabled = wrappedAction.disabled;
+			var oldActionDisabled = wrappedAction.disabled;
 			wrappedAction.disabled = action.disabled;
 
 			var position = g.Push(rect: new()).rect.xy;
-			int initialX = (int)position.x;
+			var initialX = (int)position.x;
 			if (wrappedAction is AAttack attack)
 			{
 				var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
@@ -551,7 +551,7 @@ internal static class CardPatches
 	{
 		if (!action.disabled)
 			return currentColor;
-		Color fadeColor = new(Colors.disabledText.r / Colors.textMain.r, Colors.disabledText.g / Colors.textMain.g, Colors.disabledText.b / Colors.textMain.b, Colors.disabledText.a / Colors.textMain.a);
+		var fadeColor = new Color(Colors.disabledText.r / Colors.textMain.r, Colors.disabledText.g / Colors.textMain.g, Colors.disabledText.b / Colors.textMain.b, Colors.disabledText.a / Colors.textMain.a);
 		return currentColor * fadeColor;
 	}
 
@@ -583,7 +583,7 @@ internal static class CardPatches
 	{
 		if (!action.disabled)
 			return currentColor;
-		Color fadeColor = new(Colors.disabledText.r / Colors.textMain.r, Colors.disabledText.g / Colors.textMain.g, Colors.disabledText.b / Colors.textMain.b, Colors.disabledText.a / Colors.textMain.a);
+		var fadeColor = new Color(Colors.disabledText.r / Colors.textMain.r, Colors.disabledText.g / Colors.textMain.g, Colors.disabledText.b / Colors.textMain.b, Colors.disabledText.a / Colors.textMain.a);
 		return currentColor * fadeColor;
 	}
 
@@ -627,8 +627,8 @@ internal static class CardPatches
 
 		if (!dontDraw)
 		{
-			Vec v = g.Push(null, new Rect(w)).rect.xy;
-			Color spriteColor = variableHint.disabled ? Colors.disabledIconTint : new Color("ffffff");
+			var v = g.Push(null, new Rect(w)).rect.xy;
+			var spriteColor = variableHint.disabled ? Colors.disabledIconTint : new Color("ffffff");
 			Draw.Sprite(StableSpr.icons_outgoing, v.x, v.y, color: spriteColor);
 			g.Pop();
 		}
