@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Removed debug menu patches that are now part of vanilla (which stops Kokoro from erroring).
+
 ## 1.10.2
 Released 29 June 2024.
 
