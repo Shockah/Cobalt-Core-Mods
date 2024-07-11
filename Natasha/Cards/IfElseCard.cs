@@ -57,7 +57,7 @@ internal sealed class IfElseCard : Card, IRegisterable, IHasCustomCardTraits
 						ModEntry.Instance.KokoroApi.Actions.MakeStop(out var evadeStop),
 					]
 				}
-			),
+			).Disabled(s.ship.Get(Status.evade) > 0),
 			ModEntry.Instance.KokoroApi.Actions.MakeStopped(
 				evadeStop,
 				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
@@ -76,13 +76,13 @@ internal sealed class IfElseCard : Card, IRegisterable, IHasCustomCardTraits
 						]
 					}
 				)
-			),
+			).Disabled(s.ship.Get(Status.evade) == 0 || s.ship.Get(Status.shield) > 0),
 			ModEntry.Instance.KokoroApi.Actions.MakeStopped(
 				evadeStop,
 				ModEntry.Instance.KokoroApi.Actions.MakeStopped(
 					shieldStop,
 					new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = upgrade == Upgrade.A ? 4 : 3 }
 				)
-			)
+			).Disabled(s.ship.Get(Status.evade) == 0 || s.ship.Get(Status.shield) == 0)
 		];
 }
