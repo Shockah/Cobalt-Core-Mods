@@ -26,7 +26,10 @@ public partial interface IKokoroApi
 
 		public enum EquationStyle
 		{
-			Formal, State, Possession, PossessionComparison
+			Formal,
+			State, Possession, PossessionComparison,
+			EnemyState, EnemyPossession, EnemyPossessionComparison,
+			ToEnemyPossessionComparison
 		}
 
 		public interface IExpression
@@ -77,7 +80,7 @@ public partial interface IKokoroApi
 				=> PotentialResources.FirstOrDefault()?.RenderSuffix(g, ref position, isDisabled, dontRender);
 
 			void RenderSingle(G g, ref Vec position, IResource? satisfiedResource, bool isDisabled, bool dontRender);
-			List<Tooltip> GetTooltips(State state, Combat? combat) => new();
+			List<Tooltip> GetTooltips(State state, Combat? combat) => [];
 		}
 
 		public interface IResource

@@ -5,6 +5,8 @@
 ## Upcoming release
 
 * Removed debug menu patches that are now part of vanilla (which stops Kokoro from erroring).
+* Added a proper tooltip for a `HasStatus` conditional description for enemies.
+* Added additional conditional description styles: `EnemyState`, `EnemyPossession`, `EnemyPossessionComparison` and `ToEnemyPossessionComparison`.
 
 ## 1.10.2
 Released 29 June 2024.
