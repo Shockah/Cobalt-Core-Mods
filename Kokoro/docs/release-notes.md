@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the mod being completely broken on clean install.
+
 ## 1.11.0
 Released 11 July 2024.
 
