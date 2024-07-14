@@ -11,17 +11,14 @@ using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
-public sealed class ApiImplementation : IKokoroApi, IProxyProvider
+public sealed class ApiImplementation(
+	IManifest manifest
+) : IKokoroApi, IProxyProvider
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private readonly IManifest Manifest;
-	private readonly Dictionary<Type, ConditionalWeakTable<object, object?>> ProxyCache = [];
-
-	public ApiImplementation(IManifest manifest)
-	{
-		this.Manifest = manifest;
-	}
+	private readonly IManifest Manifest = manifest;
+	private static readonly Dictionary<Type, ConditionalWeakTable<object, object?>> ProxyCache = [];
 
 	#region Generic
 	public TimeSpan TotalGameTime
@@ -55,7 +52,7 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 		}
 		if (!ProxyCache.TryGetValue(typeof(T), out var table))
 		{
-			table = new();
+			table = [];
 			ProxyCache[typeof(T)] = table;
 		}
 		if (table.TryGetValue(@object, out var rawProxy))
@@ -64,7 +61,7 @@ public sealed class ApiImplementation : IKokoroApi, IProxyProvider
 			return rawProxy is not null;
 		}
 
-		var newNullableProxy = Instance.ProxyManager.TryProxy<string, T>(@object, "Unknown", Instance.Name, out var newProxy) ? newProxy : null;
+		var newNullableProxy = Instance.Helper.Utilities.ProxyManager.TryProxy<string, T>(@object, "Unknown", Instance.Name, out var newProxy) ? newProxy : null;
 		table.AddOrUpdate(@object, newNullableProxy);
 		proxy = newNullableProxy is null ? default : newNullableProxy;
 		return newNullableProxy is not null;

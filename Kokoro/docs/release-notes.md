@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Switched to using Nickel's newly exposed proxy manager, potentially improving performance and compatibility.
+
 ## 1.11.1
 Released 12 July 2024.
 
