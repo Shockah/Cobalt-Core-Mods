@@ -23,7 +23,7 @@ public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>, 
 		for (int i = 0; i < tooltips.Count; i++)
 		{
 			var tooltip = tooltips[i];
-			if (tooltip is TTGlossary glossary && glossary.key == $"status.{Instance.Content.OxidationStatus.Id!.Value}")
+			if (tooltip is TTGlossary glossary && glossary.key == $"status.{Instance.Content.OxidationStatus.Status}")
 				glossary.vals = [$"<c=boldPink>{oxidationMaxValue}</c>"];
 		}
 		return tooltips;
@@ -34,13 +34,13 @@ public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>, 
 		if (timing != StatusTurnTriggerTiming.TurnEnd)
 			return false;
 
-		if (status == Status.corrode && ship.Get((Status)Instance.Content.OxidationStatus.Id!.Value) >= GetOxidationStatusMaxValue(state, ship))
+		if (status == Status.corrode && ship.Get(Instance.Content.OxidationStatus.Status) >= GetOxidationStatusMaxValue(state, ship))
 		{
 			amount++;
 			setStrategy = StatusTurnAutoStepSetStrategy.Direct;
 			return false;
 		}
-		if (status == (Status)Instance.Content.OxidationStatus.Id!.Value && amount >= GetOxidationStatusMaxValue(state, ship))
+		if (status == Instance.Content.OxidationStatus.Status && amount >= GetOxidationStatusMaxValue(state, ship))
 		{
 			amount = 0;
 			setStrategy = StatusTurnAutoStepSetStrategy.QueueSet;

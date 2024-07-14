@@ -1,6 +1,7 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
 using daisyowl.text;
+using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.IO;
@@ -30,7 +31,7 @@ internal sealed class Content
 	internal ExternalStatus WormStatus { get; private set; } = null!;
 
 	internal ExternalSprite OxidationSprite { get; private set; } = null!;
-	internal ExternalStatus OxidationStatus { get; private set; } = null!;
+	internal IStatusEntry OxidationStatus { get; private set; } = null!;
 
 	internal ExternalSprite RedrawButtonSprite { get; private set; } = null!;
 	internal ExternalSprite RedrawButtonOnSprite { get; private set; } = null!;
@@ -168,16 +169,19 @@ internal sealed class Content
 			registry.RegisterStatus(WormStatus);
 		}
 		{
-			OxidationStatus = new(
-				$"{typeof(ModEntry).Namespace}.Status.Oxidation",
-				isGood: false,
-				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF00FFAD)),
-				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF98FFF7)),
-				OxidationSprite,
-				affectedByTimestop: false
-			);
-			OxidationStatus.AddLocalisation(I18n.OxidationStatusName, I18n.OxidationStatusDescription);
-			registry.RegisterStatus(OxidationStatus);
+			OxidationStatus = Instance.Helper.Content.Statuses.RegisterStatus($"{typeof(ModEntry).Namespace}.Status.Oxidation", new()
+			{
+				Definition = new()
+				{
+					icon = (Spr)OxidationSprite.Id!.Value,
+					color = new("00FFAD"),
+					border = new("98FFF7"),
+					isGood = false,
+				},
+				Name = _ => I18n.OxidationStatusName,
+				Description = _ => I18n.OxidationStatusDescription,
+				ShouldFlash = (state, _, ship, status) => ship.Get(status) >= Instance.Api.GetOxidationStatusMaxValue(state, ship)
+			});
 		}
 		{
 			RedrawStatus = new(

@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* The Oxidation status now flashes when about to turn into Corrode.
 * Switched to using Nickel's newly exposed proxy manager, potentially improving performance and compatibility.
 
 ## 1.11.1

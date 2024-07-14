@@ -153,13 +153,13 @@ public sealed class ApiImplementation(
 
 	#region OxidationStatus
 	public ExternalStatus OxidationStatus
-		=> Instance.Content.OxidationStatus;
+		=> ExternalStatus.GetRaw((int)Instance.Content.OxidationStatus.Status);
 
 	public Status OxidationVanillaStatus
 		=> (Status)OxidationStatus.Id!.Value;
 
 	public Tooltip GetOxidationStatusTooltip(State state, Ship ship)
-		=> new TTGlossary($"status.{Instance.Content.OxidationStatus.Id!.Value}", Instance.OxidationStatusManager.GetOxidationStatusMaxValue(state, ship));
+		=> new TTGlossary($"status.{Instance.Content.OxidationStatus.Status}", Instance.OxidationStatusManager.GetOxidationStatusMaxValue(state, ship));
 
 	public int GetOxidationStatusMaxValue(State state, Ship ship)
 		=> Instance.OxidationStatusManager.GetOxidationStatusMaxValue(state, ship);
