@@ -42,9 +42,13 @@
         }
     },
     "status": {
-        "Veiling": {
-            "name": "Veiling Aura",
-            "description": "Reduce incoming hits by <c=C2FF60>1</c> and <c=downside>decrease this by <c=C2FF60>1</c></c>."
+        "Reprogrammed": {
+            "name": "Reprogrammed",
+            "description": "The next <c=midrow>object</c> launched by this ship is replaced with a <c=midrow>Repair Kit</c>."
+        },
+        "Deprogrammed": {
+            "name": "Deprogrammed",
+            "description": "The next <c=midrow>object</c> launched by this ship is replaced with an <c=midrow>Asteroid</c>."
         }
     },
     "cardTrait": {
@@ -56,6 +60,9 @@
                 "withoutCard": "This card can be used multiple times each combat before it gets <c=cardtrait>exhausted</c>.",
             }
         }
+    },
+    "condition": {
+        "TimesPlayed": "times this card was played this combat (including this play)"
     },
     "artifact": {
         "AuraMastery": {
@@ -106,6 +113,9 @@
         },
         "RemoveLimiter": {
             "name": "Remove Limiter"
+        },
+        "Reprogram": {
+            "name": "Reprogram"
         },
         "RestartEngines": {
             "name": "Restart Engines"

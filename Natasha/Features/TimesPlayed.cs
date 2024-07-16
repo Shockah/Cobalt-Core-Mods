@@ -58,3 +58,21 @@ internal sealed class TimesPlayedVariableHint : AVariableHint
 			}
 		];
 }
+
+internal sealed class TimesPlayedCondition : IKokoroApi.IConditionalActionApi.IIntExpression
+{
+	public required int CardId;
+
+	public string GetTooltipDescription(State state, Combat? combat)
+		=> ModEntry.Instance.Localizations.Localize(["condition", "TimesPlayed"]);
+
+	public int GetValue(State state, Combat combat)
+		=> state.FindCard(CardId)?.GetTimesPlayed() ?? 0;
+
+	public void Render(G g, ref Vec position, bool isDisabled, bool dontRender)
+	{
+		if (!dontRender)
+			Draw.Sprite(TimesPlayed.Icon.Sprite, position.x, position.y, color: isDisabled ? Colors.disabledIconTint : Colors.white);
+		position.x += 8;
+	}
+}

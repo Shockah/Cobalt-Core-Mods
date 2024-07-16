@@ -36,6 +36,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(AccessViolationCard),
 		typeof(HijackEnginesCard),
 		typeof(ParallelismCard),
+		typeof(ReprogramCard),
 		typeof(TypoCard),
 		typeof(VoltageTuningCard),
 	];
@@ -85,6 +86,7 @@ public sealed class ModEntry : SimpleMod
 			typeof(TimesPlayed),
 			typeof(Step),
 			typeof(OneLiners),
+			typeof(Reprogram),
 			.. AllCardTypes,
 			.. AllArtifactTypes,
 			.. DuoArtifacts,
