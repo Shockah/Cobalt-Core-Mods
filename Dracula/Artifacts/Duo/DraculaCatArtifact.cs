@@ -56,9 +56,9 @@ internal sealed class DraculaCatArtifact : Artifact, IRegisterable
 
 	private static void Card_GetActionsOverridden_Postfix(Card __instance, State s, ref List<CardAction> __result)
 	{
-		if (!ModEntry.Instance.IsExeCardType(__instance.GetType()))
+		if (!s.EnumerateAllArtifacts().Any(a => a is DraculaCatArtifact))
 			return;
-		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is DraculaCatArtifact) is not { } artifact)
+		if (!ModEntry.Instance.IsExeCardType(__instance.GetType()))
 			return;
 
 		foreach (var baseAction in __result)
@@ -71,7 +71,7 @@ internal sealed class DraculaCatArtifact : Artifact, IRegisterable
 	{
 		if (!ModEntry.Instance.Helper.ModData.TryGetModData(__instance, "IsExeCardOffering", out bool isExeCardOffering) || !isExeCardOffering)
 			return;
-		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is DraculaCatArtifact) is not { } artifact)
+		if (!s.EnumerateAllArtifacts().Any(a => a is DraculaCatArtifact))
 			return;
 
 		IsDuringExeCardOfferingMethods.Add(__originalMethod);
