@@ -285,8 +285,8 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 		if (Settings.ProfileBased.Current.RareCardsCondition || Settings.ProfileBased.Current.AnyCardsCondition)
 		{
 			var characterCardsInDeck = state.GetAllCards()
-				.Where(c => !c.GetDataWithOverrides(state).temporary)
 				.Where(c => DB.cardMetas.TryGetValue(c.Key(), out var meta) && !meta.dontOffer && meta.deck == character.deckType)
+				.Where(c => !c.GetDataWithOverrides(state).temporary)
 				.ToList();
 
 			if (Settings.ProfileBased.Current.AnyCardsCondition && characterCardsInDeck.Count >= Settings.ProfileBased.Current.MinCards)
