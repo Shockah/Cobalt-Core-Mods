@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Nickel;
-using Shockah.Shared;
 using System.Collections.Generic;
 
 namespace Shockah.Bloch;
@@ -23,14 +22,12 @@ internal sealed class SplitPersonalityManager : IStatusRenderHook
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "SplitPersonality", "description"]).Localize
 		});
 
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
 			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(GetType(), nameof(AAttack_Begin_Prefix)), priority: Priority.Last)
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(ASpawn), nameof(ASpawn.Begin)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ASpawn), nameof(ASpawn.Begin)),
 			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(GetType(), nameof(ASpawn_Begin_Prefix)), priority: Priority.Last)
 		);
 

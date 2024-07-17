@@ -104,15 +104,13 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 				ModEntry.Instance.Helper.ModData.RemoveModData(card, "ChosenAuras");
 		}, 0);
 
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
 			prefix: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Prefix)),
 			finalizer: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Finalizer))
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.ModifyDamageDueToParts)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.ModifyDamageDueToParts)),
 			prefix: new HarmonyMethod(GetType(), nameof(Ship_ModifyDamageDueToParts_Prefix))
 		);
 

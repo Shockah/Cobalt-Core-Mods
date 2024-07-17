@@ -13,7 +13,7 @@ namespace Shockah.Bloch;
 public sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
-	internal readonly Harmony Harmony;
+	internal readonly IHarmony Harmony;
 	internal readonly HookManager<IBlochHook> HookManager;
 	internal readonly ApiImplementation Api;
 	internal readonly IKokoroApi KokoroApi;
@@ -94,7 +94,7 @@ public sealed class ModEntry : SimpleMod
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
-		Harmony = new(package.Manifest.UniqueName);
+		Harmony = helper.Utilities.DelayedHarmony;
 		HookManager = new();
 		Api = new();
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;

@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Shockah.Shared;
 
 namespace Shockah.Bloch;
 
@@ -7,9 +6,8 @@ internal sealed class InfiniteCharacterAnimationManager
 {
 	public InfiniteCharacterAnimationManager()
 	{
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Shout), nameof(Shout.AnimationFrame)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Shout), nameof(Shout.AnimationFrame)),
 			postfix: new HarmonyMethod(GetType(), nameof(Shout_AnimationFrame_Postfix))
 		);
 	}

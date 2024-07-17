@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Shockah.Shared;
 using System;
 
 namespace Shockah.Bloch;
@@ -12,31 +11,26 @@ internal sealed class WavyDialogueManager
 
 	public WavyDialogueManager()
 	{
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Dialogue), nameof(Dialogue.Render)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Dialogue), nameof(Dialogue.Render)),
 			prefix: new HarmonyMethod(GetType(), nameof(Dialogue_Render_Prefix)),
 			finalizer: new HarmonyMethod(GetType(), nameof(Dialogue_Render_Finalizer))
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Character), nameof(Character.Render)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Character), nameof(Character.Render)),
 			prefix: new HarmonyMethod(GetType(), nameof(Character_Render_Prefix)),
 			finalizer: new HarmonyMethod(GetType(), nameof(Character_Render_Finalizer))
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.Text)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.Text)),
 			prefix: new HarmonyMethod(GetType(), nameof(Draw_Text_Prefix))
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.RenderCharacter)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.RenderCharacter)),
 			prefix: new HarmonyMethod(GetType(), nameof(Draw_RenderCharacter_Prefix))
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.RenderCharacterOutline)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.RenderCharacterOutline)),
 			prefix: new HarmonyMethod(GetType(), nameof(Draw_RenderCharacterOutline_Prefix))
 		);
 	}
