@@ -3,7 +3,7 @@ using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
-using Shockah.Shared;
+using Nickel;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -15,21 +15,18 @@ internal static class DrawPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	public static void Apply(Harmony harmony)
+	public static void Apply(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.Text)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.Text)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Draw_Text_Prefix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.RenderCharacter)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.RenderCharacter)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Draw_RenderCharacter_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.RenderCharacterOutline)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.RenderCharacterOutline)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Draw_RenderCharacterOutline_Transpiler))
 		);
 	}

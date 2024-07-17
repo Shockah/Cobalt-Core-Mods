@@ -12,7 +12,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)CardActionExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EffectSpawnerExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExternalTypesExt.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HarmonyExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HookManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IModHelperExt.cs" />

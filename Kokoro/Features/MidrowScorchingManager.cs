@@ -59,9 +59,9 @@ public sealed class MidrowScorchingManager : HookManager<IMidrowScorchingHook>
 
 	internal void ModifyMidrowObjectTooltips(StuffBase @object, List<Tooltip> tooltips)
 	{
-		if (StateExt.Instance is not { } state)
+		if (MG.inst.g.state is not { } state)
 			return;
-		if (StateExt.Instance?.route is not Combat combat)
+		if (state.route is not Combat combat)
 			return;
 
 		var scorching = Instance.Api.GetScorchingStatus(state, combat, @object);

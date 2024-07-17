@@ -19,7 +19,7 @@ public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>, 
 
 	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
 	{
-		var oxidationMaxValue = ship is null ? BaseOxidationStatusMaxValue : GetOxidationStatusMaxValue(StateExt.Instance ?? DB.fakeState, ship);
+		var oxidationMaxValue = ship is null ? BaseOxidationStatusMaxValue : GetOxidationStatusMaxValue(MG.inst.g.state ?? DB.fakeState, ship);
 		for (int i = 0; i < tooltips.Count; i++)
 		{
 			var tooltip = tooltips[i];

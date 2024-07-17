@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
-using Shockah.Shared;
+using Nickel;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -14,21 +14,18 @@ internal static class AStatusPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	public static void Apply(Harmony harmony)
+	public static void Apply(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.Begin)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.Begin)),
 			transpiler: new HarmonyMethod(typeof(AStatusPatches), nameof(AStatus_Begin_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.GetTooltips)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.GetTooltips)),
 			postfix: new HarmonyMethod(typeof(AStatusPatches), nameof(AStatus_GetTooltips_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.GetIcon)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.GetIcon)),
 			postfix: new HarmonyMethod(typeof(AStatusPatches), nameof(AStatus_GetIcon_Postfix))
 		);
 	}

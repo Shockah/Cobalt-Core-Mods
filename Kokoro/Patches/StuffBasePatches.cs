@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
 
@@ -8,25 +9,22 @@ internal static class StuffBasePatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	public static void Apply(Harmony harmony)
+	public static void Apply(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.DrawWithHilight)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.DrawWithHilight)),
 			postfix: new HarmonyMethod(typeof(StuffBasePatches), nameof(StuffBase_DrawWithHilight_Postfix))
 		);
 	}
 
-	public static void ApplyLate(Harmony harmony)
+	public static void ApplyLate(IHarmony harmony)
 	{
-		harmony.TryPatchVirtual(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.GetTooltips)),
+		harmony.PatchVirtual(
+			original: AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.GetTooltips)),
 			postfix: new HarmonyMethod(typeof(StuffBasePatches), nameof(StuffBase_GetTooltips_Postfix))
 		);
-		harmony.TryPatchVirtual(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.GetActionsOnDestroyed)),
+		harmony.PatchVirtual(
+			original: AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.GetActionsOnDestroyed)),
 			postfix: new HarmonyMethod(typeof(StuffBasePatches), nameof(StuffBase_GetActionsOnDestroyed_Postfix))
 		);
 	}
@@ -43,7 +41,7 @@ internal static class StuffBasePatches
 
 	private static void StuffBase_GetActionsOnDestroyed_Postfix(StuffBase __instance, State __0, Combat __1, bool __2 /* wasPlayer */, ref List<CardAction>? __result)
 	{
-		__result ??= new();
+		__result ??= [];
 		Instance.MidrowScorchingManager.ModifyMidrowObjectDestroyedActions(__0, __1, __instance, __2, __result);
 	}
 }

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
-using Shockah.Shared;
+using Nickel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +15,10 @@ internal static class SecondOpinionsPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	public static void Apply(Harmony harmony)
+	public static void Apply(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(SecondOpinions), nameof(SecondOpinions.GetActions)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(SecondOpinions), nameof(SecondOpinions.GetActions)),
 			transpiler: new HarmonyMethod(typeof(SecondOpinionsPatches), nameof(SecondOpinions_GetActions_Transpiler))
 		);
 	}

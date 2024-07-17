@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
+using Nickel;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -26,66 +27,55 @@ internal static class CardPatches
 	private static Dictionary<string, int>? CurrentNonDrawingResourceState = null;
 	private static readonly Stack<Matrix?> CardRenderMatrixStack = new();
 
-	public static void Apply(Harmony harmony)
+	public static void Apply(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
 			postfix: new HarmonyMethod(typeof(CardPatches), nameof(Card_GetAllTooltips_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
 			prefix: new HarmonyMethod(typeof(CardPatches), nameof(Card_Render_Prefix)),
 			postfix: new HarmonyMethod(typeof(CardPatches), nameof(Card_Render_Postfix)),
 			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_Render_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.MakeAllActionIcons)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.MakeAllActionIcons)),
 			prefix: new HarmonyMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Prefix)),
 			finalizer: new HarmonyMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Finalizer)),
 			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_MakeAllActionIcons_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(typeof(CardPatches), nameof(Card_RenderAction_Prefix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_RenderAction_Prefix_First)), priority: Priority.First),
 			finalizer: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_RenderAction_Finalizer_Last)), priority: Priority.Last)
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => typeof(Card).GetMethods(AccessTools.all).First(m => m.Name.StartsWith("<RenderAction>g__IconAndOrNumber") && m.ReturnType == typeof(void)),
+		harmony.Patch(
+			original: typeof(Card).GetMethods(AccessTools.all).First(m => m.Name.StartsWith("<RenderAction>g__IconAndOrNumber") && m.ReturnType == typeof(void)),
 			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_RenderAction_IconAndOrNumber_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => typeof(Card).GetMethods(AccessTools.all).First(m => m.Name.StartsWith("<RenderAction>g__ParenIconParen") && m.ReturnType == typeof(void)),
+		harmony.Patch(
+			original: typeof(Card).GetMethods(AccessTools.all).First(m => m.Name.StartsWith("<RenderAction>g__ParenIconParen") && m.ReturnType == typeof(void)),
 			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_RenderAction_ParenIconParen_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => typeof(Card).GetMethods(AccessTools.all).First(m => m.Name.StartsWith("<RenderAction>g__VarAssignment") && m.ReturnType == typeof(void)),
+		harmony.Patch(
+			original: typeof(Card).GetMethods(AccessTools.all).First(m => m.Name.StartsWith("<RenderAction>g__VarAssignment") && m.ReturnType == typeof(void)),
 			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_RenderAction_VarAssignment_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
 			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_GetActionsOverridden_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetDataWithOverrides)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetDataWithOverrides)),
 			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_GetDataWithOverrides_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(State), nameof(State.Render)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(State), nameof(State.Render)),
 			postfix: new HarmonyMethod(typeof(CardPatches), nameof(State_Render_Postfix))
 		);
 	}

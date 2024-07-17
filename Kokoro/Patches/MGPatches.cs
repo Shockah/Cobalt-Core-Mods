@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Shockah.Shared;
+using Nickel;
 
 namespace Shockah.Kokoro;
 
@@ -8,11 +8,10 @@ internal static class MGPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	public static void Apply(Harmony harmony)
+	public static void Apply(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(MG), "Draw"),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(MG), "Draw"),
 			postfix: new HarmonyMethod(typeof(MGPatches), nameof(MG_Draw_Prefix))
 		);
 	}

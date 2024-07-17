@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using Shockah.Shared;
+using Nickel;
 using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
@@ -8,11 +8,10 @@ internal static class StatusMetaPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	internal static void Apply(Harmony harmony)
+	internal static void Apply(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(StatusMeta), nameof(StatusMeta.GetTooltips)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(StatusMeta), nameof(StatusMeta.GetTooltips)),
 			postfix: new HarmonyMethod(typeof(StatusMetaPatches), nameof(StatusMeta_GetTooltips_Postfix))
 		);
 	}

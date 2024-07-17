@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
-using Shockah.Shared;
+using Nickel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,40 +53,34 @@ internal static class ShipPatches
 		return method.CreateDelegate<Action<Ship, G, string, List<KeyValuePair<Status, int>>, int, int, int>>();
 	});
 
-	public static void Apply(Harmony harmony)
+	public static void Apply(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.OnBeginTurn)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.OnBeginTurn)),
 			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_OnBeginTurn_Prefix_First)), Priority.First),
 			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_OnBeginTurn_Postfix_Last)), Priority.Last),
 			transpiler: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_OnBeginTurn_Transpiler_Last)), Priority.Last)
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.OnAfterTurn)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.OnAfterTurn)),
 			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_OnAfterTurn_Prefix_First)), Priority.First),
 			transpiler: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_OnAfterTurn_Transpiler_Last)), Priority.Last)
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), "GetStatusSize"),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), "GetStatusSize"),
 			postfix: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_GetStatusSize_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), "RenderStatuses"),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), "RenderStatuses"),
 			prefix: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatuses_Prefix)),
 			finalizer: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatuses_Finalizer))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), "RenderStatusRow"),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), "RenderStatusRow"),
 			transpiler: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatusRow_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.Set)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.Set)),
 			prefix: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_Set_Prefix))
 		);
 	}
@@ -164,7 +158,7 @@ internal static class ShipPatches
 	private static void Ship_GetStatusSize_Postfix(Ship __instance, Status status, int amount, ref object __result)
 	{
 		LastStatusBarRenderingOverride = null;
-		if (StateExt.Instance is not { } state)
+		if (MG.inst.g.state is not { } state)
 			return;
 		if (state.route is not Combat combat)
 			return;
@@ -245,7 +239,7 @@ internal static class ShipPatches
 
 	private static Dictionary<Status, int> Ship_RenderStatuses_Transpiler_ModifyStatusesToShow(Dictionary<Status, int> statusEffects, Ship ship)
 	{
-		if (StateExt.Instance is not { } state)
+		if (MG.inst.g.state is not { } state)
 			return statusEffects;
 		if (state.route is not Combat combat)
 			return statusEffects;
@@ -313,7 +307,7 @@ internal static class ShipPatches
 
 	private static bool Ship_Set_Prefix(Ship __instance, Status status, ref int n)
 	{
-		if (StateExt.Instance is not { } state)
+		if (MG.inst.g.state is not { } state)
 			return true;
 		if (state.route is not Combat combat)
 			return true;

@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using Shockah.Shared;
+using Nickel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,27 +35,23 @@ internal sealed class CustomTTGlossary : TTGlossary
 		this.Values = values?.ToList() ?? (IReadOnlyList<Func<object>>)Array.Empty<Func<object>>();
 	}
 
-	public static void ApplyPatches(Harmony harmony)
+	public static void ApplyPatches(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(TTGlossary), nameof(BuildIconAndText)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(TTGlossary), nameof(BuildIconAndText)),
 			prefix: new HarmonyMethod(typeof(CustomTTGlossary), nameof(TTGlossary_BuildIconAndText_Prefix)),
 			finalizer: new HarmonyMethod(typeof(CustomTTGlossary), nameof(TTGlossary_BuildIconAndText_Finalizer))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(TTGlossary), "TryGetIcon"),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(TTGlossary), "TryGetIcon"),
 			prefix: new HarmonyMethod(typeof(CustomTTGlossary), nameof(TTGlossary_TryGetIcon_Prefix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(TTGlossary), nameof(MakeNameDescPair)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(TTGlossary), nameof(MakeNameDescPair)),
 			prefix: new HarmonyMethod(typeof(CustomTTGlossary), nameof(TTGlossary_MakeNameDescPair_Prefix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(TTGlossary), nameof(BuildString)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(TTGlossary), nameof(BuildString)),
 			prefix: new HarmonyMethod(typeof(CustomTTGlossary), nameof(TTGlossary_BuildString_Prefix))
 		);
 	}

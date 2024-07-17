@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using Shockah.Shared;
+using Nickel;
 
 namespace Shockah.Kokoro;
 
@@ -7,11 +7,10 @@ internal static class RevengeDrivePatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	public static void Apply(Harmony harmony)
+	public static void Apply(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(RevengeDrive), nameof(RevengeDrive.OnPlayerLoseHull)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(RevengeDrive), nameof(RevengeDrive.OnPlayerLoseHull)),
 			prefix: new HarmonyMethod(typeof(RevengeDrivePatches), nameof(RevengeDrive_OnPlayerLoseHull_Prefix)),
 			postfix: new HarmonyMethod(typeof(RevengeDrivePatches), nameof(RevengeDrive_OnPlayerLoseHull_Postfix))
 		);

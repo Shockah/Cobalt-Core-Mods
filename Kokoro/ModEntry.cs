@@ -1,7 +1,6 @@
 ﻿using CobaltCoreModding.Definitions;
 using CobaltCoreModding.Definitions.ModContactPoints;
 using CobaltCoreModding.Definitions.ModManifests;
-using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Newtonsoft.Json.Serialization;
@@ -20,7 +19,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	public static ModEntry Instance { get; private set; } = null!;
 	internal Nickel.IModHelper Helper { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = null!;
-	private Harmony Harmony = null!;
+	private Nickel.IHarmony Harmony = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
 	public IEnumerable<DependencyEntry> Dependencies => [];
@@ -62,8 +61,12 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		StatusLogicManager.Register(StatusNextTurnManager, 0);
 		StatusRenderManager.Register(OxidationStatusManager, 0);
 		StatusRenderManager.Register(StatusNextTurnManager, 0);
+	}
 
-		Harmony = new(Name);
+	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, Nickel.IModHelper helper)
+	{
+		Helper = helper;
+		Harmony = helper.Utilities.DelayedHarmony;
 
 		ACardOfferingPatches.Apply(Harmony);
 		ArtifactBrowsePatches.Apply(Harmony);
@@ -88,9 +91,6 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 		SetupSerializationChanges();
 	}
-
-	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, Nickel.IModHelper helper)
-		=> Helper = helper;
 
 	public void FinalizePreperations(IPrelaunchContactPoint prelaunchManifest)
 		=> StuffBasePatches.ApplyLate(Harmony);

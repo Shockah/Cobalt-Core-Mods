@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using Shockah.Shared;
+using Nickel;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -10,11 +10,10 @@ internal static class CardRewardPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	public static void Apply(Harmony harmony)
+	public static void Apply(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(CardReward), nameof(CardReward.TakeCard)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(CardReward), nameof(CardReward.TakeCard)),
 			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardReward_TakeCard_Prefix)), priority: Priority.First)
 		);
 	}

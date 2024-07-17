@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Newtonsoft.Json;
-using Shockah.Shared;
+using Nickel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,12 +27,11 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction
 	[JsonProperty]
 	private int OriginalIndex = 0;
 
-	internal static void ApplyPatches(Harmony harmony)
+	internal static void ApplyPatches(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
-			transpiler: new HarmonyMethod(typeof(APlaySpecificCardFromAnywhere), nameof(Combat_TryPlayCard_Transpiler))
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
+			transpiler: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(APlaySpecificCardFromAnywhere), nameof(Combat_TryPlayCard_Transpiler)), priority: Priority.High)
 		);
 	}
 

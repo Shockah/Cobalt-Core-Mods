@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
-using Shockah.Shared;
+using Nickel;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -14,31 +14,26 @@ internal static class CombatPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	public static void Apply(Harmony harmony)
+	public static void Apply(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderMoveButtons)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderMoveButtons)),
 			transpiler: new HarmonyMethod(typeof(CombatPatches), nameof(Combat_RenderMoveButtons_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderDroneShiftButtons)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderDroneShiftButtons)),
 			transpiler: new HarmonyMethod(typeof(CombatPatches), nameof(Combat_RenderDroneShiftButtons_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), "DoEvade"),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), "DoEvade"),
 			prefix: new HarmonyMethod(typeof(CombatPatches), nameof(Combat_DoEvade_Prefix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), "DoDroneShift"),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), "DoDroneShift"),
 			prefix: new HarmonyMethod(typeof(CombatPatches), nameof(Combat_DoDroneShift_Prefix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
 			prefix: new HarmonyMethod(typeof(CombatPatches), nameof(Combat_DrainCardActions_Prefix)),
 			postfix: new HarmonyMethod(typeof(CombatPatches), nameof(Combat_DrainCardActions_Postfix))
 		);
