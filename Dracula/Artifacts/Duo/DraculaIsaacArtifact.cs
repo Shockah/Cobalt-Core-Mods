@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
-using Shockah.Shared;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -31,9 +30,8 @@ internal sealed class DraculaIsaacArtifact : Artifact, IRegisterable
 
 		api.RegisterDuoArtifact(thisType, [ModEntry.Instance.DraculaDeck.Deck, Deck.goat]);
 
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DestroyDroneAt)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DestroyDroneAt)),
 			prefix: new HarmonyMethod(thisType, nameof(Combat_DestroyDroneAt_Prefix)),
 			postfix: new HarmonyMethod(thisType, nameof(Combat_DestroyDroneAt_Postfix))
 		);

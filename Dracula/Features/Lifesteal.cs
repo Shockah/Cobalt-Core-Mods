@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Shockah.Shared;
 using System;
 
 namespace Shockah.Dracula;
@@ -28,15 +27,13 @@ internal sealed class LifestealManager
 
 	public LifestealManager()
 	{
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
 			prefix: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Prefix)),
 			finalizer: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Finalizer))
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
 			prefix: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Prefix)),
 			postfix: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Postfix))
 		);

@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Newtonsoft.Json;
-using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,15 +22,13 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 		ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(this, 0);
 		ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(this, 0);
 
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.DirectHullDamage)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.DirectHullDamage)),
 			prefix: new HarmonyMethod(GetType(), nameof(Ship_DirectHullDamage_Prefix)),
 			postfix: new HarmonyMethod(GetType(), nameof(Ship_DirectHullDamage_Postfix))
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Update)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Update)),
 			postfix: new HarmonyMethod(GetType(), nameof(Combat_Update_Postfix))
 		);
 

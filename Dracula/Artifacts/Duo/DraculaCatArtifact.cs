@@ -33,20 +33,17 @@ internal sealed class DraculaCatArtifact : Artifact, IRegisterable
 
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.DraculaDeck.Deck, Deck.colorless]);
 
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetActionsOverridden_Postfix))
 		);
-		ModEntry.Instance.Harmony.TryPatchVirtual(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(ACardOffering), nameof(ACardOffering.BeginWithRoute)),
+		ModEntry.Instance.Harmony.PatchVirtual(
+			original: AccessTools.DeclaredMethod(typeof(ACardOffering), nameof(ACardOffering.BeginWithRoute)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ACardOffering_BeginWithRoute_Prefix)),
 			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ACardOffering_BeginWithRoute_Finalizer))
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(CardReward), nameof(CardReward.GetOffering)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(CardReward), nameof(CardReward.GetOffering)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardReward_GetOffering_Postfix))
 		);
 	}

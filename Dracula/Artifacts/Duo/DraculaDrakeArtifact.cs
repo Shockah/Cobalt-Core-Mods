@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
-using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -31,9 +30,8 @@ internal sealed class DraculaDrakeArtifact : Artifact, IRegisterable
 
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.DraculaDeck.Deck, Deck.eunice]);
 
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Prefix)),
 			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Finalizer))
 		);

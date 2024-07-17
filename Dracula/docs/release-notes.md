@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Improved the Death Coil card's tooltips.
+* General optimizations.
 
 ## 1.1.5
 Released 19 May 2024.

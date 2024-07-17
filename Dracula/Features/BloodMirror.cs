@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Shockah.Shared;
 
 namespace Shockah.Dracula;
 
@@ -20,15 +19,13 @@ internal sealed class BloodMirrorManager : IStatusLogicHook
 	{
 		ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(this, 0);
 		
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.DirectHullDamage)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.DirectHullDamage)),
 			prefix: new HarmonyMethod(GetType(), nameof(Ship_DirectHullDamage_Prefix)),
 			postfix: new HarmonyMethod(GetType(), nameof(Ship_DirectHullDamage_Postfix))
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(AHurt), nameof(AHurt.Begin)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AHurt), nameof(AHurt.Begin)),
 			prefix: new HarmonyMethod(GetType(), nameof(AHurt_Begin_Prefix)),
 			finalizer: new HarmonyMethod(GetType(), nameof(AHurt_Begin_Finalizer))
 		);

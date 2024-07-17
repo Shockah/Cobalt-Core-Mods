@@ -2,10 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Nanoray.PluginManager;
-using Nanoray.Shrike.Harmony;
 using Nanoray.Shrike;
+using Nanoray.Shrike.Harmony;
 using Nickel;
-using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,14 +55,12 @@ internal sealed class DominateCard : Card, IDraculaCard
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dominate", "name"]).Localize
 		});
 
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Render)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Render)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Transpiler))
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(GetAllTooltips)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(GetAllTooltips)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetAllTooltips_Postfix))
 		);
 	}

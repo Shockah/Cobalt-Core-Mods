@@ -22,9 +22,8 @@ internal sealed class BloodTapManager : IStatusLogicHook
 
 	public BloodTapManager()
 	{
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Update)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Update)),
 			postfix: new HarmonyMethod(GetType(), nameof(Combat_Update_Postfix))
 		);
 

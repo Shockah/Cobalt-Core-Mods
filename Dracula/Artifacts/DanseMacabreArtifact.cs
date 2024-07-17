@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
-using Shockah.Shared;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -25,9 +24,8 @@ internal sealed class DanseMacabreArtifact : Artifact, IRegisterable
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "DanseMacabre", "description", "stateless"]).Localize
 		});
 		
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Artifact), nameof(GetTooltips)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Artifact), nameof(GetTooltips)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Artifact_GetTooltips_Postfix))
 		);
 	}

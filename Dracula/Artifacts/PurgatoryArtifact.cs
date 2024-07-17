@@ -2,7 +2,6 @@
 using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
-using Shockah.Shared;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -35,9 +34,8 @@ internal sealed class PurgatoryArtifact : Artifact, IRegisterable
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Purgatory", "description"]).Localize
 		});
 
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.DirectHullDamage)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.DirectHullDamage)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_DirectHullDamage_Prefix))
 		);
 	}

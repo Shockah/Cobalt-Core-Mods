@@ -3,7 +3,6 @@ using HarmonyLib;
 using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
-using Shockah.Shared;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -52,14 +51,12 @@ internal sealed class BatmobileArtifact : Artifact, IRegisterable
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "ship", "Batmobile", "description"]).Localize
 		});
 
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Artifact), nameof(GetTooltips)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Artifact), nameof(GetTooltips)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Artifact_GetTooltips_Postfix))
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Update)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Update)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_Update_Postfix))
 		);
 	}

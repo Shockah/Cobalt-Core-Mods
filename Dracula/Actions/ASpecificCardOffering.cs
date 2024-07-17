@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Shockah.Shared;
+using Nickel;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,11 +12,10 @@ public sealed class ASpecificCardOffering : CardAction
 	public bool CanSkip { get; set; } = false;
 	public CardDestination Destination { get; set; } = CardDestination.Hand;
 
-	internal static void ApplyPatches(Harmony harmony, ILogger logger)
+	internal static void ApplyPatches(IHarmony harmony, ILogger logger)
 	{
-		harmony.TryPatch(
-			logger: logger,
-			original: () => AccessTools.DeclaredMethod(typeof(CardReward), nameof(CardReward.TakeCard)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(CardReward), nameof(CardReward.TakeCard)),
 			postfix: new HarmonyMethod(typeof(ASpecificCardOffering), nameof(CardReward_TakeCard_Postfix))
 		);
 	}

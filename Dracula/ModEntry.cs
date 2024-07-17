@@ -13,7 +13,7 @@ public sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 
-	internal Harmony Harmony { get; }
+	internal IHarmony Harmony { get; }
 	internal IKokoroApi KokoroApi { get; }
 	internal IEssentialsApi? EssentialsApi { get; private set; }
 	internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; }
@@ -153,7 +153,7 @@ public sealed class ModEntry : SimpleMod
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
-		Harmony = new(package.Manifest.UniqueName);
+		Harmony = helper.Utilities.DelayedHarmony;
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 		_ = new BleedingManager();
 		_ = new BloodMirrorManager();
