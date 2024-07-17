@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Updated for Cobalt Core 1.1.2.
 * General optimizations.
 
 ## 1.11.2

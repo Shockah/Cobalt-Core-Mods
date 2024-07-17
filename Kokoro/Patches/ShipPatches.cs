@@ -15,43 +15,7 @@ internal static class ShipPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private static (IReadOnlyList<Color> Colors, int? BarTickWidth)? LastStatusBarRenderingOverride;
-
-	private static readonly Lazy<Func<Ship, G, Status, int, int>> GetStatusSizeBoxWidthMethod = new(() =>
-	{
-		var statusPlanType = AccessTools.Inner(typeof(Ship), "StatusPlan");
-		var boxWidth = AccessTools.DeclaredField(statusPlanType, "boxWidth");
-		var getStatusSizeMethod = AccessTools.DeclaredMethod(typeof(Ship), "GetStatusSize");
-
-		DynamicMethod method = new("GetStatusSizeBoxWidth", typeof(int), [typeof(Ship), typeof(G), typeof(Status), typeof(int)]);
-		var il = method.GetILGenerator();
-		il.Emit(OpCodes.Ldarg_0);
-		il.Emit(OpCodes.Ldarg_1);
-		il.Emit(OpCodes.Ldarg_2);
-		il.Emit(OpCodes.Ldarg_3);
-		il.Emit(OpCodes.Call, getStatusSizeMethod);
-		il.Emit(OpCodes.Ldfld, boxWidth);
-		il.Emit(OpCodes.Ret);
-		return method.CreateDelegate<Func<Ship, G, Status, int, int>>();
-	});
-
-	private static readonly Lazy<Action<Ship, G, string, List<KeyValuePair<Status, int>>, int, int, int>> RenderStatusRowMethod = new(() =>
-	{
-		var renderStatusRowMethod = AccessTools.DeclaredMethod(typeof(Ship), "RenderStatusRow");
-
-		DynamicMethod method = new("RenderStatusRow", typeof(void), [typeof(Ship), typeof(G), typeof(string), typeof(List<KeyValuePair<Status, int>>), typeof(int), typeof(int), typeof(int)]);
-		var il = method.GetILGenerator();
-		il.Emit(OpCodes.Ldarg_0);
-		il.Emit(OpCodes.Ldarg_1);
-		il.Emit(OpCodes.Ldarg_2);
-		il.Emit(OpCodes.Ldarg_3);
-		il.Emit(OpCodes.Ldarg, 4);
-		il.Emit(OpCodes.Ldarg, 5);
-		il.Emit(OpCodes.Ldarg, 6);
-		il.Emit(OpCodes.Call, renderStatusRowMethod);
-		il.Emit(OpCodes.Ret);
-		return method.CreateDelegate<Action<Ship, G, string, List<KeyValuePair<Status, int>>, int, int, int>>();
-	});
+	private static readonly Dictionary<Status, (IReadOnlyList<Color> Colors, int? BarTickWidth)> StatusBarRenderingOverrides = [];
 
 	public static void Apply(IHarmony harmony)
 	{
@@ -73,6 +37,7 @@ internal static class ShipPatches
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Ship), "RenderStatuses"),
 			prefix: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatuses_Prefix)),
+			transpiler: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatuses_Transpiler)),
 			finalizer: new HarmonyMethod(typeof(ShipPatches), nameof(Ship_RenderStatuses_Finalizer))
 		);
 		harmony.Patch(
@@ -155,9 +120,8 @@ internal static class ShipPatches
 		}
 	}
 
-	private static void Ship_GetStatusSize_Postfix(Ship __instance, Status status, int amount, ref object __result)
+	private static void Ship_GetStatusSize_Postfix(Ship __instance, Status status, int amount, ref Ship.StatusPlan __result)
 	{
-		LastStatusBarRenderingOverride = null;
 		if (MG.inst.g.state is not { } state)
 			return;
 		if (state.route is not Combat combat)
@@ -167,128 +131,41 @@ internal static class ShipPatches
 		if (hook is null)
 			return;
 		var @override = hook.OverrideStatusRendering(state, combat, __instance, status, amount);
-		LastStatusBarRenderingOverride = @override;
+		StatusBarRenderingOverrides[status] = @override;
 
-		// TODO: use a publicizer, or emit some IL to do this instead. performance must suck
-		var statusPlanType = AccessTools.Inner(typeof(Ship), "StatusPlan");
-		var asTextField = AccessTools.DeclaredField(statusPlanType, "asText");
-		var asBarsField = AccessTools.DeclaredField(statusPlanType, "asBars");
-		var barMaxField = AccessTools.DeclaredField(statusPlanType, "barMax");
-		var boxWidthField = AccessTools.DeclaredField(statusPlanType, "boxWidth");
-		var barTickWidthField = AccessTools.DeclaredField(statusPlanType, "barTickWidth");
-
-		int barTickWidth = @override.BarTickWidth ?? (int)barTickWidthField.GetValue(__result)!;
+		var barTickWidth = @override.BarTickWidth ?? __result.barTickWidth;
 		if (@override.BarTickWidth != 0)
-			barTickWidthField.SetValue(__result, barTickWidth);
+			__result.barTickWidth = barTickWidth;
 
-		asTextField.SetValue(__result, false);
-		asBarsField.SetValue(__result, true);
-		barMaxField.SetValue(__result, @override.Colors.Count);
-		boxWidthField.SetValue(__result, 17 + @override.Colors.Count * (barTickWidth + 1));
+		__result.asText = false;
+		__result.asBars = true;
+		__result.barMax = @override.Colors.Count;
+		__result.boxWidth = 17 + @override.Colors.Count * (barTickWidth + 1);
 	}
 
-	private static bool Ship_RenderStatuses_Prefix(Ship __instance, G g, string keyPrefix)
-	{
-		Instance.StatusRenderManager.RenderingStatusForShip = __instance;
-
-		var combat = g.state.route as Combat ?? DB.fakeCombat;
-		var toRender = __instance.statusEffects
-			.Where(kvp => kvp.Key != Status.shield && kvp.Key != Status.tempShield)
-			.Select(kvp => (Status: kvp.Key, Priority: 0.0, Amount: kvp.Value))
-			.Concat(
-				Instance.StatusRenderManager
-					.SelectMany(hook => hook.GetExtraStatusesToShow(g.state, combat, __instance))
-					.Select(e => (Status: e.Status, Priority: e.Priority, Amount: __instance.Get(e.Status)))
-			)
-			.OrderByDescending(e => e.Priority)
-			.DistinctBy(e => e.Status)
-			.Where(e => Instance.StatusRenderManager.ShouldShowStatus(g.state, combat, __instance, e.Status, e.Amount))
-			.Select(e => new KeyValuePair<Status, int>(e.Status, e.Amount));
-
-		List<KeyValuePair<Status, int>> currentRow = new();
-		int currentRowLength = 0;
-		int rowIndex = 0;
-
-		void FinishRow()
-		{
-			if (currentRow.Count == 0)
-				return;
-
-			RenderStatusRowMethod.Value(__instance, g, keyPrefix, currentRow, rowIndex, 0, currentRow.Count);
-
-			currentRow.Clear();
-			currentRowLength = 0;
-			rowIndex++;
-		}
-
-		foreach (var kvp in toRender)
-		{
-			var boxWidth = GetStatusSizeBoxWidthMethod.Value(__instance, g, kvp.Key, kvp.Value);
-
-			if (currentRowLength + boxWidth > 142)
-				FinishRow();
-			currentRow.Add(kvp);
-			currentRowLength += boxWidth;
-		}
-		FinishRow();
-		return false;
-	}
+	private static void Ship_RenderStatuses_Prefix(Ship __instance)
+		=> Instance.StatusRenderManager.RenderingStatusForShip = __instance;
 
 	private static void Ship_RenderStatuses_Finalizer()
 		=> Instance.StatusRenderManager.RenderingStatusForShip = null;
 
-	private static Dictionary<Status, int> Ship_RenderStatuses_Transpiler_ModifyStatusesToShow(Dictionary<Status, int> statusEffects, Ship ship)
-	{
-		if (MG.inst.g.state is not { } state)
-			return statusEffects;
-		if (state.route is not Combat combat)
-			return statusEffects;
-
-		return statusEffects
-			.Select(kvp => (Status: kvp.Key, Priority: 0.0, Amount: kvp.Value))
-			.Concat(
-				Instance.StatusRenderManager
-					.SelectMany(hook => hook.GetExtraStatusesToShow(state, combat, ship))
-					.Select(e => (Status: e.Status, Priority: e.Priority, Amount: ship.Get(e.Status)))
-			)
-			.OrderByDescending(e => e.Priority)
-			.DistinctBy(e => e.Status)
-			.Where(e => Instance.StatusRenderManager.ShouldShowStatus(state, combat, ship, e.Status, e.Amount))
-			.ToDictionary(e => e.Status, e => e.Amount);
-	}
-
-	private static IEnumerable<CodeInstruction> Ship_RenderStatusRow_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	private static IEnumerable<CodeInstruction> Ship_RenderStatuses_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
-					SequenceBlockMatcherFindOccurence.Last, SequenceMatcherRelativeBounds.WholeSequence,
-					ILMatches.Call("get_Item"),
-					ILMatches.Stloc<KeyValuePair<Status, int>>(originalMethod)
-				)
-				.Find(
-					SequenceBlockMatcherFindOccurence.Last, SequenceMatcherRelativeBounds.WholeSequence,
-					ILMatches.Ldloc<int>(originalMethod).CreateLdlocInstruction(out var ldlocBarIndex),
-					ILMatches.AnyLdloc,
-					ILMatches.Ldfld("barMax"),
-					ILMatches.Blt
-				)
-				.Find(
-					SequenceBlockMatcherFindOccurence.Last, SequenceMatcherRelativeBounds.Before,
-					ILMatches.Ldloca<Color>(originalMethod),
-					ILMatches.Instruction(OpCodes.Ldc_R8),
-					ILMatches.Call("fadeAlpha"),
+				.Find([
+					ILMatches.LdcI4(0).ExtractLabels(out var labels),
+					ILMatches.Stloc<int>(originalMethod),
+					ILMatches.LdcI4(0),
+					ILMatches.Stloc<int>(originalMethod),
 					ILMatches.Br,
-					ILMatches.Ldloc<Color>(originalMethod)
-				)
-				.PointerMatcher(SequenceMatcherRelativeElement.AfterLast)
-				.ExtractLabels(out var labels)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-					ldlocBarIndex.Value.WithLabels(labels),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_RenderStatusRow_Transpiler_ModifyColor)))
-				)
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
+					new CodeInstruction(OpCodes.Ldarg_1),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_RenderStatuses_Transpiler_ModifyStatusesToShow))),
+				])
 				.AllElements();
 		}
 		catch (Exception ex)
@@ -298,11 +175,68 @@ internal static class ShipPatches
 		}
 	}
 
-	private static Color Ship_RenderStatusRow_Transpiler_ModifyColor(Color color, int barIndex)
+	private static void Ship_RenderStatuses_Transpiler_ModifyStatusesToShow(Ship ship, G g)
 	{
-		if (LastStatusBarRenderingOverride is null)
+		var combat = g.state.route as Combat ?? DB.fakeCombat;
+
+		ship._statusListCache = ship.statusEffects
+			.Where(kvp => kvp.Key != Status.shield && kvp.Key != Status.tempShield)
+			.Select(kvp => (Status: kvp.Key, Priority: 0.0, Amount: kvp.Value))
+			.Concat(
+				Instance.StatusRenderManager
+					.SelectMany(hook => hook.GetExtraStatusesToShow(g.state, combat, ship))
+					.Select(e => (Status: e.Status, Priority: e.Priority, Amount: ship.Get(e.Status)))
+			)
+			.OrderByDescending(e => e.Priority)
+			.DistinctBy(e => e.Status)
+			.Where(e => Instance.StatusRenderManager.ShouldShowStatus(g.state, combat, ship, e.Status, e.Amount))
+			.Select(e => new KeyValuePair<Status, int>(e.Status, e.Amount))
+			.ToList();
+	}
+
+	private static IEnumerable<CodeInstruction> Ship_RenderStatusRow_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(SequenceBlockMatcherFindOccurence.Last, SequenceMatcherRelativeBounds.WholeSequence, [
+					ILMatches.Ldloca<KeyValuePair<Status, int>>(originalMethod).CreateLdlocInstruction(out var ldlocKvp),
+					ILMatches.Call("get_Value"),
+					ILMatches.Call("GetStatusSize"),
+				])
+				.Find(SequenceBlockMatcherFindOccurence.Last, SequenceMatcherRelativeBounds.WholeSequence, [
+					ILMatches.Ldloc<int>(originalMethod).CreateLdlocInstruction(out var ldlocBarIndex),
+					ILMatches.Ldloc<Ship.StatusPlan>(originalMethod).CreateLdlocInstruction(out var ldlocStatusPlan),
+					ILMatches.Ldfld("barMax"),
+					ILMatches.Blt,
+				])
+				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.WholeSequence, [
+					ILMatches.Ldloca<Color>(originalMethod),
+					ILMatches.Instruction(OpCodes.Ldc_R8),
+					ILMatches.Call("fadeAlpha"),
+					ILMatches.Br.GetBranchTarget(out var branchTarget),
+				])
+				.PointerMatcher(branchTarget)
+				.ExtractLabels(out var labels)
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					ldlocBarIndex.Value.WithLabels(labels),
+					ldlocKvp,
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(ShipPatches), nameof(Ship_RenderStatusRow_Transpiler_ModifyColor))),
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			return instructions;
+		}
+	}
+
+	private static Color Ship_RenderStatusRow_Transpiler_ModifyColor(Color color, int barIndex, KeyValuePair<Status, int> kvp)
+	{
+		if (!StatusBarRenderingOverrides.TryGetValue(kvp.Key, out var @override))
 			return color;
-		return LastStatusBarRenderingOverride.Value.Colors[barIndex];
+		return @override.Colors[barIndex];
 	}
 
 	private static bool Ship_Set_Prefix(Ship __instance, Status status, ref int n)
