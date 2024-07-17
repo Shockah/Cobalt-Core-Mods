@@ -12,8 +12,8 @@ internal sealed class DuoArtifactDatabase
 	internal ExternalDeck DuoArtifactDeck { get; set; } = null!;
 	internal ExternalDeck TrioArtifactDeck { get; set; } = null!;
 	internal ExternalDeck ComboArtifactDeck { get; set; } = null!;
-	private readonly Dictionary<HashSet<string>, HashSet<Type>> ComboToTypeDictionary = new(HashSet<string>.CreateSetComparer());
-	private readonly Dictionary<Type, HashSet<string>> TypeToComboDictionary = [];
+	private readonly Dictionary<HashSet<Deck>, HashSet<Type>> ComboToTypeDictionary = new(HashSet<Deck>.CreateSetComparer());
+	private readonly Dictionary<Type, HashSet<Deck>> TypeToComboDictionary = [];
 
 	public bool IsDuoArtifactType(Type type)
 		=> TypeToComboDictionary.ContainsKey(type);
@@ -22,7 +22,7 @@ internal sealed class DuoArtifactDatabase
 		=> IsDuoArtifactType(artifact.GetType());
 
 	public IReadOnlySet<Deck>? GetDuoArtifactTypeOwnership(Type type)
-		=> TypeToComboDictionary.GetValueOrDefault(type)?.Select(key => DB.decks.Keys.First(deck => deck.Key() == key)).ToHashSet();
+		=> TypeToComboDictionary.GetValueOrDefault(type);
 
 	public IReadOnlySet<Deck>? GetDuoArtifactOwnership(Artifact artifact)
 		=> GetDuoArtifactTypeOwnership(artifact.GetType());
@@ -34,16 +34,16 @@ internal sealed class DuoArtifactDatabase
 		=> TypeToComboDictionary.Keys.Select(t => (Artifact)Activator.CreateInstance(t)!);
 
 	public IEnumerable<Type> GetExactDuoArtifactTypes(IEnumerable<Deck> combo)
-		=> ComboToTypeDictionary.TryGetValue(FixCombo(combo).Select(d => d.Key()).ToHashSet(), out var types) ? types : Array.Empty<Type>();
+		=> ComboToTypeDictionary.TryGetValue(FixCombo(new HashSet<Deck>(combo)), out var types) ? types : Array.Empty<Type>();
 
 	public IEnumerable<Artifact> InstantiateExactDuoArtifacts(IEnumerable<Deck> combo)
 		=> GetExactDuoArtifactTypes(combo).Select(t => (Artifact)Activator.CreateInstance(t)!);
 
 	public IEnumerable<Type> GetMatchingDuoArtifactTypes(IEnumerable<Deck> combo)
 	{
-		var comboKeySet = FixCombo(combo).Select(d => d.Key()).ToHashSet();
+		var comboSet = new HashSet<Deck>(combo);
 		foreach (var (keySet, types) in ComboToTypeDictionary)
-			if (!keySet.Except(comboKeySet).Any())
+			if (!keySet.Except(comboSet).Any())
 				foreach (var type in types)
 					yield return type;
 	}
@@ -89,19 +89,27 @@ internal sealed class DuoArtifactDatabase
 		if (!type.IsAssignableTo(typeof(Artifact)))
 			throw new ArgumentException($"Type {type} is not a subclass of the {typeof(Artifact)} type.");
 
-		var comboKeySet = FixCombo(combo).Select(d => d.Key()).ToHashSet();
-		if (comboKeySet.Count < 2)
+		var comboSet = FixCombo(new HashSet<Deck>(combo));
+		if (comboSet.Count < 2)
 			throw new ArgumentException("Tried to register a duo artifact for less than 2 characters.");
-		TypeToComboDictionary[type] = comboKeySet;
+		TypeToComboDictionary[type] = comboSet;
 
-		if (!ComboToTypeDictionary.TryGetValue(comboKeySet, out var types))
+		if (!ComboToTypeDictionary.TryGetValue(comboSet, out var types))
 		{
 			types = [];
-			ComboToTypeDictionary[comboKeySet] = types;
+			ComboToTypeDictionary[comboSet] = types;
 		}
 		types.Add(type);
 	}
 
-	private static IEnumerable<Deck> FixCombo(IEnumerable<Deck> combo)
-		=> combo.Select(d => d == Deck.catartifact ? Deck.colorless : d);
+	private static HashSet<Deck> FixCombo(HashSet<Deck> combo)
+	{
+		if (!combo.Contains(Deck.catartifact))
+			return combo;
+
+		var result = new HashSet<Deck>(combo);
+		result.Remove(Deck.catartifact);
+		result.Add(Deck.colorless);
+		return result;
+	}
 }
