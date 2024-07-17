@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using Shockah.Shared;
+using Nickel;
 using System;
 using System.Linq;
 
@@ -11,12 +11,11 @@ internal sealed class CatIsaacArtifact : DuoArtifact
 
 	public int Charges = ChargesPerTurn;
 
-	protected internal override void ApplyPatches(Harmony harmony)
+	protected internal override void ApplyPatches(IHarmony harmony)
 	{
 		base.ApplyPatches(harmony);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), "BeginCardAction"),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), "BeginCardAction"),
 			prefix: new HarmonyMethod(GetType(), nameof(Combat_BeginCardAction_Prefix))
 		);
 	}

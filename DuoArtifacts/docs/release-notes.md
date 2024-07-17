@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* General optimizations.
+
 ## 1.1.2
 Released 6 July 2024.
 

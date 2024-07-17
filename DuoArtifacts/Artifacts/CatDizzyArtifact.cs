@@ -4,6 +4,7 @@ using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
+using Nickel;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -20,17 +21,15 @@ internal sealed class CatDizzyArtifact : DuoArtifact
 
 	public bool TriggeredThisCombat = false;
 
-	protected internal override void ApplyPatches(Harmony harmony)
+	protected internal override void ApplyPatches(IHarmony harmony)
 	{
 		base.ApplyPatches(harmony);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
 			transpiler: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.DirectHullDamage)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.DirectHullDamage)),
 			prefix: new HarmonyMethod(GetType(), nameof(Ship_DirectHullDamage_Prefix))
 		);
 	}

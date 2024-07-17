@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using Shockah.Shared;
+using Nickel;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,12 +9,11 @@ internal sealed class MaxPeriArtifact : DuoArtifact
 {
 	private static int ModifyBaseDamageNestingCounter = 0;
 
-	protected internal override void ApplyPatches(Harmony harmony)
+	protected internal override void ApplyPatches(IHarmony harmony)
 	{
 		base.ApplyPatches(harmony);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
 			postfix: new HarmonyMethod(GetType(), nameof(Card_GetActionsOverridden_Postfix))
 		);
 	}

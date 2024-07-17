@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Nickel;
 using Shockah.Shared;
 using System.Linq;
 
@@ -8,16 +9,14 @@ internal static class CharacterPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	public static void Apply(Harmony harmony)
+	public static void Apply(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Character), nameof(Character.GetDisplayName), [typeof(string), typeof(State)]),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Character), nameof(Character.GetDisplayName), [typeof(string), typeof(State)]),
 			postfix: new HarmonyMethod(typeof(CharacterPatches), nameof(Character_GetDisplayName_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Character), nameof(Character.Render)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Character), nameof(Character.Render)),
 			postfix: new HarmonyMethod(typeof(CharacterPatches), nameof(Character_Render_Postfix))
 		);
 	}

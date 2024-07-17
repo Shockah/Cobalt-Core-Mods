@@ -1,13 +1,13 @@
 ﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Nanoray.Shrike.Harmony;
 using Nanoray.Shrike;
-using Shockah.Shared;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Reflection;
+using Nanoray.Shrike.Harmony;
+using Nickel;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Shockah.DuoArtifacts;
 
@@ -15,12 +15,11 @@ internal sealed class DizzyDrakeArtifact : DuoArtifact
 {
 	private const int ExtraShieldDamage = 1;
 
-	protected internal override void ApplyPatches(Harmony harmony)
+	protected internal override void ApplyPatches(IHarmony harmony)
 	{
 		base.ApplyPatches(harmony);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(AOverheat), nameof(AOverheat.Begin)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AOverheat), nameof(AOverheat.Begin)),
 			transpiler: new HarmonyMethod(GetType(), nameof(AOverheat_Begin_Transpiler))
 		);
 	}

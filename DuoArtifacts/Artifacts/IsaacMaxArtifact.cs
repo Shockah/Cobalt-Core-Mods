@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using Shockah.Shared;
+using Nickel;
 using System.Linq;
 
 namespace Shockah.DuoArtifacts;
@@ -9,27 +9,23 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 	public bool WaitingForActionDrain = false;
 	private static bool IsDuringTryPlayCard = false;
 
-	protected internal override void ApplyPatches(Harmony harmony)
+	protected internal override void ApplyPatches(IHarmony harmony)
 	{
 		base.ApplyPatches(harmony);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.SendCardToDiscard)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.SendCardToDiscard)),
 			postfix: new HarmonyMethod(GetType(), nameof(Combat_SendCardToDiscard_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.SendCardToExhaust)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.SendCardToExhaust)),
 			postfix: new HarmonyMethod(GetType(), nameof(Combat_SendCardToExhaust_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
 			postfix: new HarmonyMethod(GetType(), nameof(Combat_DrainCardActions_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
 			prefix: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Prefix)),
 			finalizer: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Finalizer))
 		);

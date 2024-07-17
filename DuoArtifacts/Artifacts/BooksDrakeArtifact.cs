@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
-using Shockah.Shared;
+using Nickel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +15,11 @@ internal sealed class BooksDrakeArtifact : DuoArtifact
 {
 	private const int ShardCost = 2;
 
-	protected internal override void ApplyPatches(Harmony harmony)
+	protected internal override void ApplyPatches(IHarmony harmony)
 	{
 		base.ApplyPatches(harmony);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
 			transpiler: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Transpiler))
 		);
 	}

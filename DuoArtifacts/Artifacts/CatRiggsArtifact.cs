@@ -1,13 +1,13 @@
 ﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Nanoray.Shrike.Harmony;
 using Nanoray.Shrike;
-using Shockah.Shared;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Reflection;
+using Nanoray.Shrike.Harmony;
+using Nickel;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Shockah.DuoArtifacts;
 
@@ -16,12 +16,11 @@ internal sealed class CatRiggsArtifact : DuoArtifact
 	public bool DoingInitialDraw = false;
 	public bool WaitingForFirstExtraDraw = true;
 
-	protected internal override void ApplyPatches(Harmony harmony)
+	protected internal override void ApplyPatches(IHarmony harmony)
 	{
 		base.ApplyPatches(harmony);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.SendCardToHand)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.SendCardToHand)),
 			transpiler: new HarmonyMethod(GetType(), nameof(Combat_SendCardToHand_Transpiler))
 		);
 	}

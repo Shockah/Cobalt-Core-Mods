@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using Shockah.Shared;
+using Nickel;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,11 +9,10 @@ internal static class ArtifactPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	public static void Apply(Harmony harmony)
+	public static void Apply(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Artifact), nameof(Artifact.GetTooltips)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Artifact), nameof(Artifact.GetTooltips)),
 			postfix: new HarmonyMethod(typeof(ArtifactPatches), nameof(Artifact_GetTooltips_Postfix))
 		);
 	}

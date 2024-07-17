@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using Shockah.Shared;
+using Nickel;
 using System.Linq;
 
 namespace Shockah.DuoArtifacts;
@@ -9,18 +9,16 @@ internal sealed class CatDrakeArtifact : DuoArtifact
 	private static int SerenityChange = 0;
 	private static int TimeStopChange = 0;
 
-	protected internal override void ApplyPatches(Harmony harmony)
+	protected internal override void ApplyPatches(IHarmony harmony)
 	{
 		base.ApplyPatches(harmony);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.Set)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.Set)),
 			prefix: new HarmonyMethod(GetType(), nameof(Ship_Set_Prefix)),
 			postfix: new HarmonyMethod(GetType(), nameof(Ship_Set_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Update)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Update)),
 			postfix: new HarmonyMethod(GetType(), nameof(Combat_Update_Postfix))
 		);
 	}

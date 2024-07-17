@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
+using Nickel;
 using Shockah.Shared;
 using System;
 using System.Linq;
@@ -15,18 +16,16 @@ internal sealed class BooksPeriArtifact : DuoArtifact
 	private static bool? PaidExtraForAttack = null;
 	private static int ModifyBaseDamageNestingCounter = 0;
 
-	protected internal override void ApplyPatches(Harmony harmony)
+	protected internal override void ApplyPatches(IHarmony harmony)
 	{
 		base.ApplyPatches(harmony);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
 			prefix: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Prefix)),
 			finalizer: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Finalizer))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
 			postfix: new HarmonyMethod(GetType(), nameof(Combat_DrainCardActions_Postfix))
 		);
 	}

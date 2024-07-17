@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework.Input;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
-using Shockah.Shared;
+using Nickel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,16 +21,14 @@ internal static class ArtifactBrowsePatches
 	private static ArtifactBrowse? LastRoute;
 	private static Deck? LastDeck;
 
-	public static void Apply(Harmony harmony)
+	public static void Apply(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(ArtifactBrowse), nameof(ArtifactBrowse.Render)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ArtifactBrowse), nameof(ArtifactBrowse.Render)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ArtifactBrowse_Render_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Artifact), nameof(Artifact.Render)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Artifact), nameof(Artifact.Render)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Artifact_Render_Prefix)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Artifact_Render_Transpiler))
 		);

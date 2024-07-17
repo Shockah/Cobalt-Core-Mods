@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Nickel;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -8,12 +9,11 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class DrakeIsaacArtifact : DuoArtifact
 {
-	protected internal override void ApplyLatePatches(Harmony harmony)
+	protected internal override void ApplyLatePatches(IHarmony harmony)
 	{
 		base.ApplyLatePatches(harmony);
-		harmony.TryPatchVirtual(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.GetActions)),
+		harmony.PatchVirtual(
+			original: AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.GetActions)),
 			postfix: new HarmonyMethod(GetType(), nameof(StuffBase_GetActions_Postfix))
 		);
 	}
@@ -30,7 +30,7 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
-		if (StateExt.Instance?.route is not Combat combat)
+		if (MG.inst.g.state?.route is not Combat combat)
 			return base.GetExtraTooltips();
 
 		foreach (var @object in combat.stuff.Values)

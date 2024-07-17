@@ -4,6 +4,7 @@ using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
+using Nickel;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -28,75 +29,62 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 
 	public int ShardsToRestoreOnNextCombat = 0;
 
-	protected internal override void ApplyPatches(Harmony harmony)
+	protected internal override void ApplyPatches(IHarmony harmony)
 	{
 		base.ApplyPatches(harmony);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
 			prefix: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Prefix)),
 			finalizer: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Finalizer))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
 			prefix: new HarmonyMethod(GetType(), nameof(Combat_DrainCardActions_Prefix)),
 			finalizer: new HarmonyMethod(GetType(), nameof(Combat_DrainCardActions_Finalizer))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.MakeAllActionIcons)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.MakeAllActionIcons)),
 			transpiler: new HarmonyMethod(GetType(), nameof(Card_MakeAllActionIcons_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Prefix)),
 			transpiler: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => typeof(Card).GetMethods(AccessTools.all).First(m => m.Name.StartsWith("<RenderAction>g__ShardcostIcon") && m.ReturnType == typeof(void)),
+		harmony.Patch(
+			original: typeof(Card).GetMethods(AccessTools.all).First(m => m.Name.StartsWith("<RenderAction>g__ShardcostIcon") && m.ReturnType == typeof(void)),
 			transpiler: new HarmonyMethod(GetType(), nameof(Card_RenderAction_ShardcostIcon_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(AVariableHint), nameof(AVariableHint.GetTooltips)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AVariableHint), nameof(AVariableHint.GetTooltips)),
 			transpiler: new HarmonyMethod(GetType(), nameof(AVariableHint_GetTooltips_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(ShieldGun), "GetShieldAmt"),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ShieldGun), "GetShieldAmt"),
 			postfix: new HarmonyMethod(GetType(), nameof(ShieldGun_GetShieldAmt_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Converter), "GetShieldAmt"),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Converter), "GetShieldAmt"),
 			postfix: new HarmonyMethod(GetType(), nameof(Converter_GetShieldAmt_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Converter), nameof(Converter.GetActions)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Converter), nameof(Converter.GetActions)),
 			postfix: new HarmonyMethod(GetType(), nameof(Converter_GetActions_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Inverter), "GetShieldAmt"),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Inverter), "GetShieldAmt"),
 			postfix: new HarmonyMethod(GetType(), nameof(Inverter_GetShieldAmt_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Inverter), nameof(Converter.GetActions)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Inverter), nameof(Converter.GetActions)),
 			postfix: new HarmonyMethod(GetType(), nameof(Inverter_GetActions_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Glimmershot), nameof(Glimmershot.GetShard)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Glimmershot), nameof(Glimmershot.GetShard)),
 			postfix: new HarmonyMethod(GetType(), nameof(Glimmershot_GetShard_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Glimmershot), nameof(Glimmershot.GetActions)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Glimmershot), nameof(Glimmershot.GetActions)),
 			postfix: new HarmonyMethod(GetType(), nameof(Glimmershot_GetActions_Postfix))
 		);
 	}
@@ -364,7 +352,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	{
 		if (!costMet)
 			return spriteId;
-		if (StateExt.Instance is not { } state || !state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+		if (MG.inst.g.state is not { } state || !state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return spriteId;
 
 		int shield = state.ship.Get(Status.shield);

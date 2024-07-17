@@ -1,13 +1,13 @@
 ﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Nanoray.Shrike.Harmony;
 using Nanoray.Shrike;
-using Shockah.Shared;
+using Nanoray.Shrike.Harmony;
+using Nickel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Shockah.DuoArtifacts;
 
@@ -18,18 +18,16 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 
 	public bool IsPaidForAndActive = false;
 
-	protected internal override void ApplyPatches(Harmony harmony)
+	protected internal override void ApplyPatches(IHarmony harmony)
 	{
 		base.ApplyPatches(harmony);
 		// this doesn't work, the method gets inlined; transpile `GetActions` and `GetTooltips` instead
-		//harmony.TryPatch(
-		//	logger: Instance.Logger!,
-		//	original: () => AccessTools.DeclaredMethod(typeof(AttackDrone), "AttackDamage"),
+		//harmony.Patch(
+		//	original: AccessTools.DeclaredMethod(typeof(AttackDrone), "AttackDamage"),
 		//	postfix: new HarmonyMethod(GetType(), nameof(AttackDrone_AttackDamage_Postfix))
 		//);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(AttackDrone), nameof(AttackDrone.GetActions)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AttackDrone), nameof(AttackDrone.GetActions)),
 			transpiler: new HarmonyMethod(GetType(), nameof(AttackDrone_GetActions_Transpiler))
 		);
 	}
@@ -92,7 +90,7 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 
 	private static int GetModifiedAttackDamage(int damage, AttackDrone drone)
 	{
-		if (StateExt.Instance is not { } state)
+		if (MG.inst.g.state is not { } state)
 			return damage;
 		if (drone.targetPlayer)
 			return damage;

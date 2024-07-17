@@ -1,5 +1,5 @@
 ﻿using CobaltCoreModding.Definitions.ModContactPoints;
-using HarmonyLib;
+using Nickel;
 using System.Collections.Generic;
 
 namespace Shockah.DuoArtifacts;
@@ -8,11 +8,11 @@ public abstract class DuoArtifact : Artifact
 {
 	protected static ModEntry Instance => ModEntry.Instance;
 
-	protected internal virtual void ApplyPatches(Harmony harmony)
+	protected internal virtual void ApplyPatches(IHarmony harmony)
 	{
 	}
 
-	protected internal virtual void ApplyLatePatches(Harmony harmony)
+	protected internal virtual void ApplyLatePatches(IHarmony harmony)
 	{
 	}
 
@@ -35,7 +35,7 @@ public abstract class DuoArtifact : Artifact
 		if (definition is null || definition.ExtraTooltips.Count == 0)
 			return tooltips;
 
-		tooltips ??= new();
+		tooltips ??= [];
 		foreach (var tooltip in definition.ExtraTooltips)
 			tooltips.Add(tooltip.MakeTooltip());
 		return tooltips;

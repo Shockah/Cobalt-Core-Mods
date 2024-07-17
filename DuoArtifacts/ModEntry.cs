@@ -32,7 +32,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	internal ExternalSprite[] DuoGlowSprites { get; private set; } = new ExternalSprite[2];
 	internal ExternalSprite[] TrioGlowSprites { get; private set; } = new ExternalSprite[3];
 
-	private Harmony Harmony { get; set; } = null!;
+	private IHarmony Harmony { get; set; } = null!;
 	private readonly Dictionary<HashSet<string>, ExternalSprite> DuoArtifactSprites = new(HashSet<string>.CreateSetComparer());
 
 	internal Settings Settings { get; private set; } = new();
@@ -41,8 +41,14 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	{
 		Instance = this;
 		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+	}
 
-		Harmony = new(Name);
+	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
+	{
+		this.Helper = helper;
+		this.Harmony = helper.Utilities.DelayedHarmony;
+		Settings = helper.Storage.LoadJson<Settings>(helper.Storage.GetMainStorageFile("json"));
+
 		ArtifactPatches.Apply(Harmony);
 		ArtifactBrowsePatches.Apply(Harmony);
 		ArtifactRewardPatches.Apply(Harmony);
@@ -51,12 +57,6 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 
 		foreach (var definition in DuoArtifactDefinition.Definitions)
 			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.ApplyPatches(Harmony);
-	}
-
-	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
-	{
-		this.Helper = helper;
-		Settings = helper.Storage.LoadJson<Settings>(helper.Storage.GetMainStorageFile("json"));
 
 		helper.ModRegistry.AwaitApi<IModSettingsApi>(
 			"Nickel.ModSettings",

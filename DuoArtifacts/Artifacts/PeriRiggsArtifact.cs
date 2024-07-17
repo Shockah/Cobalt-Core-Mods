@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using Nanoray.Pintail;
-using Shockah.Shared;
+using Nickel;
 using System.Linq;
 
 namespace Shockah.DuoArtifacts;
@@ -11,12 +11,11 @@ internal sealed class PeriRiggsArtifact : DuoArtifact, IEvadeHook
 
 	public int EvadesLeft = EvadesPerTurn;
 
-	protected internal override void ApplyPatches(Harmony harmony)
+	protected internal override void ApplyPatches(IHarmony harmony)
 	{
 		base.ApplyPatches(harmony);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(AccessTools.AllAssemblies().First(a => (a.GetName().Name ?? a.GetName().FullName) == "Kokoro").GetType("Shockah.Kokoro.VanillaEvadeHook"), nameof(IEvadeHook.IsEvadePossible)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(AccessTools.AllAssemblies().First(a => (a.GetName().Name ?? a.GetName().FullName) == "Kokoro").GetType("Shockah.Kokoro.VanillaEvadeHook"), nameof(IEvadeHook.IsEvadePossible)),
 			postfix: new HarmonyMethod(GetType(), nameof(VanillaEvadeHook_IsEvadePossible_Postfix))
 		);
 	}

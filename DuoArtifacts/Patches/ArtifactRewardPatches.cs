@@ -1,13 +1,13 @@
 ﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Nanoray.Shrike.Harmony;
 using Nanoray.Shrike;
-using Shockah.Shared;
+using Nanoray.Shrike.Harmony;
+using Nickel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Shockah.DuoArtifacts;
 
@@ -18,21 +18,18 @@ internal static class ArtifactRewardPatches
 	private static readonly string FirstZoneDuoTag = $"{typeof(ModEntry).Namespace!}.Duo.FirstZone";
 	private static readonly string PastFirstZoneDuoTag = $"{typeof(ModEntry).Namespace!}.Duo.PastFirstZone";
 
-	public static void Apply(Harmony harmony)
+	public static void Apply(IHarmony harmony)
 	{
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(ArtifactReward), nameof(ArtifactReward.GetOffering)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ArtifactReward), nameof(ArtifactReward.GetOffering)),
 			postfix: new HarmonyMethod(typeof(ArtifactRewardPatches), nameof(ArtifactReward_GetOffering_Postfix))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(ArtifactReward), nameof(ArtifactReward.Render)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ArtifactReward), nameof(ArtifactReward.Render)),
 			transpiler: new HarmonyMethod(typeof(ArtifactRewardPatches), nameof(ArtifactReward_Render_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(ArtifactReward), nameof(ArtifactReward.OnMouseDown)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ArtifactReward), nameof(ArtifactReward.OnMouseDown)),
 			postfix: new HarmonyMethod(typeof(ArtifactRewardPatches), nameof(ArtifactReward_OnMouseDown_Postfix))
 		);
 	}

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
-using Shockah.Shared;
+using Nickel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,48 +18,41 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 	private static int? LastLibra;
 	private static int? LastOverdrive;
 
-	protected internal override void ApplyPatches(Harmony harmony)
+	protected internal override void ApplyPatches(IHarmony harmony)
 	{
 		base.ApplyPatches(harmony);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
 			transpiler: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(AAttack), "DoLibraEffect"),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AAttack), "DoLibraEffect"),
 			transpiler: new HarmonyMethod(GetType(), nameof(AAttack_DoLibraEffect_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
 			prefix: new HarmonyMethod(GetType(), nameof(Card_GetAllTooltips_Prefix)),
 			finalizer: new HarmonyMethod(GetType(), nameof(Card_GetAllTooltips_Finalizer))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderDrones)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderDrones)),
 			prefix: new HarmonyMethod(GetType(), nameof(Combat_RenderDrones_Prefix)),
 			finalizer: new HarmonyMethod(GetType(), nameof(Combat_RenderDrones_Finalizer))
 		);
 
 		// this doesn't work, the method gets inlined; transpile `GetActions` and `GetTooltips` instead
-		//harmony.TryPatch(
-		//	logger: Instance.Logger!,
-		//	original: () => AccessTools.DeclaredMethod(typeof(AttackDrone), "AttackDamage"),
+		//harmony.Patch(
+		//	original: AccessTools.DeclaredMethod(typeof(AttackDrone), "AttackDamage"),
 		//	postfix: new HarmonyMethod(GetType(), nameof(AttackDrone_AttackDamage_Postfix))
 		//);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(AttackDrone), nameof(AttackDrone.GetActions)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AttackDrone), nameof(AttackDrone.GetActions)),
 			prefix: new HarmonyMethod(GetType(), nameof(AttackDrone_GetActions_Prefix)),
 			finalizer: new HarmonyMethod(GetType(), nameof(AttackDrone_GetActions_Finalizer)),
 			transpiler: new HarmonyMethod(GetType(), nameof(AttackDrone_GetActions_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(AttackDrone), nameof(AttackDrone.GetTooltips)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AttackDrone), nameof(AttackDrone.GetTooltips)),
 			transpiler: new HarmonyMethod(GetType(), nameof(AttackDrone_GetTooltips_Transpiler))
 		);
 	}
