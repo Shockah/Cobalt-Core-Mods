@@ -11,7 +11,7 @@ namespace Shockah.Natasha;
 public sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
-	internal readonly Harmony Harmony;
+	internal readonly IHarmony Harmony;
 	internal readonly IKokoroApi KokoroApi;
 	internal readonly IBlochApi BlochApi;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
@@ -95,7 +95,7 @@ public sealed class ModEntry : SimpleMod
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
-		Harmony = new(package.Manifest.UniqueName);
+		Harmony = helper.Utilities.DelayedHarmony;
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 		BlochApi = helper.ModRegistry.GetApi<IBlochApi>("Shockah.Bloch")!;
 
