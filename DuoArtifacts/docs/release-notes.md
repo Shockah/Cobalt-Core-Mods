@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.3
+Released 17 July 2024.
 
 * General optimizations.
 
