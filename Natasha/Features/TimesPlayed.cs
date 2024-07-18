@@ -61,13 +61,13 @@ internal sealed class TimesPlayedVariableHint : AVariableHint
 
 internal sealed class TimesPlayedCondition : IKokoroApi.IConditionalActionApi.IIntExpression
 {
-	public required int CardId;
+	public required int CurrentTimesPlayed;
 
 	public string GetTooltipDescription(State state, Combat? combat)
 		=> ModEntry.Instance.Localizations.Localize(["condition", "TimesPlayed"]);
 
 	public int GetValue(State state, Combat combat)
-		=> state.FindCard(CardId)?.GetTimesPlayed() ?? 0;
+		=> CurrentTimesPlayed;
 
 	public void Render(G g, ref Vec position, bool isDisabled, bool dontRender)
 	{
