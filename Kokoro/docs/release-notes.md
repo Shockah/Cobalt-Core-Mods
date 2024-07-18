@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.11.3
+Released 17 July 2024.
 
 * Updated for Cobalt Core 1.1.2.
 * General optimizations.
