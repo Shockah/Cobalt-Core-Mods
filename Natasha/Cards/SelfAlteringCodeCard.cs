@@ -72,7 +72,7 @@ internal sealed class SelfAlteringCodeCard : Card, IRegisterable, IHasCustomCard
 				if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, Limited.Trait))
 					continue;
 
-				card.SetLimitedUses(card.GetLimitedUses() + Amount);
+				card.SetLimitedUses(card.GetLimitedUses(s) + Amount);
 				didAnything = true;
 			}
 

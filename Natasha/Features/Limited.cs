@@ -3,6 +3,7 @@ using Nanoray.PluginManager;
 using Nickel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Natasha;
@@ -12,8 +13,16 @@ internal static class LimitedExt
 	public static void ResetLimitedUses(this Card card)
 		=> ModEntry.Instance.Helper.ModData.RemoveModData(card, "LimitedUses");
 
-	public static int GetLimitedUses(this Card card)
-		=> ModEntry.Instance.Helper.ModData.TryGetModData(card, "LimitedUses", out int value) ? value : Limited.GetDefaultLimitedUses(card.Key(), card.upgrade);
+	public static int GetLimitedUses(this Card card, State state)
+	{
+		if (ModEntry.Instance.Helper.ModData.TryGetModData(card, "LimitedUses", out int value))
+			return value;
+
+		value = Limited.GetDefaultLimitedUses(card.Key(), card.upgrade);
+		if (state.EnumerateAllArtifacts().Any(a => a is RamDiskArtifact))
+			value += 3;
+		return value;
+	}
 
 	public static void SetLimitedUses(this Card card, int value)
 		=> ModEntry.Instance.Helper.ModData.SetModData(card, "LimitedUses", Math.Max(value, 1));
@@ -30,7 +39,7 @@ internal sealed class Limited : IRegisterable
 	{
 		Trait = helper.Content.Cards.RegisterTrait("Limited", new()
 		{
-			Icon = (state, card) => ObtainIcon(card?.GetLimitedUses() ?? 10),
+			Icon = (state, card) => ObtainIcon(card?.GetLimitedUses(state) ?? 10),
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Limited", "name"]).Localize,
 			Tooltips = (state, card) =>
 			{
@@ -38,14 +47,14 @@ internal sealed class Limited : IRegisterable
 				if (card is null)
 					description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Limited", "description", "withoutCard"]);
 				else if (state.route is Combat)
-					description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Limited", "description", "stateful"], new { Count = card.GetLimitedUses() });
+					description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Limited", "description", "stateful"], new { Count = card.GetLimitedUses(state) });
 				else
 					description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Limited", "description", "outOfCombat"], new { Count = GetDefaultLimitedUses(card.Key(), card.upgrade) });
 
 				return [
 					new GlossaryTooltip($"cardtrait.{MethodBase.GetCurrentMethod()!.DeclaringType!.Namespace!}::Limited")
 					{
-						Icon = ObtainIcon(card?.GetLimitedUses() ?? 10),
+						Icon = ObtainIcon(card?.GetLimitedUses(DB.fakeState) ?? 10),
 						TitleColor = Colors.cardtrait,
 						Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Limited", "name"]),
 						Description = description,
@@ -65,7 +74,7 @@ internal sealed class Limited : IRegisterable
 		{
 			if (!helper.Content.Cards.IsCardTraitActive(state, card, Trait))
 				return;
-			card.SetLimitedUses(card.GetLimitedUses() - 1);
+			card.SetLimitedUses(card.GetLimitedUses(state) - 1);
 		}, 0);
 
 		helper.Content.Cards.OnGetFinalDynamicCardTraitOverrides += OnGetFinalDynamicCardTraitOverrides;
@@ -81,9 +90,15 @@ internal sealed class Limited : IRegisterable
 	{
 		if (!args.TraitStates[Trait].IsActive)
 			return;
-		if (args.Card.GetLimitedUses() > 1)
+		if (args.Card.GetLimitedUses(args.State) > 1)
 			return;
-		args.SetOverride(ModEntry.Instance.Helper.Content.Cards.ExhaustCardTrait, true);
+
+		args.SetOverride(
+			args.State.EnumerateAllArtifacts().Any(a => a is RamDiskArtifact)
+				? ModEntry.Instance.Helper.Content.Cards.SingleUseCardTrait
+				: ModEntry.Instance.Helper.Content.Cards.ExhaustCardTrait,
+			true
+		);
 	}
 
 	public static int GetDefaultLimitedUses(string key, Upgrade upgrade)
@@ -182,7 +197,7 @@ internal sealed class LimitedUsesVariableHint : AVariableHint
 		=> [
 			new GlossaryTooltip("action.xHintLimitedUses.desc")
 			{
-				Description = ModEntry.Instance.Localizations.Localize(["x", "LimitedUses", s.route is Combat ? "stateful" : "stateless"], new { Count = s.FindCard(CardId)?.GetLimitedUses() ?? 0 })
+				Description = ModEntry.Instance.Localizations.Localize(["x", "LimitedUses", s.route is Combat ? "stateful" : "stateless"], new { Count = s.FindCard(CardId)?.GetLimitedUses(s) ?? 0 })
 			}
 		];
 }
@@ -225,7 +240,7 @@ internal sealed class ChangeLimitedUsesAction : CardAction
 			return;
 		}
 
-		var currentAmount = card.GetLimitedUses();
+		var currentAmount = card.GetLimitedUses(s);
 		var newAmount = Mode switch
 		{
 			AStatusMode.Add => currentAmount + Amount,

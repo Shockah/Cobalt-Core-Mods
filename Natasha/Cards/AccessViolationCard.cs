@@ -71,7 +71,7 @@ internal sealed class AccessViolationCard : Card, IRegisterable, IHasCustomCardT
 				c.SendCardToDiscard(s, card);
 
 				if (ExtraUses != 0)
-					card.SetLimitedUses(card.GetLimitedUses() + ExtraUses);
+					card.SetLimitedUses(card.GetLimitedUses(s) + ExtraUses);
 			}
 
 			if (index != 0)
