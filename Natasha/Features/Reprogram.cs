@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Shockah.Natasha;
@@ -66,6 +67,8 @@ internal sealed class Reprogram : IRegisterable
 			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASpawn_Begin_Prefix)), priority: Priority.First),
 			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASpawn_Begin_Finalizer))
 		);
+
+		ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(new Hook(), 0);
 	}
 
 	private static void ASpawn_Begin_Prefix(ASpawn __instance)
@@ -83,5 +86,17 @@ internal sealed class Reprogram : IRegisterable
 			});
 
 		SpawnContext = null;
+	}
+
+	private sealed class Hook : IStatusRenderHook
+	{
+		public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
+		{
+			if (status == ReprogrammedStatus.Status)
+				return [.. tooltips, .. new RepairKit().GetTooltips()];
+			if (status == DeprogrammedStatus.Status)
+				return [.. tooltips, .. new Asteroid().GetTooltips()];
+			return tooltips;
+		}
 	}
 }
