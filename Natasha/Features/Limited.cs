@@ -249,7 +249,14 @@ internal sealed class ChangeLimitedUsesAction : CardAction
 		};
 
 		card.SetLimitedUses(newAmount);
-		if (newAmount <= 0 && !c.exhausted.Contains(card))
+		if (newAmount > 0)
+			return;
+
+		if (s.EnumerateAllArtifacts().Any(a => a is RamDiskArtifact))
+		{
+			s.RemoveCardFromWhereverItIs(CardId);
+		}
+		else if (!c.exhausted.Contains(card))
 		{
 			s.RemoveCardFromWhereverItIs(CardId);
 			c.SendCardToExhaust(s, card);

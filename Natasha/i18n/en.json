@@ -65,6 +65,18 @@
         "TimesPlayed": "times this card was played this combat (including this play)"
     },
     "artifact": {
+        "Forkbomb": {
+            "name": "FORKBOMB",
+            "description": "Once per combat, whenever your enemy gains a negative status, they gain 1 more."
+        },
+        "NetworkComputing": {
+            "name": "NETWORK COMPUTING",
+            "description": "<c=cardtrait>Limited</c> cards do their actions twice."
+        },
+        "OperationAltair": {
+            "name": "OPERATION ALTAIR",
+            "description": "Each combat, all non-<c=cardtrait>single-use</c> cards start as if they were already played once, without reducing their <c=cardtrait>limited</c> uses."
+        },
         "RamDisk": {
             "name": "RAM DISK",
             "description": "<c=cardtrait>Limited</c> cards get 3 extra uses. <c=downside><c=cardtrait>Limited 1</c> now makes cards <c=cardtrait>single use</c> instead of <c=cardtrait>exhaust</c>.</c>"
