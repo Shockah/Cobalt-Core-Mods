@@ -98,6 +98,9 @@
         "Botnet": {
             "name": "Botnet"
         },
+        "BruteForce": {
+            "name": "Brute Force"
+        },
         "Buffer": {
             "name": "Buffer"
         },
@@ -119,8 +122,13 @@
         "Limiter": {
             "name": "Limiter"
         },
-        "Parallelism": {
-            "name": "Parallelism"
+        "ManInTheMiddle": {
+            "name": "Man-in-the-Middle",
+            "description": {
+                "None": "Launch an <c=midrow>asteroid</c> in front of the largest enemy attack targeting you.",
+                "A": "Launch an <c=midrow>asteroid</c> in front of the largest enemy attack targeting you.",
+                "B": "Launch a <c=midrow>random static object</c> in front of the largest enemy attack targeting you."
+            }
         },
         "Ping": {
             "name": "Ping"
@@ -136,9 +144,6 @@
         },
         "Reprogram": {
             "name": "Reprogram"
-        },
-        "RestartEngines": {
-            "name": "Restart Engines"
         },
         "SelfAlteringCode": {
             "name": "Self-altering Code",

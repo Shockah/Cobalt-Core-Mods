@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Shockah.Natasha;
 
-internal sealed class ParallelismCard : Card, IRegisterable, IHasCustomCardTraits
+internal sealed class BruteForceCard : Card, IRegisterable, IHasCustomCardTraits
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -19,8 +19,8 @@ internal sealed class ParallelismCard : Card, IRegisterable, IHasCustomCardTrait
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Parallelism.png"), StableSpr.cards_MultiBlast).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Parallelism", "name"]).Localize
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/BruteForce.png"), StableSpr.cards_MultiBlast).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BruteForce", "name"]).Localize
 		});
 
 		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
