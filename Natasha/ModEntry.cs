@@ -87,6 +87,7 @@ public sealed class ModEntry : SimpleMod
 			typeof(Step),
 			typeof(OneLiners),
 			typeof(Reprogram),
+			typeof(NegativeBoost),
 			.. AllCardTypes,
 			.. AllArtifactTypes,
 			.. DuoArtifacts,
