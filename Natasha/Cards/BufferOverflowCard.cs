@@ -23,9 +23,9 @@ internal sealed class BufferOverflowCard : Card, IRegisterable, IHasCustomCardTr
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BufferOverflow", "name"]).Localize
 		});
 
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.None, 3);
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.A, 4);
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.B, 2);
+		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
+		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 4);
+		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)

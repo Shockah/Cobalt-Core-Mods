@@ -23,8 +23,8 @@ internal sealed class RestartEnginesCard : Card, IRegisterable, IHasCustomCardTr
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "RestartEngines", "name"]).Localize
 		});
 
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.None, 2);
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.A, 3);
+		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 2);
+		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 3);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)

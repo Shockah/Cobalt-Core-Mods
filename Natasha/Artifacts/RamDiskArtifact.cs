@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Shockah.Natasha;
 
-internal sealed class RamDiskArtifact : Artifact, IRegisterable
+internal sealed class RamDiskArtifact : Artifact, IRegisterable, INatashaHook
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -28,4 +28,10 @@ internal sealed class RamDiskArtifact : Artifact, IRegisterable
 			.. (Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? []),
 			new TTGlossary("cardtrait.singleUse"),
 		];
+
+	public bool ModifyLimitedUses(State state, Card card, int baseUses, ref int uses)
+	{
+		uses += 3;
+		return false;
+	}
 }

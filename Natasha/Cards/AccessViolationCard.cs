@@ -26,7 +26,7 @@ internal sealed class AccessViolationCard : Card, IRegisterable, IHasCustomCardT
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "AccessViolation", "name"]).Localize
 		});
 
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.B, 2);
+		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
 
 		ModEntry.Instance.KokoroApi.RegisterCardRenderHook(new Hook(), 0);
 	}

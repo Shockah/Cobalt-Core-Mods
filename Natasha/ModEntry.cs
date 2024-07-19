@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ public sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly IHarmony Harmony;
+	internal readonly HookManager<INatashaHook> HookManager;
 	internal readonly IKokoroApi KokoroApi;
 	internal readonly IBlochApi BlochApi;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
@@ -93,6 +95,7 @@ public sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = helper.Utilities.DelayedHarmony;
+		HookManager = new();
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 		BlochApi = helper.ModRegistry.GetApi<IBlochApi>("Shockah.Bloch")!;
 
@@ -155,6 +158,9 @@ public sealed class ModEntry : SimpleMod
 				.ToList()
 		});
 	}
+
+	public override object? GetApi(IModManifest requestingMod)
+		=> new ApiImplementation();
 
 	internal static Rarity GetCardRarity(Type type)
 	{

@@ -24,7 +24,7 @@ internal sealed class SelfAlteringCodeCard : Card, IRegisterable, IHasCustomCard
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "SelfAlteringCode", "name"]).Localize
 		});
 
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.B, 2);
+		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)

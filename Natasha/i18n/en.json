@@ -71,7 +71,7 @@
         },
         "NetworkComputing": {
             "name": "NETWORK COMPUTING",
-            "description": "<c=cardtrait>Limited</c> cards do their actions twice."
+            "description": "Whenever you play a <c=cardtrait>limited</c> card, play it again for free (if it still has uses left). <c=downside><c=cardtrait>Limited</c> cards get 1 less use.</c>"
         },
         "OperationAltair": {
             "name": "OPERATION ALTAIR",

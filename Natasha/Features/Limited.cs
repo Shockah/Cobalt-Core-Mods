@@ -17,11 +17,7 @@ internal static class LimitedExt
 	{
 		if (ModEntry.Instance.Helper.ModData.TryGetModData(card, "LimitedUses", out int value))
 			return value;
-
-		value = Limited.GetDefaultLimitedUses(card.Key(), card.upgrade);
-		if (state.EnumerateAllArtifacts().Any(a => a is RamDiskArtifact))
-			value += 3;
-		return value;
+		return Limited.GetStartingLimitedUses(state, card);
 	}
 
 	public static void SetLimitedUses(this Card card, int value)
@@ -49,7 +45,7 @@ internal sealed class Limited : IRegisterable
 				else if (state.route is Combat)
 					description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Limited", "description", "stateful"], new { Count = card.GetLimitedUses(state) });
 				else
-					description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Limited", "description", "outOfCombat"], new { Count = GetDefaultLimitedUses(card.Key(), card.upgrade) });
+					description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Limited", "description", "outOfCombat"], new { Count = GetStartingLimitedUses(state, card) });
 
 				return [
 					new GlossaryTooltip($"cardtrait.{MethodBase.GetCurrentMethod()!.DeclaringType!.Namespace!}::Limited")
@@ -101,23 +97,35 @@ internal sealed class Limited : IRegisterable
 		);
 	}
 
-	public static int GetDefaultLimitedUses(string key, Upgrade upgrade)
+	public static int GetBaseLimitedUses(string key, Upgrade upgrade)
 	{
 		if (!DefaultLimitedUses.TryGetValue(key, out var perUpgrade))
 			return 2;
-		if (!perUpgrade.TryGetValue(upgrade, out var value))
+		if (!perUpgrade.TryGetValue(upgrade, out var upgradeUses))
 			return 2;
-		return value;
+		return upgradeUses;
 	}
 
-	public static void SetDefaultLimitedUses(string key, int value)
+	public static int GetStartingLimitedUses(State state, Card card)
 	{
-		SetDefaultLimitedUses(key, Upgrade.None, value);
-		SetDefaultLimitedUses(key, Upgrade.A, value);
-		SetDefaultLimitedUses(key, Upgrade.B, value);
+		var baseUses = GetBaseLimitedUses(card.Key(), card.upgrade);
+		var uses = baseUses;
+
+		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, state.EnumerateAllArtifacts()))
+			if (hook.ModifyLimitedUses(state, card, baseUses, ref uses))
+				break;
+
+		return Math.Max(uses, 1);
 	}
 
-	public static void SetDefaultLimitedUses(string key, Upgrade upgrade, int value)
+	public static void SetBaseLimitedUses(string key, int value)
+	{
+		SetBaseLimitedUses(key, Upgrade.None, value);
+		SetBaseLimitedUses(key, Upgrade.A, value);
+		SetBaseLimitedUses(key, Upgrade.B, value);
+	}
+
+	public static void SetBaseLimitedUses(string key, Upgrade upgrade, int value)
 	{
 		if (!DefaultLimitedUses.TryGetValue(key, out var perUpgrade))
 		{

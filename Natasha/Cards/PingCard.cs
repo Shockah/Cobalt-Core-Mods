@@ -23,7 +23,7 @@ internal sealed class PingCard : Card, IRegisterable, IHasCustomCardTraits
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Ping", "name"]).Localize
 		});
 
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.B, 3);
+		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 3);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)

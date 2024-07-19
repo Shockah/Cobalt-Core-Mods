@@ -23,7 +23,7 @@ internal sealed class IfElseCard : Card, IRegisterable, IHasCustomCardTraits
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "IfElse", "name"]).Localize
 		});
 
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.B, 3);
+		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 3);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)

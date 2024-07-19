@@ -23,8 +23,8 @@ internal sealed class VoltageTuningCard : Card, IRegisterable, IHasCustomCardTra
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "VoltageTuning", "name"]).Localize
 		});
 
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.None, 3);
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.B, 3);
+		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
+		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 3);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)

@@ -9,6 +9,10 @@ public partial interface IKokoroApi
 
 	public interface IActionApi
 	{
+		CardAction MakeExhaustEntireHandImmediate();
+		CardAction MakePlaySpecificCardFromAnywhere(int cardId, bool showTheCardIfNotInHand = true);
+		CardAction MakePlayRandomCardsFromAnywhere(IEnumerable<int> cardIds, int amount = 1, bool showTheCardIfNotInHand = true);
+
 		CardAction MakeContinue(out Guid id);
 		CardAction MakeContinued(Guid id, CardAction action);
 		IEnumerable<CardAction> MakeContinued(Guid id, IEnumerable<CardAction> action);

@@ -23,7 +23,7 @@ internal sealed class DenialOfServiceCard : Card, IRegisterable, IHasCustomCardT
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "DenialOfService", "name"]).Localize
 		});
 
-		Limited.SetDefaultLimitedUses(entry.UniqueName, 3);
+		Limited.SetBaseLimitedUses(entry.UniqueName, 3);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)

@@ -23,9 +23,9 @@ internal sealed class BufferCard : Card, IRegisterable, IHasCustomCardTraits
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Buffer", "name"]).Localize
 		});
 
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.None, 1);
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.A, 3);
-		Limited.SetDefaultLimitedUses(entry.UniqueName, Upgrade.B, 1);
+		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 1);
+		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 3);
+		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 1);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)

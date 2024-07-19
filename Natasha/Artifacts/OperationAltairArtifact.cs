@@ -1,6 +1,5 @@
 ﻿using FMOD;
 using HarmonyLib;
-using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using System;
@@ -56,9 +55,7 @@ internal sealed class OperationAltairArtifact : Artifact, IRegisterable
 		var discardPile = new List<Card>(combat.discard);
 		var exhaustPile = new List<Card>(combat.exhausted);
 		var hand = new List<Card>(combat.hand);
-
 		List<Card> allCards = [.. drawPile, .. discardPile, .. exhaustPile, .. hand];
-		var limitedUses = allCards.ToDictionary(c => c.uuid, c => c.GetLimitedUses(state));
 
 		try
 		{
@@ -75,16 +72,11 @@ internal sealed class OperationAltairArtifact : Artifact, IRegisterable
 			fakeState.route = fakeCombat;
 			MG.inst.g.state = fakeState;
 
-			while (fakeCombat.currentCardAction is not null || fakeCombat.cardActions.Count != 0)
-			{
-				fakeCombat.Update(MG.inst.g);
-				if (fakeCombat.routeOverride is not null)
-				{
-					fakeCombat.currentCardAction = null;
-					fakeCombat.cardActions.Clear();
-					break;
-				}
-			}
+			fakeState.artifacts.Clear();
+			foreach (var character in fakeState.characters)
+				character.artifacts.Clear();
+
+			FullyUpdateCombat();
 
 			foreach (var card in allCards)
 			{
@@ -103,6 +95,11 @@ internal sealed class OperationAltairArtifact : Artifact, IRegisterable
 				fakeCombat.energy = Math.Max(fakeState.ship.baseEnergy, data.cost);
 				fakeCombat.TryPlayCard(fakeState, card);
 
+				FullyUpdateCombat();
+			}
+
+			void FullyUpdateCombat()
+			{
 				while (fakeCombat.currentCardAction is not null || fakeCombat.cardActions.Count != 0)
 				{
 					fakeCombat.Update(MG.inst.g);
@@ -110,18 +107,15 @@ internal sealed class OperationAltairArtifact : Artifact, IRegisterable
 					{
 						fakeCombat.currentCardAction = null;
 						fakeCombat.cardActions.Clear();
-						goto continueCards;
+						break;
 					}
 				}
-
-				continueCards:;
 			}
 		}
 		finally
 		{
 			foreach (var card in allCards)
-				if (limitedUses.TryGetValue(card.uuid, out var limitedUsesForCard))
-					card.SetLimitedUses(limitedUsesForCard);
+				card.ResetLimitedUses();
 
 			IsSimulating = false;
 			pfx.Restore();
