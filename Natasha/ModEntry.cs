@@ -47,6 +47,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(BotnetCard),
 		typeof(PortScanningCard),
 		typeof(RebootCard),
+		typeof(RemoteExecutionCard),
 		typeof(ZeroDayExploitCard),
 	];
 

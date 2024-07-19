@@ -139,6 +139,14 @@
         "Reboot": {
             "name": "Reboot"
         },
+        "RemoteExecution": {
+            "name": "Remote Execution",
+            "description": {
+                "None": "Trigger an enemy intent or <c=midrow>midrow object</c>.",
+                "A": "Trigger an enemy intent or <c=midrow>midrow object</c>. <c=action>Spontaneous</c>: <c=cardtrait>Discount</c> by 1.",
+                "B": "Trigger an enemy intent or <c=midrow>midrow object</c>."
+            }
+        },
         "RemoveLimiter": {
             "name": "Remove Limiter"
         },
