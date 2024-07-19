@@ -4,7 +4,6 @@ using Nanoray.PluginManager;
 using Nickel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Natasha;
@@ -48,6 +47,7 @@ internal sealed class OperationAltairArtifact : Artifact, IRegisterable
 	public override void OnCombatStart(State state, Combat combat)
 	{
 		base.OnCombatStart(state, combat);
+		Pulse();
 
 		var pfx = PFXState.Create();
 		var dt = MG.inst.g.dt;
