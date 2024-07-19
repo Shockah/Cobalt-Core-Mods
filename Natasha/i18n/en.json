@@ -69,6 +69,10 @@
             "name": "FORKBOMB",
             "description": "Once per combat, whenever your enemy gains a negative status, they gain 1 more."
         },
+        "Keylogger": {
+            "name": "KEYLOGGER",
+            "description": "If you end your turn with more than 0 <c=energy>energy</c>, give 1 extra use to a random <c=cardtrait>limited</c> card in your hand."
+        },
         "NetworkComputing": {
             "name": "NETWORK COMPUTING",
             "description": "Whenever you play a <c=cardtrait>limited</c> card, play it again for free (if it still has uses left). <c=downside><c=cardtrait>Limited</c> cards get 1 less use.</c>"

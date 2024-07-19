@@ -61,6 +61,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static readonly IReadOnlyList<Type> CommonArtifacts = [
 		typeof(ForkbombArtifact),
+		typeof(KeyloggerArtifact),
 		typeof(OperationAltairArtifact),
 		typeof(SecondConsoleArtifact),
 	];
