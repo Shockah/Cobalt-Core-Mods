@@ -123,8 +123,6 @@ internal sealed class RemoteExecutionCard : Card, IRegisterable, IHasCustomCardT
 
 			Draw.Rect(0, 0, MG.inst.PIX_W, MG.inst.PIX_H, Colors.black.fadeAlpha(0.5));
 
-			//g.Push(rect: new Rect(-79));
-
 			var keyPrefix = $"{typeof(ModEntry).Namespace!}::{typeof(RemoteExecutionCard).Name}";
 			for (var i = 0; i < combat.otherShip.parts.Count; i++)
 			{
@@ -150,8 +148,6 @@ internal sealed class RemoteExecutionCard : Card, IRegisterable, IHasCustomCardT
 				g.Pop();
 			}
 
-			//g.Pop();
-
 			var centerX = g.state.ship.x + g.state.ship.parts.Count / 2.0;
 			foreach (var (worldX, @object) in combat.stuff)
 			{
@@ -174,7 +170,7 @@ internal sealed class RemoteExecutionCard : Card, IRegisterable, IHasCustomCardT
 				g,
 				new Vec(MG.inst.PIX_W - 69, MG.inst.PIX_H - 31),
 				CancelExecutionUK,
-				"CANCEL",
+				ModEntry.Instance.Localizations.Localize(["card", "RemoteExecution", "ui", "cancel"]),
 				onMouseDown: new MouseDownHandler(() => g.CloseRoute(this))
 			);
 		}

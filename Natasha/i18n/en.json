@@ -65,6 +65,14 @@
         "TimesPlayed": "times this card was played this combat (including this play)"
     },
     "artifact": {
+        "DarkWebData": {
+            "name": "DARK WEB DATA",
+            "description": "Choose a card that <c=cardtrait>exhausts</c>. Replace its <c=cardtrait>Exhaust</c> with <c=cardtrait>Limited 2</c>.",
+            "ui": {
+                "title": "Select a card to replace <c=cardtrait>Exhaust</c> with <c=cardtrait>Limited 2</c>, forever.",
+                "done": "Replaced <c=cardtrait>Exhaust</c> with <c=cardtrait>Limited 2</c>!"
+            }
+        },
         "Forkbomb": {
             "name": "FORKBOMB",
             "description": "Once per combat, whenever your enemy gains a negative status, they gain 1 more."
@@ -145,6 +153,9 @@
                 "None": "Trigger an enemy intent or <c=midrow>midrow object</c>.",
                 "A": "Trigger an enemy intent or <c=midrow>midrow object</c>. <c=action>Spontaneous</c>: <c=cardtrait>Discount</c> by 1.",
                 "B": "Trigger an enemy intent or <c=midrow>midrow object</c>."
+            },
+            "ui": {
+                "cancel": "CANCEL"
             }
         },
         "RemoveLimiter": {
@@ -178,10 +189,13 @@
             "name": "Zero-Day Exploit"
         },
 
-        "ChangePerspective": {
-            "name": "Perspective Change",
-            "description": "Convert any <c=C2FF60>Aura</c> into {{ConvertToIntensifyAmount}} <c=status>intensify</c> or {{ConvertToAuraAmount}} of a different <c=C2FF60>Aura</c>.",
-            "uiTitle": "CONVERT AURA"
+        "NatashaExe": {
+            "name": "Natasha.EXE",
+            "description": {
+                "None": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=E1FFCF>Natasha</c> cards to your hand.",
+                "A": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=E1FFCF>Natasha</c> cards to your hand.",
+                "B": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=E1FFCF>Natasha</c> cards to your hand."
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Bloch;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -57,10 +58,11 @@ public sealed class ModEntry : SimpleMod
 			.. UncommonCardTypes,
 			.. RareCardTypes,
 			typeof(LimiterCard),
-			//typeof(BlochExeCard)
+			typeof(NatashaExeCard)
 		];
 
 	internal static readonly IReadOnlyList<Type> CommonArtifacts = [
+		typeof(DarkWebDataArtifact),
 		typeof(ForkbombArtifact),
 		typeof(KeyloggerArtifact),
 		typeof(OperationAltairArtifact),
@@ -89,6 +91,7 @@ public sealed class ModEntry : SimpleMod
 			typeof(OneLiners),
 			typeof(Reprogram),
 			typeof(NegativeBoost),
+			typeof(CardSelectFilters),
 			.. AllCardTypes,
 			.. AllArtifactTypes,
 			.. DuoArtifacts,
@@ -149,7 +152,7 @@ public sealed class ModEntry : SimpleMod
 					new PingCard(),
 				]
 			},
-			//ExeCardType = typeof(BlochExeCard)
+			ExeCardType = typeof(NatashaExeCard)
 		});
 
 		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
