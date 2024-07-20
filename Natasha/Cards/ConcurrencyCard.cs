@@ -36,19 +36,19 @@ internal sealed class ConcurrencyCard : Card, IRegisterable
 		{
 			Upgrade.B => [
 				new AAttack { damage = GetDmg(s, 1), disabled = flipped },
-				new StepAction { CardId = uuid, Step = 2, Steps = 2, Action = new AAttack { damage = GetDmg(s, 2) }, disabled = flipped },
-				new StepAction { CardId = uuid, Step = 3, Steps = 3, Action = new AAttack { damage = GetDmg(s, 3) }, disabled = flipped },
+				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 2, Action = new AAttack { damage = GetDmg(s, 2) }, disabled = flipped },
+				new SequenceAction { CardId = uuid, SequenceStep = 3, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 3) }, disabled = flipped },
 				new ADummyAction(),
 				new AEnergy { changeAmount = 1, disabled = !flipped },
 			],
 			Upgrade.A => [
-				new StepAction { CardId = uuid, Step = 1, Steps = 3, Action = new AAttack { damage = GetDmg(s, 1) } },
-				new StepAction { CardId = uuid, Step = 1, Steps = 2, Action = new AAttack { damage = GetDmg(s, 2) } },
+				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 1) } },
+				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 2, Action = new AAttack { damage = GetDmg(s, 2) } },
 				new AAttack { damage = GetDmg(s, 3) },
 			],
 			_ => [
-				new StepAction { CardId = uuid, Step = 3, Steps = 3, Action = new AAttack { damage = GetDmg(s, 1) } },
-				new StepAction { CardId = uuid, Step = 2, Steps = 2, Action = new AAttack { damage = GetDmg(s, 2) } },
+				new SequenceAction { CardId = uuid, SequenceStep = 3, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 1) } },
+				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 2, Action = new AAttack { damage = GetDmg(s, 2) } },
 				new AAttack { damage = GetDmg(s, 3) },
 			]
 		};

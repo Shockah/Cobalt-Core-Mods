@@ -11,19 +11,13 @@ namespace Shockah.Natasha;
 
 internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTraits
 {
-	internal record ObjectEntry(
-		string UniqueName,
-		Func<State, StuffBase> Factory,
-		double InitialWeight = 1,
-		Func<State, double, double>? WeightProvider = null
-	);
-
 	internal record SerializableObjectEntry(
 		string UniqueName,
 		double Weight
 	);
 
-	internal static readonly List<ObjectEntry> RegisteredObjects = [
+	internal static readonly Dictionary<string, INatashaApi.ManInTheMiddleStaticObjectEntry> RegisteredObjects = new List<INatashaApi.ManInTheMiddleStaticObjectEntry>()
+	{
 		new($"{typeof(ModEntry).Namespace!}::Asteroid", _ => new Asteroid()),
 		new($"{typeof(ModEntry).Namespace!}::Geode", _ => new Geode(), 0.5),
 		new($"{typeof(ModEntry).Namespace!}::Mine", _ => new SpaceMine()),
@@ -34,7 +28,7 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 		new($"{typeof(ModEntry).Namespace!}::EnergyDrone", _ => new EnergyDrone { targetPlayer = true }, 0.25),
 		new($"{typeof(ModEntry).Namespace!}::JupiterDrone", _ => new JupiterDrone(), 0.25),
 		new($"{typeof(ModEntry).Namespace!}::SportOrb", _ => new Football(), 0.1, (_, w) => w / 2.0)
-	];
+	}.ToDictionary(e => e.UniqueName, e => e);
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -148,7 +142,7 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 					return new Asteroid();
 
 				var chosenSerializableEntry = weighted.Next(state.rngActions, consume: true);
-				if (RegisteredObjects.FirstOrDefault(e => e.UniqueName == chosenSerializableEntry.UniqueName) is not { } chosenEntry)
+				if (!RegisteredObjects.TryGetValue(chosenSerializableEntry.UniqueName, out var chosenEntry))
 					continue;
 
 				queue.Remove(chosenSerializableEntry);
@@ -162,11 +156,11 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 			var queue = ModEntry.Instance.Helper.ModData.ObtainModData<List<SerializableObjectEntry>>(combat, $"{typeof(ManInTheMiddleCard).Name}::ObjectQueue");
 
 			for (var i = queue.Count - 1; i >= 0; i--)
-				if (!RegisteredObjects.Any(e => e.UniqueName == queue[i].UniqueName))
+				if (!RegisteredObjects.ContainsKey(queue[i].UniqueName))
 					queue.RemoveAt(i);
 
 			if (queue.Count == 0)
-				foreach (var entry in RegisteredObjects)
+				foreach (var entry in RegisteredObjects.Values)
 					queue.Add(new(entry.UniqueName, entry.InitialWeight));
 
 			return queue;

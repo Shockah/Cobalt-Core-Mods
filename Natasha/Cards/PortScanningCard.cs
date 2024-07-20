@@ -35,14 +35,14 @@ internal sealed class PortScanningCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new StepAction { CardId = uuid, Step = 1, Steps = 3, Action = new AAttack { damage = GetDmg(s, 1) } },
-				new StepAction { CardId = uuid, Step = 2, Steps = 3, Action = new AAttack { damage = GetDmg(s, 2) } },
-				new StepAction { CardId = uuid, Step = 3, Steps = 3, Action = new AAttack { damage = GetDmg(s, 2), brittle = true } },
+				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 1) } },
+				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 2) } },
+				new SequenceAction { CardId = uuid, SequenceStep = 3, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 2), brittle = true } },
 			],
 			_ => [
-				new StepAction { CardId = uuid, Step = 1, Steps = 3, Action = new AAttack { damage = GetDmg(s, 1) } },
-				new StepAction { CardId = uuid, Step = 2, Steps = 3, Action = new AAttack { damage = GetDmg(s, 2) } },
-				new StepAction { CardId = uuid, Step = 3, Steps = 3, Action = new AAttack { damage = GetDmg(s, 2), weaken = true } },
+				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 1) } },
+				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 2) } },
+				new SequenceAction { CardId = uuid, SequenceStep = 3, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 2), weaken = true } },
 			]
 		};
 }

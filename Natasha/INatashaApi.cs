@@ -1,4 +1,6 @@
 ﻿using Nickel;
+using System;
+using System.Collections.Generic;
 
 namespace Shockah.Natasha;
 
@@ -18,9 +20,28 @@ public interface INatashaApi
 	int GetLimitedUses(State state, Card card);
 	void SetLimitedUses(State state, Card card, int value);
 	void ResetLimitedUses(State state, Card card);
+	CardAction MakeLimitedUsesVariableHintAction(int cardId);
+	CardAction MakeChangeLimitedUsesAction(int cardId, int amount, AStatusMode mode = AStatusMode.Add);
+	ACardSelect SetFilterLimited(ACardSelect action, bool? limited);
+
+	CardAction MakeTimesPlayedVariableHintAction(int cardId);
+	IKokoroApi.IConditionalActionApi.IIntExpression MakeTimesPlayedCondition(int currentTimesPlayed);
+
+	CardAction MakeSequenceAction(int cardId, CardAction action, int sequenceStep, int sequenceLength);
+
+	CardAction MakeOneLinerAction(List<CardAction> actions, int spacing = 3);
 
 	void RegisterHook(INatashaHook hook, double priority);
 	void UnregisterHook(INatashaHook hook);
+
+	void RegisterManInTheMiddleStaticObject(ManInTheMiddleStaticObjectEntry entry);
+
+	public record ManInTheMiddleStaticObjectEntry(
+		string UniqueName,
+		Func<State, StuffBase> Factory,
+		double InitialWeight = 1,
+		Func<State, double, double>? WeightProvider = null
+	);
 }
 
 public interface INatashaHook

@@ -45,19 +45,19 @@ internal sealed class TypoCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new StepAction { CardId = uuid, Step = 1, Steps = 2, Action = new AStatus { targetPlayer = false, status = Status.powerdrive, statusAmount = 1 } },
-				new StepAction { CardId = uuid, Step = 2, Steps = 2, Action = new AStatus { targetPlayer = true, status = Status.powerdrive, statusAmount = 1 } },
+				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 2, Action = new AStatus { targetPlayer = false, status = Status.powerdrive, statusAmount = 1 } },
+				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 2, Action = new AStatus { targetPlayer = true, status = Status.powerdrive, statusAmount = 1 } },
 			],
 			Upgrade.A => [
-				new StepAction { CardId = uuid, Step = 1, Steps = 3, Action = new AStatus { targetPlayer = false, status = Status.overdrive, statusAmount = 1 } },
-				new StepAction { CardId = uuid, Step = 2, Steps = 3, Action = new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 } },
-				new StepAction { CardId = uuid, Step = 3, Steps = 3, Action = new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 } },
-				new StepAction { CardId = uuid, Step = 3, Steps = 3, Action = new DiscardSelfAction { CardId = uuid } },
+				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 3, Action = new AStatus { targetPlayer = false, status = Status.overdrive, statusAmount = 1 } },
+				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 3, Action = new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 } },
+				new SequenceAction { CardId = uuid, SequenceStep = 3, SequenceLength = 3, Action = new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 } },
+				new SequenceAction { CardId = uuid, SequenceStep = 3, SequenceLength = 3, Action = new DiscardSelfAction { CardId = uuid } },
 			],
 			_ => [
-				new StepAction { CardId = uuid, Step = 1, Steps = 2, Action = new AStatus { targetPlayer = false, status = Status.overdrive, statusAmount = 1 } },
-				new StepAction { CardId = uuid, Step = 2, Steps = 2, Action = new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 } },
-				new StepAction { CardId = uuid, Step = 2, Steps = 2, Action = new DiscardSelfAction { CardId = uuid } },
+				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 2, Action = new AStatus { targetPlayer = false, status = Status.overdrive, statusAmount = 1 } },
+				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 2, Action = new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 } },
+				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 2, Action = new DiscardSelfAction { CardId = uuid } },
 			]
 		};
 

@@ -41,10 +41,10 @@ internal sealed class BotnetCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new StepAction { CardId = uuid, Step = 2, Steps = 2, Action = new AStatus { targetPlayer = true, status = Status.powerdrive, statusAmount = 1 } },
+				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 2, Action = new AStatus { targetPlayer = true, status = Status.powerdrive, statusAmount = 1 } },
 			],
 			_ => [
-				new StepAction { CardId = uuid, Step = 3, Steps = 3, Action = new AStatus { targetPlayer = true, status = Status.powerdrive, statusAmount = 1 } },
+				new SequenceAction { CardId = uuid, SequenceStep = 3, SequenceLength = 3, Action = new AStatus { targetPlayer = true, status = Status.powerdrive, statusAmount = 1 } },
 			]
 		};
 }

@@ -1,4 +1,5 @@
 ﻿using Nickel;
+using System.Collections.Generic;
 
 namespace Shockah.Natasha;
 
@@ -37,9 +38,33 @@ public sealed class ApiImplementation : INatashaApi
 	public void ResetLimitedUses(State state, Card card)
 		=> card.ResetLimitedUses();
 
+	public CardAction MakeLimitedUsesVariableHintAction(int cardId)
+		=> new LimitedUsesVariableHint { CardId = cardId };
+
+	public CardAction MakeChangeLimitedUsesAction(int cardId, int amount, AStatusMode mode = AStatusMode.Add)
+		=> new ChangeLimitedUsesAction { CardId = cardId, Amount = amount, Mode = mode };
+
+	public ACardSelect SetFilterLimited(ACardSelect action, bool? limited)
+		=> action.SetFilterLimited(limited);
+
+	public CardAction MakeTimesPlayedVariableHintAction(int cardId)
+		=> new TimesPlayedVariableHint { CardId = cardId };
+
+	public IKokoroApi.IConditionalActionApi.IIntExpression MakeTimesPlayedCondition(int currentTimesPlayed)
+		=> new TimesPlayedCondition { CurrentTimesPlayed = currentTimesPlayed };
+
+	public CardAction MakeSequenceAction(int cardId, CardAction action, int sequenceStep, int sequenceLength)
+		=> new SequenceAction { CardId = cardId, Action = action, SequenceStep = sequenceStep, SequenceLength = sequenceLength };
+
+	public CardAction MakeOneLinerAction(List<CardAction> actions, int spacing = 3)
+		=> new OneLinerAction { Actions = actions, Spacing = spacing };
+
 	public void RegisterHook(INatashaHook hook, double priority)
 		=> ModEntry.Instance.HookManager.Register(hook, priority);
 
 	public void UnregisterHook(INatashaHook hook)
 		=> ModEntry.Instance.HookManager.Unregister(hook);
+
+	public void RegisterManInTheMiddleStaticObject(INatashaApi.ManInTheMiddleStaticObjectEntry entry)
+		=> ManInTheMiddleCard.RegisteredObjects[entry.UniqueName] = entry;
 }

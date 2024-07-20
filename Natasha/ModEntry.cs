@@ -88,7 +88,7 @@ public sealed class ModEntry : SimpleMod
 		= [
 			typeof(Limited),
 			typeof(TimesPlayed),
-			typeof(Step),
+			typeof(Sequence),
 			typeof(OneLiners),
 			typeof(Reprogram),
 			typeof(NegativeBoost),

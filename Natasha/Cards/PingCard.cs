@@ -44,12 +44,12 @@ internal sealed class PingCard : Card, IRegisterable, IHasCustomCardTraits
 				new ADrawCard { count = 2 },
 			],
 			Upgrade.A => [
-				new StepAction { CardId = uuid, Step = 1, Steps = 2, Action = new AAttack { damage = GetDmg(s, 3) } },
-				new StepAction { CardId = uuid, Step = 2, Steps = 2, Action = new ADrawCard { count = 3 } },
+				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 2, Action = new AAttack { damage = GetDmg(s, 3) } },
+				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 2, Action = new ADrawCard { count = 3 } },
 			],
 			_ => [
-				new StepAction { CardId = uuid, Step = 1, Steps = 2, Action = new AAttack { damage = GetDmg(s, 2) } },
-				new StepAction { CardId = uuid, Step = 2, Steps = 2, Action = new ADrawCard { count = 2 } },
+				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 2, Action = new AAttack { damage = GetDmg(s, 2) } },
+				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 2, Action = new ADrawCard { count = 2 } },
 			]
 		};
 }

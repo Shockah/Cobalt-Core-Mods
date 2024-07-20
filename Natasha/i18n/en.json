@@ -7,8 +7,8 @@
         ]
     },
     "action": {
-        "Step": {
-            "name": "  Step",
+        "Sequence": {
+            "name": "  Sequence",
             "description": {
                 "stateful": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played (currently <c=boldPink>{{Current}}</c>/<c=boldPink>{{Steps}}</c>).",
                 "stateless": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played."

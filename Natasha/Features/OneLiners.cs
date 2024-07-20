@@ -16,7 +16,7 @@ internal sealed class OneLiners : IRegisterable, IWrappedActionHook
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
 
-		var self = new Step();
+		var self = new OneLiners();
 		ModEntry.Instance.KokoroApi.Actions.RegisterWrappedActionHook(self, 0);
 	}
 

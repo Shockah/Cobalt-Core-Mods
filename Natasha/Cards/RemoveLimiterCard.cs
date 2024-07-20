@@ -32,7 +32,7 @@ internal sealed class RemoveLimiterCard : Card, IRegisterable
 		{
 			Upgrade.A => [
 				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 },
-				new StepAction { CardId = uuid, Step = 1, Steps = 2, Action = new AAddCard { card = new LimiterCard(), destination = CardDestination.Deck } },
+				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 2, Action = new AAddCard { card = new LimiterCard(), destination = CardDestination.Deck } },
 			],
 			Upgrade.B => [
 				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 3 },
