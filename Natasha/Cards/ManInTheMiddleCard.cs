@@ -119,7 +119,7 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 				.Select(e => (WorldX: e.WorldX, PlayerPart: e.PlayerPart, EnemyPart: e.EnemyPart!, Midrow: combat.stuff.GetValueOrDefault(e.WorldX)))
 				.OrderByDescending(e => e.EnemyPart.intent switch
 				{
-					IntentAttack attackIntent => e.Midrow is null ? attackIntent.damage : 0,
+					IntentAttack attackIntent => e.Midrow is null ? attackIntent.damage + (attackIntent.status is not null && attackIntent.statusAmount != 0 ? 0.45 : 0) + (attackIntent.cardOnHit is not null ? 0.45 : 0) : 0,
 					IntentMissile missileIntent => e.Midrow is null ? missileIntent.missileType switch
 					{
 						MissileType.shaker => 1,
