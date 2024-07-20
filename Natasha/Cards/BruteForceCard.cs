@@ -42,17 +42,17 @@ internal sealed class BruteForceCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new LimitedUsesVariableHint { CardId = uuid, disabled = flipped },
-				new AAttack { damage = GetDmg(s, this.GetLimitedUses(s)), xHint = 1, disabled = flipped },
+				new TimesPlayedVariableHint { CardId = uuid, disabled = flipped },
+				new AAttack { damage = GetDmg(s, this.GetTimesPlayed() + 1), xHint = 1, disabled = flipped },
 				new ADummyAction(),
-				new TimesPlayedVariableHint { CardId = uuid, disabled = !flipped },
-				new AAttack { damage = GetDmg(s, this.GetTimesPlayed() + 1), xHint = 1, disabled = !flipped },
+				new LimitedUsesVariableHint { CardId = uuid, disabled = !flipped },
+				new AAttack { damage = GetDmg(s, this.GetLimitedUses(s)), xHint = 1, disabled = !flipped },
 			],
 			_ => [
-				new LimitedUsesVariableHint { CardId = uuid },
-				new AAttack { damage = GetDmg(s, this.GetLimitedUses(s)), xHint = 1 },
 				new TimesPlayedVariableHint { CardId = uuid },
 				new AAttack { damage = GetDmg(s, this.GetTimesPlayed() + 1), xHint = 1 },
+				new LimitedUsesVariableHint { CardId = uuid },
+				new AAttack { damage = GetDmg(s, this.GetLimitedUses(s)), xHint = 1 },
 			]
 		};
 }
