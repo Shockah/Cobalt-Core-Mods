@@ -42,13 +42,13 @@ internal sealed class DarkWebDataArtifact : Artifact, IRegisterable, INatashaHoo
 			browseAction = new CardSelectAction(),
 			browseSource = CardBrowse.Source.Deck,
 			filterExhaust = true,
-			filterTemporary = false
+			filterTemporary = false,
 		}.SetFilterLimited(false));
 	}
 
 	private static void ArtifactReward_GetBlockedArtifacts_Postfix(State s, ref HashSet<Type> __result)
 	{
-		if (!s.GetAllCards().Any(card => ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, ModEntry.Instance.Helper.Content.Cards.ExhaustCardTrait)))
+		if (!s.GetAllCards().Any(card => card.GetMeta().deck != Deck.trash && ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, ModEntry.Instance.Helper.Content.Cards.ExhaustCardTrait)))
 			__result.Add(typeof(DarkWebDataArtifact));
 	}
 
