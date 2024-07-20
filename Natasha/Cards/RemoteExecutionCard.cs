@@ -142,7 +142,11 @@ internal sealed class RemoteExecutionCard : Card, IRegisterable, IHasCustomCardT
 					var partIndex = i;
 					box.onMouseDown = new MouseDownHandler(() => OnPartSelected(g, combat.otherShip, partIndex));
 					if (box.IsHover())
+					{
+						if (!Input.gamepadIsActiveInput)
+							MouseUtil.DrawGamepadCursor(box);
 						part.hilight = true;
+					}
 				}
 
 				g.Pop();
@@ -155,14 +159,18 @@ internal sealed class RemoteExecutionCard : Card, IRegisterable, IHasCustomCardT
 					continue;
 				if (g.boxes.FirstOrDefault(b => b.key is { } key && key.k == StableUK.midrow && key.v == worldX) is not { } realBox)
 					continue;
+				if ((@object.GetActions(g.state, combat)?.Count ?? 0) == 0)
+					continue;
 
 				var box = g.Push(new UIKey(MidrowExecutionUK, worldX), realBox.rect, onMouseDown: new MouseDownHandler(() => OnMidrowSelected(g, @object)));
+				@object.Render(g, box.rect.xy);
 				if (box.rect.x > 60.0 && box.rect.x < 464.0 && box.IsHover())
 				{
+					if (!Input.gamepadIsActiveInput)
+						MouseUtil.DrawGamepadCursor(box);
 					g.tooltips.Add(box.rect.xy + new Vec(16.0, 24.0), @object.GetTooltips());
 					@object.hilight = 2;
 				}
-				@object.Render(g, box.rect.xy);
 				g.Pop();
 			}
 
