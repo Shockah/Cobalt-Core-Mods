@@ -186,7 +186,12 @@
             "name": "Voltage Tuning"
         },
         "ZeroDayExploit": {
-            "name": "Zero-Day Exploit"
+            "name": "Zero-Day Exploit",
+            "description": {
+                "None": "If your enemy has no <c=status>corrode</c>, they gain 1.",
+                "A": "If your enemy has no <c=status>corrode</c>, they gain 1.",
+                "B": "If your enemy has no <c=status>corrode</c>, they gain 2."
+            }
         },
 
         "NatashaExe": {

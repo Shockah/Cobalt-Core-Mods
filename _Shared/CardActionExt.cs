@@ -8,6 +8,12 @@ internal static class CardActionExt
 		return self;
 	}
 
+	public static CardAction OmitFromTooltips(this CardAction self, bool value = true)
+	{
+		self.omitFromTooltips = value;
+		return self;
+	}
+
 	public static CardAction CanRunAfterKill(this CardAction self, bool canRunAfterKill = true)
 	{
 		self.canRunAfterKill = canRunAfterKill;
