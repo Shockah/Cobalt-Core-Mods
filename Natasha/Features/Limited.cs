@@ -90,7 +90,7 @@ internal sealed class Limited : IRegisterable
 			return;
 
 		args.SetOverride(
-			args.State.EnumerateAllArtifacts().Any(a => a is RamDiskArtifact)
+			!args.CardData.unremovableAtShops && args.State.EnumerateAllArtifacts().Any(a => a is RamDiskArtifact)
 				? ModEntry.Instance.Helper.Content.Cards.SingleUseCardTrait
 				: ModEntry.Instance.Helper.Content.Cards.ExhaustCardTrait,
 			true
@@ -260,7 +260,7 @@ internal sealed class ChangeLimitedUsesAction : CardAction
 		if (newAmount > 0)
 			return;
 
-		if (s.EnumerateAllArtifacts().Any(a => a is RamDiskArtifact))
+		if (s.EnumerateAllArtifacts().Any(a => a is RamDiskArtifact) && !card.GetDataWithOverrides(s).unremovableAtShops)
 		{
 			s.RemoveCardFromWhereverItIs(CardId);
 		}
