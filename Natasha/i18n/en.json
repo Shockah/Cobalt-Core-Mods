@@ -2,7 +2,7 @@
     "character": {
         "name": "Natasha",
         "description": [
-            "<c=E1FFCF>NATASHA</c>",
+            "<c=BBBBBB>NATASHA</c>",
             "An <c=textBold>actual</c> hacker. Her cards often <c=keyword>exhaust after several uses</c> and <c=keyword>apply negative statuses to enemies</c>."
         ]
     },
@@ -192,9 +192,9 @@
         "NatashaExe": {
             "name": "Natasha.EXE",
             "description": {
-                "None": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=E1FFCF>Natasha</c> cards to your hand.",
-                "A": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=E1FFCF>Natasha</c> cards to your hand.",
-                "B": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=E1FFCF>Natasha</c> cards to your hand."
+                "None": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=BBBBBB>Natasha</c> cards to your hand.",
+                "A": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=BBBBBB>Natasha</c> cards to your hand.",
+                "B": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=BBBBBB>Natasha</c> cards to your hand."
             }
         }
     }

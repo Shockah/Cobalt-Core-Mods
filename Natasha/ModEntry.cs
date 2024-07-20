@@ -115,7 +115,7 @@ public sealed class ModEntry : SimpleMod
 
 		NatashaDeck = helper.Content.Decks.RegisterDeck("Natasha", new()
 		{
-			Definition = new() { color = new("E1FFCF"), titleColor = Colors.black },
+			Definition = new() { color = new("BBBBBB"), titleColor = Colors.black },
 			DefaultCardArt = StableSpr.cards_colorless,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize
@@ -133,9 +133,11 @@ public sealed class ModEntry : SimpleMod
 			{
 				CharacterType = NatashaDeck.UniqueName,
 				LoopTag = "neutral",
-				Frames = Enumerable.Range(0, 3)
-				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Neutral/{i}.png")).Sprite)
-				.ToList()
+				Frames = Enumerable.Range(0, 100)
+					.Select(i => package.PackageRoot.GetRelativeFile($"assets/Character/Neutral/{i}.png"))
+					.TakeWhile(f => f.Exists)
+					.Select(f => helper.Content.Sprites.RegisterSprite(f).Sprite)
+					.ToList()
 			},
 			MiniAnimation = new()
 			{
@@ -159,8 +161,20 @@ public sealed class ModEntry : SimpleMod
 		{
 			CharacterType = NatashaDeck.UniqueName,
 			LoopTag = "gameover",
-			Frames = Enumerable.Range(0, 1)
-				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/GameOver/{i}.png")).Sprite)
+			Frames = Enumerable.Range(0, 100)
+				.Select(i => package.PackageRoot.GetRelativeFile($"assets/Character/GameOver/{i}.png"))
+				.TakeWhile(f => f.Exists)
+				.Select(f => helper.Content.Sprites.RegisterSprite(f).Sprite)
+				.ToList()
+		});
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
+		{
+			CharacterType = NatashaDeck.UniqueName,
+			LoopTag = "squint",
+			Frames = Enumerable.Range(0, 100)
+				.Select(i => package.PackageRoot.GetRelativeFile($"assets/Character/Squint/{i}.png"))
+				.TakeWhile(f => f.Exists)
+				.Select(f => helper.Content.Sprites.RegisterSprite(f).Sprite)
 				.ToList()
 		});
 	}
