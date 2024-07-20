@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
+using Nickel.Common;
 using Shockah.Bloch;
 using Shockah.Shared;
 using System;
@@ -177,6 +178,36 @@ public sealed class ModEntry : SimpleMod
 				.Select(f => helper.Content.Sprites.RegisterSprite(f).Sprite)
 				.ToList()
 		});
+
+		helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>(
+			"TheJazMaster.MoreDifficulties",
+			new SemanticVersion(1, 3, 0),
+			api => api.RegisterAltStarters(
+				deck: NatashaDeck.Deck,
+				starterDeck: new StarterDeck
+				{
+					cards = [
+						new RemoveLimiterCard(),
+						new BufferOverflowCard()
+					]
+				}
+			)
+		);
+
+		helper.ModRegistry.AwaitApi<IDraculaApi>(
+			"Shockah.Dracula",
+			api =>
+			{
+				api.RegisterBloodTapOptionProvider(Reprogram.ReprogrammedStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+				]);
+				api.RegisterBloodTapOptionProvider(Reprogram.DeprogrammedStatus.Status, (_, _, status) => [
+					new AHurt { targetPlayer = true, hurtAmount = 1 },
+					new AStatus { targetPlayer = true, status = status, statusAmount = 2 },
+				]);
+			}
+		);
 	}
 
 	public override object? GetApi(IModManifest requestingMod)
