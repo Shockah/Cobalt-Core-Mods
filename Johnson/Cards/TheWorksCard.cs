@@ -33,39 +33,45 @@ internal sealed class TheWorksCard : Card, IRegisterable
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		List<CardAction> actions = [];
-		if (upgrade == Upgrade.A)
+		=> upgrade switch
 		{
-			actions.Add(new AAddCard
-			{
-				card = new LayoutCard { temporaryOverride = true },
-				destination = CardDestination.Hand
-			});
-			actions.Add(new AAddCard
-			{
-				card = new StrategizeCard { temporaryOverride = true },
-				destination = CardDestination.Hand
-			});
-		}
-		else
-		{
-			actions.Add(new ASpecificCardOffering
-			{
-				Destination = upgrade == Upgrade.B ? CardDestination.Deck : CardDestination.Hand,
-				Cards = [
-					new LayoutCard { temporaryOverride = true },
-					new StrategizeCard { temporaryOverride = true },
-				],
-			});
-			actions.Add(new ATooltipAction
-			{
-				Tooltips = [
-					new TTCard { card = new LayoutCard { temporaryOverride = true } },
-					new TTCard { card = new StrategizeCard { temporaryOverride = true } },
-				]
-			});
-		}
-		return actions;
-	}
+			Upgrade.A => [
+				new AAddCard { card = new LayoutCard { temporaryOverride = true }, destination = CardDestination.Hand },
+				new AAddCard { card = new StrategizeCard { temporaryOverride = true }, destination = CardDestination.Hand },
+			],
+			Upgrade.B => [
+				new ASpecificCardOffering
+				{
+					Destination = CardDestination.Deck,
+					Cards = [
+						new LayoutCard { temporaryOverride = true },
+						new StrategizeCard { temporaryOverride = true },
+					],
+				},
+				new ATooltipAction
+				{
+					Tooltips = [
+						new TTCard { card = new LayoutCard { temporaryOverride = true } },
+						new TTCard { card = new StrategizeCard { temporaryOverride = true } },
+					]
+				},
+			],
+			_ => [
+				new ASpecificCardOffering
+				{
+					Destination = CardDestination.Hand,
+					Cards = [
+						new LayoutCard { temporaryOverride = true },
+						new StrategizeCard { temporaryOverride = true },
+					],
+				},
+				new ATooltipAction
+				{
+					Tooltips = [
+						new TTCard { card = new LayoutCard { temporaryOverride = true } },
+						new TTCard { card = new StrategizeCard { temporaryOverride = true } },
+					]
+				},
+			]
+		};
 }
