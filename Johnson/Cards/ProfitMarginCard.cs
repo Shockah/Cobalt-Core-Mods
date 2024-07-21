@@ -34,52 +34,17 @@ internal sealed class ProfitMarginCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.tempShield,
-					statusAmount = 3
-				},
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.shield,
-					statusAmount = 1
-				},
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.temporaryCheap,
-					statusAmount = 1
-				}
+				new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Status.temporaryCheap, statusAmount = 1 }
 			],
 			Upgrade.B => [
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.tempShield,
-					statusAmount = 2
-				},
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.temporaryCheap,
-					statusAmount = 1
-				}
+				new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Status.temporaryCheap, statusAmount = 1 }
 			],
 			_ => [
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.tempShield,
-					statusAmount = 3
-				},
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.temporaryCheap,
-					statusAmount = 1
-				}
+				new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = Status.temporaryCheap, statusAmount = 1 }
 			]
 		};
 }
