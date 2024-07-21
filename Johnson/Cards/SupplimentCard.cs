@@ -60,7 +60,7 @@ internal sealed class SupplimentCard : Card, IRegisterable
 		{
 			base.Begin(g, s, c);
 
-			if (Leftmost && c.hand.LastOrDefault() is { } leftmostCard)
+			if (Leftmost && c.hand.FirstOrDefault() is { } leftmostCard)
 			{
 				if (Discount)
 					leftmostCard.discount--;
