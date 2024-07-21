@@ -1,4 +1,5 @@
-﻿using Nanoray.PluginManager;
+﻿using FSPRO;
+using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,61 +34,58 @@ internal sealed class RevampCard : Card, IRegisterable
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		List<CardAction> actions = [];
-		var leftCard = c.hand.FirstOrDefault(card => card.uuid != uuid && card.IsUpgradable());
-		var rightCard = c.hand.LastOrDefault(card => card.uuid != uuid && card.IsUpgradable());
+		=> upgrade switch
+		{
+			Upgrade.B => [new Action { Choose = true }],
+			_ => [new Action { Choose = false }],
+		};
 
-		if (upgrade == Upgrade.B)
-		{
-			if (leftCard is not null)
-				actions.Add(new ATemporarilyUpgrade
-				{
-					CardId = leftCard.uuid
-				});
-			if (rightCard is not null && leftCard != rightCard)
-				actions.Add(new ATemporarilyUpgrade
-				{
-					CardId = rightCard.uuid
-				});
-		}
-		else
-		{
-			if (leftCard is not null)
-				actions.Add(new ATemporarilySpecificUpgrade
-				{
-					CardId = leftCard.uuid,
-					Upgrade = Upgrade.A
-				});
-			if (rightCard is not null && leftCard != rightCard)
-				actions.Add(new ATemporarilySpecificUpgrade
-				{
-					CardId = rightCard.uuid,
-					Upgrade = Upgrade.B
-				});
-		}
-		actions.Add(new ATooltipAction
-		{
-			Tooltips = [
-				ModEntry.Instance.Api.TemporaryUpgradeTooltip
-			]
-		});
-		return actions;
-	}
-
-	public sealed class ATemporarilySpecificUpgrade : CardAction
+	private sealed class Action : CardAction
 	{
-		public required int CardId;
-		public required Upgrade Upgrade;
+		public bool Choose = false;
+
+		public override List<Tooltip> GetTooltips(State s)
+			=> [ModEntry.Instance.Api.TemporaryUpgradeTooltip];
 
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
-			timer = 0;
-			if (s.FindCard(CardId) is not { } card)
+			if (c.hand.Count == 0)
+			{
+				timer = 0;
 				return;
-			card.SetTemporarilyUpgraded(true);
-			card.upgrade = Upgrade;
+			}
+
+			var didAnything = false;
+			TryUpgrade(c.hand[0], Upgrade.A);
+			TryUpgrade(c.hand[^1], Upgrade.B);
+
+			if (!didAnything)
+			{
+				timer = 0;
+				return;
+			}
+
+			Audio.Play(Event.CardHandling);
+
+			void TryUpgrade(Card card, Upgrade upgrade)
+			{
+				if (card.upgrade != Upgrade.None)
+					return;
+				if (!card.GetMeta().upgradesTo.Contains(upgrade))
+					return;
+
+				if (Choose)
+				{
+					c.QueueImmediate(new ATemporarilyUpgrade { CardId = card.uuid });
+				}
+				else
+				{
+					didAnything = true;
+					card.SetTemporarilyUpgraded(true);
+					card.upgrade = upgrade;
+				}
+			}
 		}
 	}
 }

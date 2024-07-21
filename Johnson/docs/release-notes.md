@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* The Revamp card no longer upgrades further than leftmost and rightmost cards if they were already upgraded or non-upgradable.
 * The Merger card now takes into account the Extreme Measures status from the Ty & Sasha mod.
 
 ## 1.1.4
