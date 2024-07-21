@@ -1,6 +1,6 @@
 {
     "UniqueName": "Shockah.Natasha",
-    "Version": "0.1.0",
+    "Version": "1.0.0",
     "DisplayName": "Natasha",
     "Author": "Shockah",
     "RequiredApiVersion": "1.2.0",
@@ -15,5 +15,10 @@
             "UniqueName": "Shockah.Bloch",
             "Version": "1.0.0"
         }
-    ]
+    ],
+    "UpdateChecks": {
+        "NexusMods": {
+            "ID": 32
+        }
+    }
 }

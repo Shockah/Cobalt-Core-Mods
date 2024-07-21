@@ -64,6 +64,13 @@ Adds various content all around, but most notably new map events.
 
 [![Banner](MORE/Banner.png)](https://www.nexusmods.com/cobaltcore/mods/31)
 
+# Natasha
+
+**Natasha** -- An *actual* hacker. Her cards often exhaust after several uses and apply negative statuses to enemies.  
+\[[NexusMods](https://www.nexusmods.com/cobaltcore/mods/32)] \[[release notes](Natasha/docs/release-notes.md)] \[[source code](Natasha)]
+
+[![Banner](Natasha/Banner.png)](https://www.nexusmods.com/cobaltcore/mods/32)
+
 # Rerolls
 
 Adds a way to reroll artifact and card rewards.  
