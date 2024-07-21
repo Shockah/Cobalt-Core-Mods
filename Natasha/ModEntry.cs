@@ -67,7 +67,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(ForkbombArtifact),
 		typeof(KeyloggerArtifact),
 		typeof(OperationAltairArtifact),
-		typeof(SecondConsoleArtifact),
+		typeof(TraceProtectionLinkArtifact),
 	];
 
 	internal static readonly IReadOnlyList<Type> BossArtifacts = [

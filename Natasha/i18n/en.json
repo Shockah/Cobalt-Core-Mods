@@ -93,8 +93,8 @@
             "name": "RAM DISK",
             "description": "<c=cardtrait>Limited</c> cards get 3 extra uses. <c=downside><c=cardtrait>Limited 1</c> now makes cards <c=cardtrait>single use</c> instead of <c=cardtrait>exhaust</c>.</c>"
         },
-        "SecondConsole": {
-            "name": "SECOND CONSOLE",
+        "TraceProtectionLink": {
+            "name": "TRACE PROTECTION LINK",
             "description": "Whenever you play a <c=cardtrait>limited</c> card, gain 1 <c=status>temp shield</c>."
         }
     },

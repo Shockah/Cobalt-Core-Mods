@@ -5,11 +5,11 @@ using System.Reflection;
 
 namespace Shockah.Natasha;
 
-internal sealed class SecondConsoleArtifact : Artifact, IRegisterable
+internal sealed class TraceProtectionLinkArtifact : Artifact, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Artifacts.RegisterArtifact("SecondConsole", new()
+		helper.Content.Artifacts.RegisterArtifact("TraceProtectionLink", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
@@ -17,9 +17,9 @@ internal sealed class SecondConsoleArtifact : Artifact, IRegisterable
 				owner = ModEntry.Instance.NatashaDeck.Deck,
 				pools = ModEntry.GetArtifactPools(MethodBase.GetCurrentMethod()!.DeclaringType!)
 			},
-			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/SecondConsole.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "SecondConsole", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "SecondConsole", "description"]).Localize
+			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/TraceProtectionLink.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "TraceProtectionLink", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "TraceProtectionLink", "description"]).Localize
 		});
 	}
 
