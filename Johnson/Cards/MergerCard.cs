@@ -34,7 +34,7 @@ internal sealed class MergerCard : Card, IRegisterable
 	{
 		var x = state.ship.Get(Status.shield);
 		if (ModEntry.Instance.TyAndSashaApi is { } api)
-			x += state.ship.Get(api.XFactorStatus);
+			x += state.ship.Get(api.XFactorStatus) + state.ship.Get(api.ExtremeMeasuresStatus);
 		return x;
 	}
 

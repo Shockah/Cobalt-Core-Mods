@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* The Merger card now takes into account the Extreme Measures status from the Ty & Sasha mod.
+
 ## 1.1.4
 Released 31 May 2024.
 
