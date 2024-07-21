@@ -1,8 +1,7 @@
-﻿using Nanoray.PluginManager;
+﻿using FSPRO;
+using Nanoray.PluginManager;
 using Nickel;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Johnson;
@@ -56,36 +55,44 @@ internal sealed class DownsizeCard : Card, IRegisterable
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
-			timer = 0;
+			if (c.hand.Count == 0)
+			{
+				timer = 0;
+				return;
+			}
+
+			var didAnything = false;
 
 			switch (Cards)
 			{
 				case CardsType.Left:
-					foreach (var card in c.hand)
-					{
-						if (card.GetDataWithOverrides(s).temporary)
-							continue;
-						ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, ModEntry.Instance.Helper.Content.Cards.TemporaryCardTrait, true, permanent: true);
-						return;
-					}
+					TryTemporarify(c.hand[0]);
 					break;
 				case CardsType.Right:
-					foreach (var card in ((IEnumerable<Card>)c.hand).Reverse())
-					{
-						if (card.GetDataWithOverrides(s).temporary)
-							continue;
-						ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, ModEntry.Instance.Helper.Content.Cards.TemporaryCardTrait, true, permanent: true);
-						return;
-					}
+					TryTemporarify(c.hand[^1]);
 					break;
 				case CardsType.All:
 					foreach (var card in c.hand)
-					{
-						if (card.GetDataWithOverrides(s).temporary)
-							continue;
-						ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, ModEntry.Instance.Helper.Content.Cards.TemporaryCardTrait, true, permanent: true);
-					}
+						TryTemporarify(card);
 					break;
+			}
+
+			if (!didAnything)
+			{
+				timer = 0;
+				return;
+			}
+
+			Audio.Play(Event.CardHandling);
+
+			void TryTemporarify(Card card)
+			{
+				var data = card.GetDataWithOverrides(s);
+				if (data.temporary || data.unremovableAtShops)
+					return;
+
+				didAnything = true;
+				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, ModEntry.Instance.Helper.Content.Cards.TemporaryCardTrait, true, permanent: true);
 			}
 		}
 	}
