@@ -233,14 +233,14 @@ public sealed class ModEntry : SimpleMod
 		foreach (var registerableType in RegisterableTypes)
 			AccessTools.DeclaredMethod(registerableType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
 
-		helper.Content.Characters.RegisterCharacter("Johnson", new()
+		helper.Content.Characters.V2.RegisterPlayableCharacter("Johnson", new()
 		{
 			Deck = JohnsonDeck.Deck,
 			Description = this.AnyLocalizations.Bind(["character", "description"]).Localize,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CharacterFrame.png")).Sprite,
 			NeutralAnimation = new()
 			{
-				Deck = JohnsonDeck.Deck,
+				CharacterType = JohnsonDeck.UniqueName,
 				LoopTag = "neutral",
 				Frames = Enumerable.Range(0, 4)
 					.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Neutral/{i}.png")).Sprite)
@@ -248,7 +248,7 @@ public sealed class ModEntry : SimpleMod
 			},
 			MiniAnimation = new()
 			{
-				Deck = JohnsonDeck.Deck,
+				CharacterType = JohnsonDeck.UniqueName,
 				LoopTag = "mini",
 				Frames = [
 					helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Character/Mini.png")).Sprite
@@ -264,25 +264,25 @@ public sealed class ModEntry : SimpleMod
 			ExeCardType = typeof(JohnsonExeCard)
 		});
 
-		helper.Content.Characters.RegisterCharacterAnimation(new()
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
-			Deck = JohnsonDeck.Deck,
+			CharacterType = JohnsonDeck.UniqueName,
 			LoopTag = "gameover",
 			Frames = Enumerable.Range(0, 1)
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/GameOver/{i}.png")).Sprite)
 				.ToList()
 		});
-		helper.Content.Characters.RegisterCharacterAnimation(new()
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
-			Deck = JohnsonDeck.Deck,
+			CharacterType = JohnsonDeck.UniqueName,
 			LoopTag = "squint",
 			Frames = Enumerable.Range(0, 5)
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Squint/{i}.png")).Sprite)
 				.ToList()
 		});
-		helper.Content.Characters.RegisterCharacterAnimation(new()
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
-			Deck = JohnsonDeck.Deck,
+			CharacterType = JohnsonDeck.UniqueName,
 			LoopTag = "fiddling",
 			Frames = Enumerable.Range(0, 4)
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Fiddling/{i}.png")).Sprite)
