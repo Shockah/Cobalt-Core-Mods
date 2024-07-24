@@ -57,7 +57,7 @@
             "description": {
                 "stateful": "This card can be used <c=boldPink>{{Count}}</c> times this combat before it gets <c=cardtrait>exhausted</c>.",
                 "outOfCombat": "This card can be used <c=boldPink>{{Count}}</c> times each combat before it gets <c=cardtrait>exhausted</c>.",
-                "withoutCard": "This card can be used multiple times each combat before it gets <c=cardtrait>exhausted</c>.",
+                "withoutCard": "This card can be used multiple times each combat before it gets <c=cardtrait>exhausted</c>."
             }
         }
     },

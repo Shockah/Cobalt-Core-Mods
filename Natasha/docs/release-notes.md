@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * The Buffer card no longer draws cards.
+* Changed the Man-in-the-Middle card's algorithm.
 
 ## 1.0.0
 Released 21 July 2024.

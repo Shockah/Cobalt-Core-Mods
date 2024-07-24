@@ -105,28 +105,99 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 		}
 
 		private static int? GetIdealWorldX(State state, Combat combat)
-			=> state.ship.parts
+		{
+			var entries = state.ship.parts
 				.Select((p, i) => (WorldX: state.ship.x + i, Part: p))
 				.Where(e => e.Part.type != PType.empty)
 				.Select(e => (WorldX: e.WorldX, PlayerPart: e.Part, EnemyPart: combat.otherShip.GetPartAtWorldX(e.WorldX)))
-				.Where(e => e.EnemyPart is not null)
-				.Select(e => (WorldX: e.WorldX, PlayerPart: e.PlayerPart, EnemyPart: e.EnemyPart!, Midrow: combat.stuff.GetValueOrDefault(e.WorldX)))
-				.OrderByDescending(e => e.EnemyPart.intent switch
-				{
-					IntentAttack attackIntent => e.Midrow is null ? attackIntent.damage + (attackIntent.status is not null && attackIntent.statusAmount != 0 ? 0.45 : 0) + (attackIntent.cardOnHit is not null ? 0.45 : 0) : 0,
-					IntentMissile missileIntent => e.Midrow is null ? missileIntent.missileType switch
+				.Select(e => (
+					WorldX: e.WorldX,
+					PlayerPart: e.PlayerPart,
+					EnemyPart: e.EnemyPart,
+					Midrow: combat.stuff.GetValueOrDefault(e.WorldX),
+					Attack: e.EnemyPart?.intent as IntentAttack,
+					Missile: e.EnemyPart?.intent switch
 					{
-						MissileType.shaker => 1,
-						MissileType.normal or MissileType.seeker or MissileType.punch => 2,
-						MissileType.heavy or MissileType.breacher => 3,
-						MissileType.corrode => 5,
-						_ => 2
-					} : 0,
-					IntentSpawn spawnIntent => e.Midrow is null || spawnIntent.thing.bubbleShield ? 2 : 0,
-					_ => 0
-				})
-				.ThenByDescending(e => Math.Abs((e.WorldX - state.ship.x) / 2.0 - state.ship.parts.Count / 2.0))
+						IntentMissile missileIntent => missileIntent.missileType,
+						IntentSpawn spawnIntent => spawnIntent.thing is Missile missile ? missile.missileType : null,
+						_ => (MissileType?)null
+					},
+					Spawn: e.EnemyPart?.intent is IntentSpawn spawnIntent2 && spawnIntent2.thing is not Missile ? spawnIntent2.thing : null
+				))
+				.OrderBy(e => Math.Abs(e.WorldX - state.ship.x - state.ship.parts.Count / 2.0))
+				.ToList();
+
+			var attackEntry = entries
+				.Where(e => e.Midrow is null && e.Attack is not null)
+				.Select(e => (WorldX: e.WorldX, PlayerPart: e.PlayerPart, Hits: e.Attack!.multiHit, Damage: GetModifiedDamage(e.Attack!.damage, e.PlayerPart), ExtraThreat: (e.Attack!.status is null ? 0 : 0.45) + (e.Attack!.cardOnHit is null ? 0 : 0.45)))
+				.Where(e => e.Damage > 0 || e.ExtraThreat > 0)
+				.OrderByDescending(e => e.Damage + e.ExtraThreat)
+				.ThenBy(e => e.Hits)
+				.FirstOrNull();
+
+			if (attackEntry is not null)
+				return attackEntry.Value.WorldX;
+
+			var missileEntry = entries
+				.Where(e => e.Midrow is Missile)
+				.Select(e => (WorldX: e.WorldX, PlayerPart: e.PlayerPart, Damage: GetModifiedDamage(GetMissileDamage(((Missile)e.Midrow!).missileType), e.PlayerPart), ExtraThreat: GetMissileExtraThreat(((Missile)e.Midrow!).missileType)))
+				.Where(e => e.Damage > 0 || e.ExtraThreat > 0)
+				.OrderByDescending(e => e.Damage + e.ExtraThreat)
+				.FirstOrNull();
+
+			if (missileEntry is not null)
+				return missileEntry.Value.WorldX;
+
+			missileEntry = entries
+				.Where(e => e.Midrow is null && e.Missile is not null)
+				.Select(e => (WorldX: e.WorldX, PlayerPart: e.PlayerPart, Damage: GetModifiedDamage(GetMissileDamage(e.Missile!.Value), e.PlayerPart), ExtraThreat: GetMissileExtraThreat(e.Missile!.Value)))
+				.Where(e => e.Damage > 0 || e.ExtraThreat > 0)
+				.OrderByDescending(e => e.Damage + e.ExtraThreat)
+				.FirstOrNull();
+
+			if (missileEntry is not null)
+				return missileEntry.Value.WorldX;
+
+			var entry = entries
+				.Where(e => e.Midrow is not null && (e.Midrow.IsHostile() || !e.Midrow.IsFriendly()) && (e.Midrow.GetActions(state, combat)?.Count ?? 0) != 0)
+				.FirstOrNull();
+
+			if (entry is not null)
+				return entry.Value.WorldX;
+
+			entry = entries
+				.Where(e => e.Midrow is null && e.Spawn is not null && (e.Spawn.IsHostile() || !e.Spawn.IsFriendly()) && (e.Spawn.GetActions(state, combat)?.Count ?? 0) != 0)
+				.FirstOrNull();
+
+			if (entry is not null)
+				return entry.Value.WorldX;
+
+			return entries
+				.OrderByDescending(e => e.Midrow is null)
+				.ThenByDescending(e => e.EnemyPart is not null && e.EnemyPart.type != PType.empty)
 				.FirstOrNull()?.WorldX;
+
+			static int GetMissileDamage(MissileType type)
+				=> type switch
+				{
+					MissileType.corrode => 5,
+					MissileType.heavy or MissileType.breacher => 3,
+					MissileType.shaker => 1,
+					_ => 2
+				};
+
+			static double GetMissileExtraThreat(MissileType type)
+				=> type == MissileType.shaker ? 0.45 : 0;
+
+			static int GetModifiedDamage(int damage, Part part)
+				=> Math.Max(part.damageModifier switch
+				{
+					PDamMod.armor => damage - 1,
+					PDamMod.weak => damage + 1,
+					PDamMod.brittle => damage * 2,
+					_ => damage
+				}, 0);
+		}
 
 		private static StuffBase CreateNextObject(State state, Combat combat)
 		{
