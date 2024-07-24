@@ -42,14 +42,12 @@ internal sealed class BufferCard : Card, IRegisterable, IHasCustomCardTraits
 					new ChangeLimitedUsesAction { CardId = uuid, Amount = 1 }
 				),
 				new AEnergy { changeAmount = 2 },
-				new ADrawCard { count = 1 },
 			],
 			_ => [
 				ModEntry.Instance.BlochApi.MakeOnTurnEndAction(
 					new ChangeLimitedUsesAction { CardId = uuid, Amount = 1 }
 				),
 				new AEnergy { changeAmount = 1 },
-				new ADrawCard { count = 1 },
 			]
 		};
 }
