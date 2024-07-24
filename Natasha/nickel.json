@@ -1,6 +1,6 @@
 {
     "UniqueName": "Shockah.Natasha",
-    "Version": "1.0.0",
+    "Version": "{{ModVersion}}",
     "DisplayName": "Natasha",
     "Author": "Shockah",
     "RequiredApiVersion": "1.2.0",
