@@ -11,12 +11,13 @@ public sealed class ApiImplementation : IJohnsonApi
 		=> ModEntry.Instance.CrunchTimeStatus;
 
 	public Tooltip TemporaryUpgradeTooltip
-		=> new CustomTTGlossary(
-			CustomTTGlossary.GlossaryType.cardtrait,
-			() => ModEntry.Instance.TemporaryUpgradeIcon.Sprite,
-			() => ModEntry.Instance.Localizations.Localize(["cardTrait", "TemporaryUpgrade", "name"]),
-			() => ModEntry.Instance.Localizations.Localize(["cardTrait", "TemporaryUpgrade", "description"])
-		);
+		=> new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::TemporaryUpgrade")
+		{
+			Icon = ModEntry.Instance.TemporaryUpgradeIcon.Sprite,
+			TitleColor = Colors.cardtrait,
+			Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "TemporaryUpgrade", "name"]),
+			Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "TemporaryUpgrade", "description"])
+		};
 
 	public bool IsTemporarilyUpgraded(Card card)
 		=> card.IsTemporarilyUpgraded();
@@ -25,13 +26,13 @@ public sealed class ApiImplementation : IJohnsonApi
 		=> card.SetTemporarilyUpgraded(value);
 
 	public Tooltip GetStrengthenTooltip(int amount)
-		=> new CustomTTGlossary(
-			CustomTTGlossary.GlossaryType.cardtrait,
-			() => ModEntry.Instance.StrengthenIcon.Sprite,
-			() => ModEntry.Instance.Localizations.Localize(["cardTrait", "Strengthen", "name"]),
-			() => ModEntry.Instance.Localizations.Localize(["cardTrait", "Strengthen", "description"], new { Damage = amount }),
-			key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::Strengthen"
-		);
+		=> new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Strengthen")
+		{
+			Icon = ModEntry.Instance.TemporaryUpgradeIcon.Sprite,
+			TitleColor = Colors.cardtrait,
+			Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Strengthen", "name"]),
+			Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Strengthen", "description"], new { Damage = amount })
+		};
 
 	public int GetStrengthen(Card card)
 		=> card.GetStrengthen();
@@ -43,15 +44,8 @@ public sealed class ApiImplementation : IJohnsonApi
 		=> card.AddStrengthen(value);
 
 	public CardAction MakeStrengthenAction(int cardId, int amount)
-		=> new AStrengthen
-		{
-			CardId = cardId,
-			Amount = amount
-		};
+		=> new AStrengthen { CardId = cardId, Amount = amount };
 
 	public CardAction MakeStrengthenHandAction(int amount)
-		=> new AStrengthenHand
-		{
-			Amount = amount
-		};
+		=> new AStrengthenHand { Amount = amount };
 }

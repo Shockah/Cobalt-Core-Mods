@@ -150,7 +150,6 @@ public sealed class ModEntry : SimpleMod
 
 		DynamicWidthCardAction.ApplyPatches(Harmony, logger);
 		CustomCardBrowse.ApplyPatches(Harmony, logger);
-		CustomTTGlossary.ApplyPatches(Harmony);
 		InPlaceCardUpgrade.ApplyPatches(Harmony, logger);
 
 		CustomCardBrowse.RegisterCustomCardSource(

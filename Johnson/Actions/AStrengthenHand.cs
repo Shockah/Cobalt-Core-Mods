@@ -1,4 +1,5 @@
 ﻿using FSPRO;
+using Nickel;
 using System.Collections.Generic;
 
 namespace Shockah.Johnson;
@@ -20,12 +21,12 @@ public sealed class AStrengthenHand : DynamicWidthCardAction
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
-			new CustomTTGlossary(
-				CustomTTGlossary.GlossaryType.action,
-				() => ModEntry.Instance.StrengthenHandIcon.Sprite,
-				() => ModEntry.Instance.Localizations.Localize(["action", "StrengthenHand", "name"]),
-				() => ModEntry.Instance.Localizations.Localize(["action", "StrengthenHand", "description"], new { Damage = Amount }),
-				key: $"{ModEntry.Instance.Package.Manifest.UniqueName}::StrengthenHand"
-			)
+			new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::StrengthenHand")
+			{
+				Icon = ModEntry.Instance.StrengthenIcon.Sprite,
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["action", "StrengthenHand", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["action", "StrengthenHand", "description"], new { Damage = Amount })
+			}
 		];
 }
