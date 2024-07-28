@@ -35,6 +35,7 @@ internal sealed class DeadlineCard : Card, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
+			new ADummyAction(),
 			new AStatus
 			{
 				targetPlayer = true,
@@ -45,6 +46,7 @@ internal sealed class DeadlineCard : Card, IRegisterable
 					Upgrade.B => 1,
 					_ => 2
 				}
-			}
+			},
+			new ADummyAction() { dialogueSelector = $".Played::{Key()}" },
 		];
 }

@@ -45,7 +45,8 @@ internal sealed class LayoutCard : Card, IRegisterable
 				{
 					card = new SlideTransitionCard(),
 					destination = CardDestination.Discard,
-				}
+				},
+				new ADummyAction { dialogueSelector = $".Played::{ModEntry.Instance.Package.Manifest.UniqueName}::LayoutOrStrategize" },
 			],
 			_ => [
 				new ASpecificCardOffering
@@ -61,8 +62,9 @@ internal sealed class LayoutCard : Card, IRegisterable
 					Tooltips = [
 						new TTCard { card = new BulletPointCard() },
 						new TTCard { card = new SlideTransitionCard() },
-					]
-				}
+					],
+					dialogueSelector = $".Played::{ModEntry.Instance.Package.Manifest.UniqueName}::LayoutOrStrategize"
+				},
 			]
 		};
 }

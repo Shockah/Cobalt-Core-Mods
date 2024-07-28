@@ -36,25 +36,13 @@ internal sealed class Quarter1Card : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AAddCard
-				{
-					destination = CardDestination.Deck,
-					card = new Quarter2Card()
-				},
-				new AAddCard
-				{
-					destination = CardDestination.Discard,
-					card = new Quarter2Card(),
-					omitFromTooltips = true
-				}
+				new AAddCard { destination = CardDestination.Deck, card = new Quarter2Card() },
+				new AAddCard { destination = CardDestination.Discard, card = new Quarter2Card(), omitFromTooltips = true },
+				new ADummyAction() { dialogueSelector = $".Played::{Key()}" },
 			],
 			_ => [
-				new AAddCard
-				{
-					destination = CardDestination.Deck,
-					insertRandomly = upgrade != Upgrade.A,
-					card = new Quarter2Card()
-				}
+				new AAddCard { destination = CardDestination.Deck, insertRandomly = upgrade != Upgrade.A, card = new Quarter2Card() },
+				new ADummyAction() { dialogueSelector = $".Played::{Key()}" },
 			]
 		};
 }

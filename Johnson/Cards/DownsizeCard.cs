@@ -37,10 +37,8 @@ internal sealed class DownsizeCard : Card, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new ATemporarify
-			{
-				Cards = upgrade == Upgrade.B ? ATemporarify.CardsType.All : ATemporarify.CardsType.Right
-			}
+			new ATemporarify { Cards = upgrade == Upgrade.B ? ATemporarify.CardsType.All : ATemporarify.CardsType.Right },
+			new ADummyAction() { dialogueSelector = $".Played::{Key()}" },
 		];
 
 	public sealed class ATemporarify : CardAction

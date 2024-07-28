@@ -1,0 +1,21 @@
+{
+    "Played": {
+        "Quarter1": [
+            "Time to get the ball rolling."
+        ],
+        "Deadline": [
+            "About time we finished this, no?",
+            "This has been fun, but let's wrap things up.",
+            "Let's touch base on your imminent demise."
+        ],
+        "LayoutOrStrategize": [
+            "I think I have an idea.",
+            "Something like this should do the trick.",
+            "Let's see what I can bring to the table."
+        ],
+        "Downsize": [
+            "Sorry, looks like we're going to have to let you go.",
+            "Make sure to clean out your desk by the end of the fight."
+        ]
+    }
+}

@@ -45,7 +45,8 @@ internal sealed class StrategizeCard : Card, IRegisterable
 				{
 					card = new BrainstormCard(),
 					destination = CardDestination.Discard,
-				}
+				},
+				new ADummyAction { dialogueSelector = $".Played::{ModEntry.Instance.Package.Manifest.UniqueName}::LayoutOrStrategize" },
 			],
 			_ => [
 				new ASpecificCardOffering
@@ -61,8 +62,9 @@ internal sealed class StrategizeCard : Card, IRegisterable
 					Tooltips = [
 						new TTCard { card = new LeverageCard() },
 						new TTCard { card = new BrainstormCard() },
-					]
-				}
+					],
+					dialogueSelector = $".Played::{ModEntry.Instance.Package.Manifest.UniqueName}::LayoutOrStrategize"
+				},
 			]
 		};
 }

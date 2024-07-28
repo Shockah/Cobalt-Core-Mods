@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added dialogue.
 * The Profit Margin card now gives 1 less temp shield all around.
 * The positional (Downsize and Revamp) cards no longer look at cards past the left-/right-most if their first target is not applicable (already upgraded, already temporary, etc).
 * The Supplement A card now correctly discounts the leftmost and rightmost cards, instead of discounting rightmost twice.

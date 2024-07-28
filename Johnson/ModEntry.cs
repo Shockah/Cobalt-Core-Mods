@@ -31,6 +31,7 @@ public sealed class ModEntry : SimpleMod
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
 	internal IDeckEntry JohnsonDeck { get; }
+	internal IPlayableCharacterEntryV2 JohnsonCharacter { get; }
 	internal IStatusEntry CrunchTimeStatus { get; }
 
 	internal ISpriteEntry TemporaryUpgradeIcon { get; }
@@ -138,7 +139,7 @@ public sealed class ModEntry : SimpleMod
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
-			localeStreamFunction: locale => package.PackageRoot.GetRelativeFile($"i18n/{locale}.json").OpenRead()
+			localeStreamFunction: locale => package.PackageRoot.GetRelativeFile($"i18n/main-{locale}.json").OpenRead()
 		);
 		this.Localizations = new MissingPlaceholderLocalizationProvider<IReadOnlyList<string>>(
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
@@ -232,7 +233,7 @@ public sealed class ModEntry : SimpleMod
 		foreach (var registerableType in RegisterableTypes)
 			AccessTools.DeclaredMethod(registerableType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
 
-		helper.Content.Characters.V2.RegisterPlayableCharacter("Johnson", new()
+		JohnsonCharacter = helper.Content.Characters.V2.RegisterPlayableCharacter("Johnson", new()
 		{
 			Deck = JohnsonDeck.Deck,
 			Description = this.AnyLocalizations.Bind(["character", "description"]).Localize,
@@ -287,6 +288,14 @@ public sealed class ModEntry : SimpleMod
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Fiddling/{i}.png")).Sprite)
 				.ToList()
 		});
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
+		{
+			CharacterType = JohnsonDeck.UniqueName,
+			LoopTag = "flashing",
+			Frames = Enumerable.Range(0, 4)
+				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Flashing/{i}.png")).Sprite)
+				.ToList()
+		});
 
 		TemporaryUpgradeIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/TemporaryUpgrade.png"));
 		StrengthenIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/Strengthen.png"));
@@ -303,6 +312,10 @@ public sealed class ModEntry : SimpleMod
 				]
 			}
 		);
+
+		_ = new CombatDialogue();
+		_ = new EventDialogue();
+		_ = new CardDialogue();
 	}
 
 	public override object? GetApi(IModManifest requestingMod)
