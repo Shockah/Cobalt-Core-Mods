@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Nickel;
-using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,14 +30,12 @@ internal sealed class StrengthenManager
 {
 	public StrengthenManager()
 	{
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
 			transpiler: new HarmonyMethod(GetType(), nameof(Card_Render_Transpiler))
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
 			postfix: new HarmonyMethod(GetType(), nameof(Card_GetAllTooltips_Postfix))
 		);
 

@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
-using Shockah.Shared;
 using System.Linq;
 using System.Reflection;
 
@@ -24,9 +23,8 @@ internal sealed class JumpTheCurveArtifact : Artifact, IRegisterable
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "JumpTheCurve", "description"]).Localize
 		});
 
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(State), nameof(State.SendCardToDeck)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(State), nameof(State.SendCardToDeck)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(State_SendCardToDeck_Postfix))
 		);
 	}

@@ -1,17 +1,16 @@
 ﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Shockah.Shared;
+using Nickel;
 using System.Reflection;
 
 namespace Shockah.Johnson;
 
 public sealed class InPlaceCardUpgrade : CardUpgrade
 {
-	internal static void ApplyPatches(Harmony harmony, ILogger logger)
+	internal static void ApplyPatches(IHarmony harmony, ILogger logger)
 	{
-		harmony.TryPatch(
-			logger: logger,
-			original: () => AccessTools.DeclaredMethod(typeof(CardUpgrade), nameof(FinallyReallyUpgrade)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(CardUpgrade), nameof(FinallyReallyUpgrade)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(FinallyReallyUpgrade_Prefix))
 		);
 	}

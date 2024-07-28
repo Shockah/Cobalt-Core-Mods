@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
-using Shockah.Shared;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -32,9 +31,8 @@ internal sealed class JohnsonCatArtifact : Artifact, IRegisterable
 
 		NoneOfTheAboveCard.Register(package, helper);
 
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(CardReward), nameof(CardReward.Render)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(CardReward), nameof(CardReward.Render)),
 			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardReward_Render_Prefix)), priority: Priority.Last)
 		);
 	}

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Nickel;
-using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -24,19 +23,16 @@ internal sealed class TemporaryUpgradeManager
 {
 	public TemporaryUpgradeManager()
 	{
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
 			transpiler: new HarmonyMethod(GetType(), nameof(Card_Render_Transpiler))
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
 			postfix: new HarmonyMethod(GetType(), nameof(Card_GetAllTooltips_Postfix))
 		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(State), nameof(State.EndRun)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(State), nameof(State.EndRun)),
 			prefix: new HarmonyMethod(GetType(), nameof(State_EndRun_Prefix))
 		);
 

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Nickel;
-using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -23,16 +22,14 @@ internal sealed class CustomCardBrowse
 	internal static void RegisterCustomCardSource(CardBrowse.Source key, CustomCardSource source)
 		=> CustomCardSources[key] = source;
 
-	internal static void ApplyPatches(Harmony harmony, ILogger logger)
+	internal static void ApplyPatches(IHarmony harmony, ILogger logger)
 	{
-		harmony.TryPatch(
-			logger: logger,
-			original: () => AccessTools.DeclaredMethod(typeof(CardBrowse), nameof(CardBrowse.GetCardList)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(CardBrowse), nameof(CardBrowse.GetCardList)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardBrowse_GetCardList_Transpiler))
 		);
-		harmony.TryPatch(
-			logger: logger,
-			original: () => AccessTools.DeclaredMethod(typeof(CardBrowse), nameof(CardBrowse.Render)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(CardBrowse), nameof(CardBrowse.Render)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardBrowse_Render_Transpiler))
 		);
 	}

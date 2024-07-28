@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
-using Shockah.Shared;
 using System.Linq;
 using System.Reflection;
 
@@ -38,9 +37,8 @@ internal sealed class FrugalityArtifact : Artifact, IRegisterable
 			]
 		};
 
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(MapShop), nameof(MapShop.MakeRoute)),
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(MapShop), nameof(MapShop.MakeRoute)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(MapShop_MakeRoute_Postfix))
 		);
 	}

@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Shockah.Shared;
+using Nickel;
 using System;
 using System.Reflection;
 
@@ -8,11 +8,10 @@ namespace Shockah.Johnson;
 
 public abstract class DynamicWidthCardAction : CardAction
 {
-	internal static void ApplyPatches(Harmony harmony, ILogger logger)
+	internal static void ApplyPatches(IHarmony harmony, ILogger logger)
 	{
-		harmony.TryPatch(
-			logger: logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
 	}
