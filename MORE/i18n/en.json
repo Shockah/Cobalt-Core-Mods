@@ -132,7 +132,7 @@
                 },
                 "Duplicates": {
                     "name": "The Duplicates Trial",
-                    "description": "Your drawn hand must contain at least 2 same of the same card (excluding upgrades)."
+                    "description": "Your drawn hand must contain at least 2 of the same card (ignoring their upgrade path)."
                 },
                 "Upgrades": {
                     "name": "The Upgrades Trial",
