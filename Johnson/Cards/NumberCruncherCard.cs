@@ -34,15 +34,7 @@ internal sealed class NumberCruncherCard : Card, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new AAttack
-			{
-				damage = GetDmg(s, upgrade == Upgrade.A ? 3 : 2)
-			},
-			new AStatus
-			{
-				targetPlayer = true,
-				status = Status.temporaryCheap,
-				statusAmount = upgrade == Upgrade.A ? 2 : 1
-			}
+			new AAttack { damage = GetDmg(s, upgrade == Upgrade.A ? 2 : 1), piercing = true },
+			new AStatus { targetPlayer = true, status = Status.temporaryCheap, statusAmount = upgrade == Upgrade.A ? 2 : 1 }
 		];
 }
