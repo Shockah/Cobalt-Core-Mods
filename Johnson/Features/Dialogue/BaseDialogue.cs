@@ -6,21 +6,16 @@ using System.Linq;
 
 namespace Shockah.Johnson;
 
-internal abstract class BaseDialogue
+internal abstract class BaseDialogue(Func<string, Stream> localeStreamFunction)
 {
-	private readonly INonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
-
-	protected BaseDialogue(Func<string, Stream> localeStreamFunction)
-	{
-		this.Localizations = new MissingPlaceholderNonBoundLocalizationProvider<IReadOnlyList<string>>(
-			new EnglishFallbackLocalizationProvider<IReadOnlyList<string>>(
-				new JsonLocalizationProvider(
-					tokenExtractor: new SimpleLocalizationTokenExtractor(),
-					localeStreamFunction: localeStreamFunction
-				)
+	private readonly INonNullLocalizationProvider<IReadOnlyList<string>> Localizations = new MissingPlaceholderNonBoundLocalizationProvider<IReadOnlyList<string>>(
+		new EnglishFallbackLocalizationProvider<IReadOnlyList<string>>(
+			new JsonLocalizationProvider(
+				tokenExtractor: new SimpleLocalizationTokenExtractor(),
+				localeStreamFunction: localeStreamFunction
 			)
-		);
-	}
+		)
+	);
 
 	protected void InjectStory(Dictionary<IReadOnlyList<string>, StoryNode> newNodes, Dictionary<IReadOnlyList<string>, StoryNode> newHardcodedNodes, Dictionary<IReadOnlyList<string>, Say> saySwitchNodes, NodeType newNodeType)
 	{

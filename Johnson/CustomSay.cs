@@ -9,7 +9,6 @@ internal sealed class CustomSay : Say
 	private readonly int Id = 0;
 	private int ExecuteCount = 0;
 
-	public string? Text;
 	public List<string>? AlternativeTexts;
 
 	public CustomSay()
@@ -19,8 +18,8 @@ internal sealed class CustomSay : Say
 
 	public override bool Execute(G g, IScriptTarget target, ScriptCtx ctx)
 	{
-		var text = Text;
-		if (string.IsNullOrEmpty(text) && AlternativeTexts is not null && AlternativeTexts.Count != 0)
+		var text = "";
+		if (AlternativeTexts is not null && AlternativeTexts.Count != 0)
 			text = AlternativeTexts[ExecuteCount % AlternativeTexts.Count];
 
 		if (string.IsNullOrEmpty(text))
