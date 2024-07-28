@@ -27,7 +27,7 @@ internal sealed class BuyLowCard : Card, IRegisterable
 		=> new()
 		{
 			artTint = "FFFFFF",
-			cost = upgrade == Upgrade.B ? 1 : 0,
+			cost = 0,
 			description = ModEntry.Instance.Localizations.Localize(["card", "BuyLow", "description", upgrade.ToString()])
 		};
 
