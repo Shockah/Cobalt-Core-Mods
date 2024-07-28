@@ -79,6 +79,11 @@
             [ "Moving the needle." ]
         ]
     },
+    "ShieldedDamage": {
+        "Basic": [
+            [ "Shields were a good investment." ]
+        ]
+    },
     "Missed": {
         "Basic": [
             [ "..." ],
@@ -141,6 +146,17 @@
             [ "Can we get a janitor in here?" ]
         ]
     },
+    "PlayedRecycle": {
+        "Basic": [
+            [ "Let's circle back to this later." ]
+        ]
+    },
+    "NewNonJohnsonNonTrashTempCard": {
+        "Basic": [
+            [ "Time to spearhead something new." ],
+            [ "Think outside the box." ]
+        ]
+    },
     "StartedBattle": {
         "Basic": [
             [ "Let's get out there and make those investors proud!" ]
@@ -192,6 +208,13 @@
     "StartedBattleAgainstDuncan": [
         /*Johnson*/ "All this senseless violence. Perhaps there is another way we could smooth things over?",
         /*Duncan*/ "I'm not in it for the money, I'm in it for the rocks!"
+    ],
+    "StartedBattleAgainstDahlia": [
+        /*Dahlia*/ "Here's a fresh batch of missiles, on the house!",
+        /*Johnson*/ "Wow! What a deal!"
+    ],
+    "StartedBattleAgainstBigCrystal": [
+        "Meh. I have always found crystals to be tacky."
     ],
     "CrabFacts1_Multi_0": "Interesting... Very interesting...",
     "CrabFacts2_Multi_0": "Hold on. I need to speak to some people about this."

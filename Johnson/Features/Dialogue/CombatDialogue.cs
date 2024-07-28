@@ -206,7 +206,6 @@ internal sealed class CombatDialogue : BaseDialogue
 		};
 		#endregion
 
-		#region DealtBigDamage
 		for (var i = 0; i < 3; i++)
 			newNodes[["DealtBigDamage", "Basic", i.ToString()]] = new()
 			{
@@ -218,7 +217,17 @@ internal sealed class CombatDialogue : BaseDialogue
 					new Say() { who = johnsonType, loopTag = "flashing" },
 				],
 			};
-		#endregion
+
+		for (var i = 0; i < 1; i++)
+			newNodes[["ShieldedDamage", "Basic", i.ToString()]] = new StoryNode()
+			{
+				enemyShotJustHit = true,
+				maxDamageDealtToPlayerThisTurn = 0,
+				allPresent = [johnsonType],
+				lines = [
+					new Say() { who = johnsonType, loopTag = "neutral" },
+				],
+			}.SetMinShieldLostThisTurn(1);
 
 		newNodes[["Missed", "Basic", "0"]] = new()
 		{
@@ -404,6 +413,28 @@ internal sealed class CombatDialogue : BaseDialogue
 			};
 
 		for (var i = 0; i < 1; i++)
+			newNodes[["PlayedRecycle", "Basic", i.ToString()]] = new()
+			{
+				lookup = [$"{ModEntry.Instance.Package.Manifest.UniqueName}::PlayedRecycle"],
+				allPresent = [johnsonType],
+				lines = [
+					new Say() { who = johnsonType, loopTag = "neutral" },
+				],
+			};
+
+		for (var i = 0; i < 2; i++)
+			newNodes[["NewNonJohnsonNonTrashTempCard", "Basic", i.ToString()]] = new()
+			{
+				lookup = [$"{ModEntry.Instance.Package.Manifest.UniqueName}::NewNonJohnsonNonTrashTempCard"],
+				oncePerCombat = true,
+				oncePerCombatTags = [$"{ModEntry.Instance.Package.Manifest.UniqueName}::NewNonJohnsonNonTrashTempCard"],
+				allPresent = [johnsonType],
+				lines = [
+					new Say() { who = johnsonType, loopTag = "fiddling" },
+				],
+			};
+
+		for (var i = 0; i < 1; i++)
 			newNodes[["StartedBattle", "Basic", i.ToString()]] = new()
 			{
 				turnStart = true,
@@ -470,6 +501,17 @@ internal sealed class CombatDialogue : BaseDialogue
 				],
 			};
 
+		for (var i = 0; i < 1; i++)
+			newNodes[["ReturningFromMissing", "Basic", i.ToString()]] = new()
+			{
+				priority = true,
+				lookup = [$"{ModEntry.Instance.Package.Manifest.UniqueName}::ReturningFromMissing"],
+				oncePerRun = true,
+				lines = [
+					new Say() { who = johnsonType, loopTag = "fiddling" },
+				],
+			};
+
 		#region DealtDamage
 		for (var i = 0; i < 2; i++)
 			newNodes[["GoingToOverheat", "Basic", i.ToString()]] = new()
@@ -515,6 +557,32 @@ internal sealed class CombatDialogue : BaseDialogue
 			lines = [
 				new Say() { who = johnsonType, loopTag = "neutral" },
 				new Say() { who = "skunk", loopTag = "neutral" },
+			],
+		};
+
+		newNodes[["StartedBattleAgainstDahlia"]] = new()
+		{
+			priority = true,
+			turnStart = true,
+			maxTurnsThisCombat = 1,
+			oncePerCombat = true,
+			allPresent = [johnsonType, "bandit"],
+			lines = [
+				new Say() { who = "bandit", loopTag = "neutral" },
+				new Say() { who = johnsonType, loopTag = "squint" },
+			],
+		};
+
+		newNodes[["StartedBattleAgainstBigCrystal"]] = new()
+		{
+			priority = true,
+			turnStart = true,
+			oncePerRun = true,
+			requiredScenes = ["Crystal_1", "Crystal_1_1"],
+			excludedScenes = ["Crystal_2"],
+			allPresent = [johnsonType, "crystal"],
+			lines = [
+				new Say() { who = johnsonType, loopTag = "fiddling" },
 			],
 		};
 

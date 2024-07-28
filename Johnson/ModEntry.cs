@@ -313,6 +313,7 @@ public sealed class ModEntry : SimpleMod
 			}
 		);
 
+		_ = new DialogueExtensions();
 		_ = new CombatDialogue();
 		_ = new EventDialogue();
 		_ = new CardDialogue();
