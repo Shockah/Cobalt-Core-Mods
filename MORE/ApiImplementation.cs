@@ -10,6 +10,9 @@ public sealed class ApiImplementation : IMoreApi
 	public IStatusEntry VolatileOverdriveStatus
 		=> MORE.VolatileOverdriveStatus.Instance.Entry;
 
+	public void RegisterArtifactToReapplyOnShipSwap(string key)
+		=> ShipSwapEvent.ArtifactsToReapply.Add(key);
+
 	public void RegisterAltruisticArtifact(string key)
 		=> ModEntry.Instance.AltruisticArtifactKeys.Add(key);
 

@@ -12,6 +12,24 @@ internal sealed class ShipSwapEvent : IRegisterable
 {
 	private static string EventName = null!;
 
+	internal static readonly HashSet<string> ArtifactsToReapply = [
+		nameof(ArmoredBay),
+		nameof(BrokenGlasses),
+		nameof(DemonThrusters),
+		nameof(DirtyEngines),
+		nameof(FlowState),
+		nameof(GlassCannon),
+		nameof(HiFreqIntercom),
+		nameof(NextGenInsulation),
+		nameof(PowerDiversion),
+		nameof(Prototype22),
+		nameof(ShardCollector),
+		nameof(ShieldReserves),
+		nameof(SubzeroHeatsinks),
+		nameof(ThermoReactor),
+		nameof(TridimensionalCockpit),
+	];
+
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		EventName = $"{package.Manifest.UniqueName}::{MethodBase.GetCurrentMethod()!.DeclaringType!.Name}";
@@ -109,14 +127,7 @@ internal sealed class ShipSwapEvent : IRegisterable
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-Yes", i.ToString()], new { ShipName = Loc.T($"ship.{newShipKeys[i]}.name") }),
 				key = $"{EventName}::Yes",
-				actions = [
-					new AShipUpgrades
-					{
-						actions = [
-							new ASwapShip { NewShipKey = newShipKeys[i] }
-						]
-					}
-				]
+				actions = [new ASwapShip { NewShipKey = newShipKeys[i] }]
 			})
 			.Append(new Choice
 			{
@@ -140,52 +151,11 @@ internal sealed class ShipSwapEvent : IRegisterable
 			if (!StarterShip.ships.TryGetValue(currentShipKey, out var currentShipStarter))
 				return;
 
-			foreach (var artifact in s.EnumerateAllArtifacts())
-				artifact.OnRemoveArtifact(s);
-
-			var currentShip = s.ship;
-			var hullMaxDifference = Math.Max(s.ship.hullMax - currentShipStarter.ship.hullMax, 0);
-			s.ship = Mutil.DeepCopy(newShipStarter.ship);
-			s.ship.hullMax += hullMaxDifference;
-			s.ship.hull += hullMaxDifference;
-
-			foreach (var artifact in s.EnumerateAllArtifacts())
-				artifact.OnReceiveArtifact(s);
-
 			List<CardAction> moreActions = [];
 			HashSet<string> starterArtifactKeysToRemove = [];
 			HashSet<string> commonArtifactKeysToRemove = [];
 			HashSet<string> bossArtifactKeysToRemove = [];
 			List<Artifact> artifactsToAdd = [];
-
-			void MarkArtifactKeyForRemoval(string key, bool isBoss, bool isStarter)
-			{
-				if (isStarter)
-					starterArtifactKeysToRemove.Add(key);
-				else if (isBoss)
-					bossArtifactKeysToRemove.Add(key);
-				else
-					commonArtifactKeysToRemove.Add(key);
-			}
-
-			void MarkArtifactForRemoval(Artifact artifact, bool isStarter)
-			{
-				var key = artifact.Key();
-				var meta = artifact.GetMeta();
-				if (meta.pools.Contains(ArtifactPool.Boss))
-					MarkArtifactKeyForRemoval(key, true, isStarter);
-				else if (meta.pools.Contains(ArtifactPool.Common))
-					MarkArtifactKeyForRemoval(key, false, isStarter);
-				else if (isStarter)
-					MarkArtifactKeyForRemoval(key, false, isStarter);
-			}
-
-			void MarkArtifactForAddition(Artifact artifact)
-			{
-				if (starterArtifactKeysToRemove.Remove(artifact.Key()) || commonArtifactKeysToRemove.Remove(artifact.Key()) || bossArtifactKeysToRemove.Remove(artifact.Key()))
-					return;
-				artifactsToAdd.Add(artifact);
-			}
 
 			foreach (var artifact in currentShipStarter.artifacts)
 				if (s.EnumerateAllArtifacts().Any(a => a.Key() == artifact.Key()))
@@ -196,6 +166,14 @@ internal sealed class ShipSwapEvent : IRegisterable
 			foreach (var artifact in newShipStarter.artifacts)
 				MarkArtifactForAddition(artifact);
 
+			foreach (var artifact in s.EnumerateAllArtifacts())
+			{
+				if (!ArtifactsToReapply.Contains(artifact.Key()))
+					continue;
+				moreActions.Add(new ALoseArtifact { artifactType = artifact.Key() });
+				MarkArtifactForAddition(artifact);
+			}
+
 			foreach (var artifactKey in starterArtifactKeysToRemove)
 				moreActions.Add(new ALoseArtifact { artifactType = artifactKey });
 			foreach (var artifactKey in commonArtifactKeysToRemove)
@@ -203,8 +181,8 @@ internal sealed class ShipSwapEvent : IRegisterable
 			foreach (var artifactKey in bossArtifactKeysToRemove)
 				moreActions.Add(new ALoseArtifact { artifactType = artifactKey });
 
-			foreach (var artifact in artifactsToAdd)
-				moreActions.Add(new AAddArtifact { artifact = Mutil.DeepCopy(artifact) });
+			moreActions.Add(new AShipUpgrades { actions = [new AActuallySwapShipBody { NewShipKey = NewShipKey }] });
+			moreActions.Add(new ATakeCardsUntilSkip { Cards = newShipStarter.cards.Select(card => card.CopyWithNewId()).ToList() });
 
 			if (commonArtifactKeysToRemove.Count != 0 || bossArtifactKeysToRemove.Count != 0)
 			{
@@ -256,8 +234,35 @@ internal sealed class ShipSwapEvent : IRegisterable
 				}
 			}
 
-			moreActions.Add(new ATakeCardsUntilSkip { Cards = newShipStarter.cards.Select(card => card.CopyWithNewId()).ToList() });
+			foreach (var artifact in artifactsToAdd)
+				moreActions.Add(new AAddArtifact { artifact = Mutil.DeepCopy(artifact) });
+			
 			s.GetCurrentQueue().InsertRange(0, moreActions);
+
+			void MarkArtifactForAddition(Artifact artifact)
+				=> artifactsToAdd.Add(artifact);
+
+			void MarkArtifactForRemoval(Artifact artifact, bool isStarter)
+			{
+				var key = artifact.Key();
+				var meta = artifact.GetMeta();
+				if (meta.pools.Contains(ArtifactPool.Boss))
+					MarkArtifactKeyForRemoval(key, true, isStarter);
+				else if (meta.pools.Contains(ArtifactPool.Common))
+					MarkArtifactKeyForRemoval(key, false, isStarter);
+				else if (isStarter)
+					MarkArtifactKeyForRemoval(key, false, isStarter);
+			}
+
+			void MarkArtifactKeyForRemoval(string key, bool isBoss, bool isStarter)
+			{
+				if (isStarter)
+					starterArtifactKeysToRemove.Add(key);
+				else if (isBoss)
+					bossArtifactKeysToRemove.Add(key);
+				else
+					commonArtifactKeysToRemove.Add(key);
+			}
 		}
 
 		public override List<Tooltip> GetTooltips(State s)
@@ -265,9 +270,6 @@ internal sealed class ShipSwapEvent : IRegisterable
 				new TTText(ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Action-Tooltip"])),
 				new TTText($"<c=textChoice>{Loc.T($"ship.{NewShipKey}.name")}</c>\n{Loc.T($"ship.{NewShipKey}.desc")}")
 			];
-
-		public override string? GetUpgradeText(State s)
-			=> ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Action-UpgradeText"]);
 
 		private static IEnumerable<Type> GetExclusiveArtifactTypes(string shipKey)
 		{
@@ -304,6 +306,30 @@ internal sealed class ShipSwapEvent : IRegisterable
 		}
 	}
 
+	private sealed class AActuallySwapShipBody : CardAction
+	{
+		public required string NewShipKey;
+
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+
+			var currentShipKey = s.ship.key;
+			if (!StarterShip.ships.TryGetValue(NewShipKey, out var newShipStarter))
+				return;
+			if (!StarterShip.ships.TryGetValue(currentShipKey, out var currentShipStarter))
+				return;
+
+			var hullMaxDifference = Math.Max(s.ship.hullMax - currentShipStarter.ship.hullMax, 0);
+			s.ship = Mutil.DeepCopy(newShipStarter.ship);
+			s.ship.hullMax += hullMaxDifference;
+			s.ship.hull += hullMaxDifference;
+		}
+
+		public override string? GetUpgradeText(State s)
+			=> ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Action-UpgradeText"]);
+	}
+
 	private sealed class ATakeCardsUntilSkip : CardAction
 	{
 		public required List<Card> Cards;
@@ -329,7 +355,7 @@ internal sealed class ShipSwapEvent : IRegisterable
 		public override Route? BeginWithRoute(G g, State s, Combat c)
 		{
 			timer = 0;
-			var cardsLeft = Cards.Where(card => !s.deck.Any(cardInDeck => cardInDeck.uuid == card.uuid)).ToList();
+			var cardsLeft = Cards.Where(card => s.deck.All(cardInDeck => cardInDeck.uuid != card.uuid)).ToList();
 			if (cardsLeft.Count != Cards.Count - ExpectedSkipped)
 				return null;
 

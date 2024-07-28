@@ -7,6 +7,8 @@ public interface IMoreApi
 	IStatusEntry ActionReactionStatus { get; }
 	IStatusEntry VolatileOverdriveStatus { get; }
 
+	void RegisterArtifactToReapplyOnShipSwap(string key);
+
 	void RegisterAltruisticArtifact(string key);
 
 	//#region Self-destruct
