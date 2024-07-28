@@ -57,7 +57,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			minDamageDealtToPlayerThisTurn = 1,
 			allPresent = [johnsonType, Deck.goat.Key()],
 			lines = [
-				new Say() { who = Deck.goat.Key(), loopTag = "neutral" },
+				new Say() { who = Deck.goat.Key(), loopTag = "squint" },
 				new Say() { who = johnsonType, loopTag = "neutral" },
 			],
 		};
@@ -67,7 +67,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			minDamageDealtToPlayerThisTurn = 1,
 			allPresent = [johnsonType, Deck.eunice.Key()],
 			lines = [
-				new Say() { who = Deck.eunice.Key(), loopTag = "neutral" },
+				new Say() { who = Deck.eunice.Key(), loopTag = "squint" },
 				new Say() { who = johnsonType, loopTag = "squint" },
 			],
 		};
@@ -77,7 +77,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			minDamageDealtToPlayerThisTurn = 1,
 			allPresent = [johnsonType, Deck.hacker.Key()],
 			lines = [
-				new Say() { who = Deck.hacker.Key(), loopTag = "neutral" },
+				new Say() { who = Deck.hacker.Key(), loopTag = "mad" },
 				new Say() { who = johnsonType, loopTag = "flashing" },
 			],
 		};
@@ -88,7 +88,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			allPresent = [johnsonType, Deck.shard.Key()],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "squint" },
-				new Say() { who = Deck.shard.Key(), loopTag = "neutral" },
+				new Say() { who = Deck.shard.Key(), loopTag = "intense" },
 			],
 		};
 		newNodes[["TookDamage", "CAT"]] = new()
@@ -98,7 +98,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			allPresent = [johnsonType, "comp"],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "squint" },
-				new Say() { who = "comp", loopTag = "neutral" },
+				new Say() { who = "comp", loopTag = "grumpy" },
 			],
 		};
 		#endregion
@@ -168,7 +168,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			allPresent = [johnsonType, Deck.eunice.Key()],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "fiddling" },
-				new Say() { who = Deck.eunice.Key(), loopTag = "neutral" },
+				new Say() { who = Deck.eunice.Key(), loopTag = "mad" },
 			],
 		};
 		newNodes[["DealtDamage", "Max"]] = new()
@@ -179,7 +179,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			allPresent = [johnsonType, Deck.hacker.Key()],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "neutral" },
-				new Say() { who = Deck.hacker.Key(), loopTag = "neutral" },
+				new Say() { who = Deck.hacker.Key(), loopTag = "squint" },
 			],
 		};
 		newNodes[["DealtDamage", "Books"]] = new()
@@ -190,7 +190,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			allPresent = [johnsonType, Deck.shard.Key()],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "neutral" },
-				new Say() { who = Deck.shard.Key(), loopTag = "neutral" },
+				new Say() { who = Deck.shard.Key(), loopTag = "blush" },
 			],
 		};
 		newNodes[["DealtDamage", "CAT"]] = new()
@@ -200,7 +200,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			whoDidThat = johnsonDeck,
 			allPresent = [johnsonType, "comp"],
 			lines = [
-				new Say() { who = "comp", loopTag = "neutral" },
+				new Say() { who = "comp", loopTag = "smug" },
 				new Say() { who = johnsonType, loopTag = "squint" },
 			],
 		};
@@ -307,7 +307,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			oncePerRun = true,
 			allPresent = [johnsonType, Deck.riggs.Key()],
 			lines = [
-				new Say() { who = Deck.riggs.Key(), loopTag = "neutral" },
+				new Say() { who = Deck.riggs.Key(), loopTag = "nervous" },
 				new Say() { who = johnsonType, loopTag = "squint" },
 			],
 		};
@@ -330,7 +330,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			allPresent = [johnsonType, Deck.goat.Key()],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "fiddling" },
-				new Say() { who = Deck.goat.Key(), loopTag = "neutral" },
+				new Say() { who = Deck.goat.Key(), loopTag = "squint" },
 			],
 		};
 		newNodes[["AboutToDie", "Drake"]] = new()
@@ -341,7 +341,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			allPresent = [johnsonType, Deck.eunice.Key()],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "fiddling" },
-				new Say() { who = Deck.eunice.Key(), loopTag = "neutral" },
+				new Say() { who = Deck.eunice.Key(), loopTag = "mad" },
 			],
 		};
 		newNodes[["AboutToDie", "Books"]] = new()
@@ -352,7 +352,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			allPresent = [johnsonType, Deck.shard.Key()],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "squint" },
-				new Say() { who = Deck.shard.Key(), loopTag = "neutral" },
+				new Say() { who = Deck.shard.Key(), loopTag = "intense" },
 			],
 		};
 		newNodes[["AboutToDie", "CAT"]] = new()
@@ -363,7 +363,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			allPresent = [johnsonType, "comp"],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "squint" },
-				new Say() { who = "comp", loopTag = "neutral" },
+				new Say() { who = "comp", loopTag = "mad" },
 			],
 		};
 		#endregion
