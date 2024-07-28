@@ -10,6 +10,9 @@ public sealed class ApiImplementation : IJohnsonApi
 	public IStatusEntry CrunchTimeStatus
 		=> ModEntry.Instance.CrunchTimeStatus;
 
+	public ICardTraitEntry TemporaryUpgradeCardTrait
+		=> TemporaryUpgradeManager.Trait;
+
 	public Tooltip TemporaryUpgradeTooltip
 		=> new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::TemporaryUpgrade")
 		{
@@ -24,6 +27,9 @@ public sealed class ApiImplementation : IJohnsonApi
 
 	public void SetTemporarilyUpgraded(Card card, bool value)
 		=> card.SetTemporarilyUpgraded(value);
+
+	public ICardTraitEntry StrengthenCardTrait
+		=> StrengthenManager.Trait;
 
 	public Tooltip GetStrengthenTooltip(int amount)
 		=> new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Strengthen")
