@@ -103,13 +103,23 @@ internal sealed class CombatDialogue : BaseDialogue
 		};
 		#endregion
 
+		for (var i = 0; i < 1; i++)
+			newNodes[["TookNonHullDamage", "Basic", i.ToString()]] = new StoryNode()
+			{
+				enemyShotJustHit = true,
+				maxDamageDealtToPlayerThisTurn = 0,
+				allPresent = [johnsonType],
+				lines = [
+					new Say() { who = johnsonType, loopTag = "neutral" },
+				],
+			};
+
 		#region DealtDamage
-		for (var i = 0; i < 2; i++)
+		for (var i = 0; i < 4; i++)
 			newNodes[["DealtDamage", "Basic", i.ToString()]] = new()
 			{
 				playerShotJustHit = true,
 				minDamageDealtToEnemyThisTurn = 1,
-				whoDidThat = johnsonDeck,
 				allPresent = [johnsonType],
 				lines = [
 					new Say() { who = johnsonType, loopTag = "neutral" },
@@ -131,7 +141,6 @@ internal sealed class CombatDialogue : BaseDialogue
 		{
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 1,
-			whoDidThat = johnsonDeck,
 			allPresent = [johnsonType, Deck.riggs.Key()],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "neutral" },
@@ -164,7 +173,6 @@ internal sealed class CombatDialogue : BaseDialogue
 		{
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 1,
-			whoDidThat = johnsonDeck,
 			allPresent = [johnsonType, Deck.eunice.Key()],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "fiddling" },
@@ -175,7 +183,6 @@ internal sealed class CombatDialogue : BaseDialogue
 		{
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 1,
-			whoDidThat = johnsonDeck,
 			allPresent = [johnsonType, Deck.hacker.Key()],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "neutral" },
@@ -186,7 +193,6 @@ internal sealed class CombatDialogue : BaseDialogue
 		{
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 1,
-			whoDidThat = johnsonDeck,
 			allPresent = [johnsonType, Deck.shard.Key()],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "neutral" },
@@ -197,7 +203,6 @@ internal sealed class CombatDialogue : BaseDialogue
 		{
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 1,
-			whoDidThat = johnsonDeck,
 			allPresent = [johnsonType, "comp"],
 			lines = [
 				new Say() { who = "comp", loopTag = "smug" },
@@ -232,7 +237,6 @@ internal sealed class CombatDialogue : BaseDialogue
 		newNodes[["Missed", "Basic", "0"]] = new()
 		{
 			playerShotJustMissed = true,
-			whoDidThat = johnsonDeck,
 			allPresent = [johnsonType],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "squint" },
@@ -241,7 +245,6 @@ internal sealed class CombatDialogue : BaseDialogue
 		newNodes[["Missed", "Basic", "1"]] = new()
 		{
 			playerShotJustMissed = true,
-			whoDidThat = johnsonDeck,
 			allPresent = [johnsonType],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "squint" },
@@ -250,7 +253,6 @@ internal sealed class CombatDialogue : BaseDialogue
 		newNodes[["Missed", "Basic", "2"]] = new()
 		{
 			playerShotJustMissed = true,
-			whoDidThat = johnsonDeck,
 			allPresent = [johnsonType],
 			lines = [
 				new Say() { who = johnsonType, loopTag = "fiddling" },

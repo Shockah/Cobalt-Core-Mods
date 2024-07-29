@@ -34,10 +34,17 @@
             /*CAT*/ "I really hope you're wrong."
         ]
     },
+    "TookNonHullDamage": {
+        "Basic": [
+            [ "No big deal." ]
+        ]
+    },
     "DealtDamage": {
         "Basic": [
             [ "On the money." ],
-            [ "Satisfactory." ]
+            [ "Satisfactory." ],
+            [ "Very good." ],
+            [ "Mhmm." ]
         ],
         "Dizzy": [
             /*Dizzy*/ "Hey, good stuff!",

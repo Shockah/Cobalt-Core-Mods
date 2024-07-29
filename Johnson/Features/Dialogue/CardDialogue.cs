@@ -36,6 +36,7 @@ internal sealed class CardDialogue : BaseDialogue
 				lookup = [$"Played::{new DeadlineCard().Key()}"],
 				priority = true,
 				oncePerRun = true,
+				oncePerCombatTags = [$"Played::{new DeadlineCard().Key()}"],
 				allPresent = [johnsonType],
 				lines = [
 					new Say() { who = johnsonType, loopTag = "fiddling" },
@@ -48,6 +49,7 @@ internal sealed class CardDialogue : BaseDialogue
 				lookup = [$"Played::{ModEntry.Instance.Package.Manifest.UniqueName}::LayoutOrStrategize"],
 				priority = true,
 				oncePerRun = true,
+				oncePerCombatTags = [$"Played::{ModEntry.Instance.Package.Manifest.UniqueName}::LayoutOrStrategize"],
 				allPresent = [johnsonType],
 				lines = [
 					new Say() { who = johnsonType, loopTag = "neutral" },
@@ -60,6 +62,7 @@ internal sealed class CardDialogue : BaseDialogue
 				lookup = [$"Played::{new DownsizeCard().Key()}"],
 				priority = true,
 				oncePerRun = true,
+				oncePerCombatTags = [$"Played::{new DownsizeCard().Key()}"],
 				allPresent = [johnsonType],
 				lines = [
 					new Say() { who = johnsonType, loopTag = "fiddling" },
