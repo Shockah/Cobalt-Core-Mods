@@ -52,6 +52,10 @@
         "flippableRelease": {
             "name": "Flippable Release",
             "description": "Whether Books' Release card should be flippable."
+        },
+        "toothCards": {
+            "name": "Enabled Tooth cards",
+            "description": "The cards that will be offered by <c=tooth>Tooth</c>."
         }
     },
     "event": {
@@ -201,6 +205,39 @@
                 "Swap your ship to a different one. Lose all ship-specific artifacts for your current ship. Gain all starting and an equivalent amount of random ship-specific artifacts for the new ship. Optionally gain any starting cards for the new ship."
             ],
             "Action-UpgradeText": "Swap to a new ship"
+        },
+        "ToothCardOffering": {
+            "choices": [
+                "Let's try <c=card>{{Card}}</c>.",
+                "Give me <c=card>{{Card}}</c>.",
+                "How about <c=card>{{Card}}</c>?",
+                "<c=card>{{Card}}</c>, please!"
+            ],
+            "nextPageChoice": "Anything else?",
+            "card": {
+                "Fiddle": {
+                    "name": "Fiddle",
+                    "description": {
+                        "None": "Draw a card in your hand.",
+                        "A": "Draw a card in your hand, twice.",
+                        "B": "Discard a card in your hand, then draw it."
+                    },
+                    "drawACardInYourHand": "Select a card to draw.",
+                    "discardAndDrawACardInYourHand": "Select a card to discard and draw again."
+                },
+                "Slip": {
+                    "name": "Slip"
+                },
+                "FinalForm": {
+                    "name": "Final Form"
+                },
+                "Skim": {
+                    "name": "Skim"
+                },
+                "Smash": {
+                    "name": "Smash"
+                }
+            }
         }
     }
 }

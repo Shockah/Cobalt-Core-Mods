@@ -79,6 +79,7 @@ internal sealed class ModEntry : SimpleMod
 			typeof(EphemeralUpgrades),
 			typeof(ReleaseUpgrades),
 			typeof(CardSelectFilters),
+			typeof(ToothCards),
 		];
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
@@ -167,6 +168,41 @@ internal sealed class ModEntry : SimpleMod
 						TitleColor = Colors.textBold,
 						Title = Localizations.Localize(["settings", "flippableRelease", "name"]),
 						Description = Localizations.Localize(["settings", "flippableRelease", "description"])
+					}
+				]),
+				api.MakeButton(
+					() => Localizations.Localize(["settings", "toothCards", "name"]),
+					(g, route) => route.OpenSubroute(g, api.MakeModSettingsRoute(api.MakeList([
+						api.MakeHeader(
+							() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
+							() => Localizations.Localize(["settings", "toothCards", "name"])
+						),
+						api.MakeList(
+							ToothCards.AllToothCardKeys
+								.Where(key => DB.cards.ContainsKey(key))
+								.Select(key => (IModSettingsApi.IModSetting)api.MakeCheckbox(
+									() => Loc.T($"card.{key}.name"),
+									() => !Settings.ProfileBased.Current.DisabledToothCards.Contains(key),
+									(_, _, value) =>
+									{
+										if (value)
+											Settings.ProfileBased.Current.DisabledToothCards.Remove(key);
+										else
+											Settings.ProfileBased.Current.DisabledToothCards.Add(key);
+									}
+								).SetTooltips(() => [new TTCard { card = (Card)Activator.CreateInstance(DB.cards[key])! }]))
+								.ToList()
+						),
+						api.MakeBackButton()
+					]).SetSpacing(8)))
+				).SetValueText(
+					() => $"{ToothCards.AllToothCardKeys.Length - Settings.ProfileBased.Current.DisabledToothCards.Count}/{ToothCards.AllToothCardKeys.Length}"
+				).SetTooltips(() => [
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.DisabledToothCards)}")
+					{
+						TitleColor = Colors.textBold,
+						Title = Localizations.Localize(["settings", "toothCards", "name"]),
+						Description = Localizations.Localize(["settings", "toothCards", "description"])
 					}
 				])
 			]).SubscribeToOnMenuClose(_ =>

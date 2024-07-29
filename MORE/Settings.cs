@@ -55,4 +55,7 @@ internal sealed class ProfileSettings
 
 	[JsonProperty]
 	public bool EnabledFlippableRelease = true;
+
+	[JsonProperty]
+	public HashSet<string> DisabledToothCards = [];
 }
