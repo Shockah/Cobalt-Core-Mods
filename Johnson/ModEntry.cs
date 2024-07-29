@@ -310,15 +310,19 @@ public sealed class ModEntry : SimpleMod
 		StrengthenHandIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/StrengthenHand.png"));
 		DiscountHandIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/DiscountHand.png"));
 
-		helper.ModRegistry.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", new SemanticVersion(1, 3, 0))?.RegisterAltStarters(
-			deck: JohnsonDeck.Deck,
-			starterDeck: new StarterDeck
-			{
-				cards = [
-					new BuyLowCard(),
-					new ProfitMarginCard()
-				]
-			}
+		helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>(
+			"TheJazMaster.MoreDifficulties",
+			new SemanticVersion(1, 3, 0),
+			api => api.RegisterAltStarters(
+				deck: JohnsonDeck.Deck,
+				starterDeck: new StarterDeck
+				{
+					cards = [
+						new BuyLowCard(),
+						new ProfitMarginCard()
+					]
+				}
+			)
 		);
 
 		_ = new DialogueExtensions();
