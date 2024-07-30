@@ -206,6 +206,7 @@
             ],
             "Action-UpgradeText": "Swap to a new ship"
         },
+
         "ToothCardOffering": {
             "choices": [
                 "Let's try <c=card>{{Card}}</c>.",
@@ -236,6 +237,17 @@
                 },
                 "Smash": {
                     "name": "Smash"
+                }
+            }
+        },
+        "BootSequenceDownside": {
+            "choices": {
+                "HibernationHangover": "<c=downside>Gain 1 <c=trash>Hibernation Hangover</c></c>"
+            },
+            "card": {
+                "HibernationHangover": {
+                    "name": "Hibernation Hangover",
+                    "description": "<c=downside>Gain 1 random <c=status>Is Missing status</c>.</c>"
                 }
             }
         }

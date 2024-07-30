@@ -80,6 +80,7 @@ internal sealed class ModEntry : SimpleMod
 			typeof(ReleaseUpgrades),
 			typeof(CardSelectFilters),
 			typeof(ToothCards),
+			typeof(BootSequenceDownsides),
 		];
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)

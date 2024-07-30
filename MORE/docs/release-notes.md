@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Added new cards offered by Tooth.
+* Added a new Boot Sequence downside option.
 * The Ship Swap event now re-applies artifacts which do ship-wide modifications. Other mods can use an API to add more artifacts to this system.
 * Fixed a mistake in The Duplicates Trial's description.
 
