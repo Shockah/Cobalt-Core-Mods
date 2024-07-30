@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.2.0
+Released 30 July 2024.
 
 * Added dialogue.
 * The Number Cruncher card deals 1 less damage all around but pierces.
