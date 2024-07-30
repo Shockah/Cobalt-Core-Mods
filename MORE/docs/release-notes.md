@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.0
+Released 30 July 2024.
 
 * Added new cards offered by Tooth.
 * The Ship Swap event now re-applies artifacts which do ship-wide modifications. Other mods can use an API to add more artifacts to this system.
