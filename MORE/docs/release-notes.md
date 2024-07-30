@@ -5,7 +5,7 @@
 ## 1.1.0
 Released 30 July 2024.
 
-* Added new cards offered by Tooth.
+* Added new cards offered by Tooth (thanks to TheJazMaster for the ideas!).
 * The Ship Swap event now re-applies artifacts which do ship-wide modifications. Other mods can use an API to add more artifacts to this system.
 * Fixed a mistake in The Duplicates Trial's description.
 
