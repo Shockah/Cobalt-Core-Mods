@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.0
+Released 31 July 2024.
 
 * Intensify now decays by half, rounded up.
 * The Focus card now grants 1 less Intensify in its upgrades.
