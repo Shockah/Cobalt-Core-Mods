@@ -94,7 +94,7 @@ public sealed class ModEntry : SimpleMod
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
-		Harmony = helper.Utilities.DelayedHarmony;
+		Harmony = helper.Utilities.Harmony;
 		HookManager = new();
 		Api = new();
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;

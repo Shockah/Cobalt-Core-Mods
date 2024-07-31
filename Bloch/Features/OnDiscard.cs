@@ -20,7 +20,7 @@ internal sealed class OnDiscardManager : IWrappedActionHook
 			prefix: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Prefix)),
 			finalizer: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Finalizer))
 		);
-		ModEntry.Instance.Helper.Utilities.Harmony.Patch( // gets inlined when delayed
+		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.SendCardToDiscard)),
 			postfix: new HarmonyMethod(GetType(), nameof(Combat_SendCardToDiscard_Postfix))
 		);
@@ -44,10 +44,11 @@ internal sealed class OnDiscardManager : IWrappedActionHook
 			return;
 		if (card == LastCardPlayed)
 			return;
-		if (s.CharacterIsMissing(card.GetMeta().deck))
-			return;
 
 		var meta = card.GetMeta();
+		if (s.CharacterIsMissing(meta.deck))
+			return;
+
 		__instance.QueueImmediate(
 			card.GetActionsOverridden(s, __instance)
 				.Where(action => !action.disabled)

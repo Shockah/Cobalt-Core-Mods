@@ -5,7 +5,6 @@
 ## Upcoming release
 
 * The Mind Blast card now has retain as a baseline, and a reworked B upgrade.
-* General optimizations.
 
 ## 1.0.2
 Released 8 July 2024.
