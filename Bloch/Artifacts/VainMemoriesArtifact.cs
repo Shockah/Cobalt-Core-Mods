@@ -31,7 +31,7 @@ internal sealed class VainMemoriesArtifact : Artifact, IRegisterable
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Prefix)),
 			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Finalizer))
 		);
-		ModEntry.Instance.Harmony.Patch(
+		ModEntry.Instance.Helper.Utilities.Harmony.Patch( // gets inlined when delayed
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.SendCardToDiscard)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_SendCardToDiscard_Postfix))
 		);
