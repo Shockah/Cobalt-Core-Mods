@@ -39,8 +39,8 @@ internal sealed class FocusCard : Card, IRegisterable
 				status = AuraManager.IntensifyStatus.Status,
 				statusAmount = upgrade switch
 				{
-					Upgrade.A => 2,
-					Upgrade.B => 3,
+					Upgrade.A => 1,
+					Upgrade.B => 2,
 					_ => 1
 				}
 			},
