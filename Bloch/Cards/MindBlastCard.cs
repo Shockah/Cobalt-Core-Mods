@@ -41,12 +41,12 @@ internal sealed class MindBlastCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AAttack { damage = GetDamage(s) },
-				new OnDiscardManager.TriggerAction { Action = new CountUpAction { CardId = uuid } }
+				new CountUpAction { CardId = uuid },
+				new OnDiscardManager.TriggerAction { Action = new AAttack { damage = GetDamage(s) } },
 			],
 			_ => [
-				new CountUpAction { CardId = uuid },
-				new OnDiscardManager.TriggerAction { Action = new AAttack { damage = GetDamage(s) } }
+				new AAttack { damage = GetDamage(s) },
+				new OnDiscardManager.TriggerAction { Action = new CountUpAction { CardId = uuid } },
 			]
 		};
 
