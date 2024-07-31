@@ -155,7 +155,7 @@
             "description": {
                 "None": "Attack for <c=redd>{{Damage}}</c>. <c=action>On Discard</c>, gains <c=keyword>{{Gain}}</c> damage this combat.",
                 "A": "Attack for <c=redd>{{Damage}}</c>. <c=action>On Discard</c>, gains <c=keyword>{{Gain}}</c> damage this combat.",
-                "B": "Attack for <c=redd>{{Damage}}</c>. <c=action>On Discard</c>, gains <c=keyword>{{Gain}}</c> damage this combat."
+                "B": "Gain <c=keyword>{{Gain}}</c> damage this combat. <c=action>On Discard</c>, attack for <c=redd>{{Damage}}</c>."
             }
         },
         "MindMap": {

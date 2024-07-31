@@ -33,22 +33,22 @@ internal sealed class MindBlastCard : Card, IRegisterable
 		=> new()
 		{
 			cost = upgrade == Upgrade.A ? 1 : 2,
-			recycle = upgrade == Upgrade.B,
-			retain = upgrade == Upgrade.B,
+			retain = true,
 			description = ModEntry.Instance.Localizations.Localize(["card", "MindBlast", "description", upgrade.ToString()], new { Damage = GetDamage(state), Gain = 2 })
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new AAttack
-			{
-				damage = GetDamage(s)
-			},
-			new OnDiscardManager.TriggerAction
-			{
-				Action = new CountUpAction { CardId = uuid }
-			}
-		];
+		=> upgrade switch
+		{
+			Upgrade.B => [
+				new AAttack { damage = GetDamage(s) },
+				new OnDiscardManager.TriggerAction { Action = new CountUpAction { CardId = uuid } }
+			],
+			_ => [
+				new CountUpAction { CardId = uuid },
+				new OnDiscardManager.TriggerAction { Action = new AAttack { damage = GetDamage(s) } }
+			]
+		};
 
 	public override void OnExitCombat(State s, Combat c)
 	{
