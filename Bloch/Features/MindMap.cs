@@ -98,7 +98,7 @@ internal sealed class MindMapManager : IStatusRenderHook
 		public required int Amount;
 
 		public override string? GetCardSelectText(State s)
-			=> ModEntry.Instance.Localizations.Localize(["status", "Retain", "browseText"], new { Amount });
+			=> ModEntry.Instance.Localizations.Localize(["status", "MindMap", "browseText"], new { Amount });
 
 		public override void Begin(G g, State s, Combat c)
 		{
