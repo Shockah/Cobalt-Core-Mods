@@ -78,6 +78,7 @@ internal sealed class MindMapManager : IStatusRenderHook
 				browseSource = CardBrowse.Source.Hand,
 				browseAction = new BrowseAction { Amount = Amount },
 				MaxSelected = Amount,
+				filterRetain = false,
 			};
 			c.Queue(new ADelay
 			{
