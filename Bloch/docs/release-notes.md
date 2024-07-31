@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Intensify now decays by half, rounded up.
 * The Mind Blast card now has retain as a baseline, and a reworked B upgrade.
 
 ## 1.0.2

@@ -220,7 +220,7 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 		}
 		else
 		{
-			amount = 0;
+			amount /= 2;
 		}
 		return false;
 	}

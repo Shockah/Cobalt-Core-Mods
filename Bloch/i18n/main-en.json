@@ -55,7 +55,7 @@
         },
         "Intensify": {
             "name": "Intensify",
-            "description": "All of your <c=C2FF60>Auras</c> trigger again for each stack of this. <c=downside>Goes away at start of next turn.</c>"
+            "description": "All of your <c=C2FF60>Auras</c> trigger again for each stack of this. <c=downside>Lose half of it at the start of each turn, rounded up.</c>"
         },
         "Intuition": {
             "name": "Intuition",
