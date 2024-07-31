@@ -5,7 +5,7 @@
 ## 1.1.0
 Released 31 July 2024.
 
-* Intensify now decays by half, rounded up.
+* The Intensify status now decays by half, rounded up.
 * The Focus card now grants 1 less Intensify in its upgrades.
 * The Mind Blast card now has retain as a baseline, and a reworked B upgrade.
 * The Mind Map status no longer shows cards which already have Retain.
