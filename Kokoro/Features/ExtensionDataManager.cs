@@ -1,4 +1,6 @@
 ﻿using CobaltCoreModding.Definitions.ModManifests;
+using HarmonyLib;
+using Nanoray.Mitosis;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,10 +10,11 @@ using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
-internal sealed class ExtensionDataManager
+internal sealed class ExtensionDataManager : IReferenceCloneListener
 {
-	internal readonly ConditionalWeakTable<object, Dictionary<string, Dictionary<string, object?>>> ExtensionDataStorage = new();
-	private readonly HashSet<Type> TypesRegisteredForExtensionData = new();
+	internal readonly ConditionalWeakTable<object, Dictionary<string, Dictionary<string, object?>>> ExtensionDataStorage = [];
+	private readonly HashSet<Type> TypesRegisteredForExtensionData = [];
+	private bool IsRegisteredCloneListener;
 
 	private static T ConvertExtensionData<T>(object? o)
 	{
@@ -63,6 +66,7 @@ internal sealed class ExtensionDataManager
 	{
 		if (!IsTypeRegisteredForExtensionData(o))
 			throw new InvalidOperationException($"Type {o.GetType().FullName} is not registered for storing extension data.");
+		RegisterCloneListenerIfNeeded();
 		if (!ExtensionDataStorage.TryGetValue(o, out var allObjectData))
 			throw new KeyNotFoundException($"Object {o} does not contain extension data with key `{key}`");
 		if (!allObjectData.TryGetValue(manifest.Name, out var modObjectData))
@@ -76,6 +80,7 @@ internal sealed class ExtensionDataManager
 	{
 		if (!IsTypeRegisteredForExtensionData(o))
 			throw new InvalidOperationException($"Type {o.GetType().FullName} is not registered for storing extension data.");
+		RegisterCloneListenerIfNeeded();
 		if (!ExtensionDataStorage.TryGetValue(o, out var allObjectData))
 		{
 			data = default;
@@ -112,6 +117,7 @@ internal sealed class ExtensionDataManager
 	{
 		if (!IsTypeRegisteredForExtensionData(o))
 			throw new InvalidOperationException($"Type {o.GetType().FullName} is not registered for storing extension data.");
+		RegisterCloneListenerIfNeeded();
 		if (!ExtensionDataStorage.TryGetValue(o, out var allObjectData))
 			return false;
 		if (!allObjectData.TryGetValue(manifest.Name, out var modObjectData))
@@ -125,6 +131,7 @@ internal sealed class ExtensionDataManager
 	{
 		if (!IsTypeRegisteredForExtensionData(o))
 			throw new InvalidOperationException($"Type {o.GetType().FullName} is not registered for storing extension data.");
+		RegisterCloneListenerIfNeeded();
 		if (!ExtensionDataStorage.TryGetValue(o, out var allObjectData))
 		{
 			allObjectData = new();
@@ -142,6 +149,7 @@ internal sealed class ExtensionDataManager
 	{
 		if (!IsTypeRegisteredForExtensionData(o))
 			throw new InvalidOperationException($"Type {o.GetType().FullName} is not registered for storing extension data.");
+		RegisterCloneListenerIfNeeded();
 		if (ExtensionDataStorage.TryGetValue(o, out var allObjectData))
 		{
 			if (allObjectData.TryGetValue(manifest.Name, out var modObjectData))
@@ -152,6 +160,68 @@ internal sealed class ExtensionDataManager
 			}
 			if (allObjectData.Count == 0)
 				ExtensionDataStorage.Remove(o);
+		}
+	}
+
+	internal void RegisterCloneListenerIfNeeded()
+	{
+		if (IsRegisteredCloneListener)
+			return;
+
+		var nickelStaticType = typeof(Nickel.Mod).Assembly.GetType("Nickel.NickelStatic");
+		if (nickelStaticType is null)
+			return; // outdated Nickel
+
+		var cloneEngineField = AccessTools.DeclaredField(nickelStaticType, "CloneEngine");
+
+		var cloneEngineLazy = (Lazy<DefaultCloneEngine>)cloneEngineField.GetValue(null)!;
+		cloneEngineLazy.Value.RegisterCloneListener(this);
+		IsRegisteredCloneListener = true;
+	}
+
+	public void OnClone<T>(ICloneEngine engine, T source, T destination) where T : class
+	{
+		if (source.GetType().IsValueType)
+			throw new ArgumentException("Mod data can only be put on reference (class) types", nameof(source));
+		if (destination.GetType().IsValueType)
+			throw new ArgumentException("Mod data can only be put on reference (class) types", nameof(destination));
+
+		if (!ExtensionDataStorage.TryGetValue(source, out var allSourceObjectData))
+			return;
+
+		if (!ExtensionDataStorage.TryGetValue(destination, out var allTargetObjectData))
+		{
+			allTargetObjectData = [];
+			ExtensionDataStorage.AddOrUpdate(destination, allTargetObjectData);
+		}
+
+		foreach (var (modUniqueName, sourceModObjectData) in allSourceObjectData)
+		{
+			if (!allTargetObjectData.TryGetValue(modUniqueName, out var targetModObjectData))
+			{
+				targetModObjectData = [];
+				allTargetObjectData[modUniqueName] = targetModObjectData;
+			}
+
+			foreach (var (key, value) in sourceModObjectData)
+				targetModObjectData[key] = DeepCopy(value);
+		}
+
+		static object? DeepCopy(object? o)
+		{
+			if (o is null)
+				return null;
+
+			var type = o.GetType();
+			if (type.IsValueType)
+				return o;
+
+			var stringWriter = new StringWriter();
+			JSONSettings.serializer.Serialize(new JsonTextWriter(stringWriter), o);
+			if (JSONSettings.serializer.Deserialize(new JsonTextReader(new StringReader(stringWriter.ToString()))) is { } deserialized)
+				return deserialized;
+
+			throw new ArgumentException($"Cannot deep copy {o}", nameof(o));
 		}
 	}
 }

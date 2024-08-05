@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
@@ -10,17 +9,15 @@ internal sealed class ConditionalWeakTableExtensionDataContractResolver : IContr
 {
 	private readonly IContractResolver Wrapped;
 	private readonly string JsonKey;
-	private readonly ConditionalWeakTable<object, Dictionary<string, Dictionary<string, object?>>> Storage;
-	private readonly Func<object, bool> ShouldStoreExtensionData;
+	private readonly ExtensionDataManager Manager;
 
 	private readonly Dictionary<Type, JsonContract> ContractCache = new();
 
-	public ConditionalWeakTableExtensionDataContractResolver(IContractResolver wrapped, string jsonKey, ConditionalWeakTable<object, Dictionary<string, Dictionary<string, object?>>> storage, Func<object, bool> shouldStoreExtensionData)
+	public ConditionalWeakTableExtensionDataContractResolver(IContractResolver wrapped, string jsonKey, ExtensionDataManager manager)
 	{
 		this.Wrapped = wrapped;
 		this.JsonKey = jsonKey;
-		this.Storage = storage;
-		this.ShouldStoreExtensionData = shouldStoreExtensionData;
+		this.Manager = manager;
 	}
 
 	public JsonContract ResolveContract(Type type)
@@ -44,7 +41,7 @@ internal sealed class ConditionalWeakTableExtensionDataContractResolver : IContr
 	{
 		if (o is null)
 			yield break;
-		if (ShouldStoreExtensionData(o) && Storage.TryGetValue(o, out var allObjectData))
+		if (Manager.IsTypeRegisteredForExtensionData(o) && Manager.ExtensionDataStorage.TryGetValue(o, out var allObjectData))
 			yield return new(JsonKey, allObjectData);
 		if (wrapped is not null && wrapped.Invoke(o) is { } wrappedData)
 			foreach (var kvp in wrappedData)
@@ -59,18 +56,24 @@ internal sealed class ConditionalWeakTableExtensionDataContractResolver : IContr
 			wrapped?.Invoke(o, key, value);
 			return;
 		}
-		if (!ShouldStoreExtensionData(o))
+
+		if (!Manager.IsTypeRegisteredForExtensionData(o))
 			return;
+
+		Manager.RegisterCloneListenerIfNeeded();
+
 		if (value is null)
 		{
-			Storage.Remove(o);
+			Manager.ExtensionDataStorage.Remove(o);
 			return;
 		}
+
 		if (value is not Dictionary<string, Dictionary<string, object?>> dictionary)
 		{
 			ModEntry.Instance.Logger!.LogError("Encountered invalid serialized mod data of type {Type}.", value.GetType().FullName!);
 			return;
 		}
-		Storage.AddOrUpdate(o, dictionary);
+
+		Manager.ExtensionDataStorage.AddOrUpdate(o, dictionary);
 	}
 }

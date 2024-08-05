@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Updated for an upcoming Nickel release.
+
 ## 1.11.3
 Released 17 July 2024.
 

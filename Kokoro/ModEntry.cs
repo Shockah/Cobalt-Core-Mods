@@ -66,7 +66,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, Nickel.IModHelper helper)
 	{
 		Helper = helper;
-		Harmony = helper.Utilities.DelayedHarmony;
+		Harmony = helper.Utilities.Harmony;
 
 		ACardOfferingPatches.Apply(Harmony);
 		ArtifactBrowsePatches.Apply(Harmony);
@@ -109,14 +109,12 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		JSONSettings.indented.ContractResolver = new ConditionalWeakTableExtensionDataContractResolver(
 			JSONSettings.indented.ContractResolver ?? new DefaultContractResolver(),
 			ExtensionDataJsonKey,
-			ExtensionDataManager.ExtensionDataStorage,
-			ExtensionDataManager.IsTypeRegisteredForExtensionData
+			ExtensionDataManager
 		);
 		JSONSettings.serializer.ContractResolver = new ConditionalWeakTableExtensionDataContractResolver(
 			JSONSettings.serializer.ContractResolver ?? new DefaultContractResolver(),
 			ExtensionDataJsonKey,
-			ExtensionDataManager.ExtensionDataStorage,
-			ExtensionDataManager.IsTypeRegisteredForExtensionData
+			ExtensionDataManager
 		);
 	}
 }
