@@ -270,14 +270,14 @@ public sealed class ModEntry : SimpleMod
 		foreach (var registerableType in RegisterableTypes)
 			AccessTools.DeclaredMethod(registerableType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
 
-		helper.Content.Characters.RegisterCharacter("Dracula", new()
+		helper.Content.Characters.V2.RegisterPlayableCharacter("Dracula", new()
 		{
 			Deck = DraculaDeck.Deck,
 			Description = this.AnyLocalizations.Bind(["character", "description"]).Localize,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CharacterFrame.png")).Sprite,
 			NeutralAnimation = new()
 			{
-				Deck = DraculaDeck.Deck,
+				CharacterType = DraculaDeck.UniqueName,
 				LoopTag = "neutral",
 				Frames = [
 					StableSpr.characters_dracula_dracula_neutral_0,
@@ -289,7 +289,7 @@ public sealed class ModEntry : SimpleMod
 			},
 			MiniAnimation = new()
 			{
-				Deck = DraculaDeck.Deck,
+				CharacterType = DraculaDeck.UniqueName,
 				LoopTag = "mini",
 				Frames = [
 					helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Character/Mini.png")).Sprite
@@ -305,17 +305,17 @@ public sealed class ModEntry : SimpleMod
 			ExeCardType = typeof(DraculaExeCard)
 		});
 
-		helper.Content.Characters.RegisterCharacterAnimation(new()
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
-			Deck = DraculaDeck.Deck,
+			CharacterType = DraculaDeck.UniqueName,
 			LoopTag = "gameover",
 			Frames = Enumerable.Range(0, 1)
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/GameOver/{i}.png")).Sprite)
 				.ToList()
 		});
-		helper.Content.Characters.RegisterCharacterAnimation(new()
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
-			Deck = DraculaDeck.Deck,
+			CharacterType = DraculaDeck.UniqueName,
 			LoopTag = "squint",
 			Frames = Enumerable.Range(0, 5)
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Squint/{i}.png")).Sprite)
@@ -440,7 +440,7 @@ public sealed class ModEntry : SimpleMod
 			return;
 
 		foreach (var deck in NewRunOptions.allChars)
-			if (Helper.Content.Characters.LookupByDeck(deck) is { } character)
+			if (Helper.Content.Characters.V2.LookupByDeck(deck) is { } character)
 				if (character.Configuration.ExeCardType is { } exeCardType)
 					ExeTypes.Add(exeCardType);
 	}
