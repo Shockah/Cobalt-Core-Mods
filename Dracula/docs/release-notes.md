@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.2.0
+Released 7 August 2024.
 
 * The Screech card is now uncommon and got significant buffs.
 * The Enshroud card is now rare and has a brand new B upgrade.
