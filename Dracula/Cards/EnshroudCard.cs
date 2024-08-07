@@ -1,4 +1,5 @@
-﻿using Nanoray.PluginManager;
+﻿using HarmonyLib;
+using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,6 +62,11 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 				}
 			}
 		}, 0);
+
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(HARDMODE), nameof(HARDMODE.OnTurnStart)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(HARDMODE_OnTurnStart_Postfix))
+		);
 	}
 
 	public override CardData GetData(State state)
@@ -87,6 +93,19 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 				new EnshroudAction { TargetPlayer = true },
 			]
 		};
+
+	private static void HARDMODE_OnTurnStart_Prefix(HARDMODE __instance, Combat combat, ref int __state)
+		=> __state = combat.cardActions.Count;
+
+	private static void HARDMODE_OnTurnStart_Postfix(HARDMODE __instance, Combat combat, ref int __state)
+	{
+		if (__instance.difficulty < 1 || combat.turn != 1)
+			return;
+
+		for (var i = combat.cardActions.Count - __state - 1; i >= 0; i--)
+			combat.cardActions[i].timer = 0;
+		combat.cardActions.Insert(combat.cardActions.Count - __state, new UpgradeArmor { Reapply = true });
+	}
 
 	private sealed class EnshroudAction : CardAction
 	{
@@ -148,6 +167,8 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 
 	private sealed class UpgradeArmor : CardAction
 	{
+		public bool Reapply;
+
 		public override List<Tooltip> GetTooltips(State s)
 			=> [
 				new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::{typeof(EnshroudCard).Name}::{GetType().Name}")
@@ -166,14 +187,39 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 		{
 			base.Begin(g, s, c);
 
-			foreach (var part in s.ship.parts)
+			bool zeroTimer;
+			if (Reapply)
+				zeroTimer = ApplyUpgrade(s.ship);
+			else
+				zeroTimer = IncreaseUpgrade(s.ship);
+
+			if (zeroTimer)
+				timer = 0;
+		}
+
+		private static bool IncreaseUpgrade(Ship ship)
+		{
+			var level = ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(ship, "CockpitArmorUpgradeLevel") + 1;
+			ModEntry.Instance.Helper.ModData.SetModData(ship, "CockpitArmorUpgradeLevel", level);
+			ApplyUpgrade(ship, 1);
+			return true;
+		}
+
+		private static bool ApplyUpgrade(Ship ship)
+			=> ApplyUpgrade(ship, ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(ship, "CockpitArmorUpgradeLevel"));
+
+		private static bool ApplyUpgrade(Ship ship, int level)
+		{
+			if (level <= 0)
+				return false;
+
+			foreach (var part in ship.parts)
 			{
 				if (part.type != PType.cockpit)
 					continue;
 
-				part.damageModifier = ModifyDamageModifier(part.damageModifier);
-				if (part.damageModifierOverrideWhileActive is { } damageModifierOverride)
-					part.damageModifierOverrideWhileActive = ModifyDamageModifier(damageModifierOverride);
+				for (var i = 0; i < level; i++)
+					part.damageModifier = ModifyDamageModifier(part.damageModifier);
 
 				static PDamMod ModifyDamageModifier(PDamMod mod)
 					=> mod switch
@@ -184,6 +230,8 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 						_ => mod
 					};
 			}
+
+			return true;
 		}
 	}
 }
