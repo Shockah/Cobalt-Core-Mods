@@ -36,7 +36,7 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 			Upgrade.A => [
 				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
 					expression: new HullCondition { BelowHalf = false },
-					action: new AAttack { damage = GetDmg(s, 2) }
+					action: new AAttack { damage = GetDmg(s, 3) }
 				),
 				new AHeal
 				{
@@ -51,7 +51,7 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 				}
 			],
 			Upgrade.B => [
-				new AAttack { damage = GetDmg(s, 2) },
+				new AAttack { damage = GetDmg(s, 3) },
 				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
 					expression: new HullCondition { BelowHalf = true },
 					action: new AHeal
@@ -70,7 +70,7 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 			_ => [
 				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
 					expression: new HullCondition { BelowHalf = false },
-					action: new AAttack { damage = GetDmg(s, 2) }
+					action: new AAttack { damage = GetDmg(s, 3) }
 				),
 				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
 					expression: new HullCondition { BelowHalf = true },
