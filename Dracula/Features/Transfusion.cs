@@ -58,14 +58,16 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 		if (oldAmount <= 0)
 			return;
 
+		var progress = ship.Get(ModEntry.Instance.TransfusingStatus.Status);
 		var thinBloodArtifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is ThinBloodArtifact);
-		var triggers = thinBloodArtifact is null ? 1 : 2;
+		var triggers = Math.Min(thinBloodArtifact is null ? 1 : 2, oldAmount - progress);
+
 		combat.QueueImmediate(new AStatus
 		{
 			targetPlayer = ship.isPlayerShip,
 			status = ModEntry.Instance.TransfusingStatus.Status,
 			statusAmount = triggers,
-			artifactPulse = thinBloodArtifact?.Key()
+			artifactPulse = triggers > 1 ? thinBloodArtifact?.Key() : null,
 		});
 	}
 
@@ -135,7 +137,7 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 			__instance.QueueImmediate(new AReenableTransfusion
 			{
 				TargetPlayer = ship.isPlayerShip,
-				canRunAfterKill = true
+				canRunAfterKill = true,
 			});
 			if (progress > 0)
 			{
@@ -143,7 +145,7 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 				{
 					targetPlayer = ship.isPlayerShip,
 					healAmount = progress,
-					canRunAfterKill = true
+					canRunAfterKill = true,
 				});
 			}
 			__instance.QueueImmediate(new AStatus
@@ -151,14 +153,16 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 				targetPlayer = ship.isPlayerShip,
 				mode = AStatusMode.Set,
 				status = ModEntry.Instance.TransfusionStatus.Status,
-				statusAmount = 0
+				statusAmount = 0,
+				timer = 0,
 			});
 			__instance.QueueImmediate(new AStatus
 			{
 				targetPlayer = ship.isPlayerShip,
 				mode = AStatusMode.Set,
 				status = ModEntry.Instance.TransfusingStatus.Status,
-				statusAmount = 0
+				statusAmount = 0,
+				timer = 0,
 			});
 		}
 

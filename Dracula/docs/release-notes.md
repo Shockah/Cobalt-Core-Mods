@@ -10,6 +10,8 @@
 * The Heartbreak card now deals 3 damage (up from 2) and an extra 1 damage on its B upgrade (up from 0).
 * The Wings of Night artifact now needs to spend 1 evade to create the Bat Form card (used to give you the card no matter what).
 * The Blood Bank artifact now also triggers on out-of-combat heals. It also no longer goes back and forth on remaining blood visually.
+* Fixed the Thin Blood artifact allowing healing via Transfusion above its total.
+* Sped up Transfusion effects visually.
 
 ## 1.1.5
 Released 19 May 2024.

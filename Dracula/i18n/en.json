@@ -175,7 +175,7 @@
         },
         "ThinBlood": {
             "name": "THIN BLOOD",
-            "description": "<c=status>BLEEDING</c> and <c=status>TRANSFUSION</c> triggers twice per turn."
+            "description": "<c=status>BLEEDING</c> and <c=status>TRANSFUSION</c> trigger twice as fast."
         },
         "WingsOfNight": {
             "name": "WINGS OF NIGHT",
