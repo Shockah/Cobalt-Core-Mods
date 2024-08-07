@@ -15,7 +15,7 @@ internal sealed class ScreechCard : Card, IDraculaCard
 			Meta = new()
 			{
 				deck = ModEntry.Instance.DraculaDeck.Deck,
-				rarity = Rarity.rare,
+				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
 			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Screech.png")).Sprite,

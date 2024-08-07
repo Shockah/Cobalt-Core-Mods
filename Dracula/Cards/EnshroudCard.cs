@@ -31,7 +31,7 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 			Meta = new()
 			{
 				deck = ModEntry.Instance.DraculaDeck.Deck,
-				rarity = Rarity.uncommon,
+				rarity = Rarity.rare,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
 			Art = StableSpr.cards_CloudSave,
