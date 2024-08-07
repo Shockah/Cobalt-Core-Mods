@@ -1,10 +1,11 @@
 ﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
-using Microsoft.Xna.Framework;
 using Nanoray.PluginManager;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
+using Newtonsoft.Json;
 using Nickel;
+using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,26 +16,18 @@ namespace Shockah.Dracula;
 
 internal sealed class DominateCard : Card, IDraculaCard
 {
+	private static readonly UK MidrowExecutionUK = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
+	private static readonly UK CancelExecutionUK = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
+
 	private static ISpriteEntry NonFlipArt = null!;
 	private static ISpriteEntry OptionalOnIcon = null!;
 	private static ISpriteEntry OptionalOffIcon = null!;
 
-	public Matrix ModifyCardActionRenderMatrix(G g, List<CardAction> actions, CardAction action, int actionWidth)
-	{
-		if (upgrade == Upgrade.None)
-			return Matrix.Identity;
+	[JsonProperty]
+	private bool DisabledFlip;
 
-		var spacing = 12 * g.mg.PIX_SCALE;
-		var halfYCenterOffset = 16 * g.mg.PIX_SCALE;
-		var index = actions.IndexOf(action);
-		var recenterY = -(int)((index - actions.Count / 2.0 + 0.5) * spacing);
-		return index switch
-		{
-			0 => Matrix.CreateTranslation(0, recenterY - halfYCenterOffset, 0),
-			1 or 2 => Matrix.CreateTranslation(0, recenterY + halfYCenterOffset - spacing / 2 + spacing * (index - 1), 0),
-			_ => Matrix.Identity
-		};
-	}
+	[JsonProperty]
+	private bool DisabledSecondaryAction;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -63,32 +56,55 @@ internal sealed class DominateCard : Card, IDraculaCard
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(GetAllTooltips)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetAllTooltips_Postfix))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.IsVisible)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_IsVisible_Postfix))
+		);
 	}
 
 	public override CardData GetData(State state)
 		=> new()
 		{
-			art = upgrade != Upgrade.None && flipped ? NonFlipArt.Sprite : null,
+			art = DisabledFlip ? NonFlipArt.Sprite : null,
 			cost = 1,
-			floppable = upgrade != Upgrade.None
+			floppable = true,
+			description = string.Join(" ", [
+				ModEntry.Instance.Localizations.Localize(["card", "Dominate", "description", "Flip", DisabledFlip ? "inactive" : "active"]),
+				.. (upgrade == Upgrade.A ? [ModEntry.Instance.Localizations.Localize(["card", "Dominate", "description", "Bubble", DisabledSecondaryAction ? "inactive" : "active"])] : Array.Empty<string>()),
+				.. (upgrade == Upgrade.B ? [ModEntry.Instance.Localizations.Localize(["card", "Dominate", "description", "Trigger", DisabledSecondaryAction ? "inactive" : "active"])] : Array.Empty<string>()),
+				ModEntry.Instance.Localizations.Localize(["card", "Dominate", "description", "Draw"]),
+			]),
 		};
+
+	public override void OnFlip(G g)
+	{
+		base.OnFlip(g);
+
+		var sum = (DisabledFlip ? 0 : 1) + (upgrade == Upgrade.None || DisabledSecondaryAction ? 0 : 2);
+		var maxSum = upgrade == Upgrade.None ? 1 : 3;
+		var newSum = sum - 1;
+		if (newSum < 0)
+			newSum += maxSum + 1;
+
+		DisabledFlip = (newSum & 1) == 0;
+		DisabledSecondaryAction = (newSum & 2) == 0;
+		flipped = DisabledFlip || (upgrade != Upgrade.None && DisabledSecondaryAction);
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new ABayDroneFlip { FromPlayer = true, disabled = flipped },
-				new ABayDroneBubble { FromPlayer = true },
-				new ADrawCard { count = 1 }
+				new Action { Flip = !DisabledFlip, Bubble = !DisabledSecondaryAction },
+				new ADrawCard { count = 1 },
 			],
 			Upgrade.B => [
-				new ABayDroneFlip { FromPlayer = true, disabled = flipped },
-				new ABayDroneTrigger { FromPlayer = true },
-				new ADrawCard { count = 1 }
+				new Action { Flip = !DisabledFlip, Trigger = !DisabledSecondaryAction },
+				new ADrawCard { count = 1 },
 			],
 			_ => [
-				new ABayDroneFlip { FromPlayer = true },
-				new ADrawCard { count = 1 }
+				new Action { Flip = !DisabledFlip },
+				new ADrawCard { count = 1 },
 			]
 		};
 
@@ -165,5 +181,112 @@ internal sealed class DominateCard : Card, IDraculaCard
 					], new { Button = buttonText })
 				};
 			});
+	}
+
+	private static void Combat_IsVisible_Postfix(Combat __instance, ref bool __result)
+	{
+		if (__instance.routeOverride is ActionRoute)
+			__result = true;
+	}
+
+	private sealed class Action : CardAction
+	{
+		public bool Flip = true;
+		public bool Bubble;
+		public bool Trigger;
+
+		public override List<Tooltip> GetTooltips(State s)
+			=> [
+				.. (Bubble ? [new TTGlossary("midrow.bubbleShield")] : Array.Empty<Tooltip>())
+			];
+
+		public override Route? BeginWithRoute(G g, State s, Combat c)
+		{
+			if (!Flip && !Bubble && !Trigger)
+			{
+				timer = 0;
+				return null;
+			}
+			return new ActionRoute { Flip = Flip, Bubble = Bubble, Trigger = Trigger };
+		}
+	}
+
+	private sealed class ActionRoute : Route
+	{
+		public required bool Flip;
+		public required bool Bubble;
+		public required bool Trigger;
+
+		public override bool GetShowOverworldPanels()
+			=> true;
+
+		public override bool CanBePeeked()
+			=> false;
+
+		public override void Render(G g)
+		{
+			base.Render(g);
+
+			if (g.state.route is not Combat combat)
+			{
+				g.CloseRoute(this);
+				return;
+			}
+
+			Draw.Rect(0, 0, MG.inst.PIX_W, MG.inst.PIX_H, Colors.black.fadeAlpha(0.5));
+
+			var centerX = g.state.ship.x + g.state.ship.parts.Count / 2.0;
+			foreach (var (worldX, @object) in combat.stuff)
+			{
+				if (Math.Abs(worldX - centerX) > 10)
+					continue;
+				if (g.boxes.FirstOrDefault(b => b.key is { } key && key.k == StableUK.midrow && key.v == worldX) is not { } realBox)
+					continue;
+				if ((@object.GetActions(g.state, combat)?.Count ?? 0) == 0)
+					continue;
+
+				var box = g.Push(new UIKey(MidrowExecutionUK, worldX), realBox.rect, onMouseDown: new MouseDownHandler(() => OnMidrowSelected(g, @object)));
+				@object.Render(g, box.rect.xy);
+				if (box.rect.x > 60.0 && box.rect.x < 464.0 && box.IsHover())
+				{
+					if (!Input.gamepadIsActiveInput)
+						MouseUtil.DrawGamepadCursor(box);
+					g.tooltips.Add(box.rect.xy + new Vec(16.0, 24.0), @object.GetTooltips());
+					@object.hilight = 2;
+				}
+				g.Pop();
+			}
+
+			SharedArt.ButtonText(
+				g,
+				new Vec(MG.inst.PIX_W - 69, MG.inst.PIX_H - 31),
+				CancelExecutionUK,
+				ModEntry.Instance.Localizations.Localize(["card", "Dominate", "ui", "cancel"]),
+				onMouseDown: new MouseDownHandler(() => g.CloseRoute(this))
+			);
+		}
+
+		private void OnMidrowSelected(G g, StuffBase @object)
+		{
+			if (g.state.route is not Combat combat)
+			{
+				g.CloseRoute(this);
+				return;
+			}
+
+			List<CardAction> actions = [];
+
+			if (Flip)
+				actions.Add(new APositionalDroneFlip { WorldX = @object.x });
+			if (Bubble && !@object.bubbleShield)
+				actions.Add(new APositionalDroneBubble { WorldX = @object.x });
+			if (Trigger)
+				actions.Add(new APositionalDroneTrigger { WorldX = @object.x });
+			if (Bubble && @object.bubbleShield)
+				actions.Add(new APositionalDroneBubble { WorldX = @object.x });
+
+			combat.QueueImmediate(actions);
+			g.CloseRoute(this);
+		}
 	}
 }

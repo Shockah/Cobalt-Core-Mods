@@ -6,6 +6,7 @@
 
 * The Screech card is now uncommon and got significant buffs.
 * The Enshroud card is now rare and has a brand new B upgrade.
+* The Dominate card got reworked to be more flexible.
 * The Death Coil card now deals 3 damage (up from 2). Also improves its tooltips.
 * The Heartbreak card now deals 3 damage (up from 2) and an extra 1 damage on its B upgrade (up from 0).
 * The Wings of Night artifact now needs to spend 1 evade to create the Bat Form card (used to give you the card no matter what).

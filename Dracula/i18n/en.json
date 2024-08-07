@@ -289,7 +289,25 @@
             "name": "Dispersion"
         },
         "Dominate": {
-            "name": "Dominate"
+            "name": "Dominate",
+            "description": {
+                "Flip": {
+                    "active": "Flip a <c=midrow>midrow object</c>.",
+                    "inactive": "<c=5f5f5f>Flip a midrow object.</c>"
+                },
+                "Bubble": {
+                    "active": "Give it <c=midrow>bubble</c>.",
+                    "inactive": "<c=5f5f5f>Give it bubble.</c>"
+                },
+                "Trigger": {
+                    "active": "Trigger its actions.",
+                    "inactive": "<c=5f5f5f>Trigger its actions.</c>"
+                },
+                "Draw": "Draw 1 card."
+            },
+            "ui": {
+                "cancel": "CANCEL"
+            }
         },
         "DrainEssence": {
             "name": "Drain Essence"
