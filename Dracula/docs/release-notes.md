@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* The Enshroud card has a brand new B upgrade.
 * Increased Death Coil card's damage from 2 to 3.
 * The Blood Bank artifact now also triggers on out-of-combat heals.
 * The Blood Bank artifact no longer goes back on forth on remaining blood visually.

@@ -1,6 +1,7 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dracula;
@@ -68,37 +69,28 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 			cost = upgrade switch
 			{
 				Upgrade.A => 1,
-				Upgrade.B => 0,
+				Upgrade.B => 3,
 				_ => 2
 			},
+			singleUse = upgrade == Upgrade.B,
 			description = ModEntry.Instance.Localizations.Localize(["card", "Enshroud", "description", upgrade.ToString()])
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		List<Ship> ships = [s.ship];
-		if (upgrade == Upgrade.B)
-			ships.Add(c.otherShip);
+		=> upgrade switch
+		{
+			Upgrade.B => [
+				new UpgradeArmor(),
+				new AEndTurn(),
+			],
+			_ => [
+				new EnshroudAction { TargetPlayer = true },
+			]
+		};
 
-		List<CardAction> actions = [];
-		foreach (var ship in ships)
-			for (var partIndex = 0; partIndex < ship.parts.Count; partIndex++)
-				if (ship.parts[partIndex].type != PType.empty)
-					actions.Add(new AEnshroudPart
-					{
-						TargetPlayer = ship.isPlayerShip,
-						WorldX = ship.x + partIndex,
-						omitFromTooltips = true,
-					});
-
-		actions.Add(new ATooltipAction { Tooltips = [new TTGlossary("parttrait.armor")] });
-		return actions;
-	}
-
-	public sealed class AEnshroudPart : CardAction
+	private sealed class EnshroudAction : CardAction
 	{
 		public required bool TargetPlayer;
-		public required int WorldX;
 
 		public override List<Tooltip> GetTooltips(State s)
 			=> [new TTGlossary("parttrait.armor")];
@@ -109,7 +101,27 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 			timer = 0;
 
 			var ship = TargetPlayer ? s.ship : c.otherShip;
-			if (ship.GetPartAtWorldX(WorldX) is not { } part)
+			c.QueueImmediate(
+				ship.parts
+					.Select((part, i) => (Part: part, X: i))
+					.Where(e => e.Part.type != PType.empty)
+					.Select(e => new EnshroudPartAction { TargetPlayer = TargetPlayer, LocalX = e.X })
+			);
+		}
+	}
+
+	private sealed class EnshroudPartAction : CardAction
+	{
+		public required bool TargetPlayer;
+		public required int LocalX;
+
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+			timer = 0;
+
+			var ship = TargetPlayer ? s.ship : c.otherShip;
+			if (ship.GetPartAtLocalX(LocalX) is not { } part)
 				return;
 
 			if (part.damageModifier != PDamMod.armor)
@@ -118,7 +130,7 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 				c.QueueImmediate(new AArmor
 				{
 					targetPlayer = TargetPlayer,
-					worldX = WorldX
+					worldX = LocalX + ship.x
 				});
 			}
 			if (part.damageModifierOverrideWhileActive is not null && part.damageModifierOverrideWhileActive != PDamMod.armor)
@@ -127,9 +139,50 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 				c.QueueImmediate(new AArmor
 				{
 					targetPlayer = TargetPlayer,
-					worldX = WorldX,
+					worldX = LocalX + ship.x,
 					justTheActiveOverride = true
 				});
+			}
+		}
+	}
+
+	private sealed class UpgradeArmor : CardAction
+	{
+		public override List<Tooltip> GetTooltips(State s)
+			=> [
+				new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::{typeof(EnshroudCard).Name}::{GetType().Name}")
+				{
+					Icon = StableSpr.icons_armor,
+					TitleColor = Colors.action,
+					Title = ModEntry.Instance.Localizations.Localize(["card", "Enshroud", "UpgradeCockpit", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["card", "Enshroud", "UpgradeCockpit", "description"])
+				},
+				new TTGlossary("parttrait.brittle"),
+				new TTGlossary("parttrait.weak"),
+				new TTGlossary("parttrait.armor"),
+			];
+
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+
+			foreach (var part in s.ship.parts)
+			{
+				if (part.type != PType.cockpit)
+					continue;
+
+				part.damageModifier = ModifyDamageModifier(part.damageModifier);
+				if (part.damageModifierOverrideWhileActive is { } damageModifierOverride)
+					part.damageModifierOverrideWhileActive = ModifyDamageModifier(damageModifierOverride);
+
+				static PDamMod ModifyDamageModifier(PDamMod mod)
+					=> mod switch
+					{
+						PDamMod.brittle => PDamMod.weak,
+						PDamMod.weak => PDamMod.none,
+						PDamMod.none => PDamMod.armor,
+						_ => mod
+					};
 			}
 		}
 	}

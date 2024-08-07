@@ -307,7 +307,11 @@
             "description": {
                 "None": "All your ship parts get <c=parttrait>armor</c> until the start of the next turn.",
                 "A": "All your ship parts get <c=parttrait>armor</c> until the start of the next turn.",
-                "B": "ALL ship parts get <c=parttrait>armor</c> until the start of the next turn."
+                "B": "Permanently upgrade your cockpit's armor. End your turn."
+            },
+            "UpgradeCockpit": {
+                "name": "Upgrade Cockpit",
+                "description": "Replace <c=parttrait>brittle/weak/nothing</c> on your cockpit with <c=parttrait>weak/nothing/armor</c>."
             }
         },
         "GrimoireOfSecrets": {
