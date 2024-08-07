@@ -26,18 +26,67 @@ internal sealed class ScreechCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = upgrade == Upgrade.B ? 3 : 2,
-			retain = upgrade == Upgrade.A,
+			cost = 2,
+			retain = true,
 			exhaust = upgrade == Upgrade.B
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new AStatus
-			{
-				targetPlayer = false,
-				status = Status.overdrive,
-				statusAmount = upgrade == Upgrade.B ? -2 : -1
-			}
-		];
+		=> upgrade switch
+		{
+			Upgrade.A => [
+				new AStatus
+				{
+					targetPlayer = false,
+					status = Status.overdrive,
+					statusAmount = -1,
+				},
+				new AStatus
+				{
+					targetPlayer = true,
+					status = Status.shield,
+					statusAmount = 2,
+				},
+				new AStatus
+				{
+					targetPlayer = true,
+					status = ModEntry.Instance.TransfusionStatus.Status,
+					statusAmount = 1,
+				},
+			],
+			Upgrade.B => [
+				new AStatus
+				{
+					targetPlayer = false,
+					status = Status.overdrive,
+					statusAmount = -2,
+				},
+				new AStatus
+				{
+					targetPlayer = true,
+					status = Status.shield,
+					statusAmount = 1,
+				},
+				new AStatus
+				{
+					targetPlayer = true,
+					status = ModEntry.Instance.TransfusionStatus.Status,
+					statusAmount = 2,
+				},
+			],
+			_ => [
+				new AStatus
+				{
+					targetPlayer = false,
+					status = Status.overdrive,
+					statusAmount = -1,
+				},
+				new AStatus
+				{
+					targetPlayer = true,
+					status = Status.shield,
+					statusAmount = 1,
+				},
+			]
+		};
 }
