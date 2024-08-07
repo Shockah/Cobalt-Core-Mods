@@ -133,12 +133,19 @@ internal sealed class BloodBankArtifact : Artifact, IRegisterable
 		artifact.Pulse();
 	}
 
-	private static void AHeal_Begin_Postfix(State s)
+	private static void AHeal_Begin_Postfix(AHeal __instance, State s)
 	{
-		if (!s.EnumerateAllArtifacts().Any(a => a is BloodBankArtifact))
+		if (!__instance.targetPlayer)
 			return;
+		if (s.EnumerateAllArtifacts().OfType<BloodBankArtifact>().FirstOrDefault() is not { } bloodBank)
+			return;
+
+		if (__instance.targetPlayer && ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(__instance, "FromBloodBank"))
+			bloodBank.LastHull = s.ship.hull;
+
 		if (s.EnumerateAllArtifacts().OfType<HealBooster>().FirstOrDefault() is not { } healBooster)
 			return;
+
 		ModEntry.Instance.Helper.ModData.SetModData(healBooster, "UsedThisTurn", true);
 	}
 

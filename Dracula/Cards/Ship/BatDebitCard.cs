@@ -59,15 +59,19 @@ internal sealed class BatDebitCard : Card, IDraculaCard
 				return;
 			}
 
-			artifact.Charges -= 2; // healing grants 1
+			artifact.Charges -= 1;
 			artifact.Pulse();
-			c.QueueImmediate(new AHeal
+
+			var action = new AHeal
 			{
 				targetPlayer = true,
 				healAmount = 1,
 				canRunAfterKill = true,
 				artifactPulse = artifact.Key()
-			});
+			};
+			ModEntry.Instance.Helper.ModData.SetModData(action, "FromBloodBank", true);
+
+			c.QueueImmediate(action);
 		}
 	}
 

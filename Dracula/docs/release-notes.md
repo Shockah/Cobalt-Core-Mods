@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * The Blood Bank artifact now also triggers on out-of-combat heals.
+* The Blood Bank artifact no longer goes back on forth on remaining blood visually.
 * Improved the Death Coil card's tooltips.
 
 ## 1.1.5
