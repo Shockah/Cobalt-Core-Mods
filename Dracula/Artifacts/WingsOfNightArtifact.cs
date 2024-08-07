@@ -43,24 +43,41 @@ internal sealed class WingsOfNightArtifact : Artifact, IRegisterable
 		if (!combat.isPlayerTurn)
 			return;
 
-		combat.QueueImmediate([
-			new AAddCard
-			{
-				card = new BatFormCard
+		combat.Queue(new Action { PassthroughArtifactPulse = Key() });
+	}
+
+	private sealed class Action : CardAction
+	{
+		public required string PassthroughArtifactPulse;
+
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+			timer = 0;
+
+			if (s.ship.Get(Status.evade) <= 0)
+				return;
+
+			c.QueueImmediate([
+				new AStatus
 				{
-					upgrade = Upgrade.A,
-					temporaryOverride = true,
-					exhaustOverride = true
+					targetPlayer = true,
+					status = Status.evade,
+					statusAmount = -1,
+					timer = 0,
 				},
-				destination = CardDestination.Hand,
-				artifactPulse = Key()
-			},
-			new AStatus
-			{
-				targetPlayer = true,
-				status = Status.evade,
-				statusAmount = -1
-			}
-		]);
+				new AAddCard
+				{
+					card = new BatFormCard
+					{
+						upgrade = Upgrade.A,
+						temporaryOverride = true,
+						exhaustOverride = true,
+					},
+					destination = CardDestination.Hand,
+					artifactPulse = PassthroughArtifactPulse,
+				},
+			]);
+		}
 	}
 }
