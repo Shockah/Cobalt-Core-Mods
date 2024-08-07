@@ -42,12 +42,12 @@ internal sealed class HeartbreakCard : Card, IDraculaCard
 				},
 				new AAttack
 				{
-					damage = GetDmg(s, 0),
+					damage = GetDmg(s, 1),
 					weaken = true
 				},
 				new AAttack
 				{
-					damage = GetDmg(s, 2),
+					damage = GetDmg(s, 3),
 					piercing = true,
 				},
 				new AStatus
@@ -65,7 +65,7 @@ internal sealed class HeartbreakCard : Card, IDraculaCard
 				},
 				new AAttack
 				{
-					damage = GetDmg(s, 2),
+					damage = GetDmg(s, 3),
 					piercing = true,
 					weaken = true
 				},

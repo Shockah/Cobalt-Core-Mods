@@ -6,9 +6,10 @@
 
 * The Screech card is now uncommon and got significant buffs.
 * The Enshroud card is now rare and has a brand new B upgrade.
-* Increased Death Coil card's damage from 2 to 3.
+* The Death Coil card now deals 3 damage (up from 2).
+* The Heartbreak card now deals 3 damage (up from 2) and an extra 1 damage on its B upgrade (up from 0).
 * The Blood Bank artifact now also triggers on out-of-combat heals.
-* The Blood Bank artifact no longer goes back on forth on remaining blood visually.
+* The Blood Bank artifact no longer goes back and forth on remaining blood visually.
 * Improved the Death Coil card's tooltips.
 
 ## 1.1.5
