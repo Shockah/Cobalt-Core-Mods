@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* The Blood Bank artifact now also triggers on out-of-combat heals.
 * Improved the Death Coil card's tooltips.
 * General optimizations.
 

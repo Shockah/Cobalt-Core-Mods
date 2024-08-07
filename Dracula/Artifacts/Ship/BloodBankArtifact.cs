@@ -15,6 +15,9 @@ internal sealed class BloodBankArtifact : Artifact, IRegisterable
 	[JsonProperty]
 	public int Charges { get; set; } = 3;
 
+	[JsonProperty]
+	private int LastHull = 0;
+
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		HealBoosterInactiveIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Ship/HealBoosterInactive.png"));
@@ -33,11 +36,9 @@ internal sealed class BloodBankArtifact : Artifact, IRegisterable
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "ship", "BloodBank", "description"]).Localize
 		});
 
-
 		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Update)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_Update_Prefix)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_Update_Postfix))
+			original: AccessTools.DeclaredMethod(typeof(State), nameof(State.Update)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(State_Update_Postfix))
 		);
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
@@ -86,21 +87,29 @@ internal sealed class BloodBankArtifact : Artifact, IRegisterable
 		ModEntry.Instance.Helper.ModData.RemoveModData(healBooster, "UsedThisTurn");
 	}
 
-	private static void Combat_Update_Prefix(G g, ref int __state)
-		=> __state = g.state.ship.hull;
-
-	private static void Combat_Update_Postfix(G g, ref int __state)
+	private static void State_Update_Postfix(State __instance)
 	{
-		if (g.state.ship.hull <= __state)
+		if (__instance.IsOutsideRun())
 			return;
-		var artifact = g.state.EnumerateAllArtifacts().OfType<BloodBankArtifact>().FirstOrDefault();
+
+		var artifact = __instance.EnumerateAllArtifacts().OfType<BloodBankArtifact>().FirstOrDefault();
 		if (artifact is null)
 			return;
-		if (artifact.Charges >= 5)
+		if (artifact.LastHull == __instance.ship.hull)
 			return;
 
-		artifact.Charges++;
-		artifact.Pulse();
+		if (artifact.LastHull <= 0)
+		{
+			artifact.LastHull = __instance.ship.hull;
+			return;
+		}
+
+		if (__instance.ship.hull > artifact.LastHull && artifact.Charges < 5)
+		{
+			artifact.Charges++;
+			artifact.Pulse();
+		}
+		artifact.LastHull = __instance.ship.hull;
 	}
 
 	private static void Combat_DrainCardActions_Prefix(Combat __instance, ref bool __state)
