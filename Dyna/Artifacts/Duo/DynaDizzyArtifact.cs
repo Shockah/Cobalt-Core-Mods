@@ -1,7 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dyna;
@@ -30,9 +29,10 @@ internal sealed class DynaDizzyArtifact : Artifact, IRegisterable
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> StatusMeta.GetTooltips(Status.tempShield, 1)
-			.Concat(StatusMeta.GetTooltips(Status.shield, 1))
-			.Append(new TTCard
+		=> [
+			.. StatusMeta.GetTooltips(Status.tempShield, 1),
+			.. StatusMeta.GetTooltips(Status.shield, 1),
+			new TTCard
 			{
 				card = new FluxChargeCard
 				{
@@ -40,8 +40,8 @@ internal sealed class DynaDizzyArtifact : Artifact, IRegisterable
 					temporaryOverride = true,
 					exhaustOverride = true
 				}
-			})
-			.ToList();
+			},
+		];
 
 	public override void OnCombatStart(State state, Combat combat)
 	{
@@ -54,6 +54,7 @@ internal sealed class DynaDizzyArtifact : Artifact, IRegisterable
 				temporaryOverride = true,
 				exhaustOverride = true
 			},
+			destination = CardDestination.Hand,
 			artifactPulse = Key()
 		});
 	}

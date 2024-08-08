@@ -7,6 +7,7 @@
 * Burst Charge now triggers Concussable.
 * Charges now visually animate horizontally when the parts they are attached to move.
 * Firing a charge at an empty enemy part now renders correctly.
+* The Blast Goggles (Dyna-Dizzy duo) artifact now correctly adds the Flux Charge card to the hand.
 
 ## 1.2.2
 Released 6 July 2024.
