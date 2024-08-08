@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Burst Charge now triggers Concussable.
+
 ## 1.2.2
 Released 6 July 2024.
 

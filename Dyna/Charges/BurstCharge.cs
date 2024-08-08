@@ -75,6 +75,9 @@ public sealed class BurstCharge : BaseDynaCharge, IRegisterable
 				worldX = WorldX
 			};
 			EffectSpawnerExt.HitEffect(MG.inst.g, TargetPlayer, raycastResult, damageDone);
+
+			if (targetShip.GetPartAtWorldX(WorldX) is { } part && part.type != PType.empty && part.stunModifier == PStunMod.stunnable)
+				c.QueueImmediate(new AStunPart { worldX = WorldX });
 		}
 	}
 }
