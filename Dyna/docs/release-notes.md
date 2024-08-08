@@ -2,12 +2,14 @@
 
 # Release notes
 
-## Upcoming release
+## 1.2.3
+Released 8 August 2024.
 
 * Burst Charge now triggers Concussable.
 * Charges now visually animate horizontally when the parts they are attached to move.
 * Firing a charge at an empty enemy part now renders correctly.
 * The Blast Goggles (Dyna-Dizzy duo) artifact now correctly adds the Flux Charge card to the hand.
+* The Flash Burst card now grants all of its Temp Shield instances at once.
 
 ## 1.2.2
 Released 6 July 2024.
