@@ -150,14 +150,14 @@ public sealed class ModEntry : SimpleMod
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
 
-		helper.Content.Characters.RegisterCharacter("Dyna", new()
+		helper.Content.Characters.V2.RegisterPlayableCharacter("Dyna", new()
 		{
 			Deck = DynaDeck.Deck,
 			Description = this.AnyLocalizations.Bind(["character", "description"]).Localize,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CharacterFrame.png")).Sprite,
 			NeutralAnimation = new()
 			{
-				Deck = DynaDeck.Deck,
+				CharacterType = DynaDeck.UniqueName,
 				LoopTag = "neutral",
 				Frames = Enumerable.Range(0, 1)
 					.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Neutral/{i}.png")).Sprite)
@@ -165,7 +165,7 @@ public sealed class ModEntry : SimpleMod
 			},
 			MiniAnimation = new()
 			{
-				Deck = DynaDeck.Deck,
+				CharacterType = DynaDeck.UniqueName,
 				LoopTag = "mini",
 				Frames = [
 					helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Character/Mini.png")).Sprite
@@ -181,17 +181,17 @@ public sealed class ModEntry : SimpleMod
 			ExeCardType = typeof(DynaExeCard)
 		});
 
-		helper.Content.Characters.RegisterCharacterAnimation(new()
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
-			Deck = DynaDeck.Deck,
+			CharacterType = DynaDeck.UniqueName,
 			LoopTag = "gameover",
 			Frames = Enumerable.Range(0, 1)
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/GameOver/{i}.png")).Sprite)
 				.ToList()
 		});
-		helper.Content.Characters.RegisterCharacterAnimation(new()
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
-			Deck = DynaDeck.Deck,
+			CharacterType = DynaDeck.UniqueName,
 			LoopTag = "squint",
 			Frames = Enumerable.Range(0, 2)
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Squint/{i}.png")).Sprite)
