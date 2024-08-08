@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Burst Charge now triggers Concussable.
+* Charges now visually animate horizontally when the parts they are attached to move.
 
 ## 1.2.2
 Released 6 July 2024.

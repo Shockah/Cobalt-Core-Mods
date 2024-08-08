@@ -116,14 +116,14 @@ internal sealed class ChargeManager
 
 		charge.YOffset = FireChargeAction.ShipDistanceFromMidrow * (ship.isPlayerShip ? 1 : -1);
 		g.Push(null, new Rect(0, (ship.isPlayerShip ? 6 : -6) * part.pulse).round());
-		RenderAnyCharge(g, state, combat, ship, partIndex, charge);
+		RenderAnyCharge(g, state, combat, ship, part.xLerped ?? partIndex, charge);
 		g.Pop();
 	}
 
-	private static void RenderAnyCharge(G g, State state, Combat combat, Ship ship, int partIndex, IDynaCharge charge)
+	private static void RenderAnyCharge(G g, State state, Combat combat, Ship ship, double partIndex, IDynaCharge charge)
 	{
 		var box = g.Push(null, new Rect(partIndex * 16 + 7.5, 53.5));
-		charge.Render(g, state, combat, ship, ship.x + partIndex, box.rect.xy);
+		charge.Render(g, state, combat, ship, (int)(ship.x + partIndex), box.rect.xy);
 		g.Pop();
 	}
 
