@@ -397,7 +397,7 @@ public sealed class FireChargeAction : CardAction
 		double finalPosition;
 		if (c.stuff.ContainsKey(worldX))
 			finalPosition = 0;
-		else if (targetShip.GetPartAtWorldX(worldX) is not null)
+		else if (targetShip.GetPartAtWorldX(worldX) is { } targetPart && targetPart.type != PType.empty)
 			finalPosition = TargetPlayer ? ShipDistanceFromMidrow : -ShipDistanceFromMidrow;
 		else
 			finalPosition = TargetPlayer ? OuterSpaceDistanceFromMidrow : -OuterSpaceDistanceFromMidrow;
