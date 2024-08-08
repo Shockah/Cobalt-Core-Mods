@@ -33,74 +33,21 @@ internal sealed class FlashBurstCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new AAttack
-				{
-					damage = GetDmg(s, 1)
-				},
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.tempShield,
-					statusAmount = 1
-				},
-				new AAttack
-				{
-					damage = GetDmg(s, 1)
-				},
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.tempShield,
-					statusAmount = 1
-				},
-				new AAttack
-				{
-					damage = GetDmg(s, 1)
-				}
+				new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 2 },
+				new AAttack { damage = GetDmg(s, 1) },
+				new AAttack { damage = GetDmg(s, 1) },
+				new AAttack { damage = GetDmg(s, 1) },
 			],
 			Upgrade.B => [
-				new AAttack
-				{
-					damage = GetDmg(s, 1)
-				},
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.tempShield,
-					statusAmount = 2
-				},
-				new AAttack
-				{
-					damage = GetDmg(s, 1)
-				},
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.shield,
-					statusAmount = 1
-				}
+				new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 },
+				new AAttack { damage = GetDmg(s, 1) },
+				new AAttack { damage = GetDmg(s, 1) },
 			],
 			_ => [
-				new AAttack
-				{
-					damage = GetDmg(s, 1)
-				},
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.tempShield,
-					statusAmount = 1
-				},
-				new AAttack
-				{
-					damage = GetDmg(s, 1)
-				},
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.tempShield,
-					statusAmount = 1
-				}
+				new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 2 },
+				new AAttack { damage = GetDmg(s, 1) },
+				new AAttack { damage = GetDmg(s, 1) },
 			]
 		};
 }
