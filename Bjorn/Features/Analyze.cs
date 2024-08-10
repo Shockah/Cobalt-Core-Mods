@@ -16,6 +16,18 @@ internal static class AnalyzeCardSelectFiltersExt
 	}
 }
 
+internal static class AnalyzeCardExt
+{
+	public static bool IsAnalyzable(this Card card, State state)
+	{
+		if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Analyze.AnalyzedTrait))
+			return false;
+		if (card.GetDataWithOverrides(state).temporary && !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Analyze.ReevaluatedTrait))
+			return false;
+		return true;
+	}
+}
+
 internal sealed class Analyze : IRegisterable
 {
 	internal static ISpriteEntry AnalyzeIcon { get; private set; } = null!;
@@ -69,6 +81,15 @@ internal sealed class Analyze : IRegisterable
 		);
 	}
 
+	public static Tooltip GetAnalyzeTooltip()
+		=> new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::Analyze")
+		{
+			Icon = AnalyzeIcon.Sprite,
+			TitleColor = Colors.action,
+			Title = ModEntry.Instance.Localizations.Localize(["action", "Analyze", "name"]),
+			Description = ModEntry.Instance.Localizations.Localize(["action", "Analyze", "description"]),
+		};
+
 	private static void ACardSelect_BeginWithRoute_Postfix(ACardSelect __instance, ref Route? __result)
 	{
 		if (__result is not CardBrowse route)
@@ -85,16 +106,9 @@ internal sealed class Analyze : IRegisterable
 
 		for (var i = __result.Count - 1; i >= 0; i--)
 		{
-			if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(g.state, __result[i], AnalyzedTrait))
-			{
-				__result.RemoveAt(i);
+			if (__result[i].IsAnalyzable(g.state) == filterAnalyzable)
 				continue;
-			}
-			if (__result[i].GetDataWithOverrides(g.state).temporary && !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(g.state, __result[i], ReevaluatedTrait))
-			{
-				__result.RemoveAt(i);
-				continue;
-			}
+			__result.RemoveAt(i);
 		}
 	}
 }
@@ -108,13 +122,7 @@ internal sealed class AnalyzeCostAction : CardAction
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
-			new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::Analyze")
-			{
-				Icon = Analyze.AnalyzeIcon.Sprite,
-				TitleColor = Colors.action,
-				Title = ModEntry.Instance.Localizations.Localize(["action", "Analyze", "name"]),
-				Description = ModEntry.Instance.Localizations.Localize(["action", "Analyze", "description"]),
-			},
+			Analyze.GetAnalyzeTooltip(),
 			.. (Analyze.AnalyzedTrait.Configuration.Tooltips?.Invoke(s, null) ?? []),
 			.. Actions.SelectMany(a => a.GetTooltips(s))
 		];
@@ -189,4 +197,24 @@ internal sealed class SelfAnalyzeCostAction : CardAction
 		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, Analyze.AnalyzedTrait, true, permanent: false);
 		c.QueueImmediate(Actions);
 	}
+}
+
+internal sealed class AnalyzableVariableHint : AVariableHint
+{
+	public required int CardId;
+
+	public AnalyzableVariableHint()
+	{
+		this.hand = true;
+	}
+
+	public override List<Tooltip> GetTooltips(State s)
+		=> [
+			new GlossaryTooltip($"action::{ModEntry.Instance.Package.Manifest.UniqueName}::AnalyzableVariableHint.desc")
+			{
+				Description = ModEntry.Instance.Localizations.Localize(["x", "Analyzable", s.route is Combat ? "stateful" : "stateless"], new { Count = (s.route as Combat)?.hand.Count(card => card.uuid != CardId && card.IsAnalyzable(s)) })
+			},
+			Analyze.GetAnalyzeTooltip(),
+			.. (Analyze.AnalyzedTrait.Configuration.Tooltips?.Invoke(s, null) ?? []),
+		];
 }
