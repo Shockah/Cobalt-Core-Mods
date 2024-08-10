@@ -2,7 +2,6 @@
 using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
 using CobaltCoreModding.Definitions.ModManifests;
-using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
@@ -46,7 +45,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
 	{
 		this.Helper = helper;
-		this.Harmony = helper.Utilities.DelayedHarmony;
+		this.Harmony = helper.Utilities.Harmony;
 		Settings = helper.Storage.LoadJson<Settings>(helper.Storage.GetMainStorageFile("json"));
 
 		ArtifactPatches.Apply(Harmony);
