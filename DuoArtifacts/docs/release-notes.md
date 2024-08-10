@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.4
+Released 10 August 2024.
 
 * The Combat Spreadsheets (Max-Peri duo) artifact got its effects swapped (now the leftmost attack fires an extra shot, while the rightmost attack deals more damage).
 * Fixed CAT duo artifacts never being offered.
