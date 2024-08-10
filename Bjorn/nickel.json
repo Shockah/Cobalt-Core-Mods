@@ -1,0 +1,16 @@
+{
+    "UniqueName": "Shockah.Bjorn",
+    "Version": "{{ModVersion}}",
+    "DisplayName": "Bjorn",
+    "Description": "TBD",
+    "Author": "Arin, Shockah",
+    "RequiredApiVersion": "1.4.0",
+    "EntryPointAssembly": "Bjorn.dll",
+    "LoadPhase": "AfterDbInit",
+    "Dependencies": [
+        {
+            "UniqueName": "Shockah.Kokoro",
+            "Version": "1.11.0"
+        }
+    ]
+}
