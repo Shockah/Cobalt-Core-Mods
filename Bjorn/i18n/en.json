@@ -27,6 +27,12 @@
             "uiTitle": "Select a card to <c=action>Analyze</c>."
         }
     },
+    "x": {
+        "Analyzable": {
+            "stateful": "<c=action>X</c> = All other analyzable cards in hand (<c=boldPink>{{Count}}</c>).",
+            "stateless": "<c=action>X</c> = All other analyzable cards in hand."
+        }
+    },
     "card": {
         "Assimilate": {
             "name": "Assimilate",
@@ -42,6 +48,23 @@
                 "None": "<c=action>Analyze</c> a card: gain 1 <c=status>max shield</c>. Gain 1 <c=status>smart shield</c>.",
                 "A": "<c=action>Analyze</c> a card: gain 1 <c=status>max shield</c>. Gain 2 <c=status>smart shield</c>.",
                 "B": "<c=action>Analyze</c> 2 cards: gain 2 <c=status>max shield</c>. Gain 2 <c=status>smart shield</c>."
+            }
+        },
+        "LilHadronCollider": {
+            "name": "Lil' Hadron Collider",
+            "description": {
+                "None": {
+                    "stateful": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 2X (<c=boldPink>{{Damage}}</c>).",
+                    "stateless": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 2X."
+                },
+                "A": {
+                    "stateful": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 2X (<c=boldPink>{{Damage}}</c>).",
+                    "stateless": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 2X."
+                },
+                "B": {
+                    "stateful": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 3X (<c=boldPink>{{Damage}}</c>).",
+                    "stateless": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 3X."
+                }
             }
         },
         "SafetyProtocol": {

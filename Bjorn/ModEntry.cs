@@ -28,6 +28,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
+		typeof(LilHadronColliderCard),
 	];
 
 	internal static readonly IEnumerable<Type> AllCardTypes
