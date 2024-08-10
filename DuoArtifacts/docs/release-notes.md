@@ -6,6 +6,7 @@
 
 * The Combat Spreadsheets (Max-Peri duo) artifact got its effects swapped (now the leftmost attack fires an extra shot, while the rightmost attack deals more damage).
 * Fixed CAT duo artifacts never being offered.
+* Fixed the Combat Training Simulator (CAT-Peri duo) and Combat Spreadsheets (Max-Peri duo) artifacts not looking at wrapped actions for considering which cards are attacks.
 
 ## 1.1.3
 Released 17 July 2024.
