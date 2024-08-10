@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed CAT duo artifacts never being offered.
+
 ## 1.1.3
 Released 17 July 2024.
 

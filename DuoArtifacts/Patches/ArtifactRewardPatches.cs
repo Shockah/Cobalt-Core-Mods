@@ -39,11 +39,9 @@ internal static class ArtifactRewardPatches
 
 	private static IEnumerable<Deck> GetCharactersEligibleForDuoArtifacts(State state)
 	{
-		//return NewRunOptions.allChars;
-
 		foreach (var character in state.characters)
 			if (character.deckType is { } deck && Instance.GetDuoArtifactEligibity(deck, state) == DuoArtifactEligibity.Eligible)
-				yield return deck == Deck.colorless ? Deck.catartifact : deck;
+				yield return deck == Deck.catartifact ? Deck.colorless : deck;
 	}
 
 	private static void ArtifactReward_GetOffering_Postfix(State s, List<ArtifactPool>? limitPools, List<Artifact> __result, Rand? rngOverride)
