@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Shockah.DuoArtifacts</RootNamespace>
-		<Version>1.1.3</Version>
+		<Version>1.1.4</Version>
 		<IsLegacyMod>True</IsLegacyMod>
 		<IncludedModProjectPaths>assets</IncludedModProjectPaths>
 	</PropertyGroup>

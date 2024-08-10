@@ -1,6 +1,6 @@
 {
     "UniqueName": "Shockah.DuoArtifacts",
-    "Version": "1.1.3",
+    "Version": "{{ModVersion}}",
     "DisplayName": "Duo Artifacts",
     "Description": "Adds a new artifact pool: duo artifacts, which are pretty powerful artifacts, synergizing between two different crew members.",
     "Author": "Shockah",
