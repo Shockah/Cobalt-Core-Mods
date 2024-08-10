@@ -38,7 +38,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetterRunSummaries", "Bette
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MORE", "MORE\MORE.csproj", "{A324EDAF-B4B3-4F19-AFF6-81A8B90E8CE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Natasha", "Natasha\Natasha.csproj", "{6E364255-1F38-4004-AD23-E64CFE7AEC47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Natasha", "Natasha\Natasha.csproj", "{6E364255-1F38-4004-AD23-E64CFE7AEC47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bjorn", "Bjorn\Bjorn.csproj", "{F51105FD-7C9B-418E-A47B-9B84A578B47C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_Media.Kokoro", "_Media.Kokoro\_Media.Kokoro.csproj", "{CB5964AC-8183-46EA-9062-C4405064A48D}"
 EndProject
@@ -116,6 +118,10 @@ Global
 		{6E364255-1F38-4004-AD23-E64CFE7AEC47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E364255-1F38-4004-AD23-E64CFE7AEC47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E364255-1F38-4004-AD23-E64CFE7AEC47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F51105FD-7C9B-418E-A47B-9B84A578B47C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F51105FD-7C9B-418E-A47B-9B84A578B47C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F51105FD-7C9B-418E-A47B-9B84A578B47C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F51105FD-7C9B-418E-A47B-9B84A578B47C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CB5964AC-8183-46EA-9062-C4405064A48D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CB5964AC-8183-46EA-9062-C4405064A48D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB5964AC-8183-46EA-9062-C4405064A48D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -174,5 +180,6 @@ Global
 		_Shared\_Shared.projitems*{cf83b02e-c4dc-4f8c-bb84-6bdde883f5c1}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{e363f17f-c5f1-4594-ad2f-6204fcdde6c5}*SharedItemsImports = 5
 		_Shared\_Shared.projitems*{e9a3d7bc-bd41-48dc-9acb-56b9cae5725b}*SharedItemsImports = 5
+		_Shared\_Shared.projitems*{f51105fd-7c9b-418e-a47b-9b84a578b47c}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
