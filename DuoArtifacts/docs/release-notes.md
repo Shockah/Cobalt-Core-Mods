@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* The Combat Spreadsheets (Max-Peri duo) artifact got its effects swapped (now the leftmost attack fires an extra shot, while the rightmost attack deals more damage).
 * Fixed CAT duo artifacts never being offered.
 
 ## 1.1.3

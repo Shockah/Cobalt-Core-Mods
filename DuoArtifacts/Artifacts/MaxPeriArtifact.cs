@@ -45,7 +45,7 @@ internal sealed class MaxPeriArtifact : DuoArtifact
 		if (!attacks.Contains(card) || attacks.Count == 1)
 			return base.ModifyBaseDamage(baseDamage, card, state, combat, fromPlayer);
 
-		if (attacks.First() != card)
+		if (attacks.Last() != card)
 			return base.ModifyBaseDamage(baseDamage, card, state, combat, fromPlayer);
 
 		return 1;
@@ -64,7 +64,7 @@ internal sealed class MaxPeriArtifact : DuoArtifact
 		if (!attacks.Contains(__instance) || attacks.Count == 1)
 			return;
 
-		if (attacks.Last() != __instance)
+		if (attacks.First() != __instance)
 			return;
 
 		__result.Add(new AAttack { damage = __instance.GetDmg(s, 1) });
