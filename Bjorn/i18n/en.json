@@ -72,6 +72,14 @@
         "FractalStructure": {
             "name": "Fractal Structure"
         },
+        "HandheldDuplitron": {
+            "name": "Handheld Duplitron",
+            "description": {
+                "None": "<c=action>Analyze</c> a card. Create a <c=cardtrait>temp</c> copy of it.",
+                "A": "<c=action>Analyze</c> a card. Create a <c=cardtrait>re-evaluated temp</c> copy of it.",
+                "B": "<c=action>Analyze</c> a card. Create 4 <c=cardtrait>temp</c> copies of it. <c=downside>Lose 1 hull.</c>"
+            }
+        },
         "LilHadronCollider": {
             "name": "Lil' Hadron Collider",
             "description": {
