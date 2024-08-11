@@ -72,10 +72,7 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 		public required int CardId;
 
 		public override List<Tooltip> GetTooltips(State s)
-			=> [
-				Analyze.GetAnalyzeTooltip(),
-				.. (Analyze.AnalyzedTrait.Configuration.Tooltips?.Invoke(s, null) ?? []),
-			];
+			=> Analyze.GetAnalyzeTooltips(s);
 
 		public override void Begin(G g, State s, Combat c)
 		{
