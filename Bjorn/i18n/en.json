@@ -33,6 +33,14 @@
         "AnalyzeOrSelfAnalyze": {
             "name": "(Self-)Analyze",
             "description": "Choose a non-<c=cardtrait>analyzed</c>, non-<c=cardtrait>temp</c> card in hand. It gains <c=cardtrait>Analyzed</c> until end of combat."
+        },
+        "OnAnalyze": {
+            "name": "On Analyze",
+            "description": "This action only triggers when this card gains <c=cardtrait>Analyzed</c>."
+        },
+        "DiscardSelf": {
+            "name": "Discard Self",
+            "description": "Discard this card."
         }
     },
     "x": {
@@ -41,9 +49,18 @@
             "stateless": "<c=action>X</c> = All other analyzable cards in hand."
         }
     },
+    "status": {
+        "Relativity": {
+            "name": "Relativity",
+            "description": "Lets you move left or right with <c=boldPink>{{MoveLeft}}</c> / <c=boldPink>{{MoveRight}}</c>, or move all <c=midrow>midrow objects</c> left or right with <c=boldPink>{{ShiftLeft}}</c> / <c=boldPink>{{ShiftRight}}</c>, or move the enemy left or right. Costs 1 relativity per move. Maximum 3."
+        }
+    },
     "card": {
         "Assimilate": {
             "name": "Assimilate"
+        },
+        "ElectronGun": {
+            "name": "Electron Gun"
         },
         "FractalStructure": {
             "name": "Fractal Structure"
@@ -64,6 +81,25 @@
                     "stateless": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 3X."
                 }
             }
+        },
+        "LorentzTransform": {
+            "name": "Lorentz Transform"
+        },
+        "Prototype": {
+            "name": "Prototype",
+            "description": "When <c=action>analyzed</c>, <c=action>upgrade</c>, then <c=cardtrait>exhaust</c>."
+        },
+        "Prototyping": {
+            "name": "Prototyping",
+            "description": {
+                "None": "Add <c=card>Prototype</c> to your hand.",
+                "A": "Add <c=card>Prototype</c> to your hand.",
+                "B": "Add 2 <c=card>Prototype</c>s to your hand."
+            }
+        },
+        "Relativity": {
+            "name": "Relativity",
+            "description": "Move <c=midrow>midrow</c> and both ships by different amounts each in 0-2. Gain 2 <c=status>relativity</c>."
         },
         "SafetyProtocol": {
             "name": "Safety Protocol"
