@@ -49,6 +49,12 @@
             "stateless": "<c=action>X</c> = All other analyzable cards in hand."
         }
     },
+    "midrow": {
+        "SmartShieldDrone": {
+            "name": "Smart Shield Drone",
+            "description": "Beams <c=status>1 smart shield</c> at its target once per turn."
+        }
+    },
     "status": {
         "Relativity": {
             "name": "Relativity",
@@ -88,6 +94,9 @@
                 "B": "<c=action>Analyze</c> a card. Create 4 <c=cardtrait>temp</c> copies of it. <c=downside>Lose 1 hull.</c>"
             }
         },
+        "Insurance": {
+            "name": "Insurance"
+        },
         "LilHadronCollider": {
             "name": "Lil' Hadron Collider",
             "description": {
@@ -126,6 +135,9 @@
         },
         "SafetyProtocol": {
             "name": "Safety Protocol"
+        },
+        "SmartShieldDrone": {
+            "name": "Smart Shield Drone"
         }
     }
 }

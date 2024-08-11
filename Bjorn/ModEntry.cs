@@ -26,11 +26,13 @@ public sealed class ModEntry : SimpleMod
 		typeof(LorentzTransformCard),
 		typeof(PrototypingCard),
 		typeof(SafetyProtocolCard),
+		typeof(SmartShieldDroneCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
 		typeof(AssimilateCard),
 		typeof(EntangleCard),
+		typeof(InsuranceCard),
 		typeof(RelativityCard),
 	];
 
@@ -72,6 +74,7 @@ public sealed class ModEntry : SimpleMod
 			typeof(Entanglement),
 			typeof(Relativity),
 			typeof(SmartShield),
+			typeof(SmartShieldDrone),
 		];
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
