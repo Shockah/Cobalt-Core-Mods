@@ -1,9 +1,7 @@
-﻿using FSPRO;
-using Nanoray.PluginManager;
+﻿using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Bjorn;
@@ -27,68 +25,44 @@ public sealed class SafetyProtocolCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-	{
-		var description = ModEntry.Instance.Localizations.Localize(["card", "SafetyProtocol", "description", upgrade.ToString(), flipped ? "energy" : "analyze"]);
-		return upgrade.Switch<CardData>(
-			none: () => new() { cost = 0, floppable = true, infinite = true, description = description },
-			a: () => new() { cost = 0, floppable = true, infinite = true, description = description },
-			b: () => new() { cost = 0, floppable = true, description = description }
+		=> upgrade.Switch<CardData>(
+			none: () => new() { cost = 0, floppable = true, infinite = true },
+			a: () => new() { cost = 0, floppable = true, infinite = true },
+			b: () => new() { cost = 0, floppable = true }
 		);
-	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade.Switch<List<CardAction>>(
-			none: () => [new ActionCost { Analyze = !flipped, EnergyCost = flipped ? 1 : 0, Actions = [
-				new SmartShieldAction { Amount = 1 },
-			] }],
-			a: () => [new ActionCost { Analyze = !flipped, EnergyCost = flipped ? 1 : 0, Actions = [
-				new SmartShieldAction { Amount = 1 },
-				new ADrawCard { count = 1 },
-			] }],
-			b: () => [new ActionCost { Analyze = !flipped, EnergyCost = flipped ? 1 : 0, Actions = [
-				new SmartShieldAction { Amount = 2 },
-			] }]
+			none: () => [
+				new AnalyzeCostAction { Action = new SmartShieldAction { Amount = 1 }, disabled = flipped },
+				new ADummyAction(),
+				ModEntry.Instance.KokoroApi.ActionCosts.Make(
+					ModEntry.Instance.KokoroApi.ActionCosts.Cost(ModEntry.Instance.KokoroApi.ActionCosts.EnergyResource(), 1),
+					new SmartShieldAction { Amount = 1 }
+				).Disabled(!flipped),
+			],
+			a: () => [
+				new AnalyzeCostAction { Action = ModEntry.Instance.KokoroApi.Actions.MakeContinue(out var analyzeContinueId), disabled = flipped },
+				ModEntry.Instance.KokoroApi.ActionCosts.Make(
+					ModEntry.Instance.KokoroApi.ActionCosts.Cost(ModEntry.Instance.KokoroApi.ActionCosts.EnergyResource(), 1),
+					ModEntry.Instance.KokoroApi.Actions.MakeContinue(out var energyContinueId)
+				).Disabled(!flipped),
+				new ADummyAction(),
+				.. ModEntry.Instance.KokoroApi.Actions.MakeContinued(
+					flipped ? energyContinueId : analyzeContinueId,
+					[
+						new SmartShieldAction { Amount = 1 },
+						new ADrawCard { count = 1 }
+					]
+				),
+			],
+			b: () => [
+				new AnalyzeCostAction { Action = new SmartShieldAction { Amount = 2 }, disabled = flipped },
+				new ADummyAction(),
+				ModEntry.Instance.KokoroApi.ActionCosts.Make(
+					ModEntry.Instance.KokoroApi.ActionCosts.Cost(ModEntry.Instance.KokoroApi.ActionCosts.EnergyResource(), 1),
+					new SmartShieldAction { Amount = 2 }
+				).Disabled(!flipped),
+			]
 		);
-
-	private sealed class ActionCost : CardAction
-	{
-		public int EnergyCost;
-		public bool Analyze;
-		public required List<CardAction> Actions;
-
-		public override List<Tooltip> GetTooltips(State s)
-			=> Analyze
-				? new AnalyzeCostAction { Actions = Actions }.GetTooltips(s)
-				: Actions.SelectMany(a => a.GetTooltips(s)).ToList();
-
-		public override void Begin(G g, State s, Combat c)
-		{
-			base.Begin(g, s, c);
-
-			if (Analyze)
-			{
-				timer = 0;
-				c.QueueImmediate(new AnalyzeCostAction { Actions = Actions });
-			}
-			else if (EnergyCost > 0)
-			{
-				if (c.energy < EnergyCost)
-				{
-					timer = 0;
-					Audio.Play(Event.ZeroEnergy);
-					return;
-				}
-				else
-				{
-					c.energy -= EnergyCost;
-					c.QueueImmediate(Actions);
-				}
-			}
-			else
-			{
-				timer = 0;
-				c.QueueImmediate(Actions);
-			}
-		}
-	}
 }
