@@ -29,6 +29,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
 		typeof(AssimilateCard),
+		typeof(EntangleCard),
 		typeof(RelativityCard),
 	];
 
@@ -66,6 +67,7 @@ public sealed class ModEntry : SimpleMod
 			.. AllArtifactTypes,
 			.. DuoArtifacts,
 			typeof(Analyze),
+			typeof(Entanglement),
 			typeof(Relativity),
 			typeof(SmartShield),
 		];

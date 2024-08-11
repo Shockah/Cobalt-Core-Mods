@@ -9,4 +9,15 @@ public partial interface IKokoroApi
 public interface IStatusLogicHook
 {
 	int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount) => newAmount;
+	bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy) => false;
+}
+
+public enum StatusTurnTriggerTiming
+{
+	TurnStart, TurnEnd
+}
+
+public enum StatusTurnAutoStepSetStrategy
+{
+	Direct, QueueSet, QueueAdd, QueueImmediateSet, QueueImmediateAdd
 }
