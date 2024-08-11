@@ -63,6 +63,14 @@
         "Assimilate": {
             "name": "Assimilate"
         },
+        "DrawConclusions": {
+            "name": "Draw Conclusions",
+            "description": {
+                "None": "<c=action>Analyze</c> a card. Draw cards equal to its cost, +1.",
+                "A": "<c=action>Analyze</c> a card. Draw cards equal to its cost, +2.",
+                "B": "<c=action>Analyze</c> a random card. Draw cards equal to its cost, +1."
+            }
+        },
         "ElectronGun": {
             "name": "Electron Gun"
         },

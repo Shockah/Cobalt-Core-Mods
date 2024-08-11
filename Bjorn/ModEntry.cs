@@ -20,6 +20,7 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry BjornDeck { get; }
 
 	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
+		typeof(DrawConclusionsCard),
 		typeof(ElectronGunCard),
 		typeof(FractalStructureCard),
 		typeof(LorentzTransformCard),
