@@ -14,6 +14,12 @@ internal static class AnalyzeCardSelectFiltersExt
 		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "FilterAnalyzable", value);
 		return self;
 	}
+
+	public static ACardSelect SetForceInclude(this ACardSelect self, int? cardId)
+	{
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "ForceInclude", cardId);
+		return self;
+	}
 }
 
 internal static class AnalyzeCardExt
@@ -140,21 +146,28 @@ internal sealed class Analyze : IRegisterable
 	{
 		if (__result is not CardBrowse route)
 			return;
-
-		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "FilterAnalyzable") is { } filterAnalyzable)
-			ModEntry.Instance.Helper.ModData.SetModData(route, "FilterAnalyzable", filterAnalyzable);
+		ModEntry.Instance.Helper.ModData.CopyOwnedModData(__instance, route);
 	}
 
 	private static void CardBrowse_GetCardList_Postfix(CardBrowse __instance, G g, ref List<Card> __result)
 	{
-		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "FilterAnalyzable") is not { } filterAnalyzable)
-			return;
-
-		for (var i = __result.Count - 1; i >= 0; i--)
+		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "FilterAnalyzable") is { } filterAnalyzable)
 		{
-			if (__result[i].IsAnalyzable(g.state) == filterAnalyzable)
-				continue;
-			__result.RemoveAt(i);
+			for (var i = __result.Count - 1; i >= 0; i--)
+			{
+				if (__result[i].IsAnalyzable(g.state) == filterAnalyzable)
+					continue;
+				__result.RemoveAt(i);
+			}
+		}
+
+		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<int>(__instance, "ForceInclude") is { } forceIncludeCardId)
+		{
+			var index = __result.FindIndex(card => card.uuid == forceIncludeCardId);
+			if (index != -1)
+				__result.RemoveAt(index);
+			if (g.state.FindCard(forceIncludeCardId) is { } card)
+				__result.Insert(0, card);
 		}
 	}
 
@@ -307,7 +320,7 @@ internal sealed class AnalyzeCostAction : CardAction
 		{
 			browseAction = new AnalyzeCostBrowseAction { Action = Action, ToAnalyzeLeft = Count - 1 },
 			browseSource = CardBrowse.Source.Hand,
-		}.SetFilterAnalyzable(true));
+		}.SetFilterAnalyzable(true).SetForceInclude(CardId));
 	}
 
 	// TODO: register wrapped action
