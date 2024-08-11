@@ -100,32 +100,41 @@ internal sealed class Analyze : IRegisterable
 		);
 	}
 
-	public static Tooltip GetAnalyzeTooltip()
-		=> new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::Analyze")
-		{
-			Icon = AnalyzeIcon.Sprite,
-			TitleColor = Colors.action,
-			Title = ModEntry.Instance.Localizations.Localize(["action", "Analyze", "name"]),
-			Description = ModEntry.Instance.Localizations.Localize(["action", "Analyze", "description"]),
-		};
+	public static List<Tooltip> GetAnalyzeTooltips(State state)
+		=> [
+			new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::Analyze")
+			{
+				Icon = AnalyzeIcon.Sprite,
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["action", "Analyze", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["action", "Analyze", "description"]),
+			},
+			.. (AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? []),
+		];
 
-	public static Tooltip GetSelfAnalyzeTooltip()
-		=> new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::SelfAnalyze")
-		{
-			Icon = SelfAnalyzeIcon.Sprite,
-			TitleColor = Colors.action,
-			Title = ModEntry.Instance.Localizations.Localize(["action", "SelfAnalyze", "name"]),
-			Description = ModEntry.Instance.Localizations.Localize(["action", "SelfAnalyze", "description"]),
-		};
+	public static List<Tooltip> GetSelfAnalyzeTooltips(State state)
+		=> [
+			new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::SelfAnalyze")
+			{
+				Icon = SelfAnalyzeIcon.Sprite,
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["action", "SelfAnalyze", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["action", "SelfAnalyze", "description"]),
+			},
+			.. (AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? []),
+		];
 
-	public static Tooltip GetAnalyzeOrSelfAnalyzeTooltip()
-		=> new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::AnalyzeOrSelfAnalyze")
-		{
-			Icon = AnalyzeOrSelfAnalyzeIcon.Sprite,
-			TitleColor = Colors.action,
-			Title = ModEntry.Instance.Localizations.Localize(["action", "AnalyzeOrSelfAnalyze", "name"]),
-			Description = ModEntry.Instance.Localizations.Localize(["action", "AnalyzeOrSelfAnalyze", "description"]),
-		};
+	public static List<Tooltip> GetAnalyzeOrSelfAnalyzeTooltips(State state)
+		=> [
+			new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::AnalyzeOrSelfAnalyze")
+			{
+				Icon = AnalyzeOrSelfAnalyzeIcon.Sprite,
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["action", "AnalyzeOrSelfAnalyze", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["action", "AnalyzeOrSelfAnalyze", "description"]),
+			},
+			.. (AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? []),
+		];
 
 	private static void ACardSelect_BeginWithRoute_Postfix(ACardSelect __instance, ref Route? __result)
 	{
@@ -279,8 +288,7 @@ internal sealed class AnalyzeCostAction : CardAction
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
-			CardId is null ? Analyze.GetAnalyzeTooltip() : Analyze.GetAnalyzeOrSelfAnalyzeTooltip(),
-			.. (Analyze.AnalyzedTrait.Configuration.Tooltips?.Invoke(s, null) ?? []),
+			.. (CardId is null ? Analyze.GetAnalyzeTooltips(s) : Analyze.GetAnalyzeOrSelfAnalyzeTooltips(s)),
 			.. Action.GetTooltips(s),
 		];
 
@@ -341,8 +349,7 @@ internal sealed class SelfAnalyzeCostAction : CardAction
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
-			Analyze.GetSelfAnalyzeTooltip(),
-			.. (Analyze.AnalyzedTrait.Configuration.Tooltips?.Invoke(s, null) ?? []),
+			.. Analyze.GetSelfAnalyzeTooltips(s),
 			.. Action.GetTooltips(s),
 		];
 
@@ -402,7 +409,6 @@ internal sealed class AnalyzableVariableHint : AVariableHint
 			{
 				Description = ModEntry.Instance.Localizations.Localize(["x", "Analyzable", s.route is Combat ? "stateful" : "stateless"], new { Count = (s.route as Combat)?.hand.Count(card => card.uuid != CardId && card.IsAnalyzable(s)) })
 			},
-			Analyze.GetAnalyzeTooltip(),
-			.. (Analyze.AnalyzedTrait.Configuration.Tooltips?.Invoke(s, null) ?? []),
+			.. Analyze.GetAnalyzeTooltips(s),
 		];
 }
