@@ -25,28 +25,25 @@ public sealed class AssimilateCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-	{
-		var description = ModEntry.Instance.Localizations.Localize(["card", "Assimilate", "description", upgrade.ToString()]);
-		return upgrade.Switch<CardData>(
-			none: () => new() { cost = 1, description = description },
-			a: () => new() { cost = 1, description = description },
-			b: () => new() { cost = 1, exhaust = true, description = description }
+		=> upgrade.Switch<CardData>(
+			none: () => new() { cost = 1 },
+			a: () => new() { cost = 1 },
+			b: () => new() { cost = 1, exhaust = true }
 		);
-	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade.Switch<List<CardAction>>(
 			none: () => [
 				new SmartShieldAction { Amount = 1 },
-				new SelfAnalyzeCostAction { CardId = uuid, Actions = [new AHeal { targetPlayer = true, healAmount = 1, canRunAfterKill = true }] },
+				new SelfAnalyzeCostAction { CardId = uuid, Action = new AHeal { targetPlayer = true, healAmount = 1, canRunAfterKill = true } },
 			],
 			a: () => [
 				new SmartShieldAction { Amount = 2 },
-				new SelfAnalyzeCostAction { CardId = uuid, Actions = [new AHeal { targetPlayer = true, healAmount = 1, canRunAfterKill = true }] },
+				new SelfAnalyzeCostAction { CardId = uuid, Action = new AHeal { targetPlayer = true, healAmount = 1, canRunAfterKill = true } },
 			],
 			b: () => [
-				new SmartShieldAction { Amount = 1 },
-				new SelfAnalyzeCostAction { CardId = uuid, Actions = [new AnalyzeCostAction { Actions = [new AHeal { targetPlayer = true, healAmount = 1, canRunAfterKill = true }] }] },
+				new SmartShieldAction { Amount = 2 },
+				new SelfAnalyzeCostAction { CardId = uuid, Action = new AnalyzeCostAction { Action = new AHeal { targetPlayer = true, healAmount = 2, canRunAfterKill = true } } },
 			]
 		);
 }

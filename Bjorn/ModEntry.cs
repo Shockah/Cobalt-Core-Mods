@@ -13,6 +13,7 @@ public sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly IHarmony Harmony;
+	internal readonly IKokoroApi KokoroApi;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
@@ -67,6 +68,7 @@ public sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
+		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
