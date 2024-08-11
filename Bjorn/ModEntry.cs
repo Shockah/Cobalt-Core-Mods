@@ -34,6 +34,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
+		typeof(HandheldDuplitronCard),
 		typeof(LilHadronColliderCard),
 	];
 
