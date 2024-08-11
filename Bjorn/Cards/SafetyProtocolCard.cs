@@ -17,10 +17,10 @@ public sealed class SafetyProtocolCard : Card, IRegisterable
 			{
 				deck = ModEntry.Instance.BjornDeck.Deck,
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
-				upgradesTo = [Upgrade.A, Upgrade.B]
+				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/SafetyProtocol.png"), StableSpr.cards_Shield).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "SafetyProtocol", "name"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "SafetyProtocol", "name"]).Localize,
 		});
 	}
 

@@ -91,6 +91,13 @@ internal sealed class Analyze : IRegisterable
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
+
+		// TODO: make this a Nickel API
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Mod).Assembly.GetType("Nickel.CardTraitManager"), "SetCardTraitOverride"),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardTraitManager_SetCardTraitOverride_Perfix)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardTraitManager_SetCardTraitOverride_Postfix))
+		);
 	}
 
 	public static Tooltip GetAnalyzeTooltip()
@@ -172,7 +179,7 @@ internal sealed class Analyze : IRegisterable
 
 			return false;
 		}
-		
+
 		if (action is SelfAnalyzeCostAction selfAnalyzeCostAction)
 		{
 			bool oldActionDisabled = selfAnalyzeCostAction.Action.disabled;
@@ -196,7 +203,69 @@ internal sealed class Analyze : IRegisterable
 			return false;
 		}
 
+		if (action is OnAnalyzeAction onAnalyzeAction)
+		{
+			bool oldActionDisabled = onAnalyzeAction.Action.disabled;
+			onAnalyzeAction.Action.disabled = onAnalyzeAction.disabled;
+
+			var position = g.Push(rect: new()).rect.xy;
+			int initialX = (int)position.x;
+
+			if (!dontDraw)
+				Draw.Sprite(OnAnalyzeIcon.Sprite, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
+			position.x += 10;
+
+			g.Push(rect: new(position.x - initialX, 0));
+			position.x += Card.RenderAction(g, state, onAnalyzeAction.Action, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+			g.Pop();
+
+			__result = (int)position.x - initialX;
+			g.Pop();
+			onAnalyzeAction.Action.disabled = oldActionDisabled;
+
+			return false;
+		}
+
 		return true;
+	}
+
+	private static void CardTraitManager_SetCardTraitOverride_Perfix(Card card, ICardTraitEntry trait, bool? overrideValue, ref bool __state)
+	{
+		if (trait != AnalyzedTrait)
+			return;
+		if (overrideValue == false)
+			return;
+		__state = ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(MG.inst.g.state, card, trait);
+	}
+
+	private static void CardTraitManager_SetCardTraitOverride_Postfix(Card card, ICardTraitEntry trait, bool? overrideValue, ref bool __state)
+	{
+		if (trait != AnalyzedTrait)
+			return;
+		if (overrideValue == false)
+			return;
+		if (__state)
+			return;
+		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(MG.inst.g.state, card, trait))
+			return;
+		if (MG.inst.g.state.route is not Combat combat)
+			return;
+
+		var meta = card.GetMeta();
+		if (MG.inst.g.state.CharacterIsMissing(meta.deck))
+			return;
+
+		combat.QueueImmediate(
+			card.GetActionsOverridden(MG.inst.g.state, combat)
+				.Where(action => !action.disabled)
+				.OfType<OnAnalyzeAction>()
+				.Select(triggerAction => triggerAction.Action)
+				.Select(action =>
+				{
+					action.whoDidThis = meta.deck;
+					return action;
+				})
+		);
 	}
 }
 
@@ -288,6 +357,33 @@ internal sealed class SelfAnalyzeCostAction : CardAction
 
 		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, Analyze.AnalyzedTrait, true, permanent: false);
 		c.QueueImmediate(Action);
+	}
+}
+
+internal sealed class OnAnalyzeAction : CardAction
+{
+	public required CardAction Action;
+
+	public override Icon? GetIcon(State s)
+		=> new(Analyze.OnAnalyzeIcon.Sprite, null, Colors.textMain);
+
+	public override List<Tooltip> GetTooltips(State s)
+		=> [
+			new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::OnAnalyze")
+			{
+				Icon = Analyze.OnAnalyzeIcon.Sprite,
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["action", "OnAnalyze", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["action", "OnAnalyze", "description"]),
+			},
+			.. (Analyze.AnalyzedTrait.Configuration.Tooltips?.Invoke(s, null) ?? []),
+			.. Action.GetTooltips(s)
+		];
+
+	public override void Begin(G g, State s, Combat c)
+	{
+		base.Begin(g, s, c);
+		timer = 0;
 	}
 }
 
