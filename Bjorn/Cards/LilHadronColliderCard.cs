@@ -18,10 +18,10 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 			{
 				deck = ModEntry.Instance.BjornDeck.Deck,
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
-				upgradesTo = [Upgrade.A, Upgrade.B]
+				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/LilHadronCollider.png"), StableSpr.cards_HandCannon).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "LilHadronCollider", "name"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "LilHadronCollider", "name"]).Localize,
 		});
 	}
 

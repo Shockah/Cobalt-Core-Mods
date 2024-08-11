@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Shockah.Bjorn;
 
-public sealed class AssimilateCard : Card, IRegisterable
+public sealed class ElectronGunCard : Card, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -19,8 +19,8 @@ public sealed class AssimilateCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Assimilate.png"), StableSpr.cards_Repairs).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Assimilate", "name"]).Localize,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/ElectronGun.png"), StableSpr.cards_Cannon).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "ElectronGun", "name"]).Localize,
 		});
 	}
 
@@ -28,22 +28,22 @@ public sealed class AssimilateCard : Card, IRegisterable
 		=> upgrade.Switch<CardData>(
 			none: () => new() { cost = 1 },
 			a: () => new() { cost = 1 },
-			b: () => new() { cost = 1, exhaust = true }
+			b: () => new() { cost = 1 }
 		);
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade.Switch<List<CardAction>>(
 			none: () => [
-				new SmartShieldAction { Amount = 1 },
-				new SelfAnalyzeCostAction { CardId = uuid, Action = new AHeal { targetPlayer = true, healAmount = 1, canRunAfterKill = true } },
+				new AAttack { damage = GetDmg(s, 1) },
+				new AStatus { targetPlayer = true, status = Relativity.RelativityStatus.Status, statusAmount = 1 },
 			],
 			a: () => [
-				new SmartShieldAction { Amount = 2 },
-				new SelfAnalyzeCostAction { CardId = uuid, Action = new AHeal { targetPlayer = true, healAmount = 1, canRunAfterKill = true } },
+				new AAttack { damage = GetDmg(s, 2) },
+				new AStatus { targetPlayer = true, status = Relativity.RelativityStatus.Status, statusAmount = 1 },
 			],
 			b: () => [
-				new SmartShieldAction { Amount = 2 },
-				new SelfAnalyzeCostAction { CardId = uuid, Action = new AnalyzeCostAction { Action = new AHeal { targetPlayer = true, healAmount = 2, canRunAfterKill = true } } },
+				new AAttack { damage = GetDmg(s, 2) },
+				new AnalyzeCostAction { Count = 2, Action = new AStatus { targetPlayer = true, status = Relativity.RelativityStatus.Status, statusAmount = 2 } },
 			]
 		);
 }
