@@ -25,6 +25,14 @@
             "name": "Analyze",
             "description": "Choose a non-<c=cardtrait>analyzed</c>, non-<c=cardtrait>temp</c> card in hand. It gains <c=cardtrait>Analyzed</c> until end of combat.",
             "uiTitle": "Select a card to <c=action>Analyze</c>."
+        },
+        "SelfAnalyze": {
+            "name": "Self-Analyze",
+            "description": "This card gains <c=cardtrait>Analyzed</c> until end of combat."
+        },
+        "AnalyzeOrSelfAnalyze": {
+            "name": "(Self-)Analyze",
+            "description": "Choose a non-<c=cardtrait>analyzed</c>, non-<c=cardtrait>temp</c> card in hand. It gains <c=cardtrait>Analyzed</c> until end of combat."
         }
     },
     "x": {
@@ -35,20 +43,10 @@
     },
     "card": {
         "Assimilate": {
-            "name": "Assimilate",
-            "description": {
-                "None": "Gain 1 <c=status>smart shield</c>. <c=action>Self-analyze</c>: <c=heal>Heal 1</c>.",
-                "A": "Gain 2 <c=status>smart shield</c>. <c=action>Self-analyze</c>: <c=heal>Heal 1</c>.",
-                "B": "Gain 1 <c=status>smart shield</c>. <c=action>Self-analyze</c> + <c=action>analyze</c> a card: <c=heal>Heal 2</c>."
-            }
+            "name": "Assimilate"
         },
         "FractalStructure": {
-            "name": "Fractal Structure",
-            "description": {
-                "None": "<c=action>Analyze</c> a card: gain 1 <c=status>max shield</c>. Gain 1 <c=status>smart shield</c>.",
-                "A": "<c=action>Analyze</c> a card: gain 1 <c=status>max shield</c>. Gain 2 <c=status>smart shield</c>.",
-                "B": "<c=action>Analyze</c> 2 cards: gain 2 <c=status>max shield</c>. Gain 2 <c=status>smart shield</c>."
-            }
+            "name": "Fractal Structure"
         },
         "LilHadronCollider": {
             "name": "Lil' Hadron Collider",
@@ -68,21 +66,7 @@
             }
         },
         "SafetyProtocol": {
-            "name": "Safety Protocol",
-            "description": {
-                "None": {
-                    "energy": "<c=5f5f5f>Analyze a card/</c>Spend 1 <c=energy>energy</c>: Gain 1 <c=status>smart shield</c>.",
-                    "analyze": "<c=action>Analyze</c> a card<c=5f5f5f>/Spend 1 energy</c>: Gain 1 <c=status>smart shield</c>."
-                },
-                "A": {
-                    "energy": "<c=5f5f5f>Analyze a card/</c>Spend 1 <c=energy>energy</c>: Gain 1 <c=status>smart shield</c>, then draw a card.",
-                    "analyze": "<c=action>Analyze</c> a card<c=5f5f5f>/Spend 1 energy</c>: Gain 1 <c=status>smart shield</c>, then draw a card."
-                },
-                "B": {
-                    "energy": "<c=5f5f5f>Analyze a card/</c>Spend 1 <c=energy>energy</c>: Gain 2 <c=status>smart shield</c>.",
-                    "analyze": "<c=action>Analyze</c> a card<c=5f5f5f>/Spend 1 energy</c>: Gain 2 <c=status>smart shield</c>."
-                }
-            }
+            "name": "Safety Protocol"
         }
     }
 }

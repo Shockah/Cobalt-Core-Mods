@@ -25,27 +25,24 @@ public sealed class FractalStructureCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-	{
-		var description = ModEntry.Instance.Localizations.Localize(["card", "FractalStructure", "description", upgrade.ToString()]);
-		return upgrade.Switch<CardData>(
-			none: () => new() { cost = 1, description = description },
-			a: () => new() { cost = 1, description = description },
-			b: () => new() { cost = 0, exhaust = true, description = description }
+		=> upgrade.Switch<CardData>(
+			none: () => new() { cost = 1 },
+			a: () => new() { cost = 1 },
+			b: () => new() { cost = 0, exhaust = true }
 		);
-	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade.Switch<List<CardAction>>(
 			none: () => [
-				new AnalyzeCostAction { Actions = [new AStatus { targetPlayer = true, status = Status.maxShield, statusAmount = 1 }] },
+				new AnalyzeCostAction { Action = new AStatus { targetPlayer = true, status = Status.maxShield, statusAmount = 1 } },
 				new SmartShieldAction { Amount = 1 },
 			],
 			a: () => [
-				new AnalyzeCostAction { Actions = [new AStatus { targetPlayer = true, status = Status.maxShield, statusAmount = 1 }] },
+				new AnalyzeCostAction { Action = new AStatus { targetPlayer = true, status = Status.maxShield, statusAmount = 1 } },
 				new SmartShieldAction { Amount = 2 },
 			],
 			b: () => [
-				new AnalyzeCostAction { Cards = 2, Actions = [new AStatus { targetPlayer = true, status = Status.maxShield, statusAmount = 2 }] },
+				new AnalyzeCostAction { Count = 2, Action = new AStatus { targetPlayer = true, status = Status.maxShield, statusAmount = 2 } },
 				new SmartShieldAction { Amount = 2 },
 			]
 		);
