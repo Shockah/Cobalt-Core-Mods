@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Run Summary card tooltips after scrolling.
+
 ## 1.0.1
 Released 11 May 2024.
 
