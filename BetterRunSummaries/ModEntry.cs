@@ -340,7 +340,7 @@ public sealed class ModEntry : SimpleMod
 		}
 
 		var rect = Draw.Text(str, x, y, Instance.KokoroApi?.Assets.PinchCompactFont ?? font, color, colorForce, progress, maxWidth, align, dontDraw, lineHeight, outline, blend, samplerState, effect, dontSubstituteLocFont, letterSpacing, extraScale);
-		var box = MG.inst.g.Push(new UIKey(StableUK.card, card.uuid), new Rect(x - 82, y - 14, rect.w + 4, rect.h + 4));
+		var box = MG.inst.g.Push(new UIKey(StableUK.card, card.uuid), new Rect(x - 82, y - 14 - route.scroll, rect.w + 4, rect.h + 4));
 
 		if (box.IsHover())
 			MG.inst.g.tooltips.Add(box.rect.xy.round() + new Vec(rect.w + 8), new TTCard { card = card, showCardTraitTooltips = true });
