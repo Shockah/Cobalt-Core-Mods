@@ -7,7 +7,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	internal FrogproofManager() : base()
+	internal FrogproofManager()
 	{
 		Register(FrogproofCardTraitFrogproofHook.Instance, 0);
 		Register(NonVanillaNonCharacterCardFrogproofHook.Instance, 1);
@@ -38,7 +38,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 			var hookResult = hook.GetFrogproofType(state, combat, card, context);
 			if (hookResult == FrogproofType.None)
 				return FrogproofType.None;
-			else if (hookResult != null)
+			if (hookResult != null)
 				return hookResult.Value;
 		}
 		return FrogproofType.None;
@@ -51,7 +51,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 			var hookResult = hook.GetFrogproofType(state, combat, card, context);
 			if (hookResult == FrogproofType.None)
 				return null;
-			else if (hookResult != null)
+			if (hookResult != null)
 				return hook;
 		}
 		return null;

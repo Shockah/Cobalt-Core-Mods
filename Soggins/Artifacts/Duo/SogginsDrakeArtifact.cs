@@ -15,7 +15,7 @@ public sealed class SogginsDrakeArtifact : Artifact, IRegisterableArtifact
 	private static ExternalSprite Sprite = null!;
 	private static ExternalSprite InactiveSprite = null!;
 
-	public bool TriggeredThisCombat = false;
+	public bool TriggeredThisCombat;
 
 	public void RegisterArt(ISpriteRegistry registry)
 	{

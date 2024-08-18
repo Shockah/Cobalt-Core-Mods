@@ -68,7 +68,7 @@ public sealed class SogginsMaxArtifact : Artifact, IRegisterableArtifact, ISmugH
 		if (card is null || state.route is not Combat combat || combat.hand.Count < 2)
 			return chance;
 
-		int handPosition = combat.hand.IndexOf(card);
+		var handPosition = combat.hand.IndexOf(card);
 		if (handPosition != 0 && handPosition != combat.hand.Count - 1)
 			return chance;
 

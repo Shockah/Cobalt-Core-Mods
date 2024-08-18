@@ -51,33 +51,28 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard, IFrogproof
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		List<CardAction> actions = [
+		=>
+		[
 			new AStatus
 			{
 				status = (Status)Instance.SmugStatus.Id!.Value,
 				statusAmount = 1,
 				targetPlayer = true
-			}
-		];
-
-		actions.Add(ModEntry.Instance.KokoroApi.Actions.MakeSpoofed(
-			renderAction: new AAddCard
-			{
-				card = new RandomPlaceholderApologyCard(),
-				destination = CardDestination.Hand,
-				amount = GetAmount()
 			},
-			realAction: new AAddApologyCard
-			{
-				Destination = CardDestination.Hand,
-				Amount = GetAmount()
-			}
-		));
-
-		for (int i = 0; i < 2; i++)
-			actions.Add(new ADummyAction());
-
-		return actions;
-	}
+			ModEntry.Instance.KokoroApi.Actions.MakeSpoofed(
+				renderAction: new AAddCard
+				{
+					card = new RandomPlaceholderApologyCard(),
+					destination = CardDestination.Hand,
+					amount = this.GetAmount()
+				},
+				realAction: new AAddApologyCard
+				{
+					Destination = CardDestination.Hand,
+					Amount = this.GetAmount()
+				}
+			),
+			new ADummyAction(),
+			new ADummyAction(),
+		];
 }

@@ -3,7 +3,6 @@ using Nickel;
 
 namespace Shockah.Kokoro;
 
-// ReSharper disable InconsistentNaming
 internal static class RevengeDrivePatches
 {
 	private static ModEntry Instance => ModEntry.Instance;

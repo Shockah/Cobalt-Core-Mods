@@ -14,9 +14,9 @@ internal sealed class NarrativeManager
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	public bool DidBotchCard = false;
-	public bool DidDoubleCard = false;
-	public bool DidDoubleLaunchAction = false;
+	public bool DidBotchCard;
+	public bool DidDoubleCard;
+	public bool DidDoubleLaunchAction;
 
 	internal static void ApplyPatches(Harmony harmony)
 	{
@@ -42,13 +42,14 @@ internal sealed class NarrativeManager
 
 	private static IEnumerable<CodeInstruction> Narrative_PickWhenActionsAreDone_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(
 					ILMatches.Ldarg(0),
 					ILMatches.Ldfld("state"),
-					ILMatches.Ldfld("storyVars"),
+					new ElementMatch<CodeInstruction>("ldfld `storyVars` or ldfld `persistentStoryVars`", i => ILMatches.Ldfld("storyVars").Matches(i) || ILMatches.Ldfld("persistentStoryVars").Matches(i)),
 					ILMatches.Ldfld("skipTutorial"),
 					ILMatches.Brtrue.GetBranchTarget(out var branchTarget)
 				)
@@ -68,6 +69,7 @@ internal sealed class NarrativeManager
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static bool Narrative_PickWhenActionsAreDone_Transpiler_OverrideNarrative(G g, Combat combat)
@@ -79,28 +81,28 @@ internal sealed class NarrativeManager
 		if (manager.DidBotchCard)
 		{
 			double? responseDelay = DB.story.QuickLookup(g.state, $".{Instance.SogginsDeck.GlobalName}_Botch") is null ? null : 1.25;
-			Narrative.SpeakBecauseOfAction(MG.inst.g, combat, $".{Instance.SogginsDeck.GlobalName}_Botch");
-			QueuedAction.Queue(new QueuedAction()
+			Narrative.SpeakBecauseOfAction(g, combat, $".{Instance.SogginsDeck.GlobalName}_Botch");
+			QueuedAction.Queue(new QueuedAction
 			{
 				WaitForTotalGameTime = responseDelay is null ? null : Instance.KokoroApi.TotalGameTime.TotalSeconds + responseDelay.Value,
-				Action = () => Narrative.SpeakBecauseOfAction(MG.inst.g, combat, $".{Instance.SogginsDeck.GlobalName}_BotchResponse_{deckKey}")
+				Action = () => Narrative.SpeakBecauseOfAction(g, combat, $".{Instance.SogginsDeck.GlobalName}_BotchResponse_{deckKey}")
 			});
 			return true;
 		}
 		if (manager.DidDoubleCard)
 		{
-			bool wasLaunchAction = manager.DidDoubleLaunchAction;
+			var wasLaunchAction = manager.DidDoubleLaunchAction;
 			double? responseDelay = DB.story.QuickLookup(g.state, $".{Instance.SogginsDeck.GlobalName}_Double") is null ? null : 1.25;
-			Narrative.SpeakBecauseOfAction(MG.inst.g, combat, $".{Instance.SogginsDeck.GlobalName}_Double");
-			QueuedAction.Queue(new QueuedAction()
+			Narrative.SpeakBecauseOfAction(g, combat, $".{Instance.SogginsDeck.GlobalName}_Double");
+			QueuedAction.Queue(new QueuedAction
 			{
 				WaitForTotalGameTime = responseDelay is null ? null : Instance.KokoroApi.TotalGameTime.TotalSeconds + responseDelay.Value,
 				Action = () =>
 				{
-					string storyKey = $".{Instance.SogginsDeck.GlobalName}_Double{(wasLaunchAction ? "Launch" : "")}Response";
+					var storyKey = $".{Instance.SogginsDeck.GlobalName}_Double{(wasLaunchAction ? "Launch" : "")}Response";
 					if (wasLaunchAction && DB.story.QuickLookup(g.state, storyKey) is null)
 						storyKey = $".{Instance.SogginsDeck.GlobalName}_DoubleResponse";
-					Narrative.SpeakBecauseOfAction(MG.inst.g, combat, storyKey);
+					Narrative.SpeakBecauseOfAction(g, combat, storyKey);
 				}
 			});
 			return true;

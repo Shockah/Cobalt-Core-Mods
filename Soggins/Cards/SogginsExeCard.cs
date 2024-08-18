@@ -128,8 +128,6 @@ public sealed class SogginsExeCard : Card, IRegisterableCard, IFrogproofCard
 					targetPlayer = true
 				});
 				break;
-			default:
-				break;
 		}
 
 		actions.Add(new ASogginsExe

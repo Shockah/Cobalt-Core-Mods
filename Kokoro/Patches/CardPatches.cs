@@ -14,7 +14,6 @@ using System.Reflection.Emit;
 
 namespace Shockah.Kokoro;
 
-// ReSharper disable InconsistentNaming
 internal static class CardPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;

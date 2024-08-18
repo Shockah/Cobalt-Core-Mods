@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Updated for latest Nickel and Cobalt Core.
+
 ## 1.3.4
 Released 6 July 2024.
 

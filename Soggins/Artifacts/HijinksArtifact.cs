@@ -43,28 +43,28 @@ public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook
 			allPresent = [Instance.SogginsDeck.GlobalName],
 			hasArtifacts = [Key()],
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = Instance.SogginsDeck.GlobalName,
 					Text = "I connected a few loose wires, we have extra energy now.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				},
-				new SaySwitch()
+				new SaySwitch
 				{
 					lines = [
-						new CustomSay()
+						new CustomSay
 						{
 							who = "comp",
 							Text = "Wow! I hope nothing bad will happen.",
 							loopTag = "neutral"
 						},
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.hacker.Key(),
 							Text = "I have a bad feeling about this.",
 							loopTag = "squint"
 						},
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.dizzy.Key(),
 							Text = "All these readings are wrong.",

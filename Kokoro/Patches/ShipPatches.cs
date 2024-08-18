@@ -11,7 +11,6 @@ using System.Reflection.Emit;
 
 namespace Shockah.Kokoro;
 
-// ReSharper disable InconsistentNaming
 internal static class ShipPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;

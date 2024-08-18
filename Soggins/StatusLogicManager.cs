@@ -4,7 +4,7 @@ internal sealed class StatusLogicManager : IStatusLogicHook
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	internal StatusLogicManager() : base()
+	internal StatusLogicManager()
 	{
 		Instance.KokoroApi.RegisterStatusLogicHook(this, 0);
 	}

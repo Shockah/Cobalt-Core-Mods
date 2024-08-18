@@ -20,12 +20,9 @@ internal sealed class CustomSay : Say
 			return base.Execute(g, target, ctx);
 
 		if (DynamicLoopTag is not null)
-		{
-			if (RegisteredDynamicLoopTags.TryGetValue(DynamicLoopTag, out var dynamicLoopTagFunction))
-				loopTag = dynamicLoopTagFunction(g);
-			else
-				loopTag = DynamicLoopTag;
-		}
+			this.loopTag = RegisteredDynamicLoopTags.TryGetValue(this.DynamicLoopTag, out var dynamicLoopTagFunction)
+				? dynamicLoopTagFunction(g)
+				: this.DynamicLoopTag;
 
 		hash = $"{GetType().FullName}:{NextId++}";
 		DB.currentLocale.strings[GetLocKey(ctx.script, hash)] = Text;

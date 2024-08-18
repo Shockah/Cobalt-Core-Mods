@@ -6,7 +6,6 @@ using System.Linq;
 
 namespace Shockah.Kokoro;
 
-// ReSharper disable InconsistentNaming
 internal sealed class CustomTTGlossary : TTGlossary
 {
 	public enum GlossaryType

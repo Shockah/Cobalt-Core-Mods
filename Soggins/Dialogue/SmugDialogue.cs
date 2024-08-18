@@ -45,143 +45,127 @@ internal static class SmugDialogue
 	private static readonly Dictionary<Deck, (string LoopTag, string Text)[]> BotchResponseLines = new()
 	{
 		{
-			Deck.dizzy, new (string LoopTag, string Text)[]
-			{
+			Deck.dizzy, [
 				("squint", "This is going to be an interesting experience."),
 				("squint", "You can stop that now."),
-				("neutral", "Are you interested in becoming a live specimen?"),
-			}
+				("neutral", "Are you interested in becoming a live specimen?")
+			]
 		},
 		{
-			Deck.riggs, new (string LoopTag, string Text)[]
-			{
+			Deck.riggs, [
 				("squint", "I wanted to use that."),
 				("neutral", "Can we put him into the brig?"),
-				("neutral", "Is this a prank?"),
-			}
+				("neutral", "Is this a prank?")
+			]
 		},
 		{
-			Deck.peri, new (string LoopTag, string Text)[]
-			{
+			Deck.peri, [
 				("squint", "..."),
 				("mad", "Take your hands off my controls."),
-				("squint", "Could you sit down?"),
-			}
+				("squint", "Could you sit down?")
+			]
 		},
 		{
-			Deck.goat, new (string LoopTag, string Text)[]
-			{
+			Deck.goat, [
 				("panic", "This is not fine!"),
 				("squint", "Oh man..."),
-				("squint", "Oh no."),
-			}
+				("squint", "Oh no.")
+			]
 		},
 		{
-			Deck.eunice, new (string LoopTag, string Text)[]
-			{
+			Deck.eunice, [
 				("mad", "I'm going to smack you."),
 				("mad", "This is your fault."),
-				("squint", "Ugh."),
-			}
+				("squint", "Ugh.")
+			]
 		},
 		{
-			Deck.hacker, new (string LoopTag, string Text)[]
-			{
+			Deck.hacker, [
 				("squint", "My controls are all slimy."),
 				("squint", "I need to put a lock on his door."),
-				("mad", "Please stop."),
-			}
+				("mad", "Please stop.")
+			]
 		},
 		{
-			Deck.shard, new (string LoopTag, string Text)[]
-			{
+			Deck.shard, [
 				("squint", "The prince is being unhelpful!"),
 				("neutral", "I'll accept your apology."),
-				("neutral", "As long as you say sorry!"),
-			}
+				("neutral", "As long as you say sorry!")
+			]
 		},
 		{
-			Deck.colorless, new (string LoopTag, string Text)[]
-			{
+			Deck.colorless, [
 				("squint", "Error 404."),
 				("squint", "Null exception."),
-				("lean", "Could you stop?"),
-			}
+				("lean", "Could you stop?")
+			]
 		},
 	};
 
 	private static readonly Dictionary<Deck, (string LoopTag, string Text)[]> DoubleResponseLines = new()
 	{
 		{
-			Deck.dizzy, new (string LoopTag, string Text)[]
-			{
+			Deck.dizzy, [
 				("explains", "Science!"),
 				("shrug", "Science?"),
-				("neutral", "Unexpected!"),
-			}
+				("neutral", "Unexpected!")
+			]
 		},
 		{
-			Deck.riggs, new (string LoopTag, string Text)[]
-			{
+			Deck.riggs, [
 				("neutral", "Wow!"),
 				("neutral", "That was something!"),
-				("neutral", "That was good?"),
-			}
+				("neutral", "That was good?")
+			]
 		},
 		{
-			Deck.peri, new (string LoopTag, string Text)[]
-			{
+			Deck.peri, [
 				("neutral", "..."),
 				("neutral", "I don't know how to feel about this."),
-				("neutral", "I wasn't prepared for that."),
-			}
+				("neutral", "I wasn't prepared for that.")
+			]
 		},
 		{
-			Deck.goat, new (string LoopTag, string Text)[]
-			{
+			Deck.goat, [
 				("squint", "Uh huh..."),
-				("squint", "Ummm."),
-			}
+				("squint", "Ummm.")
+			]
 		},
 		{
-			Deck.eunice, new (string LoopTag, string Text)[]
-			{
+			Deck.eunice, [
 				("neutral", "Hell yeah!"),
 				("sly", "Heheh."),
-				("neutral", "Don't stop whatever you're doing."),
-			}
+				("neutral", "Don't stop whatever you're doing.")
+			]
 		},
 		{
-			Deck.hacker, new (string LoopTag, string Text)[]
-			{
+			Deck.hacker, [
 				("neutral", "Hmmm."),
 				("neutral", "That's okay?"),
-				("squint", "Oookay."),
-			}
+				("squint", "Oookay.")
+			]
 		},
 		{
-			Deck.shard, new (string LoopTag, string Text)[]
-			{
+			Deck.shard, [
 				("stoked", "That was doubly amazing!"),
 				("relaxed", "Thank you, Mr. Prince."),
-				("stoked", "Yay!"),
-			}
+				("stoked", "Yay!")
+			]
 		},
 		{
-			Deck.colorless, new (string LoopTag, string Text)[]
-			{
+			Deck.colorless, [
 				("squint", "What are you even doing?"),
 				("squint", "Stop bashing the console!"),
-				("squint", "Huuuh."),
-			}
+				("squint", "Huuuh.")
+			]
 		},
 	};
 
 	internal static void Inject()
 	{
-		string soggins = Instance.SogginsDeck.GlobalName;
+		var soggins = Instance.SogginsDeck.GlobalName;
 
-		for (int i = 0; i < BotchLines.Length; i++)
+		for (var i = 0; i < BotchLines.Length; i++)
 			DB.story.all[$"{soggins}_Botch_{i}"] = new()
 			{
 				type = NodeType.combat,
@@ -189,7 +173,7 @@ internal static class SmugDialogue
 				allPresent = [soggins],
 				oncePerCombat = true,
 				lines = [
-					new CustomSay()
+					new CustomSay
 					{
 						who = soggins,
 						Text = BotchLines[i],
@@ -198,7 +182,7 @@ internal static class SmugDialogue
 				]
 			};
 
-		for (int i = 0; i < DoubleLines.Length; i++)
+		for (var i = 0; i < DoubleLines.Length; i++)
 			DB.story.all[$"{soggins}_Double_{i}"] = new()
 			{
 				type = NodeType.combat,
@@ -206,7 +190,7 @@ internal static class SmugDialogue
 				allPresent = [soggins],
 				oncePerCombat = true,
 				lines = [
-					new CustomSay()
+					new CustomSay
 					{
 						who = soggins,
 						Text = DoubleLines[i],
@@ -218,7 +202,7 @@ internal static class SmugDialogue
 		foreach (var (deck, entries) in BotchResponseLines)
 		{
 			var deckKey = deck == Deck.colorless ? "comp" : deck.Key();
-			for (int i = 0; i < entries.Length; i++)
+			for (var i = 0; i < entries.Length; i++)
 				DB.story.all[$"{soggins}_BotchResponse_{deckKey}_{i}"] = new()
 				{
 					type = NodeType.combat,
@@ -226,7 +210,7 @@ internal static class SmugDialogue
 					allPresent = [deckKey],
 					oncePerCombat = true,
 					lines = [
-						new CustomSay()
+						new CustomSay
 						{
 							who = deckKey,
 							Text = entries[i].Text,
@@ -239,7 +223,7 @@ internal static class SmugDialogue
 		foreach (var (deck, entries) in DoubleResponseLines)
 		{
 			var deckKey = deck == Deck.colorless ? "comp" : deck.Key();
-			for (int i = 0; i < entries.Length; i++)
+			for (var i = 0; i < entries.Length; i++)
 				DB.story.all[$"{soggins}_DoubleResponse_{deckKey}_{i}"] = new()
 				{
 					type = NodeType.combat,
@@ -247,7 +231,7 @@ internal static class SmugDialogue
 					allPresent = [deckKey],
 					oncePerCombat = true,
 					lines = [
-						new CustomSay()
+						new CustomSay
 						{
 							who = deckKey,
 							Text = entries[i].Text,
@@ -265,7 +249,7 @@ internal static class SmugDialogue
 			oncePerCombat = true,
 			priority = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = Deck.goat.Key(),
 					Text = "That's not how things normally work.",
@@ -281,7 +265,7 @@ internal static class SmugDialogue
 			oncePerCombat = true,
 			priority = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = Deck.goat.Key(),
 					Text = "It moved out of the way, huh?",

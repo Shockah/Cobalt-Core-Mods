@@ -1,6 +1,4 @@
 ﻿using FSPRO;
-using Shockah.Shared;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.Soggins;
@@ -17,7 +15,7 @@ public sealed class ASpecificColorSearch : CardAction
 	{
 		base.Begin(g, s, c);
 
-		IEnumerable<Card> cardsToDrawEnumerable = Enumerable.Empty<Card>();
+		var cardsToDrawEnumerable = Enumerable.Empty<Card>();
 		if (FromDrawPile)
 			cardsToDrawEnumerable = cardsToDrawEnumerable.Concat(s.deck.Where(c => c.GetMeta().deck == Deck).Reverse());
 		if (FromDiscard)

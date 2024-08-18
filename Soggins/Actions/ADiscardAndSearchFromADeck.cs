@@ -1,6 +1,4 @@
 ﻿using FSPRO;
-using Shockah.Shared;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.Soggins;
@@ -17,7 +15,7 @@ public sealed class ADiscardAndSearchFromADeck : CardAction
 	{
 		base.Begin(g, s, c);
 
-		IEnumerable<Card> cardsToDiscardEnumerable = c.hand.Where(c => c.GetMeta().deck != Deck);
+		var cardsToDiscardEnumerable = c.hand.Where(c => c.GetMeta().deck != Deck);
 		if (Limit is not null)
 			cardsToDiscardEnumerable = cardsToDiscardEnumerable
 				.Shuffle(s.rngActions)
@@ -30,7 +28,7 @@ public sealed class ADiscardAndSearchFromADeck : CardAction
 			c.SendCardToDiscard(s, card);
 		}
 
-		IEnumerable<Card> cardsToDrawEnumerable = Enumerable.Empty<Card>();
+		var cardsToDrawEnumerable = Enumerable.Empty<Card>();
 		if (FromDrawPile)
 			cardsToDrawEnumerable = cardsToDrawEnumerable.Concat(s.deck.Where(c => c.GetMeta().deck == Deck).Reverse());
 		if (FromDiscard)

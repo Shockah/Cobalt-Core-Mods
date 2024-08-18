@@ -50,7 +50,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 	private static ModEntry Instance => ModEntry.Instance;
 
-	internal SmugStatusManager() : base()
+	internal SmugStatusManager()
 	{
 		Register(new ExtraApologiesSmugHook(), 0);
 		Register(new DoublersLuckSmugHook(), -100);
@@ -188,6 +188,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 	private static IEnumerable<CodeInstruction> Combat_TryPlayCard_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -232,6 +233,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static List<CardAction> Combat_TryPlayCard_Transpiler_ModifyActions(List<CardAction> actions, State state, Combat combat, Card card, bool playNoMatterWhatForFree, ref bool actuallyExhaust, ref bool actuallyInfinite, ref CardData data)
@@ -394,6 +396,8 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			return;
 		var tooltipToYield = new TTText(apology.ApologyFlavorText);
 
+		__result = ModifyTooltips(__result);
+
 		IEnumerable<Tooltip> ModifyTooltips(IEnumerable<Tooltip> tooltips)
 		{
 			var yieldedFlavorText = false;
@@ -411,7 +415,5 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			if (!yieldedFlavorText)
 				yield return tooltipToYield;
 		}
-
-		__result = ModifyTooltips(__result);
 	}
 }

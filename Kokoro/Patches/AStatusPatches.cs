@@ -10,7 +10,6 @@ using System.Reflection.Emit;
 
 namespace Shockah.Kokoro;
 
-// ReSharper disable InconsistentNaming
 internal static class AStatusPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;

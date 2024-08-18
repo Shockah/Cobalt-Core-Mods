@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
 
-// ReSharper disable InconsistentNaming
 internal static class StuffBasePatches
 {
 	private static ModEntry Instance => ModEntry.Instance;

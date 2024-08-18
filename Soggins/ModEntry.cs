@@ -15,12 +15,12 @@ using System.Linq;
 
 namespace Shockah.Soggins;
 
-public sealed partial class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IStatusManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest, INickelManifest
+public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IStatusManifest, IAnimationManifest, IArtifactManifest, ICardManifest, ICharacterManifest, INickelManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = null!;
 	internal IKokoroApi KokoroApi { get; private set; } = null!;
-	internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; } = null!;
+	internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; }
 	private Harmony Harmony { get; set; } = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
@@ -184,7 +184,7 @@ public sealed partial class ModEntry : CobaltCoreModding.Definitions.ModManifest
 		StatePatches.Apply(Harmony);
 	}
 
-	public object? GetApi(IManifest requestingMod)
+	public object GetApi(IManifest requestingMod)
 		=> new ApiImplementation();
 
 	public void LoadManifest(ISpriteRegistry registry)
@@ -561,9 +561,9 @@ public sealed partial class ModEntry : CobaltCoreModding.Definitions.ModManifest
 
 		this.FrogproofTrait = helper.Content.Cards.RegisterTrait("Frogproof", new()
 		{
-			Icon = (state, card) => (Spr)Instance.FrogproofSprite.Id!.Value,
+			Icon = (_, _) => (Spr)Instance.FrogproofSprite.Id!.Value,
 			Name = _ => I18n.FrogproofCardTraitName,
-			Tooltips = (state, card) => [Api.FrogproofCardTraitTooltip]
+			Tooltips = (_, _) => [Api.FrogproofCardTraitTooltip]
 		});
 
 		helper.Content.Cards.OnGetDynamicInnateCardTraitOverrides += (_, e) =>
@@ -637,7 +637,7 @@ public sealed partial class ModEntry : CobaltCoreModding.Definitions.ModManifest
 				"APurpleApple.GenericArtifacts",
 				api => api.SetPaletteAction(
 					(Deck)SogginsDeck.Id!.Value,
-					state => Instance.KokoroApi.Actions.MakeSpoofed(
+					_ => Instance.KokoroApi.Actions.MakeSpoofed(
 						renderAction: new AAddCard
 						{
 							card = new RandomPlaceholderApologyCard(),

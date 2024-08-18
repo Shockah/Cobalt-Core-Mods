@@ -16,6 +16,7 @@ public abstract class ApologyCard : Card, IFrogproofCard
 
 	public virtual void RegisterArt(ISpriteRegistry registry)
 	{
+		// ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 		if (Art is not null)
 			return;
 

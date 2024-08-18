@@ -52,8 +52,7 @@ public sealed class HarnessingSmugnessCard : Card, IRegisterableCard, IFrogproof
 	{
 		if (upgrade == Upgrade.A)
 			return flipped ? Bottom23Art : Top23Art;
-		else
-			return flipped ? BottomArt : TopArt;
+		return this.flipped ? BottomArt : TopArt;
 	}
 
 	public override CardData GetData(State state)

@@ -8,7 +8,7 @@ internal static class CombatDialogue
 
 	internal static void Inject()
 	{
-		string soggins = Instance.SogginsDeck.GlobalName;
+		var soggins = Instance.SogginsDeck.GlobalName;
 
 		DB.story.all[$"BlockedALotOfAttacksWithArmor_{soggins}"] = new()
 		{
@@ -19,7 +19,7 @@ internal static class CombatDialogue
 			enemyShotJustHit = true,
 			minDamageBlockedByPlayerArmorThisTurn = 3,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "All of that was planned.",
@@ -35,7 +35,7 @@ internal static class CombatDialogue
 			lastTurnPlayerStatuses = [Status.missingDizzy],
 			priority = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Better him than me.",
@@ -51,7 +51,7 @@ internal static class CombatDialogue
 			lastTurnPlayerStatuses = [Status.missingRiggs],
 			priority = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Bring me a drink when you come back.",
@@ -67,7 +67,7 @@ internal static class CombatDialogue
 			lastTurnPlayerStatuses = [Status.missingPeri],
 			priority = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "She was scary anyway.",
@@ -83,7 +83,7 @@ internal static class CombatDialogue
 			lastTurnPlayerStatuses = [Status.missingIsaac],
 			priority = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "He's coming back, it'll be fine.",
@@ -99,7 +99,7 @@ internal static class CombatDialogue
 			lastTurnPlayerStatuses = [Status.missingDrake],
 			priority = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "She was scary anyway.",
@@ -115,7 +115,7 @@ internal static class CombatDialogue
 			lastTurnPlayerStatuses = [Status.missingMax],
 			priority = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Mortimer?",
@@ -131,7 +131,7 @@ internal static class CombatDialogue
 			lastTurnPlayerStatuses = [Status.missingBooks],
 			priority = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Nice magic trick, kid.",
@@ -147,7 +147,7 @@ internal static class CombatDialogue
 			lastTurnPlayerStatuses = [Status.missingCat],
 			priority = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "How do you reboot the computer?",
@@ -155,19 +155,19 @@ internal static class CombatDialogue
 				}
 			]
 		};
-		DB.story.GetNode("CrabFacts1_Multi_0")?.lines.OfType<SaySwitch>().LastOrDefault()?.lines.Insert(0, new CustomSay()
+		DB.story.GetNode("CrabFacts1_Multi_0")?.lines.OfType<SaySwitch>().LastOrDefault()?.lines.Insert(0, new CustomSay
 		{
 			who = soggins,
 			Text = "Do you have frog facts?",
 			DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 		});
-		DB.story.GetNode("CrabFacts2_Multi_0")?.lines.OfType<SaySwitch>().LastOrDefault()?.lines.Insert(0, new CustomSay()
+		DB.story.GetNode("CrabFacts2_Multi_0")?.lines.OfType<SaySwitch>().LastOrDefault()?.lines.Insert(0, new CustomSay
 		{
 			who = soggins,
 			Text = "We're so alike!",
 			DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 		});
-		DB.story.GetNode("CrabFactsAreOverNow_Multi_0")?.lines.OfType<SaySwitch>().LastOrDefault()?.lines.Insert(0, new CustomSay()
+		DB.story.GetNode("CrabFactsAreOverNow_Multi_0")?.lines.OfType<SaySwitch>().LastOrDefault()?.lines.Insert(0, new CustomSay
 		{
 			who = soggins,
 			Text = "I knew all of those facts already.",
@@ -181,22 +181,22 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "As expected.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				},
-				new SaySwitch()
+				new SaySwitch
 				{
 					lines = [
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.peri.Key(),
 							Text = "...",
 							loopTag = "squint"
 						},
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.shard.Key(),
 							Text = "!",
@@ -214,22 +214,22 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Good!",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				},
-				new SaySwitch()
+				new SaySwitch
 				{
 					lines = [
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.eunice.Key(),
 							Text = "You somehow did it.",
 							loopTag = "sly"
 						},
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.riggs.Key(),
 							Text = "Wow!",
@@ -247,22 +247,22 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Blam!",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				},
-				new SaySwitch()
+				new SaySwitch
 				{
 					lines = [
-						new CustomSay()
+						new CustomSay
 						{
 							who = "comp",
 							Text = "You can do things right sometimes.",
 							loopTag = "squint"
 						},
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.goat.Key(),
 							Text = "I have to log the successes.",
@@ -280,22 +280,22 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "I'm unmatched.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				},
-				new SaySwitch()
+				new SaySwitch
 				{
 					lines = [
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.dizzy.Key(),
 							Text = "You did it!",
 							loopTag = "neutral"
 						},
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.hacker.Key(),
 							Text = "Huh, good job.",
@@ -312,7 +312,7 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "I helped.",
@@ -327,7 +327,7 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "All me.",
@@ -342,7 +342,7 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "I'm so good at this.",
@@ -357,7 +357,7 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "I did it!",
@@ -372,7 +372,7 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisAction = 1,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "All according to plan.",
@@ -388,46 +388,46 @@ internal static class CombatDialogue
 			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Guess I'll see you all next loop.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				},
-				new SaySwitch()
+				new SaySwitch
 				{
 					lines = [
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.dizzy.Key(),
 							Text = "Guess again.",
 							loopTag = "neutral"
 						},
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.riggs.Key(),
 							Text = "Don't count on it.",
 							loopTag = "neutral"
 						},
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.peri.Key(),
 							Text = "I'd rather not.",
 							loopTag = "squint"
 						},
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.eunice.Key(),
 							Text = "Can we just loop already?",
 							loopTag = "mad"
 						},
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.shard.Key(),
 							Text = "We'll try again extra hard next time!",
 							loopTag = "neutral"
 						},
-						new CustomSay()
+						new CustomSay
 						{
 							who = "comp",
 							Text = "I still want to know how you got in here.",
@@ -445,13 +445,13 @@ internal static class CombatDialogue
 			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = "comp",
 					Text = "Someone expedited our demise.",
 					loopTag = "squint"
 				},
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "I wonder who that is.",
@@ -467,13 +467,13 @@ internal static class CombatDialogue
 			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = Deck.dizzy.Key(),
 					Text = "This isn't looking pretty.",
 					loopTag = "neutral"
 				},
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "What do you mean I don't look pretty.",
@@ -489,13 +489,13 @@ internal static class CombatDialogue
 			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = Deck.riggs.Key(),
 					Text = "We have to do something!",
 					loopTag = "neutral"
 				},
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "I'll press some buttons!",
@@ -511,13 +511,13 @@ internal static class CombatDialogue
 			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = Deck.peri.Key(),
 					Text = "This is getting pretty dire.",
 					loopTag = "mad"
 				},
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Don't worry, I'm here with you all.",
@@ -533,13 +533,13 @@ internal static class CombatDialogue
 			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = Deck.goat.Key(),
 					Text = "Is there a way out of this mess?",
 					loopTag = "panic"
 				},
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Trust me, it's fine.",
@@ -555,13 +555,13 @@ internal static class CombatDialogue
 			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = Deck.eunice.Key(),
 					Text = "I'm blaming you.",
 					loopTag = "mad"
 				},
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "I haven't done anything wrong!",
@@ -577,13 +577,13 @@ internal static class CombatDialogue
 			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = Deck.hacker.Key(),
 					Text = "I'm going to die and my computer is full of viruses.",
 					loopTag = "mad"
 				},
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "You still have games on your phone.",
@@ -599,13 +599,13 @@ internal static class CombatDialogue
 			oncePerCombatTags = ["aboutToDie"],
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = Deck.shard.Key(),
 					Text = "Use your magic powers to save us!",
 					loopTag = "neutral"
 				},
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Yes, magic powers.",
@@ -620,7 +620,7 @@ internal static class CombatDialogue
 			handEmpty = true,
 			minEnergy = 1,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "That extra energy could heat up the hot tub.",
@@ -635,7 +635,7 @@ internal static class CombatDialogue
 			handEmpty = true,
 			minEnergy = 1,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Yep, that was planned.",
@@ -652,7 +652,7 @@ internal static class CombatDialogue
 			oncePerCombat = true,
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "That sound is funny.",
@@ -669,7 +669,7 @@ internal static class CombatDialogue
 			oncePerCombat = true,
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "We're doing big damage now.",
@@ -685,7 +685,7 @@ internal static class CombatDialogue
 			oncePerCombatTags = ["ExpensiveCardPlayed"],
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "My game just shut itself off.",
@@ -701,7 +701,7 @@ internal static class CombatDialogue
 			oncePerCombatTags = ["handOnlyHasTrashCards"],
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "This is just fine.",
@@ -717,7 +717,7 @@ internal static class CombatDialogue
 			oncePerCombatTags = ["handFullOfUnplayableCards"],
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Do the buttons do anything?",
@@ -735,16 +735,16 @@ internal static class CombatDialogue
 			nonePresent = ["crab"],
 			priority = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Seeker turn off how?",
 					loopTag = Instance.SmugPortraitAnimations[-2].Tag
 				},
-				new SaySwitch()
+				new SaySwitch
 				{
 					lines = [
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.riggs.Key(),
 							Text = "I don't think asking it will solve anything.",
@@ -763,7 +763,7 @@ internal static class CombatDialogue
 			oncePerRun = true,
 			turnStart = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Mind if I just play a game on the side?",
@@ -779,7 +779,7 @@ internal static class CombatDialogue
 			whoDidThat = Deck.colorless,
 			oncePerCombatTags = ["OverheatCatFix"],
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "My hot tub is getting cold.",
@@ -795,7 +795,7 @@ internal static class CombatDialogue
 			whoDidThat = Deck.eunice,
 			oncePerCombatTags = ["OverheatDrakeFix"],
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "My hot tub is getting cold.",
@@ -810,7 +810,7 @@ internal static class CombatDialogue
 			goingToOverheat = true,
 			oncePerCombatTags = ["OverheatGeneric"],
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Is it getting hot here?",
@@ -825,7 +825,7 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 10,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "You can all thank me later.",
@@ -840,7 +840,7 @@ internal static class CombatDialogue
 			enemyShotJustHit = true,
 			minDamageDealtToPlayerThisTurn = 3,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Oh no!",
@@ -856,7 +856,7 @@ internal static class CombatDialogue
 			maxDamageDealtToPlayerThisTurn = 0,
 			maxHull = 2,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Yup, perfectly fine.",
@@ -871,7 +871,7 @@ internal static class CombatDialogue
 			lastTurnPlayerStatuses = [Status.corrode],
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "The walls are looking green, I like green.",
@@ -887,22 +887,22 @@ internal static class CombatDialogue
 			oncePerCombat = true,
 			doesNotHaveArtifacts = ["Recalibrator", "GrazerBeam"],
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Oops!",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				},
-				new SaySwitch()
+				new SaySwitch
 				{
 					lines = [
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.peri.Key(),
 							Text = "Stop wasting our ammo.",
 							loopTag = "squint"
 						},
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.eunice.Key(),
 							Text = "It would be cute if it wasn't losing our time.",
@@ -920,16 +920,16 @@ internal static class CombatDialogue
 			oncePerCombat = true,
 			doesNotHaveArtifacts = ["Recalibrator", "GrazerBeam"],
 			lines = [
-				new SaySwitch()
+				new SaySwitch
 				{
 					lines = [
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.peri.Key(),
 							Text = "Recalculating.",
 							loopTag = "neutral"
 						},
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.eunice.Key(),
 							Text = "Drat.",
@@ -937,7 +937,7 @@ internal static class CombatDialogue
 						}
 					]
 				},
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Let me fire instead.",
@@ -953,7 +953,7 @@ internal static class CombatDialogue
 			minDamageDealtToPlayerThisTurn = 1,
 			maxDamageDealtToPlayerThisTurn = 1,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "We'll be fine.",
@@ -969,7 +969,7 @@ internal static class CombatDialogue
 			minDamageDealtToPlayerThisTurn = 1,
 			maxDamageDealtToPlayerThisTurn = 1,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "I know a place we can go for repairs.",
@@ -984,7 +984,7 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 4,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "That was a bazillion damage.",
@@ -999,7 +999,7 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 4,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Winning!",
@@ -1014,7 +1014,7 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 4,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Dealing damage.",
@@ -1029,7 +1029,7 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 6,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "I'm so good.",
@@ -1044,7 +1044,7 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 6,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "That was a thousand bazillion damage.",
@@ -1059,7 +1059,7 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 6,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "One more win for me.",
@@ -1074,13 +1074,13 @@ internal static class CombatDialogue
 			playerShotJustHit = true,
 			minDamageDealtToEnemyThisTurn = 6,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Just according to keikaku.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				},
-				new CustomSay()
+				new CustomSay
 				{
 					who = "comp",
 					Text = "Keikaku means... How do you even know that word?",

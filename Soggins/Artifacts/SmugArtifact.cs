@@ -17,7 +17,7 @@ public sealed class SmugArtifact : Artifact, IRegisterableArtifact
 
 	public void RegisterArt(ISpriteRegistry registry)
 	{
-		for (int smug = -Sprites.Length / 2; smug <= Sprites.Length / 2; smug++)
+		for (var smug = -Sprites.Length / 2; smug <= Sprites.Length / 2; smug++)
 			Sprites[smug + Sprites.Length / 2] = registry.RegisterArtOrThrow(
 				id: $"{GetType().Namespace}.Artifact.Smug{smug}",
 				file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Smug", $"{smug}.png"))

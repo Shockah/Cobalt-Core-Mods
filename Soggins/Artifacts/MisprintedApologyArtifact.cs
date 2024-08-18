@@ -14,7 +14,7 @@ public sealed class MisprintedApologyArtifact : Artifact, IRegisterableArtifact
 	private static ExternalSprite Sprite = null!;
 	private static ExternalSprite InactiveSprite = null!;
 
-	public bool TriggeredThisTurn = false;
+	public bool TriggeredThisTurn;
 
 	public void RegisterArt(ISpriteRegistry registry)
 	{

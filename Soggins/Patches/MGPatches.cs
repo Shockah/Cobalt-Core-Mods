@@ -17,7 +17,7 @@ internal static class MGPatches
 		);
 	}
 
-	private static void DrawLoadingScreen_Prefix(MG __instance, ref int __state)
+	private static void DrawLoadingScreen_Prefix(MG __instance, out int __state)
 		=> __state = __instance.loadingQueue?.Count ?? 0;
 
 	private static void DrawLoadingScreen_Postfix(MG __instance, ref int __state)

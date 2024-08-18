@@ -6,7 +6,6 @@ using System.Reflection;
 
 namespace Shockah.Kokoro;
 
-// ReSharper disable InconsistentNaming
 internal static class CardRewardPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;

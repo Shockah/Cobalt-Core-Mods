@@ -17,7 +17,7 @@ internal sealed class CustomTTGlossary : TTGlossary
 
 	private static readonly Stack<TTGlossary> ContextStack = new();
 
-	private static int NextID = 0;
+	private static int NextID;
 	private readonly GlossaryType Type;
 	private readonly Func<Spr?> Icon;
 	private readonly Func<string> Title;
@@ -90,7 +90,7 @@ internal sealed class CustomTTGlossary : TTGlossary
 		if (!ContextStack.TryPeek(out var glossary) || glossary is not CustomTTGlossary custom)
 			return true;
 
-		object[] args = custom.Values.Select(v => "<c=boldPink>{0}</c>".FF(v().ToString() ?? "")).ToArray();
+		var args = custom.Values.Select(v => "<c=boldPink>{0}</c>".FF(v().ToString() ?? "")).ToArray<object>();
 		__result = string.Format(custom.Description(), args);
 		return false;
 	}

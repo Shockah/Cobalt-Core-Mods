@@ -95,7 +95,7 @@ public sealed class HotTubArtifact : Artifact, IRegisterableArtifact
 		if (Instance.Api.IsOversmug(state, state.ship))
 			return;
 
-		int sign = Math.Sign(smug.Value - 0);
+		var sign = Math.Sign(smug.Value - 0);
 		if (sign == 0)
 			return;
 

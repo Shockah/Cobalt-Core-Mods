@@ -55,25 +55,4 @@ internal static class CombatPatches
 
 		character.loopTag = GetClosestAnimation(smug.Value).Tag;
 	}
-
-	private static void CharAnimations_GetCharAnimationSprite_Prefix(string who, ref string tag)
-	{
-		if (MG.inst.g.state is not { } state)
-			return;
-		if (who != Instance.SogginsDeck.GlobalName)
-			return;
-		if (tag != "neutral")
-			return;
-
-		var smug = Instance.Api.GetSmug(state, state.ship);
-		if (smug is null)
-			return;
-
-		if (Instance.Api.IsOversmug(state, state.ship))
-		{
-			tag = Instance.OversmugPortraitAnimation.Tag;
-			return;
-		}
-		tag = GetClosestAnimation(smug.Value).Tag;
-	}
 }

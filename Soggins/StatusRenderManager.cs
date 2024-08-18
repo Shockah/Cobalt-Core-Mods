@@ -8,7 +8,7 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	internal StatusRenderManager() : base()
+	internal StatusRenderManager()
 	{
 		Instance.KokoroApi.RegisterStatusRenderHook(this, double.MinValue);
 	}
@@ -25,7 +25,7 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 	public (IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(State state, Combat combat, Ship ship, Status status, int amount)
 	{
 		if (status == (Status)Instance.DoubleTimeStatus.Id!.Value)
-			return (new Color[] { new(0, 0, 0, 0) }, -3);
+			return ([new(0, 0, 0, 0)], -3);
 
 		var barCount = Instance.Api.GetMaxSmug(ship) - Instance.Api.GetMinSmug(ship) + 1;
 		var colors = new Color[barCount];
@@ -39,11 +39,11 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 		var goodColor = Colors.cheevoGold;
 		if (Instance.Api.IsOversmug(state, ship))
 		{
-			double f = Math.Sin(Instance.KokoroApi.TotalGameTime.TotalSeconds * Math.PI * 2) * 0.5 + 0.5;
+			var f = Math.Sin(Instance.KokoroApi.TotalGameTime.TotalSeconds * Math.PI * 2) * 0.5 + 0.5;
 			goodColor = Color.Lerp(Colors.downside, Colors.white, f);
 		}
 
-		for (int barIndex = 0; barIndex < colors.Length; barIndex++)
+		for (var barIndex = 0; barIndex < colors.Length; barIndex++)
 		{
 			var smugIndex = barIndex + Instance.Api.GetMinSmug(ship);
 			if (smugIndex == 0)
@@ -69,8 +69,7 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 		{
 			if (isForShipStatus)
 			{
-				var glossary = tooltips.FirstOrDefault() as TTGlossary;
-				if (glossary is not null)
+				if (tooltips.FirstOrDefault() is TTGlossary)
 					tooltips[0] = new CustomTTGlossary(
 						CustomTTGlossary.GlossaryType.status,
 						() => I18n.SmugStatusName,
@@ -79,8 +78,8 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 
 				if (MG.inst.g.state is { } state)
 				{
-					double botchChance = Math.Clamp(Instance.Api.GetSmugBotchChance(state, state.ship, null), 0, 1);
-					double doubleChance = Math.Clamp(Instance.Api.GetSmugDoubleChance(state, state.ship, null), 0, 1 - botchChance);
+					var botchChance = Math.Clamp(Instance.Api.GetSmugBotchChance(state, state.ship, null), 0, 1);
+					var doubleChance = Math.Clamp(Instance.Api.GetSmugDoubleChance(state, state.ship, null), 0, 1 - botchChance);
 					tooltips.Add(new TTText(string.Format(I18n.SmugStatusOddsDescription, doubleChance * 100, botchChance * 100)));
 				}
 			}

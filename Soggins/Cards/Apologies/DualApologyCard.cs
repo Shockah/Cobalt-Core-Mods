@@ -19,8 +19,8 @@ public sealed class DualApologyCard : ApologyCard, IRegisterableCard
 	public Card? FirstCard;
 	public Card? SecondCard;
 
-	public bool CustomFlipped = false;
-	public bool CustomFlopped = false;
+	public bool CustomFlipped;
+	public bool CustomFlopped;
 
 	public override void RegisterArt(ISpriteRegistry registry)
 	{
@@ -63,17 +63,17 @@ public sealed class DualApologyCard : ApologyCard, IRegisterableCard
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		List<CardAction> firstActions = FirstCard?.GetActions(s, c).Select(a => { a.disabled = CustomFlopped; return a; }).ToList() ?? [];
-		List<CardAction> secondActions = SecondCard?.GetActions(s, c).Select(a => { a.disabled = !CustomFlopped; return a; }).ToList() ?? [];
-		int perSide = Math.Max(firstActions.Count, secondActions.Count);
+		var firstActions = FirstCard?.GetActions(s, c).Select(a => { a.disabled = CustomFlopped; return a; }).ToList() ?? [];
+		var secondActions = SecondCard?.GetActions(s, c).Select(a => { a.disabled = !CustomFlopped; return a; }).ToList() ?? [];
+		var perSide = Math.Max(firstActions.Count, secondActions.Count);
 
 		List<CardAction> actions = [];
-		for (int i = 0; i < perSide - firstActions.Count; i++)
+		for (var i = 0; i < perSide - firstActions.Count; i++)
 			actions.Add(new ADummyAction());
 		actions.AddRange(firstActions);
 		actions.Add(new ADummyAction());
 		actions.AddRange(secondActions);
-		for (int i = 0; i < perSide - secondActions.Count; i++)
+		for (var i = 0; i < perSide - secondActions.Count; i++)
 			actions.Add(new ADummyAction());
 		return actions;
 	}

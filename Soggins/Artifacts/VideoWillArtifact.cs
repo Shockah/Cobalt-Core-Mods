@@ -43,22 +43,22 @@ public sealed class VideoWillArtifact : Artifact, IRegisterableArtifact
 			allPresent = [Instance.SogginsDeck.GlobalName],
 			hasArtifacts = [Key()],
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = Instance.SogginsDeck.GlobalName,
 					Text = "I look so handsome in this recording.",
 					DynamicLoopTag = Dialogue.CurrentSmugLoopTag
 				},
-				new SaySwitch()
+				new SaySwitch
 				{
 					lines = [
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.riggs.Key(),
 							Text = "Handsome?",
 							loopTag = "neutral"
 						},
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.shard.Key(),
 							Text = "Is it your prince form?",

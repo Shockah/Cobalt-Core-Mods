@@ -8,7 +8,7 @@ internal static class ArtifactDialogue
 
 	internal static void Inject()
 	{
-		string soggins = Instance.SogginsDeck.GlobalName;
+		var soggins = Instance.SogginsDeck.GlobalName;
 
 		foreach (var artifactType in ModEntry.AllArtifacts)
 		{
@@ -24,7 +24,7 @@ internal static class ArtifactDialogue
 			allPresent = [soggins],
 			hasArtifacts = ["EnergyPrep"],
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "I just got zapped by static.",
@@ -41,7 +41,7 @@ internal static class ArtifactDialogue
 			hasArtifacts = ["EnergyRefund"],
 			minCostOfCardJustPlayed = 3,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "There's free energy laying around.",
@@ -59,7 +59,7 @@ internal static class ArtifactDialogue
 			maxTurnsThisCombat = 1,
 			turnStart = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Computer, find weak spot.",
@@ -74,7 +74,7 @@ internal static class ArtifactDialogue
 			allPresent = [soggins],
 			hasArtifacts = ["GeminiCoreBooster"],
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "Don't worry! This is very simple.",
@@ -89,7 +89,7 @@ internal static class ArtifactDialogue
 			allPresent = [soggins],
 			hasArtifacts = ["GeminiCore"],
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "This ship is simple for a smart person like me.",
@@ -106,7 +106,7 @@ internal static class ArtifactDialogue
 			maxTurnsThisCombat = 1,
 			maxHullPercent = 0.5,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "I feel really safe right now.",
@@ -123,13 +123,13 @@ internal static class ArtifactDialogue
 			maxDamageDealtToEnemyThisAction = 0,
 			whoDidThat = (Deck)Instance.SogginsDeck.Id!.Value,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "That's not very nice.",
 					loopTag = Instance.MadPortraitAnimation.Tag
 				},
-				new CustomSay()
+				new CustomSay
 				{
 					who = Deck.peri.Key(),
 					Text = "I'm keeping an eye on you.",
@@ -144,7 +144,7 @@ internal static class ArtifactDialogue
 			hasArtifacts = ["ArtifactRecalibrator"],
 			playerShotJustMissed = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "No misses, only happy accidents.",
@@ -159,7 +159,7 @@ internal static class ArtifactDialogue
 			hasArtifacts = ["Simplicity"],
 			oncePerRunTags = ["SimplicityShouts"],
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "No thoughts, head empty.",
@@ -177,16 +177,16 @@ internal static class ArtifactDialogue
 			oncePerCombatTags = ["TridimensionalCockpit"],
 			oncePerRun = true,
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = soggins,
 					Text = "I don't understand where we are right now.",
 					loopTag = Instance.MadPortraitAnimation.Tag
 				},
-				new SaySwitch()
+				new SaySwitch
 				{
 					lines = [
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.hacker.Key(),
 							Text = "It's better that way.",
