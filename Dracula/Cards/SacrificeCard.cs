@@ -14,9 +14,6 @@ internal static class SacrificeExt
 
 internal sealed class SacrificeCard : Card, IDraculaCard
 {
-	private const CardBrowse.Source ExhaustOrSingleUseBrowseSource = (CardBrowse.Source)2137201;
-	private const CardBrowse.Source HandDrawDiscardBrowseSource = (CardBrowse.Source)2137202;
-
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard("Sacrifice", new()
@@ -38,21 +35,6 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 				return;
 			combat.GetSingleUseCardsPlayed().Add(card);
 		}, 0);
-
-		CustomCardBrowse.RegisterCustomCardSource(
-			ExhaustOrSingleUseBrowseSource,
-			new(
-				(_, _, cards) => ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "ui", "exhaustOrSingleUse"], new { Count = cards.Count }),
-				(_, c) => [..c?.exhausted ?? [], .. c?.GetSingleUseCardsPlayed() ?? []]
-			)
-		);
-		CustomCardBrowse.RegisterCustomCardSource(
-			HandDrawDiscardBrowseSource,
-			new(
-				(_, _, cards) => ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "ui", "handDrawDiscard"], new { Count = cards.Count }),
-				(s, c) => [..s.deck, ..c?.hand ?? [], ..c?.discard ?? []]
-			)
-		);
 	}
 
 	public override CardData GetData(State state)
@@ -64,31 +46,27 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new ACardSelect
-			{
-				browseSource = upgrade == Upgrade.A ? HandDrawDiscardBrowseSource : CardBrowse.Source.Hand,
-				browseAction = new ExhaustCardBrowseAction
+		=> upgrade switch
+		{
+			Upgrade.B => [
+				new ACardSelect
 				{
-					OnSuccess = [
-						new ACardSelect
-						{
-							browseSource = upgrade == Upgrade.B
-								? ExhaustOrSingleUseBrowseSource
-								: CardBrowse.Source.ExhaustPile,
-							browseAction = upgrade == Upgrade.B
-								? new PutCardInHandBrowseAction()
-								: new PlayCardFromAnywhereBrowseAction(),
-							ignoreCardType = Key()
-						}
-					]
+					browseSource = CardBrowse.Source.Hand,
+					browseAction = new ExhaustCardBrowseAction
+					{
+						OnSuccess = [
+							ModEntry.Instance.KokoroApi.Actions.MakeCustomCardBrowse(new ACardSelect
+							{
+								browseAction = new PutCardInHandBrowseAction(),
+								ignoreCardType = Key()
+							}, new ExhaustOrSingleUseBrowseSource())
+						]
+					},
+					omitFromTooltips = true,
 				},
-				omitFromTooltips = true
-			},
-			new ATooltipAction
-			{
-				Tooltips = upgrade == Upgrade.B
-					? [
+				new ATooltipAction
+				{
+					Tooltips = [
 						new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::Sacrifice::RemovedFromPlay")
 						{
 							Icon = StableSpr.icons_singleUse,
@@ -96,10 +74,43 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 							Title = ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "removedFromPlay", "name"]),
 							Description = ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "removedFromPlay", "description"])
 						},
-						new TTGlossary("cardtrait.singleUse")
-					] : null
-			}
-		];
+					]
+				}
+			],
+			Upgrade.A => [
+				ModEntry.Instance.KokoroApi.Actions.MakeCustomCardBrowse(new ACardSelect
+				{
+					browseAction = new ExhaustCardBrowseAction
+					{
+						OnSuccess = [
+							new ACardSelect
+							{
+								browseSource = CardBrowse.Source.ExhaustPile,
+								browseAction = new PlayCardFromAnywhereBrowseAction(),
+								ignoreCardType = Key()
+							}
+						]
+					}
+				}, new HandDrawDiscardBrowseSource()),
+			],
+			_ => [
+				new ACardSelect
+				{
+					browseSource = CardBrowse.Source.Hand,
+					browseAction = new ExhaustCardBrowseAction
+					{
+						OnSuccess = [
+							new ACardSelect
+							{
+								browseSource = CardBrowse.Source.ExhaustPile,
+								browseAction = new PlayCardFromAnywhereBrowseAction(),
+								ignoreCardType = Key()
+							}
+						]
+					}
+				},
+			]
+		};
 
 	public sealed class ExhaustCardBrowseAction : CardAction
 	{
@@ -159,5 +170,30 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 			s.RemoveCardFromWhereverItIs(selectedCard.uuid);
 			c.SendCardToHand(s, selectedCard);
 		}
+	}
+
+	public sealed class ExhaustOrSingleUseBrowseSource : ICustomCardBrowseSource
+	{
+		public string GetTitle(State state, Combat? combat, List<Card> cards)
+			=> ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "ui", "exhaustOrSingleUse"], new { Count = cards.Count });
+
+		public List<Card> GetCards(State state, Combat? combat)
+			=> [
+				.. combat?.exhausted ?? [],
+				.. combat?.GetSingleUseCardsPlayed() ?? []
+			];
+	}
+
+	public sealed class HandDrawDiscardBrowseSource : ICustomCardBrowseSource
+	{
+		public string GetTitle(State state, Combat? combat, List<Card> cards)
+			=> ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "ui", "handDrawDiscard"], new { Count = cards.Count });
+
+		public List<Card> GetCards(State state, Combat? combat)
+			=> [
+				.. state.deck,
+				.. combat?.hand ?? [],
+				.. combat?.discard ?? []
+			];
 	}
 }

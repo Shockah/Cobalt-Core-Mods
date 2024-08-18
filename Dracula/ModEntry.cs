@@ -177,7 +177,6 @@ public sealed class ModEntry : SimpleMod
 				AccessTools.DeclaredMethod(registerableType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
 		};
 
-		CustomCardBrowse.ApplyPatches(Harmony, logger);
 		DynamicWidthCardAction.ApplyPatches(Harmony, logger);
 		ASpecificCardOffering.ApplyPatches(Harmony, logger);
 

@@ -8,8 +8,7 @@ namespace Shockah.Dracula;
 
 internal sealed class DraculaJohnsonArtifact : Artifact, IRegisterable
 {
-	private const CardBrowse.Source TempUpgradeBrowseSource = (CardBrowse.Source)2137211;
-
+	private static IJohnsonApi JohnsonApi = null!;
 	private static ISpriteEntry TemporaryToPermanentUpgradeIcon = null!;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
@@ -18,6 +17,7 @@ internal sealed class DraculaJohnsonArtifact : Artifact, IRegisterable
 			return;
 		if (ModEntry.Instance.JohnsonApi is not { } johnsonApi)
 			return;
+		JohnsonApi = johnsonApi;
 
 		TemporaryToPermanentUpgradeIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/TemporaryToPermanentUpgrade.png"));
 
@@ -37,14 +37,6 @@ internal sealed class DraculaJohnsonArtifact : Artifact, IRegisterable
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.DraculaDeck.Deck, johnsonApi.JohnsonDeck.Deck]);
 
 		ModEntry.Instance.BloodTapManager.RegisterOptionProvider(new Provider(), -1000);
-
-		CustomCardBrowse.RegisterCustomCardSource(
-			TempUpgradeBrowseSource,
-			new(
-				(_, _, cards) => ModEntry.Instance.Localizations.Localize(["artifact", "Duo", "DraculaJohnson", "browseTitle"], new { Count = cards.Count }),
-				(s, c) => s.deck.Concat(c?.hand ?? []).Concat(c?.discard ?? []).Where(card => johnsonApi.IsTemporarilyUpgraded(card)).ToList()
-			)
-		);
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
@@ -106,11 +98,10 @@ internal sealed class DraculaJohnsonArtifact : Artifact, IRegisterable
 			base.Begin(g, s, c);
 			timer = 0;
 
-			c.QueueImmediate(new ACardSelect
+			c.QueueImmediate(ModEntry.Instance.KokoroApi.Actions.MakeCustomCardBrowse(new ACardSelect
 			{
-				browseSource = TempUpgradeBrowseSource,
 				browseAction = new BrowseAction()
-			});
+			}, new TempUpgradeBrowseSource()));
 		}
 	}
 
@@ -126,5 +117,14 @@ internal sealed class DraculaJohnsonArtifact : Artifact, IRegisterable
 
 			johnsonApi.SetTemporarilyUpgraded(selectedCard, false);
 		}
+	}
+
+	public sealed class TempUpgradeBrowseSource : ICustomCardBrowseSource
+	{
+		public string GetTitle(State state, Combat? combat, List<Card> cards)
+			=> ModEntry.Instance.Localizations.Localize(["artifact", "Duo", "DraculaJohnson", "browseTitle"], new { Count = cards.Count });
+
+		public List<Card> GetCards(State state, Combat? combat)
+			=> state.deck.Concat(combat?.hand ?? []).Concat(combat?.discard ?? []).Where(JohnsonApi.IsTemporarilyUpgraded).ToList();
 	}
 }
