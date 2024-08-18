@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Updated for an upcoming Nickel release.
+* Added `ICustomCardBrowseSource`.
 
 ## 1.11.3
 Released 17 July 2024.

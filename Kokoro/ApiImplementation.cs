@@ -413,6 +413,9 @@ public sealed class ApiImplementation(
 
 		public void UnregisterWrappedActionHook(IWrappedActionHook hook)
 			=> Instance.WrappedActionManager.Unregister(hook);
+
+		public ACardSelect MakeCustomCardBrowse(ACardSelect action, ICustomCardBrowseSource source)
+			=> Instance.CustomCardBrowseManager.MakeCustomCardBrowse(action, source);
 	}
 	#endregion
 

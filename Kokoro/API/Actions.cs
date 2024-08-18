@@ -35,10 +35,18 @@ public partial interface IKokoroApi
 
 		void RegisterWrappedActionHook(IWrappedActionHook hook, double priority);
 		void UnregisterWrappedActionHook(IWrappedActionHook hook);
+
+		ACardSelect MakeCustomCardBrowse(ACardSelect action, ICustomCardBrowseSource source);
 	}
 }
 
 public interface IWrappedActionHook
 {
 	List<CardAction>? GetWrappedCardActions(CardAction action);
+}
+
+public interface ICustomCardBrowseSource
+{
+	List<Card> GetCards(State state, Combat? combat);
+	string GetTitle(State state, Combat? combat, List<Card> cards);
 }

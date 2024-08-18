@@ -42,6 +42,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	public readonly OxidationStatusManager OxidationStatusManager = new();
 	public readonly RedrawStatusManager RedrawStatusManager = new();
 	public readonly StatusNextTurnManager StatusNextTurnManager = new();
+	public readonly CustomCardBrowseManager CustomCardBrowseManager = new();
 
 	internal TimeSpan TotalGameTime;
 
@@ -52,6 +53,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		Api.RegisterTypeForExtensionData(typeof(ACardOffering));
 		Api.RegisterTypeForExtensionData(typeof(AStatus));
 		Api.RegisterTypeForExtensionData(typeof(AVariableHint));
+		Api.RegisterTypeForExtensionData(typeof(CardBrowse));
 		Api.RegisterTypeForExtensionData(typeof(CardReward));
 		Api.RegisterTypeForExtensionData(typeof(Combat));
 		Api.RegisterTypeForExtensionData(typeof(StuffBase));
@@ -69,11 +71,13 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		Harmony = helper.Utilities.Harmony;
 
 		ACardOfferingPatches.Apply(Harmony);
+		ACardSelectPatches.Apply(Harmony);
 		ArtifactBrowsePatches.Apply(Harmony);
 		ArtifactPatches.Apply(Harmony);
 		AStatusPatches.Apply(Harmony);
 		AVariableHintPatches.Apply(Harmony);
 		BigStatsPatches.Apply(Harmony);
+		CardBrowsePatches.Apply(Harmony);
 		CardPatches.Apply(Harmony);
 		CardRewardPatches.Apply(Harmony);
 		CombatPatches.Apply(Harmony);
