@@ -1,12 +1,11 @@
-﻿using FSPRO;
-using Shockah.Shared;
+﻿using Shockah.Shared;
 using System.Linq;
 
 namespace Shockah.Kokoro;
 
 public sealed class DroneShiftManager : HookManager<IDroneShiftHook>
 {
-	internal DroneShiftManager() : base()
+	internal DroneShiftManager()
 	{
 		Register(VanillaDroneShiftHook.Instance, 0);
 		Register(VanillaDebugDroneShiftHook.Instance, 1_000_000_000);

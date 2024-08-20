@@ -59,7 +59,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 
 	private static void Ship_Set_Postfix(Ship __instance, Status status, int n)
 	{
-		if (StateExt.Instance is not { } state || state.ship != __instance)
+		if (MG.inst.g.state is not { } state || state.ship != __instance)
 			return;
 		if (n == 0)
 			return;

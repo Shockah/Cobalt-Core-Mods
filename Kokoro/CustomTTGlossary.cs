@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace Shockah.Kokoro;
 
+// ReSharper disable InconsistentNaming
 internal sealed class CustomTTGlossary : TTGlossary
 {
 	public enum GlossaryType
@@ -13,11 +14,9 @@ internal sealed class CustomTTGlossary : TTGlossary
 		midrow, status, cardtrait, action, parttrait, destination, actionMisc, part, env
 	}
 
-	private static ModEntry Instance => ModEntry.Instance;
-
 	private static readonly Stack<TTGlossary> ContextStack = new();
 
-	private static int NextID = 0;
+	private static int NextId;
 	private readonly GlossaryType Type;
 	private readonly Func<Spr?> Icon;
 	private readonly Func<string> Title;
@@ -26,7 +25,7 @@ internal sealed class CustomTTGlossary : TTGlossary
 
 	public CustomTTGlossary(GlossaryType type, Func<string> title, Func<string> description, IEnumerable<Func<object>>? values = null, string? key = null) : this(type, () => null, title, description, values, key) { }
 
-	public CustomTTGlossary(GlossaryType type, Func<Spr?> icon, Func<string> title, Func<string> description, IEnumerable<Func<object>>? values = null, string? key = null) : base($"{Enum.GetName(type)}.customttglossary.{key ?? $"{NextID++}"}")
+	public CustomTTGlossary(GlossaryType type, Func<Spr?> icon, Func<string> title, Func<string> description, IEnumerable<Func<object>>? values = null, string? key = null) : base($"{Enum.GetName(type)}.customttglossary.{key ?? $"{NextId++}"}")
 	{
 		this.Type = type;
 		this.Icon = icon;
@@ -86,7 +85,7 @@ internal sealed class CustomTTGlossary : TTGlossary
 		if (!ContextStack.TryPeek(out var glossary) || glossary is not CustomTTGlossary custom)
 			return true;
 
-		object[] args = custom.Values.Select(v => "<c=boldPink>{0}</c>".FF(v().ToString() ?? "")).ToArray();
+		var args = custom.Values.Select(v => "<c=boldPink>{0}</c>".FF(v().ToString() ?? "")).ToArray<object>();
 		__result = string.Format(custom.Description(), args);
 		return false;
 	}

@@ -36,7 +36,7 @@ public sealed class OrderedList<TElement, TOrderingValue> : IReadOnlyList<TEleme
 
 	public void Add(TElement element, TOrderingValue orderingValue)
 	{
-		for (int i = 0; i < Entries.Count; i++)
+		for (var i = 0; i < Entries.Count; i++)
 		{
 			if (Entries[i].OrderingValue.CompareTo(orderingValue) > 0)
 			{
@@ -49,7 +49,7 @@ public sealed class OrderedList<TElement, TOrderingValue> : IReadOnlyList<TEleme
 
 	public bool Remove(TElement element)
 	{
-		for (int i = 0; i < Entries.Count; i++)
+		for (var i = 0; i < Entries.Count; i++)
 		{
 			if (Equals(Entries[i].Element, element))
 			{

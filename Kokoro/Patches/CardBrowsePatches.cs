@@ -10,6 +10,7 @@ using System.Reflection.Emit;
 
 namespace Shockah.Kokoro;
 
+// ReSharper disable InconsistentNaming
 internal static class CardBrowsePatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
@@ -36,6 +37,7 @@ internal static class CardBrowsePatches
 
 	private static IEnumerable<CodeInstruction> CardBrowse_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -69,6 +71,7 @@ internal static class CardBrowsePatches
 			ModEntry.Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static bool CardBrowse_Render_Transpiler_GetCardSourceText(CardBrowse self, G g, ref string title)

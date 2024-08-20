@@ -1,5 +1,6 @@
 ﻿namespace Shockah.Kokoro;
 
+// ReSharper disable once InconsistentNaming
 internal static class I18n
 {
 	public static string ScorchingGlossaryName => "Scorching";

@@ -45,7 +45,7 @@ internal sealed class JohnsonTyArtifact : Artifact, IRegisterable
 
 	public override List<Tooltip>? GetExtraTooltips()
 		=> [
-			..ModEntry.Instance.TyAndSashaApi!.WildTrait.Configuration.Tooltips?.Invoke(DB.fakeState, null),
+			.. (ModEntry.Instance.TyAndSashaApi!.WildTrait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? []),
 			ModEntry.Instance.Api.TemporaryUpgradeTooltip
 		];
 

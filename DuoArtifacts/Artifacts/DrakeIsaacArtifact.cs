@@ -74,7 +74,7 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 		if (artifact is null)
 			return;
 
-		if ((__result ?? []).Count == 0)
+		if (__result.Count == 0)
 			return;
 
 		artifact.Pulse();

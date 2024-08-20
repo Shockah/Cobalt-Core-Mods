@@ -14,17 +14,18 @@ using System.Reflection.Emit;
 
 namespace Shockah.Kokoro;
 
+// ReSharper disable InconsistentNaming
 internal static class CardPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private static int MakeAllActionIconsCounter = 0;
-	private static int RenderActionCounter = 0;
-	private static int LastRenderActionWidth = 0;
-	private static Card? LastCard = null;
-	private static List<CardAction>? LastCardActions = null;
-	private static Dictionary<string, int>? CurrentResourceState = null;
-	private static Dictionary<string, int>? CurrentNonDrawingResourceState = null;
+	private static int MakeAllActionIconsCounter;
+	private static int RenderActionCounter;
+	private static int LastRenderActionWidth;
+	private static Card? LastCard;
+	private static List<CardAction>? LastCardActions;
+	private static Dictionary<string, int>? CurrentResourceState;
+	private static Dictionary<string, int>? CurrentNonDrawingResourceState;
 	private static readonly Stack<Matrix?> CardRenderMatrixStack = new();
 
 	public static void Apply(IHarmony harmony)
@@ -89,6 +90,7 @@ internal static class CardPatches
 		}
 		catch
 		{
+			// ignored
 		}
 	}
 
@@ -118,7 +120,7 @@ internal static class CardPatches
 			return;
 
 		var position = posOverride ?? __instance.pos;
-		position += new Vec(0.0, __instance.hoverAnim * -2.0 + Mutil.Parabola(__instance.flipAnim) * -10.0 + Mutil.Parabola(Math.Abs(__instance.flopAnim)) * -10.0 * (double)Math.Sign(__instance.flopAnim));
+		position += new Vec(0.0, __instance.hoverAnim * -2.0 + Mutil.Parabola(__instance.flipAnim) * -10.0 + Mutil.Parabola(Math.Abs(__instance.flopAnim)) * -10.0 * Math.Sign(__instance.flopAnim));
 		position += new Vec(((overrideWidth ?? 59) - 21) / 2.0, 82 - 13 / 2.0 - 0.5);
 		position = position.round();
 
@@ -136,6 +138,7 @@ internal static class CardPatches
 
 	private static IEnumerable<CodeInstruction> Card_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			var modifiedScaleLocal = il.DeclareLocal(typeof(Vec));
@@ -171,17 +174,14 @@ internal static class CardPatches
 						ILMatches.Instruction(OpCodes.Conv_R8),
 						ILMatches.Instruction(OpCodes.Call)
 					],
-					matcher =>
-					{
-						return matcher
-							.PointerMatcher(SequenceMatcherRelativeElement.Last)
-							.Insert(
-								SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-								new CodeInstruction(OpCodes.Ldloc, modifiedScaleLocal),
-								new CodeInstruction(OpCodes.Ldarg_0),
-								new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_Render_Transpiler_ModifyAvailableWidth)))
-							);
-					},
+					matcher => matcher
+						.PointerMatcher(SequenceMatcherRelativeElement.Last)
+						.Insert(
+							SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+							new CodeInstruction(OpCodes.Ldloc, modifiedScaleLocal),
+							new CodeInstruction(OpCodes.Ldarg_0),
+							new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_Render_Transpiler_ModifyAvailableWidth)))
+						),
 					minExpectedOccurences: 2, maxExpectedOccurences: 2
 				)
 				.PointerMatcher(branchTarget)
@@ -197,6 +197,7 @@ internal static class CardPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static Font? Card_Render_Transpiler_ReplaceCardTextFont(Card card, G g)
@@ -210,7 +211,7 @@ internal static class CardPatches
 			return Vec.One;
 		}
 		var modifiedScale = Instance.CardRenderManager.ModifyTextCardScale(g, card);
-		if (modifiedScale.x == 1 && modifiedScale.y == 1)
+		if (modifiedScale is { x: 1, y: 1 })
 		{
 			CardRenderMatrixStack.Push(null);
 			return Vec.One;
@@ -240,6 +241,7 @@ internal static class CardPatches
 
 	private static IEnumerable<CodeInstruction> Card_MakeAllActionIcons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			var actionsOverriddenLocal = il.DeclareLocal(typeof(List<CardAction>));
@@ -275,6 +277,7 @@ internal static class CardPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static List<CardAction> Card_MakeAllActionIcons_Transpiler_ModifyActions(List<CardAction> actions, Card card, State state)
@@ -348,118 +351,122 @@ internal static class CardPatches
 
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
 	{
-		if (action is AConditional conditional)
+		switch (action)
 		{
-			if (conditional.Action is not { } wrappedAction)
+			case AConditional conditional:
+			{
+				if (conditional.Action is not { } wrappedAction)
+					return false;
+
+				var oldActionDisabled = wrappedAction.disabled;
+				var faded = action.disabled || (conditional.FadeUnsatisfied && state.route is Combat combat && conditional.Expression?.GetValue(state, combat) == false);
+				wrappedAction.disabled = faded;
+
+				var position = g.Push(rect: new()).rect.xy;
+				var initialX = (int)position.x;
+
+				conditional.Expression?.Render(g, ref position, faded, dontDraw);
+				if (conditional.Expression?.ShouldRenderQuestionMark(state, state.route as Combat) == true)
+				{
+					if (!dontDraw)
+						Draw.Sprite((Spr)Instance.Content.QuestionMarkSprite.Id!.Value, position.x, position.y, color: faded ? Colors.disabledIconTint : Colors.white);
+					position.x += SpriteLoader.Get((Spr)Instance.Content.QuestionMarkSprite.Id!.Value)?.Width ?? 0;
+					position.x -= 1;
+				}
+
+				position.x += 2;
+				if (wrappedAction is AAttack attack)
+				{
+					var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
+					if (shouldStun)
+						attack.stunEnemy = shouldStun;
+				}
+
+				g.Push(rect: new(position.x - initialX, 0));
+				position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+				g.Pop();
+
+				__result = (int)position.x - initialX;
+				g.Pop();
+				wrappedAction.disabled = oldActionDisabled;
+
 				return false;
-
-			var oldActionDisabled = wrappedAction.disabled;
-			var faded = action.disabled || (conditional.FadeUnsatisfied && state.route is Combat combat && conditional.Expression?.GetValue(state, combat) == false);
-			wrappedAction.disabled = faded;
-
-			var position = g.Push(rect: new()).rect.xy;
-			var initialX = (int)position.x;
-
-			conditional.Expression?.Render(g, ref position, faded, dontDraw);
-			if (conditional.Expression?.ShouldRenderQuestionMark(state, state.route as Combat) == true)
-			{
-				if (!dontDraw)
-					Draw.Sprite((Spr)Instance.Content.QuestionMarkSprite.Id!.Value, position.x, position.y, color: faded ? Colors.disabledIconTint : Colors.white);
-				position.x += SpriteLoader.Get((Spr)Instance.Content.QuestionMarkSprite.Id!.Value)?.Width ?? 0;
-				position.x -= 1;
 			}
-
-			position.x += 2;
-			if (wrappedAction is AAttack attack)
+			case AResourceCost resourceCostAction:
 			{
-				var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
-				if (shouldStun)
-					attack.stunEnemy = shouldStun;
-			}
+				if (resourceCostAction.Action is not { } wrappedAction)
+					return false;
+				var resourceState = (dontDraw ? CurrentNonDrawingResourceState : CurrentResourceState) ?? new();
 
-			g.Push(rect: new(position.x - initialX, 0));
-			position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
-			g.Pop();
+				var oldActionDisabled = wrappedAction.disabled;
+				wrappedAction.disabled = action.disabled;
 
-			__result = (int)position.x - initialX;
-			g.Pop();
-			wrappedAction.disabled = oldActionDisabled;
+				var position = g.Push(rect: new()).rect.xy;
+				var initialX = (int)position.x;
 
-			return false;
-		}
-		else if (action is AResourceCost resourceCostAction)
-		{
-			if (resourceCostAction.Action is not { } wrappedAction)
+				var (payment, groupedPayment, _) = AResourceCost.GetResourcePayment(resourceState, resourceCostAction.Costs ?? []);
+				resourceCostAction.RenderCosts(g, ref position, action.disabled, dontDraw, payment);
+				if (!action.disabled)
+					foreach (var (resourceKey, resourceAmount) in groupedPayment)
+						resourceState[resourceKey] = resourceState.GetValueOrDefault(resourceKey) - resourceAmount;
+
+				position.x += 2;
+				if (wrappedAction is AAttack attack)
+				{
+					var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
+					if (shouldStun)
+						attack.stunEnemy = shouldStun;
+				}
+
+				g.Push(rect: new(position.x - initialX, 0));
+				position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+				g.Pop();
+
+				__result = (int)position.x - initialX;
+				g.Pop();
+				wrappedAction.disabled = oldActionDisabled;
+
 				return false;
-			var resourceState = (dontDraw ? CurrentNonDrawingResourceState : CurrentResourceState) ?? new();
-
-			var oldActionDisabled = wrappedAction.disabled;
-			wrappedAction.disabled = action.disabled;
-
-			var position = g.Push(rect: new()).rect.xy;
-			var initialX = (int)position.x;
-
-			var (payment, groupedPayment, _) = AResourceCost.GetResourcePayment(resourceState, resourceCostAction.Costs ?? new());
-			resourceCostAction.RenderCosts(g, ref position, action.disabled, dontDraw, payment);
-			if (!action.disabled)
-				foreach (var (resourceKey, resourceAmount) in groupedPayment)
-					resourceState[resourceKey] = resourceState.GetValueOrDefault(resourceKey) - resourceAmount;
-
-			position.x += 2;
-			if (wrappedAction is AAttack attack)
-			{
-				var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
-				if (shouldStun)
-					attack.stunEnemy = shouldStun;
 			}
+			case AContinued continuedAction:
+			{
+				if (continuedAction.Action is not { } wrappedAction)
+					return false;
 
-			g.Push(rect: new(position.x - initialX, 0));
-			position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
-			g.Pop();
+				var oldActionDisabled = wrappedAction.disabled;
+				wrappedAction.disabled = action.disabled;
 
-			__result = (int)position.x - initialX;
-			g.Pop();
-			wrappedAction.disabled = oldActionDisabled;
+				var position = g.Push(rect: new()).rect.xy;
+				var initialX = (int)position.x;
+				if (wrappedAction is AAttack attack)
+				{
+					var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
+					if (shouldStun)
+						attack.stunEnemy = shouldStun;
+				}
 
-			return false;
-		}
-		else if (action is AContinued continuedAction)
-		{
-			if (continuedAction.Action is not { } wrappedAction)
+				g.Push(rect: new(position.x - initialX, 0));
+				position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+				g.Pop();
+
+				__result = (int)position.x - initialX;
+				g.Pop();
+				wrappedAction.disabled = oldActionDisabled;
+
 				return false;
-
-			var oldActionDisabled = wrappedAction.disabled;
-			wrappedAction.disabled = action.disabled;
-
-			var position = g.Push(rect: new()).rect.xy;
-			var initialX = (int)position.x;
-			if (wrappedAction is AAttack attack)
-			{
-				var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
-				if (shouldStun)
-					attack.stunEnemy = shouldStun;
 			}
+			case ASpoofed spoofedAction:
+			{
+				if ((spoofedAction.RenderAction ?? spoofedAction.RealAction) is not { } actionToRender)
+					return true;
 
-			g.Push(rect: new(position.x - initialX, 0));
-			position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
-			g.Pop();
-
-			__result = (int)position.x - initialX;
-			g.Pop();
-			wrappedAction.disabled = oldActionDisabled;
-
-			return false;
-		}
-		else if (action is ASpoofed spoofedAction)
-		{
-			if ((spoofedAction.RenderAction ?? spoofedAction.RealAction) is not { } actionToRender)
+				__result = Card.RenderAction(g, state, actionToRender, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+				return false;
+			}
+			default:
 				return true;
-
-			__result = Card.RenderAction(g, state, actionToRender, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
-			return false;
 		}
 
-		return true;
 	}
 
 	private static void Card_RenderAction_Prefix_First(G g, CardAction action, bool dontDraw)
@@ -489,7 +496,7 @@ internal static class CardPatches
 
 		CardRenderMatrixStack.Push(g.mg.cameraMatrix);
 		var box = g.uiStack.TryPeek(out var existingRect) ? existingRect : new();
-		Vector3 translation = new Vector3((float)box.rect.x + LastRenderActionWidth / 2f, (float)box.rect.y + 4f, 0f) * g.mg.PIX_SCALE;
+		var translation = new Vector3((float)box.rect.x + LastRenderActionWidth / 2f, (float)box.rect.y + 4f, 0f) * g.mg.PIX_SCALE;
 		MG.inst.cameraMatrix *= Matrix.CreateTranslation(-translation);
 		MG.inst.cameraMatrix *= modifiedMatrix;
 		MG.inst.cameraMatrix *= Matrix.CreateTranslation(translation);
@@ -514,6 +521,7 @@ internal static class CardPatches
 
 	private static IEnumerable<CodeInstruction> Card_RenderAction_IconAndOrNumber_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -535,6 +543,7 @@ internal static class CardPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static Color Card_RenderAction_IconAndOrNumber_Transpiler_ModifyXColor(Color currentColor, CardAction action)
@@ -547,6 +556,7 @@ internal static class CardPatches
 
 	private static IEnumerable<CodeInstruction> Card_RenderAction_ParenIconParen_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -567,6 +577,7 @@ internal static class CardPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static Color Card_RenderAction_ParenIconParen_Transpiler_ModifyXColor(Color currentColor, CardAction action)
@@ -579,6 +590,7 @@ internal static class CardPatches
 
 	private static IEnumerable<CodeInstruction> Card_RenderAction_VarAssignment_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -604,6 +616,7 @@ internal static class CardPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static int Card_RenderAction_VarAssignment_Transpiler_Outgoing(G g, CardAction action, bool dontDraw, int w)
@@ -628,6 +641,7 @@ internal static class CardPatches
 
 	private static IEnumerable<CodeInstruction> Card_GetActionsOverridden_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			var wrappedActionsLocal = il.DeclareLocal(typeof(List<CardAction>));
@@ -658,6 +672,7 @@ internal static class CardPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static List<CardAction> Card_GetActionsOverridden_Transpiler_UnwrapActions(List<CardAction> actions)
@@ -665,6 +680,7 @@ internal static class CardPatches
 
 	private static IEnumerable<CodeInstruction> Card_GetDataWithOverrides_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -685,6 +701,7 @@ internal static class CardPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static List<CardAction> Card_GetDataWithOverrides_Transpiler_UnwrapActions(List<CardAction> actions)

@@ -98,12 +98,12 @@ internal static class HarmonyExt
 			return;
 		}
 
-		Type? declaringType = original.DeclaringType;
+		var declaringType = original.DeclaringType;
 		if (declaringType == null)
 			throw new ArgumentException($"{nameof(original)}.{nameof(original.DeclaringType)} is null.");
-		foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+		foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
 		{
-			IEnumerable<Type> subtypes = Enumerable.Empty<Type>();
+			IEnumerable<Type> subtypes = [];
 			try
 			{
 				subtypes = assembly.GetTypes().Where(t => t.IsAssignableTo(declaringType));
@@ -113,7 +113,7 @@ internal static class HarmonyExt
 				logger.Log(LogLevel.Trace, "There was a problem while getting types defined in assembly {Assembly}, ignoring it. Reason:\n{Exception}", assembly.GetName().Name, ex);
 			}
 
-			foreach (Type subtype in subtypes)
+			foreach (var subtype in subtypes)
 			{
 				var originalParameters = original.GetParameters();
 				var subtypeOriginal = AccessTools.Method(
@@ -138,7 +138,7 @@ internal static class HarmonyExt
 				)
 				{
 					var subtypeOriginalParameters = subtypeOriginal.GetParameters();
-					for (int i = 0; i < original.GetParameters().Length; i++)
+					for (var i = 0; i < original.GetParameters().Length; i++)
 						if (originalParameters[i].Name != subtypeOriginalParameters[i].Name)
 							throw new InvalidOperationException($"Method {declaringType.Name}.{original.Name} cannot be automatically patched for subtype {subtype.Name}, because argument #{i} has a mismatched name: `{originalParameters[i].Name}` vs `{subtypeOriginalParameters[i].Name}`.");
 				}
@@ -173,11 +173,11 @@ internal static class HarmonyExt
 
 		try
 		{
-			int patched = 0;
-			Type declaringType = originalMethod.DeclaringType ?? throw new ArgumentException($"{nameof(original)}.{nameof(originalMethod.DeclaringType)} is null.");
-			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+			var patched = 0;
+			var declaringType = originalMethod.DeclaringType ?? throw new ArgumentException($"{nameof(original)}.{nameof(originalMethod.DeclaringType)} is null.");
+			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
 			{
-				IEnumerable<Type> subtypes = Enumerable.Empty<Type>();
+				IEnumerable<Type> subtypes = [];
 				try
 				{
 					subtypes = assembly.GetTypes().Where(t => t.IsAssignableTo(declaringType));
@@ -187,7 +187,7 @@ internal static class HarmonyExt
 					logger.Log(LogLevel.Trace, "There was a problem while getting types defined in assembly {Assembly}, ignoring it. Reason:\n{Exception}", assembly.GetName().Name, ex);
 				}
 
-				foreach (Type subtype in subtypes)
+				foreach (var subtype in subtypes)
 				{
 					try
 					{
@@ -214,7 +214,7 @@ internal static class HarmonyExt
 						)
 						{
 							var subtypeOriginalParameters = subtypeOriginal.GetParameters();
-							for (int i = 0; i < originalMethod.GetParameters().Length; i++)
+							for (var i = 0; i < originalMethod.GetParameters().Length; i++)
 								if (originalParameters[i].Name != subtypeOriginalParameters[i].Name)
 									throw new InvalidOperationException($"Method {declaringType.Name}.{originalMethod.Name} cannot be automatically patched for subtype {subtype.Name}, because argument #{i} has a mismatched name: `{originalParameters[i].Name}` vs `{subtypeOriginalParameters[i].Name}`.");
 						}

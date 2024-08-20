@@ -22,10 +22,10 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction
 	public bool ShowTheCardIfNotInHand = true;
 
 	[JsonProperty]
-	private CardDestination? OriginalDestination = null;
+	private CardDestination? OriginalDestination;
 
 	[JsonProperty]
-	private int OriginalIndex = 0;
+	private int OriginalIndex;
 
 	internal static void ApplyPatches(IHarmony harmony)
 	{
@@ -38,47 +38,10 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction
 	public override void Begin(G g, State s, Combat c)
 	{
 		base.Begin(g, s, c);
-
-		Card? card = c.hand.Concat(s.deck).Concat(c.discard).Concat(c.exhausted).FirstOrDefault(c => c.uuid == CardId);
-		if (card is null)
+		if (c.hand.Concat(s.deck).Concat(c.discard).Concat(c.exhausted).FirstOrDefault(c => c.uuid == CardId) is not { } card)
 			return;
 
-		(Card Card, CardDestination OriginalDestination, int OriginalIndex)? GetEntry()
-		{
-			if (card is null)
-				return null;
-			if (OriginalDestination is { } originalDestination)
-				return (card, originalDestination, OriginalIndex);
-
-			int index = -1;
-			if ((index = s.deck.IndexOf(card)) != -1)
-				return (card, CardDestination.Deck, index);
-			if ((index = c.hand.IndexOf(card)) != -1)
-				return (card, CardDestination.Hand, index);
-			if ((index = c.discard.IndexOf(card)) != -1)
-				return (card, CardDestination.Discard, index);
-			if ((index = c.exhausted.IndexOf(card)) != -1)
-				return (card, CardDestination.Exhaust, index);
-
-			return null;
-		}
-
 		var entry = GetEntry();
-
-		void PlayCardAndFixQueue(bool withHacks)
-		{
-			if (card is null)
-				return;
-
-			if (withHacks)
-				CardBeingHackinglyPlayed = entry;
-			var queue = c.cardActions.Where(a => a != this).ToList();
-			c.cardActions.Clear();
-			c.TryPlayCard(s, card, playNoMatterWhatForFree: true);
-			c.cardActions.AddRange(queue);
-			if (withHacks)
-				CardBeingHackinglyPlayed = null;
-		}
 
 		if (c.hand.Contains(card))
 		{
@@ -102,10 +65,41 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction
 
 		c.QueueImmediate(new APlaySpecificCardFromAnywhere { CardId = card.uuid, OriginalDestination = entry?.OriginalDestination, OriginalIndex = entry?.OriginalIndex ?? 0 });
 		c.QueueImmediate(new ADelay() { time = -0.2 });
+
+		(Card Card, CardDestination OriginalDestination, int OriginalIndex)? GetEntry()
+		{
+			if (this.OriginalDestination is { } originalDestination)
+				return (card, originalDestination, this.OriginalIndex);
+
+			int index;
+			if ((index = s.deck.IndexOf(card)) != -1)
+				return (card, CardDestination.Deck, index);
+			if ((index = c.hand.IndexOf(card)) != -1)
+				return (card, CardDestination.Hand, index);
+			if ((index = c.discard.IndexOf(card)) != -1)
+				return (card, CardDestination.Discard, index);
+			if ((index = c.exhausted.IndexOf(card)) != -1)
+				return (card, CardDestination.Exhaust, index);
+
+			return null;
+		}
+
+		void PlayCardAndFixQueue(bool withHacks)
+		{
+			if (withHacks)
+				CardBeingHackinglyPlayed = entry;
+			var queue = c.cardActions.Where(a => a != this).ToList();
+			c.cardActions.Clear();
+			c.TryPlayCard(s, card, playNoMatterWhatForFree: true);
+			c.cardActions.AddRange(queue);
+			if (withHacks)
+				CardBeingHackinglyPlayed = null;
+		}
 	}
 
 	private static IEnumerable<CodeInstruction> Combat_TryPlayCard_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -147,6 +141,7 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static void Combat_TryPlayCard_Transpiler_RemoveFromHandIfHackinglyPlayed(Combat combat, State state, Card card)

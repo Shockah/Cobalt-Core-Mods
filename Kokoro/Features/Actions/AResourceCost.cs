@@ -40,11 +40,11 @@ public sealed class AResourceCost : CardAction
 		if (Costs is null)
 			return;
 
-		int resourceIndex = 0;
+		var resourceIndex = 0;
 		Costs.FirstOrDefault()?.RenderPrefix(g, ref position, isDisabled, dontRender);
 		foreach (var cost in Costs)
 		{
-			for (int i = 0; i < cost.ResourceAmount; i++)
+			for (var i = 0; i < cost.ResourceAmount; i++)
 			{
 				var (resourceKey, isResourceSatisfied) = payment[resourceIndex];
 				var resource = cost.PotentialResources.FirstOrDefault(r => r.ResourceKey == resourceKey);
@@ -81,12 +81,12 @@ public sealed class AResourceCost : CardAction
 	{
 		List<List<IKokoroApi.IActionCostApi.IResource>> toPay = [];
 		foreach (var cost in costs)
-			for (int i = 0; i < cost.ResourceAmount; i++)
+			for (var i = 0; i < cost.ResourceAmount; i++)
 				toPay.Add(cost.PotentialResources.ToList());
 
-		List<(string ResourceKey, bool IsSatisfied)> payment = GetBestResourcePaymentOptions(resourceState, toPay).FirstOrDefault() ?? [];
-		Dictionary<string, int> groupedPayment = payment.GroupBy(k => k.ResourceKey).ToDictionary(g => g.Key, g => g.Count());
-		bool isSatisfied = payment.All(e => e.IsSatisfied);
+		var payment = GetBestResourcePaymentOptions(resourceState, toPay).FirstOrDefault() ?? [];
+		var groupedPayment = payment.GroupBy(k => k.ResourceKey).ToDictionary(g => g.Key, g => g.Count());
+		var isSatisfied = payment.All(e => e.IsSatisfied);
 		return (Payment: payment, GroupedPayment: groupedPayment, IsSatisfied: isSatisfied);
 	}
 

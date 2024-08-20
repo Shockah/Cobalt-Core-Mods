@@ -574,7 +574,7 @@ public sealed partial class ModEntry : CobaltCoreModding.Definitions.ModManifest
 					e.SetOverride(FrogproofTrait, true);
 					break;
 				case FrogproofType.InnateHiddenIfNotNeeded:
-					if (!(StateExt.Instance ?? e.State).IsOutsideRun() && Instance.Api.IsRunWithSmug(StateExt.Instance ?? e.State))
+					if (!(MG.inst.g.state ?? e.State).IsOutsideRun() && Instance.Api.IsRunWithSmug(MG.inst.g.state ?? e.State))
 						e.SetOverride(FrogproofTrait, true);
 					break;
 			}

@@ -10,6 +10,7 @@ using System.Reflection.Emit;
 
 namespace Shockah.Kokoro;
 
+// ReSharper disable InconsistentNaming
 internal static class AStatusPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
@@ -32,6 +33,7 @@ internal static class AStatusPatches
 
 	private static IEnumerable<CodeInstruction> AStatus_Begin_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -65,6 +67,7 @@ internal static class AStatusPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static bool AStatus_Begin_Transpiler_ShouldApplyBoost(AStatus status, State state, Combat combat)
@@ -73,7 +76,7 @@ internal static class AStatusPatches
 		return Instance.StatusLogicManager.IsAffectedByBoost(state, combat, ship, status.status);
 	}
 
-	private static void AStatus_GetTooltips_Postfix(AStatus __instance, State s, ref List<Tooltip> __result)
+	private static void AStatus_GetTooltips_Postfix(AStatus __instance, ref List<Tooltip> __result)
 	{
 		if (!Instance.Api.ObtainExtensionData(__instance, "energy", () => false))
 			return;

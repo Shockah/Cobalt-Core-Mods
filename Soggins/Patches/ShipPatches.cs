@@ -18,8 +18,7 @@ internal static class ShipPatches
 
 	private static void Ship_ResetAfterCombat_Postfix(Ship __instance)
 	{
-		var state = StateExt.Instance;
-		if (state is null)
+		if (MG.inst.g.state is not { } state)
 			return;
 		if (state.ship != __instance)
 			return;

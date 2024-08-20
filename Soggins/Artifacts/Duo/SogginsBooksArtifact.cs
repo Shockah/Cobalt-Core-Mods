@@ -42,7 +42,7 @@ public sealed class SogginsBooksArtifact : Artifact, IRegisterableArtifact
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
-		var maxShardAmount = (StateExt.Instance ?? DB.fakeState).ship.Get(Status.maxShard);
+		var maxShardAmount = (MG.inst.g.state ?? DB.fakeState).ship.Get(Status.maxShard);
 		if (maxShardAmount == 0)
 			maxShardAmount = 3;
 

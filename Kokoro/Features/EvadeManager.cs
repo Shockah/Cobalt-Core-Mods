@@ -1,4 +1,4 @@
-﻿﻿using FSPRO;
+﻿using FSPRO;
 using Shockah.Shared;
 using System.Linq;
 
@@ -6,7 +6,7 @@ namespace Shockah.Kokoro;
 
 public sealed class EvadeManager : HookManager<IEvadeHook>
 {
-	internal EvadeManager() : base()
+	internal EvadeManager()
 	{
 		Register(VanillaEvadeHook.Instance, 0);
 		Register(VanillaDebugEvadeHook.Instance, 1_000_000_000);

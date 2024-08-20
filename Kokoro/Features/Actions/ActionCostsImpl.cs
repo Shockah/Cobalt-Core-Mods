@@ -134,14 +134,14 @@ internal sealed class ActionCostStatusResource : IKokoroApi.IActionCostApi.IReso
 
 	public List<Tooltip> GetTooltips(State state, Combat? combat, int amount)
 	{
-		string nameFormat = Target == IKokoroApi.IActionCostApi.StatusResourceTarget.Player
+		var nameFormat = Target == IKokoroApi.IActionCostApi.StatusResourceTarget.Player
 			? I18n.StatusPlayerCostActionName : I18n.StatusEnemyCostActionName;
-		string descriptionFormat = Target == IKokoroApi.IActionCostApi.StatusResourceTarget.Player
+		var descriptionFormat = Target == IKokoroApi.IActionCostApi.StatusResourceTarget.Player
 			? I18n.StatusPlayerCostActionDescription : I18n.StatusEnemyCostActionDescription;
 
 		var icon = CostSatisfiedIcon ?? CostUnsatisfiedIcon ?? DB.statuses[Status].icon;
-		string name = string.Format(nameFormat, Status.GetLocName().ToUpper());
-		string description = string.Format(descriptionFormat, amount, Status.GetLocName().ToUpper());
+		var name = string.Format(nameFormat, Status.GetLocName().ToUpper());
+		var description = string.Format(descriptionFormat, amount, Status.GetLocName().ToUpper());
 
 		return [
 			new CustomTTGlossary(

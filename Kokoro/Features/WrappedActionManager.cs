@@ -5,7 +5,7 @@ namespace Shockah.Kokoro;
 
 public sealed class WrappedActionManager : HookManager<IWrappedActionHook>
 {
-	internal WrappedActionManager() : base()
+	internal WrappedActionManager()
 	{
 		Register(ConditionalActionWrappedActionHook.Instance, 0);
 		Register(ResourceCostActionWrappedActionHook.Instance, 0);

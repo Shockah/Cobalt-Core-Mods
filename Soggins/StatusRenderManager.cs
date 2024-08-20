@@ -77,7 +77,7 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 						() => I18n.SmugStatusLongDescription
 					);
 
-				if (StateExt.Instance is { } state)
+				if (MG.inst.g.state is { } state)
 				{
 					double botchChance = Math.Clamp(Instance.Api.GetSmugBotchChance(state, state.ship, null), 0, 1);
 					double doubleChance = Math.Clamp(Instance.Api.GetSmugDoubleChance(state, state.ship, null), 0, 1 - botchChance);

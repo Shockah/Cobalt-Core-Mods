@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
 
+// ReSharper disable InconsistentNaming
 internal static class StatusMetaPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;

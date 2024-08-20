@@ -4,6 +4,7 @@ using Nickel;
 
 namespace Shockah.Kokoro;
 
+// ReSharper disable InconsistentNaming
 internal static class MGPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;

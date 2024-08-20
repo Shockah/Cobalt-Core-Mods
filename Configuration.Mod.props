@@ -13,6 +13,6 @@
 	<Import Project="_Shared\_Shared.projitems" Label="Shared" />
 	<ItemGroup>
 		<PackageReference Include="Nickel.ModBuildConfig" Version="1.2.2" />
-		<PackageReference Include="EnumByNameSourceGenerator" Version="1.1.1" PrivateAssets="All" ExcludeAssets="runtime" />
+		<PackageReference Include="EnumByNameSourceGenerator" Version="1.1.2" PrivateAssets="All" ExcludeAssets="runtime" />
 	</ItemGroup>
 </Project>

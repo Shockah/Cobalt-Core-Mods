@@ -79,11 +79,11 @@ internal sealed class NarrativeManager
 		if (manager.DidBotchCard)
 		{
 			double? responseDelay = DB.story.QuickLookup(g.state, $".{Instance.SogginsDeck.GlobalName}_Botch") is null ? null : 1.25;
-			Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, $".{Instance.SogginsDeck.GlobalName}_Botch");
+			Narrative.SpeakBecauseOfAction(MG.inst.g, combat, $".{Instance.SogginsDeck.GlobalName}_Botch");
 			QueuedAction.Queue(new QueuedAction()
 			{
 				WaitForTotalGameTime = responseDelay is null ? null : Instance.KokoroApi.TotalGameTime.TotalSeconds + responseDelay.Value,
-				Action = () => Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, $".{Instance.SogginsDeck.GlobalName}_BotchResponse_{deckKey}")
+				Action = () => Narrative.SpeakBecauseOfAction(MG.inst.g, combat, $".{Instance.SogginsDeck.GlobalName}_BotchResponse_{deckKey}")
 			});
 			return true;
 		}
@@ -91,7 +91,7 @@ internal sealed class NarrativeManager
 		{
 			bool wasLaunchAction = manager.DidDoubleLaunchAction;
 			double? responseDelay = DB.story.QuickLookup(g.state, $".{Instance.SogginsDeck.GlobalName}_Double") is null ? null : 1.25;
-			Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, $".{Instance.SogginsDeck.GlobalName}_Double");
+			Narrative.SpeakBecauseOfAction(MG.inst.g, combat, $".{Instance.SogginsDeck.GlobalName}_Double");
 			QueuedAction.Queue(new QueuedAction()
 			{
 				WaitForTotalGameTime = responseDelay is null ? null : Instance.KokoroApi.TotalGameTime.TotalSeconds + responseDelay.Value,
@@ -100,7 +100,7 @@ internal sealed class NarrativeManager
 					string storyKey = $".{Instance.SogginsDeck.GlobalName}_Double{(wasLaunchAction ? "Launch" : "")}Response";
 					if (wasLaunchAction && DB.story.QuickLookup(g.state, storyKey) is null)
 						storyKey = $".{Instance.SogginsDeck.GlobalName}_DoubleResponse";
-					Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, storyKey);
+					Narrative.SpeakBecauseOfAction(MG.inst.g, combat, storyKey);
 				}
 			});
 			return true;

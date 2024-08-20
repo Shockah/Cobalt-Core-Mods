@@ -3,7 +3,8 @@
 namespace Shockah.Kokoro;
 
 [EnumByName(typeof(Spr))]
-internal static partial class StableSpr { }
+internal static partial class StableSpr;
 
 [EnumByName(typeof(UK))]
-internal static partial class StableUK { }
+// ReSharper disable once InconsistentNaming
+internal static partial class StableUK;

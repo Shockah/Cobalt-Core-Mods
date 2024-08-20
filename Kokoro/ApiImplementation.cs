@@ -2,7 +2,6 @@
 using CobaltCoreModding.Definitions.ModManifests;
 using daisyowl.text;
 using Nanoray.Pintail;
-using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -13,11 +12,10 @@ namespace Shockah.Kokoro;
 
 public sealed class ApiImplementation(
 	IManifest manifest
-) : IKokoroApi, IProxyProvider
+) : IKokoroApi
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	private readonly IManifest Manifest = manifest;
 	private static readonly Dictionary<Type, ConditionalWeakTable<object, object?>> ProxyCache = [];
 
 	#region Generic
@@ -57,13 +55,13 @@ public sealed class ApiImplementation(
 		}
 		if (table.TryGetValue(@object, out var rawProxy))
 		{
-			proxy = rawProxy is null ? default : (T)rawProxy;
+			proxy = (T)rawProxy!;
 			return rawProxy is not null;
 		}
 
 		var newNullableProxy = Instance.Helper.Utilities.ProxyManager.TryProxy<string, T>(@object, "Unknown", Instance.Name, out var newProxy) ? newProxy : null;
 		table.AddOrUpdate(@object, newNullableProxy);
-		proxy = newNullableProxy is null ? default : newNullableProxy;
+		proxy = newNullableProxy;
 		return newNullableProxy is not null;
 	}
 
@@ -74,25 +72,25 @@ public sealed class ApiImplementation(
 		=> Instance.ExtensionDataManager.RegisterTypeForExtensionData(type);
 
 	public T GetExtensionData<T>(object o, string key)
-		=> Instance.ExtensionDataManager.GetExtensionData<T>(Manifest, o, key);
+		=> Instance.ExtensionDataManager.GetExtensionData<T>(manifest, o, key);
 
 	public bool TryGetExtensionData<T>(object o, string key, [MaybeNullWhen(false)] out T data)
-		=> Instance.ExtensionDataManager.TryGetExtensionData(Manifest, o, key, out data);
+		=> Instance.ExtensionDataManager.TryGetExtensionData(manifest, o, key, out data);
 
 	public T ObtainExtensionData<T>(object o, string key, Func<T> factory)
-		=> Instance.ExtensionDataManager.ObtainExtensionData(Manifest, o, key, factory);
+		=> Instance.ExtensionDataManager.ObtainExtensionData(manifest, o, key, factory);
 
 	public T ObtainExtensionData<T>(object o, string key) where T : new()
-		=> Instance.ExtensionDataManager.ObtainExtensionData<T>(Manifest, o, key);
+		=> Instance.ExtensionDataManager.ObtainExtensionData<T>(manifest, o, key);
 
 	public bool ContainsExtensionData(object o, string key)
-		=> Instance.ExtensionDataManager.ContainsExtensionData(Manifest, o, key);
+		=> Instance.ExtensionDataManager.ContainsExtensionData(manifest, o, key);
 
 	public void SetExtensionData<T>(object o, string key, T data)
-		=> Instance.ExtensionDataManager.SetExtensionData(Manifest, o, key, data);
+		=> Instance.ExtensionDataManager.SetExtensionData(manifest, o, key, data);
 
 	public void RemoveExtensionData(object o, string key)
-		=> Instance.ExtensionDataManager.RemoveExtensionData(Manifest, o, key);
+		=> Instance.ExtensionDataManager.RemoveExtensionData(manifest, o, key);
 	#endregion
 
 	#region WormStatus
@@ -459,7 +457,7 @@ public sealed class ApiImplementation(
 	public sealed class ActionCostApiImplementation : IKokoroApi.IActionCostApi
 	{
 		public CardAction Make(IKokoroApi.IActionCostApi.IActionCost cost, CardAction action)
-			=> new AResourceCost { Costs = new() { cost }, Action = action };
+			=> new AResourceCost { Costs = [cost], Action = action };
 
 		public CardAction Make(IReadOnlyList<IKokoroApi.IActionCostApi.IActionCost> costs, CardAction action)
 			=> new AResourceCost { Costs = costs.ToList(), Action = action };

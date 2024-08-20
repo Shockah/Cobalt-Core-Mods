@@ -152,7 +152,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		{
 			misprintedApologyArtifact.Pulse();
 			misprintedApologyArtifact.TriggeredThisTurn = true;
-			Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, $".{misprintedApologyArtifact.Key()}Trigger");
+			Narrative.SpeakBecauseOfAction(MG.inst.g, combat, $".{misprintedApologyArtifact.Key()}Trigger");
 			var firstCard = GenerateAndTrackApology(state, combat, rng, forDual: true);
 			var secondCard = GenerateAndTrackApology(state, combat, rng, forDual: true, ignoringType: firstCard.GetType());
 			apology = new DualApologyCard

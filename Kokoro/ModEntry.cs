@@ -99,7 +99,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	public void FinalizePreperations(IPrelaunchContactPoint prelaunchManifest)
 		=> StuffBasePatches.ApplyLate(Harmony);
 
-	public object? GetApi(IManifest requestingMod)
+	public object GetApi(IManifest requestingMod)
 		=> new ApiImplementation(requestingMod);
 
 	public void LoadManifest(ISpriteRegistry registry)
@@ -116,6 +116,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 			ExtensionDataManager
 		);
 		JSONSettings.serializer.ContractResolver = new ConditionalWeakTableExtensionDataContractResolver(
+			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 			JSONSettings.serializer.ContractResolver ?? new DefaultContractResolver(),
 			ExtensionDataJsonKey,
 			ExtensionDataManager

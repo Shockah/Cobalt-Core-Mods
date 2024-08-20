@@ -17,7 +17,7 @@ internal static class EffectSpawnerExt
 				: FxPositions.Cannon(ray.worldX, !targetPlayer);
 
 			Vec rectVecB;
-			if (!ray.hitDrone && !ray.hitShip)
+			if (ray is { hitDrone: false, hitShip: false })
 				rectVecB = FxPositions.Miss(ray.worldX, targetPlayer);
 			else if (ray.hitDrone)
 				rectVecB = FxPositions.Drone(ray.worldX);
@@ -31,7 +31,7 @@ internal static class EffectSpawnerExt
 			ParticleBursts.HullImpact(g, hitPos, targetPlayer, !ray.hitDrone, ray.fromDrone);
 		}
 
-		if (dmg.hitShield && !dmg.hitHull)
+		if (dmg is { hitShield: true, hitHull: false })
 		{
 			combat.fx.Add(new ShieldHit { pos = FxPositions.Shield(ray.worldX, targetPlayer) });
 			ParticleBursts.ShieldImpact(g, FxPositions.Shield(ray.worldX, targetPlayer), targetPlayer);
@@ -46,7 +46,7 @@ internal static class EffectSpawnerExt
 		else if (dmg.hitShield)
 			sound = Event.Hits_ShieldHit;
 
-		if (!ray.hitDrone && !ray.hitShip)
+		if (ray is { hitDrone: false, hitShip: false })
 			sound = Event.Hits_Miss;
 		else if (dmg.hitHull)
 			sound = targetPlayer ? Event.Hits_HitHurt : Event.Hits_OutgoingHit;

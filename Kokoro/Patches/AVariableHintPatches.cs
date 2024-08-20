@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
 
+// ReSharper disable InconsistentNaming
 internal static class AVariableHintPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
@@ -27,7 +28,7 @@ internal static class AVariableHintPatches
 		if (__instance.status is not { } status)
 			return;
 
-		int index = __result.FindIndex(t => t is TTGlossary glossary && glossary.key == "action.xHint.desc");
+		var index = __result.FindIndex(t => t is TTGlossary { key: "action.xHint.desc" });
 		if (index < 0)
 			return;
 

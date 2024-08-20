@@ -9,5 +9,5 @@ internal static class RandExt
 		=> chance > 0 && (chance >= 1 || random.Next() < chance);
 
 	public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source, Rand rng)
-		=> source.OrderBy(item => rng.NextInt());
+		=> source.OrderBy(_ => rng.NextInt());
 }

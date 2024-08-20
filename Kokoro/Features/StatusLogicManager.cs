@@ -20,7 +20,7 @@ public sealed class StatusLogicManager : HookManager<IStatusLogicHook>
 		{ Status.lockdown, StatusTurnAutoStepSetStrategy.QueueAdd },
 	};
 
-	internal StatusLogicManager() : base()
+	internal StatusLogicManager()
 	{
 		Register(VanillaBoostStatusLogicHook.Instance, 0);
 		Register(VanillaTimestopStatusLogicHook.Instance, 1_000_000);
@@ -38,13 +38,8 @@ public sealed class StatusLogicManager : HookManager<IStatusLogicHook>
 	public bool IsAffectedByBoost(State state, Combat combat, Ship ship, Status status)
 	{
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
-		{
-			var hookResult = hook.IsAffectedByBoost(state, combat, ship, status);
-			if (hookResult == false)
-				return false;
-			else if (hookResult == true)
-				return true;
-		}
+			if (hook.IsAffectedByBoost(state, combat, ship, status) is { } result)
+				return result;
 		return true;
 	}
 
@@ -56,13 +51,13 @@ public sealed class StatusLogicManager : HookManager<IStatusLogicHook>
 
 	private void OnTurnStartOrEnd(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship)
 	{
-		Dictionary<Status, int> oldAmounts = DB.statuses.Keys
+		var oldAmounts = DB.statuses.Keys
 			.ToDictionary(status => status, ship.Get);
 
 		foreach (var (status, oldAmount) in oldAmounts)
 		{
-			int newAmount = oldAmount;
-			StatusTurnAutoStepSetStrategy setStrategy = AutoStepSetStrategies.GetValueOrDefault(status, StatusTurnAutoStepSetStrategy.QueueImmediateAdd);
+			var newAmount = oldAmount;
+			var setStrategy = AutoStepSetStrategies.GetValueOrDefault(status, StatusTurnAutoStepSetStrategy.QueueImmediateAdd);
 
 			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
 				if (hook.HandleStatusTurnAutoStep(state, combat, timing, ship, status, ref newAmount, ref setStrategy))
@@ -114,6 +109,8 @@ public sealed class StatusLogicManager : HookManager<IStatusLogicHook>
 						statusAmount = newAmount - oldAmount
 					});
 					break;
+				default:
+					throw new ArgumentOutOfRangeException();
 			}
 		}
 	}
@@ -152,14 +149,14 @@ public sealed class VanillaTurnStartStatusAutoStepLogicHook : IStatusLogicHook
 		if (amount == 0)
 			return false;
 
-		bool shouldDecrement = status is Status.timeStop or Status.perfectShield;
+		var shouldDecrement = status is Status.timeStop or Status.perfectShield;
 		if (shouldDecrement)
 		{
 			amount -= Math.Sign(amount);
 			return false;
 		}
 
-		bool shouldZeroOut = status is Status.stunCharge or Status.tempShield or Status.tempPayback or Status.autododgeLeft or Status.autododgeRight;
+		var shouldZeroOut = status is Status.stunCharge or Status.tempShield or Status.tempPayback or Status.autododgeLeft or Status.autododgeRight;
 		if (shouldZeroOut)
 		{
 			amount = 0;
@@ -183,14 +180,14 @@ public sealed class VanillaTurnEndStatusAutoStepLogicHook : IStatusLogicHook
 		if (amount == 0)
 			return false;
 
-		bool shouldDecrement = status is Status.overdrive or Status.temporaryCheap or Status.libra or Status.lockdown or Status.backwardsMissiles;
+		var shouldDecrement = status is Status.overdrive or Status.temporaryCheap or Status.libra or Status.lockdown or Status.backwardsMissiles;
 		if (shouldDecrement)
 		{
 			amount -= Math.Sign(amount);
 			return false;
 		}
 
-		bool shouldZeroOut = status is Status.autopilot or Status.hermes or Status.engineStall;
+		var shouldZeroOut = status is Status.autopilot or Status.hermes or Status.engineStall;
 		if (shouldZeroOut)
 		{
 			amount = 0;

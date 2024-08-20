@@ -42,7 +42,7 @@ public sealed class SmugArtifact : Artifact, IRegisterableArtifact
 
 	public override Spr GetSprite()
 	{
-		var state = StateExt.Instance ?? DB.fakeState;
+		var state = MG.inst.g.state ?? DB.fakeState;
 		if (state.route is not Combat)
 			return base.GetSprite();
 		var smug = Instance.Api.GetSmug(state, state.ship);

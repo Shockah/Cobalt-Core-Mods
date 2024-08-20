@@ -85,7 +85,7 @@ public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook
 	public override void OnCombatStart(State state, Combat combat)
 	{
 		base.OnCombatStart(state, combat);
-		Narrative.SpeakBecauseOfAction(GExt.Instance!, combat, $".{Key()}Trigger");
+		Narrative.SpeakBecauseOfAction(MG.inst.g, combat, $".{Key()}Trigger");
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()

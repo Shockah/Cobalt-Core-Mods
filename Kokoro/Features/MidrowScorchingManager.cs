@@ -16,7 +16,7 @@ public sealed class MidrowScorchingManager : HookManager<IMidrowScorchingHook>
 			if (Instance.Api.GetScorchingStatus(state, combat, @object) <= 0)
 				continue;
 
-			bool isInvincible = @object.Invincible();
+			var isInvincible = @object.Invincible();
 			foreach (var someArtifact in state.EnumerateAllArtifacts())
 			{
 				if (someArtifact.ModifyDroneInvincibility(state, combat, @object) != true)

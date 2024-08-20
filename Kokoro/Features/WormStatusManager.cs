@@ -1,5 +1,4 @@
-﻿using Shockah.Shared;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.Kokoro;
@@ -24,7 +23,7 @@ public sealed class WormStatusManager : IStatusLogicHook
 			return;
 
 		var otherShip = ship.isPlayerShip ? combat.otherShip : state.ship;
-		int wormAmount = otherShip.Get((Status)Instance.Content.WormStatus.Id!.Value);
+		var wormAmount = otherShip.Get((Status)Instance.Content.WormStatus.Id!.Value);
 		if (wormAmount <= 0)
 			return;
 

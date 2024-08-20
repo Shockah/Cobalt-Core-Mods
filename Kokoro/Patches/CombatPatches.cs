@@ -10,6 +10,7 @@ using System.Reflection.Emit;
 
 namespace Shockah.Kokoro;
 
+// ReSharper disable InconsistentNaming
 internal static class CombatPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
@@ -41,6 +42,7 @@ internal static class CombatPatches
 
 	private static IEnumerable<CodeInstruction> Combat_RenderMoveButtons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			var leftEndLabel = il.DefineLabel();
@@ -102,6 +104,7 @@ internal static class CombatPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static bool Combat_RenderMoveButtons_Transpiler_ShouldRender(G g, int direction)
@@ -113,6 +116,7 @@ internal static class CombatPatches
 
 	private static IEnumerable<CodeInstruction> Combat_RenderDroneShiftButtons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			var leftEndLabel = il.DefineLabel();
@@ -187,6 +191,7 @@ internal static class CombatPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static bool Combat_RenderDroneShiftButtons_Transpiler_ShouldRender(G g, int direction)
@@ -231,7 +236,7 @@ internal static class CombatPatches
 		return false;
 	}
 
-	private static void Combat_DrainCardActions_Prefix(Combat __instance, ref bool __state)
+	private static void Combat_DrainCardActions_Prefix(Combat __instance, out bool __state)
 		=> __state = __instance.currentCardAction is not null || __instance.cardActions.Count != 0;
 
 	private static void Combat_DrainCardActions_Postfix(Combat __instance, ref bool __state)

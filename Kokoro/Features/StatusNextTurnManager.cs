@@ -14,13 +14,12 @@ public sealed class StatusNextTurnManager : HookManager<IOxidationStatusHook>, I
 				.. tooltips,
 				.. StatusMeta.GetTooltips(Status.tempShield, amount)
 			];
-		else if (status == (Status)Instance.Content.ShieldNextTurnStatus.Id!.Value)
+		if (status == (Status)Instance.Content.ShieldNextTurnStatus.Id!.Value)
 			return [
 				.. tooltips,
 				.. StatusMeta.GetTooltips(Status.shield, amount)
 			];
-		else
-			return tooltips;
+		return tooltips;
 	}
 
 	public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)

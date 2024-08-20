@@ -90,20 +90,12 @@ internal sealed class ConditionalActionScalarMultiplier : IKokoroApi.IConditiona
 
 	[JsonIgnore]
 	internal int? ConstantValue
-	{
-		get
+		=> this.Expression switch
 		{
-			if (Expression is ConditionalActionIntConstant constant)
-				return constant.Value;
-			if (Expression is ConditionalActionScalarMultiplier scalarMultiplier)
-			{
-				var scalarConstant = scalarMultiplier.ConstantValue;
-				if (scalarConstant is not null)
-					return scalarConstant.Value * Scalar;
-			}
-			return null;
-		}
-	}
+			ConditionalActionIntConstant constant => constant.Value,
+			ConditionalActionScalarMultiplier scalarMultiplier => scalarMultiplier.ConstantValue * this.Scalar,
+			_ => null
+		};
 
 	[JsonConstructor]
 	public ConditionalActionScalarMultiplier(IKokoroApi.IConditionalActionApi.IIntExpression expression, int scalar)
@@ -234,7 +226,7 @@ internal sealed class ConditionalActionStatusExpression : IKokoroApi.IConditiona
 	{
 		var ship = TargetPlayer ? state.ship : combat?.otherShip;
 		var amount = ship?.Get(Status) ?? 1;
-		return new() { new TTGlossary($"status.{Status.Key()}", amount) };
+		return [new TTGlossary($"status.{this.Status.Key()}", amount)];
 	}
 }
 
@@ -275,8 +267,8 @@ internal sealed class ConditionalActionEquation : IKokoroApi.IConditionalActionA
 
 	public bool GetValue(State state, Combat combat)
 	{
-		int lhs = Lhs.GetValue(state, combat);
-		int rhs = Rhs.GetValue(state, combat);
+		var lhs = Lhs.GetValue(state, combat);
+		var rhs = Rhs.GetValue(state, combat);
 		return Operator switch
 		{
 			IKokoroApi.IConditionalActionApi.EquationOperator.Equal => lhs == rhs,
@@ -404,7 +396,7 @@ internal sealed class ConditionalActionEquation : IKokoroApi.IConditionalActionA
 
 	public List<Tooltip> GetTooltips(State state, Combat? combat)
 		=> [
-			..Lhs.GetTooltips(state, combat),
-			..Rhs.GetTooltips(state, combat),
+			.. Lhs.GetTooltips(state, combat),
+			.. Rhs.GetTooltips(state, combat),
 		];
 }

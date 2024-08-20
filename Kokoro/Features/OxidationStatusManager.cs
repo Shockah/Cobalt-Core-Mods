@@ -11,7 +11,7 @@ public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>, 
 
 	public int GetOxidationStatusMaxValue(State state, Ship ship)
 	{
-		int value = BaseOxidationStatusMaxValue;
+		var value = BaseOxidationStatusMaxValue;
 		foreach (var hook in GetHooksWithProxies(Instance.Api, state.EnumerateAllArtifacts()))
 			value = hook.ModifyOxidationRequirement(state, ship, value);
 		return value;
@@ -19,10 +19,10 @@ public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>, 
 
 	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
 	{
+		// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 		var oxidationMaxValue = ship is null ? BaseOxidationStatusMaxValue : GetOxidationStatusMaxValue(MG.inst.g.state ?? DB.fakeState, ship);
-		for (int i = 0; i < tooltips.Count; i++)
+		foreach (var tooltip in tooltips)
 		{
-			var tooltip = tooltips[i];
 			if (tooltip is TTGlossary glossary && glossary.key == $"status.{Instance.Content.OxidationStatus.Status}")
 				glossary.vals = [$"<c=boldPink>{oxidationMaxValue}</c>"];
 		}

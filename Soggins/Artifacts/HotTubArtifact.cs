@@ -78,7 +78,7 @@ public sealed class HotTubArtifact : Artifact, IRegisterableArtifact
 
 	public override string Description()
 	{
-		if (StateExt.Instance is not { } state)
+		if (MG.inst.g.state is not { } state)
 			return base.Description();
 		return string.Format(I18n.HotTubArtifactDescription, Instance.Api.GetMinSmug(state.ship), Instance.Api.GetMaxSmug(state.ship));
 	}

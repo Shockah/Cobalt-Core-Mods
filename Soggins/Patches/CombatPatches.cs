@@ -58,7 +58,7 @@ internal static class CombatPatches
 
 	private static void CharAnimations_GetCharAnimationSprite_Prefix(string who, ref string tag)
 	{
-		if (StateExt.Instance is not { } state)
+		if (MG.inst.g.state is not { } state)
 			return;
 		if (who != Instance.SogginsDeck.GlobalName)
 			return;

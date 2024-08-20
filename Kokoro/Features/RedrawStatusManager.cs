@@ -1,10 +1,11 @@
 ﻿using Shockah.Shared;
+using System.Linq;
 
 namespace Shockah.Kokoro;
 
 public sealed class RedrawStatusManager : HookManager<IRedrawStatusHook>
 {
-	internal RedrawStatusManager() : base()
+	internal RedrawStatusManager()
 	{
 		Register(StandardRedrawStatusPaymentHook.Instance, 0);
 		Register(StandardRedrawStatusActionHook.Instance, -1000);
@@ -18,59 +19,46 @@ public sealed class RedrawStatusManager : HookManager<IRedrawStatusHook>
 			return false;
 
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
-		{
-			var hookResult = hook.CanRedraw(state, combat, card);
-			if (hookResult == false)
-				return false;
-			else if (hookResult == true)
-				return true;
-		}
+			if (hook.CanRedraw(state, combat, card) is { } result)
+				return result;
 		return false;
 	}
 
 	public bool DoRedraw(State state, Combat combat, Card card)
 	{
-		IRedrawStatusHook? GetPossibilityHook()
-		{
-			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
-			{
-				var hookResult = hook.CanRedraw(state, combat, card);
-				if (hookResult == false)
-					return null;
-				else if (hookResult == true)
-					return hook;
-			}
-			return null;
-		}
-
 		if (GetPossibilityHook() is not { } possibilityHook)
 			return false;
-
-		IRedrawStatusHook? GetPaymentHook()
-		{
-			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
-				if (hook.PayForRedraw(state, combat, card, possibilityHook))
-					return hook;
-			return null;
-		}
-
 		if (GetPaymentHook() is not { } paymentHook)
 			return false;
-
-		IRedrawStatusHook? GetActionHook()
-		{
-			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
-				if (hook.DoRedraw(state, combat, card, possibilityHook, paymentHook))
-					return hook;
-			return null;
-		}
-
 		if (GetActionHook() is not { } actionHook)
 			return false;
 
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
 			hook.AfterRedraw(state, combat, card, possibilityHook, paymentHook, actionHook);
 		return true;
+
+		IRedrawStatusHook? GetPossibilityHook()
+		{
+			foreach (var hook in this.GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
+			{
+				switch (hook.CanRedraw(state, combat, card))
+				{
+					case false:
+						return null;
+					case true:
+						return hook;
+				}
+			}
+			return null;
+		}
+
+		IRedrawStatusHook? GetPaymentHook()
+			=> this.GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts())
+				.FirstOrDefault(hook => hook.PayForRedraw(state, combat, card, possibilityHook));
+
+		IRedrawStatusHook? GetActionHook()
+			=> this.GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts())
+				.FirstOrDefault(hook => hook.DoRedraw(state, combat, card, possibilityHook, paymentHook));
 	}
 }
 

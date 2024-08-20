@@ -11,6 +11,7 @@ using System.Reflection.Emit;
 
 namespace Shockah.Kokoro;
 
+// ReSharper disable InconsistentNaming
 internal static class ShipPatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
@@ -64,6 +65,7 @@ internal static class ShipPatches
 
 	private static IEnumerable<CodeInstruction> Ship_OnBeginTurn_Transpiler_Last(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -89,6 +91,7 @@ internal static class ShipPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static void Ship_OnAfterTurn_Prefix_First(Ship __instance, State s, Combat c)
@@ -98,6 +101,7 @@ internal static class ShipPatches
 
 	private static IEnumerable<CodeInstruction> Ship_OnAfterTurn_Transpiler_Last(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -118,6 +122,7 @@ internal static class ShipPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static void Ship_GetStatusSize_Postfix(Ship __instance, Status status, int amount, ref Ship.StatusPlan __result)
@@ -151,6 +156,7 @@ internal static class ShipPatches
 
 	private static IEnumerable<CodeInstruction> Ship_RenderStatuses_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -173,6 +179,7 @@ internal static class ShipPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static void Ship_RenderStatuses_Transpiler_ModifyStatusesToShow(Ship ship, G g)
@@ -196,6 +203,7 @@ internal static class ShipPatches
 
 	private static IEnumerable<CodeInstruction> Ship_RenderStatusRow_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -206,7 +214,7 @@ internal static class ShipPatches
 				])
 				.Find(SequenceBlockMatcherFindOccurence.Last, SequenceMatcherRelativeBounds.WholeSequence, [
 					ILMatches.Ldloc<int>(originalMethod).CreateLdlocInstruction(out var ldlocBarIndex),
-					ILMatches.Ldloc<Ship.StatusPlan>(originalMethod).CreateLdlocInstruction(out var ldlocStatusPlan),
+					ILMatches.Ldloc<Ship.StatusPlan>(originalMethod),
 					ILMatches.Ldfld("barMax"),
 					ILMatches.Blt,
 				])
@@ -230,6 +238,7 @@ internal static class ShipPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static Color Ship_RenderStatusRow_Transpiler_ModifyColor(Color color, int barIndex, KeyValuePair<Status, int> kvp)
@@ -246,8 +255,8 @@ internal static class ShipPatches
 		if (state.route is not Combat combat)
 			return true;
 
-		int oldAmount = __instance.Get(status);
-		int newAmount = Instance.StatusLogicManager.ModifyStatusChange(state, combat, __instance, status, oldAmount, n);
+		var oldAmount = __instance.Get(status);
+		var newAmount = Instance.StatusLogicManager.ModifyStatusChange(state, combat, __instance, status, oldAmount, n);
 
 		if (newAmount == oldAmount)
 			return false;

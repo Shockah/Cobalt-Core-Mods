@@ -27,6 +27,7 @@ internal static class ArtifactBrowsePatches
 
 	private static IEnumerable<CodeInstruction> ArtifactBrowse_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -44,6 +45,7 @@ internal static class ArtifactBrowsePatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static int ArtifactBrowse_Render_Transpiler_ModifyScrollLength(int scrollLength, ArtifactBrowse menu)

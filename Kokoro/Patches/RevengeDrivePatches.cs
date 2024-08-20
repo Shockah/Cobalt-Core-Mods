@@ -3,6 +3,7 @@ using Nickel;
 
 namespace Shockah.Kokoro;
 
+// ReSharper disable InconsistentNaming
 internal static class RevengeDrivePatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
@@ -16,7 +17,7 @@ internal static class RevengeDrivePatches
 		);
 	}
 
-	private static void RevengeDrive_OnPlayerLoseHull_Prefix(RevengeDrive __instance, ref bool __state)
+	private static void RevengeDrive_OnPlayerLoseHull_Prefix(RevengeDrive __instance, out bool __state)
 		=> __state = __instance.alreadyActivated;
 
 	private static void RevengeDrive_OnPlayerLoseHull_Postfix(RevengeDrive __instance, State state, Combat combat, ref bool __state)
@@ -27,7 +28,7 @@ internal static class RevengeDrivePatches
 		// TODO: fix behavior for wrapped actions - this code won't trigger on these, but the original that we're fixing won't either
 		if (!Instance.StatusLogicManager.IsAffectedByBoost(state, combat, state.ship, Status.overdrive))
 			foreach (var action in combat.cardActions)
-				if (action is AAttack attack && !attack.targetPlayer && attack.fromDroneX is null)
+				if (action is AAttack { targetPlayer: false, fromDroneX: null } attack)
 					attack.damage -= 1 + state.ship.Get(Status.boost);
 	}
 }

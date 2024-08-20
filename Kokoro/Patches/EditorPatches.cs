@@ -4,10 +4,9 @@ using System.Linq;
 
 namespace Shockah.Kokoro;
 
+// ReSharper disable InconsistentNaming
 internal static class EditorPatches
 {
-	private static ModEntry Instance => ModEntry.Instance;
-
 	public static void Apply(IHarmony harmony)
 	{
 		harmony.Patch(

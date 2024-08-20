@@ -10,20 +10,20 @@ using System.Text.RegularExpressions;
 
 namespace Shockah.Kokoro;
 
-internal sealed class Content
+internal sealed partial class Content
 {
-	private static readonly Regex InfoFaceRegex = new("face=\"(.*?)\"");
-	private static readonly Regex InfoSizeRegex = new("size=(\\d+)");
-	private static readonly Regex CommonLineHeightRegex = new("lineHeight=(\\d+)");
-	private static readonly Regex CommonBaseRegex = new("base=(\\d+)");
-	private static readonly Regex CharIdRegex = new("id=(\\d+)");
-	private static readonly Regex CharXRegex = new("x=(\\d+)");
-	private static readonly Regex CharYRegex = new("y=(\\d+)");
-	private static readonly Regex CharWidthRegex = new("width=(\\d+)");
-	private static readonly Regex CharHeightRegex = new("height=(\\d+)");
-	private static readonly Regex CharXOffsetRegex = new("xoffset=(\\-?\\d+)");
-	private static readonly Regex CharYOffsetRegex = new("yoffset=(\\-?\\d+)");
-	private static readonly Regex CharXAdvanceRegex = new("xadvance=(\\-?\\d+)");
+	private static readonly Regex InfoFaceRegex = CreateInfoFaceRegex();
+	private static readonly Regex InfoSizeRegex = CreateInfoSizeRegex();
+	private static readonly Regex CommonLineHeightRegex = CreateCommonLineHeightRegex();
+	private static readonly Regex CommonBaseRegex = CreateCommonBaseRegex();
+	private static readonly Regex CharIdRegex = CreateCharIdRegex();
+	private static readonly Regex CharXRegex = CreateCharXRegex();
+	private static readonly Regex CharYRegex = CreateCharYRegex();
+	private static readonly Regex CharWidthRegex = CreateCharWidthRegex();
+	private static readonly Regex CharHeightRegex = CreateCharHeightRegex();
+	private static readonly Regex CharXOffsetRegex = CreateCharXOffsetRegex();
+	private static readonly Regex CharYOffsetRegex = CreateCharYOffsetRegex();
+	private static readonly Regex CharXAdvanceRegex = CreateCharXAdvanceRegex();
 
 	private static ModEntry Instance => ModEntry.Instance;
 
@@ -237,11 +237,11 @@ internal sealed class Content
 		string? face = null;
 		int? size = null, lineHeight = null, @base = null;
 		List<int> charsId = [], charsX = [], charsY = [], charsW = [], charsH = [], charsXOffset = [], charsYOffset = [], charsAdvance = [];
-		int charId, charX, charY, charW, charH, charXOffset, charYOffset, charAdvance;
-		Match match;
 
 		foreach (var line in lines)
 		{
+			Match match;
+			
 			if (line.StartsWith("info "))
 			{
 				match = InfoFaceRegex.Match(line);
@@ -267,42 +267,42 @@ internal sealed class Content
 				match = CharIdRegex.Match(line);
 				if (!match.Success)
 					continue;
-				charId = int.Parse(match.Groups[1].Value);
+				var charId = int.Parse(match.Groups[1].Value);
 
 				match = CharXRegex.Match(line);
 				if (!match.Success)
 					continue;
-				charX = int.Parse(match.Groups[1].Value) + (hasOutline ? 1 : 0);
+				var charX = int.Parse(match.Groups[1].Value) + (hasOutline ? 1 : 0);
 
 				match = CharYRegex.Match(line);
 				if (!match.Success)
 					continue;
-				charY = int.Parse(match.Groups[1].Value) + (hasOutline ? 1 : 0);
+				var charY = int.Parse(match.Groups[1].Value) + (hasOutline ? 1 : 0);
 
 				match = CharWidthRegex.Match(line);
 				if (!match.Success)
 					continue;
-				charW = int.Parse(match.Groups[1].Value) - (hasOutline ? 2 : 0);
+				var charW = int.Parse(match.Groups[1].Value) - (hasOutline ? 2 : 0);
 
 				match = CharHeightRegex.Match(line);
 				if (!match.Success)
 					continue;
-				charH = int.Parse(match.Groups[1].Value) - (hasOutline ? 2 : 0);
+				var charH = int.Parse(match.Groups[1].Value) - (hasOutline ? 2 : 0);
 
 				match = CharXOffsetRegex.Match(line);
 				if (!match.Success)
 					continue;
-				charXOffset = int.Parse(match.Groups[1].Value);
+				var charXOffset = int.Parse(match.Groups[1].Value);
 
 				match = CharYOffsetRegex.Match(line);
 				if (!match.Success)
 					continue;
-				charYOffset = int.Parse(match.Groups[1].Value);
+				var charYOffset = int.Parse(match.Groups[1].Value);
 
 				match = CharXAdvanceRegex.Match(line);
 				if (!match.Success)
 					continue;
-				charAdvance = int.Parse(match.Groups[1].Value) - 1;
+				var charAdvance = int.Parse(match.Groups[1].Value) - 1;
 
 				charsId.Add(charId);
 				charsX.Add(charX);
@@ -343,4 +343,29 @@ internal sealed class Content
 			has_1px_outline = hasOutline,
 		};
 	}
+
+	[GeneratedRegex("face=\"(.*?)\"")]
+	private static partial Regex CreateInfoFaceRegex();
+	[GeneratedRegex("size=(\\d+)")]
+	private static partial Regex CreateInfoSizeRegex();
+	[GeneratedRegex("lineHeight=(\\d+)")]
+	private static partial Regex CreateCommonLineHeightRegex();
+	[GeneratedRegex("base=(\\d+)")]
+	private static partial Regex CreateCommonBaseRegex();
+	[GeneratedRegex("id=(\\d+)")]
+	private static partial Regex CreateCharIdRegex();
+	[GeneratedRegex("x=(\\d+)")]
+	private static partial Regex CreateCharXRegex();
+	[GeneratedRegex("y=(\\d+)")]
+	private static partial Regex CreateCharYRegex();
+	[GeneratedRegex("width=(\\d+)")]
+	private static partial Regex CreateCharWidthRegex();
+	[GeneratedRegex("height=(\\d+)")]
+	private static partial Regex CreateCharHeightRegex();
+	[GeneratedRegex(@"xoffset=(\-?\d+)")]
+	private static partial Regex CreateCharXOffsetRegex();
+	[GeneratedRegex(@"yoffset=(\-?\d+)")]
+	private static partial Regex CreateCharYOffsetRegex();
+	[GeneratedRegex(@"xadvance=(\-?\d+)")]
+	private static partial Regex CreateCharXAdvanceRegex();
 }
