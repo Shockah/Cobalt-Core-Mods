@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.12.1
+Released 25 August 2024.
 
 * The `RegisterTypeForExtensionData` method is no longer required, and no longer does anything.
 
