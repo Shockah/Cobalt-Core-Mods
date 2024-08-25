@@ -2,7 +2,11 @@
 
 # Release notes
 
-## 1.12.0 release
+## Upcoming release
+
+* The `RegisterTypeForExtensionData` method is no longer required, and no longer does anything.
+
+## 1.12.0
 Released 20 August 2024.
 
 * Updated for an upcoming Nickel release.

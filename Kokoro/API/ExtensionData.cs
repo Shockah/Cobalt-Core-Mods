@@ -5,6 +5,7 @@ namespace Shockah.Kokoro;
 
 public partial interface IKokoroApi
 {
+	[Obsolete("This method is no longer required and no longer does anything.")]
 	void RegisterTypeForExtensionData(Type type);
 	T GetExtensionData<T>(object o, string key);
 	bool TryGetExtensionData<T>(object o, string key, [MaybeNullWhen(false)] out T data);

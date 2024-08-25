@@ -13,7 +13,6 @@ namespace Shockah.Kokoro;
 internal sealed class ExtensionDataManager : IReferenceCloneListener
 {
 	internal readonly ConditionalWeakTable<object, Dictionary<string, Dictionary<string, object?>>> ExtensionDataStorage = [];
-	private readonly HashSet<Type> TypesRegisteredForExtensionData = [];
 	private bool IsRegisteredCloneListener;
 
 	private static T ConvertExtensionData<T>(object? o)
@@ -45,27 +44,8 @@ internal sealed class ExtensionDataManager : IReferenceCloneListener
 		throw new ArgumentException($"Cannot convert {o} to extension data type {typeof(T)}", nameof(T));
 	}
 
-	internal bool IsTypeRegisteredForExtensionData(object o)
-	{
-		var currentType = o.GetType();
-		while (true)
-		{
-			if (TypesRegisteredForExtensionData.Contains(currentType))
-				return true;
-			currentType = currentType.BaseType;
-			if (currentType is null)
-				break;
-		}
-		return false;
-	}
-
-	public void RegisterTypeForExtensionData(Type type)
-		=> TypesRegisteredForExtensionData.Add(type);
-
 	public T GetExtensionData<T>(IManifest manifest, object o, string key)
 	{
-		if (!IsTypeRegisteredForExtensionData(o))
-			throw new InvalidOperationException($"Type {o.GetType().FullName} is not registered for storing extension data.");
 		RegisterCloneListenerIfNeeded();
 		if (!ExtensionDataStorage.TryGetValue(o, out var allObjectData))
 			throw new KeyNotFoundException($"Object {o} does not contain extension data with key `{key}`");
@@ -78,8 +58,6 @@ internal sealed class ExtensionDataManager : IReferenceCloneListener
 
 	public bool TryGetExtensionData<T>(IManifest manifest, object o, string key, [MaybeNullWhen(false)] out T data)
 	{
-		if (!IsTypeRegisteredForExtensionData(o))
-			throw new InvalidOperationException($"Type {o.GetType().FullName} is not registered for storing extension data.");
 		RegisterCloneListenerIfNeeded();
 		if (!ExtensionDataStorage.TryGetValue(o, out var allObjectData))
 		{
@@ -115,8 +93,6 @@ internal sealed class ExtensionDataManager : IReferenceCloneListener
 
 	public bool ContainsExtensionData(IManifest manifest, object o, string key)
 	{
-		if (!IsTypeRegisteredForExtensionData(o))
-			throw new InvalidOperationException($"Type {o.GetType().FullName} is not registered for storing extension data.");
 		RegisterCloneListenerIfNeeded();
 		if (!ExtensionDataStorage.TryGetValue(o, out var allObjectData))
 			return false;
@@ -129,8 +105,6 @@ internal sealed class ExtensionDataManager : IReferenceCloneListener
 
 	public void SetExtensionData<T>(IManifest manifest, object o, string key, T data)
 	{
-		if (!IsTypeRegisteredForExtensionData(o))
-			throw new InvalidOperationException($"Type {o.GetType().FullName} is not registered for storing extension data.");
 		RegisterCloneListenerIfNeeded();
 		if (!ExtensionDataStorage.TryGetValue(o, out var allObjectData))
 		{
@@ -147,8 +121,6 @@ internal sealed class ExtensionDataManager : IReferenceCloneListener
 
 	public void RemoveExtensionData(IManifest manifest, object o, string key)
 	{
-		if (!IsTypeRegisteredForExtensionData(o))
-			throw new InvalidOperationException($"Type {o.GetType().FullName} is not registered for storing extension data.");
 		RegisterCloneListenerIfNeeded();
 		if (ExtensionDataStorage.TryGetValue(o, out var allObjectData))
 		{

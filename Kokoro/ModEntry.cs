@@ -50,13 +50,6 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	{
 		Instance = this;
 		Api = new(this);
-		Api.RegisterTypeForExtensionData(typeof(ACardOffering));
-		Api.RegisterTypeForExtensionData(typeof(AStatus));
-		Api.RegisterTypeForExtensionData(typeof(AVariableHint));
-		Api.RegisterTypeForExtensionData(typeof(CardBrowse));
-		Api.RegisterTypeForExtensionData(typeof(CardReward));
-		Api.RegisterTypeForExtensionData(typeof(Combat));
-		Api.RegisterTypeForExtensionData(typeof(StuffBase));
 
 		StatusLogicManager.Register(WormStatusManager, 0);
 		StatusLogicManager.Register(OxidationStatusManager, 0);

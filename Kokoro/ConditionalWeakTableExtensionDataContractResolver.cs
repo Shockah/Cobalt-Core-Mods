@@ -39,7 +39,7 @@ internal sealed class ConditionalWeakTableExtensionDataContractResolver : IContr
 
 	private IEnumerable<KeyValuePair<object, object>> ExtensionDataGetter(object o, ExtensionDataGetter? wrapped)
 	{
-		if (Manager.IsTypeRegisteredForExtensionData(o) && Manager.ExtensionDataStorage.TryGetValue(o, out var allObjectData))
+		if (Manager.ExtensionDataStorage.TryGetValue(o, out var allObjectData))
 			yield return new(JsonKey, allObjectData);
 		if (wrapped?.Invoke(o) is { } wrappedData)
 			foreach (var kvp in wrappedData)
@@ -54,9 +54,6 @@ internal sealed class ConditionalWeakTableExtensionDataContractResolver : IContr
 			wrapped?.Invoke(o, key, value);
 			return;
 		}
-
-		if (!Manager.IsTypeRegisteredForExtensionData(o))
-			return;
 
 		Manager.RegisterCloneListenerIfNeeded();
 

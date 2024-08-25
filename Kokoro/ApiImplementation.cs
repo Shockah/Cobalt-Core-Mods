@@ -69,7 +69,8 @@ public sealed class ApiImplementation(
 
 	#region ExtensionData
 	public void RegisterTypeForExtensionData(Type type)
-		=> Instance.ExtensionDataManager.RegisterTypeForExtensionData(type);
+	{
+	}
 
 	public T GetExtensionData<T>(object o, string key)
 		=> Instance.ExtensionDataManager.GetExtensionData<T>(manifest, o, key);
