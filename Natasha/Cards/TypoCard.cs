@@ -35,11 +35,7 @@ internal sealed class TypoCard : Card, IRegisterable, IHasCustomCardTraits
 		});
 
 	public override CardData GetData(State state)
-		=> upgrade switch
-		{
-			Upgrade.B => new() { cost = 1, infinite = true },
-			_ => new() { cost = 0, infinite = true }
-		};
+		=> new() { cost = 0, infinite = true };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
