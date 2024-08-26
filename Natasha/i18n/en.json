@@ -133,9 +133,9 @@
         "ManInTheMiddle": {
             "name": "Man-in-the-Middle",
             "description": {
-                "None": "Launch an <c=midrow>asteroid</c> in front of the largest enemy attack targeting you.",
-                "A": "Launch an <c=midrow>asteroid</c> in front of the largest enemy attack targeting you.",
-                "B": "Launch a <c=midrow>random static object</c> in front of the largest enemy attack targeting you."
+                "None": "Launch an <c=midrow>asteroid</c> from the chosen part.",
+                "A": "Launch an <c=midrow>asteroid</c> from the chosen part.",
+                "B": "Launch a <c=midrow>random static object</c> from the chosen part."
             }
         },
         "Ping": {

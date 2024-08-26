@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* The Man-in-the-Middle card now lets you choose the part to launch from.
 * Fixed the Keylogger artifact applying always to the leftmost card, instead of a random one.
 
 ## 1.0.1

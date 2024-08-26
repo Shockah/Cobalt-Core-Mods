@@ -1,8 +1,7 @@
-﻿using daisyowl.text;
+﻿using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +14,8 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 		string UniqueName,
 		double Weight
 	);
+	
+	private static readonly UK CancelMitmUK = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
 
 	internal static readonly Dictionary<string, INatashaApi.ManInTheMiddleStaticObjectEntry> RegisteredObjects = new List<INatashaApi.ManInTheMiddleStaticObjectEntry>()
 	{
@@ -49,7 +50,10 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 5);
 		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 3);
 
-		ModEntry.Instance.KokoroApi.RegisterCardRenderHook(new Hook(), 0);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.IsVisible)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_IsVisible_Postfix))
+		);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
@@ -65,140 +69,96 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 			_ => [new Action { Random = false }]
 		};
 
+	private static void Combat_IsVisible_Postfix(Combat __instance, ref bool __result)
+	{
+		if (__instance.routeOverride is ActionRoute)
+			__result = true;
+	}
+	
 	private sealed class Action : CardAction
 	{
 		public bool Random;
 
 		public override List<Tooltip> GetTooltips(State s)
-		{
-			if (s.route is Combat combat)
-			{
-				if (GetIdealWorldX(s, combat) is { } idealWorldX && s.ship.GetPartAtWorldX(idealWorldX) is { } part)
-				{
-					part.hilight = true;
-					if (combat.stuff.TryGetValue(idealWorldX, out var @object))
-						@object.hilight = 2;
-				}
-				else
-				{
-					_ = new ASpawn { thing = new Asteroid() }.GetTooltips(s);
-				}
-			}
-
-			return [
+			=> [
 				new TTGlossary("action.spawn"),
 				.. new Asteroid().GetTooltips()
 			];
-		}
+		
+		public override Route? BeginWithRoute(G g, State s, Combat c)
+			=> new ActionRoute { Random = Random };
+	}
 
-		public override void Begin(G g, State s, Combat c)
+	private sealed class ActionRoute : Route
+	{
+		public required bool Random;
+		
+		public override bool GetShowOverworldPanels()
+			=> true;
+
+		public override bool CanBePeeked()
+			=> false;
+
+		public override void Render(G g)
 		{
-			base.Begin(g, s, c);
-			timer = 0;
+			base.Render(g);
 
-			var @object = Random ? CreateNextObject(s, c) : new Asteroid();
-			c.QueueImmediate(
-				GetIdealWorldX(s, c) is { } idealWorldX
-					? new ASpawn { fromX = idealWorldX - s.ship.x, thing = @object }
-					: new ASpawn { thing = @object }
+			if (g.state.route is not Combat combat)
+			{
+				g.CloseRoute(this);
+				return;
+			}
+
+			Draw.Rect(0, 0, MG.inst.PIX_W, MG.inst.PIX_H, Colors.black.fadeAlpha(0.5));
+
+			var keyPrefix = $"{typeof(ModEntry).Namespace!}::{nameof(ManInTheMiddleCard)}";
+			for (var i = 0; i < g.state.ship.parts.Count; i++)
+			{
+				var part = g.state.ship.parts[i];
+				if (g.boxes.FirstOrDefault(b => b.key is { } key && key.k == StableUK.part && key.v == i && key.str == "combat_ship_player") is not { } realBox)
+					continue;
+
+				g.Push(rect: new Rect(realBox.rect.x - i * 16 + 1, realBox.rect.y, realBox.rect.w, realBox.rect.h));
+
+				combat.otherShip.RenderPartUI(g, combat, part, i, keyPrefix, isPreview: false);
+
+				if (g.boxes.FirstOrDefault(b => b.key is { } key && key.k == StableUK.part && key.v == i && key.str == keyPrefix) is { } box)
+				{
+					var partIndex = i;
+					box.onMouseDown = new MouseDownHandler(() => OnPartSelected(g, partIndex));
+					if (box.IsHover())
+					{
+						if (!Input.gamepadIsActiveInput)
+							MouseUtil.DrawGamepadCursor(box);
+						part.hilight = true;
+					}
+				}
+
+				g.Pop();
+			}
+
+			SharedArt.ButtonText(
+				g,
+				new Vec(MG.inst.PIX_W - 69, MG.inst.PIX_H - 31),
+				CancelMitmUK,
+				ModEntry.Instance.Localizations.Localize(["card", "RemoteExecution", "ui", "cancel"]),
+				onMouseDown: new MouseDownHandler(() => g.CloseRoute(this))
 			);
 		}
 
-		private static int? GetIdealWorldX(State state, Combat combat)
+		private void OnPartSelected(G g, int partIndex)
 		{
-			var entries = state.ship.parts
-				.Select((p, i) => (WorldX: state.ship.x + i, Part: p))
-				.Where(e => e.Part.type != PType.empty)
-				.Select(e => (WorldX: e.WorldX, PlayerPart: e.Part, EnemyPart: combat.otherShip.GetPartAtWorldX(e.WorldX)))
-				.Select(e => (
-					WorldX: e.WorldX,
-					PlayerPart: e.PlayerPart,
-					EnemyPart: e.EnemyPart,
-					Midrow: combat.stuff.GetValueOrDefault(e.WorldX),
-					Attack: e.EnemyPart?.intent as IntentAttack,
-					Missile: e.EnemyPart?.intent switch
-					{
-						IntentMissile missileIntent => missileIntent.missileType,
-						IntentSpawn spawnIntent => spawnIntent.thing is Missile missile ? missile.missileType : null,
-						_ => (MissileType?)null
-					},
-					Spawn: e.EnemyPart?.intent is IntentSpawn { thing: not Missile } spawnIntent2 ? spawnIntent2.thing : null
-				))
-				.OrderBy(e => Math.Abs(e.WorldX - state.ship.x - state.ship.parts.Count / 2.0))
-				.ToList();
-
-			var attackEntry = entries
-				.Where(e => e.Midrow is null && e.Attack is not null)
-				.Select(e => (WorldX: e.WorldX, PlayerPart: e.PlayerPart, Hits: e.Attack!.multiHit, Damage: GetModifiedDamage(e.Attack!.damage, e.PlayerPart), ExtraThreat: (e.Attack!.status is null ? 0 : 0.45) + (e.Attack!.cardOnHit is null ? 0 : 0.45)))
-				.Where(e => e.Damage > 0 || e.ExtraThreat > 0)
-				.OrderByDescending(e => e.Damage + e.ExtraThreat)
-				.ThenBy(e => e.Hits)
-				.FirstOrNull();
-
-			if (attackEntry is not null)
-				return attackEntry.Value.WorldX;
-
-			var missileEntry = entries
-				.Where(e => e.Midrow is Missile)
-				.Select(e => (WorldX: e.WorldX, PlayerPart: e.PlayerPart, Damage: GetModifiedDamage(GetMissileDamage(((Missile)e.Midrow!).missileType), e.PlayerPart), ExtraThreat: GetMissileExtraThreat(((Missile)e.Midrow!).missileType)))
-				.Where(e => e.Damage > 0 || e.ExtraThreat > 0)
-				.OrderByDescending(e => e.Damage + e.ExtraThreat)
-				.FirstOrNull();
-
-			if (missileEntry is not null)
-				return missileEntry.Value.WorldX;
-
-			missileEntry = entries
-				.Where(e => e.Midrow is null && e.Missile is not null)
-				.Select(e => (WorldX: e.WorldX, PlayerPart: e.PlayerPart, Damage: GetModifiedDamage(GetMissileDamage(e.Missile!.Value), e.PlayerPart), ExtraThreat: GetMissileExtraThreat(e.Missile!.Value)))
-				.Where(e => e.Damage > 0 || e.ExtraThreat > 0)
-				.OrderByDescending(e => e.Damage + e.ExtraThreat)
-				.FirstOrNull();
-
-			if (missileEntry is not null)
-				return missileEntry.Value.WorldX;
-
-			var entry = entries
-				.Where(e => e.Midrow is not null && (e.Midrow.IsHostile() || !e.Midrow.IsFriendly()) && (e.Midrow.GetActions(state, combat)?.Count ?? 0) != 0)
-				.FirstOrNull();
-
-			if (entry is not null)
-				return entry.Value.WorldX;
-
-			entry = entries
-				.Where(e => e.Midrow is null && e.Spawn is not null && (e.Spawn.IsHostile() || !e.Spawn.IsFriendly()) && (e.Spawn.GetActions(state, combat)?.Count ?? 0) != 0)
-				.FirstOrNull();
-
-			if (entry is not null)
-				return entry.Value.WorldX;
-
-			return entries
-				.OrderByDescending(e => e.Midrow is null)
-				.ThenByDescending(e => e.EnemyPart is not null && e.EnemyPart.type != PType.empty)
-				.FirstOrNull()?.WorldX;
-
-			static int GetMissileDamage(MissileType type)
-				=> type switch
-				{
-					MissileType.corrode => 5,
-					MissileType.heavy or MissileType.breacher => 3,
-					MissileType.shaker => 1,
-					_ => 2
-				};
-
-			static double GetMissileExtraThreat(MissileType type)
-				=> type == MissileType.shaker ? 0.45 : 0;
-
-			static int GetModifiedDamage(int damage, Part part)
-				=> Math.Max(part.damageModifier switch
-				{
-					PDamMod.armor => damage - 1,
-					PDamMod.weak => damage + 1,
-					PDamMod.brittle => damage * 2,
-					_ => damage
-				}, 0);
+			if (g.state.route is not Combat combat)
+			{
+				g.CloseRoute(this);
+				return;
+			}
+			
+			var @object = Random ? CreateNextObject(g.state, combat) : new Asteroid();
+			combat.QueueImmediate(new ASpawn { fromX = partIndex, thing = @object });
+			g.CloseRoute(this);
 		}
-
+		
 		private static StuffBase CreateNextObject(State state, Combat combat)
 		{
 			var queue = ObtainObjectQueue(combat);
@@ -234,16 +194,6 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 				queue.AddRange(RegisteredObjects.Values.Select(e => new SerializableObjectEntry(e.UniqueName, e.InitialWeight)));
 
 			return queue;
-		}
-	}
-
-	private sealed class Hook : ICardRenderHook
-	{
-		public Font? ReplaceTextCardFont(G g, Card card)
-		{
-			if (card is not ManInTheMiddleCard)
-				return null;
-			return ModEntry.Instance.KokoroApi.PinchCompactFont;
 		}
 	}
 }

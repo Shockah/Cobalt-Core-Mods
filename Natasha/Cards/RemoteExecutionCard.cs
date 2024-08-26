@@ -35,8 +35,7 @@ internal sealed class RemoteExecutionCard : Card, IRegisterable, IHasCustomCardT
 
 		ModEntry.Instance.KokoroApi.RegisterCardRenderHook(new Hook(), 0);
 
-		// specifically using non-delayed Harmony - gets inlined otherwise
-		ModEntry.Instance.Helper.Utilities.Harmony.Patch(
+		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.IsVisible)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_IsVisible_Postfix))
 		);
