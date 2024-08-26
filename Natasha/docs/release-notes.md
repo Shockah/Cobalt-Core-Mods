@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.0
+Released 26 August 2024.
 
 * The Man-in-the-Middle card now lets you choose the part to launch from.
 * The Botnet card now costs 1 energy (down from 2).
