@@ -12,7 +12,7 @@ internal sealed class BootSequenceDownsides : IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		HibernationHangoverCard.Register(package, helper);
+		HibernationHangoverCard.RegisterCard(helper);
 
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
@@ -29,11 +29,11 @@ internal sealed class BootSequenceDownsides : IRegisterable
 			actions = [new AAddCard { card = new HibernationHangoverCard() }],
 		});
 
-	private sealed class HibernationHangoverCard : Card, IRegisterable
+	private sealed class HibernationHangoverCard : Card
 	{
 		internal static ICardEntry Entry = null!;
 
-		public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+		public static void RegisterCard(IModHelper helper)
 		{
 			Entry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 			{

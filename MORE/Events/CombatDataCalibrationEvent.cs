@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using JetBrains.Annotations;
 using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		CombatAnalyzerGadgetArtifact.Register(package, helper);
+		CombatAnalyzerGadgetArtifact.RegisterArtifact(helper);
 
 		EventName = $"{package.Manifest.UniqueName}::{MethodBase.GetCurrentMethod()!.DeclaringType!.Name}";
 
@@ -98,6 +99,7 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 			.ToArray();
 	}
 
+	[UsedImplicitly]
 	private static List<Choice> GetChoices(State state)
 		=> [
 			new Choice
@@ -115,9 +117,9 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 			}
 		];
 
-	private sealed class CombatAnalyzerGadgetArtifact : Artifact, IRegisterable
+	private sealed class CombatAnalyzerGadgetArtifact : Artifact
 	{
-		public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+		public static void RegisterArtifact(IModHelper helper)
 		{
 			ArtifactEntry = helper.Content.Artifacts.RegisterArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 			{
@@ -149,7 +151,7 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 		public override void OnCombatEnd(State state)
 		{
 			base.OnCombatEnd(state);
-			if (state.map.markers[state.map.currentLocation].contents is not MapBattle node || node.battleType != BattleType.Boss)
+			if (state.map.markers[state.map.currentLocation].contents is not MapBattle { battleType: BattleType.Boss })
 				return;
 
 			state.rewardsQueue.Queue(new ALoseArtifact { artifactType = Key() });

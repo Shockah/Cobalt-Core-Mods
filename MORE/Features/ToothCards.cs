@@ -22,11 +22,11 @@ internal sealed class ToothCards : IRegisterable
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		FiddleCard.Register(package, helper);
-		SlipCard.Register(package, helper);
-		FinalFormCard.Register(package, helper);
-		SkimCard.Register(package, helper);
-		SmashCard.Register(package, helper);
+		FiddleCard.RegisterCard(helper);
+		SlipCard.RegisterCard(helper);
+		FinalFormCard.RegisterCard(helper);
+		SkimCard.RegisterCard(helper);
+		SmashCard.RegisterCard(helper);
 
 		AllToothCardKeys = [
 			nameof(Buckshot), nameof(WaltzCard), nameof(BruiseCard), nameof(LightningBottle),
@@ -48,7 +48,7 @@ internal sealed class ToothCards : IRegisterable
 	private static void MapEvent_MakeRoute_Prefix(State s)
 		=> ModEntry.Instance.Helper.ModData.RemoveModData(s, "ToothChoicesPage");
 
-	private static void Events_ToothCardOffering_Postfix(State s, ref List<Choice> __result)
+	private static void Events_ToothCardOffering_Postfix(State s, out List<Choice> __result)
 	{
 		var rand = new Rand(s.rngCurrentEvent.seed + 4682101);
 		var presentedChoices = AllToothCardKeys
@@ -122,9 +122,9 @@ internal sealed class ToothCards : IRegisterable
 		}
 	}
 
-	private sealed class FiddleCard : Card, IRegisterable
+	private sealed class FiddleCard : Card
 	{
-		public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+		public static void RegisterCard(IModHelper helper)
 		{
 			FiddleCardEntry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 			{
@@ -240,9 +240,9 @@ internal sealed class ToothCards : IRegisterable
 		}
 	}
 
-	private sealed class SlipCard : Card, IRegisterable
+	private sealed class SlipCard : Card
 	{
-		public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+		public static void RegisterCard(IModHelper helper)
 		{
 			SlipCardEntry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 			{
@@ -286,9 +286,9 @@ internal sealed class ToothCards : IRegisterable
 			};
 	}
 
-	private sealed class FinalFormCard : Card, IRegisterable
+	private sealed class FinalFormCard : Card
 	{
-		public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+		public static void RegisterCard(IModHelper helper)
 		{
 			FinalFormCardEntry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 			{
@@ -335,9 +335,9 @@ internal sealed class ToothCards : IRegisterable
 			};
 	}
 
-	private sealed class SkimCard : Card, IRegisterable
+	private sealed class SkimCard : Card
 	{
-		public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+		public static void RegisterCard(IModHelper helper)
 		{
 			SkimCardEntry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 			{
@@ -379,9 +379,9 @@ internal sealed class ToothCards : IRegisterable
 			};
 	}
 
-	private sealed class SmashCard : Card, IRegisterable
+	private sealed class SmashCard : Card
 	{
-		public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+		public static void RegisterCard(IModHelper helper)
 		{
 			SmashCardEntry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 			{

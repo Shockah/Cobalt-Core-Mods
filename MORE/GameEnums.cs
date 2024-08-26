@@ -3,4 +3,4 @@
 namespace Shockah.MORE;
 
 [EnumByName(typeof(Spr))]
-internal static partial class StableSpr { }
+internal static partial class StableSpr;

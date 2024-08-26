@@ -17,39 +17,39 @@ internal sealed class ModEntry : SimpleMod
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
-	internal Settings Settings { get; private set; } = new();
+	internal Settings Settings { get; private set; }
 
 	internal readonly HashSet<string> AltruisticArtifactKeys = [
 		// Dizzy
-		typeof(ReboundReagent).Name,
-		typeof(ShieldReserves).Name,
-		typeof(ShieldBurst).Name,
-		typeof(Prototype22).Name,
+		nameof(ReboundReagent),
+		nameof(ShieldReserves),
+		nameof(ShieldBurst),
+		nameof(Prototype22),
 
 		// Riggs
-		typeof(Quickdraw).Name,
-		typeof(PerpetualMotionDevice).Name,
-		typeof(CaffeineRush).Name,
-		typeof(DemonThrusters).Name,
-		typeof(Flywheel).Name,
+		nameof(Quickdraw),
+		nameof(PerpetualMotionDevice),
+		nameof(CaffeineRush),
+		nameof(DemonThrusters),
+		nameof(Flywheel),
 
 		// Peri
-		typeof(RevengeDrive).Name,
-		typeof(Premeditation).Name,
-		typeof(BerserkerDrive).Name,
+		nameof(RevengeDrive),
+		nameof(Premeditation),
+		nameof(BerserkerDrive),
 
 		// Max
-		typeof(SafetyLock).Name,
-		typeof(StickyNote).Name,
-		typeof(StrongStart).Name,
-		typeof(RightClickArtifact).Name,
-		typeof(FlowState).Name,
-		typeof(TridimensionalCockpit).Name,
-		typeof(LightspeedBootDisk).Name,
+		nameof(SafetyLock),
+		nameof(StickyNote),
+		nameof(StrongStart),
+		nameof(RightClickArtifact),
+		nameof(FlowState),
+		nameof(TridimensionalCockpit),
+		nameof(LightspeedBootDisk),
 
 		// CAT
-		typeof(StandbyMode).Name,
-		typeof(InitialBooster).Name,
+		nameof(StandbyMode),
+		nameof(InitialBooster),
 	];
 
 	internal static IReadOnlyList<Type> StatusTypes { get; } = [
@@ -157,18 +157,6 @@ internal sealed class ModEntry : SimpleMod
 						TitleColor = Colors.textBold,
 						Title = Localizations.Localize(["settings", "releaseUpgrades", "name"]),
 						Description = Localizations.Localize(["settings", "releaseUpgrades", "description"])
-					}
-				]),
-				api.MakeCheckbox(
-					() => Localizations.Localize(["settings", "flippableRelease", "name"]),
-					() => Settings.ProfileBased.Current.EnabledFlippableRelease,
-					(_, _, value) => Settings.ProfileBased.Current.EnabledFlippableRelease = value
-				).SetTooltips(() => [
-					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.EnabledFlippableRelease)}")
-					{
-						TitleColor = Colors.textBold,
-						Title = Localizations.Localize(["settings", "flippableRelease", "name"]),
-						Description = Localizations.Localize(["settings", "flippableRelease", "description"])
 					}
 				]),
 				api.MakeButton(

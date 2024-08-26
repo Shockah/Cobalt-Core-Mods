@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using JetBrains.Annotations;
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
@@ -110,7 +111,7 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 			AllTrials.AddRange(NewRunOptions.allChars.Select(d => new CrewTrial { Deck = d }));
 		};
 
-		helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnQueueEmptyDuringPlayerTurn), (State state, Combat combat) =>
+		helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnQueueEmptyDuringPlayerTurn), (Combat combat) =>
 		{
 			if (combat.otherShip.ai is not TrialEnemy trialEnemy || trialEnemy.StartedTrial)
 				return;
@@ -155,7 +156,7 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 	{
 		List<Choice> choices = [];
 
-		if (state.deck.Select(c => c.GetDataWithOverrides(state)).Any(d => d.cost > 0 && !d.recycle))
+		if (state.deck.Select(c => c.GetDataWithOverrides(state)).Any(d => d is { cost: > 0, recycle: false }))
 			choices.Add(new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Success-Choice", "AddRecycle", "choice"]),
@@ -247,6 +248,7 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 		return choices;
 	}
 
+	[UsedImplicitly]
 	private static List<Choice> GetFailureChoices(State state)
 		=> [
 			new()
@@ -395,6 +397,7 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 			timer = 0;
 			if (c.otherShip.ai is not TrialEnemy trialEnemy)
 				return;
+			// ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 			if (trialEnemy.Trial is null) // someone is screwing with the debug menu...
 				return;
 
@@ -420,7 +423,7 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 		public bool IsTrialApplicable(State state)
 			=> state.characters.Any(c => c.deckType == Deck) && TestCards(state, state.deck);
 
-		public Choice? MakeChoice(State state)
+		public Choice MakeChoice(State state)
 			=> new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Crew", "name"], new { Deck = Loc.T($"char.{Deck.Key()}") }),
@@ -455,44 +458,80 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 					return null;
 				var traitCapitalizedName = CultureInfo.GetCultureInfo("en-GB").TextInfo.ToTitleCase(traitName);
 
-				if (Count == 1)
-					return new()
+				return this.Count switch
+				{
+					1 => new()
 					{
-						label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "name"], new { Trait = traitCapitalizedName }),
-						actions = [
+						label = ModEntry.Instance.Localizations.Localize([
+							"event", "DraculaDeckTrial", "Choice", "Trait", "name"
+						], new
+						{
+							Trait = traitCapitalizedName
+						}),
+						actions =
+						[
 							new ATooltipAction
 							{
-								Tooltips = [
-									new GlossaryTooltip($"event.{ModEntry.Instance.Package.Manifest.UniqueName}::{GetType().Name}")
+								Tooltips =
+								[
+									new GlossaryTooltip($"event.{ModEntry.Instance.Package.Manifest.UniqueName}::{this.GetType().Name}")
 									{
 										TitleColor = Colors.textChoice,
-										Title = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "name"], new { Trait = traitCapitalizedName }),
-										Description = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "description", "one"], new { Trait = traitName }),
+										Title = ModEntry.Instance.Localizations.Localize([
+											"event", "DraculaDeckTrial", "Choice", "Trait", "name"
+										], new
+										{
+											Trait = traitCapitalizedName
+										}),
+										Description = ModEntry.Instance.Localizations.Localize([
+											"event", "DraculaDeckTrial", "Choice", "Trait", "description", "one"
+										], new
+										{
+											Trait = traitName
+										}),
 									},
 									.. (trait.Configuration.Tooltips?.Invoke(state, null) ?? [])
 								]
 							}
 						]
-					};
-				else
-					return new()
+					},
+					_ => new()
 					{
-						label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "name"], new { Trait = traitCapitalizedName }),
-						actions = [
+						label = ModEntry.Instance.Localizations.Localize([
+							"event", "DraculaDeckTrial", "Choice", "Trait", "name"
+						], new
+						{
+							Trait = traitCapitalizedName
+						}),
+						actions =
+						[
 							new ATooltipAction
 							{
-								Tooltips = [
-									new GlossaryTooltip($"event.{ModEntry.Instance.Package.Manifest.UniqueName}::{GetType().Name}")
+								Tooltips =
+								[
+									new GlossaryTooltip($"event.{ModEntry.Instance.Package.Manifest.UniqueName}::{this.GetType().Name}")
 									{
 										TitleColor = Colors.textChoice,
-										Title = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "name"], new { Trait = traitCapitalizedName }),
-										Description = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Trait", "description", "other"], new { Trait = traitName, Count = Count }),
+										Title = ModEntry.Instance.Localizations.Localize([
+											"event", "DraculaDeckTrial", "Choice", "Trait", "name"
+										], new
+										{
+											Trait = traitCapitalizedName
+										}),
+										Description = ModEntry.Instance.Localizations.Localize([
+											"event", "DraculaDeckTrial", "Choice", "Trait", "description", "other"
+										], new
+										{
+											Trait = traitName,
+											Count = this.Count
+										}),
 									},
 									.. (trait.Configuration.Tooltips?.Invoke(state, null) ?? [])
 								]
 							}
 						]
-					};
+					}
+				};
 			}
 			catch
 			{
@@ -513,7 +552,7 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 		public bool IsTrialApplicable(State state)
 			=> TestCards(state, state.deck.OrderBy(c => c.GetDataWithOverrides(state).cost).Take(state.ship.baseDraw).ToList());
 
-		public Choice? MakeChoice(State state)
+		public Choice MakeChoice(State state)
 			=> new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Cheap", "name"]),
@@ -534,7 +573,7 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 		public bool IsTrialApplicable(State state)
 			=> TestCards(state, state.deck.OrderByDescending(c => c.GetDataWithOverrides(state).cost).Take(state.ship.baseDraw).ToList());
 
-		public Choice? MakeChoice(State state)
+		public Choice MakeChoice(State state)
 			=> new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Expensive", "name"]),
@@ -552,7 +591,7 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 
 	public sealed class ExoticTrial : IDeckTrial
 	{
-		public Choice? MakeChoice(State state)
+		public Choice MakeChoice(State state)
 			=> new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Exotic", "name"]),
@@ -568,13 +607,13 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 			=> cards.Count(c =>
 			{
 				var deck = c.GetMeta().deck;
-				return deck != Deck.colorless && !state.characters.Any(character => character.deckType == deck);
+				return deck != Deck.colorless && state.characters.All(character => character.deckType != deck);
 			}) >= 2;
 	}
 
 	public sealed class DuplicatesTrial : IDeckTrial
 	{
-		public Choice? MakeChoice(State state)
+		public Choice MakeChoice(State state)
 			=> new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Duplicates", "name"]),
@@ -592,7 +631,7 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 
 	public sealed class UpgradesTrial : IDeckTrial
 	{
-		public Choice? MakeChoice(State state)
+		public Choice MakeChoice(State state)
 			=> new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Upgrades", "name"]),
@@ -610,7 +649,7 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 
 	public sealed class ReaderTrial : IDeckTrial
 	{
-		public Choice? MakeChoice(State state)
+		public Choice MakeChoice(State state)
 			=> new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Reader", "name"]),
@@ -628,7 +667,7 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 
 	public sealed class PauperTrial : IDeckTrial
 	{
-		public Choice? MakeChoice(State state)
+		public Choice MakeChoice(State state)
 			=> new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Pauper", "name"]),
@@ -646,7 +685,7 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 
 	public sealed class ConnoisseurTrial : IDeckTrial
 	{
-		public Choice? MakeChoice(State state)
+		public Choice MakeChoice(State state)
 			=> new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Connoisseur", "name"]),
@@ -664,7 +703,7 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 
 	public sealed class CollectorTrial : IDeckTrial
 	{
-		public Choice? MakeChoice(State state)
+		public Choice MakeChoice(State state)
 			=> new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Collector", "name"]),

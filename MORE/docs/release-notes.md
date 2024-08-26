@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Removed flippable Release, as vanilla is getting that feature in 1.2.
+
 ## 1.1.0
 Released 30 July 2024.
 

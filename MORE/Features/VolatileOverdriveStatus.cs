@@ -36,7 +36,7 @@ internal sealed class VolatileOverdriveStatus : IRegisterable, IStatusLogicHook,
 
 		helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerTakeNormalDamage), (State state, Combat combat, Part? part) =>
 		{
-			if (part is not { } nonNullPart || nonNullPart.type != PType.cockpit)
+			if (part is not { type: PType.cockpit })
 				return;
 			if (state.ship.Get(Instance.Entry.Status) <= 0)
 				return;
@@ -57,9 +57,9 @@ internal sealed class VolatileOverdriveStatus : IRegisterable, IStatusLogicHook,
 			]);
 		}, 0);
 
-		helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnEnemyGetHit), (State state, Combat combat, Part? part) =>
+		helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnEnemyGetHit), (Combat combat, Part? part) =>
 		{
-			if (part is not { } nonNullPart || nonNullPart.type != PType.cockpit)
+			if (part is not { type: PType.cockpit })
 				return;
 			if (combat.otherShip.Get(Instance.Entry.Status) <= 0)
 				return;

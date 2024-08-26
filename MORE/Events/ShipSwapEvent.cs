@@ -173,13 +173,10 @@ internal sealed class ShipSwapEvent : IRegisterable
 				moreActions.Add(new ALoseArtifact { artifactType = artifact.Key() });
 				MarkArtifactForAddition(artifact);
 			}
-
-			foreach (var artifactKey in starterArtifactKeysToRemove)
-				moreActions.Add(new ALoseArtifact { artifactType = artifactKey });
-			foreach (var artifactKey in commonArtifactKeysToRemove)
-				moreActions.Add(new ALoseArtifact { artifactType = artifactKey });
-			foreach (var artifactKey in bossArtifactKeysToRemove)
-				moreActions.Add(new ALoseArtifact { artifactType = artifactKey });
+			
+			moreActions.AddRange(starterArtifactKeysToRemove.Select(a => new ALoseArtifact { artifactType = a }));
+			moreActions.AddRange(commonArtifactKeysToRemove.Select(a => new ALoseArtifact { artifactType = a }));
+			moreActions.AddRange(bossArtifactKeysToRemove.Select(a => new ALoseArtifact { artifactType = a }));
 
 			moreActions.Add(new AShipUpgrades { actions = [new AActuallySwapShipBody { NewShipKey = NewShipKey }] });
 			moreActions.Add(new ATakeCardsUntilSkip { Cards = newShipStarter.cards.Select(card => card.CopyWithNewId()).ToList() });
@@ -233,9 +230,8 @@ internal sealed class ShipSwapEvent : IRegisterable
 						});
 				}
 			}
-
-			foreach (var artifact in artifactsToAdd)
-				moreActions.Add(new AAddArtifact { artifact = Mutil.DeepCopy(artifact) });
+			
+			moreActions.AddRange(artifactsToAdd.Select(a => new AAddArtifact { artifact = Mutil.DeepCopy(a) }));
 			
 			s.GetCurrentQueue().InsertRange(0, moreActions);
 
@@ -273,35 +269,37 @@ internal sealed class ShipSwapEvent : IRegisterable
 
 		private static IEnumerable<Type> GetExclusiveArtifactTypes(string shipKey)
 		{
-			if (shipKey == "artemis")
+			switch (shipKey)
 			{
-				yield return typeof(HunterWings);
-			}
-			else if (shipKey == "ares")
-			{
-				yield return typeof(AresCannonV2);
-				yield return typeof(ControlRodsV2);
-			}
-			else if (shipKey == "jupiter")
-			{
-				yield return typeof(JupiterDroneHubV2);
-				yield return typeof(JupiterDroneHubV3);
-				yield return typeof(JupiterDroneHubV4);
-				yield return typeof(JupiterDroneHubV5);
-				yield return typeof(RadarSubwoofer);
-			}
-			else if (shipKey == "gemini")
-			{
-				yield return typeof(GeminiCoreBooster);
-			}
-			else if (shipKey == "boat")
-			{
-				yield return typeof(TideRunnerAnchorV2);
-			}
-			else if (ModEntry.Instance.Helper.Content.Ships.LookupByUniqueName(shipKey)?.Configuration.ExclusiveArtifactTypes is { } exclusiveArtifactTypes)
-			{
-				foreach (var exclusiveArtifactType in exclusiveArtifactTypes)
-					yield return exclusiveArtifactType;
+				case "artemis":
+					yield return typeof(HunterWings);
+					break;
+				case "ares":
+					yield return typeof(AresCannonV2);
+					yield return typeof(ControlRodsV2);
+					break;
+				case "jupiter":
+					yield return typeof(JupiterDroneHubV2);
+					yield return typeof(JupiterDroneHubV3);
+					yield return typeof(JupiterDroneHubV4);
+					yield return typeof(JupiterDroneHubV5);
+					yield return typeof(RadarSubwoofer);
+					break;
+				case "gemini":
+					yield return typeof(GeminiCoreBooster);
+					break;
+				case "boat":
+					yield return typeof(TideRunnerAnchorV2);
+					break;
+				default:
+				{
+					if (ModEntry.Instance.Helper.Content.Ships.LookupByUniqueName(shipKey)?.Configuration.ExclusiveArtifactTypes is { } exclusiveArtifactTypes)
+					{
+						foreach (var exclusiveArtifactType in exclusiveArtifactTypes)
+							yield return exclusiveArtifactType;
+					}
+					break;
+				}
 			}
 		}
 	}

@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using JetBrains.Annotations;
 using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		AbyssalPowerCard.Register(package, helper);
+		AbyssalPowerCard.RegisterCard(helper);
 
 		EventName = $"{package.Manifest.UniqueName}::{MethodBase.GetCurrentMethod()!.DeclaringType!.Name}";
 
@@ -161,6 +162,7 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 		AbyssalPowerCardEntry.Configuration.Meta.unreleased = settings.DisabledEvents.Contains(MoreEvent.AbyssalPower);
 	}
 
+	[UsedImplicitly]
 	private static List<Choice> GetChoices(State state)
 		=> [
 			new Choice
@@ -233,9 +235,9 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 		];
 	}
 
-	private sealed class AbyssalPowerCard : Card, IRegisterable
+	private sealed class AbyssalPowerCard : Card
 	{
-		public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+		public static void RegisterCard(IModHelper helper)
 		{
 			AbyssalPowerCardEntry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 			{

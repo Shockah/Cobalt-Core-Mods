@@ -54,8 +54,5 @@ internal sealed class ProfileSettings
 	public bool EnabledReleaseUpgrades = true;
 
 	[JsonProperty]
-	public bool EnabledFlippableRelease = true;
-
-	[JsonProperty]
 	public HashSet<string> DisabledToothCards = [];
 }

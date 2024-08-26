@@ -4,7 +4,7 @@ internal sealed class CustomSay : Say
 {
 	private static int NextId = 1;
 
-	private readonly int Id = 0;
+	private readonly int Id;
 
 	public string? Text;
 

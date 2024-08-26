@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using JetBrains.Annotations;
 using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
@@ -16,7 +17,7 @@ internal sealed class BombEvent : IRegisterable
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		BombEnemy.Register(package, helper);
+		BombEnemy.RegisterEnemy(package, helper);
 
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
@@ -58,6 +59,7 @@ internal sealed class BombEvent : IRegisterable
 		DB.eventChoiceFns[EventName] = AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(GetChoices));
 	}
 
+	[UsedImplicitly]
 	private static List<Choice> GetChoices(State state)
 		=> [
 			new Choice
@@ -69,17 +71,17 @@ internal sealed class BombEvent : IRegisterable
 			}
 		];
 
-	private static void Combat_PlayerWon_Postfix(Combat __instance, G g)
+	private static void Combat_PlayerWon_Postfix(/* Combat __instance, G g */)
 	{
-		if (__instance.otherShip.ai is not BombEnemy)
-			return;
+		// if (__instance.otherShip.ai is not BombEnemy)
+		// 	return;
 	}
 
-	public abstract class BombEnemy : AI, IRegisterable
+	public abstract class BombEnemy : AI
 	{
-		public sealed class BombZone1Enemy() : BombEnemy(ZoneType.First) { }
-		public sealed class BombZone2Enemy() : BombEnemy(ZoneType.Second) { }
-		public sealed class BombZone3Enemy() : BombEnemy(ZoneType.Third) { }
+		public sealed class BombZone1Enemy() : BombEnemy(ZoneType.First);
+		public sealed class BombZone2Enemy() : BombEnemy(ZoneType.Second);
+		public sealed class BombZone3Enemy() : BombEnemy(ZoneType.Third);
 
 		public enum ZoneType
 		{
@@ -98,7 +100,7 @@ internal sealed class BombEvent : IRegisterable
 		internal bool Exploded;
 
 		[JsonConstructor]
-		public BombEnemy(ZoneType zone)
+		protected BombEnemy(ZoneType zone)
 		{
 			this.Zone = zone;
 		}
@@ -110,7 +112,7 @@ internal sealed class BombEvent : IRegisterable
 		//				]
 		//			}
 
-		public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+		public static void RegisterEnemy(IPluginPackage<IModManifest> package, IModHelper helper)
 		{
 			SwitchBrittlePartIntentSprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Intent/SwitchBrittlePart.png"));
 			SelfDestructIntentSprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Intent/SelfDestruct.png"));
@@ -277,7 +279,7 @@ internal sealed class BombEvent : IRegisterable
 			if (ownShip.Get(SelfDestructTimerStatus.Instance.Entry.Status) <= 0)
 			{
 				availablePartIndexes = Enumerable.Range(0, ownShip.parts.Count)
-					.Where(i => !intents.Any(intent => intent.fromX == i))
+					.Where(i => intents.All(intent => intent.fromX != i))
 					.ToList();
 				if (availablePartIndexes.Count != 0)
 					intents.Add(new SelfDestructIntent
@@ -299,7 +301,7 @@ internal sealed class BombEvent : IRegisterable
 			internal static SelfDestructTimerStatus Instance { get; private set; } = null!;
 			internal IStatusEntry Entry { get; private set; } = null!;
 
-			public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+			static void IRegisterable.Register(IPluginPackage<IModManifest> package, IModHelper helper)
 			{
 				Instance = new();
 
@@ -370,7 +372,7 @@ internal sealed class BombEvent : IRegisterable
 		{
 			public int FlatDamage = 0;
 			public double PercentCurrentDamage = 0;
-			public double PercentMaxDamage = 0;
+			public double PercentMaxDamage;
 			public bool PreventDeath = false;
 			public bool HurtShieldsFirst = true;
 

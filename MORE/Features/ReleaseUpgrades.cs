@@ -25,14 +25,11 @@ internal sealed class ReleaseUpgrades : IRegisterable
 
 	public static void UpdateSettings(IPluginPackage<IModManifest> package, IModHelper helper, ProfileSettings settings)
 	{
-		DB.cardMetas[typeof(ReleaseCard).Name].upgradesTo = settings.EnabledReleaseUpgrades ? [Upgrade.A] : [];
+		DB.cardMetas[nameof(ReleaseCard)].upgradesTo = settings.EnabledReleaseUpgrades ? [Upgrade.A] : [];
 	}
 
 	private static void ReleaseCard_GetData_Postfix(Card __instance, ref CardData __result)
 	{
-		if (ModEntry.Instance.Settings.ProfileBased.Current.EnabledFlippableRelease)
-			__result.flippable = true;
-
 		if (__instance.upgrade != Upgrade.A)
 			return;
 

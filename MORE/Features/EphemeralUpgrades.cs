@@ -47,9 +47,9 @@ internal sealed class EphemeralUpgrades : IRegisterable
 
 	public static void UpdateSettings(IPluginPackage<IModManifest> package, IModHelper helper, ProfileSettings settings)
 	{
-		DB.cardMetas[typeof(EphemeralCannon).Name].upgradesTo = settings.EnabledEphemeralUpgrades ? [Upgrade.A, Upgrade.B] : [];
-		DB.cardMetas[typeof(EphemeralDodge).Name].upgradesTo = settings.EnabledEphemeralUpgrades ? [Upgrade.A, Upgrade.B] : [];
-		DB.cardMetas[typeof(EphemeralRepairs).Name].upgradesTo = settings.EnabledEphemeralUpgrades ? [Upgrade.A, Upgrade.B] : [];
+		DB.cardMetas[nameof(EphemeralCannon)].upgradesTo = settings.EnabledEphemeralUpgrades ? [Upgrade.A, Upgrade.B] : [];
+		DB.cardMetas[nameof(EphemeralDodge)].upgradesTo = settings.EnabledEphemeralUpgrades ? [Upgrade.A, Upgrade.B] : [];
+		DB.cardMetas[nameof(EphemeralRepairs)].upgradesTo = settings.EnabledEphemeralUpgrades ? [Upgrade.A, Upgrade.B] : [];
 	}
 
 	private static void EphemeralCannon_GetActions_Postfix(Card __instance, State s, ref List<CardAction> __result)
@@ -122,7 +122,7 @@ internal sealed class EphemeralUpgrades : IRegisterable
 		}
 	}
 
-	private static void EphemeralRepairs_GetActions_Postfix(Card __instance, State s, Combat c, ref List<CardAction> __result)
+	private static void EphemeralRepairs_GetActions_Postfix(Card __instance, State s, ref List<CardAction> __result)
 	{
 		__result = __instance.upgrade switch
 		{
