@@ -101,9 +101,7 @@ internal sealed class Limited : IRegisterable
 	{
 		if (!DefaultLimitedUses.TryGetValue(key, out var perUpgrade))
 			return 2;
-		if (!perUpgrade.TryGetValue(upgrade, out var upgradeUses))
-			return 2;
-		return upgradeUses;
+		return perUpgrade.GetValueOrDefault(upgrade, 2);
 	}
 
 	public static int GetStartingLimitedUses(State state, Card card)
@@ -164,7 +162,7 @@ internal sealed class Limited : IRegisterable
 			return true;
 
 		var position = g.Push(rect: new()).rect.xy;
-		int initialX = (int)position.x;
+		var initialX = (int)position.x;
 
 		if (!dontDraw)
 			Draw.Sprite(ObtainIcon(10), position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);

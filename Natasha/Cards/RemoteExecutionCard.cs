@@ -123,7 +123,7 @@ internal sealed class RemoteExecutionCard : Card, IRegisterable, IHasCustomCardT
 
 			Draw.Rect(0, 0, MG.inst.PIX_W, MG.inst.PIX_H, Colors.black.fadeAlpha(0.5));
 
-			var keyPrefix = $"{typeof(ModEntry).Namespace!}::{typeof(RemoteExecutionCard).Name}";
+			var keyPrefix = $"{typeof(ModEntry).Namespace!}::{nameof(RemoteExecutionCard)}";
 			for (var i = 0; i < combat.otherShip.parts.Count; i++)
 			{
 				var part = combat.otherShip.parts[i];
@@ -164,7 +164,7 @@ internal sealed class RemoteExecutionCard : Card, IRegisterable, IHasCustomCardT
 
 				var box = g.Push(new UIKey(MidrowExecutionUK, worldX), realBox.rect, onMouseDown: new MouseDownHandler(() => OnMidrowSelected(g, @object)));
 				@object.Render(g, box.rect.xy);
-				if (box.rect.x > 60.0 && box.rect.x < 464.0 && box.IsHover())
+				if (box.rect.x is > 60.0 and < 464.0 && box.IsHover())
 				{
 					if (!Input.gamepadIsActiveInput)
 						MouseUtil.DrawGamepadCursor(box);

@@ -28,7 +28,7 @@ internal sealed class OneLiners : IRegisterable, IWrappedActionHook
 		var selfDisabled = oneLinerAction.disabled;
 
 		var position = g.Push(rect: new()).rect.xy;
-		int initialX = (int)position.x;
+		var initialX = (int)position.x;
 
 		var isFirst = true;
 		foreach (var wrappedAction in oneLinerAction.Actions)

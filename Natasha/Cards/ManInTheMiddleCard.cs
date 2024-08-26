@@ -67,13 +67,13 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 
 	private sealed class Action : CardAction
 	{
-		public bool Random = false;
+		public bool Random;
 
 		public override List<Tooltip> GetTooltips(State s)
 		{
 			if (s.route is Combat combat)
 			{
-				if (GetIdealWorldX(s, s.route as Combat ?? DB.fakeCombat) is { } idealWorldX && s.ship.GetPartAtWorldX(idealWorldX) is { } part)
+				if (GetIdealWorldX(s, combat) is { } idealWorldX && s.ship.GetPartAtWorldX(idealWorldX) is { } part)
 				{
 					part.hilight = true;
 					if (combat.stuff.TryGetValue(idealWorldX, out var @object))
@@ -122,7 +122,7 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 						IntentSpawn spawnIntent => spawnIntent.thing is Missile missile ? missile.missileType : null,
 						_ => (MissileType?)null
 					},
-					Spawn: e.EnemyPart?.intent is IntentSpawn spawnIntent2 && spawnIntent2.thing is not Missile ? spawnIntent2.thing : null
+					Spawn: e.EnemyPart?.intent is IntentSpawn { thing: not Missile } spawnIntent2 ? spawnIntent2.thing : null
 				))
 				.OrderBy(e => Math.Abs(e.WorldX - state.ship.x - state.ship.parts.Count / 2.0))
 				.ToList();
@@ -224,15 +224,14 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 
 		private static List<SerializableObjectEntry> ObtainObjectQueue(Combat combat)
 		{
-			var queue = ModEntry.Instance.Helper.ModData.ObtainModData<List<SerializableObjectEntry>>(combat, $"{typeof(ManInTheMiddleCard).Name}::ObjectQueue");
+			var queue = ModEntry.Instance.Helper.ModData.ObtainModData<List<SerializableObjectEntry>>(combat, $"{nameof(ManInTheMiddleCard)}::ObjectQueue");
 
 			for (var i = queue.Count - 1; i >= 0; i--)
 				if (!RegisteredObjects.ContainsKey(queue[i].UniqueName))
 					queue.RemoveAt(i);
 
 			if (queue.Count == 0)
-				foreach (var entry in RegisteredObjects.Values)
-					queue.Add(new(entry.UniqueName, entry.InitialWeight));
+				queue.AddRange(RegisteredObjects.Values.Select(e => new SerializableObjectEntry(e.UniqueName, e.InitialWeight)));
 
 			return queue;
 		}

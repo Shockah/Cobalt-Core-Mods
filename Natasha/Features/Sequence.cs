@@ -61,7 +61,7 @@ internal sealed class Sequence : IRegisterable, IWrappedActionHook
 		sequenceAction.Action.disabled = selfDisabled;
 
 		var position = g.Push(rect: new()).rect.xy;
-		int initialX = (int)position.x;
+		var initialX = (int)position.x;
 
 		if (!dontDraw)
 			Draw.Sprite(ObtainIcon(sequenceAction.SequenceStep, sequenceAction.SequenceLength), position.x, position.y, color: selfDisabled ? Colors.disabledIconTint : Colors.white);

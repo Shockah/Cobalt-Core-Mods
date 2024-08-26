@@ -10,7 +10,7 @@ namespace Shockah.Natasha;
 
 internal sealed class OperationAltairArtifact : Artifact, IRegisterable
 {
-	private static bool IsSimulating = false;
+	private static bool IsSimulating;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{

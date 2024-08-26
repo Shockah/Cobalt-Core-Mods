@@ -45,12 +45,7 @@ internal sealed class CardSelectFilters : IRegisterable
 			return;
 
 		for (var i = __result.Count - 1; i >= 0; i--)
-		{
 			if (filterLimited is not null && ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(g.state, __result[i], Limited.Trait) != filterLimited.Value)
-			{
 				__result.RemoveAt(i);
-				continue;
-			}
-		}
 	}
 }

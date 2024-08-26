@@ -31,7 +31,7 @@ internal sealed class TimesPlayed : IRegisterable
 				card.ResetTimesPlayed();
 		}, 0);
 
-		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (Card card, State state) =>
+		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (Card card) =>
 		{
 			card.SetTimesPlayed(card.GetTimesPlayed() + 1);
 		}, 0);
