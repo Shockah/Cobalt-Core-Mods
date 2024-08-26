@@ -35,7 +35,7 @@ internal sealed class BotnetCard : Card, IRegisterable, IHasCustomCardTraits
 		});
 
 	public override CardData GetData(State state)
-		=> new() { cost = 2 };
+		=> new() { cost = 1 };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch

@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * The Man-in-the-Middle card now lets you choose the part to launch from.
+* The Botnet card now costs 1 energy (down from 2).
 * Fixed the Keylogger artifact applying always to the leftmost card, instead of a random one.
 
 ## 1.0.1
