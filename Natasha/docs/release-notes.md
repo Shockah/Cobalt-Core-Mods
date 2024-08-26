@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Keylogger artifact applying always to the leftmost card, instead of a random one.
+
 ## 1.0.1
 Released 24 July 2024.
 

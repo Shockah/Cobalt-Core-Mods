@@ -70,7 +70,7 @@ internal sealed class KeyloggerArtifact : Artifact, IRegisterable, INatashaHook
 
 			void HandleCard(Card card)
 			{
-				limitedCards[0].SetLimitedUses(limitedCards[0].GetLimitedUses(s) + 1);
+				card.SetLimitedUses(card.GetLimitedUses(s) + 1);
 				Audio.Play(Event.Status_PowerUp);
 			}
 		}
