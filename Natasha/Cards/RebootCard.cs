@@ -9,6 +9,8 @@ namespace Shockah.Natasha;
 
 internal sealed class RebootCard : Card, IRegisterable, IHasCustomCardTraits
 {
+	private bool DuringSafelyGetDataWithOverrides;
+	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		var entry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
@@ -47,7 +49,23 @@ internal sealed class RebootCard : Card, IRegisterable, IHasCustomCardTraits
 			new AVariableHint { hand = true, handAmount = Math.Max(c.hand.Count - 1, 0) },
 			new AStatus { targetPlayer = true, status = Status.drawNextTurn, statusAmount = Math.Max(c.hand.Count - 1, 0), xHint = 1 },
 			ModEntry.Instance.KokoroApi.EnergyAsStatus.MakeVariableHint().AsCardAction,
-			new AStatus { targetPlayer = true, status = Status.energyNextTurn, statusAmount = c.energy - GetDataWithOverrides(s).cost, xHint = 1 },
+			new AStatus { targetPlayer = true, status = Status.energyNextTurn, statusAmount = c.energy - SafelyGetDataWithOverrides(s).cost, xHint = 1 },
 			new AEndTurn()
 		];
+
+	private CardData SafelyGetDataWithOverrides(State state)
+	{
+		if (DuringSafelyGetDataWithOverrides)
+			return new();
+		
+		try
+		{
+			DuringSafelyGetDataWithOverrides = true;
+			return GetDataWithOverrides(state);
+		}
+		finally
+		{
+			DuringSafelyGetDataWithOverrides = false;
+		}
+	}
 }
