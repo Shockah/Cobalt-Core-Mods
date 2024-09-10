@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Reboot card crashing when Table Flip was active.
+
 ## 1.1.0
 Released 26 August 2024.
 
