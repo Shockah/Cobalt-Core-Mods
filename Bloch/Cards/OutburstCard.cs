@@ -9,7 +9,7 @@ namespace Shockah.Bloch;
 
 internal sealed class OutburstCard : Card, IRegisterable
 {
-	private static int GetDataRecursionDepth = 0;
+	private static int GetDataRecursionDepth;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -54,7 +54,6 @@ internal sealed class OutburstCard : Card, IRegisterable
 	private sealed class Action : CardAction
 	{
 		public int? CardId;
-		public bool Exhaust;
 
 		public override void Begin(G g, State s, Combat c)
 		{
@@ -64,19 +63,8 @@ internal sealed class OutburstCard : Card, IRegisterable
 			if (CardId is not { } cardId || s.FindCard(cardId) is not { } fromCard)
 				fromCard = null;
 
-			var cards = c.hand.ToList();
 			c.QueueImmediate(new AAttack { damage = GetActualDamage(s, sum, card: fromCard) });
 			c.DiscardHand(s);
-
-			if (!Exhaust)
-				return;
-
-			foreach (Card card in ((IEnumerable<Card>)cards).Reverse())
-			{
-				card.ExhaustFX();
-				s.RemoveCardFromWhereverItIs(card.uuid);
-				c.SendCardToExhaust(s, card);
-			}
 		}
 	}
 }

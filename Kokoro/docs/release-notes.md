@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added `MultiCardBrowse`.
+
 ## 1.12.1
 Released 25 August 2024.
 

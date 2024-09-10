@@ -41,7 +41,7 @@ internal sealed class WavyDialogueManager
 		color.a *= 0.9 - (Math.Sin(MG.inst.g.state.time / Math.PI * 15) / 2 + 0.5) * 0.1;
 	}
 
-	private static void Dialogue_Render_Prefix(Dialogue __instance, G g)
+	private static void Dialogue_Render_Prefix(Dialogue __instance)
 	{
 		if (__instance.routeOverride is not null || !__instance.IsVisible() || !__instance.ctx.running || DB.story.GetNode(__instance.ctx.script) is null || __instance.shout is not { } shout)
 			return;
@@ -58,7 +58,7 @@ internal sealed class WavyDialogueManager
 
 	private static void Character_Render_Prefix(Character __instance, G g, bool showDialogue)
 	{
-		if (!showDialogue || g.state.ship.hull <= 0 || __instance.shout is not { } shout || shout.delay != 0)
+		if (!showDialogue || g.state.ship.hull <= 0 || __instance.shout is not { delay: 0 } shout)
 			return;
 		RenderedShoutText = shout.GetText();
 		ShouldDisplayWavyText = __instance.deckType == ModEntry.Instance.BlochDeck.Deck;
@@ -66,7 +66,7 @@ internal sealed class WavyDialogueManager
 
 	private static void Character_Render_Finalizer(Character __instance, G g, bool showDialogue)
 	{
-		if (!showDialogue || g.state.ship.hull <= 0 || __instance.shout is not { } shout || shout.delay != 0)
+		if (!showDialogue || g.state.ship.hull <= 0 || __instance.shout is not { delay: 0 })
 			return;
 
 		RenderedShoutText = null;

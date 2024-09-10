@@ -51,20 +51,14 @@ internal sealed class MindPurgeCard : Card, IRegisterable
 	private sealed class Action : CardAction
 	{
 		public int ExtraCards;
-		public int? CardCountOverride;
 
 		public override Route? BeginWithRoute(G g, State s, Combat c)
 		{
-			var route = new MultiCardBrowse()
+			var route = ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.MakeRoute(r =>
 			{
-				mode = CardBrowse.Mode.Browse,
-				browseSource = CardBrowse.Source.Hand,
-				browseAction = new BrowseAction
-				{
-					ExtraCards = ExtraCards,
-					CardCountOverride = CardCountOverride,
-				}
-			};
+				r.browseSource = CardBrowse.Source.Hand;
+				r.browseAction = new BrowseAction { ExtraCards = ExtraCards };
+			}).AsRoute;
 			c.Queue(new ADelay
 			{
 				time = 0.0,
@@ -82,7 +76,6 @@ internal sealed class MindPurgeCard : Card, IRegisterable
 	private sealed class BrowseAction : CardAction
 	{
 		public int ExtraCards;
-		public int? CardCountOverride;
 
 		public override string? GetCardSelectText(State s)
 			=> ModEntry.Instance.Localizations.Localize(["card", "MindPurge", "browseText"]);
@@ -92,7 +85,7 @@ internal sealed class MindPurgeCard : Card, IRegisterable
 			base.Begin(g, s, c);
 
 			var cardsToDiscard = c.hand
-				.Where(card => (ModEntry.Instance.Api.GetSelectedMultiCardBrowseCards(this) ?? []).Any(selectedCard => selectedCard.uuid == card.uuid))
+				.Where(handCard => (ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.GetSelectedCards(this) ?? []).Any(card => card.uuid == handCard.uuid))
 				.ToList();
 
 			for (var i = 0; i < cardsToDiscard.Count; i++)
@@ -108,7 +101,7 @@ internal sealed class MindPurgeCard : Card, IRegisterable
 				return;
 
 			Audio.Play(Event.CardHandling);
-			c.QueueImmediate(new ADrawCard { count = CardCountOverride ?? (cardsToDiscard.Count + ExtraCards) });
+			c.QueueImmediate(new ADrawCard { count = cardsToDiscard.Count + ExtraCards });
 		}
 	}
 }

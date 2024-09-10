@@ -8,22 +8,21 @@ namespace Shockah.Bloch;
 internal sealed class SpontaneousManager : IWrappedActionHook
 {
 	private static ISpriteEntry ActionIcon = null!;
-	private static ISpriteEntry TriggeredIcon = null!;
 	internal static ICardTraitEntry SpontaneousTriggeredTrait { get; private set; } = null!;
 
 	public SpontaneousManager()
 	{
 		ActionIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Actions/Spontaneous.png"));
-		TriggeredIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Actions/SpontaneousTriggered.png"));
+		var triggeredIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Actions/SpontaneousTriggered.png"));
 
 		SpontaneousTriggeredTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Spontaneous", new()
 		{
-			Icon = (_, _) => TriggeredIcon.Sprite,
+			Icon = (_, _) => triggeredIcon.Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Spontaneous"]).Localize,
 			Tooltips = (_, _) => [
 				new GlossaryTooltip($"cardtrait.{GetType().Namespace!}::Spontaneous")
 				{
-					Icon = TriggeredIcon.Sprite,
+					Icon = triggeredIcon.Sprite,
 					TitleColor = Colors.action,
 					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Spontaneous", "name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Spontaneous", "description"]),
@@ -105,11 +104,11 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 		if (action is not TriggerAction triggerAction)
 			return true;
 
-		bool oldActionDisabled = triggerAction.Action.disabled;
+		var oldActionDisabled = triggerAction.Action.disabled;
 		triggerAction.Action.disabled = triggerAction.disabled;
 
 		var position = g.Push(rect: new()).rect.xy;
-		int initialX = (int)position.x;
+		var initialX = (int)position.x;
 
 		if (!dontDraw)
 			Draw.Sprite(ActionIcon.Sprite, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);

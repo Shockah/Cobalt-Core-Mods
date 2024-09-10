@@ -19,7 +19,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	public static ModEntry Instance { get; private set; } = null!;
 	internal Nickel.IModHelper Helper { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = null!;
-	private Nickel.IHarmony Harmony = null!;
+	internal Nickel.IHarmony Harmony { get; private set; } = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
 	public IEnumerable<DependencyEntry> Dependencies => [];
@@ -85,6 +85,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 		CustomTTGlossary.ApplyPatches(Harmony);
 		APlaySpecificCardFromAnywhere.ApplyPatches(Harmony);
+		MultiCardBrowseManager.ApplyPatches(Harmony);
 
 		SetupSerializationChanges();
 	}

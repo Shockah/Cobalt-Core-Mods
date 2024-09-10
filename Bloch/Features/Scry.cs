@@ -1,6 +1,5 @@
 ﻿using FSPRO;
 using Nickel;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -72,14 +71,14 @@ internal sealed class ScryAction : CardAction
 
 		c.Queue(new ADelay { timer = 0.0 });
 
-		return new MultiCardBrowse()
+		return ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.MakeRoute(r =>
 		{
-			mode = CardBrowse.Mode.Browse,
-			browseSource = CardBrowse.Source.DrawPile,
-			browseAction = new BrowseAction { PresentedCards = cards, FromInsight = FromInsight },
-			CardsOverride = cards,
-			EnabledSorting = false,
-		};
+			r.browseSource = CardBrowse.Source.DrawPile;
+			r.browseAction = new BrowseAction { PresentedCards = cards, FromInsight = FromInsight };
+		})
+			.SetCardsOverride(cards)
+			.SetEnabledSorting(false)
+			.AsRoute;
 	}
 
 	private sealed class BrowseAction : CardAction
@@ -95,7 +94,7 @@ internal sealed class ScryAction : CardAction
 			base.Begin(g, s, c);
 
 			var cardsToDiscard = s.deck
-				.Where(card => (ModEntry.Instance.Api.GetSelectedMultiCardBrowseCards(this) ?? []).Any(selectedCard => selectedCard.uuid == card.uuid))
+				.Where(drawPileCard => (ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.GetSelectedCards(this) ?? []).Any(card => card.uuid == drawPileCard.uuid))
 				.ToList();
 
 			for (var i = 0; i < cardsToDiscard.Count; i++)

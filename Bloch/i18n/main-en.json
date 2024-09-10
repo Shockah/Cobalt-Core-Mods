@@ -35,11 +35,6 @@
             }
         }
     },
-    "route": {
-        "MultiCardBrowse": {
-            "doneButton": "DONE"
-        }
-    },
     "status": {
         "Veiling": {
             "name": "Veiling Aura",

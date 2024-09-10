@@ -7,7 +7,7 @@ public partial interface IKokoroApi
 {
 	IActionApi Actions { get; }
 
-	public interface IActionApi
+	public partial interface IActionApi
 	{
 		CardAction MakeExhaustEntireHandImmediate();
 

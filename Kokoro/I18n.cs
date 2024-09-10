@@ -93,4 +93,6 @@ internal static class I18n
 	public static string ContinueActionDescription => "Trigger the next actions. If this is not triggered, the next actions will not be either.";
 	public static string StopActionName => "STOP";
 	public static string StopActionDescription => "Stop triggering the next actions. If this is not triggered, the next actions will trigger as usual.";
+	
+	public static string MultiCardBrowseDoneButtonTitle => "DONE";
 }

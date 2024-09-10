@@ -9,7 +9,7 @@ internal sealed class OnDiscardManager : IWrappedActionHook
 {
 	private static ISpriteEntry ActionIcon = null!;
 
-	private static Card? LastCardPlayed = null;
+	private static Card? LastCardPlayed;
 
 	public OnDiscardManager()
 	{
@@ -67,11 +67,11 @@ internal sealed class OnDiscardManager : IWrappedActionHook
 		if (action is not TriggerAction triggerAction)
 			return true;
 
-		bool oldActionDisabled = triggerAction.Action.disabled;
+		var oldActionDisabled = triggerAction.Action.disabled;
 		triggerAction.Action.disabled = triggerAction.disabled;
 
 		var position = g.Push(rect: new()).rect.xy;
-		int initialX = (int)position.x;
+		var initialX = (int)position.x;
 
 		if (!dontDraw)
 			Draw.Sprite(ActionIcon.Sprite, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
@@ -107,7 +107,7 @@ internal sealed class OnDiscardManager : IWrappedActionHook
 					Title = ModEntry.Instance.Localizations.Localize(["action", "OnDiscard", "name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["action", "OnDiscard", "description"]),
 				},
-				..Action.GetTooltips(s)
+				.. Action.GetTooltips(s)
 			];
 
 		public override void Begin(G g, State s, Combat c)

@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Long-Term Memory artifact forgetting the already used up actions after using Save & Exit.
+
 ## 1.1.0
 Released 31 July 2024.
 

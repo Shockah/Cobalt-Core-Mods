@@ -1,6 +1,7 @@
 ﻿using FSPRO;
 using HarmonyLib;
 using Nanoray.PluginManager;
+using Newtonsoft.Json;
 using Nickel;
 using System;
 using System.Collections.Generic;
@@ -11,8 +12,11 @@ namespace Shockah.Bloch;
 
 internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 {
-	private int RetainCooldown = 0;
-	private int DiscardCooldown = 0;
+	[JsonProperty]
+	private int RetainCooldown;
+
+	[JsonProperty]
+	private int DiscardCooldown;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -84,13 +88,10 @@ internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 			return;
 		if (s.EnumerateAllArtifacts().OfType<LongTermMemoryArtifact>().FirstOrDefault() is not { } artifact)
 			return;
-		if (artifact.RetainCooldown > 0 && artifact.DiscardCooldown > 0)
+		if (artifact is { RetainCooldown: > 0, DiscardCooldown: > 0 })
 			return;
 
-		c.QueueImmediate(new Action
-		{
-			artifactPulse = artifact.Key()
-		});
+		c.QueueImmediate(new Action { artifactPulse = artifact.Key() });
 	}
 
 	private sealed class Action : CardAction
@@ -100,35 +101,32 @@ internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 			if (s.EnumerateAllArtifacts().OfType<LongTermMemoryArtifact>().FirstOrDefault() is not { } artifact)
 				return null;
 
-			var customActions = new List<IBlochApi.IMultiCardBrowseRoute.CustomAction>(capacity: 2);
+			var customActions = new List<IKokoroApi.IActionApi.IMultiCardBrowse.ICustomAction>(capacity: 2);
 			if (artifact.RetainCooldown <= 0)
-				customActions.Add(new(
+				customActions.Add(ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.MakeCustomAction(
 					new RetainAction(),
-					ModEntry.Instance.Localizations.Localize(["artifact", "LongTermMemory", "retainAction"]),
-					MinSelected: 1,
-					MaxSelected: 1
-				));
+					ModEntry.Instance.Localizations.Localize(["artifact", "LongTermMemory", "retainAction"])
+				).SetMinSelected(1).SetMaxSelected(1));
 			if (artifact.DiscardCooldown <= 0)
-				customActions.Add(new(
+				customActions.Add(ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.MakeCustomAction(
 					new DiscardAction(),
-					ModEntry.Instance.Localizations.Localize(["artifact", "LongTermMemory", "discardAction"]),
-					MinSelected: 1,
-					MaxSelected: 1
-				));
+					ModEntry.Instance.Localizations.Localize(["artifact", "LongTermMemory", "discardAction"])
+				).SetMinSelected(1).SetMaxSelected(1));
 
 			if (customActions.Count == 0)
 				return null;
 
-			var route = new MultiCardBrowse()
+			var route = ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.MakeRoute(r =>
 			{
-				mode = CardBrowse.Mode.Browse,
-				browseSource = CardBrowse.Source.Hand,
-				EnabledSorting = false,
-				allowCancel = true,
-				BrowseActionIsOnlyForTitle = true,
-				browseAction = new TitleAction(),
-				CustomActions = customActions,
-			};
+				r.browseSource = CardBrowse.Source.Hand;
+				r.browseAction = new TitleAction();
+				r.allowCancel = true;
+			})
+				.SetEnabledSorting(false)
+				.SetBrowseActionIsOnlyForTitle(true)
+				.SetCustomActions(customActions)
+				.AsRoute;
+			
 			c.Queue(new ADelay
 			{
 				time = 0.0,
@@ -156,7 +154,7 @@ internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 			base.Begin(g, s, c);
 
 			var affectedCards = c.hand
-				.Where(card => (ModEntry.Instance.Api.GetSelectedMultiCardBrowseCards(this) ?? []).Any(selectedCard => selectedCard.uuid == card.uuid))
+				.Where(handCard => (ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.GetSelectedCards(this) ?? []).Any(card => card.uuid == handCard.uuid))
 				.ToList();
 
 			foreach (var card in affectedCards)
@@ -181,7 +179,7 @@ internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 			base.Begin(g, s, c);
 
 			var affectedCards = c.hand
-				.Where(card => (ModEntry.Instance.Api.GetSelectedMultiCardBrowseCards(this) ?? []).Any(selectedCard => selectedCard.uuid == card.uuid))
+				.Where(handCard => (ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.GetSelectedCards(this) ?? []).Any(card => card.uuid == handCard.uuid))
 				.ToList();
 
 			c.isPlayerTurn = true;

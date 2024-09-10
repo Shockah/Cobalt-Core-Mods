@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
-public sealed class ApiImplementation(
+public sealed partial class ApiImplementation(
 	IManifest manifest
 ) : IKokoroApi
 {
@@ -299,7 +299,7 @@ public sealed class ApiImplementation(
 	#region Actions
 	public IKokoroApi.IActionApi Actions { get; } = new ActionApiImplementation();
 
-	public sealed class ActionApiImplementation : IKokoroApi.IActionApi
+	public sealed partial class ActionApiImplementation : IKokoroApi.IActionApi
 	{
 		public CardAction MakeExhaustEntireHandImmediate()
 			=> new AExhaustEntireHandImmediate();

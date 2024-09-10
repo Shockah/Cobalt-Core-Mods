@@ -72,14 +72,12 @@ internal sealed class MindMapManager : IStatusRenderHook
 
 		public override Route? BeginWithRoute(G g, State s, Combat c)
 		{
-			var route = new MultiCardBrowse()
+			var route = ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.MakeRoute(r =>
 			{
-				mode = CardBrowse.Mode.Browse,
-				browseSource = CardBrowse.Source.Hand,
-				browseAction = new BrowseAction { Amount = Amount },
-				MaxSelected = Amount,
-				filterRetain = false,
-			};
+				r.browseSource = CardBrowse.Source.Hand;
+				r.browseAction = new BrowseAction { Amount = Amount };
+				r.filterRetain = false;
+			}).SetMaxSelected(Amount).AsRoute;
 			c.Queue(new ADelay
 			{
 				time = 0.0,
@@ -105,7 +103,7 @@ internal sealed class MindMapManager : IStatusRenderHook
 		{
 			base.Begin(g, s, c);
 
-			var cards = ModEntry.Instance.Api.GetSelectedMultiCardBrowseCards(this) ?? [];
+			var cards = ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.GetSelectedCards(this) ?? [];
 			foreach (var card in cards)
 			{
 				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, ModEntry.Instance.Helper.Content.Cards.RetainCardTrait, true, permanent: false);
