@@ -33,11 +33,6 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	internal readonly ExtensionDataManager ExtensionDataManager = new();
 	internal readonly CardRenderManager CardRenderManager = new();
 	internal readonly WrappedActionManager WrappedActionManager = new();
-	internal readonly WormStatusManager WormStatusManager = new();
-	internal readonly OxidationStatusManager OxidationStatusManager = new();
-	internal readonly RedrawStatusManager RedrawStatusManager = new();
-	internal readonly StatusNextTurnManager StatusNextTurnManager = new();
-	internal readonly CustomCardBrowseManager CustomCardBrowseManager = new();
 
 	public void BootMod(IModLoaderContact contact)
 	{
@@ -69,14 +64,16 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		EvadeManager.Setup(Harmony);
 		MidrowScorchingManager.Setup(Harmony);
 		MultiCardBrowseManager.Setup(Harmony);
+		RedrawStatusManager.Setup(Harmony);
 		StatusLogicManager.Setup(Harmony);
 		StatusRenderManager.Setup(Harmony);
 		
-		StatusLogicManager.Instance.Register(WormStatusManager, 0);
-		StatusLogicManager.Instance.Register(OxidationStatusManager, 0);
-		StatusLogicManager.Instance.Register(StatusNextTurnManager, 0);
-		StatusRenderManager.Instance.Register(OxidationStatusManager, 0);
-		StatusRenderManager.Instance.Register(StatusNextTurnManager, 0);
+		StatusLogicManager.Instance.Register(WormStatusManager.Instance, 0);
+		StatusLogicManager.Instance.Register(OxidationStatusManager.Instance, 0);
+		StatusLogicManager.Instance.Register(StatusNextTurnManager.Instance, 0);
+		StatusRenderManager.Instance.Register(WormStatusManager.Instance, 0);
+		StatusRenderManager.Instance.Register(OxidationStatusManager.Instance, 0);
+		StatusRenderManager.Instance.Register(StatusNextTurnManager.Instance, 0);
 
 		SetupSerializationChanges();
 	}

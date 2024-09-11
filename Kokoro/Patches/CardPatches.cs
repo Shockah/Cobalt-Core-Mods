@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Nickel;
-using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,13 +29,8 @@ internal static class CardPatches
 	public static void Apply(IHarmony harmony)
 	{
 		harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
-			postfix: new HarmonyMethod(typeof(CardPatches), nameof(Card_GetAllTooltips_Postfix))
-		);
-		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
 			prefix: new HarmonyMethod(typeof(CardPatches), nameof(Card_Render_Prefix)),
-			postfix: new HarmonyMethod(typeof(CardPatches), nameof(Card_Render_Postfix)),
 			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_Render_Transpiler))
 		);
 		harmony.Patch(
@@ -93,11 +87,6 @@ internal static class CardPatches
 		}
 	}
 
-	private static void Card_GetAllTooltips_Postfix(ref IEnumerable<Tooltip> __result)
-	{
-		__result = Instance.WormStatusManager.ModifyCardTooltips(__result);
-	}
-
 	private static void Card_Render_Prefix(Card __instance)
 	{
 		MakeAllActionIconsCounter = 0;
@@ -108,31 +97,6 @@ internal static class CardPatches
 		CurrentResourceState = null;
 		CurrentNonDrawingResourceState = null;
 		CardRenderMatrixStack.Clear();
-	}
-
-	private static void Card_Render_Postfix(Card __instance, G g, Vec? posOverride, State? fakeState, double? overrideWidth)
-	{
-		var state = fakeState ?? g.state;
-		if (state.route is not Combat combat)
-			return;
-		if (!Instance.RedrawStatusManager.IsRedrawPossible(state, combat, __instance))
-			return;
-
-		var position = posOverride ?? __instance.pos;
-		position += new Vec(0.0, __instance.hoverAnim * -2.0 + Mutil.Parabola(__instance.flipAnim) * -10.0 + Mutil.Parabola(Math.Abs(__instance.flopAnim)) * -10.0 * Math.Sign(__instance.flopAnim));
-		position += new Vec(((overrideWidth ?? 59) - 21) / 2.0, 82 - 13 / 2.0 - 0.5);
-		position = position.round();
-
-		var result = SharedArt.ButtonSprite(
-			g,
-			new Rect(position.x, position.y, 19, 13),
-			new UIKey((UK)21370099, __instance.uuid),
-			(Spr)ModEntry.Instance.Content.RedrawButtonSprite.Id!.Value,
-			(Spr)ModEntry.Instance.Content.RedrawButtonOnSprite.Id!.Value,
-			onMouseDown: new MouseDownHandler(() => ModEntry.Instance.RedrawStatusManager.DoRedraw(state, combat, __instance))
-		);
-		if (result.isHover)
-			g.tooltips.Add(position + new Vec(30, 10), Instance.Api.GetRedrawStatusTooltip());
 	}
 
 	private static IEnumerable<CodeInstruction> Card_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)

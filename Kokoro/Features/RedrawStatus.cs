@@ -1,14 +1,59 @@
-﻿using Shockah.Shared;
+﻿using CobaltCoreModding.Definitions.ExternalItems;
+using HarmonyLib;
+using Nickel;
+using Shockah.Shared;
+using System;
 using System.Linq;
+using System.Reflection;
 
 namespace Shockah.Kokoro;
 
-public sealed class RedrawStatusManager : HookManager<IRedrawStatusHook>
+partial class ApiImplementation
 {
-	internal RedrawStatusManager()
+	public ExternalStatus RedrawStatus
+		=> Instance.Content.RedrawStatus;
+
+	public Status RedrawVanillaStatus
+		=> (Status)RedrawStatus.Id!.Value;
+
+	public Tooltip GetRedrawStatusTooltip()
+		=> new TTGlossary($"status.{Instance.Content.RedrawStatus.Id!.Value}", 1);
+
+	public void RegisterRedrawStatusHook(IRedrawStatusHook hook, double priority)
+		=> RedrawStatusManager.Instance.Register(hook, priority);
+
+	public void UnregisterRedrawStatusHook(IRedrawStatusHook hook)
+		=> RedrawStatusManager.Instance.Unregister(hook);
+
+	public bool IsRedrawPossible(State state, Combat combat, Card card)
+		=> RedrawStatusManager.Instance.IsRedrawPossible(state, combat, card);
+
+	public bool DoRedraw(State state, Combat combat, Card card)
+		=> RedrawStatusManager.Instance.DoRedraw(state, combat, card);
+
+	public IRedrawStatusHook StandardRedrawStatusPaymentHook
+		=> Kokoro.StandardRedrawStatusPaymentHook.Instance;
+
+	public IRedrawStatusHook StandardRedrawStatusActionHook
+		=> Kokoro.StandardRedrawStatusActionHook.Instance;
+}
+
+internal sealed class RedrawStatusManager : HookManager<IRedrawStatusHook>
+{
+	internal static readonly RedrawStatusManager Instance = new();
+	
+	public RedrawStatusManager()
 	{
 		Register(StandardRedrawStatusPaymentHook.Instance, 0);
 		Register(StandardRedrawStatusActionHook.Instance, -1000);
+	}
+
+	internal static void Setup(IHarmony harmony)
+	{
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Postfix))
+		);
 	}
 
 	public bool IsRedrawPossible(State state, Combat combat, Card card)
@@ -59,6 +104,31 @@ public sealed class RedrawStatusManager : HookManager<IRedrawStatusHook>
 		IRedrawStatusHook? GetActionHook()
 			=> this.GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts())
 				.FirstOrDefault(hook => hook.DoRedraw(state, combat, card, possibilityHook, paymentHook));
+	}
+	
+	private static void Card_Render_Postfix(Card __instance, G g, Vec? posOverride, State? fakeState, double? overrideWidth)
+	{
+		var state = fakeState ?? g.state;
+		if (state.route is not Combat combat)
+			return;
+		if (!Instance.IsRedrawPossible(state, combat, __instance))
+			return;
+
+		var position = posOverride ?? __instance.pos;
+		position += new Vec(0.0, __instance.hoverAnim * -2.0 + Mutil.Parabola(__instance.flipAnim) * -10.0 + Mutil.Parabola(Math.Abs(__instance.flopAnim)) * -10.0 * Math.Sign(__instance.flopAnim));
+		position += new Vec(((overrideWidth ?? 59) - 21) / 2.0, 82 - 13 / 2.0 - 0.5);
+		position = position.round();
+
+		var result = SharedArt.ButtonSprite(
+			g,
+			new Rect(position.x, position.y, 19, 13),
+			new UIKey((UK)21370099, __instance.uuid),
+			(Spr)ModEntry.Instance.Content.RedrawButtonSprite.Id!.Value,
+			(Spr)ModEntry.Instance.Content.RedrawButtonOnSprite.Id!.Value,
+			onMouseDown: new MouseDownHandler(() => Instance.DoRedraw(state, combat, __instance))
+		);
+		if (result.isHover)
+			g.tooltips.Add(position + new Vec(30, 10), ModEntry.Instance.Api.GetRedrawStatusTooltip());
 	}
 }
 
