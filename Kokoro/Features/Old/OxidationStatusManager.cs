@@ -19,7 +19,6 @@ public sealed class OxidationStatusManager : HookManager<IOxidationStatusHook>, 
 
 	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
 	{
-		// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 		var oxidationMaxValue = ship is null ? BaseOxidationStatusMaxValue : GetOxidationStatusMaxValue(MG.inst.g.state ?? DB.fakeState, ship);
 		foreach (var tooltip in tooltips)
 		{

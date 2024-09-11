@@ -20,7 +20,7 @@ public sealed partial class ApiImplementation(
 
 	#region Generic
 	public TimeSpan TotalGameTime
-		=> Instance.TotalGameTime;
+		=> TimeSpan.FromSeconds(MG.inst.g?.time ?? 0);
 
 	public IEnumerable<Card> GetCardsEverywhere(State state, bool hand = true, bool drawPile = true, bool discardPile = true, bool exhaustPile = true)
 	{
@@ -170,99 +170,6 @@ public sealed partial class ApiImplementation(
 		=> Instance.OxidationStatusManager.Unregister(hook);
 	#endregion
 
-	#region MidrowScorching
-	public Tooltip GetScorchingTooltip(int? value = null)
-		=> value is null
-			? new CustomTTGlossary(CustomTTGlossary.GlossaryType.midrow, () => StableSpr.icons_overheat, () => I18n.ScorchingGlossaryName, () => I18n.ScorchingGlossaryAltDescription)
-			: new CustomTTGlossary(CustomTTGlossary.GlossaryType.midrow, () => StableSpr.icons_overheat, () => I18n.ScorchingGlossaryName, () => I18n.ScorchingGlossaryDescription, [() => value.Value]);
-
-	public int GetScorchingStatus(State state, Combat combat, StuffBase @object)
-		=> TryGetExtensionData(@object, ModEntry.ScorchingTag, out int value) ? value : 0;
-
-	public void SetScorchingStatus(State state, Combat combat, StuffBase @object, int value)
-	{
-		int oldValue = GetScorchingStatus(state, combat, @object);
-		SetExtensionData(@object, ModEntry.ScorchingTag, value);
-		foreach (var hook in Instance.MidrowScorchingManager.GetHooksWithProxies(this, state.EnumerateAllArtifacts()))
-			hook.OnScorchingChange(combat, @object, oldValue, value);
-	}
-
-	public void AddScorchingStatus(State state, Combat combat, StuffBase @object, int value)
-		=> SetScorchingStatus(state, combat, @object, Math.Max(GetScorchingStatus(state, combat, @object) + value, 0));
-
-	public void RegisterMidrowScorchingHook(IMidrowScorchingHook hook, double priority)
-		=> Instance.MidrowScorchingManager.Register(hook, priority);
-
-	public void UnregisterMidrowScorchingHook(IMidrowScorchingHook hook)
-		=> Instance.MidrowScorchingManager.Unregister(hook);
-	#endregion
-
-	#region EvadeHook
-	public IEvadeHook VanillaEvadeHook
-		=> Kokoro.VanillaEvadeHook.Instance;
-
-	public IEvadeHook VanillaDebugEvadeHook
-		=> Kokoro.VanillaDebugEvadeHook.Instance;
-
-	public void RegisterEvadeHook(IEvadeHook hook, double priority)
-		=> Instance.EvadeManager.Register(hook, priority);
-
-	public void UnregisterEvadeHook(IEvadeHook hook)
-		=> Instance.EvadeManager.Unregister(hook);
-
-	public bool IsEvadePossible(State state, Combat combat, int direction, EvadeHookContext context)
-		=> Instance.EvadeManager.IsEvadePossible(state, combat, direction, context);
-
-	public bool IsEvadePossible(State state, Combat combat, EvadeHookContext context)
-		=> Instance.EvadeManager.IsEvadePossible(state, combat, 0, context);
-
-	public IEvadeHook? GetEvadeHandlingHook(State state, Combat combat, int direction, EvadeHookContext context)
-		=> Instance.EvadeManager.GetHandlingHook(state, combat, direction, context);
-
-	public IEvadeHook? GetEvadeHandlingHook(State state, Combat combat, EvadeHookContext context)
-		=> Instance.EvadeManager.GetHandlingHook(state, combat, 0, context);
-
-	public void AfterEvade(State state, Combat combat, int direction, IEvadeHook hook)
-		=> Instance.EvadeManager.AfterEvade(state, combat, direction, hook);
-	#endregion
-
-	#region DroneShiftHook
-	public IDroneShiftHook VanillaDroneShiftHook
-		=> Kokoro.VanillaDroneShiftHook.Instance;
-
-	public IDroneShiftHook VanillaDebugDroneShiftHook
-		=> Kokoro.VanillaDebugDroneShiftHook.Instance;
-
-	public void RegisterDroneShiftHook(IDroneShiftHook hook, double priority)
-		=> Instance.DroneShiftManager.Register(hook, priority);
-
-	public void UnregisterDroneShiftHook(IDroneShiftHook hook)
-		=> Instance.DroneShiftManager.Unregister(hook);
-
-	public bool IsDroneShiftPossible(State state, Combat combat, int direction, DroneShiftHookContext context)
-		=> Instance.DroneShiftManager.IsDroneShiftPossible(state, combat, direction, context);
-
-	public bool IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
-		=> Instance.DroneShiftManager.IsDroneShiftPossible(state, combat, 0, context);
-
-	public IDroneShiftHook? GetDroneShiftHandlingHook(State state, Combat combat, int direction, DroneShiftHookContext context)
-		=> Instance.DroneShiftManager.GetHandlingHook(state, combat, direction, context);
-
-	public IDroneShiftHook? GetDroneShiftHandlingHook(State state, Combat combat, DroneShiftHookContext context)
-		=> Instance.DroneShiftManager.GetHandlingHook(state, combat, 0, context);
-
-	public void AfterDroneShift(State state, Combat combat, int direction, IDroneShiftHook hook)
-		=> Instance.DroneShiftManager.AfterDroneShift(state, combat, direction, hook);
-	#endregion
-
-	#region ArtifactIconHook
-	public void RegisterArtifactIconHook(IArtifactIconHook hook, double priority)
-		=> Instance.ArtifactIconManager.Register(hook, priority);
-
-	public void UnregisterArtifactIconHook(IArtifactIconHook hook)
-		=> Instance.ArtifactIconManager.Unregister(hook);
-	#endregion
-
 	#region CardRenderHook
 	public void RegisterCardRenderHook(ICardRenderHook hook, double priority)
 		=> Instance.CardRenderManager.Register(hook, priority);
@@ -272,28 +179,6 @@ public sealed partial class ApiImplementation(
 
 	public Font PinchCompactFont
 		=> ModEntry.Instance.Content.PinchCompactFont;
-	#endregion
-
-	#region StatusRenderHook
-	public void RegisterStatusRenderHook(IStatusRenderHook hook, double priority)
-		=> Instance.StatusRenderManager.Register(hook, priority);
-
-	public void UnregisterStatusRenderHook(IStatusRenderHook hook)
-		=> Instance.StatusRenderManager.Unregister(hook);
-
-	public Color DefaultActiveStatusBarColor
-		=> new("b2f2ff");
-
-	public Color DefaultInactiveStatusBarColor
-		=> DefaultActiveStatusBarColor.fadeAlpha(0.3);
-	#endregion
-
-	#region StatusLogicHook
-	public void RegisterStatusLogicHook(IStatusLogicHook hook, double priority)
-		=> Instance.StatusLogicManager.Register(hook, priority);
-
-	public void UnregisterStatusLogicHook(IStatusLogicHook hook)
-		=> Instance.StatusLogicManager.Unregister(hook);
 	#endregion
 
 	#region Actions
@@ -412,9 +297,6 @@ public sealed partial class ApiImplementation(
 
 		public void UnregisterWrappedActionHook(IWrappedActionHook hook)
 			=> Instance.WrappedActionManager.Unregister(hook);
-
-		public ACardSelect MakeCustomCardBrowse(ACardSelect action, ICustomCardBrowseSource source)
-			=> Instance.CustomCardBrowseManager.MakeCustomCardBrowse(action, source);
 	}
 	#endregion
 

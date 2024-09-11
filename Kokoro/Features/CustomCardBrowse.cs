@@ -1,5 +1,14 @@
 ﻿namespace Shockah.Kokoro;
 
+partial class ApiImplementation
+{
+	partial class ActionApiImplementation
+	{
+		public ACardSelect MakeCustomCardBrowse(ACardSelect action, ICustomCardBrowseSource source)
+			=> Instance.CustomCardBrowseManager.MakeCustomCardBrowse(action, source);
+	}
+}
+
 public sealed class CustomCardBrowseManager
 {
 	private static ModEntry Instance => ModEntry.Instance;

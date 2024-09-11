@@ -8,9 +8,9 @@ using System.Reflection;
 
 namespace Shockah.Kokoro;
 
-public partial class ApiImplementation
+partial class ApiImplementation
 {
-	public partial class ActionApiImplementation
+	partial class ActionApiImplementation
 	{
 		public IKokoroApi.IActionApi.IMultiCardBrowse MultiCardBrowse
 			=> new MultiCardBrowseImplementation();
@@ -68,11 +68,11 @@ public partial class ApiImplementation
 	}
 }
 
-public sealed class MultiCardBrowseManager
+internal sealed class MultiCardBrowseManager
 {
 	private static MultiCardBrowse? CurrentlyRenderedMenu;
 	
-	internal static void ApplyPatches(IHarmony harmony)
+	internal static void Setup(IHarmony harmony)
 	{
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(CardBrowse), nameof(CardBrowse.GetCardList)),

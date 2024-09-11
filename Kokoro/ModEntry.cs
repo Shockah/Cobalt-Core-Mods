@@ -4,10 +4,11 @@ using CobaltCoreModding.Definitions.ModManifests;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Newtonsoft.Json.Serialization;
+using Nickel;
 using Nickel.Legacy;
-using System;
 using System.Collections.Generic;
 using System.IO;
+using IModManifest = CobaltCoreModding.Definitions.ModManifests.IModManifest;
 
 namespace Shockah.Kokoro;
 
@@ -17,9 +18,9 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 	internal const string ScorchingTag = "Scorching";
 
 	public static ModEntry Instance { get; private set; } = null!;
-	internal Nickel.IModHelper Helper { get; private set; } = null!;
+	internal IModHelper Helper { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = null!;
-	internal Nickel.IHarmony Harmony { get; private set; } = null!;
+	internal IHarmony Harmony { get; private set; } = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
 	public IEnumerable<DependencyEntry> Dependencies => [];
@@ -30,43 +31,27 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 	internal readonly Content Content = new();
 	internal readonly ExtensionDataManager ExtensionDataManager = new();
-	public readonly EvadeManager EvadeManager = new();
-	public readonly DroneShiftManager DroneShiftManager = new();
-	public readonly ArtifactIconManager ArtifactIconManager = new();
-	public readonly StatusRenderManager StatusRenderManager = new();
-	public readonly StatusLogicManager StatusLogicManager = new();
-	public readonly CardRenderManager CardRenderManager = new();
-	public readonly WrappedActionManager WrappedActionManager = new();
-	public readonly MidrowScorchingManager MidrowScorchingManager = new();
-	public readonly WormStatusManager WormStatusManager = new();
-	public readonly OxidationStatusManager OxidationStatusManager = new();
-	public readonly RedrawStatusManager RedrawStatusManager = new();
-	public readonly StatusNextTurnManager StatusNextTurnManager = new();
-	public readonly CustomCardBrowseManager CustomCardBrowseManager = new();
-
-	internal TimeSpan TotalGameTime;
+	internal readonly CardRenderManager CardRenderManager = new();
+	internal readonly WrappedActionManager WrappedActionManager = new();
+	internal readonly WormStatusManager WormStatusManager = new();
+	internal readonly OxidationStatusManager OxidationStatusManager = new();
+	internal readonly RedrawStatusManager RedrawStatusManager = new();
+	internal readonly StatusNextTurnManager StatusNextTurnManager = new();
+	internal readonly CustomCardBrowseManager CustomCardBrowseManager = new();
 
 	public void BootMod(IModLoaderContact contact)
 	{
 		Instance = this;
 		Api = new(this);
-
-		StatusLogicManager.Register(WormStatusManager, 0);
-		StatusLogicManager.Register(OxidationStatusManager, 0);
-		StatusLogicManager.Register(StatusNextTurnManager, 0);
-		StatusRenderManager.Register(OxidationStatusManager, 0);
-		StatusRenderManager.Register(StatusNextTurnManager, 0);
 	}
 
-	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, Nickel.IModHelper helper)
+	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
 	{
 		Helper = helper;
 		Harmony = helper.Utilities.Harmony;
 
 		ACardOfferingPatches.Apply(Harmony);
 		ACardSelectPatches.Apply(Harmony);
-		ArtifactBrowsePatches.Apply(Harmony);
-		ArtifactPatches.Apply(Harmony);
 		AStatusPatches.Apply(Harmony);
 		AVariableHintPatches.Apply(Harmony);
 		BigStatsPatches.Apply(Harmony);
@@ -75,23 +60,29 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		CardRewardPatches.Apply(Harmony);
 		CombatPatches.Apply(Harmony);
 		DrawPatches.Apply(Harmony);
-		EditorPatches.Apply(Harmony);
-		MGPatches.Apply(Harmony);
-		RevengeDrivePatches.Apply(Harmony);
-		SecondOpinionsPatches.Apply(Harmony);
-		ShipPatches.Apply(Harmony);
-		StatusMetaPatches.Apply(Harmony);
-		StuffBasePatches.Apply(Harmony);
 
 		CustomTTGlossary.ApplyPatches(Harmony);
 		APlaySpecificCardFromAnywhere.ApplyPatches(Harmony);
-		MultiCardBrowseManager.ApplyPatches(Harmony);
+
+		ArtifactIconManager.Setup(Harmony);
+		DroneShiftManager.Setup(Harmony);
+		EvadeManager.Setup(Harmony);
+		MidrowScorchingManager.Setup(Harmony);
+		MultiCardBrowseManager.Setup(Harmony);
+		StatusLogicManager.Setup(Harmony);
+		StatusRenderManager.Setup(Harmony);
+		
+		StatusLogicManager.Instance.Register(WormStatusManager, 0);
+		StatusLogicManager.Instance.Register(OxidationStatusManager, 0);
+		StatusLogicManager.Instance.Register(StatusNextTurnManager, 0);
+		StatusRenderManager.Instance.Register(OxidationStatusManager, 0);
+		StatusRenderManager.Instance.Register(StatusNextTurnManager, 0);
 
 		SetupSerializationChanges();
 	}
 
 	public void FinalizePreperations(IPrelaunchContactPoint prelaunchManifest)
-		=> StuffBasePatches.ApplyLate(Harmony);
+		=> MidrowScorchingManager.SetupLate(Harmony);
 
 	public object GetApi(IManifest requestingMod)
 		=> new ApiImplementation(requestingMod);
@@ -110,7 +101,6 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 			ExtensionDataManager
 		);
 		JSONSettings.serializer.ContractResolver = new ConditionalWeakTableExtensionDataContractResolver(
-			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 			JSONSettings.serializer.ContractResolver ?? new DefaultContractResolver(),
 			ExtensionDataJsonKey,
 			ExtensionDataManager
