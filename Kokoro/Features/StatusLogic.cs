@@ -263,7 +263,7 @@ internal sealed class StatusLogicManager : HookManager<IStatusLogicHook>
 					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Ldarg_3),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(AStatusPatches), nameof(AStatus_Begin_Transpiler_ShouldApplyBoost))),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType, nameof(AStatus_Begin_Transpiler_ShouldApplyBoost))),
 					new CodeInstruction(OpCodes.Brfalse, branchTarget.Value)
 				])
 				.AllElements();

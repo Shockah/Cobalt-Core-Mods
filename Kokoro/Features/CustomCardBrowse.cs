@@ -30,6 +30,10 @@ internal sealed class CustomCardBrowseManager
 	internal static void Setup(IHarmony harmony)
 	{
 		harmony.Patch(
+			original: AccessTools.Method(typeof(ACardSelect), nameof(ACardSelect.BeginWithRoute)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ACardSelect_BeginWithRoute_Transpiler))
+		);
+		harmony.Patch(
 			original: AccessTools.Method(typeof(CardBrowse), nameof(CardBrowse.GetCardList)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardBrowse_GetCardList_Postfix))
 		);
@@ -37,6 +41,39 @@ internal sealed class CustomCardBrowseManager
 			original: AccessTools.DeclaredMethod(typeof(CardBrowse), nameof(CardBrowse.Render)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardBrowse_Render_Transpiler))
 		);
+	}
+	
+	private static IEnumerable<CodeInstruction> ACardSelect_BeginWithRoute_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		// ReSharper disable PossibleMultipleEnumeration
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(
+					ILMatches.Stloc<CardBrowse>(originalMethod)
+				)
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.JustInsertion,
+				[
+					new CodeInstruction(OpCodes.Dup),
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ACardSelect_BeginWithRoute_Transpiler_ApplySource)))
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Name, ex);
+			return instructions;
+		}
+		// ReSharper restore PossibleMultipleEnumeration
+	}
+
+	private static void ACardSelect_BeginWithRoute_Transpiler_ApplySource(CardBrowse browse, ACardSelect select)
+	{
+		if (!ModEntry.Instance.Api.TryGetExtensionData(select, "CustomCardBrowseSource", out ICustomCardBrowseSource? customCardSource))
+			return;
+
+		ModEntry.Instance.Api.SetExtensionData(browse, "CustomCardBrowseSource", customCardSource);
 	}
 	
 	private static void CardBrowse_GetCardList_Postfix(CardBrowse __instance, G g, ref List<Card> __result)

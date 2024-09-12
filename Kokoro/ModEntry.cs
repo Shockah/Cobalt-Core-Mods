@@ -45,22 +45,20 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		Helper = helper;
 		Harmony = helper.Utilities.Harmony;
 
-		ACardOfferingPatches.Apply(Harmony);
-		ACardSelectPatches.Apply(Harmony);
-		AStatusPatches.Apply(Harmony);
-		AVariableHintPatches.Apply(Harmony);
 		BigStatsPatches.Apply(Harmony);
 		CardPatches.Apply(Harmony);
-		CardRewardPatches.Apply(Harmony);
-		CombatPatches.Apply(Harmony);
 		DrawPatches.Apply(Harmony);
 
 		CustomTTGlossary.ApplyPatches(Harmony);
 		APlaySpecificCardFromAnywhere.ApplyPatches(Harmony);
 
 		ArtifactIconManager.Setup(Harmony);
+		CardOfferingAndRewardDestinationManager.Setup(Harmony);
+		ContinueStopActionManager.Setup(Harmony);
 		CustomCardBrowseManager.Setup(Harmony);
 		DroneShiftManager.Setup(Harmony);
+		EnemyStatusVariableHintManager.Setup(Harmony);
+		EnergyAsStatusManager.Setup(Harmony);
 		EvadeManager.Setup(Harmony);
 		MidrowScorchingManager.Setup(Harmony);
 		MultiCardBrowseManager.Setup(Harmony);

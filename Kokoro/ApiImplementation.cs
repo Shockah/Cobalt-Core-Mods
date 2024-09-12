@@ -118,93 +118,11 @@ public sealed partial class ApiImplementation(
 		public CardAction MakePlayRandomCardsFromAnywhere(IEnumerable<int> cardIds, int amount = 1, bool showTheCardIfNotInHand = true)
 			=> new APlayRandomCardsFromAnywhere { CardIds = cardIds.ToHashSet(), Amount = amount, ShowTheCardIfNotInHand = showTheCardIfNotInHand };
 
-		public CardAction MakeContinue(out Guid id)
-		{
-			id = Guid.NewGuid();
-			return new AContinue { Id = id, Continue = true };
-		}
-
-		public CardAction MakeContinued(Guid id, CardAction action)
-			=> new AContinued { Id = id, Continue = true, Action = action };
-
-		public IEnumerable<CardAction> MakeContinued(Guid id, IEnumerable<CardAction> action)
-			=> action.Select(a => MakeContinued(id, a));
-
-		public CardAction MakeStop(out Guid id)
-		{
-			id = Guid.NewGuid();
-			return new AContinue { Id = id, Continue = false };
-		}
-
-		public CardAction MakeStopped(Guid id, CardAction action)
-			=> new AContinued { Id = id, Continue = false, Action = action };
-
-		public IEnumerable<CardAction> MakeStopped(Guid id, IEnumerable<CardAction> action)
-			=> action.Select(a => MakeStopped(id, a));
-
 		public CardAction MakeSpoofed(CardAction renderAction, CardAction realAction)
 			=> new ASpoofed { RenderAction = renderAction, RealAction = realAction };
 
 		public CardAction MakeHidden(CardAction action, bool showTooltips = false)
 			=> new AHidden { Action = action, ShowTooltips = showTooltips };
-
-		public AVariableHint SetTargetPlayer(AVariableHint action, bool targetPlayer)
-		{
-			var copy = Mutil.DeepCopy(action);
-			Instance.Api.SetExtensionData(copy, "targetPlayer", targetPlayer);
-			return copy;
-		}
-
-		public AVariableHint MakeEnergyX(AVariableHint? action = null, bool energy = true, int? tooltipOverride = null)
-		{
-			var copy = action is null ? new() : Mutil.DeepCopy(action);
-			copy.status = Status.tempShield; // it doesn't matter, but it has to be *anything*
-			Instance.Api.SetExtensionData(copy, "energy", energy);
-			Instance.Api.SetExtensionData(copy, "energyTooltipOverride", tooltipOverride);
-			return copy;
-		}
-
-		public AStatus MakeEnergy(AStatus action, bool energy = true)
-		{
-			var copy = Mutil.DeepCopy(action);
-			copy.targetPlayer = true;
-			Instance.Api.SetExtensionData(copy, "energy", energy);
-			return copy;
-		}
-
-		public ACardOffering WithDestination(ACardOffering action, CardDestination? destination, bool? insertRandomly = null)
-		{
-			var copy = Mutil.DeepCopy(action);
-
-			if (destination is null)
-				Instance.Api.RemoveExtensionData(copy, "destination");
-			else
-				Instance.Api.SetExtensionData(copy, "destination", destination.Value);
-
-			if (insertRandomly is null)
-				Instance.Api.RemoveExtensionData(copy, "destinationInsertRandomly");
-			else
-				Instance.Api.SetExtensionData(copy, "destinationInsertRandomly", insertRandomly.Value);
-
-			return copy;
-		}
-
-		public CardReward WithDestination(CardReward route, CardDestination? destination, bool? insertRandomly = null)
-		{
-			var copy = Mutil.DeepCopy(route);
-
-			if (destination is null)
-				Instance.Api.RemoveExtensionData(copy, "destination");
-			else
-				Instance.Api.SetExtensionData(copy, "destination", destination.Value);
-
-			if (insertRandomly is null)
-				Instance.Api.RemoveExtensionData(copy, "destinationInsertRandomly");
-			else
-				Instance.Api.SetExtensionData(copy, "destinationInsertRandomly", insertRandomly.Value);
-
-			return copy;
-		}
 
 		public List<CardAction> GetWrappedCardActions(CardAction action)
 			=> Instance.WrappedActionManager.GetWrappedCardActions(action).ToList();
