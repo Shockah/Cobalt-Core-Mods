@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Nickel;
-using Shockah.Shared;
 using System.Linq;
 
 namespace Shockah.DuoArtifacts;

@@ -38,21 +38,20 @@ internal sealed class ArtifactIconManager : HookManager<IArtifactIconHook>
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
+				.Find([
 					ILMatches.Call("round"),
 					ILMatches.Stloc<Vec>(originalMethod).CreateLdlocInstruction(out var ldlocPosition)
-				)
-				.Find(
+				])
+				.Find([
 					ILMatches.Ldarg(5),
 					ILMatches.Brfalse
-				)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Ldarg_1),
 					ldlocPosition,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Artifact_Render_Transpiler_CallManager)))
-				)
+				])
 				.AllElements();
 		}
 		catch (Exception ex)

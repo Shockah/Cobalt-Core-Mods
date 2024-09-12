@@ -96,7 +96,7 @@ internal sealed class DroneShiftManager : HookManager<IDroneShiftHook>
 			var rightEndLabel = il.DefineLabel();
 
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
+				.Find([
 					ILMatches.Ldarg(1).ExtractLabels(out var labels),
 					ILMatches.Ldfld("state"),
 					ILMatches.Ldfld("ship"),
@@ -105,56 +105,51 @@ internal sealed class DroneShiftManager : HookManager<IDroneShiftHook>
 					ILMatches.LdcI4(0),
 					ILMatches.Bgt,
 					ILMatches.Instruction(OpCodes.Ret)
-				)
+				])
 				.Replace(
 					new CodeInstruction(OpCodes.Nop).WithLabels(labels)
 				)
-				.Find(
+				.Find([
 					ILMatches.Ldloc<Combat>(originalMethod),
 					ILMatches.Ldfld("stuff"),
 					ILMatches.Call("get_Count"),
 					ILMatches.Brfalse
-				)
-				.EncompassUntil(
-					SequenceMatcherPastBoundsDirection.After,
+				])
+				.EncompassUntil(SequenceMatcherPastBoundsDirection.After, [
 					ILMatches.Call("Any"),
 					ILMatches.Brtrue,
 					ILMatches.Instruction(OpCodes.Ret)
-				)
+				])
 				.Remove()
-				.Find(
-					SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.WholeSequence,
+				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.WholeSequence, [
 					ILMatches.Ldarg(1).Anchor(out var gPointer1),
 					ILMatches.Stloc<G>(originalMethod),
 					ILMatches.LdcI4((int)StableUK.btn_moveDrones_left),
 					ILMatches.Call("op_Implicit")
-				)
+				])
 				.Anchors()
 				.PointerMatcher(gPointer1)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldc_I4, -1),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDroneShiftButtons_Transpiler_ShouldRender))),
 					new CodeInstruction(OpCodes.Brfalse, leftEndLabel),
 					new CodeInstruction(OpCodes.Ldarg_1)
-				)
-				.EncompassUntil(
-					SequenceMatcherPastBoundsDirection.After,
+				])
+				.EncompassUntil(SequenceMatcherPastBoundsDirection.After, [
 					ILMatches.Ldarg(1),
 					ILMatches.Stloc<G>(originalMethod),
 					ILMatches.LdcI4((int)StableUK.btn_moveDrones_right),
 					ILMatches.Call("op_Implicit")
-				)
+				])
 				.PointerMatcher(SequenceMatcherRelativeElement.Last)
 				.Encompass(SequenceMatcherEncompassDirection.Before, 3)
 				.PointerMatcher(SequenceMatcherRelativeElement.First)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(leftEndLabel),
 					new CodeInstruction(OpCodes.Ldc_I4, 1),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDroneShiftButtons_Transpiler_ShouldRender))),
 					new CodeInstruction(OpCodes.Brfalse, rightEndLabel)
-				)
+				])
 				.PointerMatcher(SequenceMatcherRelativeElement.LastInWholeSequence)
 				.AddLabel(rightEndLabel)
 				.AllElements();

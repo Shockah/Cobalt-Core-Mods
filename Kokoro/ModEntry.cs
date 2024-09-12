@@ -50,7 +50,6 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		AStatusPatches.Apply(Harmony);
 		AVariableHintPatches.Apply(Harmony);
 		BigStatsPatches.Apply(Harmony);
-		CardBrowsePatches.Apply(Harmony);
 		CardPatches.Apply(Harmony);
 		CardRewardPatches.Apply(Harmony);
 		CombatPatches.Apply(Harmony);
@@ -60,6 +59,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		APlaySpecificCardFromAnywhere.ApplyPatches(Harmony);
 
 		ArtifactIconManager.Setup(Harmony);
+		CustomCardBrowseManager.Setup(Harmony);
 		DroneShiftManager.Setup(Harmony);
 		EvadeManager.Setup(Harmony);
 		MidrowScorchingManager.Setup(Harmony);

@@ -1,5 +1,4 @@
-﻿using CobaltCoreModding.Definitions.ExternalItems;
-using CobaltCoreModding.Definitions.ModManifests;
+﻿using CobaltCoreModding.Definitions.ModManifests;
 using daisyowl.text;
 using Nanoray.Pintail;
 using System;

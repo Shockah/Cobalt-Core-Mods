@@ -1,12 +1,6 @@
 ﻿using HarmonyLib;
-using Microsoft.Extensions.Logging;
-using Nanoray.Shrike;
-using Nanoray.Shrike.Harmony;
 using Nickel;
-using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
 
 namespace Shockah.Kokoro;
 
