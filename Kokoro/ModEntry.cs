@@ -12,7 +12,7 @@ using IModManifest = CobaltCoreModding.Definitions.ModManifests.IModManifest;
 
 namespace Shockah.Kokoro;
 
-public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IStatusManifest, INickelManifest
+public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IStatusManifest, INickelManifest
 {
 	internal const string ExtensionDataJsonKey = "KokoroModData";
 	internal const string ScorchingTag = "Scorching";
@@ -43,7 +43,6 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		Helper = helper;
 		Harmony = helper.Utilities.Harmony;
 
-		CustomTTGlossary.ApplyPatches(Harmony);
 		APlaySpecificCardFromAnywhere.ApplyPatches(Harmony);
 
 		ArtifactIconManager.Setup(Harmony);
@@ -57,7 +56,6 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		EnergyAsStatusManager.Setup(Harmony);
 		EvadeManager.Setup(Harmony);
 		HiddenActionManager.Setup(Harmony);
-		MidrowScorchingManager.Setup(Harmony);
 		MultiCardBrowseManager.Setup(Harmony);
 		PinchCompactFontManager.Setup(Harmony);
 		RedrawStatusManager.Setup(Harmony);
@@ -76,9 +74,6 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 		SetupSerializationChanges();
 	}
-
-	public void FinalizePreperations(IPrelaunchContactPoint prelaunchManifest)
-		=> MidrowScorchingManager.SetupLate(Harmony);
 
 	public object GetApi(IManifest requestingMod)
 		=> new ApiImplementation(requestingMod);

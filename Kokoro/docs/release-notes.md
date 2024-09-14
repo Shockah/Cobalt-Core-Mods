@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Added `MultiCardBrowse`.
+* Removed `MidrowScorching`.
 
 ## 1.12.1
 Released 25 August 2024.

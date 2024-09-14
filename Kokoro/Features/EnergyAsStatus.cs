@@ -56,13 +56,13 @@ internal sealed class EnergyAsStatusManager
 			return;
 
 		__result.Clear();
-		__result.Add(new CustomTTGlossary(
-			CustomTTGlossary.GlossaryType.status,
-			() => (Spr)ModEntry.Instance.Content.EnergySprite.Id!.Value,
-			() => I18n.EnergyGlossaryName,
-			() => I18n.EnergyGlossaryDescription,
-			key: "AStatus.Energy"
-		));
+		__result.Add(new GlossaryTooltip("AStatus.Energy")
+		{
+			Icon = (Spr)ModEntry.Instance.Content.EnergySprite.Id!.Value,
+			TitleColor = Colors.energy,
+			Title = I18n.EnergyGlossaryName,
+			Description = I18n.EnergyGlossaryDescription
+		});
 	}
 
 	private static void AStatus_GetIcon_Postfix(AStatus __instance, ref Icon? __result)
@@ -89,15 +89,13 @@ internal sealed class EnergyAsStatusManager
 		if (!ModEntry.Instance.Api.ObtainExtensionData(__instance, "energy", () => false))
 			return;
 
-		__result[index] = new CustomTTGlossary(
-			CustomTTGlossary.GlossaryType.action,
-			() => null,
-			() => "",
-			() => I18n.EnergyVariableHint,
-			[
-				() => (s.route is Combat combat) ? $" </c>(<c=keyword>{ModEntry.Instance.Api.ObtainExtensionData(__instance, "energyTooltipOverride", () => (int?)null) ?? combat.energy}</c>)" : ""
+		__result[index] = new GlossaryTooltip("AStatus.Energy")
+		{
+			Description = I18n.EnergyVariableHint,
+			vals = [
+				(s.route is Combat combat) ? $" </c>(<c=keyword>{ModEntry.Instance.Api.ObtainExtensionData(__instance, "energyTooltipOverride", () => (int?)null) ?? combat.energy}</c>)" : ""
 			]
-		);
+		};
 	}
 
 	private static void AVariableHint_GetIcon_Postfix(AVariableHint __instance, ref Icon? __result)

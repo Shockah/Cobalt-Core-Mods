@@ -114,13 +114,13 @@ public sealed class AContinue : CardAction
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
-			new CustomTTGlossary(
-				CustomTTGlossary.GlossaryType.action,
-				() => (Spr)(Continue ? ModEntry.Instance.Content.ContinueSprite : ModEntry.Instance.Content.StopSprite).Id!.Value,
-				() => Continue ? I18n.ContinueActionName : I18n.StopActionName,
-				() => Continue ? I18n.ContinueActionDescription : I18n.StopActionDescription,
-				key: $"AContinue.{(Continue ? "Continue" : "Stop")}"
-			)
+			new GlossaryTooltip($"AContinue.{(Continue ? "Continue" : "Stop")}")
+			{
+				Icon = (Spr)(Continue ? ModEntry.Instance.Content.ContinueSprite : ModEntry.Instance.Content.StopSprite).Id!.Value,
+				TitleColor = Colors.action,
+				Title = Continue ? I18n.ContinueActionName : I18n.StopActionName,
+				Description = Continue ? I18n.ContinueActionDescription : I18n.StopActionDescription
+			}
 		];
 
 	public override Icon? GetIcon(State s)

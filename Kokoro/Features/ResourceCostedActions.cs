@@ -428,13 +428,13 @@ internal sealed class ActionCostStatusResource : IKokoroApi.IActionCostApi.IReso
 		var description = string.Format(descriptionFormat, amount, Status.GetLocName().ToUpper());
 
 		return [
-			new CustomTTGlossary(
-				CustomTTGlossary.GlossaryType.action,
-				() => icon,
-				() => name,
-				() => description,
-				key: $"{name}\n{description}"
-			)
+			new GlossaryTooltip($"{typeof(ModEntry).Namespace}::ResourceCost::Status::{Status.Key()}::{Target}")
+			{
+				Icon = icon,
+				TitleColor = Colors.action,
+				Title = name,
+				Description = description
+			}
 		];
 	}
 }
@@ -474,12 +474,12 @@ internal sealed class ActionCostEnergyResource : IKokoroApi.IActionCostApi.IReso
 
 	public List<Tooltip> GetTooltips(State state, Combat? combat, int amount)
 		=> [
-			new CustomTTGlossary(
-				CustomTTGlossary.GlossaryType.action,
-				() => CostSatisfiedIcon ?? CostUnsatisfiedIcon,
-				() => I18n.EnergyCostActionName,
-				() => string.Format(I18n.EnergyCostActionDescription, amount),
-				key: $"{I18n.EnergyCostActionName}\n{I18n.EnergyCostActionDescription}"
-			)
+			new GlossaryTooltip($"{typeof(ModEntry).Namespace}::ResourceCost::Energy")
+			{
+				Icon = CostSatisfiedIcon ?? CostUnsatisfiedIcon,
+				TitleColor = Colors.action,
+				Title = I18n.EnergyCostActionName,
+				Description = string.Format(I18n.EnergyCostActionDescription, amount)
+			}
 		];
 }

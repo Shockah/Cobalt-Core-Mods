@@ -1,4 +1,5 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
+using Nickel;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,8 +15,13 @@ partial class ApiImplementation
 
 	public Tooltip GetWormStatusTooltip(int? value = null)
 		=> value is null
-			? new CustomTTGlossary(CustomTTGlossary.GlossaryType.status, () => (Spr)Instance.Content.WormSprite.Id!.Value, () => I18n.WormStatusName, () => I18n.WormStatusAltGlossaryDescription)
-			: new TTGlossary($"status.{Instance.Content.WormStatus.Id!.Value}", value.Value);
+			? new GlossaryTooltip($"status.{Instance.Content.WormStatus.Id!.Value}")
+			{
+				Icon = (Spr)Instance.Content.WormSprite.Id!.Value,
+				TitleColor = Colors.status,
+				Title = I18n.WormStatusName,
+				Description = I18n.WormStatusAltGlossaryDescription
+			} : new TTGlossary($"status.{Instance.Content.WormStatus.Id!.Value}", value.Value);
 }
 
 internal sealed class WormStatusManager : IStatusLogicHook, IStatusRenderHook

@@ -51,18 +51,16 @@ internal sealed class EnemyStatusVariableHintManager
 		if (ModEntry.Instance.Api.ObtainExtensionData(__instance, "targetPlayer", () => true))
 			return;
 
-		__result[index] = new CustomTTGlossary(
-			CustomTTGlossary.GlossaryType.action,
-			() => null,
-			() => "",
-			() => I18n.EnemyVariableHint,
-			[
-				() => "<c=status>" + status.GetLocName().ToUpperInvariant() + "</c>",
-				() => (s.route is Combat combat1) ? $" </c>(<c=keyword>{combat1.otherShip.Get(status)}</c>)" : "",
-				() => __instance.secondStatus is { } secondStatus1 ? (" </c>+ <c=status>" + secondStatus1.GetLocName().ToUpperInvariant() + "</c>") : "",
-				() => __instance.secondStatus is { } secondStatus2 && s.route is Combat combat2 ? $" </c>(<c=keyword>{combat2.otherShip.Get(secondStatus2)}</c>)" : ""
+		__result[index] = new GlossaryTooltip($"{typeof(ModEntry).Namespace}::EnemyVariableHint")
+		{
+			Description = I18n.EnemyVariableHint,
+			vals = [
+				"<c=status>" + status.GetLocName().ToUpperInvariant() + "</c>",
+				(s.route is Combat combat1) ? $" </c>(<c=keyword>{combat1.otherShip.Get(status)}</c>)" : "",
+				__instance.secondStatus is { } secondStatus1 ? (" </c>+ <c=status>" + secondStatus1.GetLocName().ToUpperInvariant() + "</c>") : "",
+				__instance.secondStatus is { } secondStatus2 && s.route is Combat combat2 ? $" </c>(<c=keyword>{combat2.otherShip.Get(secondStatus2)}</c>)" : ""
 			]
-		);
+		};
 	}
 	
 	private static IEnumerable<CodeInstruction> Card_RenderAction_VarAssignment_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
