@@ -52,7 +52,12 @@ internal sealed class HiddenActionManager
 	}
 
 	private static List<CardAction> Card_MakeAllActionIcons_Transpiler_ModifyActions(List<CardAction> actions)
-		=> actions.Where(a => a is not AHidden).ToList();
+	{
+		var result = actions.Where(a => a is not AHidden).ToList();
+		actions.Clear();
+		actions.AddRange(result);
+		return actions;
+	}
 }
 
 public sealed class AHidden : CardAction

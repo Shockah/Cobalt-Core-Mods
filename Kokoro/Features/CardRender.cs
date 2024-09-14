@@ -260,7 +260,11 @@ internal sealed class CardRenderManager : HookManager<ICardRenderHook>
 			var actionsOverriddenLocal = il.DeclareLocal(typeof(List<CardAction>));
 
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(ILMatches.Call("GetActionsOverridden")) // TODO: is this needed? 
+				.Find(ILMatches.Call("GetActionsOverridden"))
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Dup),
+					new CodeInstruction(OpCodes.Stloc, actionsOverriddenLocal)
+				])
 				.Find([
 					ILMatches.Call("CharacterIsMissing"),
 					ILMatches.Brfalse,
