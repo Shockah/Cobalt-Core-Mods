@@ -11,11 +11,9 @@ using System.Reflection.Emit;
 
 namespace Shockah.Kokoro;
 
-internal static class DrawPatches
+internal sealed class PinchCompactFontManager
 {
-	private static ModEntry Instance => ModEntry.Instance;
-
-	public static void Apply(IHarmony harmony)
+	internal static void Setup(IHarmony harmony)
 	{
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Draw), nameof(Draw.Text)),
@@ -30,9 +28,9 @@ internal static class DrawPatches
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Draw_RenderCharacterOutline_Transpiler))
 		);
 	}
-
+	
 	private static bool ShouldAlsoUsePointClamp(Spr atlas)
-		=> atlas == Instance.Content.PinchCompactFont.atlas || atlas == Instance.Content.PinchCompactFont.outlined?.atlas;
+		=> atlas == ModEntry.Instance.Content.PinchCompactFont.atlas || atlas == ModEntry.Instance.Content.PinchCompactFont.outlined?.atlas;
 
 	private static void Draw_Text_Prefix(Font? font, bool dontSubstituteLocFont, ref double extraScale)
 	{
@@ -40,7 +38,7 @@ internal static class DrawPatches
 			return;
 		if (dontSubstituteLocFont)
 			return;
-		if (font != Instance.Content.PinchCompactFont && font != Instance.Content.PinchCompactFont.outlined)
+		if (font != ModEntry.Instance.Content.PinchCompactFont && font != ModEntry.Instance.Content.PinchCompactFont.outlined)
 			return;
 
 		extraScale *= 10.0 / 48;
@@ -67,7 +65,7 @@ internal static class DrawPatches
 		}
 		catch (Exception ex)
 		{
-			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			ModEntry.Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Name, ex);
 			return instructions;
 		}
 		// ReSharper restore PossibleMultipleEnumeration
@@ -94,7 +92,7 @@ internal static class DrawPatches
 		}
 		catch (Exception ex)
 		{
-			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			ModEntry.Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Name, ex);
 			return instructions;
 		}
 		// ReSharper restore PossibleMultipleEnumeration

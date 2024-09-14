@@ -93,17 +93,6 @@ public sealed partial class ApiImplementation(
 		=> Instance.ExtensionDataManager.RemoveExtensionData(manifest, o, key);
 	#endregion
 
-	#region CardRenderHook
-	public void RegisterCardRenderHook(ICardRenderHook hook, double priority)
-		=> Instance.CardRenderManager.Register(hook, priority);
-
-	public void UnregisterCardRenderHook(ICardRenderHook hook)
-		=> Instance.CardRenderManager.Unregister(hook);
-
-	public Font PinchCompactFont
-		=> ModEntry.Instance.Content.PinchCompactFont;
-	#endregion
-
 	#region Actions
 	public IKokoroApi.IActionApi Actions { get; } = new ActionApiImplementation();
 

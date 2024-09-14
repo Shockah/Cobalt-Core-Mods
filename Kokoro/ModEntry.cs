@@ -31,7 +31,6 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 	internal readonly Content Content = new();
 	internal readonly ExtensionDataManager ExtensionDataManager = new();
-	internal readonly CardRenderManager CardRenderManager = new();
 	internal readonly WrappedActionManager WrappedActionManager = new();
 
 	public void BootMod(IModLoaderContact contact)
@@ -45,9 +44,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		Helper = helper;
 		Harmony = helper.Utilities.Harmony;
 
-		BigStatsPatches.Apply(Harmony);
 		CardPatches.Apply(Harmony);
-		DrawPatches.Apply(Harmony);
 
 		CustomTTGlossary.ApplyPatches(Harmony);
 		APlaySpecificCardFromAnywhere.ApplyPatches(Harmony);
@@ -62,6 +59,7 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		EvadeManager.Setup(Harmony);
 		MidrowScorchingManager.Setup(Harmony);
 		MultiCardBrowseManager.Setup(Harmony);
+		PinchCompactFontManager.Setup(Harmony);
 		RedrawStatusManager.Setup(Harmony);
 		StatusLogicManager.Setup(Harmony);
 		StatusRenderManager.Setup(Harmony);

@@ -6,8 +6,22 @@ using System.Linq;
 
 namespace Shockah.Kokoro;
 
-public sealed class CardRenderManager : HookManager<ICardRenderHook>
+partial class ApiImplementation
 {
+	public void RegisterCardRenderHook(ICardRenderHook hook, double priority)
+		=> CardRenderManager.Instance.Register(hook, priority);
+
+	public void UnregisterCardRenderHook(ICardRenderHook hook)
+		=> CardRenderManager.Instance.Unregister(hook);
+
+	public Font PinchCompactFont
+		=> ModEntry.Instance.Content.PinchCompactFont;
+}
+
+internal sealed class CardRenderManager : HookManager<ICardRenderHook>
+{
+	internal static readonly CardRenderManager Instance = new();
+	
 	public bool ShouldDisableCardRenderingTransformations(G g, Card card)
 		=> Hooks.Any(h => h.ShouldDisableCardRenderingTransformations(g, card));
 

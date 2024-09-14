@@ -49,18 +49,6 @@ internal static class CardPatches
 			finalizer: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_RenderAction_Finalizer_Last)), priority: Priority.Last)
 		);
 		harmony.Patch(
-			original: typeof(Card).GetMethods(AccessTools.all).First(m => m.Name.StartsWith("<RenderAction>g__IconAndOrNumber") && m.ReturnType == typeof(void)),
-			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_RenderAction_IconAndOrNumber_Transpiler))
-		);
-		harmony.Patch(
-			original: typeof(Card).GetMethods(AccessTools.all).First(m => m.Name.StartsWith("<RenderAction>g__ParenIconParen") && m.ReturnType == typeof(void)),
-			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_RenderAction_ParenIconParen_Transpiler))
-		);
-		harmony.Patch(
-			original: typeof(Card).GetMethods(AccessTools.all).First(m => m.Name.StartsWith("<RenderAction>g__VarAssignment") && m.ReturnType == typeof(void)),
-			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_RenderAction_VarAssignment_Transpiler))
-		);
-		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
 			transpiler: new HarmonyMethod(typeof(CardPatches), nameof(Card_GetActionsOverridden_Transpiler))
 		);
@@ -164,16 +152,16 @@ internal static class CardPatches
 	}
 
 	private static Font? Card_Render_Transpiler_ReplaceCardTextFont(Card card, G g)
-		=> Instance.CardRenderManager.ReplaceTextCardFont(g, card);
+		=> CardRenderManager.Instance.ReplaceTextCardFont(g, card);
 
 	private static Vec Card_Render_Transpiler_PushMatrix(Card card, G g)
 	{
-		if (Instance.CardRenderManager.ShouldDisableCardRenderingTransformations(g, card))
+		if (CardRenderManager.Instance.ShouldDisableCardRenderingTransformations(g, card))
 		{
 			CardRenderMatrixStack.Push(null);
 			return Vec.One;
 		}
-		var modifiedScale = Instance.CardRenderManager.ModifyTextCardScale(g, card);
+		var modifiedScale = CardRenderManager.Instance.ModifyTextCardScale(g, card);
 		if (modifiedScale is { x: 1, y: 1 })
 		{
 			CardRenderMatrixStack.Push(null);
@@ -268,12 +256,12 @@ internal static class CardPatches
 
 		LastCardActions = actions;
 
-		if (Instance.CardRenderManager.ShouldDisableCardRenderingTransformations(g, card))
+		if (CardRenderManager.Instance.ShouldDisableCardRenderingTransformations(g, card))
 		{
 			CardRenderMatrixStack.Push(null);
 			return;
 		}
-		var modifiedMatrix = Instance.CardRenderManager.ModifyNonTextCardRenderMatrix(g, card, actions);
+		var modifiedMatrix = CardRenderManager.Instance.ModifyNonTextCardRenderMatrix(g, card, actions);
 		if (modifiedMatrix.Equals(Matrix.Identity))
 		{
 			CardRenderMatrixStack.Push(null);
@@ -445,12 +433,12 @@ internal static class CardPatches
 			CardRenderMatrixStack.Push(null);
 			return;
 		}
-		if (Instance.CardRenderManager.ShouldDisableCardRenderingTransformations(g, LastCard))
+		if (CardRenderManager.Instance.ShouldDisableCardRenderingTransformations(g, LastCard))
 		{
 			CardRenderMatrixStack.Push(null);
 			return;
 		}
-		var modifiedMatrix = LastCardActions is null ? Matrix.Identity : Instance.CardRenderManager.ModifyCardActionRenderMatrix(g, LastCard, LastCardActions, action, LastRenderActionWidth);
+		var modifiedMatrix = LastCardActions is null ? Matrix.Identity : CardRenderManager.Instance.ModifyCardActionRenderMatrix(g, LastCard, LastCardActions, action, LastRenderActionWidth);
 		if (modifiedMatrix.Equals(Matrix.Identity))
 		{
 			CardRenderMatrixStack.Push(null);
@@ -480,126 +468,6 @@ internal static class CardPatches
 			return;
 		MG.inst.cameraMatrix = matrix.Value;
 		ResetSpriteBatch();
-	}
-
-	private static IEnumerable<CodeInstruction> Card_RenderAction_IconAndOrNumber_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
-	{
-		// ReSharper disable PossibleMultipleEnumeration
-		try
-		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
-					SequenceBlockMatcherFindOccurence.Last, SequenceMatcherRelativeBounds.WholeSequence,
-					ILMatches.Call("GetValueOrDefault"),
-					ILMatches.Ldfld("color")
-				)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-					new CodeInstruction(OpCodes.Ldarg, 5),
-					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(originalMethod.GetParameters()[5].ParameterType.GetElementType(), "action")),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_RenderAction_IconAndOrNumber_Transpiler_ModifyXColor)))
-				)
-				.AllElements();
-		}
-		catch (Exception ex)
-		{
-			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
-			return instructions;
-		}
-		// ReSharper restore PossibleMultipleEnumeration
-	}
-
-	private static Color Card_RenderAction_IconAndOrNumber_Transpiler_ModifyXColor(Color currentColor, CardAction action)
-	{
-		if (!action.disabled)
-			return currentColor;
-		var fadeColor = new Color(Colors.disabledText.r / Colors.textMain.r, Colors.disabledText.g / Colors.textMain.g, Colors.disabledText.b / Colors.textMain.b, Colors.disabledText.a / Colors.textMain.a);
-		return currentColor * fadeColor;
-	}
-
-	private static IEnumerable<CodeInstruction> Card_RenderAction_ParenIconParen_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
-	{
-		// ReSharper disable PossibleMultipleEnumeration
-		try
-		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
-					ILMatches.Call("GetValueOrDefault"),
-					ILMatches.Ldfld("color")
-				)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(originalMethod.GetParameters()[0].ParameterType.GetElementType(), "action")),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_RenderAction_ParenIconParen_Transpiler_ModifyXColor)))
-				)
-				.AllElements();
-		}
-		catch (Exception ex)
-		{
-			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
-			return instructions;
-		}
-		// ReSharper restore PossibleMultipleEnumeration
-	}
-
-	private static Color Card_RenderAction_ParenIconParen_Transpiler_ModifyXColor(Color currentColor, CardAction action)
-	{
-		if (!action.disabled)
-			return currentColor;
-		var fadeColor = new Color(Colors.disabledText.r / Colors.textMain.r, Colors.disabledText.g / Colors.textMain.g, Colors.disabledText.b / Colors.textMain.b, Colors.disabledText.a / Colors.textMain.a);
-		return currentColor * fadeColor;
-	}
-
-	private static IEnumerable<CodeInstruction> Card_RenderAction_VarAssignment_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
-	{
-		// ReSharper disable PossibleMultipleEnumeration
-		try
-		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(ILMatches.Instruction(OpCodes.Ret))
-				.Insert(
-					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(originalMethod.GetParameters()[0].ParameterType.GetElementType(), "g")),
-					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(originalMethod.GetParameters()[0].ParameterType.GetElementType(), "action")),
-					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(originalMethod.GetParameters()[0].ParameterType.GetElementType(), "dontDraw")),
-					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(originalMethod.GetParameters()[0].ParameterType.GetElementType(), "w")),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CardPatches), nameof(Card_RenderAction_VarAssignment_Transpiler_Outgoing))),
-					new CodeInstruction(OpCodes.Stfld, AccessTools.DeclaredField(originalMethod.GetParameters()[0].ParameterType.GetElementType(), "w"))
-				)
-				.AllElements();
-		}
-		catch (Exception ex)
-		{
-			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
-			return instructions;
-		}
-		// ReSharper restore PossibleMultipleEnumeration
-	}
-
-	private static int Card_RenderAction_VarAssignment_Transpiler_Outgoing(G g, CardAction action, bool dontDraw, int w)
-	{
-		if (action is not AVariableHint variableHint)
-			return w;
-		if (variableHint.hand)
-			return w;
-		if (Instance.Api.ObtainExtensionData(variableHint, "targetPlayer", () => true))
-			return w;
-
-		if (!dontDraw)
-		{
-			var v = g.Push(null, new Rect(w)).rect.xy;
-			var spriteColor = variableHint.disabled ? Colors.disabledIconTint : new Color("ffffff");
-			Draw.Sprite(StableSpr.icons_outgoing, v.x, v.y, color: spriteColor);
-			g.Pop();
-		}
-		w += 8;
-		return w;
 	}
 
 	private static IEnumerable<CodeInstruction> Card_GetActionsOverridden_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
