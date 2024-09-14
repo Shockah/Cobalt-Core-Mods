@@ -108,9 +108,7 @@ internal sealed class EvadeManager : HookManager<IEvadeHook>
 					ILMatches.Bgt,
 					ILMatches.Instruction(OpCodes.Ret)
 				])
-				.Replace(
-					new CodeInstruction(OpCodes.Nop).WithLabels(labels)
-				)
+				.Replace(new CodeInstruction(OpCodes.Nop).WithLabels(labels))
 				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.WholeSequence, [
 					ILMatches.Ldarg(1).Anchor(out var gPointer1),
 					ILMatches.LdcI4((int)StableUK.btn_move_left),

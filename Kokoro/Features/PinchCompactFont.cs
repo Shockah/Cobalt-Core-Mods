@@ -50,17 +50,16 @@ internal sealed class PinchCompactFontManager
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
+				.Find([
 					ILMatches.Ldarg(0),
 					ILMatches.LdcI4((int)StableSpr.fonts_pinch_atlas32),
 					ILMatches.Beq.GetBranchTarget(out var branchTarget)
-				)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ShouldAlsoUsePointClamp))),
 					new CodeInstruction(OpCodes.Brtrue, branchTarget.Value)
-				)
+				])
 				.AllElements();
 		}
 		catch (Exception ex)
@@ -77,17 +76,16 @@ internal sealed class PinchCompactFontManager
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
+				.Find([
 					ILMatches.Ldarg(0),
 					ILMatches.LdcI4((int)StableSpr.fonts_pinch_atlas32),
 					ILMatches.Beq.GetBranchTarget(out var branchTarget)
-				)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ShouldAlsoUsePointClamp))),
 					new CodeInstruction(OpCodes.Brtrue, branchTarget.Value)
-				)
+				])
 				.AllElements();
 		}
 		catch (Exception ex)

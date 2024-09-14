@@ -48,9 +48,7 @@ internal sealed class CustomCardBrowseManager
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
-					ILMatches.Stloc<CardBrowse>(originalMethod)
-				)
+				.Find(ILMatches.Stloc<CardBrowse>(originalMethod))
 				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.JustInsertion,
 				[
 					new CodeInstruction(OpCodes.Dup),
@@ -89,14 +87,14 @@ internal sealed class CustomCardBrowseManager
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
+				.Find([
 					ILMatches.Ldarg(0),
 					ILMatches.Ldfld("browseSource"),
 					ILMatches.Stloc<CardBrowse.Source>(originalMethod),
 					ILMatches.Ldloc<CardBrowse.Source>(originalMethod),
 					ILMatches.Instruction(OpCodes.Switch),
 					ILMatches.Br.GetBranchTarget(out var failBranchTarget)
-				)
+				])
 				.PointerMatcher(failBranchTarget)
 				.Advance(-1)
 				.GetBranchTarget(out var successBranchTarget)
@@ -104,14 +102,13 @@ internal sealed class CustomCardBrowseManager
 				.CreateLdlocaInstruction(out var ldlocaTitle)
 				.PointerMatcher(failBranchTarget)
 				.ExtractLabels(out var labels)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
 					new CodeInstruction(OpCodes.Ldarg_1),
 					ldlocaTitle,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardBrowse_Render_Transpiler_GetCardSourceText))),
 					new CodeInstruction(OpCodes.Brtrue, successBranchTarget)
-				)
+				])
 				.AllElements();
 		}
 		catch (Exception ex)

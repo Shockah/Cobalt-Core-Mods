@@ -106,9 +106,7 @@ internal sealed class DroneShiftManager : HookManager<IDroneShiftHook>
 					ILMatches.Bgt,
 					ILMatches.Instruction(OpCodes.Ret)
 				])
-				.Replace(
-					new CodeInstruction(OpCodes.Nop).WithLabels(labels)
-				)
+				.Replace(new CodeInstruction(OpCodes.Nop).WithLabels(labels))
 				.Find([
 					ILMatches.Ldloc<Combat>(originalMethod),
 					ILMatches.Ldfld("stuff"),
