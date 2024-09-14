@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using ILMatches = Nanoray.Shrike.Harmony.ILMatches;
 
 namespace Shockah.Kokoro;
 
@@ -106,6 +105,7 @@ internal sealed class CardRenderManager : HookManager<ICardRenderHook>
 		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
+			var declaringType = MethodBase.GetCurrentMethod()!.DeclaringType!;
 			var modifiedScaleLocal = il.DeclareLocal(typeof(Vec));
 
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -118,7 +118,7 @@ internal sealed class CardRenderManager : HookManager<ICardRenderHook>
 				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Ldarg_1),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Transpiler_PushMatrix))),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(declaringType, nameof(Card_Render_Transpiler_PushMatrix))),
 					new CodeInstruction(OpCodes.Stloc, modifiedScaleLocal)
 				])
 				.Find([
@@ -129,7 +129,7 @@ internal sealed class CardRenderManager : HookManager<ICardRenderHook>
 				.Replace([
 					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Ldarg_1),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Transpiler_ReplaceCardTextFont)))
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(declaringType, nameof(Card_Render_Transpiler_ReplaceCardTextFont)))
 				])
 				.ForEach(
 					SequenceMatcherRelativeBounds.After,
@@ -143,7 +143,7 @@ internal sealed class CardRenderManager : HookManager<ICardRenderHook>
 						.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 							new CodeInstruction(OpCodes.Ldloc, modifiedScaleLocal),
 							new CodeInstruction(OpCodes.Ldarg_0),
-							new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Transpiler_ModifyAvailableWidth)))
+							new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(declaringType, nameof(Card_Render_Transpiler_ModifyAvailableWidth)))
 						]),
 					minExpectedOccurences: 2, maxExpectedOccurences: 2
 				)
@@ -151,7 +151,7 @@ internal sealed class CardRenderManager : HookManager<ICardRenderHook>
 				.ExtractLabels(out var labels)
 				.Insert(
 					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Transpiler_PopMatrix))).WithLabels(labels)
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(declaringType, nameof(Card_Render_Transpiler_PopMatrix))).WithLabels(labels)
 				)
 				.AllElements();
 		}
