@@ -165,7 +165,10 @@ internal sealed partial class Content
 				WormSprite,
 				affectedByTimestop: false
 			);
-			WormStatus.AddLocalisation(I18n.WormStatusName, I18n.WormStatusDescription);
+			WormStatus.AddLocalisation(
+				ModEntry.Instance.Localizations.Localize(["status", "Worm", "name"]),
+				ModEntry.Instance.Localizations.Localize(["status", "Worm", "description", "stateful"])
+			);
 			registry.RegisterStatus(WormStatus);
 		}
 		{
@@ -178,8 +181,8 @@ internal sealed partial class Content
 					border = new("98FFF7"),
 					isGood = false,
 				},
-				Name = _ => I18n.OxidationStatusName,
-				Description = _ => I18n.OxidationStatusDescription,
+				Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Oxidation", "name"]).Localize,
+				Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Oxidation", "description"]).Localize,
 				ShouldFlash = (state, _, ship, status) => ship.Get(status) >= Instance.Api.GetOxidationStatusMaxValue(state, ship)
 			});
 		}
@@ -192,7 +195,10 @@ internal sealed partial class Content
 				RedrawSprite,
 				affectedByTimestop: false
 			);
-			RedrawStatus.AddLocalisation(I18n.RedrawStatusName, I18n.RedrawStatusDescription);
+			RedrawStatus.AddLocalisation(
+				ModEntry.Instance.Localizations.Localize(["status", "Redraw", "name"]),
+				ModEntry.Instance.Localizations.Localize(["status", "Redraw", "description"])
+			);
 			registry.RegisterStatus(RedrawStatus);
 		}
 		{
@@ -204,7 +210,10 @@ internal sealed partial class Content
 				TempShieldNextTurnSprite,
 				affectedByTimestop: false
 			);
-			TempShieldNextTurnStatus.AddLocalisation(I18n.TempShieldNextTurnStatusName, I18n.TempShieldNextTurnStatusDescription);
+			TempShieldNextTurnStatus.AddLocalisation(
+				ModEntry.Instance.Localizations.Localize(["status", "TempShieldNextTurn", "name"]),
+				ModEntry.Instance.Localizations.Localize(["status", "TempShieldNextTurn", "description"])
+			);
 			registry.RegisterStatus(TempShieldNextTurnStatus);
 		}
 		{
@@ -216,7 +225,10 @@ internal sealed partial class Content
 				ShieldNextTurnSprite,
 				affectedByTimestop: false
 			);
-			ShieldNextTurnStatus.AddLocalisation(I18n.ShieldNextTurnStatusName, I18n.ShieldNextTurnStatusDescription);
+			ShieldNextTurnStatus.AddLocalisation(
+				ModEntry.Instance.Localizations.Localize(["status", "ShieldNextTurn", "name"]),
+				ModEntry.Instance.Localizations.Localize(["status", "ShieldNextTurn", "description"])
+			);
 			registry.RegisterStatus(ShieldNextTurnStatus);
 		}
 	}

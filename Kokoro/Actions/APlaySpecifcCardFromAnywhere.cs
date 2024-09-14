@@ -103,37 +103,35 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
+				.Find([
 					ILMatches.Ldarg(0),
 					ILMatches.Ldfld("hand"),
 					ILMatches.AnyLdloc,
 					ILMatches.Ldfld("card"),
 					ILMatches.Call("Contains")
-				)
+				])
 				.Find(ILMatches.Brtrue.GetBranchTarget(out var branchTarget))
 				.PointerMatcher(branchTarget)
 				.ExtractLabels(out var labels)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
 					new CodeInstruction(OpCodes.Ldarg_1),
 					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(APlaySpecificCardFromAnywhere), nameof(Combat_TryPlayCard_Transpiler_RemoveFromHandIfHackinglyPlayed)))
-				)
-				.Find(
+				])
+				.Find([
 					ILMatches.Ldarg(0),
 					ILMatches.Ldfld("hand"),
 					ILMatches.AnyLdloc,
 					ILMatches.Ldfld("card"),
 					ILMatches.Call("Remove"),
 					ILMatches.Instruction(OpCodes.Pop)
-				)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_1),
 					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(APlaySpecificCardFromAnywhere), nameof(Combat_TryPlayCard_Transpiler_RemoveCardFromWhereverItIsIfNeeded)))
-				)
+				])
 				.AllElements();
 		}
 		catch (Exception ex)

@@ -1,0 +1,136 @@
+﻿{
+	"status": {
+		"Worm": {
+			"name": "Worm",
+			"description": {
+				"stateful": "Cancels {0} intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>",
+				"stateless": "Cancels intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>"
+			}
+		},
+		"Oxidation": {
+			"name": "Oxidation",
+			"description": "If oxidation is {0} or more at end of turn, gain 1 <c=status>CORRODE</c> and set oxidation to 0."
+		},
+		"Redraw": {
+			"name": "Redraw",
+			"description": "Lets you discard a card and draw a new one. Costs 1 redraw per discard."
+		},
+		"TempShieldNextTurn": {
+			"name": "Temp Shield Next Turn",
+			"description": "Gain {0} <c=status>TEMP SHIELD</c> next turn."
+		},
+		"ShieldNextTurn": {
+			"name": "Shield Next Turn",
+			"description": "Gain {0} <c=status>SHIELD</c> next turn."
+		}
+	},
+	"resourceCost": {
+		"status": {
+			"player": {
+				"name": "{0} Cost",
+				"description": "Lose <c=keyword>{0}</c> <c=status>{1}</c>. If you don't have enough, this action does not happen."
+			},
+			"enemy": {
+				"name": "Exploit {0}",
+				"description": "Remove <c=keyword>{0}</c> <c=status>{1}</c> from the enemy. If they don't have enough, this action does not happen."
+			}
+		},
+		"energy": {
+			"name": "Energy Cost",
+			"description": "Lose <c=keyword>{0}</c> extra <c=energy>ENERGY</c>. If you don't have enough, this action does not happen."
+		}
+	},
+	"conditional": {
+		"name": "Conditional",
+		"description": "This action will only trigger if {0}.",
+		"hand": "cards in your hand",
+		"x": "<c=action>X</c>",
+		"hasStatus": {
+			"player": "you have {0}",
+			"enemy": "your enemy has {0}"
+		},
+		"equation": {
+			"Formal": {
+				"Equal": "{0} is {1}",
+				"NotEqual": "{0} is not {1}",
+				"GreaterThan": "{0} is greater than {1}",
+				"LessThan": "{0} is less than {1}",
+				"GreaterThanOrEqual": "{0} is greater than or equal to {1}",
+				"LessThanOrEqual": "{0} is less than or equal to {1}"
+			},
+			"State": {
+				"Equal": "you are at {1} {0}",
+				"NotEqual": "you are not at {1} {0}",
+				"GreaterThan": "you are higher than {1} {0}",
+				"LessThan": "you are lower than {1} {0}",
+				"GreaterThanOrEqual": "you are at least at {1} {0}",
+				"LessThanOrEqual": "you are at most at {1} {0}"
+			},
+			"EnemyState": {
+				"Equal": "your enemy is at {1} {0}",
+				"NotEqual": "your enemy is not at {1} {0}",
+				"GreaterThan": "your enemy is higher than {1} {0}",
+				"LessThan": "your enemy is lower than {1} {0}",
+				"GreaterThanOrEqual": "your enemy is at least at {1} {0}",
+				"LessThanOrEqual": "your enemy is at most at {1} {0}"
+			},
+			"Possession": {
+				"Equal": "you have exactly {1} {0}",
+				"NotEqual": "you do not have exactly {1} {0}",
+				"GreaterThan": "you have more than {1} {0}",
+				"LessThan": "you have less than {1} {0}",
+				"GreaterThanOrEqual": "you have at least {1} {0}",
+				"LessThanOrEqual": "you have at most {1} {0}"
+			},
+			"EnemyPossession": {
+				"Equal": "your enemy has exactly {1} {0}",
+				"NotEqual": "your enemy does not have exactly {1} {0}",
+				"GreaterThan": "your enemy has more than {1} {0}",
+				"LessThan": "your enemy has less than {1} {0}",
+				"GreaterThanOrEqual": "your enemy has at least {1} {0}",
+				"LessThanOrEqual": "your enemy has at most {1} {0}"
+			},
+			"PossessionComparison": {
+				"Equal": "you have the same amount of {0} and {1}",
+				"NotEqual": "you have a different amount of {0} and {1}",
+				"GreaterThan": "you have more {0} than {1}",
+				"LessThan": "you have less {0} than {1}",
+				"GreaterThanOrEqual": "you have at least as much {0} as {1}",
+				"LessThanOrEqual": "you have at most as much {0} as {1}"
+			},
+			"EnemyPossessionComparison": {
+				"Equal": "your enemy has the same amount of {0} and {1}",
+				"NotEqual": "your enemy has a different amount of {0} and {1}",
+				"GreaterThan": "your enemy has more {0} than {1}",
+				"LessThan": "your enemy has less {0} than {1}",
+				"GreaterThanOrEqual": "your enemy has at least as much {0} as {1}",
+				"LessThanOrEqual": "your enemy has at most as much {0} as {1}"
+			},
+			"ToEnemyPossessionComparison": {
+				"Equal": "you have the same amount of {0} as your enemy",
+				"NotEqual": "you have a different amount of {0} than your enemy",
+				"GreaterThan": "you have more {0} than your enemy",
+				"LessThan": "you have less {0} than your enemy",
+				"GreaterThanOrEqual": "you have at least as much {0} as your enemy",
+				"LessThanOrEqual": "you have at most as much {0} as your enemy"
+			}
+		}
+	},
+	"enemyVariableHint": "<c=action>X</c> = The enemy's {0}{1}{2}{3}.",
+	"energyVariableHint": "<c=action>X</c> = Your <c=status>ENERGY</c> after paying for this card{0}.",
+	"energy": {
+		"name": "Energy",
+		"description": "How much <c=energy>ENERGY</c> you have remaining this turn."
+	},
+	"continue": {
+		"name": "Continue",
+		"description": "Trigger the next actions. If this is not triggered, the next actions will not be either."
+	},
+	"stop": {
+		"name": "Stop",
+		"description": "Stop triggering the next actions. If this is not triggered, the next actions will trigger as usual."
+	},
+	"multiCardBrowse": {
+		"done": "DONE"
+	}
+}

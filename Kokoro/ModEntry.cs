@@ -32,6 +32,9 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 	internal readonly Content Content = new();
 	internal readonly ExtensionDataManager ExtensionDataManager = new();
 
+	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; private set; } = null!;
+	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; private set; } = null!;
+
 	public void BootMod(IModLoaderContact contact)
 	{
 		Instance = this;
@@ -42,6 +45,14 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 	{
 		Helper = helper;
 		Harmony = helper.Utilities.Harmony;
+		
+		AnyLocalizations = new JsonLocalizationProvider(
+			tokenExtractor: new SimpleLocalizationTokenExtractor(),
+			localeStreamFunction: locale => package.PackageRoot.GetRelativeFile($"i18n/{locale}.json").OpenRead()
+		);
+		Localizations = new MissingPlaceholderLocalizationProvider<IReadOnlyList<string>>(
+			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
+		);
 
 		APlaySpecificCardFromAnywhere.ApplyPatches(Harmony);
 

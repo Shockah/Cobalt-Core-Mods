@@ -19,8 +19,8 @@ partial class ApiImplementation
 			{
 				Icon = (Spr)Instance.Content.WormSprite.Id!.Value,
 				TitleColor = Colors.status,
-				Title = I18n.WormStatusName,
-				Description = I18n.WormStatusAltGlossaryDescription
+				Title = ModEntry.Instance.Localizations.Localize(["status", "Worm", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["status", "Worm", "description", "stateless"]),
 			} : new TTGlossary($"status.{Instance.Content.WormStatus.Id!.Value}", value.Value);
 }
 

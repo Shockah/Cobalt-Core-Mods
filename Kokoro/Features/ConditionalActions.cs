@@ -126,12 +126,12 @@ public sealed class AConditional : CardAction
 		if (Expression is not null)
 		{
 			var description = Expression.GetTooltipDescription(s, s.route as Combat);
-			var formattedDescription = string.Format(I18n.ConditionalActionDescription, description);
+			var formattedDescription = string.Format(ModEntry.Instance.Localizations.Localize(["conditional", "description"]), description);
 			var defaultTooltip = new GlossaryTooltip($"AConditional::{formattedDescription}")
 			{
 				Icon = (Spr)ModEntry.Instance.Content.QuestionMarkSprite.Id!.Value,
 				TitleColor = Colors.action,
-				Title = I18n.ConditionalActionName,
+				Title = ModEntry.Instance.Localizations.Localize(["conditional", "name"]),
 				Description = formattedDescription
 			};
 
@@ -191,7 +191,7 @@ internal sealed class ConditionalActionHandConstant : IKokoroApi.IConditionalAct
 	}
 
 	public string GetTooltipDescription(State state, Combat? combat)
-		=> I18n.ConditionalHandDescription;
+		=> ModEntry.Instance.Localizations.Localize(["conditional", "hand"]);
 }
 
 internal sealed class ConditionalActionXConstant : IKokoroApi.IConditionalActionApi.IIntExpression
@@ -216,7 +216,7 @@ internal sealed class ConditionalActionXConstant : IKokoroApi.IConditionalAction
 	}
 
 	public string GetTooltipDescription(State state, Combat? combat)
-		=> I18n.ConditionalXDescription;
+		=> ModEntry.Instance.Localizations.Localize(["conditional", "x"]);
 }
 
 internal sealed class ConditionalActionScalarMultiplier : IKokoroApi.IConditionalActionApi.IIntExpression
@@ -312,7 +312,7 @@ internal sealed class ConditionalActionHasStatusExpression : IKokoroApi.IConditi
 	}
 
 	public string GetTooltipDescription(State state, Combat? combat)
-		=> string.Format(TargetPlayer ? I18n.ConditionalHasStatusDescription : I18n.ConditionalEnemyHasStatusDescription, $"<c=status>{Status.GetLocName().ToUpper()}</c>");
+		=> string.Format(ModEntry.Instance.Localizations.Localize(["conditional", "hasStatus", this.TargetPlayer ? "player" : "enemy"]), $"<c=status>{Status.GetLocName().ToUpper()}</c>");
 
 	public List<Tooltip> GetTooltips(State state, Combat? combat)
 	{
@@ -443,92 +443,9 @@ internal sealed class ConditionalActionEquation : IKokoroApi.IConditionalActionA
 
 		Rhs.Render(g, ref position, isDisabled, dontRender);
 	}
-
+	
 	private string GetTooltipDescriptionFormat()
-		=> Style switch
-		{
-			IKokoroApi.IConditionalActionApi.EquationStyle.Formal => Operator switch
-			{
-				IKokoroApi.IConditionalActionApi.EquationOperator.Equal => I18n.ConditionalEquationFormalEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => I18n.ConditionalEquationFormalNotEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => I18n.ConditionalEquationFormalGreaterThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => I18n.ConditionalEquationFormalLessThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => I18n.ConditionalEquationFormalGreaterThanOrEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => I18n.ConditionalEquationFormalLessThanOrEqualDescription,
-				_ => throw new ArgumentException()
-			},
-			IKokoroApi.IConditionalActionApi.EquationStyle.State => Operator switch
-			{
-				IKokoroApi.IConditionalActionApi.EquationOperator.Equal => I18n.ConditionalEquationStateEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => I18n.ConditionalEquationStateNotEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => I18n.ConditionalEquationStateGreaterThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => I18n.ConditionalEquationStateLessThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => I18n.ConditionalEquationStateGreaterThanOrEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => I18n.ConditionalEquationStateLessThanOrEqualDescription,
-				_ => throw new ArgumentException()
-			},
-			IKokoroApi.IConditionalActionApi.EquationStyle.EnemyState => Operator switch
-			{
-				IKokoroApi.IConditionalActionApi.EquationOperator.Equal => I18n.ConditionalEquationEnemyStateEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => I18n.ConditionalEquationEnemyStateNotEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => I18n.ConditionalEquationEnemyStateGreaterThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => I18n.ConditionalEquationEnemyStateLessThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => I18n.ConditionalEquationEnemyStateGreaterThanOrEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => I18n.ConditionalEquationEnemyStateLessThanOrEqualDescription,
-				_ => throw new ArgumentException()
-			},
-			IKokoroApi.IConditionalActionApi.EquationStyle.Possession => Operator switch
-			{
-				IKokoroApi.IConditionalActionApi.EquationOperator.Equal => I18n.ConditionalEquationPossessionEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => I18n.ConditionalEquationPossessionNotEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => I18n.ConditionalEquationPossessionGreaterThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => I18n.ConditionalEquationPossessionLessThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => I18n.ConditionalEquationPossessionGreaterThanOrEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => I18n.ConditionalEquationPossessionLessThanOrEqualDescription,
-				_ => throw new ArgumentException()
-			},
-			IKokoroApi.IConditionalActionApi.EquationStyle.EnemyPossession => Operator switch
-			{
-				IKokoroApi.IConditionalActionApi.EquationOperator.Equal => I18n.ConditionalEquationEnemyPossessionEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => I18n.ConditionalEquationEnemyPossessionNotEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => I18n.ConditionalEquationEnemyPossessionGreaterThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => I18n.ConditionalEquationEnemyPossessionLessThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => I18n.ConditionalEquationEnemyPossessionGreaterThanOrEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => I18n.ConditionalEquationEnemyPossessionLessThanOrEqualDescription,
-				_ => throw new ArgumentException()
-			},
-			IKokoroApi.IConditionalActionApi.EquationStyle.PossessionComparison => Operator switch
-			{
-				IKokoroApi.IConditionalActionApi.EquationOperator.Equal => I18n.ConditionalEquationPossessionComparisonEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => I18n.ConditionalEquationPossessionComparisonNotEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => I18n.ConditionalEquationPossessionComparisonGreaterThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => I18n.ConditionalEquationPossessionComparisonLessThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => I18n.ConditionalEquationPossessionComparisonGreaterThanOrEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => I18n.ConditionalEquationPossessionComparisonLessThanOrEqualDescription,
-				_ => throw new ArgumentException()
-			},
-			IKokoroApi.IConditionalActionApi.EquationStyle.EnemyPossessionComparison => Operator switch
-			{
-				IKokoroApi.IConditionalActionApi.EquationOperator.Equal => I18n.ConditionalEquationEnemyPossessionComparisonEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => I18n.ConditionalEquationEnemyPossessionComparisonNotEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => I18n.ConditionalEquationEnemyPossessionComparisonGreaterThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => I18n.ConditionalEquationEnemyPossessionComparisonLessThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => I18n.ConditionalEquationEnemyPossessionComparisonGreaterThanOrEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => I18n.ConditionalEquationEnemyPossessionComparisonLessThanOrEqualDescription,
-				_ => throw new ArgumentException()
-			},
-			IKokoroApi.IConditionalActionApi.EquationStyle.ToEnemyPossessionComparison => Operator switch
-			{
-				IKokoroApi.IConditionalActionApi.EquationOperator.Equal => I18n.ConditionalEquationToEnemyPossessionComparisonEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => I18n.ConditionalEquationToEnemyPossessionComparisonNotEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => I18n.ConditionalEquationToEnemyPossessionComparisonGreaterThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => I18n.ConditionalEquationToEnemyPossessionComparisonLessThanDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => I18n.ConditionalEquationToEnemyPossessionComparisonGreaterThanOrEqualDescription,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => I18n.ConditionalEquationToEnemyPossessionComparisonLessThanOrEqualDescription,
-				_ => throw new ArgumentException()
-			},
-			_ => throw new ArgumentException()
-		};
+		=> ModEntry.Instance.Localizations.Localize(["conditional", "equation", Style.ToString(), this.Operator.ToString()]);
 
 	public string GetTooltipDescription(State state, Combat? combat)
 		=> string.Format(GetTooltipDescriptionFormat(), Lhs.GetTooltipDescription(state, combat), Rhs.GetTooltipDescription(state, combat));

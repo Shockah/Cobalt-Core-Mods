@@ -418,11 +418,8 @@ internal sealed class ActionCostStatusResource : IKokoroApi.IActionCostApi.IReso
 
 	public List<Tooltip> GetTooltips(State state, Combat? combat, int amount)
 	{
-		var nameFormat = Target == IKokoroApi.IActionCostApi.StatusResourceTarget.Player
-			? I18n.StatusPlayerCostActionName : I18n.StatusEnemyCostActionName;
-		var descriptionFormat = Target == IKokoroApi.IActionCostApi.StatusResourceTarget.Player
-			? I18n.StatusPlayerCostActionDescription : I18n.StatusEnemyCostActionDescription;
-
+		var nameFormat = ModEntry.Instance.Localizations.Localize(["resourceCost", "status", Target == IKokoroApi.IActionCostApi.StatusResourceTarget.Player ? "player" : "enemy", "name"]);
+		var descriptionFormat = ModEntry.Instance.Localizations.Localize(["resourceCost", "status", Target == IKokoroApi.IActionCostApi.StatusResourceTarget.Player ? "player" : "enemy", "description"]);
 		var icon = CostSatisfiedIcon ?? CostUnsatisfiedIcon ?? DB.statuses[Status].icon;
 		var name = string.Format(nameFormat, Status.GetLocName().ToUpper());
 		var description = string.Format(descriptionFormat, amount, Status.GetLocName().ToUpper());
@@ -433,7 +430,7 @@ internal sealed class ActionCostStatusResource : IKokoroApi.IActionCostApi.IReso
 				Icon = icon,
 				TitleColor = Colors.action,
 				Title = name,
-				Description = description
+				Description = description,
 			}
 		];
 	}
@@ -478,8 +475,8 @@ internal sealed class ActionCostEnergyResource : IKokoroApi.IActionCostApi.IReso
 			{
 				Icon = CostSatisfiedIcon ?? CostUnsatisfiedIcon,
 				TitleColor = Colors.action,
-				Title = I18n.EnergyCostActionName,
-				Description = string.Format(I18n.EnergyCostActionDescription, amount)
+				Title = ModEntry.Instance.Localizations.Localize(["resourceCost", "energy", "name"]),
+				Description = string.Format(ModEntry.Instance.Localizations.Localize(["resourceCost", "energy", "description"]), amount),
 			}
 		];
 }

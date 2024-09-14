@@ -118,8 +118,8 @@ public sealed class AContinue : CardAction
 			{
 				Icon = (Spr)(Continue ? ModEntry.Instance.Content.ContinueSprite : ModEntry.Instance.Content.StopSprite).Id!.Value,
 				TitleColor = Colors.action,
-				Title = Continue ? I18n.ContinueActionName : I18n.StopActionName,
-				Description = Continue ? I18n.ContinueActionDescription : I18n.StopActionDescription
+				Title = ModEntry.Instance.Localizations.Localize([Continue ? "continue" : "stop", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize([Continue ? "continue" : "stop", "description"]),
 			}
 		];
 

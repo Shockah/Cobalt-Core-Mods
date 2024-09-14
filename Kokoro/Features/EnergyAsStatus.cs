@@ -60,8 +60,8 @@ internal sealed class EnergyAsStatusManager
 		{
 			Icon = (Spr)ModEntry.Instance.Content.EnergySprite.Id!.Value,
 			TitleColor = Colors.energy,
-			Title = I18n.EnergyGlossaryName,
-			Description = I18n.EnergyGlossaryDescription
+			Title = ModEntry.Instance.Localizations.Localize(["energy", "name"]),
+			Description = ModEntry.Instance.Localizations.Localize(["energy", "description"]),
 		});
 	}
 
@@ -91,7 +91,7 @@ internal sealed class EnergyAsStatusManager
 
 		__result[index] = new GlossaryTooltip("AStatus.Energy")
 		{
-			Description = I18n.EnergyVariableHint,
+			Description = ModEntry.Instance.Localizations.Localize(["energyVariableHint"]),
 			vals = [
 				(s.route is Combat combat) ? $" </c>(<c=keyword>{ModEntry.Instance.Api.ObtainExtensionData(__instance, "energyTooltipOverride", () => (int?)null) ?? combat.energy}</c>)" : ""
 			]

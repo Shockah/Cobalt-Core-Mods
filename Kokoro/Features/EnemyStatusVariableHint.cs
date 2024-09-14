@@ -53,7 +53,7 @@ internal sealed class EnemyStatusVariableHintManager
 
 		__result[index] = new GlossaryTooltip($"{typeof(ModEntry).Namespace}::EnemyVariableHint")
 		{
-			Description = I18n.EnemyVariableHint,
+			Description = ModEntry.Instance.Localizations.Localize(["enemyVariableHint"]),
 			vals = [
 				"<c=status>" + status.GetLocName().ToUpperInvariant() + "</c>",
 				(s.route is Combat combat1) ? $" </c>(<c=keyword>{combat1.otherShip.Get(status)}</c>)" : "",

@@ -3,7 +3,7 @@
 		<RootNamespace>Shockah.Kokoro</RootNamespace>
 		<Version>1.12.1</Version>
 		<IsLegacyMod>True</IsLegacyMod>
-		<IncludedModProjectPaths>assets</IncludedModProjectPaths>
+		<IncludedModProjectPaths>assets;i18n</IncludedModProjectPaths>
 	</PropertyGroup>
 	<Import Project="..\Configuration.Mod.props" />
 	<ItemGroup>

@@ -243,7 +243,7 @@ internal sealed class MultiCardBrowseManager
 			if (CustomActions is not null)
 				results.AddRange(CustomActions);
 			if ((browseAction is not null && !BrowseActionIsOnlyForTitle) || results.Count == 0)
-				results.Add(new ApiImplementation.ActionApiImplementation.CustomAction(browseAction ?? new ADummyAction(), I18n.MultiCardBrowseDoneButtonTitle).SetMinSelected(MinSelected).SetMaxSelected(MaxSelected));
+				results.Add(new ApiImplementation.ActionApiImplementation.CustomAction(browseAction ?? new ADummyAction(), ModEntry.Instance.Localizations.Localize(["multiCardBrowse", "done"])).SetMinSelected(MinSelected).SetMaxSelected(MaxSelected));
 			return results;
 		}
 		
