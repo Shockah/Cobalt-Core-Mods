@@ -1,9 +1,148 @@
-﻿using Newtonsoft.Json;
+﻿using HarmonyLib;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Nickel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Shockah.Kokoro;
+
+partial class ApiImplementation
+{
+	public IKokoroApi.IConditionalActionApi ConditionalActions { get; } = new ConditionalActionApiImplementation();
+
+	public sealed class ConditionalActionApiImplementation : IKokoroApi.IConditionalActionApi
+	{
+		public CardAction Make(IKokoroApi.IConditionalActionApi.IBoolExpression expression, CardAction action, bool fadeUnsatisfied = true)
+			=> new AConditional { Expression = expression, Action = action, FadeUnsatisfied = fadeUnsatisfied };
+
+		public IKokoroApi.IConditionalActionApi.IIntExpression Constant(int value)
+			=> new ConditionalActionIntConstant(value);
+
+		public IKokoroApi.IConditionalActionApi.IIntExpression HandConstant(int value)
+			=> new ConditionalActionHandConstant(value);
+
+		public IKokoroApi.IConditionalActionApi.IIntExpression XConstant(int value)
+			=> new ConditionalActionXConstant(value);
+
+		public IKokoroApi.IConditionalActionApi.IIntExpression ScalarMultiplier(IKokoroApi.IConditionalActionApi.IIntExpression expression, int scalar)
+			=> new ConditionalActionScalarMultiplier(expression, scalar);
+
+		public IKokoroApi.IConditionalActionApi.IBoolExpression HasStatus(Status status, bool targetPlayer = true, bool countNegative = false)
+			=> new ConditionalActionHasStatusExpression(status, targetPlayer, countNegative);
+
+		public IKokoroApi.IConditionalActionApi.IIntExpression Status(Status status, bool targetPlayer = true)
+			=> new ConditionalActionStatusExpression(status, targetPlayer);
+
+		public IKokoroApi.IConditionalActionApi.IBoolExpression Equation(
+			IKokoroApi.IConditionalActionApi.IIntExpression lhs,
+			IKokoroApi.IConditionalActionApi.EquationOperator @operator,
+			IKokoroApi.IConditionalActionApi.IIntExpression rhs,
+			IKokoroApi.IConditionalActionApi.EquationStyle style,
+			bool hideOperator = false
+		)
+			=> new ConditionalActionEquation(lhs, @operator, rhs, style, hideOperator);
+	}
+}
+
+internal sealed class ConditionalActionManager
+{
+	internal static void Setup(IHarmony harmony)
+	{
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
+		);
+	}
+	
+	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
+	{
+		if (action is not AConditional conditional)
+			return true;
+		if (conditional.Action is not { } wrappedAction)
+			return false;
+
+		var oldActionDisabled = wrappedAction.disabled;
+		var faded = action.disabled || (conditional.FadeUnsatisfied && state.route is Combat combat && conditional.Expression?.GetValue(state, combat) == false);
+		wrappedAction.disabled = faded;
+
+		var position = g.Push(rect: new()).rect.xy;
+		var initialX = (int)position.x;
+
+		conditional.Expression?.Render(g, ref position, faded, dontDraw);
+		if (conditional.Expression?.ShouldRenderQuestionMark(state, state.route as Combat) == true)
+		{
+			if (!dontDraw)
+				Draw.Sprite((Spr)ModEntry.Instance.Content.QuestionMarkSprite.Id!.Value, position.x, position.y, color: faded ? Colors.disabledIconTint : Colors.white);
+			position.x += SpriteLoader.Get((Spr)ModEntry.Instance.Content.QuestionMarkSprite.Id!.Value)?.Width ?? 0;
+			position.x -= 1;
+		}
+
+		position.x += 2;
+		if (wrappedAction is AAttack attack)
+		{
+			var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
+			if (shouldStun)
+				attack.stunEnemy = shouldStun;
+		}
+
+		g.Push(rect: new(position.x - initialX, 0));
+		position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+		g.Pop();
+
+		__result = (int)position.x - initialX;
+		g.Pop();
+		wrappedAction.disabled = oldActionDisabled;
+
+		return false;
+	}
+}
+
+public sealed class AConditional : CardAction
+{
+	public IKokoroApi.IConditionalActionApi.IBoolExpression? Expression;
+	public CardAction? Action;
+	public bool FadeUnsatisfied = true;
+
+	public override void Begin(G g, State s, Combat c)
+	{
+		base.Begin(g, s, c);
+		timer = 0;
+
+		if (Expression is null || Action is null)
+			return;
+		if (!Expression.GetValue(s, c))
+			return;
+
+		Action.whoDidThis = whoDidThis;
+		c.QueueImmediate(Action);
+	}
+
+	public override List<Tooltip> GetTooltips(State s)
+	{
+		List<Tooltip> tooltips = [];
+		if (Expression is not null)
+		{
+			var description = Expression.GetTooltipDescription(s, s.route as Combat);
+			var formattedDescription = string.Format(I18n.ConditionalActionDescription, description);
+			var defaultTooltip = new CustomTTGlossary(
+				CustomTTGlossary.GlossaryType.action,
+				() => (Spr)ModEntry.Instance.Content.QuestionMarkSprite.Id!.Value,
+				() => I18n.ConditionalActionName,
+				() => formattedDescription,
+				key: $"AConditional::{formattedDescription}"
+			);
+
+			tooltips.AddRange(Expression.OverrideConditionalTooltip(s, s.route as Combat, defaultTooltip, formattedDescription));
+			tooltips.AddRange(Expression.GetTooltips(s, s.route as Combat));
+		}
+		if (Action is not null && !Action.omitFromTooltips)
+			tooltips.AddRange(Action.GetTooltips(s));
+		return tooltips;
+	}
+}
 
 internal sealed class ConditionalActionIntConstant : IKokoroApi.IConditionalActionApi.IIntExpression
 {

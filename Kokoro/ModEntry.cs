@@ -31,7 +31,6 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 
 	internal readonly Content Content = new();
 	internal readonly ExtensionDataManager ExtensionDataManager = new();
-	internal readonly WrappedActionManager WrappedActionManager = new();
 
 	public void BootMod(IModLoaderContact contact)
 	{
@@ -44,25 +43,29 @@ public sealed class ModEntry : IModManifest, IPrelaunchManifest, IApiProviderMan
 		Helper = helper;
 		Harmony = helper.Utilities.Harmony;
 
-		CardPatches.Apply(Harmony);
-
 		CustomTTGlossary.ApplyPatches(Harmony);
 		APlaySpecificCardFromAnywhere.ApplyPatches(Harmony);
 
 		ArtifactIconManager.Setup(Harmony);
 		CardOfferingAndRewardDestinationManager.Setup(Harmony);
+		CardRenderManager.Setup(Harmony);
+		ConditionalActionManager.Setup(Harmony);
 		ContinueStopActionManager.Setup(Harmony);
 		CustomCardBrowseManager.Setup(Harmony);
 		DroneShiftManager.Setup(Harmony);
 		EnemyStatusVariableHintManager.Setup(Harmony);
 		EnergyAsStatusManager.Setup(Harmony);
 		EvadeManager.Setup(Harmony);
+		HiddenActionManager.Setup(Harmony);
 		MidrowScorchingManager.Setup(Harmony);
 		MultiCardBrowseManager.Setup(Harmony);
 		PinchCompactFontManager.Setup(Harmony);
 		RedrawStatusManager.Setup(Harmony);
+		ResourceCostedActionManager.Setup(Harmony);
+		SpoofedActionManager.Setup(Harmony);
 		StatusLogicManager.Setup(Harmony);
 		StatusRenderManager.Setup(Harmony);
+		WrappedActionManager.Setup(Harmony);
 		
 		StatusLogicManager.Instance.Register(WormStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(OxidationStatusManager.Instance, 0);
