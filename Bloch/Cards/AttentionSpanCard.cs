@@ -35,54 +35,39 @@ internal sealed class AttentionSpanCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new SpontaneousManager.TriggerAction
+				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
 				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.VeilingStatus.Status,
-						statusAmount = 2
-					}
-				},
-				new SpontaneousManager.TriggerAction
+					targetPlayer = true,
+					status = AuraManager.VeilingStatus.Status,
+					statusAmount = 2
+				}),
+				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
 				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.FeedbackStatus.Status,
-						statusAmount = 2
-					}
-				},
-				new SpontaneousManager.TriggerAction
+					targetPlayer = true,
+					status = AuraManager.FeedbackStatus.Status,
+					statusAmount = 2
+				}),
+				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
 				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.IntensifyStatus.Status,
-						statusAmount = 1
-					}
-				},
+					targetPlayer = true,
+					status = AuraManager.IntensifyStatus.Status,
+					statusAmount = 1
+				}),
 				ModEntry.Instance.KokoroApi.Actions.MakeOnTurnEndAction(new ExhaustCardAction { CardId = uuid }),
 			],
 			_ => [
-				new SpontaneousManager.TriggerAction
+				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
 				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.VeilingStatus.Status,
-						statusAmount = 2
-					}
-				},
-				new SpontaneousManager.TriggerAction
+					targetPlayer = true,
+					status = AuraManager.VeilingStatus.Status,
+					statusAmount = 2
+				}),
+				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
 				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.IntensifyStatus.Status,
-						statusAmount = 1
-					}
-				},
+					targetPlayer = true,
+					status = AuraManager.IntensifyStatus.Status,
+					statusAmount = 1
+				}),
 				ModEntry.Instance.KokoroApi.Actions.MakeOnTurnEndAction(new ExhaustCardAction { CardId = uuid }),
 			]
 		};

@@ -33,15 +33,12 @@ internal sealed class CalmCard : Card, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new SpontaneousManager.TriggerAction
+			ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
 			{
-				Action = new AStatus
-				{
-					targetPlayer = true,
-					status = AuraManager.VeilingStatus.Status,
-					statusAmount = upgrade == Upgrade.A ? 2 : 1
-				}
-			},
+				targetPlayer = true,
+				status = AuraManager.VeilingStatus.Status,
+				statusAmount = upgrade == Upgrade.A ? 2 : 1
+			}),
 			new ADrawCard { count = upgrade == Upgrade.B ? 3 : 1 }
 		];
 }

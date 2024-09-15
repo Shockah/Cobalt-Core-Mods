@@ -62,12 +62,6 @@
             "description": "The next {0} <c=action>attacks</c> or <c=action>launches</c> are copied and mirrored against the ship's center."
         }
     },
-    "cardTrait": {
-        "Spontaneous": {
-            "name": "Triggered This Turn",
-            "description": "This card's <c=action>Spontaneous</c> actions already triggered this turn."
-        }
-    },
     "artifact": {
         "AuraMastery": {
             "name": "AURA MASTERY",

@@ -32,14 +32,11 @@ internal sealed class EmotionalDamageCard : Card, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new SpontaneousManager.TriggerAction
+			ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AAttack
 			{
-				Action = new AAttack
-				{
-					damage = GetDmg(s, upgrade == Upgrade.B ? 3 : 1),
-					stunEnemy = true
-				}
-			},
+				damage = GetDmg(s, upgrade == Upgrade.B ? 3 : 1),
+				stunEnemy = true
+			}),
 			new AAttack
 			{
 				damage = GetDmg(s, 0),

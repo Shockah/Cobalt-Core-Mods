@@ -74,6 +74,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		PlaySpecificCardFromAnywhereManager.Setup(Harmony);
 		RedrawStatusManager.Setup(Harmony);
 		ResourceCostedActionManager.Setup(Harmony);
+		SpontaneousManager.Setup(Harmony);
 		SpoofedActionManager.Setup(Harmony);
 		StatusLogicManager.Setup(Harmony);
 		StatusRenderManager.Setup(Harmony);
@@ -85,6 +86,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		OnDiscardManager.SetupLate();
 		OnTurnEndManager.SetupLate();
 		ResourceCostedActionManager.SetupLate();
+		SpontaneousManager.SetupLate();
 		SpoofedActionManager.SetupLate();
 		
 		StatusLogicManager.Instance.Register(WormStatusManager.Instance, 0);

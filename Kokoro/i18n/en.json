@@ -24,6 +24,12 @@
 			"description": "Gain {0} <c=status>SHIELD</c> next turn."
 		}
 	},
+	"cardTrait": {
+		"Spontaneous": {
+			"name": "Triggered This Turn",
+			"description": "This card's <c=action>Spontaneous</c> actions already triggered this turn."
+		}
+	},
 	"resourceCost": {
 		"status": {
 			"player": {

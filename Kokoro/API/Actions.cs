@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nickel;
+using System;
 using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
@@ -38,6 +39,9 @@ public partial interface IKokoroApi
 
 		ACardSelect MakeCustomCardBrowse(ACardSelect action, ICustomCardBrowseSource source);
 		
+		ICardTraitEntry SpontaneousTriggeredTrait { get; }
+		
+		CardAction MakeSpontaneousAction(CardAction action);
 		CardAction MakeOnDiscardAction(CardAction action);
 		CardAction MakeOnTurnEndAction(CardAction action);
 	}

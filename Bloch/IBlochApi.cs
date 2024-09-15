@@ -15,11 +15,8 @@ public interface IBlochApi
 	IStatusEntry MindMapStatus { get; }
 	IStatusEntry PersonalitySplitStatus { get; }
 
-	ICardTraitEntry SpontaneousTriggeredTrait { get; }
-
 	CardAction MakeChooseAura(Card card, int amount, string? uiSubtitle = null, int actionId = 0);
 	CardAction MakeScryAction(int amount);
-	CardAction MakeSpontaneousAction(CardAction action);
 
 	string GetChooseAuraOnPlayUISubtitle(int amount);
 	string GetChooseAuraOnDiscardUISubtitle(int amount);

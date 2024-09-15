@@ -40,44 +40,32 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new SpontaneousManager.TriggerAction
+				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
 				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = Status.evade,
-						statusAmount = 2
-					}
-				},
-				new SpontaneousManager.TriggerAction
+					targetPlayer = true,
+					status = Status.evade,
+					statusAmount = 2
+				}),
+				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
 				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = ModEntry.Instance.KokoroApi.OxidationVanillaStatus,
-						statusAmount = 2
-					}
-				},
+					targetPlayer = true,
+					status = ModEntry.Instance.KokoroApi.OxidationVanillaStatus,
+					statusAmount = 2
+				}),
 			],
 			_ => [
-				new SpontaneousManager.TriggerAction
+				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
 				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = Status.evade,
-						statusAmount = 2
-					}
-				},
-				new SpontaneousManager.TriggerAction
+					targetPlayer = true,
+					status = Status.evade,
+					statusAmount = 2
+				}),
+				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
 				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = ModEntry.Instance.KokoroApi.OxidationVanillaStatus,
-						statusAmount = 3
-					}
-				},
+					targetPlayer = true,
+					status = ModEntry.Instance.KokoroApi.OxidationVanillaStatus,
+					statusAmount = 3
+				}),
 				new AStatus
 				{
 					targetPlayer = true,

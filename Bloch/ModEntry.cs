@@ -116,7 +116,6 @@ public sealed class ModEntry : SimpleMod
 		_ = new AuraManager();
 		_ = new InfiniteCharacterAnimationManager();
 		_ = new IntuitionManager();
-		_ = new SpontaneousManager();
 		_ = new MindMapManager();
 		_ = new ScryManager();
 		_ = new SplitPersonalityManager();

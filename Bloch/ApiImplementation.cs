@@ -29,9 +29,6 @@ public sealed class ApiImplementation : IBlochApi
 	public IStatusEntry PersonalitySplitStatus
 		=> SplitPersonalityManager.SplitPersonalityStatus;
 
-	public ICardTraitEntry SpontaneousTriggeredTrait
-		=> SpontaneousManager.SpontaneousTriggeredTrait;
-
 	public CardAction MakeChooseAura(Card card, int amount, string? uiSubtitle = null, int actionId = 0)
 	{
 		if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<Dictionary<int, Status>>(card, "ChosenAuras").TryGetValue(actionId, out var chosenAura))
@@ -47,9 +44,6 @@ public sealed class ApiImplementation : IBlochApi
 
 	public CardAction MakeScryAction(int amount)
 		=> new ScryAction { Amount = amount };
-
-	public CardAction MakeSpontaneousAction(CardAction action)
-		=> new SpontaneousManager.TriggerAction { Action = action };
 
 	public string GetChooseAuraOnPlayUISubtitle(int amount)
 		=> ModEntry.Instance.Localizations.Localize(["action", "ChooseAura", "uiSubtitle", "OnPlay"]);

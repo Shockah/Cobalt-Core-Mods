@@ -2,25 +2,40 @@
 using Nickel;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
-namespace Shockah.Bloch;
+namespace Shockah.Kokoro;
+
+partial class ApiImplementation
+{
+	partial class ActionApiImplementation
+	{
+		public ICardTraitEntry SpontaneousTriggeredTrait
+			=> SpontaneousManager.SpontaneousTriggeredTrait;
+		
+		public CardAction MakeSpontaneousAction(CardAction action)
+			=> new SpontaneousManager.TriggerAction { Action = action };
+	}
+}
 
 internal sealed class SpontaneousManager : IWrappedActionHook
 {
+	internal static readonly SpontaneousManager Instance = new();
+	
 	private static ISpriteEntry ActionIcon = null!;
 	internal static ICardTraitEntry SpontaneousTriggeredTrait { get; private set; } = null!;
 
-	public SpontaneousManager()
+	internal static void Setup(IHarmony harmony)
 	{
-		ActionIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Actions/Spontaneous.png"));
-		var triggeredIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Actions/SpontaneousTriggered.png"));
+		ActionIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Spontaneous.png"));
+		var triggeredIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/SpontaneousTriggered.png"));
 
 		SpontaneousTriggeredTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Spontaneous", new()
 		{
 			Icon = (_, _) => triggeredIcon.Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Spontaneous"]).Localize,
 			Tooltips = (_, _) => [
-				new GlossaryTooltip($"cardtrait.{GetType().Namespace!}::Spontaneous")
+				new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Spontaneous")
 				{
 					Icon = triggeredIcon.Sprite,
 					TitleColor = Colors.action,
@@ -30,17 +45,17 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 			]
 		});
 
-		ModEntry.Instance.Harmony.Patch(
+		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.SendCardToHand)),
-			postfix: new HarmonyMethod(GetType(), nameof(Combat_SendCardToHand_Postfix))
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_SendCardToHand_Postfix))
 		);
-		ModEntry.Instance.Harmony.Patch(
+		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
-			prefix: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Prefix))
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
-		ModEntry.Instance.Harmony.Patch(
+		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.SaveThemFromTheVoid)),
-			prefix: new HarmonyMethod(GetType(), nameof(Combat_SaveThemFromTheVoid_Prefix))
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_SaveThemFromTheVoid_Prefix))
 		);
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnTurnStart), (State state, Combat combat) =>
@@ -60,9 +75,13 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 				if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, SpontaneousTriggeredTrait))
 					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, SpontaneousTriggeredTrait, null, permanent: false);
 		}, 0);
-
-		ModEntry.Instance.KokoroApi.Actions.RegisterWrappedActionHook(this, 0);
 	}
+
+	internal static void SetupLate()
+		=> WrappedActionManager.Instance.Register(Instance, 0);
+
+	public List<CardAction>? GetWrappedCardActions(CardAction action)
+		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
 
 	private static void QueueSpontaneousActions(State state, Combat combat, IEnumerable<Card> cards)
 	{
@@ -128,9 +147,6 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 	private static void Combat_SaveThemFromTheVoid_Prefix(Combat __instance, Deck d)
 		=> __instance.QueueImmediate(new RequeueActionsAfterSavingFromTheVoidAction { Deck = d });
 
-	public List<CardAction>? GetWrappedCardActions(CardAction action)
-		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
-
 	internal sealed class TriggerAction : CardAction
 	{
 		public required CardAction Action;
@@ -144,23 +160,16 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 				{
 					Icon = ActionIcon.Sprite,
 					TitleColor = Colors.action,
-					Title = ModEntry.Instance.Localizations.Localize(["action", "Spontaneous", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["action", "Spontaneous", "description"]),
+					Title = ModEntry.Instance.Localizations.Localize(["spontaneous", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["spontaneous", "description"]),
 				},
-				..Action.GetTooltips(s)
+				.. Action.GetTooltips(s)
 			];
 
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
 			timer = 0;
-
-			if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is UnlockedPotentialArtifact) is not { } artifact)
-				return;
-
-			if (string.IsNullOrEmpty(Action.artifactPulse))
-				Action.artifactPulse = artifact.Key();
-			c.QueueImmediate(Action);
 		}
 	}
 

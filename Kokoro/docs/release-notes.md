@@ -7,6 +7,7 @@
 * Added `MultiCardBrowse`.
 * Incorporated Bloch's `OnDiscard`.
 * Incorporated Bloch's `OnTurnEnd`.
+* Incorporated Bloch's `Spontaneous`.
 * Removed `MidrowScorching`.
 
 ## 1.12.1
