@@ -3,7 +3,6 @@ using Nanoray.Pintail;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
@@ -64,18 +63,5 @@ public sealed partial class ApiImplementation(
 
 	public IKokoroApi.IActionApi Actions { get; } = new ActionApiImplementation();
 
-	public sealed partial class ActionApiImplementation : IKokoroApi.IActionApi
-	{
-		public CardAction MakeExhaustEntireHandImmediate()
-			=> new AExhaustEntireHandImmediate();
-
-		public CardAction MakePlaySpecificCardFromAnywhere(int cardId, bool showTheCardIfNotInHand = true)
-			=> new APlaySpecificCardFromAnywhere { CardId = cardId, ShowTheCardIfNotInHand = showTheCardIfNotInHand };
-
-		public CardAction MakePlayRandomCardsFromAnywhere(IEnumerable<int> cardIds, int amount = 1, bool showTheCardIfNotInHand = true)
-			=> new APlayRandomCardsFromAnywhere { CardIds = cardIds.ToHashSet(), Amount = amount, ShowTheCardIfNotInHand = showTheCardIfNotInHand };
-
-		public CardAction MakeSpoofed(CardAction renderAction, CardAction realAction)
-			=> new ASpoofed { RenderAction = renderAction, RealAction = realAction };
-	}
+	public sealed partial class ActionApiImplementation : IKokoroApi.IActionApi;
 }

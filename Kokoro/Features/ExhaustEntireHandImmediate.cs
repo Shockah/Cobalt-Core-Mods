@@ -3,6 +3,15 @@ using System.Linq;
 
 namespace Shockah.Kokoro;
 
+partial class ApiImplementation
+{
+	partial class ActionApiImplementation
+	{
+		public CardAction MakeExhaustEntireHandImmediate()
+			=> new AExhaustEntireHandImmediate();
+	}
+}
+
 public sealed class AExhaustEntireHandImmediate : AExhaustEntireHand
 {
 	public override void Begin(G g, State s, Combat c)

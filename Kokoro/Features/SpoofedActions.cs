@@ -5,6 +5,15 @@ using System.Reflection;
 
 namespace Shockah.Kokoro;
 
+partial class ApiImplementation
+{
+	partial class ActionApiImplementation
+	{
+		public CardAction MakeSpoofed(CardAction renderAction, CardAction realAction)
+			=> new ASpoofed { RenderAction = renderAction, RealAction = realAction };
+	}
+}
+
 internal sealed class SpoofedActionManager
 {
 	internal static void Setup(IHarmony harmony)

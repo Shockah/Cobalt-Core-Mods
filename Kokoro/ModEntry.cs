@@ -54,8 +54,6 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
 		);
 
-		APlaySpecificCardFromAnywhere.ApplyPatches(Harmony);
-
 		ArtifactIconManager.Setup(Harmony);
 		CardOfferingAndRewardDestinationManager.Setup(Harmony);
 		CardRenderManager.Setup(Harmony);
@@ -69,6 +67,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		HiddenActionManager.Setup(Harmony);
 		MultiCardBrowseManager.Setup(Harmony);
 		PinchCompactFontManager.Setup(Harmony);
+		PlaySpecificCardFromAnywhereManager.Setup(Harmony);
 		RedrawStatusManager.Setup(Harmony);
 		ResourceCostedActionManager.Setup(Harmony);
 		SpoofedActionManager.Setup(Harmony);
