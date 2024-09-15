@@ -34,28 +34,16 @@ internal sealed class PsychicDamageCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new OnDiscardManager.TriggerAction
-				{
-					Action = new AAttack { damage = GetDmg(s, 2) }
-				},
-				new OnDiscardManager.TriggerAction
-				{
-					Action = new AAttack { damage = GetDmg(s, 2) }
-				},
+				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(new AAttack { damage = GetDmg(s, 2) }),
+				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(new AAttack { damage = GetDmg(s, 2) }),
 			],
 			Upgrade.A => [
 				new AAttack { damage = GetDmg(s, 2) },
-				new OnDiscardManager.TriggerAction
-				{
-					Action = new AAttack { damage = GetDmg(s, 3) }
-				},
+				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(new AAttack { damage = GetDmg(s, 3) }),
 			],
 			_ => [
 				new AAttack { damage = GetDmg(s, 1) },
-				new OnDiscardManager.TriggerAction
-				{
-					Action = new AAttack { damage = GetDmg(s, 2) }
-				},
+				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(new AAttack { damage = GetDmg(s, 2) }),
 			]
 		};
 }

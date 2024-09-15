@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Added `MultiCardBrowse`.
+* Incorporated Bloch's `OnDiscard`.
 * Incorporated Bloch's `OnTurnEnd`.
 * Removed `MidrowScorching`.
 

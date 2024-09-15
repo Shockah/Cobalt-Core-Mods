@@ -48,9 +48,6 @@ public sealed class ApiImplementation : IBlochApi
 	public CardAction MakeScryAction(int amount)
 		=> new ScryAction { Amount = amount };
 
-	public CardAction MakeOnDiscardAction(CardAction action)
-		=> new OnDiscardManager.TriggerAction { Action = action };
-
 	public CardAction MakeSpontaneousAction(CardAction action)
 		=> new SpontaneousManager.TriggerAction { Action = action };
 

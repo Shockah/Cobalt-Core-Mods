@@ -58,33 +58,24 @@ internal sealed class PrismaticAuraCard : Card, IRegisterable
 					status = AuraManager.VeilingStatus.Status,
 					statusAmount = 1
 				},
-				new OnDiscardManager.TriggerAction
+				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(new AStatus
 				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.InsightStatus.Status,
-						statusAmount = 1
-					}
-				},
-				new OnDiscardManager.TriggerAction
+					targetPlayer = true,
+					status = AuraManager.InsightStatus.Status,
+					statusAmount = 1
+				}),
+				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(new AStatus
 				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.FeedbackStatus.Status,
-						statusAmount = 1
-					}
-				},
-				new OnDiscardManager.TriggerAction
+					targetPlayer = true,
+					status = AuraManager.FeedbackStatus.Status,
+					statusAmount = 1
+				}),
+				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(new AStatus
 				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = AuraManager.VeilingStatus.Status,
-						statusAmount = 1
-					}
-				},
+					targetPlayer = true,
+					status = AuraManager.VeilingStatus.Status,
+					statusAmount = 1
+				}),
 			],
 			_ => [
 				ModEntry.Instance.Api.MakeChooseAura(
@@ -99,15 +90,12 @@ internal sealed class PrismaticAuraCard : Card, IRegisterable
 					uiSubtitle: ModEntry.Instance.Api.GetChooseAuraOnTurnEndUISubtitle(upgrade == Upgrade.A ? 2 : 1),
 					actionId: OnTurnEndID
 				)),
-				new OnDiscardManager.TriggerAction
-				{
-					Action = ModEntry.Instance.Api.MakeChooseAura(
-						card: this,
-						amount: upgrade == Upgrade.A ? 2 : 1,
-						uiSubtitle: ModEntry.Instance.Api.GetChooseAuraOnDiscardUISubtitle(upgrade == Upgrade.A ? 2 : 1),
-						actionId: OnDiscardID
-					)
-				},
+				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(ModEntry.Instance.Api.MakeChooseAura(
+					card: this,
+					amount: upgrade == Upgrade.A ? 2 : 1,
+					uiSubtitle: ModEntry.Instance.Api.GetChooseAuraOnDiscardUISubtitle(upgrade == Upgrade.A ? 2 : 1),
+					actionId: OnDiscardID
+				)),
 			]
 		};
 }

@@ -38,6 +38,7 @@ public partial interface IKokoroApi
 
 		ACardSelect MakeCustomCardBrowse(ACardSelect action, ICustomCardBrowseSource source);
 		
+		CardAction MakeOnDiscardAction(CardAction action);
 		CardAction MakeOnTurnEndAction(CardAction action);
 	}
 }

@@ -2,35 +2,51 @@
 using Nickel;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
-namespace Shockah.Bloch;
+namespace Shockah.Kokoro;
+
+partial class ApiImplementation
+{
+	partial class ActionApiImplementation
+	{
+		public CardAction MakeOnDiscardAction(CardAction action)
+			=> new OnDiscardManager.TriggerAction { Action = action };
+	}
+}
 
 internal sealed class OnDiscardManager : IWrappedActionHook
 {
+	internal static readonly OnDiscardManager Instance = new();
+	
 	private static ISpriteEntry ActionIcon = null!;
 
 	private static Card? LastCardPlayed;
 
-	public OnDiscardManager()
+	internal static void Setup(IHarmony harmony)
 	{
-		ActionIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Actions/OnDiscard.png"));
+		ActionIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/OnDiscard.png"));
 
-		ModEntry.Instance.Harmony.Patch(
+		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
-			prefix: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Prefix)),
-			finalizer: new HarmonyMethod(GetType(), nameof(Combat_TryPlayCard_Finalizer))
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Prefix)),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Finalizer))
 		);
-		ModEntry.Instance.Harmony.Patch(
+		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.SendCardToDiscard)),
-			postfix: new HarmonyMethod(GetType(), nameof(Combat_SendCardToDiscard_Postfix))
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_SendCardToDiscard_Postfix))
 		);
-		ModEntry.Instance.Harmony.Patch(
+		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
-			prefix: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Prefix))
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
-
-		ModEntry.Instance.KokoroApi.Actions.RegisterWrappedActionHook(this, 0);
 	}
+
+	internal static void SetupLate()
+		=> WrappedActionManager.Instance.Register(Instance, 0);
+
+	public List<CardAction>? GetWrappedCardActions(CardAction action)
+		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
 
 	private static void Combat_TryPlayCard_Prefix(Card card)
 		=> LastCardPlayed = card;
@@ -88,9 +104,6 @@ internal sealed class OnDiscardManager : IWrappedActionHook
 		return false;
 	}
 
-	public List<CardAction>? GetWrappedCardActions(CardAction action)
-		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
-
 	internal sealed class TriggerAction : CardAction
 	{
 		public required CardAction Action;
@@ -114,13 +127,6 @@ internal sealed class OnDiscardManager : IWrappedActionHook
 		{
 			base.Begin(g, s, c);
 			timer = 0;
-
-			if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is MuscleMemoryArtifact) is not { } artifact)
-				return;
-
-			if (string.IsNullOrEmpty(Action.artifactPulse))
-				Action.artifactPulse = artifact.Key();
-			c.QueueImmediate(Action);
 		}
 	}
 }

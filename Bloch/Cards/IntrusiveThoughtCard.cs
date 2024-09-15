@@ -37,16 +37,10 @@ internal sealed class IntrusiveThoughtCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new OnDiscardManager.TriggerAction
-				{
-					Action = new ADrawCard { count = 3 }
-				}
+				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(new ADrawCard { count = 3 }),
 			],
 			_ => [
-				new OnDiscardManager.TriggerAction
-				{
-					Action = new ADrawCard { count = 3 }
-				},
+				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(new ADrawCard { count = 3 }),
 				ModEntry.Instance.KokoroApi.Actions.MakeOnTurnEndAction(new AStatus
 				{
 					targetPlayer = true,

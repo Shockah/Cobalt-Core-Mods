@@ -68,6 +68,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		EvadeManager.Setup(Harmony);
 		HiddenActionManager.Setup(Harmony);
 		MultiCardBrowseManager.Setup(Harmony);
+		OnDiscardManager.Setup(Harmony);
 		OnTurnEndManager.Setup(Harmony);
 		PinchCompactFontManager.Setup(Harmony);
 		PlaySpecificCardFromAnywhereManager.Setup(Harmony);
@@ -81,6 +82,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		ConditionalActionManager.SetupLate();
 		ContinueStopActionManager.SetupLate();
 		HiddenActionManager.SetupLate();
+		OnDiscardManager.SetupLate();
 		OnTurnEndManager.SetupLate();
 		ResourceCostedActionManager.SetupLate();
 		SpoofedActionManager.SetupLate();

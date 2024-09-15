@@ -19,7 +19,6 @@ public interface IBlochApi
 
 	CardAction MakeChooseAura(Card card, int amount, string? uiSubtitle = null, int actionId = 0);
 	CardAction MakeScryAction(int amount);
-	CardAction MakeOnDiscardAction(CardAction action);
 	CardAction MakeSpontaneousAction(CardAction action);
 
 	string GetChooseAuraOnPlayUISubtitle(int amount);

@@ -22,10 +22,13 @@ public partial interface IKokoroApi
 		AVariableHint SetTargetPlayer(AVariableHint action, bool targetPlayer);
 		AVariableHint MakeEnergyX(AVariableHint? action = null, bool energy = true, int? tooltipOverride = null);
 		AStatus MakeEnergy(AStatus action, bool energy = true);
+		
+		List<CardAction> GetWrappedCardActions(CardAction action);
 
 		void RegisterWrappedActionHook(IWrappedActionHook hook, double priority);
 		void UnregisterWrappedActionHook(IWrappedActionHook hook);
 		
+		CardAction MakeOnDiscardAction(CardAction action);
 		CardAction MakeOnTurnEndAction(CardAction action);
 	}
 }
