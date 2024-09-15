@@ -51,9 +51,6 @@ public sealed class ApiImplementation : IBlochApi
 	public CardAction MakeOnDiscardAction(CardAction action)
 		=> new OnDiscardManager.TriggerAction { Action = action };
 
-	public CardAction MakeOnTurnEndAction(CardAction action)
-		=> new OnTurnEndManager.TriggerAction { Action = action };
-
 	public CardAction MakeSpontaneousAction(CardAction action)
 		=> new SpontaneousManager.TriggerAction { Action = action };
 

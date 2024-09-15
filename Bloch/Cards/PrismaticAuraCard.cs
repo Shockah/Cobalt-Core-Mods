@@ -93,15 +93,12 @@ internal sealed class PrismaticAuraCard : Card, IRegisterable
 					uiSubtitle: ModEntry.Instance.Api.GetChooseAuraOnPlayUISubtitle(upgrade == Upgrade.A ? 2 : 1),
 					actionId: OnPlayID
 				),
-				new OnTurnEndManager.TriggerAction
-				{
-					Action = ModEntry.Instance.Api.MakeChooseAura(
-						card: this,
-						amount: upgrade == Upgrade.A ? 2 : 1,
-						uiSubtitle: ModEntry.Instance.Api.GetChooseAuraOnTurnEndUISubtitle(upgrade == Upgrade.A ? 2 : 1),
-						actionId: OnTurnEndID
-					)
-				},
+				ModEntry.Instance.KokoroApi.Actions.MakeOnTurnEndAction(ModEntry.Instance.Api.MakeChooseAura(
+					card: this,
+					amount: upgrade == Upgrade.A ? 2 : 1,
+					uiSubtitle: ModEntry.Instance.Api.GetChooseAuraOnTurnEndUISubtitle(upgrade == Upgrade.A ? 2 : 1),
+					actionId: OnTurnEndID
+				)),
 				new OnDiscardManager.TriggerAction
 				{
 					Action = ModEntry.Instance.Api.MakeChooseAura(

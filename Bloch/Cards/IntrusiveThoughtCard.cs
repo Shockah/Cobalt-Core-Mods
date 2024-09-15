@@ -47,15 +47,12 @@ internal sealed class IntrusiveThoughtCard : Card, IRegisterable
 				{
 					Action = new ADrawCard { count = 3 }
 				},
-				new OnTurnEndManager.TriggerAction
+				ModEntry.Instance.KokoroApi.Actions.MakeOnTurnEndAction(new AStatus
 				{
-					Action = new AStatus
-					{
-						targetPlayer = true,
-						status = Status.drawLessNextTurn,
-						statusAmount = 1
-					}
-				}
+					targetPlayer = true,
+					status = Status.drawLessNextTurn,
+					statusAmount = 1
+				}),
 			]
 		};
 }

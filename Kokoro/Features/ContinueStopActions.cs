@@ -37,8 +37,10 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class ContinueStopActionManager
+internal sealed class ContinueStopActionManager : IWrappedActionHook
 {
+	internal static readonly ContinueStopActionManager Instance = new();
+	
 	internal static void Setup(IHarmony harmony)
 	{
 		harmony.Patch(
@@ -50,6 +52,18 @@ internal sealed class ContinueStopActionManager
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
+	}
+
+	internal static void SetupLate()
+		=> WrappedActionManager.Instance.Register(Instance, 0);
+	
+	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	{
+		if (action is not AContinued continued)
+			return null;
+		if (continued.Action is not { } wrappedAction)
+			return null;
+		return [wrappedAction];
 	}
 	
 	private static void Combat_DrainCardActions_Prefix(Combat __instance, out bool __state)

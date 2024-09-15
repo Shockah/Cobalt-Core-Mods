@@ -2,28 +2,44 @@
 using Nickel;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
-namespace Shockah.Bloch;
+namespace Shockah.Kokoro;
+
+partial class ApiImplementation
+{
+	partial class ActionApiImplementation
+	{
+		public CardAction MakeOnTurnEndAction(CardAction action)
+			=> new OnTurnEndManager.TriggerAction { Action = action };
+	}
+}
 
 internal sealed class OnTurnEndManager : IWrappedActionHook
 {
+	internal static readonly OnTurnEndManager Instance = new();
+	
 	private static ISpriteEntry ActionIcon = null!;
 
-	public OnTurnEndManager()
+	internal static void Setup(IHarmony harmony)
 	{
-		ActionIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Actions/OnTurnEnd.png"));
+		ActionIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/OnTurnEnd.png"));
 
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(AEndTurn), nameof(AEndTurn.Begin)),
-			prefix: new HarmonyMethod(GetType(), nameof(AEndTurn_Begin_Prefix))
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AEndTurn_Begin_Prefix))
 		);
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
-			prefix: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Prefix))
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
-
-		ModEntry.Instance.KokoroApi.Actions.RegisterWrappedActionHook(this, 0);
 	}
+
+	internal static void SetupLate()
+		=> WrappedActionManager.Instance.Register(Instance, 0);
+	
+	public List<CardAction>? GetWrappedCardActions(CardAction action)
+		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
 
 	private static void AEndTurn_Begin_Prefix(State s, Combat c)
 	{
@@ -75,9 +91,6 @@ internal sealed class OnTurnEndManager : IWrappedActionHook
 		return false;
 	}
 
-	public List<CardAction>? GetWrappedCardActions(CardAction action)
-		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
-
 	internal sealed class TriggerAction : CardAction
 	{
 		public required CardAction Action;
@@ -91,8 +104,8 @@ internal sealed class OnTurnEndManager : IWrappedActionHook
 				{
 					Icon = ActionIcon.Sprite,
 					TitleColor = Colors.action,
-					Title = ModEntry.Instance.Localizations.Localize(["action", "OnTurnEnd", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["action", "OnTurnEnd", "description"]),
+					Title = ModEntry.Instance.Localizations.Localize(["onTurnEnd", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["onTurnEnd", "description"]),
 				},
 				.. Action.GetTooltips(s)
 			];

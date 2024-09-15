@@ -20,14 +20,28 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class HiddenActionManager
+internal sealed class HiddenActionManager : IWrappedActionHook
 {
+	internal static readonly HiddenActionManager Instance = new();
+	
 	internal static void Setup(IHarmony harmony)
 	{
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.MakeAllActionIcons)),
 			transpiler: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_MakeAllActionIcons_Transpiler)), priority: Priority.First)
 		);
+	}
+
+	internal static void SetupLate()
+		=> WrappedActionManager.Instance.Register(Instance, 0);
+	
+	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	{
+		if (action is not AHidden hidden)
+			return null;
+		if (hidden.Action is not { } wrappedAction)
+			return null;
+		return [wrappedAction];
 	}
 	
 	private static IEnumerable<CodeInstruction> Card_MakeAllActionIcons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)

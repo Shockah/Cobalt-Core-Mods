@@ -19,6 +19,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 
 	public static ModEntry Instance { get; private set; } = null!;
 	internal IModHelper Helper { get; private set; } = null!;
+	internal IPluginPackage<Nickel.IModManifest> Package { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = null!;
 	internal IHarmony Harmony { get; private set; } = null!;
 
@@ -44,6 +45,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
 	{
 		Helper = helper;
+		Package = package;
 		Harmony = helper.Utilities.Harmony;
 		
 		AnyLocalizations = new JsonLocalizationProvider(
@@ -66,6 +68,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		EvadeManager.Setup(Harmony);
 		HiddenActionManager.Setup(Harmony);
 		MultiCardBrowseManager.Setup(Harmony);
+		OnTurnEndManager.Setup(Harmony);
 		PinchCompactFontManager.Setup(Harmony);
 		PlaySpecificCardFromAnywhereManager.Setup(Harmony);
 		RedrawStatusManager.Setup(Harmony);
@@ -74,6 +77,13 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		StatusLogicManager.Setup(Harmony);
 		StatusRenderManager.Setup(Harmony);
 		WrappedActionManager.Setup(Harmony);
+		
+		ConditionalActionManager.SetupLate();
+		ContinueStopActionManager.SetupLate();
+		HiddenActionManager.SetupLate();
+		OnTurnEndManager.SetupLate();
+		ResourceCostedActionManager.SetupLate();
+		SpoofedActionManager.SetupLate();
 		
 		StatusLogicManager.Instance.Register(WormStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(OxidationStatusManager.Instance, 0);

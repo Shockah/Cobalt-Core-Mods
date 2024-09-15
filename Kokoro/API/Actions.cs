@@ -37,6 +37,8 @@ public partial interface IKokoroApi
 		void UnregisterWrappedActionHook(IWrappedActionHook hook);
 
 		ACardSelect MakeCustomCardBrowse(ACardSelect action, ICustomCardBrowseSource source);
+		
+		CardAction MakeOnTurnEndAction(CardAction action);
 	}
 }
 

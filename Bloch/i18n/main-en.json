@@ -11,10 +11,6 @@
             "name": "On Discard",
             "description": "This action only triggers whenever this card is discarded during your turn without playing it."
         },
-        "OnTurnEnd": {
-            "name": "On Turn End",
-            "description": "This action only triggers when you end your turn with this card in hand."
-        },
         "Spontaneous": {
             "name": "Spontaneous",
             "description": "This action only triggers whenever a turn starts with this card in hand, or if it's drawn for the first time this turn."

@@ -25,6 +25,8 @@ public partial interface IKokoroApi
 
 		void RegisterWrappedActionHook(IWrappedActionHook hook, double priority);
 		void UnregisterWrappedActionHook(IWrappedActionHook hook);
+		
+		CardAction MakeOnTurnEndAction(CardAction action);
 	}
 }
 

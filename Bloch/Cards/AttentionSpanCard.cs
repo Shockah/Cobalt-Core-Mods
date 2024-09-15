@@ -62,13 +62,7 @@ internal sealed class AttentionSpanCard : Card, IRegisterable
 						statusAmount = 1
 					}
 				},
-				new OnTurnEndManager.TriggerAction
-				{
-					Action = new ExhaustCardAction
-					{
-						CardId = uuid
-					}
-				}
+				ModEntry.Instance.KokoroApi.Actions.MakeOnTurnEndAction(new ExhaustCardAction { CardId = uuid }),
 			],
 			_ => [
 				new SpontaneousManager.TriggerAction
@@ -89,13 +83,7 @@ internal sealed class AttentionSpanCard : Card, IRegisterable
 						statusAmount = 1
 					}
 				},
-				new OnTurnEndManager.TriggerAction
-				{
-					Action = new ExhaustCardAction
-					{
-						CardId = uuid
-					}
-				}
+				ModEntry.Instance.KokoroApi.Actions.MakeOnTurnEndAction(new ExhaustCardAction { CardId = uuid }),
 			]
 		};
 }

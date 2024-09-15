@@ -42,8 +42,10 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class ResourceCostedActionManager
+internal sealed class ResourceCostedActionManager : IWrappedActionHook
 {
+	internal static readonly ResourceCostedActionManager Instance = new();
+	
 	private static Dictionary<string, int>? CurrentResourceState;
 	private static Dictionary<string, int>? CurrentNonDrawingResourceState;
 	
@@ -66,6 +68,18 @@ internal sealed class ResourceCostedActionManager
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
+	}
+
+	internal static void SetupLate()
+		=> WrappedActionManager.Instance.Register(Instance, 0);
+	
+	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	{
+		if (action is not AResourceCost resourceCostAction)
+			return null;
+		if (resourceCostAction.Action is not { } wrappedAction)
+			return null;
+		return [wrappedAction];
 	}
 
 	private static void Card_Render_Prefix()

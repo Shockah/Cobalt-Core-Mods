@@ -117,7 +117,6 @@ public sealed class ModEntry : SimpleMod
 		_ = new InfiniteCharacterAnimationManager();
 		_ = new IntuitionManager();
 		_ = new OnDiscardManager();
-		_ = new OnTurnEndManager();
 		_ = new SpontaneousManager();
 		_ = new MindMapManager();
 		_ = new ScryManager();
@@ -268,7 +267,7 @@ public sealed class ModEntry : SimpleMod
 			"APurpleApple.GenericArtifacts",
 			api => api.SetPaletteAction(
 				BlochDeck.Deck,
-				state => new AStatus
+				_ => new AStatus
 				{
 					targetPlayer = true,
 					status = AuraManager.VeilingStatus.Status,

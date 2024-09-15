@@ -47,14 +47,28 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class ConditionalActionManager
+internal sealed class ConditionalActionManager : IWrappedActionHook
 {
+	internal static readonly ConditionalActionManager Instance = new();
+	
 	internal static void Setup(IHarmony harmony)
 	{
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
+	}
+
+	internal static void SetupLate()
+		=> WrappedActionManager.Instance.Register(Instance, 0);
+	
+	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	{
+		if (action is not AConditional conditional)
+			return null;
+		if (conditional.Action is not { } wrappedAction)
+			return null;
+		return [wrappedAction];
 	}
 	
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
