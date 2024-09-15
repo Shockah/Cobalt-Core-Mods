@@ -37,7 +37,7 @@ internal sealed class UnlockedPotentialArtifact : Artifact, IRegisterable
 	public override List<Tooltip>? GetExtraTooltips()
 		=> ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new ADummyAction()).GetTooltips(DB.fakeState);
 
-	private static void SpontaneousManager_TriggerAction_Begin_Postfix(CardAction __instance, G g, State s, Combat c)
+	private static void SpontaneousManager_TriggerAction_Begin_Postfix(CardAction __instance, State s, Combat c)
 	{
 		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is MuscleMemoryArtifact) is not { } artifact)
 			return;

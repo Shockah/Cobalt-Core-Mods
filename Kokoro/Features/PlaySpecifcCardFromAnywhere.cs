@@ -56,7 +56,7 @@ internal sealed class PlaySpecificCardFromAnywhereManager
 					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
 					new CodeInstruction(OpCodes.Ldarg_1),
 					new CodeInstruction(OpCodes.Ldarg_2),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(APlaySpecificCardFromAnywhere), nameof(Combat_TryPlayCard_Transpiler_RemoveFromHandIfHackinglyPlayed)))
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Transpiler_RemoveFromHandIfHackinglyPlayed)))
 				])
 				.Find([
 					ILMatches.Ldarg(0),
@@ -69,7 +69,7 @@ internal sealed class PlaySpecificCardFromAnywhereManager
 				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_1),
 					new CodeInstruction(OpCodes.Ldarg_2),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(APlaySpecificCardFromAnywhere), nameof(Combat_TryPlayCard_Transpiler_RemoveCardFromWhereverItIsIfNeeded)))
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Transpiler_RemoveCardFromWhereverItIsIfNeeded)))
 				])
 				.AllElements();
 		}

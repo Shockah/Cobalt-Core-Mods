@@ -117,8 +117,8 @@ internal sealed class OnDiscardManager : IWrappedActionHook
 				{
 					Icon = ActionIcon.Sprite,
 					TitleColor = Colors.action,
-					Title = ModEntry.Instance.Localizations.Localize(["action", "OnDiscard", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["action", "OnDiscard", "description"]),
+					Title = ModEntry.Instance.Localizations.Localize(["onDiscard", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["onDiscard", "description"]),
 				},
 				.. Action.GetTooltips(s)
 			];
