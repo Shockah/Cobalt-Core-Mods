@@ -10,24 +10,37 @@ partial class ApiImplementation
 {
 	partial class ActionApiImplementation
 	{
-		public CardAction MakeOnTurnEndAction(CardAction action)
-			=> new OnTurnEndManager.TriggerAction { Action = action };
+		public bool TryGetOnDiscardAction(CardAction maybeOnDiscardAction, out CardAction? action)
+		{
+			action = maybeOnDiscardAction is OnDiscardManager.TriggerAction onDiscardAction ? onDiscardAction.Action : null;
+			return action is not null;
+		}
+		
+		public CardAction MakeOnDiscardAction(CardAction action)
+			=> new OnDiscardManager.TriggerAction { Action = action };
 	}
 }
 
-internal sealed class OnTurnEndManager : IWrappedActionHook
+internal sealed class OnDiscardManager : IWrappedActionHook
 {
-	internal static readonly OnTurnEndManager Instance = new();
+	internal static readonly OnDiscardManager Instance = new();
 	
 	private static ISpriteEntry ActionIcon = null!;
 
+	private static Card? LastCardPlayed;
+
 	internal static void Setup(IHarmony harmony)
 	{
-		ActionIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/OnTurnEnd.png"));
+		ActionIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/OnDiscard.png"));
 
 		harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AEndTurn), nameof(AEndTurn.Begin)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AEndTurn_Begin_Prefix))
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Prefix)),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Finalizer))
+		);
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.SendCardToDiscard)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_SendCardToDiscard_Postfix))
 		);
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
@@ -37,30 +50,36 @@ internal sealed class OnTurnEndManager : IWrappedActionHook
 
 	internal static void SetupLate()
 		=> WrappedActionManager.Instance.Register(Instance, 0);
-	
+
 	public List<CardAction>? GetWrappedCardActions(CardAction action)
 		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
 
-	private static void AEndTurn_Begin_Prefix(State s, Combat c)
+	private static void Combat_TryPlayCard_Prefix(Card card)
+		=> LastCardPlayed = card;
+
+	private static void Combat_TryPlayCard_Finalizer()
+		=> LastCardPlayed = null;
+
+	private static void Combat_SendCardToDiscard_Postfix(Combat __instance, State s, Card card)
 	{
-		if (c.cardActions.Any(a => a is AEndTurn))
+		if (!__instance.isPlayerTurn)
+			return;
+		if (card == LastCardPlayed)
 			return;
 
-		c.QueueImmediate(
-			c.hand
-				.Where(card => !s.CharacterIsMissing(card.GetMeta().deck))
-				.SelectMany(card =>
+		var meta = card.GetMeta();
+		if (s.CharacterIsMissing(meta.deck))
+			return;
+
+		__instance.QueueImmediate(
+			card.GetActionsOverridden(s, __instance)
+				.Where(action => !action.disabled)
+				.OfType<TriggerAction>()
+				.Select(triggerAction => triggerAction.Action)
+				.Select(action =>
 				{
-					var meta = card.GetMeta();
-					return card.GetActionsOverridden(s, c)
-						.Where(action => !action.disabled)
-						.OfType<TriggerAction>()
-						.Select(triggerAction => triggerAction.Action)
-						.Select(action =>
-						{
-							action.whoDidThis = meta.deck;
-							return action;
-						});
+					action.whoDidThis = meta.deck;
+					return action;
 				})
 		);
 	}
@@ -100,12 +119,12 @@ internal sealed class OnTurnEndManager : IWrappedActionHook
 
 		public override List<Tooltip> GetTooltips(State s)
 			=> [
-				new GlossaryTooltip($"action.{GetType().Namespace!}::OnTurnEnd")
+				new GlossaryTooltip($"action.{GetType().Namespace!}::OnDiscard")
 				{
 					Icon = ActionIcon.Sprite,
 					TitleColor = Colors.action,
-					Title = ModEntry.Instance.Localizations.Localize(["onTurnEnd", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["onTurnEnd", "description"]),
+					Title = ModEntry.Instance.Localizations.Localize(["onDiscard", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["onDiscard", "description"]),
 				},
 				.. Action.GetTooltips(s)
 			];

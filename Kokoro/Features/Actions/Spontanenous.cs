@@ -12,6 +12,12 @@ partial class ApiImplementation
 	{
 		public ICardTraitEntry SpontaneousTriggeredTrait
 			=> SpontaneousManager.SpontaneousTriggeredTrait;
+
+		public bool TryGetSpontanenousAction(CardAction maybeSpontanenousAction, out CardAction? action)
+		{
+			action = maybeSpontanenousAction is SpontaneousManager.TriggerAction spontanenousAction ? spontanenousAction.Action : null;
+			return action is not null;
+		}
 		
 		public CardAction MakeSpontaneousAction(CardAction action)
 			=> new SpontaneousManager.TriggerAction { Action = action };
