@@ -28,10 +28,6 @@
         "StrengthenBrowseSource": "Strengthen a Card"
     },
     "cardTrait": {
-        "TemporaryUpgrade": {
-            "name": "Temp Upgrade",
-            "description": "This card becomes unupgraded at the end of combat."
-        },
         "Strengthen": {
             "name": "Strengthen",
             "description": "This card deals <c=boldPink>{{Damage}}</c> extra damage for the rest of combat."

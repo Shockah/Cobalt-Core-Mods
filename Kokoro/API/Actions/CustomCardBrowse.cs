@@ -7,6 +7,7 @@ public partial interface IKokoroApi
 	public partial interface IActionApi
 	{
 		ACardSelect MakeCustomCardBrowse(ACardSelect action, ICustomCardBrowseSource source);
+		CardBrowse MakeCustomCardBrowse(CardBrowse route, ICustomCardBrowseSource source);
 	}
 }
 

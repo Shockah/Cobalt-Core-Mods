@@ -62,6 +62,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		ConditionalActionManager.Setup(Harmony);
 		ContinueStopActionManager.Setup(Harmony);
 		CustomCardBrowseManager.Setup(Harmony);
+		CustomCardUpgradeManager.Setup(Harmony);
 		DroneShiftManager.Setup(Harmony);
 		EnemyStatusVariableHintManager.Setup(Harmony);
 		EnergyAsStatusManager.Setup(Harmony);
@@ -78,6 +79,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		SpoofedActionManager.Setup(Harmony);
 		StatusLogicManager.Setup(Harmony);
 		StatusRenderManager.Setup(Harmony);
+		TemporaryUpgradesManager.Setup(Harmony);
 		WrappedActionManager.Setup(Harmony);
 		
 		ConditionalActionManager.SetupLate();

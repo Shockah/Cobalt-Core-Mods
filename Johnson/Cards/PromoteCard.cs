@@ -32,28 +32,27 @@ internal sealed class PromoteCard : Card, IRegisterable
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		List<CardAction> actions = [];
-		if (upgrade == Upgrade.B)
-			actions.AddRange([
-				new ADrawCard
+		=> upgrade switch
+		{
+			Upgrade.B => [
+				new ADrawCard { count = 2 },
+				new ADelay(),
+				new ACardSelect
 				{
-					count = 2
+					browseSource = ModEntry.UpgradableCardsInHandBrowseSource,
+					browseAction = new TemporarilyUpgradeBrowseAction(),
+					omitFromTooltips = true,
 				},
-				new ADelay()
-			]);
-		actions.Add(new ACardSelect
-		{
-			browseSource = ModEntry.UpgradableCardsInHandBrowseSource,
-			browseAction = new TemporarilyUpgradeBrowseAction(),
-			omitFromTooltips = true
-		});
-		actions.Add(new ATooltipAction
-		{
-			Tooltips = [
-				ModEntry.Instance.Api.TemporaryUpgradeTooltip
+				new ATooltipAction { Tooltips = new TemporarilyUpgradeBrowseAction().GetTooltips(s) },
+			],
+			_ => [
+				new ACardSelect
+				{
+					browseSource = ModEntry.UpgradableCardsInHandBrowseSource,
+					browseAction = new TemporarilyUpgradeBrowseAction(),
+					omitFromTooltips = true,
+				},
+				new ATooltipAction { Tooltips = new TemporarilyUpgradeBrowseAction().GetTooltips(s) },
 			]
-		});
-		return actions;
-	}
+		};
 }

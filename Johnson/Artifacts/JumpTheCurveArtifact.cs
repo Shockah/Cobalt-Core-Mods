@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -28,6 +29,12 @@ internal sealed class JumpTheCurveArtifact : Artifact, IRegisterable
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(State_SendCardToDeck_Postfix))
 		);
 	}
+	
+	public override List<Tooltip>? GetExtraTooltips()
+		=> [
+			new TTGlossary("cardtrait.discount", 1),
+			ModEntry.Instance.KokoroApi.TemporaryUpgrades.UpgradeTooltip,
+		];
 
 	public override void OnCombatStart(State state, Combat combat)
 	{
@@ -51,10 +58,6 @@ internal sealed class JumpTheCurveArtifact : Artifact, IRegisterable
 		ModEntry.Instance.Helper.ModData.SetModData(card, "JumpedTheCurve", true);
 		card.discount--;
 		if (card.IsUpgradable())
-			__instance.GetCurrentQueue().QueueImmediate(new ATemporarilyUpgrade
-			{
-				CardId = card.uuid,
-				artifactPulse = artifact.Key()
-			});
+			__instance.GetCurrentQueue().QueueImmediate(ModEntry.Instance.KokoroApi.TemporaryUpgrades.MakeChooseTemporaryUpgradeAction(card.uuid));
 	}
 }

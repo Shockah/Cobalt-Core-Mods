@@ -29,19 +29,13 @@ internal sealed class CandyArtifact : Artifact, IRegisterable
 		state.GetCurrentQueue().InsertRange(0, [
 			new ACardSelect
 			{
-				browseAction = new SpecificUpgradeBrowseAction
-				{
-					Upgrade = Upgrade.A
-				},
+				browseAction = new SpecificUpgradeBrowseAction { Upgrade = Upgrade.A },
 				browseSource = ModEntry.UpgradableCardsAnywhereToTypeABrowseSource,
 				filterTemporary = false
 			},
 			new ACardSelect
 			{
-				browseAction = new SpecificUpgradeBrowseAction
-				{
-					Upgrade = Upgrade.B
-				},
+				browseAction = new SpecificUpgradeBrowseAction { Upgrade = Upgrade.B },
 				browseSource = ModEntry.UpgradableCardsAnywhereToTypeBBrowseSource,
 				filterTemporary = false
 			}

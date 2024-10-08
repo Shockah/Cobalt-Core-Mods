@@ -1,5 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Shockah.Johnson;
@@ -21,6 +22,14 @@ internal sealed class BriefcaseArtifact : Artifact, IRegisterable
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Briefcase", "description"]).Localize
 		});
 	}
+
+	public override List<Tooltip>? GetExtraTooltips()
+		=> [
+			new TTCard { card = new BulletPointCard() },
+			new TTCard { card = new SlideTransitionCard() },
+			new TTCard { card = new LeverageCard() },
+			new TTCard { card = new BrainstormCard() },
+		];
 
 	public override void OnTurnStart(State state, Combat combat)
 	{

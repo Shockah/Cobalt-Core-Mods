@@ -42,7 +42,7 @@ internal sealed class DraculaJohnsonArtifact : Artifact, IRegisterable
 			TempUpgradeBrowseSource,
 			new(
 				(_, _, cards) => ModEntry.Instance.Localizations.Localize(["artifact", "Duo", "DraculaJohnson", "browseTitle"], new { Count = cards.Count }),
-				(s, c) => s.deck.Concat(c?.hand ?? []).Concat(c?.discard ?? []).Where(card => johnsonApi.IsTemporarilyUpgraded(card)).ToList()
+				(s, c) => s.deck.Concat(c?.hand ?? []).Concat(c?.discard ?? []).Where(card => ModEntry.Instance.KokoroApi.TemporaryUpgrades.GetTemporaryUpgrade(card) is not null).ToList()
 			)
 		);
 	}
@@ -50,7 +50,7 @@ internal sealed class DraculaJohnsonArtifact : Artifact, IRegisterable
 	public override List<Tooltip>? GetExtraTooltips()
 		=> [
 			new TTCard { card = new BloodTapCard { discount = -1, temporaryOverride = true, exhaustOverride = true } },
-			ModEntry.Instance.JohnsonApi!.TemporaryUpgradeTooltip
+			ModEntry.Instance.KokoroApi.TemporaryUpgrades.UpgradeTooltip,
 		];
 
 	public override void OnTurnStart(State state, Combat combat)
@@ -121,10 +121,11 @@ internal sealed class DraculaJohnsonArtifact : Artifact, IRegisterable
 			base.Begin(g, s, c);
 			if (selectedCard is null)
 				return;
-			if (ModEntry.Instance.JohnsonApi is not { } johnsonApi)
+			if (ModEntry.Instance.KokoroApi.TemporaryUpgrades.GetTemporaryUpgrade(selectedCard) is not { } temporaryUpgrade)
 				return;
 
-			johnsonApi.SetTemporarilyUpgraded(selectedCard, false);
+			ModEntry.Instance.KokoroApi.TemporaryUpgrades.SetTemporaryUpgrade(selectedCard, null);
+			ModEntry.Instance.KokoroApi.TemporaryUpgrades.SetPermanentUpgrade(selectedCard, temporaryUpgrade);
 		}
 	}
 }

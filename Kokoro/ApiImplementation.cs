@@ -64,4 +64,6 @@ public sealed partial class ApiImplementation(
 	public IKokoroApi.IActionApi Actions { get; } = new ActionApiImplementation();
 
 	public sealed partial class ActionApiImplementation : IKokoroApi.IActionApi;
+	
+	public sealed partial class TemporaryUpgradesApi : IKokoroApi.ITemporaryUpgradesApi;
 }

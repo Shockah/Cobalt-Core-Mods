@@ -21,6 +21,14 @@ partial class ApiImplementation
 			ModEntry.Instance.Api.SetExtensionData(custom, "CustomCardBrowseSource", source);
 			return custom;
 		}
+
+		public CardBrowse MakeCustomCardBrowse(CardBrowse route, ICustomCardBrowseSource source)
+		{
+			var custom = Mutil.DeepCopy(route);
+			custom.browseSource = (CardBrowse.Source)999999;
+			ModEntry.Instance.Api.SetExtensionData(custom, "CustomCardBrowseSource", source);
+			return custom;
+		}
 	}
 }
 

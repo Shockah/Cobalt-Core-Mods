@@ -1,5 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Shockah.Johnson;
@@ -21,6 +22,9 @@ internal sealed class CouponArtifact : Artifact, IRegisterable
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Coupon", "description"]).Localize
 		});
 	}
+
+	public override List<Tooltip>? GetExtraTooltips()
+		=> [new TTGlossary("cardtrait.discount", 1)];
 
 	public override void OnTurnStart(State state, Combat combat)
 	{

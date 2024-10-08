@@ -38,7 +38,7 @@ internal sealed class DownsizeCard : Card, IRegisterable
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
 			new ATemporarify { Cards = upgrade == Upgrade.B ? ATemporarify.CardsType.All : ATemporarify.CardsType.Right },
-			new ADummyAction() { dialogueSelector = $".Played::{Key()}" },
+			new ADummyAction { dialogueSelector = $".Played::{Key()}" },
 		];
 
 	public sealed class ATemporarify : CardAction
@@ -49,6 +49,9 @@ internal sealed class DownsizeCard : Card, IRegisterable
 		}
 
 		public required CardsType Cards;
+
+		public override List<Tooltip> GetTooltips(State s)
+			=> [new TTGlossary("cardtrait.temporary")];
 
 		public override void Begin(G g, State s, Combat c)
 		{

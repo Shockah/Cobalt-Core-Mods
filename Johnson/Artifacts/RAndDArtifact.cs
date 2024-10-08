@@ -1,5 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Shockah.Johnson;
@@ -21,6 +22,9 @@ internal sealed class RAndDArtifact : Artifact, IRegisterable
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "RAndD", "description"]).Localize
 		});
 	}
+
+	public override List<Tooltip>? GetExtraTooltips()
+		=> [new TTGlossary("cardtrait.temporary")];
 
 	public override void OnTurnStart(State state, Combat combat)
 	{

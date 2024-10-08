@@ -42,10 +42,10 @@ internal sealed class RevampCard : Card, IRegisterable
 
 	private sealed class Action : CardAction
 	{
-		public bool Choose = false;
+		public bool Choose;
 
 		public override List<Tooltip> GetTooltips(State s)
-			=> [ModEntry.Instance.Api.TemporaryUpgradeTooltip];
+			=> [ModEntry.Instance.KokoroApi.TemporaryUpgrades.UpgradeTooltip];
 
 		public override void Begin(G g, State s, Combat c)
 		{
@@ -77,13 +77,12 @@ internal sealed class RevampCard : Card, IRegisterable
 
 				if (Choose)
 				{
-					c.QueueImmediate(new ATemporarilyUpgrade { CardId = card.uuid });
+					c.QueueImmediate(ModEntry.Instance.KokoroApi.TemporaryUpgrades.MakeChooseTemporaryUpgradeAction(card.uuid));
 				}
 				else
 				{
 					didAnything = true;
-					card.SetTemporarilyUpgraded(true);
-					card.upgrade = upgrade;
+					ModEntry.Instance.KokoroApi.TemporaryUpgrades.SetTemporaryUpgrade(card, upgrade);
 				}
 			}
 		}

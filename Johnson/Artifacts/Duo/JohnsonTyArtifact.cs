@@ -12,7 +12,7 @@ internal sealed class JohnsonTyArtifact : Artifact, IRegisterable
 	private static ISpriteEntry InactiveSprite = null!;
 
 	[JsonProperty]
-	public bool TriggeredThisTurn { get; set; } = false;
+	public bool TriggeredThisTurn { get; set; }
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -45,8 +45,8 @@ internal sealed class JohnsonTyArtifact : Artifact, IRegisterable
 
 	public override List<Tooltip>? GetExtraTooltips()
 		=> [
-			.. (ModEntry.Instance.TyAndSashaApi!.WildTrait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? []),
-			ModEntry.Instance.Api.TemporaryUpgradeTooltip
+			.. ModEntry.Instance.TyAndSashaApi!.WildTrait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? [],
+			ModEntry.Instance.KokoroApi.TemporaryUpgrades.UpgradeTooltip
 		];
 
 	public override void OnTurnStart(State state, Combat combat)
@@ -68,10 +68,8 @@ internal sealed class JohnsonTyArtifact : Artifact, IRegisterable
 		if (card.upgrade != Upgrade.None)
 			return;
 
-		combat.Queue(new ATemporarilyUpgrade
-		{
-			CardId = card.uuid,
-			artifactPulse = Key()
-		});
+		var action = ModEntry.Instance.KokoroApi.TemporaryUpgrades.MakeChooseTemporaryUpgradeAction(card.uuid);
+		action.artifactPulse = Key();
+		combat.Queue(action);
 	}
 }

@@ -28,6 +28,18 @@
 		"Spontaneous": {
 			"name": "Triggered This Turn",
 			"description": "This card's <c=action>Spontaneous</c> actions already triggered this turn."
+		},
+		"TemporaryUpgrade": {
+			"name": {
+				"upgrade": "Temp Upgrade",
+				"downgrade": "Temp Downgrade",
+				"sidegrade": "Temp Sidegrade"
+			},
+			"description": {
+				"upgrade": "This card becomes unupgraded at the end of combat.",
+				"downgrade": "This card reverts to its original upgrade at the end of combat.",
+				"sidegrade": "This card reverts to its original upgrade at the end of combat."
+			}
 		}
 	},
 	"resourceCost": {

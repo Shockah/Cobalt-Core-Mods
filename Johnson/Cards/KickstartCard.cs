@@ -34,38 +34,23 @@ internal sealed class KickstartCard : Card, IRegisterable
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		List<CardAction> actions = [];
-		actions.Add(new ACardSelect
-		{
-			browseSource = ModEntry.UpgradableCardsAnywhereBrowseSource,
-			browseAction = new TemporarilyUpgradeBrowseAction
+		=> [
+			new ACardSelect
 			{
-				Discount = upgrade == Upgrade.A ? -1 : 0,
-				Strengthen = upgrade == Upgrade.B ? 1 : 0
+				browseSource = ModEntry.UpgradableCardsAnywhereBrowseSource,
+				browseAction = new TemporarilyUpgradeBrowseAction
+				{
+					Discount = this.upgrade == Upgrade.A ? -1 : 0,
+					Strengthen = this.upgrade == Upgrade.B ? 1 : 0
+				},
 			},
-			omitFromTooltips = true
-		});
-		if (upgrade == Upgrade.A)
-			actions.Add(new ATooltipAction
+			new ATooltipAction
 			{
-				Tooltips = [
-					new TTGlossary("cardtrait.discount", 1)
-				]
-			});
-		if (upgrade == Upgrade.B)
-			actions.Add(new ATooltipAction
-			{
-				Tooltips = [
-					ModEntry.Instance.Api.GetStrengthenTooltip(1)
-				]
-			});
-		actions.Add(new ATooltipAction
-		{
-			Tooltips = [
-				ModEntry.Instance.Api.TemporaryUpgradeTooltip
-			]
-		});
-		return actions;
-	}
+				Tooltips = new TemporarilyUpgradeBrowseAction
+				{
+					Discount = this.upgrade == Upgrade.A ? -1 : 0,
+					Strengthen = this.upgrade == Upgrade.B ? 1 : 0
+				}.GetTooltips(s)
+			}
+		];
 }
