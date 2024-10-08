@@ -122,7 +122,7 @@ public sealed class ModEntry : SimpleMod
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
-		Harmony = helper.Utilities.DelayedHarmony;
+		Harmony = helper.Utilities.Harmony;
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
 		DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
 
@@ -147,11 +147,9 @@ public sealed class ModEntry : SimpleMod
 
 		_ = new CrunchTimeManager();
 		_ = new StrengthenManager();
-		_ = new TemporaryUpgradeManager();
 
 		DynamicWidthCardAction.ApplyPatches(Harmony, logger);
 		CustomCardBrowse.ApplyPatches(Harmony, logger);
-		InPlaceCardUpgrade.ApplyPatches(Harmony, logger);
 
 		CustomCardBrowse.RegisterCustomCardSource(
 			UpgradableCardsInHandBrowseSource,
@@ -171,7 +169,7 @@ public sealed class ModEntry : SimpleMod
 			TemporarilyUpgradedCardsBrowseSource,
 			new CustomCardBrowse.CustomCardSource(
 				(_, _, _) => Loc.T("cardBrowse.title.upgrade"),
-				(state, combat) => state.GetAllCards().Where(c => c.upgrade != Upgrade.None && c.IsTemporarilyUpgraded()).ToList()
+				(state, _) => state.GetAllCards().Where(c => c.upgrade != Upgrade.None && KokoroApi.TemporaryUpgrades.GetTemporaryUpgrade(c) is not null).ToList()
 			)
 		);
 		CustomCardBrowse.RegisterCustomCardSource(
@@ -199,7 +197,7 @@ public sealed class ModEntry : SimpleMod
 			NonPermanentlyUpgradedCardsBrowseSource,
 			new CustomCardBrowse.CustomCardSource(
 				(_, _, _) => Loc.T("cardBrowse.title.upgrade"),
-				(state, combat) => state.deck.Concat(combat?.discard ?? []).Concat(combat?.hand ?? []).Where(c => c.upgrade == Upgrade.None || c.IsTemporarilyUpgraded()).ToList()
+				(state, combat) => state.deck.Concat(combat?.discard ?? []).Concat(combat?.hand ?? []).Where(c => KokoroApi.TemporaryUpgrades.GetPermanentUpgrade(c) == Upgrade.None).ToList()
 			)
 		);
 		CustomCardBrowse.RegisterCustomCardSource(

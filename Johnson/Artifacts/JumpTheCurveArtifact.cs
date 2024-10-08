@@ -51,10 +51,6 @@ internal sealed class JumpTheCurveArtifact : Artifact, IRegisterable
 		ModEntry.Instance.Helper.ModData.SetModData(card, "JumpedTheCurve", true);
 		card.discount--;
 		if (card.IsUpgradable())
-			__instance.GetCurrentQueue().QueueImmediate(new ATemporarilyUpgrade
-			{
-				CardId = card.uuid,
-				artifactPulse = artifact.Key()
-			});
+			__instance.GetCurrentQueue().QueueImmediate(ModEntry.Instance.KokoroApi.TemporaryUpgrades.MakeChooseTemporaryUpgradeAction(card.uuid));
 	}
 }

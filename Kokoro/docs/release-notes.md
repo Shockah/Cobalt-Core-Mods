@@ -8,6 +8,7 @@
 * Incorporated Bloch's `OnDiscard`.
 * Incorporated Bloch's `OnTurnEnd`.
 * Incorporated Bloch's `Spontaneous`.
+* Incorporated Johnson's Temporary Upgrades.
 * Removed `MidrowScorching`.
 
 ## 1.12.1

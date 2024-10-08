@@ -10,24 +10,6 @@ public sealed class ApiImplementation : IJohnsonApi
 	public IStatusEntry CrunchTimeStatus
 		=> ModEntry.Instance.CrunchTimeStatus;
 
-	public ICardTraitEntry TemporaryUpgradeCardTrait
-		=> TemporaryUpgradeManager.Trait;
-
-	public Tooltip TemporaryUpgradeTooltip
-		=> new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::TemporaryUpgrade")
-		{
-			Icon = ModEntry.Instance.TemporaryUpgradeIcon.Sprite,
-			TitleColor = Colors.cardtrait,
-			Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "TemporaryUpgrade", "name"]),
-			Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "TemporaryUpgrade", "description"])
-		};
-
-	public bool IsTemporarilyUpgraded(Card card)
-		=> card.IsTemporarilyUpgraded();
-
-	public void SetTemporarilyUpgraded(Card card, bool value)
-		=> card.SetTemporarilyUpgraded(value);
-
 	public ICardTraitEntry StrengthenCardTrait
 		=> StrengthenManager.Trait;
 
