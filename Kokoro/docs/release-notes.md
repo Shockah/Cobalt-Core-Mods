@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added an extra required method to the `ICustomCardBrowseSource`.
 * Added `MultiCardBrowse`.
 * Incorporated Bloch's `OnDiscard`.
 * Incorporated Bloch's `OnTurnEnd`.

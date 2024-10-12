@@ -13,6 +13,7 @@ public partial interface IKokoroApi
 
 public interface ICustomCardBrowseSource
 {
-	List<Card> GetCards(State state, Combat? combat);
+	IEnumerable<Tooltip> GetSearchTooltips(State state);
 	string GetTitle(State state, Combat? combat, List<Card> cards);
+	List<Card> GetCards(State state, Combat? combat);
 }

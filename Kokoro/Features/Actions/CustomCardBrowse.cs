@@ -5,6 +5,7 @@ using Nanoray.Shrike.Harmony;
 using Nickel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -39,6 +40,10 @@ internal sealed class CustomCardBrowseManager
 		harmony.Patch(
 			original: AccessTools.Method(typeof(ACardSelect), nameof(ACardSelect.BeginWithRoute)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ACardSelect_BeginWithRoute_Transpiler))
+		);
+		harmony.Patch(
+			original: AccessTools.Method(typeof(ACardSelect), nameof(ACardSelect.GetTooltips)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ACardSelect_GetTooltips_Postfix))
 		);
 		harmony.Patch(
 			original: AccessTools.Method(typeof(CardBrowse), nameof(CardBrowse.GetCardList)),
@@ -79,6 +84,14 @@ internal sealed class CustomCardBrowseManager
 			return;
 
 		ModEntry.Instance.Api.SetExtensionData(browse, "CustomCardBrowseSource", customCardSource);
+	}
+
+	private static void ACardSelect_GetTooltips_Postfix(ACardSelect __instance, State s, ref List<Tooltip> __result)
+	{
+		if (!ModEntry.Instance.Api.TryGetExtensionData<ICustomCardBrowseSource>(__instance, "CustomCardBrowseSource", out var customCardSource))
+			return;
+
+		__result = customCardSource.GetSearchTooltips(s).ToList();
 	}
 	
 	private static void CardBrowse_GetCardList_Postfix(CardBrowse __instance, G g, ref List<Card> __result)

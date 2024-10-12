@@ -355,7 +355,11 @@
             },
             "removedFromPlay": {
                 "name": "Card removed from play",
-                "description": "<c=cardtrait>Exhausted</c> and played <c=cardtrait>single use</c> cards are considered removed from play."
+                "description": "<c=cardtrait>Exhausted</c> and played this combat <c=cardtrait>single use</c> cards are considered removed from play."
+            },
+            "searchAction": {
+                "exhaustOrSingleUse": "Choose a card from your <c=keyword>exhaust pile</c> or played this combat <c=cardtrait>single use</c> cards.",
+                "handDrawDiscard": "Choose a card from your <c=keyword>hand, draw pile or discard pile</c>."
             },
             "ui": {
                 "exhaustOrSingleUse": "Exhaust Pile and Single Use: {{Count}} Cards",

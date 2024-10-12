@@ -62,7 +62,6 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 							}, new ExhaustOrSingleUseBrowseSource())
 						]
 					},
-					omitFromTooltips = true,
 				},
 				new ATooltipAction
 				{
@@ -134,7 +133,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 		public override void Begin(G g, State s, Combat c)
 		{
 			timer = 0.0;
-			if (s.FindCard(uuid) is not Card card)
+			if (s.FindCard(uuid) is not { } card)
 				return;
 
 			card.ExhaustFX();
@@ -174,6 +173,15 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 
 	public sealed class ExhaustOrSingleUseBrowseSource : ICustomCardBrowseSource
 	{
+		public IEnumerable<Tooltip> GetSearchTooltips(State state)
+			=> [new GlossaryTooltip("action.searchCardNew")
+			{	
+				Icon = StableSpr.icons_searchCardNew,
+				TitleColor = Colors.action,
+				Title = Loc.T("action.searchCardNew.name"),
+				Description = ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "searchAction", "exhaustOrSingleUse"]),
+			}];
+
 		public string GetTitle(State state, Combat? combat, List<Card> cards)
 			=> ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "ui", "exhaustOrSingleUse"], new { Count = cards.Count });
 
@@ -186,6 +194,15 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 
 	public sealed class HandDrawDiscardBrowseSource : ICustomCardBrowseSource
 	{
+		public IEnumerable<Tooltip> GetSearchTooltips(State state)
+			=> [new GlossaryTooltip("action.searchCardNew")
+			{	
+				Icon = StableSpr.icons_searchCardNew,
+				TitleColor = Colors.action,
+				Title = Loc.T("action.searchCardNew.name"),
+				Description = ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "searchAction", "handDrawDiscard"]),
+			}];
+		
 		public string GetTitle(State state, Combat? combat, List<Card> cards)
 			=> ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "ui", "handDrawDiscard"], new { Count = cards.Count });
 
