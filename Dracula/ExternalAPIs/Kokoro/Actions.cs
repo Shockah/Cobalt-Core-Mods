@@ -31,5 +31,13 @@ public partial interface IKokoroApi
 		List<CardAction> GetWrappedCardActions(CardAction action);
 		List<CardAction> GetWrappedCardActionsRecursively(CardAction action);
 		List<CardAction> GetWrappedCardActionsRecursively(CardAction action, bool includingWrapperActions);
+
+		ACardSelect MakeCustomCardBrowse(ACardSelect action, ICustomCardBrowseSource source);
 	}
+}
+
+public interface ICustomCardBrowseSource
+{
+	List<Card> GetCards(State state, Combat? combat);
+	string GetTitle(State state, Combat? combat, List<Card> cards);
 }

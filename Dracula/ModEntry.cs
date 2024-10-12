@@ -162,6 +162,7 @@ public sealed class ModEntry : SimpleMod
 		_ = new NegativeOverdriveManager();
 		_ = new CardScalingManager();
 		BloodTapManager = new();
+		CardSelectFilters.Register(package, helper);
 
 		helper.Events.OnModLoadPhaseFinished += (_, phase) =>
 		{
@@ -177,7 +178,6 @@ public sealed class ModEntry : SimpleMod
 				AccessTools.DeclaredMethod(registerableType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
 		};
 
-		CustomCardBrowse.ApplyPatches(Harmony, logger);
 		DynamicWidthCardAction.ApplyPatches(Harmony, logger);
 		ASpecificCardOffering.ApplyPatches(Harmony, logger);
 
