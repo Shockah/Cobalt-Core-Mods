@@ -23,7 +23,7 @@ public sealed class AStrengthenHand : DynamicWidthCardAction
 		=> [
 			new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::StrengthenHand")
 			{
-				Icon = ModEntry.Instance.StrengthenIcon.Sprite,
+				Icon = ModEntry.Instance.StrengthenHandIcon.Sprite,
 				TitleColor = Colors.action,
 				Title = ModEntry.Instance.Localizations.Localize(["action", "StrengthenHand", "name"]),
 				Description = ModEntry.Instance.Localizations.Localize(["action", "StrengthenHand", "description"], new { Damage = Amount })

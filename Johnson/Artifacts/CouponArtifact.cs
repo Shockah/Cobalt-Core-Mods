@@ -36,11 +36,8 @@ internal sealed class CouponArtifact : Artifact, IRegisterable
 			new ADelay(),
 			new ACardSelect
 			{
-				browseAction = new DiscountBrowseAction
-				{
-					Amount = -1
-				},
-				browseSource = ModEntry.DiscountCardAnywhereBrowseSource,
+				browseAction = new DiscountBrowseAction { Amount = -1 },
+				browseSource = CardBrowse.Source.Deck,
 				artifactPulse = Key()
 			}
 		]);

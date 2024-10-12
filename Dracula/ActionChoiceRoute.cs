@@ -29,19 +29,19 @@ internal sealed class ActionChoiceRoute : Route
 			return;
 		}
 
-		int centerX = 240;
-		int topY = 44;
+		var centerX = 240;
+		var topY = 44;
 
-		int columns = 3;
-		int choiceWidth = 56;
-		int choiceHeight = 18;
-		int choiceSpacing = 4;
-		int actionSpacing = 4;
-		int actionYOffset = 7;
-		int actionHoverYOffset = 1;
+		var columns = 3;
+		var choiceWidth = 56;
+		var choiceHeight = 18;
+		var choiceSpacing = 4;
+		var actionSpacing = 4;
+		var actionYOffset = 7;
+		var actionHoverYOffset = 1;
 
-		int fullRowWidth = columns * choiceWidth + Math.Max(columns - 1, 0) * choiceSpacing;
-		int choicesStartX = centerX - fullRowWidth / 2;
+		var fullRowWidth = columns * choiceWidth + Math.Max(columns - 1, 0) * choiceSpacing;
+		var choicesStartX = centerX - fullRowWidth / 2;
 
 		SharedArt.DrawEngineering(g);
 

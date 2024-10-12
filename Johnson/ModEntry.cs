@@ -11,15 +11,6 @@ namespace Shockah.Johnson;
 
 public sealed class ModEntry : SimpleMod
 {
-	internal const CardBrowse.Source UpgradableCardsInHandBrowseSource = (CardBrowse.Source)2137301;
-	internal const CardBrowse.Source UpgradableCardsAnywhereBrowseSource = (CardBrowse.Source)2137302;
-	internal const CardBrowse.Source TemporarilyUpgradedCardsBrowseSource = (CardBrowse.Source)2137303;
-	internal const CardBrowse.Source UpgradableCardsAnywhereToTypeABrowseSource = (CardBrowse.Source)2137304;
-	internal const CardBrowse.Source UpgradableCardsAnywhereToTypeBBrowseSource = (CardBrowse.Source)2137305;
-	internal const CardBrowse.Source DiscountCardAnywhereBrowseSource = (CardBrowse.Source)2137306;
-	internal const CardBrowse.Source NonPermanentlyUpgradedCardsBrowseSource = (CardBrowse.Source)2137307;
-	internal const CardBrowse.Source StrengthenBrowseSource = (CardBrowse.Source)2137308;
-
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly IJohnsonApi Api = new ApiImplementation();
 
@@ -146,66 +137,9 @@ public sealed class ModEntry : SimpleMod
 
 		_ = new CrunchTimeManager();
 		_ = new StrengthenManager();
+		CardSelectFilters.Register(package, helper);
 
 		DynamicWidthCardAction.ApplyPatches(Harmony, logger);
-		CustomCardBrowse.ApplyPatches(Harmony, logger);
-
-		CustomCardBrowse.RegisterCustomCardSource(
-			UpgradableCardsInHandBrowseSource,
-			new CustomCardBrowse.CustomCardSource(
-				(_, _, _) => Loc.T("cardBrowse.title.upgrade"),
-				(_, combat) => (combat?.hand ?? []).Where(c => c.IsUpgradable()).ToList()
-			)
-		);
-		CustomCardBrowse.RegisterCustomCardSource(
-			UpgradableCardsAnywhereBrowseSource,
-			new CustomCardBrowse.CustomCardSource(
-				(_, _, _) => Loc.T("cardBrowse.title.upgrade"),
-				(state, combat) => state.deck.Concat(combat?.discard ?? []).Concat(combat?.hand ?? []).Where(c => c.IsUpgradable()).ToList()
-			)
-		);
-		CustomCardBrowse.RegisterCustomCardSource(
-			TemporarilyUpgradedCardsBrowseSource,
-			new CustomCardBrowse.CustomCardSource(
-				(_, _, _) => Loc.T("cardBrowse.title.upgrade"),
-				(state, _) => state.GetAllCards().Where(c => c.upgrade != Upgrade.None && KokoroApi.TemporaryUpgrades.GetTemporaryUpgrade(c) is not null).ToList()
-			)
-		);
-		CustomCardBrowse.RegisterCustomCardSource(
-			UpgradableCardsAnywhereToTypeABrowseSource,
-			new CustomCardBrowse.CustomCardSource(
-				(_, _, _) => Localizations.Localize(["browseSource", nameof(UpgradableCardsAnywhereToTypeABrowseSource)]),
-				(state, combat) => state.deck.Concat(combat?.discard ?? []).Concat(combat?.hand ?? []).Where(c => c.IsUpgradable()).ToList()
-			)
-		);
-		CustomCardBrowse.RegisterCustomCardSource(
-			UpgradableCardsAnywhereToTypeBBrowseSource,
-			new CustomCardBrowse.CustomCardSource(
-				(_, _, _) => Localizations.Localize(["browseSource", nameof(UpgradableCardsAnywhereToTypeBBrowseSource)]),
-				(state, combat) => state.deck.Concat(combat?.discard ?? []).Concat(combat?.hand ?? []).Where(c => c.IsUpgradable()).ToList()
-			)
-		);
-		CustomCardBrowse.RegisterCustomCardSource(
-			DiscountCardAnywhereBrowseSource,
-			new CustomCardBrowse.CustomCardSource(
-				(_, _, _) => Localizations.Localize(["browseSource", nameof(DiscountCardAnywhereBrowseSource)]),
-				(state, combat) => [..state.deck, ..combat?.discard ?? [], ..combat?.hand ?? []]
-			)
-		);
-		CustomCardBrowse.RegisterCustomCardSource(
-			NonPermanentlyUpgradedCardsBrowseSource,
-			new CustomCardBrowse.CustomCardSource(
-				(_, _, _) => Loc.T("cardBrowse.title.upgrade"),
-				(state, combat) => state.deck.Concat(combat?.discard ?? []).Concat(combat?.hand ?? []).Where(c => KokoroApi.TemporaryUpgrades.GetPermanentUpgrade(c) == Upgrade.None).ToList()
-			)
-		);
-		CustomCardBrowse.RegisterCustomCardSource(
-			StrengthenBrowseSource,
-			new CustomCardBrowse.CustomCardSource(
-				(_, _, _) => Localizations.Localize(["browseSource", nameof(StrengthenBrowseSource)]),
-				(state, combat) => [..state.deck, ..combat?.discard ?? [], ..combat?.hand ?? []]
-			)
-		);
 
 		CrunchTimeStatus = helper.Content.Statuses.RegisterStatus("CrunchTime", new()
 		{

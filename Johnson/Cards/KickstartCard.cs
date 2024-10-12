@@ -37,12 +37,13 @@ internal sealed class KickstartCard : Card, IRegisterable
 		=> [
 			new ACardSelect
 			{
-				browseSource = ModEntry.UpgradableCardsAnywhereBrowseSource,
+				browseSource = CardBrowse.Source.Deck,
 				browseAction = new TemporarilyUpgradeBrowseAction
 				{
 					Discount = this.upgrade == Upgrade.A ? -1 : 0,
 					Strengthen = this.upgrade == Upgrade.B ? 1 : 0
 				},
+				filterUpgrade = Upgrade.None,
 			},
 			new ATooltipAction
 			{

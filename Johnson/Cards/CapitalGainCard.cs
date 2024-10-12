@@ -33,9 +33,6 @@ internal sealed class CapitalGainCard : Card, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new AStrengthenHand
-			{
-				Amount = upgrade == Upgrade.B ? 2 : 1
-			}
+			new AStrengthenHand { Amount = upgrade == Upgrade.B ? 2 : 1 }
 		];
 }

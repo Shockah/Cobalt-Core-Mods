@@ -44,10 +44,10 @@ internal sealed class MintCard : Card, IRegisterable
 						{
 							Upgrade.A => new ACardSelect
 							{
-								browseSource = ModEntry.NonPermanentlyUpgradedCardsBrowseSource,
+								browseSource = CardBrowse.Source.Deck,
 								browseAction = new UpgradeNonPermanentlyUpgradedCardBrowseAction(),
 								allowCancel = true
-							},
+							}.SetFilterPermanentlyUpgraded(false),
 							Upgrade.B => new ACardSelect
 							{
 								browseSource = CardBrowse.Source.Deck,
@@ -58,10 +58,10 @@ internal sealed class MintCard : Card, IRegisterable
 							},
 							_ => new ACardSelect
 							{
-								browseSource = ModEntry.TemporarilyUpgradedCardsBrowseSource,
+								browseSource = CardBrowse.Source.Deck,
 								browseAction = new MakeUpgradePermanentBrowseAction(),
 								allowCancel = true
-							},
+							}.SetFilterTemporarilyUpgraded(true),
 						}
 					}
 				]

@@ -30,15 +30,15 @@ internal sealed class CandyArtifact : Artifact, IRegisterable
 			new ACardSelect
 			{
 				browseAction = new SpecificUpgradeBrowseAction { Upgrade = Upgrade.A },
-				browseSource = ModEntry.UpgradableCardsAnywhereToTypeABrowseSource,
+				browseSource = CardBrowse.Source.Deck,
 				filterTemporary = false
-			},
+			}.SetFilterPermanentlyUpgraded(false),
 			new ACardSelect
 			{
 				browseAction = new SpecificUpgradeBrowseAction { Upgrade = Upgrade.B },
-				browseSource = ModEntry.UpgradableCardsAnywhereToTypeBBrowseSource,
+				browseSource = CardBrowse.Source.Deck,
 				filterTemporary = false
-			}
+			}.SetFilterPermanentlyUpgraded(false),
 		]);
 	}
 }

@@ -39,18 +39,18 @@ internal sealed class PromoteCard : Card, IRegisterable
 				new ADelay(),
 				new ACardSelect
 				{
-					browseSource = ModEntry.UpgradableCardsInHandBrowseSource,
+					browseSource = CardBrowse.Source.Hand,
 					browseAction = new TemporarilyUpgradeBrowseAction(),
-					omitFromTooltips = true,
+					filterUpgrade = Upgrade.None,
 				},
 				new ATooltipAction { Tooltips = new TemporarilyUpgradeBrowseAction().GetTooltips(s) },
 			],
 			_ => [
 				new ACardSelect
 				{
-					browseSource = ModEntry.UpgradableCardsInHandBrowseSource,
+					browseSource = CardBrowse.Source.Hand,
 					browseAction = new TemporarilyUpgradeBrowseAction(),
-					omitFromTooltips = true,
+					filterUpgrade = Upgrade.None,
 				},
 				new ATooltipAction { Tooltips = new TemporarilyUpgradeBrowseAction().GetTooltips(s) },
 			]

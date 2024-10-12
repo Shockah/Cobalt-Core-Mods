@@ -51,11 +51,8 @@ internal sealed class JohnsonDizzyArtifact : Artifact, IRegisterable
 			new ADelay(),
 			new ACardSelect
 			{
-				browseAction = new StrengthenBrowseAction
-				{
-					Amount = 1
-				},
-				browseSource = ModEntry.StrengthenBrowseSource
+				browseAction = new StrengthenBrowseAction { Amount = 1 },
+				browseSource = CardBrowse.Source.Deck,
 			}
 		]);
 	}
