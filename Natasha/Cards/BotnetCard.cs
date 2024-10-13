@@ -41,10 +41,10 @@ internal sealed class BotnetCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 2, Action = new AStatus { targetPlayer = true, status = Status.powerdrive, statusAmount = 1 } },
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 2, 2, new AStatus { targetPlayer = true, status = Status.powerdrive, statusAmount = 1 }),
 			],
 			_ => [
-				new SequenceAction { CardId = uuid, SequenceStep = 3, SequenceLength = 3, Action = new AStatus { targetPlayer = true, status = Status.powerdrive, statusAmount = 1 } },
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 3, 3, new AStatus { targetPlayer = true, status = Status.powerdrive, statusAmount = 1 }),
 			]
 		};
 }

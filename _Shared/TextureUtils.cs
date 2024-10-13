@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace Shockah.Natasha;
+namespace Shockah.Shared;
 
 internal static class TextureUtils
 {

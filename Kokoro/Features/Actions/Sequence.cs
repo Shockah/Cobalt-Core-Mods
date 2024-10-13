@@ -1,28 +1,36 @@
 ﻿using HarmonyLib;
-using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Shockah.Natasha;
+namespace Shockah.Kokoro;
 
-internal sealed class Sequence : IRegisterable, IWrappedActionHook
+partial class ApiImplementation
 {
+	partial class ActionApiImplementation
+	{
+		public CardAction MakeSequenceAction(int cardId, int sequenceStep, int sequenceLength, CardAction action)
+			=> new SequenceAction { CardId = cardId, SequenceStep = sequenceStep, SequenceLength = sequenceLength, Action = action };
+	}
+}
+
+internal sealed class SequenceManager : IWrappedActionHook
+{
+	internal static readonly SequenceManager Instance = new();
+
 	private static ISpriteEntry BaseIcon = null!;
 	private static readonly Dictionary<(int, int), Spr> Icons = [];
 
-	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+	internal static void Setup(IHarmony harmony)
 	{
-		BaseIcon = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icons/Sequence.png"));
+		BaseIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icons/Sequence.png"));
 
-		ModEntry.Instance.Harmony.Patch(
+		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
-
-		var self = new Sequence();
-		ModEntry.Instance.KokoroApi.Actions.RegisterWrappedActionHook(self, 0);
 	}
 
 	internal static Spr ObtainIcon(int sequenceStep, int sequenceLength)
@@ -54,7 +62,7 @@ internal sealed class Sequence : IRegisterable, IWrappedActionHook
 		if (action is not SequenceAction sequenceAction)
 			return true;
 
-		var timesPlayed = state.FindCard(sequenceAction.CardId) is { } card ? ModEntry.Instance.KokoroApi.Actions.GetTimesPlayed(card) + 1 : -1;
+		var timesPlayed = state.FindCard(sequenceAction.CardId) is { } card ? ModEntry.Instance.Api.Actions.GetTimesPlayed(card) + 1 : -1;
 		var step = (timesPlayed - 1) % sequenceAction.SequenceLength + 1;
 		var selfDisabled = sequenceAction.disabled || (timesPlayed != -1 && step != sequenceAction.SequenceStep);
 		var oldActionDisabled = sequenceAction.Action.disabled;
@@ -90,30 +98,30 @@ internal sealed class SequenceAction : CardAction
 	public required int SequenceLength;
 
 	public override Icon? GetIcon(State s)
-		=> new(Sequence.ObtainIcon(SequenceStep, SequenceLength), null, Colors.textMain);
+		=> new(SequenceManager.ObtainIcon(SequenceStep, SequenceLength), null, Colors.textMain);
 
 	public override List<Tooltip> GetTooltips(State s)
 	{
 		int currentSequenceStep;
 		if (s.route is Combat && s.FindCard(CardId) is { } card)
-			currentSequenceStep = ModEntry.Instance.KokoroApi.Actions.GetTimesPlayed(card) % SequenceLength + 1;
+			currentSequenceStep = ModEntry.Instance.Api.Actions.GetTimesPlayed(card) % SequenceLength + 1;
 		else
 			currentSequenceStep = -1;
 
 		return [
 			new GlossaryTooltip($"action.{GetType().Namespace!}::Sequence{SequenceLength}")
-				{
-					Icon = Sequence.ObtainIcon(SequenceStep, SequenceLength),
-					TitleColor = Colors.action,
-					Title = ModEntry.Instance.Localizations.Localize(["action", "Sequence", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(
-						["action", "Sequence", "description", currentSequenceStep == -1 ? "stateless" : "stateful"],
-						currentSequenceStep == -1
-							? new { Step = SequenceStep, Steps = SequenceLength }
-							: new { Step = SequenceStep, Steps = SequenceLength, Current = currentSequenceStep }
-					),
-				},
-				.. Action.GetTooltips(s)
+			{
+				Icon = SequenceManager.ObtainIcon(SequenceStep, SequenceLength),
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["action", "Sequence", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(
+					["action", "Sequence", "description", currentSequenceStep == -1 ? "stateless" : "stateful"],
+					currentSequenceStep == -1
+						? new { Step = SequenceStep, Steps = SequenceLength }
+						: new { Step = SequenceStep, Steps = SequenceLength, Current = currentSequenceStep }
+				),
+			},
+			.. Action.GetTooltips(s)
 		];
 	}
 
@@ -125,7 +133,7 @@ internal sealed class SequenceAction : CardAction
 		if (s.FindCard(CardId) is not { } card)
 			return;
 
-		var sequenceStep = (ModEntry.Instance.KokoroApi.Actions.GetTimesPlayed(card) - 1) % SequenceLength + 1;
+		var sequenceStep = (ModEntry.Instance.Api.Actions.GetTimesPlayed(card) - 1) % SequenceLength + 1;
 		if (sequenceStep != SequenceStep)
 			return;
 

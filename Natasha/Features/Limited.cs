@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;

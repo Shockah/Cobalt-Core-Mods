@@ -35,14 +35,14 @@ internal sealed class PortScanningCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 1) } },
-				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 2) } },
-				new SequenceAction { CardId = uuid, SequenceStep = 3, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 2), brittle = true } },
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 1, 3, new AAttack { damage = GetDmg(s, 1) }),
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 2, 3, new AAttack { damage = GetDmg(s, 2) }),
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 3, 3, new AAttack { damage = GetDmg(s, 2), brittle = true }),
 			],
 			_ => [
-				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 1) } },
-				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 2) } },
-				new SequenceAction { CardId = uuid, SequenceStep = 3, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 2), weaken = true } },
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 1, 3, new AAttack { damage = GetDmg(s, 1) }),
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 2, 3, new AAttack { damage = GetDmg(s, 2) }),
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 3, 3, new AAttack { damage = GetDmg(s, 2), weaken = true }),
 			]
 		};
 }

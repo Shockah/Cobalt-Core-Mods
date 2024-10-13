@@ -41,19 +41,19 @@ internal sealed class TypoCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 2, Action = new AStatus { targetPlayer = false, status = Status.powerdrive, statusAmount = 1 } },
-				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 2, Action = new AStatus { targetPlayer = true, status = Status.powerdrive, statusAmount = 1 } },
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 1, 2, new AStatus { targetPlayer = false, status = Status.powerdrive, statusAmount = 1 }),
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 2, 2, new AStatus { targetPlayer = true, status = Status.powerdrive, statusAmount = 1 }),
 			],
 			Upgrade.A => [
-				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 3, Action = new AStatus { targetPlayer = false, status = Status.overdrive, statusAmount = 1 } },
-				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 3, Action = new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 } },
-				new SequenceAction { CardId = uuid, SequenceStep = 3, SequenceLength = 3, Action = new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 } },
-				new SequenceAction { CardId = uuid, SequenceStep = 3, SequenceLength = 3, Action = new DiscardSelfAction { CardId = uuid } },
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 1, 3, new AStatus { targetPlayer = false, status = Status.overdrive, statusAmount = 1 }),
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 2, 3, new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 }),
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 3, 3, new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 }),
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 3, 3, new DiscardSelfAction { CardId = uuid }),
 			],
 			_ => [
-				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 2, Action = new AStatus { targetPlayer = false, status = Status.overdrive, statusAmount = 1 } },
-				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 2, Action = new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 } },
-				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 2, Action = new DiscardSelfAction { CardId = uuid } },
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 1, 2, new AStatus { targetPlayer = false, status = Status.overdrive, statusAmount = 1 }),
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 2, 2, new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 }),
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 2, 2, new DiscardSelfAction { CardId = uuid }),
 			]
 		};
 

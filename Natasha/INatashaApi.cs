@@ -24,8 +24,6 @@ public interface INatashaApi
 	CardAction MakeChangeLimitedUsesAction(int cardId, int amount, AStatusMode mode = AStatusMode.Add);
 	ACardSelect SetFilterLimited(ACardSelect action, bool? limited);
 
-	CardAction MakeSequenceAction(int cardId, CardAction action, int sequenceStep, int sequenceLength);
-
 	CardAction MakeOneLinerAction(List<CardAction> actions, int spacing = 3);
 
 	void RegisterHook(INatashaHook hook, double priority);

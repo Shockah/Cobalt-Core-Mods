@@ -86,7 +86,6 @@ public sealed class ModEntry : SimpleMod
 	internal static readonly IEnumerable<Type> RegisterableTypes
 		= [
 			typeof(Limited),
-			typeof(Sequence),
 			typeof(OneLiners),
 			typeof(Reprogram),
 			typeof(NegativeBoost),

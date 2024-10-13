@@ -47,9 +47,6 @@ public sealed class ApiImplementation : INatashaApi
 	public ACardSelect SetFilterLimited(ACardSelect action, bool? limited)
 		=> action.SetFilterLimited(limited);
 
-	public CardAction MakeSequenceAction(int cardId, CardAction action, int sequenceStep, int sequenceLength)
-		=> new SequenceAction { CardId = cardId, Action = action, SequenceStep = sequenceStep, SequenceLength = sequenceLength };
-
 	public CardAction MakeOneLinerAction(List<CardAction> actions, int spacing = 3)
 		=> new OneLinerAction { Actions = actions, Spacing = spacing };
 

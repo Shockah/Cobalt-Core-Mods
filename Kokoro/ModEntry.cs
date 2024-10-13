@@ -75,6 +75,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		PlaySpecificCardFromAnywhereManager.Setup(Harmony);
 		RedrawStatusManager.Setup(Harmony);
 		ResourceCostedActionManager.Setup(Harmony);
+		SequenceManager.Setup(Harmony);
 		SpontaneousManager.Setup(Harmony);
 		SpoofedActionManager.Setup(Harmony);
 		StatusLogicManager.Setup(Harmony);
@@ -95,9 +96,20 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		StatusLogicManager.Instance.Register(WormStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(OxidationStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(StatusNextTurnManager.Instance, 0);
+		
 		StatusRenderManager.Instance.Register(WormStatusManager.Instance, 0);
 		StatusRenderManager.Instance.Register(OxidationStatusManager.Instance, 0);
 		StatusRenderManager.Instance.Register(StatusNextTurnManager.Instance, 0);
+		
+		WrappedActionManager.Instance.Register(ConditionalActionManager.Instance, 0);
+		WrappedActionManager.Instance.Register(ContinueStopActionManager.Instance, 0);
+		WrappedActionManager.Instance.Register(HiddenActionManager.Instance, 0);
+		WrappedActionManager.Instance.Register(OnDiscardManager.Instance, 0);
+		WrappedActionManager.Instance.Register(OnTurnEndManager.Instance, 0);
+		WrappedActionManager.Instance.Register(ResourceCostedActionManager.Instance, 0);
+		WrappedActionManager.Instance.Register(SequenceManager.Instance, 0);
+		WrappedActionManager.Instance.Register(SpontaneousManager.Instance, 0);
+		WrappedActionManager.Instance.Register(SpoofedActionManager.Instance, 0);
 
 		SetupSerializationChanges();
 	}

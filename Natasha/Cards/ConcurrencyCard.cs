@@ -36,19 +36,19 @@ internal sealed class ConcurrencyCard : Card, IRegisterable
 		{
 			Upgrade.B => [
 				new AAttack { damage = GetDmg(s, 1), disabled = flipped },
-				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 2, Action = new AAttack { damage = GetDmg(s, 2) }, disabled = flipped },
-				new SequenceAction { CardId = uuid, SequenceStep = 3, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 3) }, disabled = flipped },
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 2, 2, new AAttack { damage = GetDmg(s, 2) }).Disabled(flipped),
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 3, 3, new AAttack { damage = GetDmg(s, 3) }).Disabled(flipped),
 				new ADummyAction(),
 				new AEnergy { changeAmount = 1, disabled = !flipped },
 			],
 			Upgrade.A => [
-				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 1) } },
-				new SequenceAction { CardId = uuid, SequenceStep = 1, SequenceLength = 2, Action = new AAttack { damage = GetDmg(s, 2) } },
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 1, 3, new AAttack { damage = GetDmg(s, 1) }),
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 1, 2, new AAttack { damage = GetDmg(s, 2) }),
 				new AAttack { damage = GetDmg(s, 3) },
 			],
 			_ => [
-				new SequenceAction { CardId = uuid, SequenceStep = 3, SequenceLength = 3, Action = new AAttack { damage = GetDmg(s, 1) } },
-				new SequenceAction { CardId = uuid, SequenceStep = 2, SequenceLength = 2, Action = new AAttack { damage = GetDmg(s, 2) } },
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 3, 3, new AAttack { damage = GetDmg(s, 1) }),
+				ModEntry.Instance.KokoroApi.Actions.MakeSequenceAction(uuid, 2, 2, new AAttack { damage = GetDmg(s, 2) }),
 				new AAttack { damage = GetDmg(s, 3) },
 			]
 		};

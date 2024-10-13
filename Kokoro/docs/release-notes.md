@@ -11,6 +11,7 @@
 * Incorporated Bloch's `Spontaneous`.
 * Incorporated Johnson's Temporary Upgrades.
 * Incorporated Natasha's `TimesPlayed`.
+* Incorporated Natasha's `Sequence`.
 * Removed `MidrowScorching`.
 
 ## 1.12.1
