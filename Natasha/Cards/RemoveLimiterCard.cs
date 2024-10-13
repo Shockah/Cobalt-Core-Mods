@@ -36,8 +36,8 @@ internal sealed class RemoveLimiterCard : Card, IRegisterable
 			],
 			Upgrade.B => [
 				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 3 },
-				new TimesPlayedVariableHint { CardId = uuid },
-				new AAddCard { card = new LimiterCard(), destination = CardDestination.Deck, amount = this.GetTimesPlayed() + 1, xHint = 1 },
+				ModEntry.Instance.KokoroApi.Actions.MakeTimesPlayedVariableHintAction(uuid),
+				new AAddCard { card = new LimiterCard(), destination = CardDestination.Deck, amount = ModEntry.Instance.KokoroApi.Actions.GetTimesPlayed(this) + 1, xHint = 1 },
 			],
 			_ => [
 				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 },

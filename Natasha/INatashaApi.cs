@@ -24,9 +24,6 @@ public interface INatashaApi
 	CardAction MakeChangeLimitedUsesAction(int cardId, int amount, AStatusMode mode = AStatusMode.Add);
 	ACardSelect SetFilterLimited(ACardSelect action, bool? limited);
 
-	CardAction MakeTimesPlayedVariableHintAction(int cardId);
-	IKokoroApi.IConditionalActionApi.IIntExpression MakeTimesPlayedCondition(int currentTimesPlayed);
-
 	CardAction MakeSequenceAction(int cardId, CardAction action, int sequenceStep, int sequenceLength);
 
 	CardAction MakeOneLinerAction(List<CardAction> actions, int spacing = 3);

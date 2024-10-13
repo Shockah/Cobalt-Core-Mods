@@ -47,12 +47,6 @@ public sealed class ApiImplementation : INatashaApi
 	public ACardSelect SetFilterLimited(ACardSelect action, bool? limited)
 		=> action.SetFilterLimited(limited);
 
-	public CardAction MakeTimesPlayedVariableHintAction(int cardId)
-		=> new TimesPlayedVariableHint { CardId = cardId };
-
-	public IKokoroApi.IConditionalActionApi.IIntExpression MakeTimesPlayedCondition(int currentTimesPlayed)
-		=> new TimesPlayedCondition { CurrentTimesPlayed = currentTimesPlayed };
-
 	public CardAction MakeSequenceAction(int cardId, CardAction action, int sequenceStep, int sequenceLength)
 		=> new SequenceAction { CardId = cardId, Action = action, SequenceStep = sequenceStep, SequenceLength = sequenceLength };
 

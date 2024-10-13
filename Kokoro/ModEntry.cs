@@ -80,6 +80,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		StatusLogicManager.Setup(Harmony);
 		StatusRenderManager.Setup(Harmony);
 		TemporaryUpgradesManager.Setup(Harmony);
+		TimesPlayedManager.Setup(Harmony);
 		WrappedActionManager.Setup(Harmony);
 		
 		ConditionalActionManager.SetupLate();

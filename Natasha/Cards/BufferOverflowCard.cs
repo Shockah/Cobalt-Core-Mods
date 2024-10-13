@@ -38,12 +38,12 @@ internal sealed class BufferOverflowCard : Card, IRegisterable, IHasCustomCardTr
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new TimesPlayedVariableHint { CardId = uuid },
-				new AAttack { damage = GetDmg(s, (this.GetTimesPlayed() + 1) * 2), xHint = 2 },
+				ModEntry.Instance.KokoroApi.Actions.MakeTimesPlayedVariableHintAction(uuid),
+				new AAttack { damage = GetDmg(s, (ModEntry.Instance.KokoroApi.Actions.GetTimesPlayed(this) + 1) * 2), xHint = 2 },
 			],
 			_ => [
-				new TimesPlayedVariableHint { CardId = uuid },
-				new AAttack { damage = GetDmg(s, this.GetTimesPlayed() + 1), xHint = 1 },
+				ModEntry.Instance.KokoroApi.Actions.MakeTimesPlayedVariableHintAction(uuid),
+				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.Actions.GetTimesPlayed(this) + 1), xHint = 1 },
 			]
 		};
 }

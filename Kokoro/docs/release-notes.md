@@ -5,11 +5,12 @@
 ## Upcoming release
 
 * Added an extra required method to the `ICustomCardBrowseSource`.
-* Added `MultiCardBrowse`.
+* Incorporated Bloch's `MultiCardBrowse`.
 * Incorporated Bloch's `OnDiscard`.
 * Incorporated Bloch's `OnTurnEnd`.
 * Incorporated Bloch's `Spontaneous`.
 * Incorporated Johnson's Temporary Upgrades.
+* Incorporated Natasha's `TimesPlayed`.
 * Removed `MidrowScorching`.
 
 ## 1.12.1

@@ -42,6 +42,12 @@
 			}
 		}
 	},
+	"x": {
+		"TimesPlayed": {
+			"stateful": "<c=action>X</c> = Times this card was played this combat, including this play (<c=boldPink>{{Count}}</c>).",
+			"stateless": "<c=action>X</c> = Times this card was played this combat, including this play."
+		}
+	},
 	"resourceCost": {
 		"status": {
 			"player": {

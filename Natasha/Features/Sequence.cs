@@ -54,7 +54,7 @@ internal sealed class Sequence : IRegisterable, IWrappedActionHook
 		if (action is not SequenceAction sequenceAction)
 			return true;
 
-		var timesPlayed = state.FindCard(sequenceAction.CardId) is { } card ? card.GetTimesPlayed() + 1 : -1;
+		var timesPlayed = state.FindCard(sequenceAction.CardId) is { } card ? ModEntry.Instance.KokoroApi.Actions.GetTimesPlayed(card) + 1 : -1;
 		var step = (timesPlayed - 1) % sequenceAction.SequenceLength + 1;
 		var selfDisabled = sequenceAction.disabled || (timesPlayed != -1 && step != sequenceAction.SequenceStep);
 		var oldActionDisabled = sequenceAction.Action.disabled;
@@ -96,7 +96,7 @@ internal sealed class SequenceAction : CardAction
 	{
 		int currentSequenceStep;
 		if (s.route is Combat && s.FindCard(CardId) is { } card)
-			currentSequenceStep = card.GetTimesPlayed() % SequenceLength + 1;
+			currentSequenceStep = ModEntry.Instance.KokoroApi.Actions.GetTimesPlayed(card) % SequenceLength + 1;
 		else
 			currentSequenceStep = -1;
 
@@ -125,7 +125,7 @@ internal sealed class SequenceAction : CardAction
 		if (s.FindCard(CardId) is not { } card)
 			return;
 
-		var sequenceStep = (card.GetTimesPlayed() - 1) % SequenceLength + 1;
+		var sequenceStep = (ModEntry.Instance.KokoroApi.Actions.GetTimesPlayed(card) - 1) % SequenceLength + 1;
 		if (sequenceStep != SequenceStep)
 			return;
 
