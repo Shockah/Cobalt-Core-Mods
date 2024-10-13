@@ -58,7 +58,7 @@ internal sealed class JesterIntegration
 			public int GetCost()
 				=> Damage * 10 + BlastwaveDamage * BlastwaveRange * 15 + ExistingShotCount * 5;
 
-			public IJesterApi.IEntry? GetUpgradeA(IJesterApi.IJesterRequest request, out int cost)
+			public IJesterApi.IEntry GetUpgradeA(IJesterApi.IJesterRequest request, out int cost)
 			{
 				var increaseBlastwaveDamage = request.Random.NextInt() % 2 == 0;
 				var entry = new Entry(Damage + (increaseBlastwaveDamage ? 0 : 1), BlastwaveDamage + (increaseBlastwaveDamage ? 1 : 0), BlastwaveRange, ExistingShotCount);
@@ -141,7 +141,7 @@ internal sealed class JesterIntegration
 			public IList<int> Offsets = [0];
 			public required ISet<string> Tags { get; init; }
 			public int MaxAtSameSpot = 2;
-			public bool WithBlastwave = false;
+			public bool WithBlastwave;
 
 			public int GetActionCount()
 				=> Offsets.Count + (WithBlastwave ? 1 : 0);

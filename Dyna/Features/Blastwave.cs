@@ -120,6 +120,7 @@ internal sealed class BlastwaveManager
 
 	private static IEnumerable<CodeInstruction> AAttack_Begin_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -144,6 +145,7 @@ internal sealed class BlastwaveManager
 			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.GetDisplayName(@long: false), ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static void AAttack_Begin_Transpiler_AfterDroneHitCheck(State state, Combat combat, RaycastResult raycastResult)
@@ -311,6 +313,9 @@ internal sealed class BlastwaveManager
 		{
 			var targetShip = TargetPlayer ? state.ship : combat.otherShip;
 
+			RunAt(WorldX - offset);
+			RunAt(WorldX + offset);
+
 			void RunForPartAt(int worldX)
 			{
 				if (targetShip.GetPartAtWorldX(worldX) is not { } part || part.type == PType.empty)
@@ -401,9 +406,6 @@ internal sealed class BlastwaveManager
 				else
 					RunForPartAt(worldX);
 			}
-
-			RunAt(WorldX - offset);
-			RunAt(WorldX + offset);
 		}
 	}
 }

@@ -17,8 +17,8 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 	internal static IStatusEntry InsightStatus { get; private set; } = null!;
 	internal static IStatusEntry IntensifyStatus { get; private set; } = null!;
 
-	private static bool IsDuringNormalDamage = false;
-	private static int ReducedDamage = 0;
+	private static bool IsDuringNormalDamage;
+	private static int ReducedDamage;
 
 	public AuraManager()
 	{
@@ -197,9 +197,6 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 			return;
 
 		var toReduce = Math.Min(maxVeiling, accountingTempShieldDamage);
-		if (toReduce <= 0)
-			return;
-
 		incomingDamage -= toReduce;
 		ReducedDamage = toReduce;
 	}
@@ -285,15 +282,14 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 		{
 			base.Render(g);
 
-			int centerX = 240;
-			int topY = 80;
+			var centerX = 240;
+			var topY = 80;
 
-			int choiceWidth = 56;
-			int choiceHeight = 24;
-			int choiceSpacing = 4;
-			int actionSpacing = 4;
-			int actionYOffset = 7;
-			int actionHoverYOffset = 1;
+			var choiceWidth = 56;
+			var choiceHeight = 24;
+			var choiceSpacing = 4;
+			var actionYOffset = 7;
+			var actionHoverYOffset = 1;
 
 			SharedArt.DrawEngineering(g);
 
@@ -311,9 +307,9 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 				var choiceTopY = topY + 48;
 
 				var buttonRect = new Rect(choiceStartX, choiceTopY, choiceWidth, choiceHeight);
-				var buttonResult = SharedArt.ButtonText(
+				SharedArt.ButtonText(
 					g, Vec.Zero, new UIKey(ChoiceKey, i), "", rect: buttonRect,
-					onMouseDown: new MouseDownHandler(() => OnFinishChoosing(g, ii))
+					onMouseDown: new MouseDownHandler(() => this.OnFinishChoosing(g, ii))
 				);
 
 				var isHover = g.boxes.FirstOrDefault(b => b.key == new UIKey(ChoiceKey, i))?.IsHover() == true;
@@ -325,7 +321,7 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 				var actionXOffset = 0;
 
 				g.Push(rect: new(actionStartX + actionXOffset, choiceTopY + actionYOffset + (isHover ? actionHoverYOffset : 0)));
-				actionXOffset += Card.RenderAction(g, g.state, fakeAction, dontDraw: false) + actionSpacing;
+				Card.RenderAction(g, g.state, fakeAction, dontDraw: false);
 				g.Pop();
 			}
 		}

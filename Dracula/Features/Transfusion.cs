@@ -97,7 +97,7 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 		return tooltips.Concat(StatusMeta.GetTooltips(ModEntry.Instance.TransfusingStatus.Status, 1)).ToList();
 	}
 
-	private static void Ship_DirectHullDamage_Prefix(Ship __instance, ref int __state)
+	private static void Ship_DirectHullDamage_Prefix(Ship __instance, out int __state)
 		=> __state = __instance.hull;
 
 	private static void Ship_DirectHullDamage_Postfix(Ship __instance, Combat c, ref int __state)
@@ -139,15 +139,12 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 				TargetPlayer = ship.isPlayerShip,
 				canRunAfterKill = true,
 			});
-			if (progress > 0)
+			__instance.QueueImmediate(new AHeal
 			{
-				__instance.QueueImmediate(new AHeal
-				{
-					targetPlayer = ship.isPlayerShip,
-					healAmount = progress,
-					canRunAfterKill = true,
-				});
-			}
+				targetPlayer = ship.isPlayerShip,
+				healAmount = progress,
+				canRunAfterKill = true,
+			});
 			__instance.QueueImmediate(new AStatus
 			{
 				targetPlayer = ship.isPlayerShip,
@@ -173,7 +170,7 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 	public sealed class AReenableTransfusion : CardAction
 	{
 		[JsonProperty]
-		public bool TargetPlayer = false;
+		public bool TargetPlayer;
 
 		public override void Begin(G g, State s, Combat c)
 		{

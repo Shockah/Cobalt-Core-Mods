@@ -67,7 +67,7 @@ internal sealed class FluxPartModManager : IDynaHook
 
 	private static void TriggerFluxIfNeeded(State state, Combat combat, Part? part, bool targetPlayer)
 	{
-		if (part is not { } nonNullPart || nonNullPart.invincible || nonNullPart.GetDamageModifier() != FluxDamageModifier)
+		if (part is null || part.invincible || part.GetDamageModifier() != FluxDamageModifier)
 			return;
 
 		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is DynaDizzyArtifact) is { } dizzyDuo)

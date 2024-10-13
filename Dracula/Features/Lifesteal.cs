@@ -42,7 +42,7 @@ internal sealed class LifestealManager
 	private static void AAttack_Begin_Prefix(AAttack __instance)
 		=> AttackContext = __instance;
 
-	private static void AAttack_Begin_Finalizer(AAttack __instance)
+	private static void AAttack_Begin_Finalizer()
 		=> AttackContext = null;
 
 	public sealed class AApplyLifesteal : CardAction
@@ -76,7 +76,7 @@ internal sealed class LifestealManager
 		}
 	}
 
-	private static void Ship_NormalDamage_Prefix(Ship __instance, ref (int Shield, int TempShield) __state)
+	private static void Ship_NormalDamage_Prefix(Ship __instance, out (int Shield, int TempShield) __state)
 		=> __state = (Shield: __instance.Get(Status.shield), TempShield: __instance.Get(Status.tempShield));
 
 	private static void Ship_NormalDamage_Postfix(Ship __instance, State s, Combat c, DamageDone __result, ref (int Shield, int TempShield) __state)

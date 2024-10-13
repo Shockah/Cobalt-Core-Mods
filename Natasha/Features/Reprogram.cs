@@ -50,7 +50,7 @@ internal sealed class Reprogram : IRegisterable
 					ModEntry.Instance.Helper.ModData.SetModData(SpawnContext, "DecrementStatus", ReprogrammedStatus.Status);
 				return new RepairKit { fromPlayer = thing.fromPlayer };
 			}
-			else if (ship.Get(DeprogrammedStatus.Status) > 0)
+			if (ship.Get(DeprogrammedStatus.Status) > 0)
 			{
 				if (thing is Asteroid)
 					return thing;

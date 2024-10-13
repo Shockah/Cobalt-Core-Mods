@@ -219,6 +219,7 @@ internal sealed class ChargeManager
 
 	private static IEnumerable<CodeInstruction> AAttack_Begin_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -244,6 +245,7 @@ internal sealed class ChargeManager
 			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.GetDisplayName(@long: false), ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static void AAttack_Begin_Transpiler_TriggerChargeIfAny(AAttack attack, State state, Combat combat, RaycastResult raycastResult)
@@ -423,8 +425,7 @@ public sealed class FireChargeAction : CardAction
 			return;
 
 		var worldX = x + Offset;
-		if (!c.stuff.TryGetValue(worldX, out var @object))
-			@object = null;
+		var @object = c.stuff.GetValueOrDefault(worldX);
 
 		var targetShip = TargetPlayer ? s.ship : c.otherShip;
 		var initialPosition = TargetPlayer ? -ShipDistanceFromMidrow : ShipDistanceFromMidrow;

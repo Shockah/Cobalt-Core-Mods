@@ -13,7 +13,7 @@ internal static class BloodMirrorExt
 
 internal sealed class BloodMirrorManager : IStatusLogicHook
 {
-	private static int BloodMirrorDepth { get; set; } = 0;
+	private static int BloodMirrorDepth;
 
 	public BloodMirrorManager()
 	{
@@ -43,7 +43,7 @@ internal sealed class BloodMirrorManager : IStatusLogicHook
 		return false;
 	}
 
-	private static void Ship_DirectHullDamage_Prefix(Ship __instance, ref int __state)
+	private static void Ship_DirectHullDamage_Prefix(Ship __instance, out int __state)
 		=> __state = __instance.hull;
 
 	private static void Ship_DirectHullDamage_Postfix(Ship __instance, Combat c, ref int __state)
