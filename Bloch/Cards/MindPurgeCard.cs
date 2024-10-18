@@ -54,7 +54,7 @@ internal sealed class MindPurgeCard : Card, IRegisterable
 
 		public override Route? BeginWithRoute(G g, State s, Combat c)
 		{
-			var route = ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.MakeRoute(r =>
+			var route = ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeRoute(r =>
 			{
 				r.browseSource = CardBrowse.Source.Hand;
 				r.browseAction = new BrowseAction { ExtraCards = ExtraCards };
@@ -85,7 +85,7 @@ internal sealed class MindPurgeCard : Card, IRegisterable
 			base.Begin(g, s, c);
 
 			var cardsToDiscard = c.hand
-				.Where(handCard => (ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.GetSelectedCards(this) ?? []).Any(card => card.uuid == handCard.uuid))
+				.Where(handCard => (ModEntry.Instance.KokoroApi.MultiCardBrowse.GetSelectedCards(this) ?? []).Any(card => card.uuid == handCard.uuid))
 				.ToList();
 
 			for (var i = 0; i < cardsToDiscard.Count; i++)

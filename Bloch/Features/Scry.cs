@@ -71,7 +71,7 @@ internal sealed class ScryAction : CardAction
 
 		c.Queue(new ADelay { timer = 0.0 });
 
-		return ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.MakeRoute(r =>
+		return ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeRoute(r =>
 		{
 			r.browseSource = CardBrowse.Source.DrawPile;
 			r.browseAction = new BrowseAction { PresentedCards = cards, FromInsight = FromInsight };
@@ -94,7 +94,7 @@ internal sealed class ScryAction : CardAction
 			base.Begin(g, s, c);
 
 			var cardsToDiscard = s.deck
-				.Where(drawPileCard => (ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.GetSelectedCards(this) ?? []).Any(card => card.uuid == drawPileCard.uuid))
+				.Where(drawPileCard => (ModEntry.Instance.KokoroApi.MultiCardBrowse.GetSelectedCards(this) ?? []).Any(card => card.uuid == drawPileCard.uuid))
 				.ToList();
 
 			for (var i = 0; i < cardsToDiscard.Count; i++)

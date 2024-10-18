@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using Nickel.Common;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ public sealed class ModEntry : SimpleMod
 	internal readonly IHarmony Harmony;
 	internal readonly HookManager<IBlochHook> HookManager;
 	internal readonly ApiImplementation Api;
-	internal readonly IKokoroApi KokoroApi;
+	internal readonly IKokoroApi.IV2 KokoroApi;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> DialogueLocalizations;
@@ -97,7 +98,7 @@ public sealed class ModEntry : SimpleMod
 		Harmony = helper.Utilities.Harmony;
 		HookManager = new();
 		Api = new();
-		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),

@@ -35,40 +35,40 @@ internal sealed class AttentionSpanCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
+				ModEntry.Instance.KokoroApi.Spontaneous.MakeAction(new AStatus
 				{
 					targetPlayer = true,
 					status = AuraManager.VeilingStatus.Status,
 					statusAmount = 2
-				}),
-				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
+				}).AsCardAction,
+				ModEntry.Instance.KokoroApi.Spontaneous.MakeAction(new AStatus
 				{
 					targetPlayer = true,
 					status = AuraManager.FeedbackStatus.Status,
 					statusAmount = 2
-				}),
-				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
+				}).AsCardAction,
+				ModEntry.Instance.KokoroApi.Spontaneous.MakeAction(new AStatus
 				{
 					targetPlayer = true,
 					status = AuraManager.IntensifyStatus.Status,
 					statusAmount = 1
-				}),
-				ModEntry.Instance.KokoroApi.Actions.MakeOnTurnEndAction(new ExhaustCardAction { CardId = uuid }),
+				}).AsCardAction,
+				ModEntry.Instance.KokoroApi.OnTurnEnd.MakeAction(new ExhaustCardAction { CardId = uuid }).AsCardAction,
 			],
 			_ => [
-				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
+				ModEntry.Instance.KokoroApi.Spontaneous.MakeAction(new AStatus
 				{
 					targetPlayer = true,
 					status = AuraManager.VeilingStatus.Status,
 					statusAmount = 2
-				}),
-				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
+				}).AsCardAction,
+				ModEntry.Instance.KokoroApi.Spontaneous.MakeAction(new AStatus
 				{
 					targetPlayer = true,
 					status = AuraManager.IntensifyStatus.Status,
 					statusAmount = 1
-				}),
-				ModEntry.Instance.KokoroApi.Actions.MakeOnTurnEndAction(new ExhaustCardAction { CardId = uuid }),
+				}).AsCardAction,
+				ModEntry.Instance.KokoroApi.OnTurnEnd.MakeAction(new ExhaustCardAction { CardId = uuid }).AsCardAction,
 			]
 		};
 }

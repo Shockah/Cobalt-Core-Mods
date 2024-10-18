@@ -9,25 +9,73 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
+	#region V1
+
+	private static readonly ConditionalWeakTable<IStatusRenderHook, IKokoroApi.IV2.IStatusRenderingApi.IHook> V1ToV2StatusRenderingHookWrappers = [];
+
+	private sealed class V1ToV2StatusRenderingHookWrapper(IStatusRenderHook v1) : IKokoroApi.IV2.IStatusRenderingApi.IHook
+	{
+		public IEnumerable<(Status Status, double Priority)> GetExtraStatusesToShow(State state, Combat combat, Ship ship)
+			=> v1.GetExtraStatusesToShow(state, combat, ship);
+		
+		public bool? ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)
+			=> v1.ShouldShowStatus(state, combat, ship, status, amount);
+		
+		public bool? ShouldOverrideStatusRenderingAsBars(State state, Combat combat, Ship ship, Status status, int amount)
+			=> v1.ShouldOverrideStatusRenderingAsBars(state, combat, ship, status, amount);
+		
+		public (IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(State state, Combat combat, Ship ship, Status status, int amount)
+			=> v1.OverrideStatusRendering(state, combat, ship, status, amount);
+		
+		public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
+			=> v1.OverrideStatusTooltips(status, amount, ship, tooltips);
+	}
+	
 	public void RegisterStatusRenderHook(IStatusRenderHook hook, double priority)
-		=> StatusRenderManager.Instance.Register(hook, priority);
+		=> StatusRenderManager.Instance.Register(V1ToV2StatusRenderingHookWrappers.GetValue(hook, key => new V1ToV2StatusRenderingHookWrapper(key)), priority);
 
 	public void UnregisterStatusRenderHook(IStatusRenderHook hook)
-		=> StatusRenderManager.Instance.Unregister(hook);
+	{
+		if (V1ToV2StatusRenderingHookWrappers.TryGetValue(hook, out var wrapper))
+			StatusRenderManager.Instance.Unregister(wrapper);
+	}
 
 	public Color DefaultActiveStatusBarColor
 		=> new("b2f2ff");
 
 	public Color DefaultInactiveStatusBarColor
 		=> DefaultActiveStatusBarColor.fadeAlpha(0.3);
+
+	#endregion
+	
+	partial class V2Api
+	{
+		public IKokoroApi.IV2.IStatusRenderingApi StatusRendering { get; } = new StatusRenderingApi();
+		
+		public sealed class StatusRenderingApi : IKokoroApi.IV2.IStatusRenderingApi
+		{
+			public void RegisterHook(IKokoroApi.IV2.IStatusRenderingApi.IHook hook, double priority = 0)
+				=> StatusRenderManager.Instance.Register(hook, priority);
+
+			public void UnregisterHook(IKokoroApi.IV2.IStatusRenderingApi.IHook hook)
+				=> StatusRenderManager.Instance.Unregister(hook);
+			
+			public Color DefaultActiveStatusBarColor
+				=> new("b2f2ff");
+
+			public Color DefaultInactiveStatusBarColor
+				=> DefaultActiveStatusBarColor.fadeAlpha(0.3);
+		}
+	}
 }
 
-internal sealed class StatusRenderManager : HookManager<IStatusRenderHook>
+internal sealed class StatusRenderManager : HookManager<IKokoroApi.IV2.IStatusRenderingApi.IHook>
 {
 	internal static readonly StatusRenderManager Instance = new();
 
@@ -64,7 +112,7 @@ internal sealed class StatusRenderManager : HookManager<IStatusRenderHook>
 		return true;
 	}
 
-	public IStatusRenderHook? GetOverridingAsBarsHook(State state, Combat combat, Ship ship, Status status, int amount)
+	public IKokoroApi.IV2.IStatusRenderingApi.IHook? GetOverridingAsBarsHook(State state, Combat combat, Ship ship, Status status, int amount)
 	{
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
 		{
@@ -83,10 +131,7 @@ internal sealed class StatusRenderManager : HookManager<IStatusRenderHook>
 	internal List<Tooltip> OverrideStatusTooltips(Status status, int amount, List<Tooltip> tooltips)
 	{
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, (MG.inst.g.state ?? DB.fakeState).EnumerateAllArtifacts()))
-		{
 			tooltips = hook.OverrideStatusTooltips(status, amount, RenderingStatusForShip, tooltips);
-			tooltips = hook.OverrideStatusTooltips(status, amount, RenderingStatusForShip is not null, tooltips);
-		}
 		return tooltips;
 	}
 	

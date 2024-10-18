@@ -35,18 +35,17 @@ internal sealed class MuscleMemoryArtifact : Artifact, IRegisterable
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(new ADummyAction()).GetTooltips(DB.fakeState);
+		=> ModEntry.Instance.KokoroApi.OnDiscard.MakeAction(new ADummyAction()).AsCardAction.GetTooltips(DB.fakeState);
 
 	private static void OnDiscardManager_TriggerAction_Begin_Postfix(CardAction __instance, State s, Combat c)
 	{
 		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is MuscleMemoryArtifact) is not { } artifact)
 			return;
-
-		c.QueueImmediate(ModEntry.Instance.KokoroApi.Actions.GetWrappedCardActions(__instance).Select(action =>
-		{
-			if (string.IsNullOrEmpty(action.artifactPulse))
-				action.artifactPulse = artifact.Key();
-			return action;
-		}));
+		if (ModEntry.Instance.KokoroApi.OnDiscard.AsAction(__instance) is not { } onDiscardAction)
+			return;
+		
+		if (string.IsNullOrEmpty(onDiscardAction.Action.artifactPulse))
+			onDiscardAction.Action.artifactPulse = artifact.Key();
+		c.QueueImmediate(onDiscardAction.Action);
 	}
 }

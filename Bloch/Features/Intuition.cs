@@ -1,9 +1,10 @@
 ﻿using Nickel;
+using Shockah.Kokoro;
 using System.Collections.Generic;
 
 namespace Shockah.Bloch;
 
-internal sealed class IntuitionManager : IStatusLogicHook, IStatusRenderHook
+internal sealed class IntuitionManager : IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static IStatusEntry IntuitionStatus { get; private set; } = null!;
 
@@ -21,15 +22,15 @@ internal sealed class IntuitionManager : IStatusLogicHook, IStatusRenderHook
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Intuition", "description"]).Localize
 		});
 
-		ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(this, 0);
-		ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(this, 0);
+		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(this);
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(this);
 	}
 
-	public void OnStatusTurnTrigger(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)
+	public void OnStatusTurnTrigger(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)
 	{
 		if (status != IntuitionStatus.Status)
 			return;
-		if (timing != StatusTurnTriggerTiming.TurnEnd)
+		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
 			return;
 
 		combat.QueueImmediate(new AStatus

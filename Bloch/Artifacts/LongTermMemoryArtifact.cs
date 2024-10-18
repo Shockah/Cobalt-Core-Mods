@@ -3,6 +3,7 @@ using HarmonyLib;
 using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
+using Shockah.Kokoro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -101,14 +102,14 @@ internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 			if (s.EnumerateAllArtifacts().OfType<LongTermMemoryArtifact>().FirstOrDefault() is not { } artifact)
 				return null;
 
-			var customActions = new List<IKokoroApi.IActionApi.IMultiCardBrowse.ICustomAction>(capacity: 2);
+			var customActions = new List<IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction>(capacity: 2);
 			if (artifact.RetainCooldown <= 0)
-				customActions.Add(ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.MakeCustomAction(
+				customActions.Add(ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeCustomAction(
 					new RetainAction(),
 					ModEntry.Instance.Localizations.Localize(["artifact", "LongTermMemory", "retainAction"])
 				).SetMinSelected(1).SetMaxSelected(1));
 			if (artifact.DiscardCooldown <= 0)
-				customActions.Add(ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.MakeCustomAction(
+				customActions.Add(ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeCustomAction(
 					new DiscardAction(),
 					ModEntry.Instance.Localizations.Localize(["artifact", "LongTermMemory", "discardAction"])
 				).SetMinSelected(1).SetMaxSelected(1));
@@ -116,7 +117,7 @@ internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 			if (customActions.Count == 0)
 				return null;
 
-			var route = ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.MakeRoute(r =>
+			var route = ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeRoute(r =>
 			{
 				r.browseSource = CardBrowse.Source.Hand;
 				r.browseAction = new TitleAction();
@@ -154,7 +155,7 @@ internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 			base.Begin(g, s, c);
 
 			var affectedCards = c.hand
-				.Where(handCard => (ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.GetSelectedCards(this) ?? []).Any(card => card.uuid == handCard.uuid))
+				.Where(handCard => (ModEntry.Instance.KokoroApi.MultiCardBrowse.GetSelectedCards(this) ?? []).Any(card => card.uuid == handCard.uuid))
 				.ToList();
 
 			foreach (var card in affectedCards)
@@ -179,7 +180,7 @@ internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 			base.Begin(g, s, c);
 
 			var affectedCards = c.hand
-				.Where(handCard => (ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.GetSelectedCards(this) ?? []).Any(card => card.uuid == handCard.uuid))
+				.Where(handCard => (ModEntry.Instance.KokoroApi.MultiCardBrowse.GetSelectedCards(this) ?? []).Any(card => card.uuid == handCard.uuid))
 				.ToList();
 
 			c.isPlayerTurn = true;

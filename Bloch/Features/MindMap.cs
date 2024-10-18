@@ -1,12 +1,13 @@
 ﻿using FSPRO;
 using HarmonyLib;
 using Nickel;
+using Shockah.Kokoro;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.Bloch;
 
-internal sealed class MindMapManager : IStatusRenderHook
+internal sealed class MindMapManager : IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static IStatusEntry MindMapStatus { get; private set; } = null!;
 
@@ -32,7 +33,7 @@ internal sealed class MindMapManager : IStatusRenderHook
 			prefix: new HarmonyMethod(GetType(), nameof(AEndTurn_Begin_Prefix))
 		);
 
-		ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(this, 0);
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(this);
 	}
 
 	private void RemoveTemporaryRetainTraits(State state)
@@ -72,7 +73,7 @@ internal sealed class MindMapManager : IStatusRenderHook
 
 		public override Route? BeginWithRoute(G g, State s, Combat c)
 		{
-			var route = ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.MakeRoute(r =>
+			var route = ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeRoute(r =>
 			{
 				r.browseSource = CardBrowse.Source.Hand;
 				r.browseAction = new BrowseAction { Amount = Amount };
@@ -103,7 +104,7 @@ internal sealed class MindMapManager : IStatusRenderHook
 		{
 			base.Begin(g, s, c);
 
-			var cards = ModEntry.Instance.KokoroApi.Actions.MultiCardBrowse.GetSelectedCards(this) ?? [];
+			var cards = ModEntry.Instance.KokoroApi.MultiCardBrowse.GetSelectedCards(this) ?? [];
 			foreach (var card in cards)
 			{
 				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, ModEntry.Instance.Helper.Content.Cards.RetainCardTrait, true, permanent: false);

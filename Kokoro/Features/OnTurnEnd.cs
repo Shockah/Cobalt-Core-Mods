@@ -8,16 +8,18 @@ namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
-	partial class ActionApiImplementation
+	partial class V2Api
 	{
-		public bool TryGetOnTurnEndAction(CardAction maybeOnTurnEndAction, out CardAction? action)
-		{
-			action = maybeOnTurnEndAction is OnTurnEndManager.TriggerAction onTurnEndAction ? onTurnEndAction.Action : null;
-			return action is not null;
-		}
+		public IKokoroApi.IV2.IOnTurnEndApi OnTurnEnd { get; } = new OnTurnEndApi();
 		
-		public CardAction MakeOnTurnEndAction(CardAction action)
-			=> new OnTurnEndManager.TriggerAction { Action = action };
+		public sealed class OnTurnEndApi : IKokoroApi.IV2.IOnTurnEndApi
+		{
+			public IKokoroApi.IV2.IOnTurnEndApi.IOnTurnEndAction? AsAction(CardAction action)
+				=> action as IKokoroApi.IV2.IOnTurnEndApi.IOnTurnEndAction;
+
+			public IKokoroApi.IV2.IOnTurnEndApi.IOnTurnEndAction MakeAction(CardAction action)
+				=> new OnTurnEndManager.TriggerAction { Action = action };
+		}
 	}
 }
 
@@ -97,9 +99,12 @@ internal sealed class OnTurnEndManager : IWrappedActionHook
 		return false;
 	}
 
-	internal sealed class TriggerAction : CardAction
+	internal sealed class TriggerAction : CardAction, IKokoroApi.IV2.IOnTurnEndApi.IOnTurnEndAction
 	{
-		public required CardAction Action;
+		public required CardAction Action { get; set; }
+
+		public CardAction AsCardAction
+			=> this;
 
 		public override Icon? GetIcon(State s)
 			=> new(ActionIcon.Sprite, null, Colors.textMain);

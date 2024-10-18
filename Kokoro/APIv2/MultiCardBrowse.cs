@@ -5,14 +5,17 @@ namespace Shockah.Kokoro;
 
 public partial interface IKokoroApi
 {
-	public partial interface IActionApi
+	public partial interface IV2
 	{
-		IMultiCardBrowse MultiCardBrowse { get; }
+		IMultiCardBrowseApi MultiCardBrowse { get; }
 		
-		public interface IMultiCardBrowse
+		public interface IMultiCardBrowseApi
 		{
+			IMultiCardBrowseRoute? AsRoute(CardBrowse route);
 			IMultiCardBrowseRoute MakeRoute(Action<CardBrowse>? @delegate = null);
+			
 			IReadOnlyList<Card>? GetSelectedCards(CardAction action);
+
 			ICustomAction MakeCustomAction(CardAction action, string title);
 			
 			public interface IMultiCardBrowseRoute
@@ -25,8 +28,6 @@ public partial interface IKokoroApi
 				bool EnabledSorting { get; set; }
 				bool BrowseActionIsOnlyForTitle { get; set; }
 				IReadOnlyList<Card>? CardsOverride { get; set; }
-
-				IMultiCardBrowseRoute ModifyRoute(Action<CardBrowse> @delegate);
 
 				IMultiCardBrowseRoute SetCustomActions(IReadOnlyList<ICustomAction>? value);
 				IMultiCardBrowseRoute SetMinSelected(int value);

@@ -24,7 +24,7 @@ partial class ApiImplementation
 			} : new TTGlossary($"status.{Instance.Content.WormStatus.Id!.Value}", value.Value);
 }
 
-internal sealed class WormStatusManager : IStatusLogicHook, IStatusRenderHook
+internal sealed class WormStatusManager : IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static readonly WormStatusManager Instance = new();
 
@@ -38,9 +38,9 @@ internal sealed class WormStatusManager : IStatusLogicHook, IStatusRenderHook
 		return tooltips;
 	}
 
-	public void OnStatusTurnTrigger(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)
+	public void OnStatusTurnTrigger(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)
 	{
-		if (status != (Status)ModEntry.Instance.Content.WormStatus.Id!.Value || timing != StatusTurnTriggerTiming.TurnStart)
+		if (status != (Status)ModEntry.Instance.Content.WormStatus.Id!.Value || timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 			return;
 
 		var otherShip = ship.isPlayerShip ? combat.otherShip : state.ship;

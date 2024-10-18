@@ -58,24 +58,24 @@ internal sealed class PrismaticAuraCard : Card, IRegisterable
 					status = AuraManager.VeilingStatus.Status,
 					statusAmount = 1
 				},
-				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(new AStatus
+				ModEntry.Instance.KokoroApi.OnDiscard.MakeAction(new AStatus
 				{
 					targetPlayer = true,
 					status = AuraManager.InsightStatus.Status,
 					statusAmount = 1
-				}),
-				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(new AStatus
+				}).AsCardAction,
+				ModEntry.Instance.KokoroApi.OnDiscard.MakeAction(new AStatus
 				{
 					targetPlayer = true,
 					status = AuraManager.FeedbackStatus.Status,
 					statusAmount = 1
-				}),
-				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(new AStatus
+				}).AsCardAction,
+				ModEntry.Instance.KokoroApi.OnDiscard.MakeAction(new AStatus
 				{
 					targetPlayer = true,
 					status = AuraManager.VeilingStatus.Status,
 					statusAmount = 1
-				}),
+				}).AsCardAction,
 			],
 			_ => [
 				ModEntry.Instance.Api.MakeChooseAura(
@@ -84,18 +84,18 @@ internal sealed class PrismaticAuraCard : Card, IRegisterable
 					uiSubtitle: ModEntry.Instance.Api.GetChooseAuraOnPlayUISubtitle(upgrade == Upgrade.A ? 2 : 1),
 					actionId: OnPlayID
 				),
-				ModEntry.Instance.KokoroApi.Actions.MakeOnTurnEndAction(ModEntry.Instance.Api.MakeChooseAura(
+				ModEntry.Instance.KokoroApi.OnTurnEnd.MakeAction(ModEntry.Instance.Api.MakeChooseAura(
 					card: this,
 					amount: upgrade == Upgrade.A ? 2 : 1,
 					uiSubtitle: ModEntry.Instance.Api.GetChooseAuraOnTurnEndUISubtitle(upgrade == Upgrade.A ? 2 : 1),
 					actionId: OnTurnEndID
-				)),
-				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(ModEntry.Instance.Api.MakeChooseAura(
+				)).AsCardAction,
+				ModEntry.Instance.KokoroApi.OnDiscard.MakeAction(ModEntry.Instance.Api.MakeChooseAura(
 					card: this,
 					amount: upgrade == Upgrade.A ? 2 : 1,
 					uiSubtitle: ModEntry.Instance.Api.GetChooseAuraOnDiscardUISubtitle(upgrade == Upgrade.A ? 2 : 1),
 					actionId: OnDiscardID
-				)),
+				)).AsCardAction,
 			]
 		};
 }

@@ -19,7 +19,7 @@ partial class ApiImplementation
 		=> (Status)ShieldNextTurnStatus.Id!.Value;
 }
 
-internal sealed class StatusNextTurnManager : HookManager<IOxidationStatusHook>, IStatusLogicHook, IStatusRenderHook
+internal sealed class StatusNextTurnManager : HookManager<IOxidationStatusHook>, IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static readonly StatusNextTurnManager Instance = new();
 	
@@ -38,9 +38,9 @@ internal sealed class StatusNextTurnManager : HookManager<IOxidationStatusHook>,
 		return tooltips;
 	}
 
-	public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
+	public bool HandleStatusTurnAutoStep(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy setStrategy)
 	{
-		if (timing != StatusTurnTriggerTiming.TurnStart)
+		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 			return false;
 
 		if (status == (Status)ModEntry.Instance.Content.TempShieldNextTurnStatus.Id!.Value)

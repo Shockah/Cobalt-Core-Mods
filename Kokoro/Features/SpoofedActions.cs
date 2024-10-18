@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Nickel;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace Shockah.Kokoro;
@@ -9,6 +10,20 @@ partial class ApiImplementation
 {
 	partial class ActionApiImplementation
 	{
+		public bool TryGetSpoofedAction(CardAction maybeSpoofedAction, [MaybeNullWhen(false)] out CardAction renderAction, [MaybeNullWhen(false)] out CardAction realAction)
+		{
+			if (maybeSpoofedAction is not ASpoofed spoofedAction)
+			{
+				renderAction = null;
+				realAction = null;
+				return false;
+			}
+
+			renderAction = spoofedAction.RenderAction;
+			realAction = spoofedAction.RealAction;
+			return true;
+		}
+		
 		public CardAction MakeSpoofed(CardAction renderAction, CardAction realAction)
 			=> new ASpoofed { RenderAction = renderAction, RealAction = realAction };
 	}
@@ -56,16 +71,14 @@ internal sealed class SpoofedActionManager : IWrappedActionHook
 
 public sealed class ASpoofed : CardAction
 {
-	public CardAction? RenderAction;
-	public CardAction? RealAction;
+	public required CardAction RenderAction;
+	public required CardAction RealAction;
 
 	public override void Begin(G g, State s, Combat c)
 	{
 		base.Begin(g, s, c);
 		timer = 0;
 
-		if (RealAction is null)
-			return;
 		RealAction.whoDidThis = whoDidThis;
 		c.QueueImmediate(RealAction);
 	}

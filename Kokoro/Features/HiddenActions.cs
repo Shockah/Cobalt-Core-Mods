@@ -5,6 +5,7 @@ using Nanoray.Shrike.Harmony;
 using Nickel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -15,6 +16,12 @@ partial class ApiImplementation
 {
 	partial class ActionApiImplementation
 	{
+		public bool TryGetHiddenAction(CardAction maybeSpontanenousAction, [MaybeNullWhen(false)] out CardAction action)
+		{
+			action = maybeSpontanenousAction is AHidden hiddenAction ? hiddenAction.Action : null;
+			return action is not null;
+		}
+		
 		public CardAction MakeHidden(CardAction action, bool showTooltips = false)
 			=> new AHidden { Action = action, ShowTooltips = showTooltips };
 	}

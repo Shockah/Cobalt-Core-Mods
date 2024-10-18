@@ -35,18 +35,17 @@ internal sealed class UnlockedPotentialArtifact : Artifact, IRegisterable
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new ADummyAction()).GetTooltips(DB.fakeState);
+		=> ModEntry.Instance.KokoroApi.Spontaneous.MakeAction(new ADummyAction()).AsCardAction.GetTooltips(DB.fakeState);
 
 	private static void SpontaneousManager_TriggerAction_Begin_Postfix(CardAction __instance, State s, Combat c)
 	{
 		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is MuscleMemoryArtifact) is not { } artifact)
 			return;
+		if (ModEntry.Instance.KokoroApi.Spontaneous.AsAction(__instance) is not { } spontaneousAction)
+			return;
 
-		c.QueueImmediate(ModEntry.Instance.KokoroApi.Actions.GetWrappedCardActions(__instance).Select(action =>
-		{
-			if (string.IsNullOrEmpty(action.artifactPulse))
-				action.artifactPulse = artifact.Key();
-			return action;
-		}));
+		if (string.IsNullOrEmpty(spontaneousAction.Action.artifactPulse))
+			spontaneousAction.Action.artifactPulse = artifact.Key();
+		c.QueueImmediate(spontaneousAction.Action);
 	}
 }

@@ -10,14 +10,16 @@ namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
-	partial class ActionApiImplementation
+	partial class V2Api
 	{
-		public IKokoroApi.IActionApi.IMultiCardBrowse MultiCardBrowse
-			=> new MultiCardBrowseImplementation();
-
-		public sealed class MultiCardBrowseImplementation : IKokoroApi.IActionApi.IMultiCardBrowse
+		public IKokoroApi.IV2.IMultiCardBrowseApi MultiCardBrowse { get; } = new MultiCardBrowseApi();
+		
+		public sealed class MultiCardBrowseApi : IKokoroApi.IV2.IMultiCardBrowseApi
 		{
-			public IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute MakeRoute(Action<CardBrowse>? @delegate = null)
+			public IKokoroApi.IV2.IMultiCardBrowseApi.IMultiCardBrowseRoute? AsRoute(CardBrowse route)
+				=> route as IKokoroApi.IV2.IMultiCardBrowseApi.IMultiCardBrowseRoute;
+
+			public IKokoroApi.IV2.IMultiCardBrowseApi.IMultiCardBrowseRoute MakeRoute(Action<CardBrowse>? @delegate = null)
 			{
 				var route = new MultiCardBrowseManager.MultiCardBrowse();
 				@delegate?.Invoke(route);
@@ -27,42 +29,42 @@ partial class ApiImplementation
 			public IReadOnlyList<Card>? GetSelectedCards(CardAction action)
 				=> ModEntry.Instance.Helper.ModData.GetOptionalModData<IReadOnlyList<Card>>(action, "SelectedCards");
 
-			public IKokoroApi.IActionApi.IMultiCardBrowse.ICustomAction MakeCustomAction(CardAction action, string title)
+			public IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction MakeCustomAction(CardAction action, string title)
 				=> new CustomAction(action, title);
-		}
-
-		public sealed class CustomAction(
-			CardAction action,
-			string title
-		) : IKokoroApi.IActionApi.IMultiCardBrowse.ICustomAction
-		{
-			public CardAction Action { get; set; } = action;
-			public string Title { get; set; } = title;
-			public int MinSelected { get; set; }
-			public int MaxSelected { get; set; } = int.MaxValue;
 			
-			public IKokoroApi.IActionApi.IMultiCardBrowse.ICustomAction SetAction(CardAction value)
+			public sealed class CustomAction(
+				CardAction action,
+				string title
+			) : IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction
 			{
-				this.Action = value;
-				return this;
-			}
+				public CardAction Action { get; set; } = action;
+				public string Title { get; set; } = title;
+				public int MinSelected { get; set; }
+				public int MaxSelected { get; set; } = int.MaxValue;
+			
+				public IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction SetAction(CardAction value)
+				{
+					this.Action = value;
+					return this;
+				}
 
-			public IKokoroApi.IActionApi.IMultiCardBrowse.ICustomAction SetTitle(string value)
-			{
-				this.Title = value;
-				return this;
-			}
+				public IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction SetTitle(string value)
+				{
+					this.Title = value;
+					return this;
+				}
 
-			public IKokoroApi.IActionApi.IMultiCardBrowse.ICustomAction SetMinSelected(int value)
-			{
-				this.MinSelected = value;
-				return this;
-			}
+				public IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction SetMinSelected(int value)
+				{
+					this.MinSelected = value;
+					return this;
+				}
 
-			public IKokoroApi.IActionApi.IMultiCardBrowse.ICustomAction SetMaxSelected(int value)
-			{
-				this.MaxSelected = value;
-				return this;
+				public IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction SetMaxSelected(int value)
+				{
+					this.MaxSelected = value;
+					return this;
+				}
 			}
 		}
 	}
@@ -120,11 +122,11 @@ internal sealed class MultiCardBrowseManager
 			__result = "";
 	}
 
-	internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown, IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute
+	internal sealed class MultiCardBrowse : CardBrowse, OnMouseDown, IKokoroApi.IV2.IMultiCardBrowseApi.IMultiCardBrowseRoute
 	{
 		private static readonly UK ChooseUk = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
 		
-		public IReadOnlyList<IKokoroApi.IActionApi.IMultiCardBrowse.ICustomAction>? CustomActions { get; set; }
+		public IReadOnlyList<IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction>? CustomActions { get; set; }
 		public int MinSelected { get; set; }
 		public int MaxSelected { get; set; } = int.MaxValue;
 		public bool EnabledSorting { get; set; } = true;
@@ -138,50 +140,8 @@ internal sealed class MultiCardBrowseManager
 			mode = Mode.Browse;
 		}
 		
-		CardBrowse IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute.AsRoute
+		public CardBrowse AsRoute
 			=> this;
-
-		IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute.ModifyRoute(Action<CardBrowse> @delegate)
-		{
-			@delegate(this);
-			return this;
-		}
-
-		IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute.SetCustomActions(IReadOnlyList<IKokoroApi.IActionApi.IMultiCardBrowse.ICustomAction>? value)
-		{
-			this.CustomActions = value;
-			return this;
-		}
-
-		IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute.SetMinSelected(int value)
-		{
-			this.MinSelected = value;
-			return this;
-		}
-
-		IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute.SetMaxSelected(int value)
-		{
-			this.MaxSelected = value;
-			return this;
-		}
-
-		IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute.SetEnabledSorting(bool value)
-		{
-			this.EnabledSorting = value;
-			return this;
-		}
-
-		IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute.SetBrowseActionIsOnlyForTitle(bool value)
-		{
-			this.BrowseActionIsOnlyForTitle = value;
-			return this;
-		}
-
-		IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute IKokoroApi.IActionApi.IMultiCardBrowse.IMultiCardBrowseRoute.SetCardsOverride(IReadOnlyList<Card>? value)
-		{
-			this.CardsOverride = value;
-			return this;
-		}
 		
 		public override void Render(G g)
 		{
@@ -237,17 +197,17 @@ internal sealed class MultiCardBrowseManager
 			}
 		}
 		
-		private List<IKokoroApi.IActionApi.IMultiCardBrowse.ICustomAction> GetAllActions()
+		private List<IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction> GetAllActions()
 		{
-			var results = new List<IKokoroApi.IActionApi.IMultiCardBrowse.ICustomAction>(Math.Max((browseAction is null ? 0 : 1) + (CustomActions?.Count ?? 0), 1));
+			var results = new List<IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction>(Math.Max((browseAction is null ? 0 : 1) + (CustomActions?.Count ?? 0), 1));
 			if (CustomActions is not null)
 				results.AddRange(CustomActions);
 			if ((browseAction is not null && !BrowseActionIsOnlyForTitle) || results.Count == 0)
-				results.Add(new ApiImplementation.ActionApiImplementation.CustomAction(browseAction ?? new ADummyAction(), ModEntry.Instance.Localizations.Localize(["multiCardBrowse", "done"])).SetMinSelected(MinSelected).SetMaxSelected(MaxSelected));
+				results.Add(new ApiImplementation.V2Api.MultiCardBrowseApi.CustomAction(browseAction ?? new ADummyAction(), ModEntry.Instance.Localizations.Localize(["multiCardBrowse", "done"])).SetMinSelected(MinSelected).SetMaxSelected(MaxSelected));
 			return results;
 		}
 		
-		private void Finish(G g, IKokoroApi.IActionApi.IMultiCardBrowse.ICustomAction action)
+		private void Finish(G g, IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction action)
 		{
 			if (SelectedCards.Count < action.MinSelected || SelectedCards.Count > action.MaxSelected)
 			{
@@ -258,6 +218,42 @@ internal sealed class MultiCardBrowseManager
 			ModEntry.Instance.Helper.ModData.SetModData<IReadOnlyList<Card>>(action.Action, "SelectedCards", _listCache.Where(card => SelectedCards.Contains(card.uuid)).ToList());
 			g.state.GetCurrentQueue().QueueImmediate(action.Action);
 			g.CloseRoute(this, CBResult.Done);
+		}
+		
+		public IKokoroApi.IV2.IMultiCardBrowseApi.IMultiCardBrowseRoute SetCustomActions(IReadOnlyList<IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction>? value)
+		{
+			this.CustomActions = value;
+			return this;
+		}
+				
+		public IKokoroApi.IV2.IMultiCardBrowseApi.IMultiCardBrowseRoute SetMinSelected(int value)
+		{
+			this.MinSelected = value;
+			return this;
+		}
+				
+		public IKokoroApi.IV2.IMultiCardBrowseApi.IMultiCardBrowseRoute SetMaxSelected(int value)
+		{
+			this.MaxSelected = value;
+			return this;
+		}
+				
+		public IKokoroApi.IV2.IMultiCardBrowseApi.IMultiCardBrowseRoute SetEnabledSorting(bool value)
+		{
+			this.EnabledSorting = value;
+			return this;
+		}
+				
+		public IKokoroApi.IV2.IMultiCardBrowseApi.IMultiCardBrowseRoute SetBrowseActionIsOnlyForTitle(bool value)
+		{
+			this.BrowseActionIsOnlyForTitle = value;
+			return this;
+		}
+				
+		public IKokoroApi.IV2.IMultiCardBrowseApi.IMultiCardBrowseRoute SetCardsOverride(IReadOnlyList<Card>? value)
+		{
+			this.CardsOverride = value;
+			return this;
 		}
 	}
 }

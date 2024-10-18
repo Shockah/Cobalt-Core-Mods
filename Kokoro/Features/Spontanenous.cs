@@ -8,19 +8,21 @@ namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
-	partial class ActionApiImplementation
+	partial class V2Api
 	{
-		public ICardTraitEntry SpontaneousTriggeredTrait
-			=> SpontaneousManager.SpontaneousTriggeredTrait;
-
-		public bool TryGetSpontanenousAction(CardAction maybeSpontanenousAction, out CardAction? action)
-		{
-			action = maybeSpontanenousAction is SpontaneousManager.TriggerAction spontanenousAction ? spontanenousAction.Action : null;
-			return action is not null;
-		}
+		public IKokoroApi.IV2.ISpontaneousApi Spontaneous { get; } = new SpontaneousApi();
 		
-		public CardAction MakeSpontaneousAction(CardAction action)
-			=> new SpontaneousManager.TriggerAction { Action = action };
+		public sealed class SpontaneousApi : IKokoroApi.IV2.ISpontaneousApi
+		{
+			public ICardTraitEntry SpontaneousTriggeredTrait
+				=> SpontaneousManager.SpontaneousTriggeredTrait;
+
+			public IKokoroApi.IV2.ISpontaneousApi.ISpontaneousAction? AsAction(CardAction action)
+				=> action as IKokoroApi.IV2.ISpontaneousApi.ISpontaneousAction;
+
+			public IKokoroApi.IV2.ISpontaneousApi.ISpontaneousAction MakeAction(CardAction action)
+				=> new SpontaneousManager.TriggerAction { Action = action };
+		}
 	}
 }
 
@@ -153,9 +155,12 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 	private static void Combat_SaveThemFromTheVoid_Prefix(Combat __instance, Deck d)
 		=> __instance.QueueImmediate(new RequeueActionsAfterSavingFromTheVoidAction { Deck = d });
 
-	internal sealed class TriggerAction : CardAction
+	internal sealed class TriggerAction : CardAction, IKokoroApi.IV2.ISpontaneousApi.ISpontaneousAction
 	{
-		public required CardAction Action;
+		public required CardAction Action { get; set; }
+
+		public CardAction AsCardAction
+			=> this;
 
 		public override Icon? GetIcon(State s)
 			=> new(ActionIcon.Sprite, null, Colors.textMain);

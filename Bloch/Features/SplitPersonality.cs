@@ -1,10 +1,11 @@
 ﻿using HarmonyLib;
 using Nickel;
+using Shockah.Kokoro;
 using System.Collections.Generic;
 
 namespace Shockah.Bloch;
 
-internal sealed class SplitPersonalityManager : IStatusRenderHook
+internal sealed class SplitPersonalityManager : IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static IStatusEntry SplitPersonalityStatus { get; private set; } = null!;
 
@@ -31,7 +32,7 @@ internal sealed class SplitPersonalityManager : IStatusRenderHook
 			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(GetType(), nameof(ASpawn_Begin_Prefix)), priority: Priority.Last)
 		);
 
-		ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(this, 0);
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(this);
 	}
 
 	private static void AAttack_Begin_Prefix(AAttack __instance, State s, Combat c, bool __runOriginal)

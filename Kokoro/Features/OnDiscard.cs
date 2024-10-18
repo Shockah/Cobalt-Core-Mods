@@ -8,16 +8,18 @@ namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
-	partial class ActionApiImplementation
+	partial class V2Api
 	{
-		public bool TryGetOnDiscardAction(CardAction maybeOnDiscardAction, out CardAction? action)
-		{
-			action = maybeOnDiscardAction is OnDiscardManager.TriggerAction onDiscardAction ? onDiscardAction.Action : null;
-			return action is not null;
-		}
+		public IKokoroApi.IV2.IOnDiscardApi OnDiscard { get; } = new OnDiscardApi();
 		
-		public CardAction MakeOnDiscardAction(CardAction action)
-			=> new OnDiscardManager.TriggerAction { Action = action };
+		public sealed class OnDiscardApi : IKokoroApi.IV2.IOnDiscardApi
+		{
+			public IKokoroApi.IV2.IOnDiscardApi.IOnDiscardAction? AsAction(CardAction action)
+				=> action as IKokoroApi.IV2.IOnDiscardApi.IOnDiscardAction;
+
+			public IKokoroApi.IV2.IOnDiscardApi.IOnDiscardAction MakeAction(CardAction action)
+				=> new OnDiscardManager.TriggerAction { Action = action };
+		}
 	}
 }
 
@@ -110,9 +112,12 @@ internal sealed class OnDiscardManager : IWrappedActionHook
 		return false;
 	}
 
-	internal sealed class TriggerAction : CardAction
+	internal sealed class TriggerAction : CardAction, IKokoroApi.IV2.IOnDiscardApi.IOnDiscardAction
 	{
-		public required CardAction Action;
+		public required CardAction Action { get; set; }
+
+		public CardAction AsCardAction
+			=> this;
 
 		public override Icon? GetIcon(State s)
 			=> new(ActionIcon.Sprite, null, Colors.textMain);

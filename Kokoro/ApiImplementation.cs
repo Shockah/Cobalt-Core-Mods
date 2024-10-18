@@ -7,13 +7,17 @@ using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
-public sealed partial class ApiImplementation(
-	IManifest manifest
-) : IKokoroApi
+public sealed partial class ApiImplementation : IKokoroApi
 {
 	private static ModEntry Instance => ModEntry.Instance;
-
 	private static readonly Dictionary<Type, ConditionalWeakTable<object, object?>> ProxyCache = [];
+	private readonly IManifest Manifest;
+
+	public ApiImplementation(IManifest manifest)
+	{
+		this.Manifest = manifest;
+		this.V2 = new V2Api(this);
+	}
 
 	public TimeSpan TotalGameTime
 		=> TimeSpan.FromSeconds(MG.inst.g?.time ?? 0);
@@ -61,9 +65,15 @@ public sealed partial class ApiImplementation(
 		return newNullableProxy is not null;
 	}
 
+	public IKokoroApi.IV2 V2 { get; }
+
 	public IKokoroApi.IActionApi Actions { get; } = new ActionApiImplementation();
 
 	public sealed partial class ActionApiImplementation : IKokoroApi.IActionApi;
-	
-	public sealed partial class TemporaryUpgradesApi : IKokoroApi.ITemporaryUpgradesApi;
+
+	public sealed partial class V2Api(ApiImplementation parent) : IKokoroApi.IV2
+	{
+		public bool TryProxy<T>(object @object, [MaybeNullWhen(false)] out T proxy) where T : class
+			=> parent.TryProxy(@object, out proxy);
+	}
 }

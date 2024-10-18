@@ -1,6 +1,7 @@
 ﻿using daisyowl.text;
 using HarmonyLib;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Linq;
 
 namespace Shockah.Bloch;
 
-internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
+internal sealed class AuraManager : IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	private static ISpriteEntry ChooseAuraIcon = null!;
 
@@ -114,8 +115,8 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 			prefix: new HarmonyMethod(GetType(), nameof(Ship_ModifyDamageDueToParts_Prefix))
 		);
 
-		ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(this, 0);
-		ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(this, 0);
+		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(this);
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(this);
 	}
 
 	private static void Ship_NormalDamage_Prefix()
@@ -201,11 +202,11 @@ internal sealed class AuraManager : IStatusLogicHook, IStatusRenderHook
 		ReducedDamage = toReduce;
 	}
 
-	public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
+	public bool HandleStatusTurnAutoStep(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy setStrategy)
 	{
 		if (status != IntensifyStatus.Status)
 			return false;
-		if (timing != StatusTurnTriggerTiming.TurnStart)
+		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 			return false;
 		if (amount == 0)
 			return false;

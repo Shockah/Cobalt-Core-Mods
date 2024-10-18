@@ -42,11 +42,11 @@ internal sealed class MindBlastCard : Card, IRegisterable
 		{
 			Upgrade.B => [
 				new CountUpAction { CardId = uuid },
-				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(new AAttack { damage = GetDamage(s) }),
+				ModEntry.Instance.KokoroApi.OnDiscard.MakeAction(new AAttack { damage = GetDamage(s) }).AsCardAction,
 			],
 			_ => [
 				new AAttack { damage = GetDamage(s) },
-				ModEntry.Instance.KokoroApi.Actions.MakeOnDiscardAction(new CountUpAction { CardId = uuid }),
+				ModEntry.Instance.KokoroApi.OnDiscard.MakeAction(new CountUpAction { CardId = uuid }).AsCardAction,
 			]
 		};
 

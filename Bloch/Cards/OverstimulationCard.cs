@@ -40,37 +40,37 @@ internal sealed class OverstimulationCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
+				ModEntry.Instance.KokoroApi.Spontaneous.MakeAction(new AStatus
 				{
 					targetPlayer = true,
 					status = Status.evade,
 					statusAmount = 2
-				}),
-				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
+				}).AsCardAction,
+				ModEntry.Instance.KokoroApi.Spontaneous.MakeAction(new AStatus
 				{
 					targetPlayer = true,
-					status = ModEntry.Instance.KokoroApi.OxidationVanillaStatus,
+					status = ModEntry.Instance.KokoroApi.OxidationStatus.Status,
 					statusAmount = 2
-				}),
+				}).AsCardAction,
 			],
 			_ => [
-				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
+				ModEntry.Instance.KokoroApi.Spontaneous.MakeAction(new AStatus
 				{
 					targetPlayer = true,
 					status = Status.evade,
 					statusAmount = 2
-				}),
-				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new AStatus
+				}).AsCardAction,
+				ModEntry.Instance.KokoroApi.Spontaneous.MakeAction(new AStatus
 				{
 					targetPlayer = true,
-					status = ModEntry.Instance.KokoroApi.OxidationVanillaStatus,
+					status = ModEntry.Instance.KokoroApi.OxidationStatus.Status,
 					statusAmount = 3
-				}),
+				}).AsCardAction,
 				new AStatus
 				{
 					targetPlayer = true,
 					mode = AStatusMode.Set,
-					status = ModEntry.Instance.KokoroApi.OxidationVanillaStatus,
+					status = ModEntry.Instance.KokoroApi.OxidationStatus.Status,
 					statusAmount = 0
 				}
 			]
