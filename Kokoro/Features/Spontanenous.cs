@@ -182,6 +182,12 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 			base.Begin(g, s, c);
 			timer = 0;
 		}
+		
+		public IKokoroApi.IV2.ISpontaneousApi.ISpontaneousAction SetAction(CardAction value)
+		{
+			this.Action = value;
+			return this;
+		}
 	}
 
 	private sealed class MarkCardAsTriggeredAction : CardAction

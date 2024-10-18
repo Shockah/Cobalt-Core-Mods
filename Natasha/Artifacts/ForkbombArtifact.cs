@@ -1,11 +1,12 @@
 ﻿using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
+using Shockah.Kokoro;
 using System.Reflection;
 
 namespace Shockah.Natasha;
 
-internal sealed class ForkbombArtifact : Artifact, IRegisterable, IStatusLogicHook
+internal sealed class ForkbombArtifact : Artifact, IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 {
 	private static ISpriteEntry ActiveSprite = null!;
 	private static ISpriteEntry InactiveSprite = null!;

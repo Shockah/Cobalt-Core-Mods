@@ -4,6 +4,7 @@ using Nanoray.PluginManager;
 using Nickel;
 using Nickel.Common;
 using Shockah.Bloch;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ public sealed class ModEntry : SimpleMod
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly IHarmony Harmony;
 	internal readonly HookManager<INatashaHook> HookManager;
-	internal readonly IKokoroApi KokoroApi;
+	internal readonly IKokoroApi.IV2 KokoroApi;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
@@ -100,7 +101,7 @@ public sealed class ModEntry : SimpleMod
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
 		HookManager = new();
-		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),

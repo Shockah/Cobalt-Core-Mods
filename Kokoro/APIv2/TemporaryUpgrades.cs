@@ -21,36 +21,23 @@ public partial interface IKokoroApi
 			void SetPermanentUpgrade(Card card, Upgrade upgrade);
 			void SetTemporaryUpgrade(Card card, Upgrade? upgrade);
 
-			public interface ISetTemporaryUpgradeAction : ICardAction
+			public interface ISetTemporaryUpgradeAction : ICardAction<CardAction>
 			{
 				int CardId { get; set; }
 				Upgrade? Upgrade { get; set; }
 
-				ISetTemporaryUpgradeAction SetCardId(int value)
-				{
-					this.CardId = value;
-					return this;
-				}
-
-				ISetTemporaryUpgradeAction SetUpgrade(Upgrade? value)
-				{
-					this.Upgrade = value;
-					return this;
-				}
+				ISetTemporaryUpgradeAction SetCardId(int value);
+				ISetTemporaryUpgradeAction SetUpgrade(Upgrade? value);
 			}
 
 			ISetTemporaryUpgradeAction? AsSetTemporaryUpgradeAction(CardAction action);
 			ISetTemporaryUpgradeAction MakeSetTemporaryUpgradeAction(int cardId, Upgrade? upgrade);
 			
-			public interface IChooseTemporaryUpgradeAction : ICardAction
+			public interface IChooseTemporaryUpgradeAction : ICardAction<CardAction>
 			{
 				int CardId { get; set; }
 
-				IChooseTemporaryUpgradeAction SetCardId(int value)
-				{
-					this.CardId = value;
-					return this;
-				}
+				IChooseTemporaryUpgradeAction SetCardId(int value);
 			}
 			
 			IChooseTemporaryUpgradeAction? AsChooseTemporaryUpgradeAction(CardAction action);

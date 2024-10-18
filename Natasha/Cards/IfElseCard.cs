@@ -1,5 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
@@ -42,14 +43,13 @@ internal sealed class IfElseCard : Card, IRegisterable, IHasCustomCardTraits
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			ModEntry.Instance.KokoroApi.ConditionalActions.Make(
-				ModEntry.Instance.KokoroApi.ConditionalActions.Equation(
-					ModEntry.Instance.KokoroApi.ConditionalActions.Status(Status.evade),
-					IKokoroApi.IConditionalActionApi.EquationOperator.Equal,
-					ModEntry.Instance.KokoroApi.ConditionalActions.Constant(0),
-					IKokoroApi.IConditionalActionApi.EquationStyle.Possession,
-					hideOperator: true
-				),
+			ModEntry.Instance.KokoroApi.Conditional.MakeAction(
+				ModEntry.Instance.KokoroApi.Conditional.Equation(
+					ModEntry.Instance.KokoroApi.Conditional.Status(Status.evade),
+					IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal,
+					ModEntry.Instance.KokoroApi.Conditional.Constant(0),
+					IKokoroApi.IV2.IConditionalApi.EquationStyle.Possession
+				).SetHideOperator(true),
 				new OneLinerAction
 				{
 					Actions = [
@@ -57,17 +57,16 @@ internal sealed class IfElseCard : Card, IRegisterable, IHasCustomCardTraits
 						ModEntry.Instance.KokoroApi.Actions.MakeStop(out var evadeStop),
 					]
 				}
-			).Disabled(s != DB.fakeState && s.ship.Get(Status.evade) > 0),
+			).AsCardAction.Disabled(s != DB.fakeState && s.ship.Get(Status.evade) > 0),
 			ModEntry.Instance.KokoroApi.Actions.MakeStopped(
 				evadeStop,
-				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
-					ModEntry.Instance.KokoroApi.ConditionalActions.Equation(
-						ModEntry.Instance.KokoroApi.ConditionalActions.Status(Status.shield),
-						IKokoroApi.IConditionalActionApi.EquationOperator.Equal,
-						ModEntry.Instance.KokoroApi.ConditionalActions.Constant(0),
-						IKokoroApi.IConditionalActionApi.EquationStyle.Possession,
-						hideOperator: true
-					),
+				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
+					ModEntry.Instance.KokoroApi.Conditional.Equation(
+						ModEntry.Instance.KokoroApi.Conditional.Status(Status.shield),
+						IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal,
+						ModEntry.Instance.KokoroApi.Conditional.Constant(0),
+						IKokoroApi.IV2.IConditionalApi.EquationStyle.Possession
+					).SetHideOperator(true),
 					new OneLinerAction
 					{
 						Actions = [

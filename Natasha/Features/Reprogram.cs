@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -68,7 +69,7 @@ internal sealed class Reprogram : IRegisterable
 			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASpawn_Begin_Finalizer))
 		);
 
-		ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(new Hook(), 0);
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(new Hook());
 	}
 
 	private static void ASpawn_Begin_Prefix(ASpawn __instance)
@@ -88,7 +89,7 @@ internal sealed class Reprogram : IRegisterable
 		SpawnContext = null;
 	}
 
-	private sealed class Hook : IStatusRenderHook
+	private sealed class Hook : IKokoroApi.IV2.IStatusRenderingApi.IHook
 	{
 		public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
 		{

@@ -38,15 +38,15 @@ internal sealed class BufferCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				ModEntry.Instance.KokoroApi.Actions.MakeOnTurnEndAction(
+				ModEntry.Instance.KokoroApi.OnTurnEnd.MakeAction(
 					new ChangeLimitedUsesAction { CardId = uuid, Amount = 1 }
-				),
+				).AsCardAction,
 				new AEnergy { changeAmount = 2 },
 			],
 			_ => [
-				ModEntry.Instance.KokoroApi.Actions.MakeOnTurnEndAction(
+				ModEntry.Instance.KokoroApi.OnTurnEnd.MakeAction(
 					new ChangeLimitedUsesAction { CardId = uuid, Amount = 1 }
-				),
+				).AsCardAction,
 				new AEnergy { changeAmount = 1 },
 			]
 		};

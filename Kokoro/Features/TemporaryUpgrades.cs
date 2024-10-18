@@ -204,6 +204,12 @@ internal sealed class TemporaryUpgradesManager
 			ModEntry.Instance.Api.V2.TemporaryUpgrades.SetTemporaryUpgrade(card, card.upgrade);
 			return ModEntry.Instance.Api.Actions.MakeCustomCardUpgrade(new CardUpgrade { cardCopy = Mutil.DeepCopy(card) }).SetInPlace(true).AsRoute;
 		}
+		
+		public IKokoroApi.IV2.ITemporaryUpgradesApi.IChooseTemporaryUpgradeAction SetCardId(int value)
+		{
+			this.CardId = value;
+			return this;
+		}
 	}
 
 	internal sealed class SetTemporaryUpgradeAction : CardAction, IKokoroApi.IV2.ITemporaryUpgradesApi.ISetTemporaryUpgradeAction
@@ -227,6 +233,18 @@ internal sealed class TemporaryUpgradesManager
 			}
 			
 			ModEntry.Instance.Api.V2.TemporaryUpgrades.SetTemporaryUpgrade(card, Upgrade);
+		}
+		
+		public IKokoroApi.IV2.ITemporaryUpgradesApi.ISetTemporaryUpgradeAction SetCardId(int value)
+		{
+			this.CardId = value;
+			return this;
+		}
+
+		public IKokoroApi.IV2.ITemporaryUpgradesApi.ISetTemporaryUpgradeAction SetUpgrade(Upgrade? value)
+		{
+			this.Upgrade = value;
+			return this;
 		}
 	}
 }

@@ -3,6 +3,7 @@ using FSPRO;
 using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ internal sealed class RemoteExecutionCard : Card, IRegisterable, IHasCustomCardT
 
 		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 5);
 
-		ModEntry.Instance.KokoroApi.RegisterCardRenderHook(new Hook(), 0);
+		ModEntry.Instance.KokoroApi.CardRendering.RegisterHook(new Hook());
 
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.IsVisible)),
@@ -60,7 +61,7 @@ internal sealed class RemoteExecutionCard : Card, IRegisterable, IHasCustomCardT
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				ModEntry.Instance.KokoroApi.Actions.MakeSpontaneousAction(new SelfDiscountAction { CardId = uuid }),
+				ModEntry.Instance.KokoroApi.Spontaneous.MakeAction(new SelfDiscountAction { CardId = uuid }).AsCardAction,
 				new Action()
 			],
 			_ => [
@@ -214,13 +215,13 @@ internal sealed class RemoteExecutionCard : Card, IRegisterable, IHasCustomCardT
 		}
 	}
 
-	private sealed class Hook : ICardRenderHook
+	private sealed class Hook : IKokoroApi.IV2.ICardRenderingApi.IHook
 	{
 		public Font? ReplaceTextCardFont(G g, Card card)
 		{
 			if (card is not RemoteExecutionCard || card.upgrade != Upgrade.A)
 				return null;
-			return ModEntry.Instance.KokoroApi.PinchCompactFont;
+			return ModEntry.Instance.KokoroApi.Assets.PinchCompactFont;
 		}
 	}
 }

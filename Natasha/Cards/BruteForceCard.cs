@@ -42,15 +42,15 @@ internal sealed class BruteForceCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				ModEntry.Instance.KokoroApi.Actions.MakeTimesPlayedVariableHintAction(uuid).Disabled(flipped),
-				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.Actions.GetTimesPlayed(this) + 1), xHint = 1, disabled = flipped },
+				ModEntry.Instance.KokoroApi.TimesPlayed.MakeVariableHintAction(uuid).AsCardAction.Disabled(flipped),
+				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this) + 1), xHint = 1, disabled = flipped },
 				new ADummyAction(),
 				new LimitedUsesVariableHint { CardId = uuid, disabled = !flipped },
 				new AAttack { damage = GetDmg(s, this.GetLimitedUses(s)), xHint = 1, disabled = !flipped },
 			],
 			_ => [
-				ModEntry.Instance.KokoroApi.Actions.MakeTimesPlayedVariableHintAction(uuid),
-				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.Actions.GetTimesPlayed(this) + 1), xHint = 1 },
+				ModEntry.Instance.KokoroApi.TimesPlayed.MakeVariableHintAction(uuid).AsCardAction,
+				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this) + 1), xHint = 1 },
 				new LimitedUsesVariableHint { CardId = uuid },
 				new AAttack { damage = GetDmg(s, this.GetLimitedUses(s)), xHint = 1 },
 			]

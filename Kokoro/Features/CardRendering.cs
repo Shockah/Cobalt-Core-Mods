@@ -11,22 +11,64 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
+	#region V1
+	
+	private static readonly ConditionalWeakTable<ICardRenderHook, IKokoroApi.IV2.ICardRenderingApi.IHook> V1ToV2CardRenderingHookWrappers = [];
+
+	private sealed class V1ToV2CardRenderingHookWrapper(ICardRenderHook v1) : IKokoroApi.IV2.ICardRenderingApi.IHook
+	{
+		public bool ShouldDisableCardRenderingTransformations(G g, Card card)
+			=> v1.ShouldDisableCardRenderingTransformations(g, card);
+		
+		public Font? ReplaceTextCardFont(G g, Card card)
+			=> v1.ReplaceTextCardFont(g, card);
+		
+		public Vec ModifyTextCardScale(G g, Card card)
+			=> v1.ModifyTextCardScale(g, card);
+		
+		public Matrix ModifyNonTextCardRenderMatrix(G g, Card card, List<CardAction> actions)
+			=> v1.ModifyNonTextCardRenderMatrix(g, card, actions);
+
+		public Matrix ModifyCardActionRenderMatrix(G g, Card card, List<CardAction> actions, CardAction action, int actionWidth)
+			=> v1.ModifyCardActionRenderMatrix(g, card, actions, action, actionWidth);
+	}
+	
 	public void RegisterCardRenderHook(ICardRenderHook hook, double priority)
-		=> CardRenderManager.Instance.Register(hook, priority);
+		=> CardRenderManager.Instance.Register(V1ToV2CardRenderingHookWrappers.GetValue(hook, key => new V1ToV2CardRenderingHookWrapper(key)), priority);
 
 	public void UnregisterCardRenderHook(ICardRenderHook hook)
-		=> CardRenderManager.Instance.Unregister(hook);
+	{
+		if (V1ToV2CardRenderingHookWrappers.TryGetValue(hook, out var wrapper))
+			CardRenderManager.Instance.Unregister(wrapper);
+	}
 
 	public Font PinchCompactFont
 		=> ModEntry.Instance.Content.PinchCompactFont;
+	
+	#endregion
+	
+	partial class V2Api
+	{
+		public IKokoroApi.IV2.ICardRenderingApi CardRendering { get; } = new CardRenderingApi();
+		
+		public sealed class CardRenderingApi : IKokoroApi.IV2.ICardRenderingApi
+		{
+			public void RegisterHook(IKokoroApi.IV2.ICardRenderingApi.IHook hook, double priority = 0)
+				=> CardRenderManager.Instance.Register(hook, priority);
+
+			public void UnregisterHook(IKokoroApi.IV2.ICardRenderingApi.IHook hook)
+				=> CardRenderManager.Instance.Unregister(hook);
+		}
+	}
 }
 
-internal sealed class CardRenderManager : HookManager<ICardRenderHook>
+internal sealed class CardRenderManager : HookManager<IKokoroApi.IV2.ICardRenderingApi.IHook>
 {
 	internal static readonly CardRenderManager Instance = new();
 	

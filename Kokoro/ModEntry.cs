@@ -15,7 +15,6 @@ namespace Shockah.Kokoro;
 public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IStatusManifest, INickelManifest
 {
 	internal const string ExtensionDataJsonKey = "KokoroModData";
-	internal const string ScorchingTag = "Scorching";
 
 	public static ModEntry Instance { get; private set; } = null!;
 	internal IModHelper Helper { get; private set; } = null!;

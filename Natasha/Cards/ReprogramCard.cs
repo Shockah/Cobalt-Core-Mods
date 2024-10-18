@@ -1,5 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
@@ -43,21 +44,20 @@ internal sealed class ReprogramCard : Card, IRegisterable, IHasCustomCardTraits
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			ModEntry.Instance.KokoroApi.ConditionalActions.Make(
-				ModEntry.Instance.KokoroApi.ConditionalActions.Equation(
-					ModEntry.Instance.KokoroApi.Actions.MakeTimesPlayedCondition(ModEntry.Instance.KokoroApi.Actions.GetTimesPlayed(this) + 1),
-					IKokoroApi.IConditionalActionApi.EquationOperator.Equal,
-					ModEntry.Instance.KokoroApi.ConditionalActions.Constant(1),
-					IKokoroApi.IConditionalActionApi.EquationStyle.Formal,
-					hideOperator: true
-				),
+			ModEntry.Instance.KokoroApi.Conditional.MakeAction(
+				ModEntry.Instance.KokoroApi.Conditional.Equation(
+					ModEntry.Instance.KokoroApi.TimesPlayed.MakeConditionExpression(ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this) + 1),
+					IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal,
+					ModEntry.Instance.KokoroApi.Conditional.Constant(1),
+					IKokoroApi.IV2.IConditionalApi.EquationStyle.Formal
+				).SetHideOperator(true),
 				new AStatus
 				{
 					targetPlayer = false,
 					status = Reprogram.ReprogrammedStatus.Status,
 					statusAmount = 1,
 				}
-			),
+			).AsCardAction,
 			new AStatus
 			{
 				targetPlayer = false,

@@ -2,6 +2,7 @@
 using FSPRO;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,7 @@ internal sealed class AccessViolationCard : Card, IRegisterable, IHasCustomCardT
 
 		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
 
-		ModEntry.Instance.KokoroApi.RegisterCardRenderHook(new Hook(), 0);
+		ModEntry.Instance.KokoroApi.CardRendering.RegisterHook(new Hook());
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
@@ -83,13 +84,13 @@ internal sealed class AccessViolationCard : Card, IRegisterable, IHasCustomCardT
 		}
 	}
 
-	private sealed class Hook : ICardRenderHook
+	private sealed class Hook : IKokoroApi.IV2.ICardRenderingApi.IHook
 	{
 		public Font? ReplaceTextCardFont(G g, Card card)
 		{
 			if (card is not AccessViolationCard)
 				return null;
-			return ModEntry.Instance.KokoroApi.PinchCompactFont;
+			return ModEntry.Instance.KokoroApi.Assets.PinchCompactFont;
 		}
 	}
 }

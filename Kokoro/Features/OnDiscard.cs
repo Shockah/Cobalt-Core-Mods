@@ -139,5 +139,11 @@ internal sealed class OnDiscardManager : IWrappedActionHook
 			base.Begin(g, s, c);
 			timer = 0;
 		}
+		
+		public IKokoroApi.IV2.IOnDiscardApi.IOnDiscardAction SetAction(CardAction value)
+		{
+			this.Action = value;
+			return this;
+		}
 	}
 }

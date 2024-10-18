@@ -9,6 +9,23 @@ namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
+	partial class V2Api
+	{
+		public IKokoroApi.IV2.ISequenceApi Sequence { get; } = new SequenceApi();
+		
+		public sealed class SequenceApi : IKokoroApi.IV2.ISequenceApi
+		{
+			public IKokoroApi.IV2.ISequenceApi.ISequenceAction? AsAction(CardAction action)
+				=> action as IKokoroApi.IV2.ISequenceApi.ISequenceAction;
+
+			public IKokoroApi.IV2.ISequenceApi.ISequenceAction MakeAction(int cardId, int sequenceStep, int sequenceLength, CardAction action)
+				=> new SequenceAction { CardId = cardId, SequenceStep = sequenceStep, SequenceLength = sequenceLength, Action = action };
+		}
+	}
+}
+
+partial class ApiImplementation
+{
 	partial class ActionApiImplementation
 	{
 		public CardAction MakeSequenceAction(int cardId, int sequenceStep, int sequenceLength, CardAction action)
@@ -62,7 +79,7 @@ internal sealed class SequenceManager : IWrappedActionHook
 		if (action is not SequenceAction sequenceAction)
 			return true;
 
-		var timesPlayed = state.FindCard(sequenceAction.CardId) is { } card ? ModEntry.Instance.Api.Actions.GetTimesPlayed(card) + 1 : -1;
+		var timesPlayed = state.FindCard(sequenceAction.CardId) is { } card ? ModEntry.Instance.Api.V2.TimesPlayed.GetTimesPlayed(card) + 1 : -1;
 		var step = (timesPlayed - 1) % sequenceAction.SequenceLength + 1;
 		var selfDisabled = sequenceAction.disabled || (timesPlayed != -1 && step != sequenceAction.SequenceStep);
 		var oldActionDisabled = sequenceAction.Action.disabled;
@@ -90,12 +107,15 @@ internal sealed class SequenceManager : IWrappedActionHook
 		=> action is SequenceAction sequenceAction ? [sequenceAction.Action] : null;
 }
 
-internal sealed class SequenceAction : CardAction
+internal sealed class SequenceAction : CardAction, IKokoroApi.IV2.ISequenceApi.ISequenceAction
 {
-	public required int CardId;
-	public required CardAction Action;
-	public required int SequenceStep;
-	public required int SequenceLength;
+	public required int CardId { get; set; }
+	public required CardAction Action { get; set; }
+	public required int SequenceStep { get; set; }
+	public required int SequenceLength { get; set; }
+
+	public CardAction AsCardAction
+		=> this;
 
 	public override Icon? GetIcon(State s)
 		=> new(SequenceManager.ObtainIcon(SequenceStep, SequenceLength), null, Colors.textMain);
@@ -104,7 +124,7 @@ internal sealed class SequenceAction : CardAction
 	{
 		int currentSequenceStep;
 		if (s.route is Combat && s.FindCard(CardId) is { } card)
-			currentSequenceStep = ModEntry.Instance.Api.Actions.GetTimesPlayed(card) % SequenceLength + 1;
+			currentSequenceStep = ModEntry.Instance.Api.V2.TimesPlayed.GetTimesPlayed(card) % SequenceLength + 1;
 		else
 			currentSequenceStep = -1;
 
@@ -133,10 +153,34 @@ internal sealed class SequenceAction : CardAction
 		if (s.FindCard(CardId) is not { } card)
 			return;
 
-		var sequenceStep = (ModEntry.Instance.Api.Actions.GetTimesPlayed(card) - 1) % SequenceLength + 1;
+		var sequenceStep = (ModEntry.Instance.Api.V2.TimesPlayed.GetTimesPlayed(card) - 1) % SequenceLength + 1;
 		if (sequenceStep != SequenceStep)
 			return;
 
 		c.QueueImmediate(Action);
+	}
+
+	public IKokoroApi.IV2.ISequenceApi.ISequenceAction SetCardId(int value)
+	{
+		CardId = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.ISequenceApi.ISequenceAction SetSequenceStep(int value)
+	{
+		SequenceStep = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.ISequenceApi.ISequenceAction SetSequenceLength(int value)
+	{
+		SequenceLength = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.ISequenceApi.ISequenceAction SetAction(CardAction value)
+	{
+		Action = value;
+		return this;
 	}
 }

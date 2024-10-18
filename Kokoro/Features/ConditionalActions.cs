@@ -11,30 +11,32 @@ namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
+	#region V1
+	
 	public IKokoroApi.IConditionalActionApi ConditionalActions { get; } = new ConditionalActionApiImplementation();
 
 	public sealed class ConditionalActionApiImplementation : IKokoroApi.IConditionalActionApi
 	{
 		public CardAction Make(IKokoroApi.IConditionalActionApi.IBoolExpression expression, CardAction action, bool fadeUnsatisfied = true)
-			=> new AConditional { Expression = expression, Action = action, FadeUnsatisfied = fadeUnsatisfied };
+			=> new AConditional { Expression = V1ToV2BoolExpressionWrapper.Convert(expression), Action = action, FadeUnsatisfied = fadeUnsatisfied };
 
 		public IKokoroApi.IConditionalActionApi.IIntExpression Constant(int value)
-			=> new ConditionalActionIntConstant(value);
+			=> new ConditionalActionIntConstant { Value = value };
 
 		public IKokoroApi.IConditionalActionApi.IIntExpression HandConstant(int value)
-			=> new ConditionalActionHandConstant(value);
+			=> new ConditionalActionHandConstant { CurrentValue = value };
 
 		public IKokoroApi.IConditionalActionApi.IIntExpression XConstant(int value)
-			=> new ConditionalActionXConstant(value);
+			=> new ConditionalActionXConstant { CurrentValue = value };
 
 		public IKokoroApi.IConditionalActionApi.IIntExpression ScalarMultiplier(IKokoroApi.IConditionalActionApi.IIntExpression expression, int scalar)
-			=> new ConditionalActionScalarMultiplier(expression, scalar);
+			=> new ConditionalActionScalarMultiplier { Expression = V1ToV2IntExpressionWrapper.Convert(expression), Scalar = scalar };
 
 		public IKokoroApi.IConditionalActionApi.IBoolExpression HasStatus(Status status, bool targetPlayer = true, bool countNegative = false)
-			=> new ConditionalActionHasStatusExpression(status, targetPlayer, countNegative);
+			=> new ConditionalActionHasStatusExpression { Status = status, TargetPlayer = targetPlayer, CountNegative = countNegative };
 
 		public IKokoroApi.IConditionalActionApi.IIntExpression Status(Status status, bool targetPlayer = true)
-			=> new ConditionalActionStatusExpression(status, targetPlayer);
+			=> new ConditionalActionStatusExpression { Status = status, TargetPlayer = targetPlayer };
 
 		public IKokoroApi.IConditionalActionApi.IBoolExpression Equation(
 			IKokoroApi.IConditionalActionApi.IIntExpression lhs,
@@ -43,7 +45,71 @@ partial class ApiImplementation
 			IKokoroApi.IConditionalActionApi.EquationStyle style,
 			bool hideOperator = false
 		)
-			=> new ConditionalActionEquation(lhs, @operator, rhs, style, hideOperator);
+			=> new ConditionalActionEquation
+			{
+				Lhs = V1ToV2IntExpressionWrapper.Convert(lhs),
+				Operator = (IKokoroApi.IV2.IConditionalApi.EquationOperator)(int)@operator,
+				Rhs = V1ToV2IntExpressionWrapper.Convert(rhs),
+				Style = (IKokoroApi.IV2.IConditionalApi.EquationStyle)(int)style,
+			};
+	}
+	
+	#endregion
+	
+	partial class V2Api
+	{
+		public IKokoroApi.IV2.IConditionalApi Conditional { get; } = new ConditionalApi();
+		
+		public sealed class ConditionalApi : IKokoroApi.IV2.IConditionalApi
+		{
+			public IKokoroApi.IV2.IConditionalApi.IConstantIntExpression? AsConstant(IKokoroApi.IV2.IConditionalApi.IExpression expression)
+				=> expression as IKokoroApi.IV2.IConditionalApi.IConstantIntExpression;
+
+			public IKokoroApi.IV2.IConditionalApi.IConstantIntExpression Constant(int value)
+				=> new ConditionalActionIntConstant { Value = value };
+
+			public IKokoroApi.IV2.IConditionalApi.IHandConstantIntExpression? AsHandConstant(IKokoroApi.IV2.IConditionalApi.IExpression expression)
+				=> expression as IKokoroApi.IV2.IConditionalApi.IHandConstantIntExpression;
+
+			public IKokoroApi.IV2.IConditionalApi.IHandConstantIntExpression HandConstant(int currentValue)
+				=> new ConditionalActionHandConstant { CurrentValue = currentValue };
+
+			public IKokoroApi.IV2.IConditionalApi.IXConstantIntExpression? AsXConstant(IKokoroApi.IV2.IConditionalApi.IExpression expression)
+				=> expression as IKokoroApi.IV2.IConditionalApi.IXConstantIntExpression;
+
+			public IKokoroApi.IV2.IConditionalApi.IXConstantIntExpression XConstant(int currentValue)
+				=> new ConditionalActionXConstant { CurrentValue = currentValue };
+
+			public IKokoroApi.IV2.IConditionalApi.IMultiplyIntExpression? AsMultiply(IKokoroApi.IV2.IConditionalApi.IExpression expression)
+				=> expression as IKokoroApi.IV2.IConditionalApi.IMultiplyIntExpression;
+
+			public IKokoroApi.IV2.IConditionalApi.IMultiplyIntExpression Multiply(IKokoroApi.IV2.IConditionalApi.IIntExpression expression, int scalar)
+				=> new ConditionalActionScalarMultiplier { Expression = expression, Scalar = scalar };
+
+			public IKokoroApi.IV2.IConditionalApi.IHasStatusExpression? AsHasStatus(IKokoroApi.IV2.IConditionalApi.IExpression expression)
+				=> expression as IKokoroApi.IV2.IConditionalApi.IHasStatusExpression;
+
+			public IKokoroApi.IV2.IConditionalApi.IHasStatusExpression HasStatus(Status status, bool targetPlayer = true)
+				=> new ConditionalActionHasStatusExpression { Status = status, TargetPlayer = targetPlayer };
+
+			public IKokoroApi.IV2.IConditionalApi.IStatusExpression? AsStatus(IKokoroApi.IV2.IConditionalApi.IExpression expression)
+				=> expression as IKokoroApi.IV2.IConditionalApi.IStatusExpression;
+
+			public IKokoroApi.IV2.IConditionalApi.IStatusExpression Status(Status status, bool targetPlayer = true)
+				=> new ConditionalActionStatusExpression { Status = status, TargetPlayer = targetPlayer };
+
+			public IKokoroApi.IV2.IConditionalApi.IEquation? AsEquation(IKokoroApi.IV2.IConditionalApi.IExpression expression)
+				=> expression as IKokoroApi.IV2.IConditionalApi.IEquation;
+
+			public IKokoroApi.IV2.IConditionalApi.IEquation Equation(IKokoroApi.IV2.IConditionalApi.IIntExpression lhs, IKokoroApi.IV2.IConditionalApi.EquationOperator @operator, IKokoroApi.IV2.IConditionalApi.IIntExpression rhs, IKokoroApi.IV2.IConditionalApi.EquationStyle style)
+				=> new ConditionalActionEquation { Lhs = lhs, Operator = @operator, Rhs = rhs, Style = style };
+
+			public IKokoroApi.IV2.IConditionalApi.IConditionalAction? AsAction(CardAction action)
+				=> action as IKokoroApi.IV2.IConditionalApi.IConditionalAction;
+
+			public IKokoroApi.IV2.IConditionalApi.IConditionalAction MakeAction(IKokoroApi.IV2.IConditionalApi.IBoolExpression expression, CardAction action)
+				=> new AConditional { Expression = expression, Action = action };
+		}
 	}
 }
 
@@ -114,19 +180,20 @@ internal sealed class ConditionalActionManager : IWrappedActionHook
 	}
 }
 
-public sealed class AConditional : CardAction
+public sealed class AConditional : CardAction, IKokoroApi.IV2.IConditionalApi.IConditionalAction
 {
-	public IKokoroApi.IConditionalActionApi.IBoolExpression? Expression;
-	public CardAction? Action;
-	public bool FadeUnsatisfied = true;
+	public required IKokoroApi.IV2.IConditionalApi.IBoolExpression Expression { get; set; }
+	public required CardAction Action { get; set; }
+	public bool FadeUnsatisfied { get; set; } = true;
+
+	public CardAction AsCardAction
+		=> this;
 
 	public override void Begin(G g, State s, Combat c)
 	{
 		base.Begin(g, s, c);
 		timer = 0;
 
-		if (Expression is null || Action is null)
-			return;
 		if (!Expression.GetValue(s, c))
 			return;
 
@@ -136,38 +203,48 @@ public sealed class AConditional : CardAction
 
 	public override List<Tooltip> GetTooltips(State s)
 	{
-		List<Tooltip> tooltips = [];
-		if (Expression is not null)
+		var description = Expression.GetTooltipDescription(s, s.route as Combat);
+		var formattedDescription = string.Format(ModEntry.Instance.Localizations.Localize(["conditional", "description"]), description);
+		var defaultTooltip = new GlossaryTooltip($"AConditional::{formattedDescription}")
 		{
-			var description = Expression.GetTooltipDescription(s, s.route as Combat);
-			var formattedDescription = string.Format(ModEntry.Instance.Localizations.Localize(["conditional", "description"]), description);
-			var defaultTooltip = new GlossaryTooltip($"AConditional::{formattedDescription}")
-			{
-				Icon = (Spr)ModEntry.Instance.Content.QuestionMarkSprite.Id!.Value,
-				TitleColor = Colors.action,
-				Title = ModEntry.Instance.Localizations.Localize(["conditional", "name"]),
-				Description = formattedDescription
-			};
+			Icon = (Spr)ModEntry.Instance.Content.QuestionMarkSprite.Id!.Value,
+			TitleColor = Colors.action,
+			Title = ModEntry.Instance.Localizations.Localize(["conditional", "name"]),
+			Description = formattedDescription
+		};
 
-			tooltips.AddRange(Expression.OverrideConditionalTooltip(s, s.route as Combat, defaultTooltip, formattedDescription));
-			tooltips.AddRange(Expression.GetTooltips(s, s.route as Combat));
-		}
-		if (Action is not null && !Action.omitFromTooltips)
+		List<Tooltip> tooltips = [];
+		tooltips.AddRange(Expression.OverrideConditionalTooltip(s, s.route as Combat, defaultTooltip, formattedDescription));
+		tooltips.AddRange(Expression.GetTooltips(s, s.route as Combat));
+		
+		if (!Action.omitFromTooltips)
 			tooltips.AddRange(Action.GetTooltips(s));
 		return tooltips;
 	}
+	
+	public IKokoroApi.IV2.IConditionalApi.IConditionalAction SetExpression(IKokoroApi.IV2.IConditionalApi.IBoolExpression value)
+	{
+		Expression = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IConditionalApi.IConditionalAction SetAction(CardAction value)
+	{
+		Action = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IConditionalApi.IConditionalAction SetFadeUnsatisfied(bool value)
+	{
+		FadeUnsatisfied = value;
+		return this;
+	}
 }
 
-internal sealed class ConditionalActionIntConstant : IKokoroApi.IConditionalActionApi.IIntExpression
+internal sealed class ConditionalActionIntConstant : IKokoroApi.IV2.IConditionalApi.IConstantIntExpression, IKokoroApi.IConditionalActionApi.IIntExpression
 {
 	[JsonProperty]
-	public readonly int Value;
-
-	[JsonConstructor]
-	public ConditionalActionIntConstant(int value)
-	{
-		this.Value = value;
-	}
+	public required int Value { get; set; }
 
 	public int GetValue(State state, Combat combat)
 		=> Value;
@@ -181,21 +258,21 @@ internal sealed class ConditionalActionIntConstant : IKokoroApi.IConditionalActi
 
 	public string GetTooltipDescription(State state, Combat? combat)
 		=> $"<c=boldPink>{Value}</c>";
+	
+	public IKokoroApi.IV2.IConditionalApi.IConstantIntExpression SetValue(int value)
+	{
+		Value = value;
+		return this;
+	}
 }
 
-internal sealed class ConditionalActionHandConstant : IKokoroApi.IConditionalActionApi.IIntExpression
+internal sealed class ConditionalActionHandConstant : IKokoroApi.IV2.IConditionalApi.IHandConstantIntExpression, IKokoroApi.IConditionalActionApi.IIntExpression
 {
 	[JsonProperty]
-	public readonly int Value;
-
-	[JsonConstructor]
-	public ConditionalActionHandConstant(int value)
-	{
-		this.Value = value;
-	}
+	public required int CurrentValue { get; set; }
 
 	public int GetValue(State state, Combat combat)
-		=> Value;
+		=> CurrentValue;
 
 	public void Render(G g, ref Vec position, bool isDisabled, bool dontRender)
 	{
@@ -206,21 +283,21 @@ internal sealed class ConditionalActionHandConstant : IKokoroApi.IConditionalAct
 
 	public string GetTooltipDescription(State state, Combat? combat)
 		=> ModEntry.Instance.Localizations.Localize(["conditional", "hand"]);
+	
+	public IKokoroApi.IV2.IConditionalApi.IHandConstantIntExpression SetCurrentValue(int value)
+	{
+		CurrentValue = value;
+		return this;
+	}
 }
 
-internal sealed class ConditionalActionXConstant : IKokoroApi.IConditionalActionApi.IIntExpression
+internal sealed class ConditionalActionXConstant : IKokoroApi.IV2.IConditionalApi.IXConstantIntExpression, IKokoroApi.IConditionalActionApi.IIntExpression
 {
 	[JsonProperty]
-	public readonly int Value;
-
-	[JsonConstructor]
-	public ConditionalActionXConstant(int value)
-	{
-		this.Value = value;
-	}
+	public required int CurrentValue { get; set; }
 
 	public int GetValue(State state, Combat combat)
-		=> Value;
+		=> CurrentValue;
 
 	public void Render(G g, ref Vec position, bool isDisabled, bool dontRender)
 	{
@@ -231,15 +308,21 @@ internal sealed class ConditionalActionXConstant : IKokoroApi.IConditionalAction
 
 	public string GetTooltipDescription(State state, Combat? combat)
 		=> ModEntry.Instance.Localizations.Localize(["conditional", "x"]);
+	
+	public IKokoroApi.IV2.IConditionalApi.IXConstantIntExpression SetCurrentValue(int value)
+	{
+		CurrentValue = value;
+		return this;
+	}
 }
 
-internal sealed class ConditionalActionScalarMultiplier : IKokoroApi.IConditionalActionApi.IIntExpression
+internal sealed class ConditionalActionScalarMultiplier : IKokoroApi.IV2.IConditionalApi.IMultiplyIntExpression, IKokoroApi.IConditionalActionApi.IIntExpression
 {
 	[JsonProperty]
-	public readonly IKokoroApi.IConditionalActionApi.IIntExpression Expression;
+	public required IKokoroApi.IV2.IConditionalApi.IIntExpression Expression { get; set; }
 
 	[JsonProperty]
-	public readonly int Scalar;
+	public required int Scalar { get; set; }
 
 	[JsonIgnore]
 	internal int? ConstantValue
@@ -250,13 +333,6 @@ internal sealed class ConditionalActionScalarMultiplier : IKokoroApi.IConditiona
 			_ => null
 		};
 
-	[JsonConstructor]
-	public ConditionalActionScalarMultiplier(IKokoroApi.IConditionalActionApi.IIntExpression expression, int scalar)
-	{
-		this.Expression = expression;
-		this.Scalar = scalar;
-	}
-
 	public int GetValue(State state, Combat combat)
 		=> Expression.GetValue(state, combat) * Scalar;
 
@@ -265,7 +341,7 @@ internal sealed class ConditionalActionScalarMultiplier : IKokoroApi.IConditiona
 		var constantValue = ConstantValue;
 		if (constantValue is not null)
 		{
-			new ConditionalActionIntConstant(constantValue.Value).Render(g, ref position, isDisabled, dontRender);
+			new ConditionalActionIntConstant { Value = constantValue.Value }.Render(g, ref position, isDisabled, dontRender);
 			return;
 		}
 
@@ -279,29 +355,33 @@ internal sealed class ConditionalActionScalarMultiplier : IKokoroApi.IConditiona
 	{
 		var constantValue = ConstantValue;
 		if (constantValue is not null)
-			return new ConditionalActionIntConstant(constantValue.Value).GetTooltipDescription(state, combat);
+			return new ConditionalActionIntConstant { Value = constantValue.Value }.GetTooltipDescription(state, combat);
 		return $"<c=boldPink>{Scalar}</c>x {Expression.GetTooltipDescription(state, combat)}";
+	}
+	
+	public IKokoroApi.IV2.IConditionalApi.IMultiplyIntExpression SetExpression(IKokoroApi.IV2.IConditionalApi.IIntExpression value)
+	{
+		Expression = value;
+		return this;
+	}
+	
+	public IKokoroApi.IV2.IConditionalApi.IMultiplyIntExpression SetScalar(int value)
+	{
+		Scalar = value;
+		return this;
 	}
 }
 
-internal sealed class ConditionalActionHasStatusExpression : IKokoroApi.IConditionalActionApi.IBoolExpression
+internal sealed class ConditionalActionHasStatusExpression : IKokoroApi.IV2.IConditionalApi.IHasStatusExpression, IKokoroApi.IConditionalActionApi.IBoolExpression
 {
 	[JsonProperty]
-	public readonly Status Status;
+	public required Status Status { get; set; }
 
 	[JsonProperty]
-	public readonly bool TargetPlayer;
+	public required bool TargetPlayer { get; set; }
 
 	[JsonProperty]
-	public readonly bool CountNegative;
-
-	[JsonConstructor]
-	public ConditionalActionHasStatusExpression(Status status, bool targetPlayer, bool countNegative)
-	{
-		this.Status = status;
-		this.TargetPlayer = targetPlayer;
-		this.CountNegative = countNegative;
-	}
+	public bool CountNegative { get; set; }
 
 	public bool GetValue(State state, Combat combat)
 	{
@@ -334,22 +414,33 @@ internal sealed class ConditionalActionHasStatusExpression : IKokoroApi.IConditi
 		var amount = ship?.Get(Status) ?? 1;
 		return [new TTGlossary($"status.{Status.Key()}", amount)];
 	}
+	
+	public IKokoroApi.IV2.IConditionalApi.IHasStatusExpression SetStatus(Status value)
+	{
+		Status = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IConditionalApi.IHasStatusExpression SetTargetPlayer(bool value)
+	{
+		TargetPlayer = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IConditionalApi.IHasStatusExpression SetCountNegative(bool value)
+	{
+		CountNegative = value;
+		return this;
+	}
 }
 
-internal sealed class ConditionalActionStatusExpression : IKokoroApi.IConditionalActionApi.IIntExpression
+internal sealed class ConditionalActionStatusExpression : IKokoroApi.IV2.IConditionalApi.IStatusExpression, IKokoroApi.IConditionalActionApi.IIntExpression
 {
 	[JsonProperty]
-	public readonly Status Status;
+	public required Status Status { get; set; }
 
 	[JsonProperty]
-	public readonly bool TargetPlayer;
-
-	[JsonConstructor]
-	public ConditionalActionStatusExpression(Status status, bool targetPlayer)
-	{
-		this.Status = status;
-		this.TargetPlayer = targetPlayer;
-	}
+	public required bool TargetPlayer { get; set; }
 
 	public int GetValue(State state, Combat combat)
 	{
@@ -381,42 +472,38 @@ internal sealed class ConditionalActionStatusExpression : IKokoroApi.IConditiona
 		var amount = ship?.Get(Status) ?? 1;
 		return [new TTGlossary($"status.{this.Status.Key()}", amount)];
 	}
+	
+	public IKokoroApi.IV2.IConditionalApi.IStatusExpression SetStatus(Status value)
+	{
+		Status = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IConditionalApi.IStatusExpression SetTargetPlayer(bool value)
+	{
+		TargetPlayer = value;
+		return this;
+	}
 }
 
-internal sealed class ConditionalActionEquation : IKokoroApi.IConditionalActionApi.IBoolExpression
+internal sealed class ConditionalActionEquation : IKokoroApi.IV2.IConditionalApi.IEquation, IKokoroApi.IConditionalActionApi.IBoolExpression
 {
 	[JsonProperty]
-	public readonly IKokoroApi.IConditionalActionApi.IIntExpression Lhs;
+	public required IKokoroApi.IV2.IConditionalApi.IIntExpression Lhs { get; set; }
 
 	[JsonProperty]
 	[JsonConverter(typeof(StringEnumConverter))]
-	public readonly IKokoroApi.IConditionalActionApi.EquationOperator Operator;
+	public required IKokoroApi.IV2.IConditionalApi.EquationOperator Operator { get; set; }
 
 	[JsonProperty]
-	public readonly IKokoroApi.IConditionalActionApi.IIntExpression Rhs;
+	public required IKokoroApi.IV2.IConditionalApi.IIntExpression Rhs { get; set; }
 
 	[JsonProperty]
 	[JsonConverter(typeof(StringEnumConverter))]
-	public readonly IKokoroApi.IConditionalActionApi.EquationStyle Style;
+	public required IKokoroApi.IV2.IConditionalApi.EquationStyle Style { get; set; }
 
 	[JsonProperty]
-	public readonly bool HideOperator;
-
-	[JsonConstructor]
-	public ConditionalActionEquation(
-		IKokoroApi.IConditionalActionApi.IIntExpression lhs,
-		IKokoroApi.IConditionalActionApi.EquationOperator @operator,
-		IKokoroApi.IConditionalActionApi.IIntExpression rhs,
-		IKokoroApi.IConditionalActionApi.EquationStyle style,
-		bool hideOperator
-	)
-	{
-		this.Lhs = lhs;
-		this.Operator = @operator;
-		this.Rhs = rhs;
-		this.Style = style;
-		this.HideOperator = hideOperator;
-	}
+	public bool HideOperator { get; set; }
 
 	public bool GetValue(State state, Combat combat)
 	{
@@ -424,12 +511,12 @@ internal sealed class ConditionalActionEquation : IKokoroApi.IConditionalActionA
 		var rhs = Rhs.GetValue(state, combat);
 		return Operator switch
 		{
-			IKokoroApi.IConditionalActionApi.EquationOperator.Equal => lhs == rhs,
-			IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => lhs != rhs,
-			IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => lhs > rhs,
-			IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => lhs < rhs,
-			IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => lhs >= rhs,
-			IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => lhs <= rhs,
+			IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal => lhs == rhs,
+			IKokoroApi.IV2.IConditionalApi.EquationOperator.NotEqual => lhs != rhs,
+			IKokoroApi.IV2.IConditionalApi.EquationOperator.GreaterThan => lhs > rhs,
+			IKokoroApi.IV2.IConditionalApi.EquationOperator.LessThan => lhs < rhs,
+			IKokoroApi.IV2.IConditionalApi.EquationOperator.GreaterThanOrEqual => lhs >= rhs,
+			IKokoroApi.IV2.IConditionalApi.EquationOperator.LessThanOrEqual => lhs <= rhs,
 			_ => throw new ArgumentException()
 		};
 	}
@@ -442,12 +529,12 @@ internal sealed class ConditionalActionEquation : IKokoroApi.IConditionalActionA
 		{
 			var operatorIcon = Operator switch
 			{
-				IKokoroApi.IConditionalActionApi.EquationOperator.Equal => ModEntry.Instance.Content.EqualSprite,
-				IKokoroApi.IConditionalActionApi.EquationOperator.NotEqual => ModEntry.Instance.Content.NotEqualSprite,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThan => ModEntry.Instance.Content.GreaterThanSprite,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThan => ModEntry.Instance.Content.LessThanSprite,
-				IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual => ModEntry.Instance.Content.GreaterThanOrEqualSprite,
-				IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual => ModEntry.Instance.Content.LessThanOrEqualSprite,
+				IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal => ModEntry.Instance.Content.EqualSprite,
+				IKokoroApi.IV2.IConditionalApi.EquationOperator.NotEqual => ModEntry.Instance.Content.NotEqualSprite,
+				IKokoroApi.IV2.IConditionalApi.EquationOperator.GreaterThan => ModEntry.Instance.Content.GreaterThanSprite,
+				IKokoroApi.IV2.IConditionalApi.EquationOperator.LessThan => ModEntry.Instance.Content.LessThanSprite,
+				IKokoroApi.IV2.IConditionalApi.EquationOperator.GreaterThanOrEqual => ModEntry.Instance.Content.GreaterThanOrEqualSprite,
+				IKokoroApi.IV2.IConditionalApi.EquationOperator.LessThanOrEqual => ModEntry.Instance.Content.LessThanOrEqualSprite,
 				_ => throw new ArgumentException()
 			};
 			if (!dontRender)
@@ -469,4 +556,84 @@ internal sealed class ConditionalActionEquation : IKokoroApi.IConditionalActionA
 			.. Lhs.GetTooltips(state, combat),
 			.. Rhs.GetTooltips(state, combat),
 		];
+	
+	public IKokoroApi.IV2.IConditionalApi.IEquation SetLhs(IKokoroApi.IV2.IConditionalApi.IIntExpression value)
+	{
+		Lhs = value;
+		return this;
+	}
+	
+	public IKokoroApi.IV2.IConditionalApi.IEquation SetOperator(IKokoroApi.IV2.IConditionalApi.EquationOperator value)
+	{
+		Operator = value;
+		return this;
+	}
+	
+	public IKokoroApi.IV2.IConditionalApi.IEquation SetRhs(IKokoroApi.IV2.IConditionalApi.IIntExpression value)
+	{
+		Rhs = value;
+		return this;
+	}
+	
+	public IKokoroApi.IV2.IConditionalApi.IEquation SetStyle(IKokoroApi.IV2.IConditionalApi.EquationStyle value)
+	{
+		Style = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IConditionalApi.IEquation SetHideOperator(bool value)
+	{
+		HideOperator = value;
+		return this;
+	}
+}
+
+internal sealed class V1ToV2BoolExpressionWrapper(IKokoroApi.IConditionalActionApi.IBoolExpression v1) : IKokoroApi.IV2.IConditionalApi.IBoolExpression
+{
+	internal static IKokoroApi.IV2.IConditionalApi.IBoolExpression Convert(IKokoroApi.IConditionalActionApi.IBoolExpression v1)
+		=> v1 switch
+		{
+			IKokoroApi.IV2.IConditionalApi.IBoolExpression v2 => v2,
+			_ => new V1ToV2BoolExpressionWrapper(v1)
+		};
+	
+	public void Render(G g, ref Vec position, bool isDisabled, bool dontRender)
+		=> v1.Render(g, ref position, isDisabled, dontRender);
+
+	public string GetTooltipDescription(State state, Combat? combat)
+		=> v1.GetTooltipDescription(state, combat);
+	
+	public List<Tooltip> GetTooltips(State state, Combat? combat)
+		=> v1.GetTooltips(state, combat);
+
+	public bool GetValue(State state, Combat combat)
+		=> v1.GetValue(state, combat);
+
+	public bool ShouldRenderQuestionMark(State state, Combat? combat)
+		=> v1.ShouldRenderQuestionMark(state, combat);
+
+	public IEnumerable<Tooltip> OverrideConditionalTooltip(State state, Combat? combat, Tooltip defaultTooltip, string defaultTooltipDescription)
+		=> v1.OverrideConditionalTooltip(state, combat, defaultTooltip, defaultTooltipDescription);
+}
+
+internal sealed class V1ToV2IntExpressionWrapper(IKokoroApi.IConditionalActionApi.IIntExpression v1) : IKokoroApi.IV2.IConditionalApi.IIntExpression
+{
+	internal static IKokoroApi.IV2.IConditionalApi.IIntExpression Convert(IKokoroApi.IConditionalActionApi.IIntExpression v1)
+		=> v1 switch
+		{
+			IKokoroApi.IV2.IConditionalApi.IIntExpression v2 => v2,
+			_ => new V1ToV2IntExpressionWrapper(v1)
+		};
+	
+	public void Render(G g, ref Vec position, bool isDisabled, bool dontRender)
+		=> v1.Render(g, ref position, isDisabled, dontRender);
+
+	public string GetTooltipDescription(State state, Combat? combat)
+		=> v1.GetTooltipDescription(state, combat);
+	
+	public List<Tooltip> GetTooltips(State state, Combat? combat)
+		=> v1.GetTooltips(state, combat);
+
+	public int GetValue(State state, Combat combat)
+		=> v1.GetValue(state, combat);
 }

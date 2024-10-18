@@ -126,5 +126,11 @@ internal sealed class OnTurnEndManager : IWrappedActionHook
 			base.Begin(g, s, c);
 			timer = 0;
 		}
+		
+		public IKokoroApi.IV2.IOnTurnEndApi.IOnTurnEndAction SetAction(CardAction value)
+		{
+			this.Action = value;
+			return this;
+		}
 	}
 }
