@@ -56,7 +56,6 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
 		);
 
-		ArtifactIconManager.Setup(Harmony);
 		CardOfferingAndRewardDestinationManager.Setup(Harmony);
 		CardRenderManager.Setup(Harmony);
 		ConditionalActionManager.Setup(Harmony);
