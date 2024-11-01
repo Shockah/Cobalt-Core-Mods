@@ -113,7 +113,7 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class ConditionalActionManager : IWrappedActionHook
+internal sealed class ConditionalActionManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 {
 	internal static readonly ConditionalActionManager Instance = new();
 	
@@ -124,11 +124,8 @@ internal sealed class ConditionalActionManager : IWrappedActionHook
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
 	}
-
-	internal static void SetupLate()
-		=> WrappedActionManager.Instance.Register(Instance, 0);
 	
-	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
 	{
 		if (action is not AConditional conditional)
 			return null;

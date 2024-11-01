@@ -1,13 +1,14 @@
 ﻿using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Natasha;
 
-internal sealed class OneLiners : IRegisterable, IWrappedActionHook
+internal sealed class OneLiners : IRegisterable, IKokoroApi.IV2.IWrappedActionsApi.IHook
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -17,7 +18,7 @@ internal sealed class OneLiners : IRegisterable, IWrappedActionHook
 		);
 
 		var self = new OneLiners();
-		ModEntry.Instance.KokoroApi.Actions.RegisterWrappedActionHook(self, 0);
+		ModEntry.Instance.KokoroApi.WrappedActions.RegisterHook(self);
 	}
 
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
@@ -54,7 +55,7 @@ internal sealed class OneLiners : IRegisterable, IWrappedActionHook
 		return false;
 	}
 
-	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
 		=> action is OneLinerAction oneLinerAction ? oneLinerAction.Actions : null;
 }
 

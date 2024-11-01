@@ -23,7 +23,7 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class OnTurnEndManager : IWrappedActionHook
+internal sealed class OnTurnEndManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 {
 	internal static readonly OnTurnEndManager Instance = new();
 	
@@ -42,11 +42,8 @@ internal sealed class OnTurnEndManager : IWrappedActionHook
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
 	}
-
-	internal static void SetupLate()
-		=> WrappedActionManager.Instance.Register(Instance, 0);
 	
-	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
 		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
 
 	private static void AEndTurn_Begin_Prefix(State s, Combat c)

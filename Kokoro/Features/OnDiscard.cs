@@ -23,7 +23,7 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class OnDiscardManager : IWrappedActionHook
+internal sealed class OnDiscardManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 {
 	internal static readonly OnDiscardManager Instance = new();
 	
@@ -50,10 +50,7 @@ internal sealed class OnDiscardManager : IWrappedActionHook
 		);
 	}
 
-	internal static void SetupLate()
-		=> WrappedActionManager.Instance.Register(Instance, 0);
-
-	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
 		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
 
 	private static void Combat_TryPlayCard_Prefix(Card card)

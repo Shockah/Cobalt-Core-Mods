@@ -42,7 +42,7 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class ResourceCostedActionManager : IWrappedActionHook
+internal sealed class ResourceCostedActionManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 {
 	internal static readonly ResourceCostedActionManager Instance = new();
 	
@@ -69,11 +69,8 @@ internal sealed class ResourceCostedActionManager : IWrappedActionHook
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
 	}
-
-	internal static void SetupLate()
-		=> WrappedActionManager.Instance.Register(Instance, 0);
 	
-	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
 	{
 		if (action is not AResourceCost resourceCostAction)
 			return null;

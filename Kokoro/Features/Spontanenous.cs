@@ -26,7 +26,7 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class SpontaneousManager : IWrappedActionHook
+internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 {
 	internal static readonly SpontaneousManager Instance = new();
 	
@@ -85,10 +85,7 @@ internal sealed class SpontaneousManager : IWrappedActionHook
 		}, 0);
 	}
 
-	internal static void SetupLate()
-		=> WrappedActionManager.Instance.Register(Instance, 0);
-
-	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
 		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
 
 	private static void QueueSpontaneousActions(State state, Combat combat, IEnumerable<Card> cards)

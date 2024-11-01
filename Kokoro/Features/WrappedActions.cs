@@ -9,15 +9,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
+	#region V1
+	
 	partial class ActionApiImplementation
 	{
+		private static readonly ConditionalWeakTable<IWrappedActionHook, IKokoroApi.IV2.IWrappedActionsApi.IHook> V1ToV2WrappedActionHookWrappers = [];
+
+		private sealed class V1ToV2WrappedActionHookWrapper(IWrappedActionHook v1) : IKokoroApi.IV2.IWrappedActionsApi.IHook
+		{
+			public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
+				=> v1.GetWrappedCardActions(action);
+		}
+		
 		public List<CardAction> GetWrappedCardActions(CardAction action)
-			=> WrappedActionManager.Instance.GetWrappedCardActions(action).ToList();
+			=> WrappedActionManager.Instance.GetWrappedCardActions(action)?.ToList() ?? [action];
 
 		public List<CardAction> GetWrappedCardActionsRecursively(CardAction action)
 			=> WrappedActionManager.Instance.GetWrappedCardActionsRecursively(action, includingWrapperActions: false).ToList();
@@ -26,14 +37,42 @@ partial class ApiImplementation
 			=> WrappedActionManager.Instance.GetWrappedCardActionsRecursively(action, includingWrapperActions).ToList();
 
 		public void RegisterWrappedActionHook(IWrappedActionHook hook, double priority)
-			=> WrappedActionManager.Instance.Register(hook, priority);
+			=> WrappedActionManager.Instance.Register(V1ToV2WrappedActionHookWrappers.GetValue(hook, key => new V1ToV2WrappedActionHookWrapper(key)), priority);
 
 		public void UnregisterWrappedActionHook(IWrappedActionHook hook)
-			=> WrappedActionManager.Instance.Unregister(hook);
+		{
+			if (V1ToV2WrappedActionHookWrappers.TryGetValue(hook, out var wrapper))
+				WrappedActionManager.Instance.Unregister(wrapper);
+		}
+	}
+	
+	#endregion
+	
+	partial class V2Api
+	{
+		public IKokoroApi.IV2.IWrappedActionsApi WrappedActions { get; } = new WrappedActionsApi();
+		
+		public sealed class WrappedActionsApi : IKokoroApi.IV2.IWrappedActionsApi
+		{
+			public void RegisterHook(IKokoroApi.IV2.IWrappedActionsApi.IHook hook, double priority = 0)
+				=> WrappedActionManager.Instance.Register(hook, priority);
+
+			public void UnregisterHook(IKokoroApi.IV2.IWrappedActionsApi.IHook hook)
+				=> WrappedActionManager.Instance.Unregister(hook);
+
+			public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
+				=> WrappedActionManager.Instance.GetWrappedCardActions(action);
+
+			public IEnumerable<CardAction> GetWrappedCardActionsRecursively(CardAction action)
+				=> WrappedActionManager.Instance.GetWrappedCardActionsRecursively(action, includingWrapperActions: false);
+
+			public IEnumerable<CardAction> GetWrappedCardActionsRecursively(CardAction action, bool includingWrapperActions)
+				=> WrappedActionManager.Instance.GetWrappedCardActionsRecursively(action, includingWrapperActions);
+		}
 	}
 }
 
-internal sealed class WrappedActionManager : HookManager<IWrappedActionHook>
+internal sealed class WrappedActionManager : HookManager<IKokoroApi.IV2.IWrappedActionsApi.IHook>
 {
 	internal static readonly WrappedActionManager Instance = new();
 
@@ -49,20 +88,8 @@ internal sealed class WrappedActionManager : HookManager<IWrappedActionHook>
 		);
 	}
 
-	public IEnumerable<CardAction> GetWrappedCardActions(CardAction action)
-	{
-		foreach (var hook in Hooks)
-		{
-			var wrappedActions = hook.GetWrappedCardActions(action);
-			if (wrappedActions is not null)
-			{
-				foreach (var wrappedAction in wrappedActions)
-					yield return wrappedAction;
-				yield break;
-			}
-		}
-		yield return action;
-	}
+	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
+		=> Hooks.Select(hook => hook.GetWrappedCardActions(action)).OfType<List<CardAction>>().FirstOrDefault();
 
 	public IEnumerable<CardAction> GetWrappedCardActionsRecursively(CardAction action, bool includingWrapperActions)
 	{

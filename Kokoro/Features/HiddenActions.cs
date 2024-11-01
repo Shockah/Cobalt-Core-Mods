@@ -27,7 +27,7 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class HiddenActionManager : IWrappedActionHook
+internal sealed class HiddenActionManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 {
 	internal static readonly HiddenActionManager Instance = new();
 	
@@ -38,11 +38,8 @@ internal sealed class HiddenActionManager : IWrappedActionHook
 			transpiler: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_MakeAllActionIcons_Transpiler)), priority: Priority.First)
 		);
 	}
-
-	internal static void SetupLate()
-		=> WrappedActionManager.Instance.Register(Instance, 0);
 	
-	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
 	{
 		if (action is not AHidden hidden)
 			return null;

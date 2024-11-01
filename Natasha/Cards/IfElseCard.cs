@@ -54,11 +54,12 @@ internal sealed class IfElseCard : Card, IRegisterable, IHasCustomCardTraits
 				{
 					Actions = [
 						new AStatus { targetPlayer = true, status = Status.evade, statusAmount = upgrade == Upgrade.A ? 3 : 2 },
-						ModEntry.Instance.KokoroApi.Actions.MakeStop(out var evadeStop),
+						ModEntry.Instance.KokoroApi.ContinueStop.MakeTriggerAction(IKokoroApi.IV2.IContinueStopApi.ActionType.Stop, out var evadeStop).AsCardAction,
 					]
 				}
 			).AsCardAction.Disabled(s != DB.fakeState && s.ship.Get(Status.evade) > 0),
-			ModEntry.Instance.KokoroApi.Actions.MakeStopped(
+			ModEntry.Instance.KokoroApi.ContinueStop.MakeFlaggedAction(
+				IKokoroApi.IV2.IContinueStopApi.ActionType.Stop,
 				evadeStop,
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					ModEntry.Instance.KokoroApi.Conditional.Equation(
@@ -71,17 +72,15 @@ internal sealed class IfElseCard : Card, IRegisterable, IHasCustomCardTraits
 					{
 						Actions = [
 							new AStatus { targetPlayer = true, status = Status.shield, statusAmount = upgrade == Upgrade.A ? 4 : 3 },
-							ModEntry.Instance.KokoroApi.Actions.MakeStop(out var shieldStop),
+							ModEntry.Instance.KokoroApi.ContinueStop.MakeTriggerAction(IKokoroApi.IV2.IContinueStopApi.ActionType.Stop, out var shieldStop).AsCardAction,
 						]
 					}
-				)
-			).Disabled(s != DB.fakeState && s.ship.Get(Status.evade) == 0 || s.ship.Get(Status.shield) > 0),
-			ModEntry.Instance.KokoroApi.Actions.MakeStopped(
-				evadeStop,
-				ModEntry.Instance.KokoroApi.Actions.MakeStopped(
-					shieldStop,
-					new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = upgrade == Upgrade.A ? 4 : 3 }
-				)
-			).Disabled(s != DB.fakeState && (s.ship.Get(Status.evade) == 0 || s.ship.Get(Status.shield) == 0))
+				).AsCardAction
+			).AsCardAction.Disabled(s != DB.fakeState && s.ship.Get(Status.evade) == 0 || s.ship.Get(Status.shield) > 0),
+			ModEntry.Instance.KokoroApi.ContinueStop.MakeFlaggedAction(
+				IKokoroApi.IV2.IContinueStopApi.ActionType.Stop,
+				[evadeStop, shieldStop],
+				new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = upgrade == Upgrade.A ? 4 : 3 }
+			).AsCardAction.Disabled(s != DB.fakeState && (s.ship.Get(Status.evade) == 0 || s.ship.Get(Status.shield) == 0)),
 		];
 }

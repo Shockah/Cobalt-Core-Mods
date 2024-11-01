@@ -33,7 +33,7 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class SequenceManager : IWrappedActionHook
+internal sealed class SequenceManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 {
 	internal static readonly SequenceManager Instance = new();
 
@@ -103,7 +103,7 @@ internal sealed class SequenceManager : IWrappedActionHook
 		return false;
 	}
 
-	public List<CardAction>? GetWrappedCardActions(CardAction action)
+	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
 		=> action is SequenceAction sequenceAction ? [sequenceAction.Action] : null;
 }
 

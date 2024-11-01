@@ -40,9 +40,6 @@ internal sealed class SpoofedActionManager : IWrappedActionHook
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
 	}
-
-	internal static void SetupLate()
-		=> WrappedActionManager.Instance.Register(Instance, 0);
 	
 	public List<CardAction>? GetWrappedCardActions(CardAction action)
 	{

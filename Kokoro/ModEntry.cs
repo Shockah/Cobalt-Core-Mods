@@ -82,15 +82,6 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		TimesPlayedManager.Setup(Harmony);
 		WrappedActionManager.Setup(Harmony);
 		
-		ConditionalActionManager.SetupLate();
-		ContinueStopActionManager.SetupLate();
-		HiddenActionManager.SetupLate();
-		OnDiscardManager.SetupLate();
-		OnTurnEndManager.SetupLate();
-		ResourceCostedActionManager.SetupLate();
-		SpontaneousManager.SetupLate();
-		SpoofedActionManager.SetupLate();
-		
 		StatusLogicManager.Instance.Register(WormStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(OxidationStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(StatusNextTurnManager.Instance, 0);
