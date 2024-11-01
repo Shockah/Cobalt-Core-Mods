@@ -46,7 +46,7 @@ internal sealed class RebootCard : Card, IRegisterable, IHasCustomCardTraits
 		=> [
 			new AVariableHint { hand = true, handAmount = Math.Max(c.hand.Count - 1, 0) },
 			new AStatus { targetPlayer = true, status = Status.drawNextTurn, statusAmount = Math.Max(c.hand.Count - 1, 0), xHint = 1 },
-			ModEntry.Instance.KokoroApi.Actions.MakeEnergyX(),
+			ModEntry.Instance.KokoroApi.EnergyAsStatus.MakeVariableHint().AsCardAction,
 			new AStatus { targetPlayer = true, status = Status.energyNextTurn, statusAmount = c.energy - GetDataWithOverrides(s).cost, xHint = 1 },
 			new AEndTurn()
 		];

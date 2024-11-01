@@ -14,13 +14,38 @@ namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
+	#region V1
+	
 	partial class ActionApiImplementation
 	{
 		public CardAction MakePlaySpecificCardFromAnywhere(int cardId, bool showTheCardIfNotInHand = true)
-			=> new APlaySpecificCardFromAnywhere { CardId = cardId, ShowTheCardIfNotInHand = showTheCardIfNotInHand };
+			=> new APlaySpecificCardFromAnywhere { CardIds = [cardId], ShowTheCardIfNotInHand = showTheCardIfNotInHand };
 
 		public CardAction MakePlayRandomCardsFromAnywhere(IEnumerable<int> cardIds, int amount = 1, bool showTheCardIfNotInHand = true)
 			=> new APlayRandomCardsFromAnywhere { CardIds = cardIds.ToHashSet(), Amount = amount, ShowTheCardIfNotInHand = showTheCardIfNotInHand };
+	}
+	
+	#endregion
+	
+	partial class V2Api
+	{
+		public IKokoroApi.IV2.IPlayCardsFromAnywhereApi PlayCardsFromAnywhere { get; } = new PlayCardsFromAnywhereApi();
+		
+		public sealed class PlayCardsFromAnywhereApi : IKokoroApi.IV2.IPlayCardsFromAnywhereApi
+		{
+			public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction? AsAction(CardAction action)
+				=> action as IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction;
+
+			public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction MakeAction(int cardId)
+			{
+				throw new NotImplementedException();
+			}
+
+			public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction MakeAction(IEnumerable<int> cardIds, int amount = 1)
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }
 
@@ -105,10 +130,14 @@ internal sealed class PlaySpecificCardFromAnywhereManager
 	}
 }
 
-public sealed class APlaySpecificCardFromAnywhere : CardAction
+public sealed class APlaySpecificCardFromAnywhere : CardAction, IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction
 {
-	public int CardId;
-	public bool ShowTheCardIfNotInHand = true;
+	public required HashSet<int> CardIds { get; set; }
+	public int Amount { get; set; } = 1;
+	public bool ShowTheCardIfNotInHand { get; set; } = true;
+
+	public CardAction AsCardAction
+		=> this;
 
 	[JsonProperty]
 	private CardDestination? OriginalDestination;
@@ -119,7 +148,20 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction
 	public override void Begin(G g, State s, Combat c)
 	{
 		base.Begin(g, s, c);
-		if (c.hand.Concat(s.deck).Concat(c.discard).Concat(c.exhausted).FirstOrDefault(c => c.uuid == CardId) is not { } card)
+		if (Amount <= 0 || CardIds.Count == 0)
+		{
+			timer = 0;
+			return;
+		}
+		if (Amount != 1 || CardIds.Count != 1)
+		{
+			timer = 0;
+			c.QueueImmediate(new APlayRandomCardsFromAnywhere { CardIds = CardIds, Amount = Amount, ShowTheCardIfNotInHand = ShowTheCardIfNotInHand });
+			return;
+		}
+
+		var cardId = CardIds.Single();
+		if (c.hand.Concat(s.deck).Concat(c.discard).Concat(c.exhausted).FirstOrDefault(c => c.uuid == cardId) is not { } card)
 			return;
 
 		var entry = GetEntry();
@@ -137,15 +179,15 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction
 			return;
 		}
 
-		s.RemoveCardFromWhereverItIs(CardId);
+		s.RemoveCardFromWhereverItIs(cardId);
 
 		var handCopy = c.hand.ToList();
 		c.hand.Clear();
 		c.SendCardToHand(s, card);
 		c.hand.InsertRange(0, handCopy);
 
-		c.QueueImmediate(new APlaySpecificCardFromAnywhere { CardId = card.uuid, OriginalDestination = entry?.OriginalDestination, OriginalIndex = entry?.OriginalIndex ?? 0 });
-		c.QueueImmediate(new ADelay() { time = -0.2 });
+		c.QueueImmediate(new APlaySpecificCardFromAnywhere { CardIds = [card.uuid], OriginalDestination = entry?.OriginalDestination, OriginalIndex = entry?.OriginalIndex ?? 0 });
+		c.QueueImmediate(new ADelay { time = -0.2 });
 
 		(Card Card, CardDestination OriginalDestination, int OriginalIndex)? GetEntry()
 		{
@@ -177,23 +219,64 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction
 				PlaySpecificCardFromAnywhereManager.CardBeingHackinglyPlayed = null;
 		}
 	}
+	
+	public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction SetCardIds(HashSet<int> value)
+	{
+		CardIds = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction SetAmount(int value)
+	{
+		Amount = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction SetShowTheCardIfNotInHand(bool value)
+	{
+		ShowTheCardIfNotInHand = value;
+		return this;
+	}
 }
 
-public sealed class APlayRandomCardsFromAnywhere : CardAction
+public sealed class APlayRandomCardsFromAnywhere : CardAction, IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction
 {
-	public HashSet<int> CardIds = [];
-	public int Amount = 1;
-	public bool ShowTheCardIfNotInHand = true;
+	public required HashSet<int> CardIds { get; set; }
+	public required int Amount { get; set; }
+	public bool ShowTheCardIfNotInHand { get; set; } = true;
+
+	public CardAction AsCardAction
+		=> this;
 
 	public override void Begin(G g, State s, Combat c)
 	{
 		base.Begin(g, s, c);
 
-		var potentialCards = ModEntry.Instance.Api.GetCardsEverywhere(s)
-			.Where(c => CardIds.Contains(c.uuid))
+		var potentialCards = CardIds
+			.Order()
+			.Select(s.FindCard)
+			.OfType<Card>()
 			.Where(c => !c.GetDataWithOverrides(s).unplayable);
 
 		foreach (var card in potentialCards.Shuffle(s.rngActions).Take(Amount))
-			c.QueueImmediate(new APlaySpecificCardFromAnywhere { CardId = card.uuid, ShowTheCardIfNotInHand = ShowTheCardIfNotInHand });
+			c.QueueImmediate(new APlaySpecificCardFromAnywhere { CardIds = [card.uuid], ShowTheCardIfNotInHand = ShowTheCardIfNotInHand });
+	}
+	
+	public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction SetCardIds(HashSet<int> value)
+	{
+		CardIds = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction SetAmount(int value)
+	{
+		Amount = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction SetShowTheCardIfNotInHand(bool value)
+	{
+		ShowTheCardIfNotInHand = value;
+		return this;
 	}
 }

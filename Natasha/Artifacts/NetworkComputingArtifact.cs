@@ -70,7 +70,7 @@ internal sealed class NetworkComputingArtifact : Artifact, IRegisterable, INatas
 				return;
 
 			ModEntry.Instance.Helper.ModData.SetModData(card, "PlayedViaNetworkComputing", true);
-			var action = ModEntry.Instance.KokoroApi.Actions.MakePlaySpecificCardFromAnywhere(CardId);
+			var action = ModEntry.Instance.KokoroApi.PlayCardsFromAnywhere.MakeAction(CardId).AsCardAction;
 			action.artifactPulse = OriginalArtifactKey;
 			c.QueueImmediate(action);
 		}

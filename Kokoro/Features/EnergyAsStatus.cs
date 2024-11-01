@@ -7,16 +7,12 @@ namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
+	#region V1
+	
 	partial class ActionApiImplementation
 	{
 		public AVariableHint MakeEnergyX(AVariableHint? action = null, bool energy = true, int? tooltipOverride = null)
-		{
-			var copy = action is null ? new() : Mutil.DeepCopy(action);
-			copy.status = Status.tempShield; // it doesn't matter, but it has to be *anything*
-			Instance.Api.SetExtensionData(copy, "energy", energy);
-			Instance.Api.SetExtensionData(copy, "energyTooltipOverride", tooltipOverride);
-			return copy;
-		}
+			=> new EnergyVariableHint { TooltipOverride = tooltipOverride };
 
 		public AStatus MakeEnergy(AStatus action, bool energy = true)
 		{
@@ -24,6 +20,50 @@ partial class ApiImplementation
 			copy.targetPlayer = true;
 			Instance.Api.SetExtensionData(copy, "energy", energy);
 			return copy;
+		}
+	}
+	
+	#endregion
+	
+	partial class V2Api
+	{
+		public IKokoroApi.IV2.IEnergyAsStatusApi EnergyAsStatus { get; } = new EnergyAsStatusApi();
+		
+		public sealed class EnergyAsStatusApi : IKokoroApi.IV2.IEnergyAsStatusApi
+		{
+			public IKokoroApi.IV2.IEnergyAsStatusApi.IVariableHint? AsVariableHint(AVariableHint action)
+				=> action as IKokoroApi.IV2.IEnergyAsStatusApi.IVariableHint;
+
+			public IKokoroApi.IV2.IEnergyAsStatusApi.IVariableHint MakeVariableHint(int? tooltipOverride = null)
+				=> new EnergyVariableHint { TooltipOverride = tooltipOverride };
+
+			public IKokoroApi.IV2.IEnergyAsStatusApi.IStatusAction? AsStatusAction(AStatus action)
+			{
+				if (action is IKokoroApi.IV2.IEnergyAsStatusApi.IStatusAction statusAction)
+					return statusAction;
+				if (Instance.Api.TryGetExtensionData(action, "energy", out bool isEnergy) && isEnergy)
+					return new StatusWrapper { Wrapped = action };
+				return null;
+			}
+
+			public IKokoroApi.IV2.IEnergyAsStatusApi.IStatusAction MakeStatusAction(int amount)
+			{
+				var wrapped = new AStatus
+				{
+					targetPlayer = true,
+					statusAmount = amount,
+				};
+				Instance.Api.SetExtensionData(wrapped, "energy", true);
+				return new StatusWrapper { Wrapped = wrapped };
+			}
+
+			private sealed class StatusWrapper : IKokoroApi.IV2.IEnergyAsStatusApi.IStatusAction
+			{
+				public required AStatus Wrapped { get; init; }
+
+				public AStatus AsCardAction
+					=> Wrapped;
+			}
 		}
 	}
 }
@@ -39,14 +79,6 @@ internal sealed class EnergyAsStatusManager
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.GetIcon)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AStatus_GetIcon_Postfix))
-		);
-		harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AVariableHint), nameof(AVariableHint.GetTooltips)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AVariableHint_GetTooltips_Postfix))
-		);
-		harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AVariableHint), nameof(AVariableHint.GetIcon)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AVariableHint_GetIcon_Postfix))
 		);
 	}
 	
@@ -75,37 +107,42 @@ internal sealed class EnergyAsStatusManager
 			color: Colors.white
 		);
 	}
+}
+
+public sealed class EnergyVariableHint : AVariableHint, IKokoroApi.IV2.IEnergyAsStatusApi.IVariableHint
+{
+	public int? TooltipOverride { get; set; }
+
+	public AVariableHint AsCardAction
+		=> this;
 	
-	private static void AVariableHint_GetTooltips_Postfix(AVariableHint __instance, State s, ref List<Tooltip> __result)
+	public EnergyVariableHint()
 	{
-		if (__instance.hand)
-			return;
-		if (__instance.status is null)
-			return;
-
-		var index = __result.FindIndex(t => t is TTGlossary { key: "action.xHint.desc" });
-		if (index < 0)
-			return;
-		if (!ModEntry.Instance.Api.ObtainExtensionData(__instance, "energy", () => false))
-			return;
-
-		__result[index] = new GlossaryTooltip("AStatus.Energy")
-		{
-			Description = ModEntry.Instance.Localizations.Localize(["energyVariableHint"]),
-			vals = [
-				(s.route is Combat combat) ? $" </c>(<c=keyword>{ModEntry.Instance.Api.ObtainExtensionData(__instance, "energyTooltipOverride", () => (int?)null) ?? combat.energy}</c>)" : ""
-			]
-		};
+		this.hand = true;
 	}
 
-	private static void AVariableHint_GetIcon_Postfix(AVariableHint __instance, ref Icon? __result)
-	{
-		if (!ModEntry.Instance.Api.ObtainExtensionData(__instance, "energy", () => false))
-			return;
-		__result = new(
+	public override Icon? GetIcon(State s)
+		=> new(
 			path: (Spr)ModEntry.Instance.Content.EnergySprite.Id!.Value,
 			number: null,
 			color: Colors.white
 		);
+
+	public override List<Tooltip> GetTooltips(State s)
+		=> [
+			new GlossaryTooltip("AStatus.Energy")
+			{
+				Description = ModEntry.Instance.Localizations.Localize(["energyVariableHint"]),
+				vals =
+				[
+					(s.route is Combat combat) ? $" </c>(<c=keyword>{ModEntry.Instance.Api.ObtainExtensionData(this, "energyTooltipOverride", () => (int?)null) ?? combat.energy}</c>)" : ""
+				]
+			}
+		];
+
+	public IKokoroApi.IV2.IEnergyAsStatusApi.IVariableHint SetTooltipOverride(int? value)
+	{
+		TooltipOverride = value;
+		return this;
 	}
 }
