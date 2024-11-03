@@ -17,11 +17,9 @@ public partial interface IKokoroApi
 			IReadOnlyList<Card>? GetSelectedCards(CardAction action);
 
 			ICustomAction MakeCustomAction(CardAction action, string title);
-			
-			public interface IMultiCardBrowseRoute
+
+			public interface IMultiCardBrowseRoute : IRoute<CardBrowse>
 			{
-				CardBrowse AsRoute { get; }
-				
 				IReadOnlyList<ICustomAction>? CustomActions { get; set; }
 				int MinSelected { get; set; }
 				int MaxSelected { get; set; }

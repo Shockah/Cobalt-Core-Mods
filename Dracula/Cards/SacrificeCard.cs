@@ -1,6 +1,7 @@
 ﻿using FSPRO;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -55,11 +56,11 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 					browseAction = new ExhaustCardBrowseAction
 					{
 						OnSuccess = [
-							ModEntry.Instance.KokoroApi.Actions.MakeCustomCardBrowse(new ACardSelect
+							ModEntry.Instance.KokoroApi.CustomCardBrowse.MakeCustom(new ACardSelect
 							{
 								browseAction = new PutCardInHandBrowseAction(),
 								ignoreCardType = Key()
-							}, new ExhaustOrSingleUseBrowseSource())
+							}).SetCustomBrowseSource(new ExhaustOrSingleUseBrowseSource()).AsCardAction
 						]
 					},
 				},
@@ -77,7 +78,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 				}
 			],
 			Upgrade.A => [
-				ModEntry.Instance.KokoroApi.Actions.MakeCustomCardBrowse(new ACardSelect
+				ModEntry.Instance.KokoroApi.CustomCardBrowse.MakeCustom(new ACardSelect
 				{
 					browseAction = new ExhaustCardBrowseAction
 					{
@@ -90,7 +91,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 							}
 						]
 					}
-				}, new HandDrawDiscardBrowseSource()),
+				}).SetCustomBrowseSource(new HandDrawDiscardBrowseSource()).AsCardAction,
 			],
 			_ => [
 				new ACardSelect
@@ -152,7 +153,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 			if (selectedCard is null)
 				return;
 
-			c.QueueImmediate(ModEntry.Instance.KokoroApi.Actions.MakePlaySpecificCardFromAnywhere(selectedCard.uuid));
+			c.QueueImmediate(ModEntry.Instance.KokoroApi.PlayCardsFromAnywhere.MakeAction(selectedCard.uuid).AsCardAction);
 		}
 	}
 
@@ -171,7 +172,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 		}
 	}
 
-	public sealed class ExhaustOrSingleUseBrowseSource : ICustomCardBrowseSource
+	public sealed class ExhaustOrSingleUseBrowseSource : IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource
 	{
 		public IEnumerable<Tooltip> GetSearchTooltips(State state)
 			=> [new GlossaryTooltip("action.searchCardNew")
@@ -192,7 +193,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 			];
 	}
 
-	public sealed class HandDrawDiscardBrowseSource : ICustomCardBrowseSource
+	public sealed class HandDrawDiscardBrowseSource : IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource
 	{
 		public IEnumerable<Tooltip> GetSearchTooltips(State state)
 			=> [new GlossaryTooltip("action.searchCardNew")

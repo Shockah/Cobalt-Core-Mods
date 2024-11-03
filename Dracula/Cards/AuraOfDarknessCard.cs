@@ -1,6 +1,8 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dracula;
@@ -36,17 +38,16 @@ internal sealed class AuraOfDarknessCard : Card, IDraculaCard
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
-					expression: ModEntry.Instance.KokoroApi.ConditionalActions.Equation(
-						lhs: ModEntry.Instance.KokoroApi.ConditionalActions.Status(ModEntry.Instance.BleedingStatus.Status),
-						@operator: IKokoroApi.IConditionalActionApi.EquationOperator.GreaterThanOrEqual,
-						rhs: ModEntry.Instance.KokoroApi.ConditionalActions.Constant(3),
-						style: IKokoroApi.IConditionalActionApi.EquationStyle.Possession,
-						hideOperator: true
-					),
-					action: ModEntry.Instance.KokoroApi.Actions.MakeStop(out var stopId)
-				),
-				..ModEntry.Instance.KokoroApi.Actions.MakeStopped(stopId, [
+				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
+					ModEntry.Instance.KokoroApi.Conditional.Equation(
+						ModEntry.Instance.KokoroApi.Conditional.Status(ModEntry.Instance.BleedingStatus.Status),
+						IKokoroApi.IV2.IConditionalApi.EquationOperator.GreaterThanOrEqual,
+						ModEntry.Instance.KokoroApi.Conditional.Constant(3),
+						IKokoroApi.IV2.IConditionalApi.EquationStyle.Possession
+					).SetHideOperator(true),
+					ModEntry.Instance.KokoroApi.ContinueStop.MakeTriggerAction(IKokoroApi.IV2.IContinueStopApi.ActionType.Stop, out var stopId).AsCardAction
+				).AsCardAction,
+				.. ModEntry.Instance.KokoroApi.ContinueStop.MakeFlaggedActions(IKokoroApi.IV2.IContinueStopApi.ActionType.Stop, stopId, [
 					new AStatus
 					{
 						targetPlayer = true,
@@ -54,7 +55,7 @@ internal sealed class AuraOfDarknessCard : Card, IDraculaCard
 						statusAmount = 1
 					},
 					new ADrawCard { count = 1 }
-				])
+				]).Select(a => a.AsCardAction)
 			],
 			Upgrade.A => [
 				new AStatus

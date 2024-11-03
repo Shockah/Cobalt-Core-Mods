@@ -58,7 +58,7 @@ internal sealed class DraculaCatArtifact : Artifact, IRegisterable
 			return;
 
 		foreach (var baseAction in __result)
-			foreach (var wrappedAction in ModEntry.Instance.KokoroApi.Actions.GetWrappedCardActionsRecursively(baseAction))
+			foreach (var wrappedAction in ModEntry.Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively(baseAction))
 				if (wrappedAction is ACardOffering)
 					ModEntry.Instance.Helper.ModData.SetModData(wrappedAction, "IsExeCardOffering", true);
 	}

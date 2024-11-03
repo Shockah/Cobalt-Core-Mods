@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Newtonsoft.Json;
+using Shockah.Kokoro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,12 @@ internal static class TransfusionExt
 		=> ModEntry.Instance.Helper.ModData.SetModData(self, "IsTransfusionDisabled", value);
 }
 
-internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
+internal sealed class TransfusionManager : IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	public TransfusionManager()
 	{
-		ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(this, 0);
-		ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(this, 0);
+		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(this);
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(this);
 
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.DirectHullDamage)),
@@ -49,11 +50,11 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 		}, priority: 0);
 	}
 
-	public void OnStatusTurnTrigger(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)
+	public void OnStatusTurnTrigger(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)
 	{
 		if (status != ModEntry.Instance.TransfusionStatus.Status)
 			return;
-		if (timing != StatusTurnTriggerTiming.TurnStart)
+		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 			return;
 		if (oldAmount <= 0)
 			return;
@@ -83,8 +84,8 @@ internal sealed class TransfusionManager : IStatusLogicHook, IStatusRenderHook
 			return ([], null);
 		var transfusing = Math.Min(ship.Get(ModEntry.Instance.TransfusingStatus.Status), amount);
 		return (
-			Colors: Enumerable.Range(0, transfusing).Select(_ => ModEntry.Instance.KokoroApi.DefaultActiveStatusBarColor)
-				.Concat(Enumerable.Range(0, amount - transfusing).Select(_ => ModEntry.Instance.KokoroApi.DefaultInactiveStatusBarColor))
+			Colors: Enumerable.Range(0, transfusing).Select(_ => ModEntry.Instance.KokoroApi.StatusRendering.DefaultActiveStatusBarColor)
+				.Concat(Enumerable.Range(0, amount - transfusing).Select(_ => ModEntry.Instance.KokoroApi.StatusRendering.DefaultInactiveStatusBarColor))
 				.ToList(),
 			BarTickWidth: null
 		);

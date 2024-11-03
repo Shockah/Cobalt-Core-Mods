@@ -1,5 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Reflection;
 
 namespace Shockah.Dracula;
 
-internal sealed class DraculaDizzyArtifact : Artifact, IRegisterable, IStatusLogicHook, IHookPriority
+internal sealed class DraculaDizzyArtifact : Artifact, IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook, IHookPriority
 {
 	internal const int ResultingOxidation = 2;
 
@@ -36,18 +37,18 @@ internal sealed class DraculaDizzyArtifact : Artifact, IRegisterable, IStatusLog
 	public override List<Tooltip>? GetExtraTooltips()
 		=> [
 			..StatusMeta.GetTooltips(ModEntry.Instance.BleedingStatus.Status, 1),
-			..StatusMeta.GetTooltips(ModEntry.Instance.KokoroApi.OxidationVanillaStatus, ResultingOxidation),
+			..StatusMeta.GetTooltips(ModEntry.Instance.KokoroApi.OxidationStatus.Status, ResultingOxidation),
 			..StatusMeta.GetTooltips(Status.corrode, 1),
 		];
 
 	public double HookPriority
 		=> 1;
 
-	public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
+	public bool HandleStatusTurnAutoStep(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy setStrategy)
 	{
-		if (status != ModEntry.Instance.KokoroApi.OxidationVanillaStatus)
+		if (status != ModEntry.Instance.KokoroApi.OxidationStatus.Status)
 			return false;
-		if (timing != StatusTurnTriggerTiming.TurnEnd)
+		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
 			return false;
 
 		var maxTriggers = state.EnumerateAllArtifacts().Any(a => a is ThinBloodArtifact) ? 2 : 1;

@@ -1,20 +1,21 @@
-﻿using System;
+﻿using Shockah.Kokoro;
+using System;
 using System.Linq;
 
 namespace Shockah.Dracula;
 
-internal sealed class BleedingManager : IStatusLogicHook
+internal sealed class BleedingManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 {
 	public BleedingManager()
 	{
-		ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(this, 0);
+		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(this);
 	}
 
-	public void OnStatusTurnTrigger(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)
+	public void OnStatusTurnTrigger(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)
 	{
 		if (status != ModEntry.Instance.BleedingStatus.Status)
 			return;
-		if (timing != StatusTurnTriggerTiming.TurnEnd)
+		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
 			return;
 		if (oldAmount <= 0)
 			return;
@@ -31,11 +32,11 @@ internal sealed class BleedingManager : IStatusLogicHook
 		}));
 	}
 
-	public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
+	public bool HandleStatusTurnAutoStep(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy setStrategy)
 	{
 		if (status != ModEntry.Instance.BleedingStatus.Status)
 			return false;
-		if (timing != StatusTurnTriggerTiming.TurnEnd)
+		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
 			return false;
 
 		var triggers = state.EnumerateAllArtifacts().Any(a => a is ThinBloodArtifact) ? 2 : 1;

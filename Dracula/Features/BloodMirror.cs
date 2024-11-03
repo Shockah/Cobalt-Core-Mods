@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Shockah.Kokoro;
 
 namespace Shockah.Dracula;
 
@@ -11,13 +12,13 @@ internal static class BloodMirrorExt
 		=> ModEntry.Instance.Helper.ModData.SetModData(self, "BloodMirrorDepth", value);
 }
 
-internal sealed class BloodMirrorManager : IStatusLogicHook
+internal sealed class BloodMirrorManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 {
 	private static int BloodMirrorDepth;
 
 	public BloodMirrorManager()
 	{
-		ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(this, 0);
+		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(this);
 		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.DirectHullDamage)),
@@ -31,11 +32,11 @@ internal sealed class BloodMirrorManager : IStatusLogicHook
 		);
 	}
 
-	public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
+	public bool HandleStatusTurnAutoStep(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy setStrategy)
 	{
 		if (status != ModEntry.Instance.BloodMirrorStatus.Status)
 			return false;
-		if (timing != StatusTurnTriggerTiming.TurnStart)
+		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 			return false;
 
 		if (amount > 0)

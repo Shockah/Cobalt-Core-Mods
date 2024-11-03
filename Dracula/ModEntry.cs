@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using Nickel.Common;
+using Shockah.Kokoro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ public sealed class ModEntry : SimpleMod
 	internal static ModEntry Instance { get; private set; } = null!;
 
 	internal IHarmony Harmony { get; }
-	internal IKokoroApi KokoroApi { get; }
+	internal IKokoroApi.IV2 KokoroApi { get; }
 	internal IEssentialsApi? EssentialsApi { get; private set; }
 	internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; }
 	internal IDynaApi? DynaApi { get; private set; }
@@ -154,7 +155,7 @@ public sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
-		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 		_ = new BleedingManager();
 		_ = new BloodMirrorManager();
 		_ = new LifestealManager();

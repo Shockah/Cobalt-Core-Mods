@@ -1,5 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
@@ -34,10 +35,10 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
-					expression: new HullCondition { BelowHalf = false },
-					action: new AAttack { damage = GetDmg(s, 3) }
-				),
+				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
+					new HullCondition { BelowHalf = false },
+					new AAttack { damage = GetDmg(s, 3) }
+				).AsCardAction,
 				new AHeal
 				{
 					targetPlayer = true,
@@ -52,15 +53,15 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 			],
 			Upgrade.B => [
 				new AAttack { damage = GetDmg(s, 3) },
-				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
-					expression: new HullCondition { BelowHalf = true },
-					action: new AHeal
+				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
+					new HullCondition { BelowHalf = true },
+					new AHeal
 					{
 						targetPlayer = true,
 						healAmount = 2,
 						canRunAfterKill = true
 					}
-				).CanRunAfterKill(),
+				).AsCardAction.CanRunAfterKill(),
 				new AHurt
 				{
 					targetPlayer = true,
@@ -68,19 +69,19 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 				}
 			],
 			_ => [
-				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
-					expression: new HullCondition { BelowHalf = false },
-					action: new AAttack { damage = GetDmg(s, 3) }
-				),
-				ModEntry.Instance.KokoroApi.ConditionalActions.Make(
-					expression: new HullCondition { BelowHalf = true },
-					action: new AHeal
+				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
+					new HullCondition { BelowHalf = false },
+					new AAttack { damage = GetDmg(s, 3) }
+				).AsCardAction,
+				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
+					new HullCondition { BelowHalf = true },
+					new AHeal
 					{
 						targetPlayer = true,
 						healAmount = 2,
 						canRunAfterKill = true
 					}
-				).CanRunAfterKill(),
+				).AsCardAction.CanRunAfterKill(),
 				new AHurt
 				{
 					targetPlayer = true,
@@ -89,7 +90,7 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 			]
 		};
 
-	private sealed class HullCondition : IKokoroApi.IConditionalActionApi.IBoolExpression
+	private sealed class HullCondition : IKokoroApi.IV2.IConditionalApi.IBoolExpression
 	{
 		public required bool BelowHalf;
 

@@ -15,7 +15,7 @@ internal static class BloodTapExt
 		=> ModEntry.Instance.Helper.ModData.ObtainModData<HashSet<Status>>(self, "BloodTapEnemyStatuses");
 }
 
-internal sealed class BloodTapManager : IStatusLogicHook
+internal sealed class BloodTapManager
 {
 	private readonly Dictionary<Status, Func<State, Combat, Status, List<CardAction>>> StatusOptions = [];
 	private readonly HookManager<IBloodTapOptionProvider> StatusOptionProviders = [];

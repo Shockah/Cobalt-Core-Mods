@@ -1,13 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
+using Shockah.Kokoro;
 using System.Collections.Generic;
 
 namespace Shockah.Dracula;
 
-internal sealed class CardScalingManager : ICardRenderHook
+internal sealed class CardScalingManager : IKokoroApi.IV2.ICardRenderingApi.IHook
 {
 	public CardScalingManager()
 	{
-		ModEntry.Instance.KokoroApi.RegisterCardRenderHook(this, 0);
+		ModEntry.Instance.KokoroApi.CardRendering.RegisterHook(this);
 	}
 
 	public Matrix ModifyNonTextCardRenderMatrix(G g, Card card, List<CardAction> actions)
