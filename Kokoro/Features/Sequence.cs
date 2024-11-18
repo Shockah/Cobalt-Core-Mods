@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Newtonsoft.Json;
 using Nickel;
 using Shockah.Shared;
 using System;
@@ -114,6 +115,7 @@ internal sealed class SequenceAction : CardAction, IKokoroApi.IV2.ISequenceApi.I
 	public required int SequenceStep { get; set; }
 	public required int SequenceLength { get; set; }
 
+	[JsonIgnore]
 	public CardAction AsCardAction
 		=> this;
 

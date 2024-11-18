@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Newtonsoft.Json;
 using Nickel;
 using System.Collections.Generic;
 using System.Reflection;
@@ -61,6 +62,7 @@ partial class ApiImplementation
 			{
 				public required AStatus Wrapped { get; init; }
 
+				[JsonIgnore]
 				public AStatus AsCardAction
 					=> Wrapped;
 			}
@@ -113,6 +115,7 @@ public sealed class EnergyVariableHint : AVariableHint, IKokoroApi.IV2.IEnergyAs
 {
 	public int? TooltipOverride { get; set; }
 
+	[JsonIgnore]
 	public AVariableHint AsCardAction
 		=> this;
 	

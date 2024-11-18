@@ -1,4 +1,5 @@
-﻿using Nickel;
+﻿using Newtonsoft.Json;
+using Nickel;
 using System;
 using System.Collections.Generic;
 
@@ -65,6 +66,7 @@ internal sealed class TimesPlayedVariableHint : AVariableHint, IKokoroApi.IV2.IT
 {
 	public required int CardId { get; set; }
 
+	[JsonIgnore]
 	public AVariableHint AsCardAction
 		=> this;
 

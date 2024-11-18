@@ -9,6 +9,7 @@
     <Import_RootNamespace>_Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CachedEnumerable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CardActionExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EffectSpawnerExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExternalTypesExt.cs" />

@@ -136,6 +136,7 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction, IKokoroApi.IV2.I
 	public int Amount { get; set; } = 1;
 	public bool ShowTheCardIfNotInHand { get; set; } = true;
 
+	[JsonIgnore]
 	public CardAction AsCardAction
 		=> this;
 
@@ -245,6 +246,7 @@ public sealed class APlayRandomCardsFromAnywhere : CardAction, IKokoroApi.IV2.IP
 	public required int Amount { get; set; }
 	public bool ShowTheCardIfNotInHand { get; set; } = true;
 
+	[JsonIgnore]
 	public CardAction AsCardAction
 		=> this;
 

@@ -183,6 +183,7 @@ public sealed class AConditional : CardAction, IKokoroApi.IV2.IConditionalApi.IC
 	public required CardAction Action { get; set; }
 	public bool FadeUnsatisfied { get; set; } = true;
 
+	[JsonIgnore]
 	public CardAction AsCardAction
 		=> this;
 

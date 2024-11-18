@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Newtonsoft.Json;
 using Nickel;
 using System.Collections.Generic;
 using System.Reflection;
@@ -186,6 +187,7 @@ internal sealed class TemporaryUpgradesManager
 	{
 		public required int CardId { get; set; }
 
+		[JsonIgnore]
 		public CardAction AsCardAction
 			=> this;
 
@@ -217,6 +219,7 @@ internal sealed class TemporaryUpgradesManager
 		public required int CardId { get; set; }
 		public required Upgrade? Upgrade { get; set; }
 
+		[JsonIgnore]
 		public CardAction AsCardAction
 			=> this;
 

@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Newtonsoft.Json;
 using Nickel;
 using System.Collections.Generic;
 using System.Linq;
@@ -156,6 +157,7 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 	{
 		public required CardAction Action { get; set; }
 
+		[JsonIgnore]
 		public CardAction AsCardAction
 			=> this;
 

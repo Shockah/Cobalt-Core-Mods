@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Shockah.Kokoro;
 
@@ -42,11 +44,13 @@ public partial interface IKokoroApi
 				IFlaggedAction SetAction(CardAction value);
 			}
 
+			[JsonConverter(typeof(StringEnumConverter))]
 			public enum ActionType
 			{
 				Continue, Stop
 			}
 
+			[JsonConverter(typeof(StringEnumConverter))]
 			public enum FlagOperator
 			{
 				And, Or

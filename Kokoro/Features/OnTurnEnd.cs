@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Newtonsoft.Json;
 using Nickel;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,7 +100,8 @@ internal sealed class OnTurnEndManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 	internal sealed class TriggerAction : CardAction, IKokoroApi.IV2.IOnTurnEndApi.IOnTurnEndAction
 	{
 		public required CardAction Action { get; set; }
-
+		
+		[JsonIgnore]
 		public CardAction AsCardAction
 			=> this;
 

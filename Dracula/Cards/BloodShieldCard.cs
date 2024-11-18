@@ -68,20 +68,16 @@ internal sealed class BloodShieldCard : Card, IDraculaCard
 				statusAmount = upgrade == Upgrade.B ? 4 : 3,
 				disabled = flipped
 			},
-			ModEntry.Instance.KokoroApi.ActionCosts.Make(
-				cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
-					resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
-						status: Status.shield,
-						costUnsatisfiedIcon: ModEntry.Instance.ShieldCostOff.Sprite,
-						costSatisfiedIcon: ModEntry.Instance.ShieldCostOn.Sprite
-					),
+			ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
+				ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
+					ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shield),
 					amount: upgrade == Upgrade.B ? 3 : 2
 				),
-				action: new AHeal
+				new AHeal
 				{
 					targetPlayer = true,
 					healAmount = upgrade == Upgrade.B ? 2 : 1
 				}
-			).Disabled(!flipped)
+			).AsCardAction.Disabled(!flipped)
 		];
 }

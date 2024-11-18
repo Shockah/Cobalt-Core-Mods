@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
+using Newtonsoft.Json;
 using Nickel;
 using System;
 using System.Collections.Generic;
@@ -70,6 +71,7 @@ partial class ApiImplementation
 					set => ModEntry.Instance.Helper.ModData.SetOptionalModData(Wrapped, "CustomCardBrowseSource", value);
 				}
 
+				[JsonIgnore]
 				public ACardSelect AsCardAction
 					=> Wrapped;
 				

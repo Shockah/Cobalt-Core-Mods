@@ -70,23 +70,17 @@ internal sealed class BloodScentCard : Card, IDraculaCard
 					status = ModEntry.Instance.BleedingStatus.Status,
 					statusAmount = 1
 				}.Disabled(flipped),
-				ModEntry.Instance.KokoroApi.ActionCosts.Make(
-					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
-						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
-							status: ModEntry.Instance.BleedingStatus.Status,
-							target: IKokoroApi.IActionCostApi.StatusResourceTarget.EnemyWithOutgoingArrow,
-							costUnsatisfiedIcon: ModEntry.Instance.BleedingCostOff.Sprite,
-							costSatisfiedIcon: ModEntry.Instance.BleedingCostOn.Sprite
-						),
-						amount: 3
+				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
+					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
+						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 3
 					),
-					action: new AStatus
+					new AStatus
 					{
 						targetPlayer = true,
 						status = Status.overdrive,
 						statusAmount = 2
 					}
-				).Disabled(flipped),
+				).AsCardAction.Disabled(flipped),
 				new AStatus
 				{
 					targetPlayer = false,
@@ -101,23 +95,17 @@ internal sealed class BloodScentCard : Card, IDraculaCard
 					status = ModEntry.Instance.BleedingStatus.Status,
 					statusAmount = 1
 				},
-				ModEntry.Instance.KokoroApi.ActionCosts.Make(
-					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
-						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
-							status: ModEntry.Instance.BleedingStatus.Status,
-							target: IKokoroApi.IActionCostApi.StatusResourceTarget.EnemyWithOutgoingArrow,
-							costUnsatisfiedIcon: ModEntry.Instance.BleedingCostOff.Sprite,
-							costSatisfiedIcon: ModEntry.Instance.BleedingCostOn.Sprite
-						),
-						amount: 3
+				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
+					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
+						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 3
 					),
-					action: new AStatus
+					new AStatus
 					{
 						targetPlayer = true,
 						status = Status.powerdrive,
 						statusAmount = 1
 					}
-				)
+				).AsCardAction
 			],
 			_ => [
 				new AStatus
@@ -126,23 +114,17 @@ internal sealed class BloodScentCard : Card, IDraculaCard
 					status = ModEntry.Instance.BleedingStatus.Status,
 					statusAmount = 1
 				},
-				ModEntry.Instance.KokoroApi.ActionCosts.Make(
-					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
-						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
-							status: ModEntry.Instance.BleedingStatus.Status,
-							target: IKokoroApi.IActionCostApi.StatusResourceTarget.EnemyWithOutgoingArrow,
-							costUnsatisfiedIcon: ModEntry.Instance.BleedingCostOff.Sprite,
-							costSatisfiedIcon: ModEntry.Instance.BleedingCostOn.Sprite
-						),
-						amount: 3
+				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
+					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
+						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 3
 					),
-					action: new AStatus
+					new AStatus
 					{
 						targetPlayer = true,
 						status = Status.overdrive,
 						statusAmount = 2
 					}
-				)
+				).AsCardAction
 			]
 		};
 }

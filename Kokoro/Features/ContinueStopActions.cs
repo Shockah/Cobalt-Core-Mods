@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Newtonsoft.Json;
 using Nickel;
 using System;
 using System.Collections.Generic;
@@ -150,6 +151,7 @@ public sealed class AContinue : CardAction, IKokoroApi.IV2.IContinueStopApi.ITri
 	public required IKokoroApi.IV2.IContinueStopApi.ActionType Type { get; set; }
 	public required Guid Id { get; set; }
 
+	[JsonIgnore]
 	public CardAction AsCardAction
 		=> this;
 
@@ -202,6 +204,7 @@ public sealed class AContinued : CardAction, IKokoroApi.IV2.IContinueStopApi.IFl
 	public required IKokoroApi.IV2.IContinueStopApi.FlagOperator Operator { get; set; }
 	public required CardAction Action { get; set; }
 
+	[JsonIgnore]
 	public CardAction AsCardAction
 		=> this;
 

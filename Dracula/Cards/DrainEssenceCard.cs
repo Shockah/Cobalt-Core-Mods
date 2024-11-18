@@ -71,40 +71,28 @@ internal sealed class DrainEssenceCard : Card, IDraculaCard
 					status = Status.tempShield,
 					statusAmount = 2
 				}.Disabled(flipped),
-				ModEntry.Instance.KokoroApi.ActionCosts.Make(
-					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
-						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
-							status: ModEntry.Instance.BleedingStatus.Status,
-							target: IKokoroApi.IActionCostApi.StatusResourceTarget.EnemyWithOutgoingArrow,
-							costUnsatisfiedIcon: ModEntry.Instance.BleedingCostOff.Sprite,
-							costSatisfiedIcon: ModEntry.Instance.BleedingCostOn.Sprite
-						),
-						amount: 1
+				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
+					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
+						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 1
 					),
-					action: new AStatus
+					new AStatus
 					{
 						targetPlayer = true,
 						status = Status.shield,
 						statusAmount = 1
 					}
-				).Disabled(flipped),
+				).AsCardAction.Disabled(flipped),
 				new ADummyAction(),
-				ModEntry.Instance.KokoroApi.ActionCosts.Make(
-					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
-						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
-							status: ModEntry.Instance.BleedingStatus.Status,
-							target: IKokoroApi.IActionCostApi.StatusResourceTarget.EnemyWithOutgoingArrow,
-							costUnsatisfiedIcon: ModEntry.Instance.BleedingCostOff.Sprite,
-							costSatisfiedIcon: ModEntry.Instance.BleedingCostOn.Sprite
-						),
-						amount: 2
+				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
+					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
+						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 2
 					),
-					action: new AHeal
+					new AHeal
 					{
 						targetPlayer = true,
 						healAmount = 1
 					}
-				).Disabled(!flipped)
+				).AsCardAction.Disabled(!flipped),
 			],
 			Upgrade.B => [
 				new AStatus
@@ -113,39 +101,27 @@ internal sealed class DrainEssenceCard : Card, IDraculaCard
 					status = Status.shield,
 					statusAmount = 1
 				},
-				ModEntry.Instance.KokoroApi.ActionCosts.Make(
-					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
-						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
-							status: ModEntry.Instance.BleedingStatus.Status,
-							target: IKokoroApi.IActionCostApi.StatusResourceTarget.EnemyWithOutgoingArrow,
-							costUnsatisfiedIcon: ModEntry.Instance.BleedingCostOff.Sprite,
-							costSatisfiedIcon: ModEntry.Instance.BleedingCostOn.Sprite
-						),
-						amount: 1
+				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
+					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
+						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 1
 					),
-					action: new AStatus
+					new AStatus
 					{
 						targetPlayer = true,
 						status = Status.shield,
 						statusAmount = 1
 					}
-				),
-				ModEntry.Instance.KokoroApi.ActionCosts.Make(
-					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
-						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
-							status: ModEntry.Instance.BleedingStatus.Status,
-							target: IKokoroApi.IActionCostApi.StatusResourceTarget.EnemyWithOutgoingArrow,
-							costUnsatisfiedIcon: ModEntry.Instance.BleedingCostOff.Sprite,
-							costSatisfiedIcon: ModEntry.Instance.BleedingCostOn.Sprite
-						),
-						amount: 1
+				).AsCardAction,
+				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
+					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
+						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 1
 					),
-					action: new AHeal
+					new AHeal
 					{
 						targetPlayer = true,
 						healAmount = 1
 					}
-				)
+				).AsCardAction,
 			],
 			_ => [
 				new AStatus
@@ -154,40 +130,28 @@ internal sealed class DrainEssenceCard : Card, IDraculaCard
 					status = Status.shield,
 					statusAmount = 1
 				}.Disabled(flipped),
-				ModEntry.Instance.KokoroApi.ActionCosts.Make(
-					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
-						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
-							status: ModEntry.Instance.BleedingStatus.Status,
-							target: IKokoroApi.IActionCostApi.StatusResourceTarget.EnemyWithOutgoingArrow,
-							costUnsatisfiedIcon: ModEntry.Instance.BleedingCostOff.Sprite,
-							costSatisfiedIcon: ModEntry.Instance.BleedingCostOn.Sprite
-						),
-						amount: 1
+				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
+					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
+						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 1
 					),
-					action: new AStatus
+					new AStatus
 					{
 						targetPlayer = true,
 						status = Status.shield,
 						statusAmount = 1
 					}
-				).Disabled(flipped),
+				).AsCardAction.Disabled(flipped),
 				new ADummyAction(),
-				ModEntry.Instance.KokoroApi.ActionCosts.Make(
-					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
-						resource: ModEntry.Instance.KokoroApi.ActionCosts.StatusResource(
-							status: ModEntry.Instance.BleedingStatus.Status,
-							target: IKokoroApi.IActionCostApi.StatusResourceTarget.EnemyWithOutgoingArrow,
-							costUnsatisfiedIcon: ModEntry.Instance.BleedingCostOff.Sprite,
-							costSatisfiedIcon: ModEntry.Instance.BleedingCostOn.Sprite
-						),
-						amount: 2
+				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
+					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
+						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 1
 					),
-					action: new AHeal
+					new AHeal
 					{
 						targetPlayer = true,
 						healAmount = 1
 					}
-				).Disabled(!flipped)
+				).AsCardAction.Disabled(!flipped),
 			]
 		};
 }

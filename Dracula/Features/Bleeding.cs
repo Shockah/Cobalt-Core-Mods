@@ -9,6 +9,12 @@ internal sealed class BleedingManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 	public BleedingManager()
 	{
 		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(this);
+		
+		ModEntry.Instance.KokoroApi.ActionCosts.RegisterStatusResourceCostIcon(
+			ModEntry.Instance.BleedingStatus.Status,
+			ModEntry.Instance.BleedingCostOn.Sprite,
+			ModEntry.Instance.BleedingCostOff.Sprite
+		);
 	}
 
 	public void OnStatusTurnTrigger(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)

@@ -55,6 +55,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
 		);
 
+		ActionCostsManager.Setup(Harmony);
 		CardOfferingAndRewardDestinationManager.Setup(Harmony);
 		CardRenderManager.Setup(Harmony);
 		ConditionalActionManager.Setup(Harmony);
@@ -72,7 +73,6 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		PinchCompactFontManager.Setup(Harmony);
 		PlaySpecificCardFromAnywhereManager.Setup(Harmony);
 		RedrawStatusManager.Setup(Harmony);
-		ResourceCostedActionManager.Setup(Harmony);
 		SequenceManager.Setup(Harmony);
 		SpontaneousManager.Setup(Harmony);
 		SpoofedActionManager.Setup(Harmony);
@@ -90,12 +90,12 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		StatusRenderManager.Instance.Register(OxidationStatusManager.Instance, 0);
 		StatusRenderManager.Instance.Register(StatusNextTurnManager.Instance, 0);
 		
+		WrappedActionManager.Instance.Register(ActionCostsManager.Instance, 0);
 		WrappedActionManager.Instance.Register(ConditionalActionManager.Instance, 0);
 		WrappedActionManager.Instance.Register(ContinueStopActionManager.Instance, 0);
 		WrappedActionManager.Instance.Register(HiddenActionManager.Instance, 0);
 		WrappedActionManager.Instance.Register(OnDiscardManager.Instance, 0);
 		WrappedActionManager.Instance.Register(OnTurnEndManager.Instance, 0);
-		WrappedActionManager.Instance.Register(ResourceCostedActionManager.Instance, 0);
 		WrappedActionManager.Instance.Register(SequenceManager.Instance, 0);
 		WrappedActionManager.Instance.Register(SpontaneousManager.Instance, 0);
 		WrappedActionManager.Instance.Register(SpoofedActionManager.Instance, 0);

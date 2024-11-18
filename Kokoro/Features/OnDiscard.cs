@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Newtonsoft.Json;
 using Nickel;
 using System.Collections.Generic;
 using System.Linq;
@@ -113,6 +114,7 @@ internal sealed class OnDiscardManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 	{
 		public required CardAction Action { get; set; }
 
+		[JsonIgnore]
 		public CardAction AsCardAction
 			=> this;
 

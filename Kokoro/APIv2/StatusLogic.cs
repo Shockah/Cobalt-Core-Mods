@@ -1,4 +1,7 @@
-﻿namespace Shockah.Kokoro;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace Shockah.Kokoro;
 
 public partial interface IKokoroApi
 {
@@ -19,11 +22,13 @@ public partial interface IKokoroApi
 				bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy) => false;
 			}
 			
+			[JsonConverter(typeof(StringEnumConverter))]
 			public enum StatusTurnTriggerTiming
 			{
 				TurnStart, TurnEnd
 			}
 
+			[JsonConverter(typeof(StringEnumConverter))]
 			public enum StatusTurnAutoStepSetStrategy
 			{
 				Direct, QueueSet, QueueAdd, QueueImmediateSet, QueueImmediateAdd

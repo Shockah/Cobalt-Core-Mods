@@ -33,8 +33,6 @@ public sealed class ModEntry : SimpleMod
 	internal IStatusEntry TransfusionStatus { get; }
 	internal IStatusEntry TransfusingStatus { get; }
 
-	internal ISpriteEntry ShieldCostOff { get; }
-	internal ISpriteEntry ShieldCostOn { get; }
 	internal ISpriteEntry BleedingCostOff { get; }
 	internal ISpriteEntry BleedingCostOn { get; }
 	internal ISpriteEntry HullBelowHalf { get; }
@@ -206,8 +204,6 @@ public sealed class ModEntry : SimpleMod
 			Name = this.AnyLocalizations.Bind(["ship", "name"]).Localize
 		});
 
-		ShieldCostOff = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/ShieldCostOff.png"));
-		ShieldCostOn = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/ShieldCostOn.png"));
 		BleedingCostOff = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/BleedingCostOff.png"));
 		BleedingCostOn = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/BleedingCostOn.png"));
 		HullBelowHalf = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/HullBelowHalf.png"));

@@ -57,6 +57,13 @@ internal sealed partial class Content
 	internal ExternalStatus TempShieldNextTurnStatus { get; private set; } = null!;
 	internal ExternalSprite ShieldNextTurnSprite { get; private set; } = null!;
 	internal ExternalStatus ShieldNextTurnStatus { get; private set; } = null!;
+	
+	internal ExternalSprite ShieldCostSatisfiedSprite { get; private set; } = null!;
+	internal ExternalSprite ShieldCostUnsatisfiedSprite { get; private set; } = null!;
+	internal ExternalSprite EvadeCostSatisfiedSprite { get; private set; } = null!;
+	internal ExternalSprite EvadeCostUnsatisfiedSprite { get; private set; } = null!;
+	internal ExternalSprite HeatCostSatisfiedSprite { get; private set; } = null!;
+	internal ExternalSprite HeatCostUnsatisfiedSprite { get; private set; } = null!;
 
 	internal Font PinchCompactFont { get; private set; } = null!;
 
@@ -137,6 +144,30 @@ internal sealed partial class Content
 		ShieldNextTurnSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Status.ShieldNextTurn",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "ShieldNextTurn.png"))
+		);
+		ShieldCostSatisfiedSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.ShieldCostSatisfied",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "ShieldCostSatisfied.png"))
+		);
+		ShieldCostUnsatisfiedSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.ShieldCostUnsatisfied",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "ShieldCostUnsatisfied.png"))
+		);
+		EvadeCostSatisfiedSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.EvadeCostSatisfied",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "EvadeCostSatisfied.png"))
+		);
+		EvadeCostUnsatisfiedSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.EvadeCostUnsatisfied",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "EvadeCostUnsatisfied.png"))
+		);
+		HeatCostSatisfiedSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.HeatCostSatisfied",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "HeatCostSatisfied.png"))
+		);
+		HeatCostUnsatisfiedSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.HeatCostUnsatisfied",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "HeatCostUnsatisfied.png"))
 		);
 
 		PinchCompactFont = LoadFont(
