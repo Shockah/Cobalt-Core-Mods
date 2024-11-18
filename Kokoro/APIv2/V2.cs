@@ -17,5 +17,12 @@ public partial interface IKokoroApi
 		{
 			T AsRoute { get; }
 		}
+
+		public interface IKokoroV2ApiHook;
+		
+		public interface IHookPriority
+		{
+			double HookPriority { get; }
+		}
 	}
 }

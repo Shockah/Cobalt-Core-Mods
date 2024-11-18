@@ -12,7 +12,7 @@ public partial interface IKokoroApi
 
 		public interface IActionCostsApi
 		{
-			public interface IHook
+			public interface IHook : IKokoroV2ApiHook
 			{
 				void OnActionCostsTransactionFinished(State state, Combat combat, Card? card, IWholeTransactionPaymentResult transactionPaymentResult) { }
 			}

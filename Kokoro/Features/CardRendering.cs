@@ -5,13 +5,11 @@ using Microsoft.Xna.Framework;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Nickel;
-using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
@@ -19,34 +17,11 @@ partial class ApiImplementation
 {
 	#region V1
 	
-	private static readonly ConditionalWeakTable<ICardRenderHook, IKokoroApi.IV2.ICardRenderingApi.IHook> V1ToV2CardRenderingHookWrappers = [];
-
-	private sealed class V1ToV2CardRenderingHookWrapper(ICardRenderHook v1) : IKokoroApi.IV2.ICardRenderingApi.IHook
-	{
-		public bool ShouldDisableCardRenderingTransformations(G g, Card card)
-			=> v1.ShouldDisableCardRenderingTransformations(g, card);
-		
-		public Font? ReplaceTextCardFont(G g, Card card)
-			=> v1.ReplaceTextCardFont(g, card);
-		
-		public Vec ModifyTextCardScale(G g, Card card)
-			=> v1.ModifyTextCardScale(g, card);
-		
-		public Matrix ModifyNonTextCardRenderMatrix(G g, Card card, List<CardAction> actions)
-			=> v1.ModifyNonTextCardRenderMatrix(g, card, actions);
-
-		public Matrix ModifyCardActionRenderMatrix(G g, Card card, List<CardAction> actions, CardAction action, int actionWidth)
-			=> v1.ModifyCardActionRenderMatrix(g, card, actions, action, actionWidth);
-	}
-	
 	public void RegisterCardRenderHook(ICardRenderHook hook, double priority)
-		=> CardRenderManager.Instance.Register(V1ToV2CardRenderingHookWrappers.GetValue(hook, key => new V1ToV2CardRenderingHookWrapper(key)), priority);
+		=> CardRenderManager.Instance.Register(hook, priority);
 
 	public void UnregisterCardRenderHook(ICardRenderHook hook)
-	{
-		if (V1ToV2CardRenderingHookWrappers.TryGetValue(hook, out var wrapper))
-			CardRenderManager.Instance.Unregister(wrapper);
-	}
+		=> CardRenderManager.Instance.Unregister(hook);
 
 	public Font PinchCompactFont
 		=> ModEntry.Instance.Content.PinchCompactFont;
@@ -68,7 +43,7 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class CardRenderManager : HookManager<IKokoroApi.IV2.ICardRenderingApi.IHook>
+internal sealed class CardRenderManager : VariedApiVersionHookManager<IKokoroApi.IV2.ICardRenderingApi.IHook, ICardRenderHook>
 {
 	internal static readonly CardRenderManager Instance = new();
 	
@@ -78,6 +53,10 @@ internal sealed class CardRenderManager : HookManager<IKokoroApi.IV2.ICardRender
 	private static Card? LastCard;
 	private static List<CardAction>? LastCardActions;
 	private static readonly Stack<Matrix?> CardRenderMatrixStack = new();
+
+	private CardRenderManager() : base(hook => new V1ToV2CardRenderingHookWrapper(hook))
+	{
+	}
 
 	internal static void Setup(IHarmony harmony)
 	{
@@ -379,4 +358,22 @@ internal sealed class CardRenderManager : HookManager<IKokoroApi.IV2.ICardRender
 		MG.inst.cameraMatrix = matrix.Value;
 		ResetSpriteBatch();
 	}
+}
+
+internal sealed class V1ToV2CardRenderingHookWrapper(ICardRenderHook v1) : IKokoroApi.IV2.ICardRenderingApi.IHook
+{
+	public bool ShouldDisableCardRenderingTransformations(G g, Card card)
+		=> v1.ShouldDisableCardRenderingTransformations(g, card);
+		
+	public Font? ReplaceTextCardFont(G g, Card card)
+		=> v1.ReplaceTextCardFont(g, card);
+		
+	public Vec ModifyTextCardScale(G g, Card card)
+		=> v1.ModifyTextCardScale(g, card);
+		
+	public Matrix ModifyNonTextCardRenderMatrix(G g, Card card, List<CardAction> actions)
+		=> v1.ModifyNonTextCardRenderMatrix(g, card, actions);
+
+	public Matrix ModifyCardActionRenderMatrix(G g, Card card, List<CardAction> actions, CardAction action, int actionWidth)
+		=> v1.ModifyCardActionRenderMatrix(g, card, actions, action, actionWidth);
 }

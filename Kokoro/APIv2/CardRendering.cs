@@ -15,7 +15,7 @@ public partial interface IKokoroApi
 			void RegisterHook(IHook hook, double priority = 0);
 			void UnregisterHook(IHook hook);
 			
-			public interface IHook
+			public interface IHook : IKokoroV2ApiHook
 			{
 				bool ShouldDisableCardRenderingTransformations(G g, Card card) => false;
 				Font? ReplaceTextCardFont(G g, Card card) => null;

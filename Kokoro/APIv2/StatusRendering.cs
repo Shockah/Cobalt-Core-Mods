@@ -16,7 +16,7 @@ public partial interface IKokoroApi
 			Color DefaultActiveStatusBarColor { get; }
 			Color DefaultInactiveStatusBarColor { get; }
 			
-			public interface IHook
+			public interface IHook : IKokoroV2ApiHook
 			{
 				IEnumerable<(Status Status, double Priority)> GetExtraStatusesToShow(State state, Combat combat, Ship ship) => [];
 				bool? ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount) => null;

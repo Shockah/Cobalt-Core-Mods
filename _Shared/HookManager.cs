@@ -1,9 +1,7 @@
-﻿using System.Collections;
+﻿using Nickel;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-#if IS_NICKEL_MOD
-using Nickel;
-#endif
 
 namespace Shockah.Shared;
 
@@ -23,7 +21,6 @@ public class HookManager<THook> : IEnumerable<THook> where THook : class
 	IEnumerator IEnumerable.GetEnumerator()
 		=> GetEnumerator();
 	
-	// TODO: allow alternative proxy implementations (Kokoro V1 -> V2 API mapping)
 	internal IEnumerable<THook> GetHooksWithProxies(IProxyProvider proxyProvider, IEnumerable<object> objects)
 		=> Hooks
 			.Select(hook => (Hook: hook, Priority: Hooks.TryGetOrderingValue(hook, out var priority) ? -priority : 0))

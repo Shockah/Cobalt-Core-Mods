@@ -17,7 +17,7 @@ public partial interface IKokoroApi
 			IEnumerable<CardAction> GetWrappedCardActionsRecursively(CardAction action);
 			IEnumerable<CardAction> GetWrappedCardActionsRecursively(CardAction action, bool includingWrapperActions);
 			
-			public interface IHook
+			public interface IHook : IKokoroV2ApiHook
 			{
 				IEnumerable<CardAction>? GetWrappedCardActions(CardAction action);
 			}

@@ -344,7 +344,7 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 {
 	internal static readonly ActionCostsManager Instance = new();
 
-	private readonly Dictionary<string, Nickel.OrderedList<(int Amount, Spr SatisfiedIcon, Spr UnsatisfiedIcon), int>> ResourceCostIcons = [];
+	private readonly Dictionary<string, OrderedList<(int Amount, Spr SatisfiedIcon, Spr UnsatisfiedIcon), int>> ResourceCostIcons = [];
 	private readonly HashSet<string> LoggedMissingResourceCostIconWarnings = [];
 	private readonly HashSet<string> LoggedImpossibleResourceCostIconWarnings = [];
 

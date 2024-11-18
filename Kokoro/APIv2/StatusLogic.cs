@@ -14,7 +14,7 @@ public partial interface IKokoroApi
 			void RegisterHook(IHook hook, double priority = 0);
 			void UnregisterHook(IHook hook);
 			
-			public interface IHook
+			public interface IHook : IKokoroV2ApiHook
 			{
 				int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount) => newAmount;
 				bool? IsAffectedByBoost(State state, Combat combat, Ship ship, Status status) => null;

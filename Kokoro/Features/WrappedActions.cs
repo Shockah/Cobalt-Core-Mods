@@ -3,13 +3,11 @@ using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Nickel;
-using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
@@ -19,14 +17,6 @@ partial class ApiImplementation
 	
 	partial class ActionApiImplementation
 	{
-		private static readonly ConditionalWeakTable<IWrappedActionHook, IKokoroApi.IV2.IWrappedActionsApi.IHook> V1ToV2WrappedActionHookWrappers = [];
-
-		private sealed class V1ToV2WrappedActionHookWrapper(IWrappedActionHook v1) : IKokoroApi.IV2.IWrappedActionsApi.IHook
-		{
-			public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
-				=> v1.GetWrappedCardActions(action);
-		}
-		
 		public List<CardAction> GetWrappedCardActions(CardAction action)
 			=> WrappedActionManager.Instance.GetWrappedCardActions(action)?.ToList() ?? [action];
 
@@ -37,13 +27,10 @@ partial class ApiImplementation
 			=> WrappedActionManager.Instance.GetWrappedCardActionsRecursively(action, includingWrapperActions).ToList();
 
 		public void RegisterWrappedActionHook(IWrappedActionHook hook, double priority)
-			=> WrappedActionManager.Instance.Register(V1ToV2WrappedActionHookWrappers.GetValue(hook, key => new V1ToV2WrappedActionHookWrapper(key)), priority);
+			=> WrappedActionManager.Instance.Register(hook, priority);
 
 		public void UnregisterWrappedActionHook(IWrappedActionHook hook)
-		{
-			if (V1ToV2WrappedActionHookWrappers.TryGetValue(hook, out var wrapper))
-				WrappedActionManager.Instance.Unregister(wrapper);
-		}
+			=> WrappedActionManager.Instance.Unregister(hook);
 	}
 	
 	#endregion
@@ -72,9 +59,13 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class WrappedActionManager : HookManager<IKokoroApi.IV2.IWrappedActionsApi.IHook>
+internal sealed class WrappedActionManager : VariedApiVersionHookManager<IKokoroApi.IV2.IWrappedActionsApi.IHook, IWrappedActionHook>
 {
 	internal static readonly WrappedActionManager Instance = new();
+
+	private WrappedActionManager() : base(hook => new V1ToV2WrappedActionHookWrapper(hook))
+	{
+	}
 
 	internal static void Setup(IHarmony harmony)
 	{
@@ -175,4 +166,10 @@ internal sealed class WrappedActionManager : HookManager<IKokoroApi.IV2.IWrapped
 
 	private static List<CardAction> Card_GetDataWithOverrides_Transpiler_UnwrapActions(List<CardAction> actions)
 		=> actions.SelectMany(a => Instance.GetWrappedCardActionsRecursively(a, includingWrapperActions: false)).ToList();
+}
+
+internal sealed class V1ToV2WrappedActionHookWrapper(IWrappedActionHook v1) : IKokoroApi.IV2.IWrappedActionsApi.IHook
+{
+	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
+		=> v1.GetWrappedCardActions(action);
 }

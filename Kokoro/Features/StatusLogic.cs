@@ -3,13 +3,11 @@ using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Nickel;
-using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
@@ -17,36 +15,11 @@ partial class ApiImplementation
 {
 	#region V1
 
-	private static readonly ConditionalWeakTable<IStatusLogicHook, IKokoroApi.IV2.IStatusLogicApi.IHook> V1ToV2StatusLogicHookWrappers = [];
-
-	private sealed class V1ToV2StatusLogicHookWrapper(IStatusLogicHook v1) : IKokoroApi.IV2.IStatusLogicApi.IHook
-	{
-		public int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount)
-			=> v1.ModifyStatusChange(state, combat, ship, status, oldAmount, newAmount); 
-		
-		public bool? IsAffectedByBoost(State state, Combat combat, Ship ship, Status status)
-			=> v1.IsAffectedByBoost(state, combat, ship, status);
-
-		public void OnStatusTurnTrigger(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)
-			=> v1.OnStatusTurnTrigger(state, combat, (StatusTurnTriggerTiming)(int)timing, ship, status, oldAmount, newAmount);
-
-		public bool HandleStatusTurnAutoStep(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy setStrategy)
-		{
-			var v1SetStrategy = (StatusTurnAutoStepSetStrategy)(int)setStrategy;
-			var result = v1.HandleStatusTurnAutoStep(state, combat, (StatusTurnTriggerTiming)(int)timing, ship, status, ref amount, ref v1SetStrategy);
-			setStrategy = (IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy)(int)v1SetStrategy;
-			return result;
-		}
-	}
-	
 	public void RegisterStatusLogicHook(IStatusLogicHook hook, double priority)
-		=> StatusLogicManager.Instance.Register(V1ToV2StatusLogicHookWrappers.GetValue(hook, key => new V1ToV2StatusLogicHookWrapper(key)), priority);
+		=> StatusLogicManager.Instance.Register(hook, priority);
 
 	public void UnregisterStatusLogicHook(IStatusLogicHook hook)
-	{
-		if (V1ToV2StatusLogicHookWrappers.TryGetValue(hook, out var wrapper))
-			StatusLogicManager.Instance.Unregister(wrapper);
-	}
+		=> StatusLogicManager.Instance.Unregister(hook);
 
 	#endregion
 	
@@ -65,7 +38,7 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class StatusLogicManager : HookManager<IKokoroApi.IV2.IStatusLogicApi.IHook>
+internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroApi.IV2.IStatusLogicApi.IHook, IStatusLogicHook>
 {
 	internal static readonly StatusLogicManager Instance = new();
 	
@@ -82,7 +55,7 @@ internal sealed class StatusLogicManager : HookManager<IKokoroApi.IV2.IStatusLog
 		{ Status.lockdown, IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueAdd },
 	};
 
-	public StatusLogicManager()
+	private StatusLogicManager() : base(hook => new V1ToV2StatusLogicHookWrapper(hook))
 	{
 		Register(VanillaBoostStatusLogicHook.Instance, 0);
 		Register(VanillaTimestopStatusLogicHook.Instance, 1_000_000);
@@ -339,6 +312,26 @@ internal sealed class StatusLogicManager : HookManager<IKokoroApi.IV2.IStatusLog
 			foreach (var action in combat.cardActions)
 				if (action is AAttack { targetPlayer: false, fromDroneX: null } attack)
 					attack.damage -= 1 + state.ship.Get(Status.boost);
+	}
+}
+
+internal sealed class V1ToV2StatusLogicHookWrapper(IStatusLogicHook v1) : IKokoroApi.IV2.IStatusLogicApi.IHook
+{
+	public int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount)
+		=> v1.ModifyStatusChange(state, combat, ship, status, oldAmount, newAmount); 
+		
+	public bool? IsAffectedByBoost(State state, Combat combat, Ship ship, Status status)
+		=> v1.IsAffectedByBoost(state, combat, ship, status);
+
+	public void OnStatusTurnTrigger(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)
+		=> v1.OnStatusTurnTrigger(state, combat, (StatusTurnTriggerTiming)(int)timing, ship, status, oldAmount, newAmount);
+
+	public bool HandleStatusTurnAutoStep(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy setStrategy)
+	{
+		var v1SetStrategy = (StatusTurnAutoStepSetStrategy)(int)setStrategy;
+		var result = v1.HandleStatusTurnAutoStep(state, combat, (StatusTurnTriggerTiming)(int)timing, ship, status, ref amount, ref v1SetStrategy);
+		setStrategy = (IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy)(int)v1SetStrategy;
+		return result;
 	}
 }
 

@@ -3,48 +3,23 @@ using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Nickel;
-using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
 	#region V1
-
-	private static readonly ConditionalWeakTable<IStatusRenderHook, IKokoroApi.IV2.IStatusRenderingApi.IHook> V1ToV2StatusRenderingHookWrappers = [];
-
-	private sealed class V1ToV2StatusRenderingHookWrapper(IStatusRenderHook v1) : IKokoroApi.IV2.IStatusRenderingApi.IHook
-	{
-		public IEnumerable<(Status Status, double Priority)> GetExtraStatusesToShow(State state, Combat combat, Ship ship)
-			=> v1.GetExtraStatusesToShow(state, combat, ship);
-		
-		public bool? ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)
-			=> v1.ShouldShowStatus(state, combat, ship, status, amount);
-		
-		public bool? ShouldOverrideStatusRenderingAsBars(State state, Combat combat, Ship ship, Status status, int amount)
-			=> v1.ShouldOverrideStatusRenderingAsBars(state, combat, ship, status, amount);
-		
-		public (IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(State state, Combat combat, Ship ship, Status status, int amount)
-			=> v1.OverrideStatusRendering(state, combat, ship, status, amount);
-		
-		public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
-			=> v1.OverrideStatusTooltips(status, amount, ship, tooltips);
-	}
 	
 	public void RegisterStatusRenderHook(IStatusRenderHook hook, double priority)
-		=> StatusRenderManager.Instance.Register(V1ToV2StatusRenderingHookWrappers.GetValue(hook, key => new V1ToV2StatusRenderingHookWrapper(key)), priority);
+		=> StatusRenderManager.Instance.Register(hook, priority);
 
 	public void UnregisterStatusRenderHook(IStatusRenderHook hook)
-	{
-		if (V1ToV2StatusRenderingHookWrappers.TryGetValue(hook, out var wrapper))
-			StatusRenderManager.Instance.Unregister(wrapper);
-	}
+		=> StatusRenderManager.Instance.Unregister(hook);
 
 	public Color DefaultActiveStatusBarColor
 		=> new("b2f2ff");
@@ -75,12 +50,16 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class StatusRenderManager : HookManager<IKokoroApi.IV2.IStatusRenderingApi.IHook>
+internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroApi.IV2.IStatusRenderingApi.IHook, IStatusRenderHook>
 {
 	internal static readonly StatusRenderManager Instance = new();
 
 	private Ship? RenderingStatusForShip;
 	private static readonly Dictionary<Status, (IReadOnlyList<Color> Colors, int? BarTickWidth)> StatusBarRenderingOverrides = [];
+
+	private StatusRenderManager() : base(hook => new V1ToV2StatusRenderingHookWrapper(hook))
+	{
+	}
 
 	internal static void Setup(IHarmony harmony)
 	{
@@ -260,4 +239,22 @@ internal sealed class StatusRenderManager : HookManager<IKokoroApi.IV2.IStatusRe
 			return color;
 		return @override.Colors[barIndex];
 	}
+}
+
+internal sealed class V1ToV2StatusRenderingHookWrapper(IStatusRenderHook v1) : IKokoroApi.IV2.IStatusRenderingApi.IHook
+{
+	public IEnumerable<(Status Status, double Priority)> GetExtraStatusesToShow(State state, Combat combat, Ship ship)
+		=> v1.GetExtraStatusesToShow(state, combat, ship);
+		
+	public bool? ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)
+		=> v1.ShouldShowStatus(state, combat, ship, status, amount);
+		
+	public bool? ShouldOverrideStatusRenderingAsBars(State state, Combat combat, Ship ship, Status status, int amount)
+		=> v1.ShouldOverrideStatusRenderingAsBars(state, combat, ship, status, amount);
+		
+	public (IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(State state, Combat combat, Ship ship, Status status, int amount)
+		=> v1.OverrideStatusRendering(state, combat, ship, status, amount);
+		
+	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
+		=> v1.OverrideStatusTooltips(status, amount, ship, tooltips);
 }

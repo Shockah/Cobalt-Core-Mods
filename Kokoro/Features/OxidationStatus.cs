@@ -1,7 +1,5 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
-using Shockah.Shared;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
@@ -20,23 +18,12 @@ partial class ApiImplementation
 
 	public int GetOxidationStatusMaxValue(State state, Ship ship)
 		=> OxidationStatusManager.Instance.GetOxidationStatusMaxValue(state, ship);
-	
-	private static readonly ConditionalWeakTable<IOxidationStatusHook, IKokoroApi.IV2.IOxidationStatusApi.IHook> V1ToV2OxidationStatusHookWrappers = [];
-
-	private sealed class V1ToV2OxidationStatusHookWrapper(IOxidationStatusHook v1) : IKokoroApi.IV2.IOxidationStatusApi.IHook
-	{
-		public int ModifyOxidationRequirement(State state, Ship ship, int value)
-			=> v1.ModifyOxidationRequirement(state, ship, value);
-	}
 
 	public void RegisterOxidationStatusHook(IOxidationStatusHook hook, double priority)
-		=> OxidationStatusManager.Instance.Register(V1ToV2OxidationStatusHookWrappers.GetValue(hook, key => new V1ToV2OxidationStatusHookWrapper(key)), priority);
+		=> OxidationStatusManager.Instance.Register(hook, priority);
 
 	public void UnregisterOxidationStatusHook(IOxidationStatusHook hook)
-	{
-		if (V1ToV2OxidationStatusHookWrappers.TryGetValue(hook, out var wrapper))
-			OxidationStatusManager.Instance.Unregister(wrapper);
-	}
+		=> OxidationStatusManager.Instance.Unregister(hook);
 	
 	#endregion
 	
@@ -61,11 +48,15 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class OxidationStatusManager : HookManager<IKokoroApi.IV2.IOxidationStatusApi.IHook>, IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
+internal sealed class OxidationStatusManager : VariedApiVersionHookManager<IKokoroApi.IV2.IOxidationStatusApi.IHook, IOxidationStatusHook>, IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	private const int BaseOxidationStatusMaxValue = 7;
 
 	internal static readonly OxidationStatusManager Instance = new();
+
+	private OxidationStatusManager() : base(hook => new V1ToV2OxidationStatusHookWrapper(hook))
+	{
+	}
 
 	public int GetOxidationStatusMaxValue(State state, Ship ship)
 	{
@@ -106,4 +97,10 @@ internal sealed class OxidationStatusManager : HookManager<IKokoroApi.IV2.IOxida
 
 		return false;
 	}
+}
+
+internal sealed class V1ToV2OxidationStatusHookWrapper(IOxidationStatusHook v1) : IKokoroApi.IV2.IOxidationStatusApi.IHook
+{
+	public int ModifyOxidationRequirement(State state, Ship ship, int value)
+		=> v1.ModifyOxidationRequirement(state, ship, value);
 }
