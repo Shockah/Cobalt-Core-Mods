@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using Shockah.Kokoro;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.Johnson;
 
-internal sealed class CrunchTimeManager : IStatusRenderHook
+internal sealed class CrunchTimeManager : IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	public CrunchTimeManager()
 	{
-		ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(this, 0);
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(this);
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnStart), (State state, Combat combat) =>
 		{
@@ -32,11 +33,11 @@ internal sealed class CrunchTimeManager : IStatusRenderHook
 		}, 0);
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
+	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
-		if (status != ModEntry.Instance.CrunchTimeStatus.Status)
-			return tooltips;
-		return tooltips
+		if (args.Status != ModEntry.Instance.CrunchTimeStatus.Status)
+			return args.Tooltips;
+		return args.Tooltips
 			.Append(new TTCard { card = new BurnOutCard() })
 			.ToList();
 	}

@@ -94,7 +94,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 	private Ship? RenderingStatusForShip;
 	private static readonly Dictionary<Status, (IReadOnlyList<Color> Colors, int? BarTickWidth)> StatusBarRenderingOverrides = [];
 
-	private StatusRenderManager() : base(hook => new V1ToV2StatusRenderingHookWrapper(hook))
+	private StatusRenderManager() : base(ModEntry.Instance.Package.Manifest.UniqueName, hook => new V1ToV2StatusRenderingHookWrapper(hook))
 	{
 	}
 
@@ -122,7 +122,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 
 	public bool ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)
 	{
-		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 			if (hook.ShouldShowStatus(new ApiImplementation.V2Api.StatusRenderingApi.ShouldShowStatusArgs(state, combat, ship, status, amount)) is { } result)
 				return result;
 		return true;
@@ -130,7 +130,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 
 	public IKokoroApi.IV2.IStatusRenderingApi.IHook? GetOverridingAsBarsHook(State state, Combat combat, Ship ship, Status status, int amount)
 	{
-		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 		{
 			var hookResult = hook.ShouldOverrideStatusRenderingAsBars(new ApiImplementation.V2Api.StatusRenderingApi.ShouldOverrideStatusRenderingAsBarsArgs(state, combat, ship, status, amount));
 			switch (hookResult)
@@ -146,7 +146,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 
 	internal List<Tooltip> OverrideStatusTooltips(Status status, int amount, List<Tooltip> tooltips)
 	{
-		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, (MG.inst.g.state ?? DB.fakeState).EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, (MG.inst.g.state ?? DB.fakeState).EnumerateAllArtifacts()))
 			tooltips = hook.OverrideStatusTooltips(new ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusTooltipsArgs(status, amount, RenderingStatusForShip, tooltips));
 		return tooltips;
 	}
@@ -280,18 +280,18 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 
 internal sealed class V1ToV2StatusRenderingHookWrapper(IStatusRenderHook v1) : IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
-	public IEnumerable<(Status Status, double Priority)> GetExtraStatusesToShow(State state, Combat combat, Ship ship)
-		=> v1.GetExtraStatusesToShow(state, combat, ship);
+	public IEnumerable<(Status Status, double Priority)> GetExtraStatusesToShow(IKokoroApi.IV2.IStatusRenderingApi.IHook.IGetExtraStatusesToShowArgs args)
+		=> v1.GetExtraStatusesToShow(args.State, args.Combat, args.Ship);
 		
-	public bool? ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)
-		=> v1.ShouldShowStatus(state, combat, ship, status, amount);
+	public bool? ShouldShowStatus(IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldShowStatusArgs args)
+		=> v1.ShouldShowStatus(args.State, args.Combat, args.Ship, args.Status, args.Amount);
 		
-	public bool? ShouldOverrideStatusRenderingAsBars(State state, Combat combat, Ship ship, Status status, int amount)
-		=> v1.ShouldOverrideStatusRenderingAsBars(state, combat, ship, status, amount);
+	public bool? ShouldOverrideStatusRenderingAsBars(IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldOverrideStatusRenderingAsBarsArgs args)
+		=> v1.ShouldOverrideStatusRenderingAsBars(args.State, args.Combat, args.Ship, args.Status, args.Amount);
 		
-	public (IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(State state, Combat combat, Ship ship, Status status, int amount)
-		=> v1.OverrideStatusRendering(state, combat, ship, status, amount);
+	public (IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingArgs args)
+		=> v1.OverrideStatusRendering(args.State, args.Combat, args.Ship, args.Status, args.Amount);
 		
-	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
-		=> v1.OverrideStatusTooltips(status, amount, ship, tooltips);
+	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+		=> v1.OverrideStatusTooltips(args.Status, args.Amount, args.Ship, args.Tooltips);
 }

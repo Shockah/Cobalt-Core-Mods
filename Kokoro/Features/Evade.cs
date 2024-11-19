@@ -47,7 +47,7 @@ internal sealed class EvadeManager : HookManager<IEvadeHook>
 {
 	internal static readonly EvadeManager Instance = new();
 	
-	public EvadeManager()
+	public EvadeManager() : base(ModEntry.Instance.Package.Manifest.UniqueName)
 	{
 		Register(VanillaEvadeHook.Instance, 0);
 		Register(VanillaDebugEvadeHook.Instance, 1_000_000_000);
@@ -72,7 +72,7 @@ internal sealed class EvadeManager : HookManager<IEvadeHook>
 
 	public IEvadeHook? GetHandlingHook(State state, Combat combat, int direction, EvadeHookContext context = EvadeHookContext.Action)
 	{
-		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 		{
 			var hookResult = hook.IsEvadePossible(state, combat, direction, context);
 			if (hookResult == false)
@@ -85,7 +85,7 @@ internal sealed class EvadeManager : HookManager<IEvadeHook>
 
 	public void AfterEvade(State state, Combat combat, int direction, IEvadeHook hook)
 	{
-		foreach (var hooks in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
+		foreach (var hooks in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 			hooks.AfterEvade(state, combat, direction, hook);
 	}
 	

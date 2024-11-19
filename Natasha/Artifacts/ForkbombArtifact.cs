@@ -42,18 +42,18 @@ internal sealed class ForkbombArtifact : Artifact, IRegisterable, IKokoroApi.IV2
 		TriggeredThisCombat = false;
 	}
 
-	public int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount)
+	public int ModifyStatusChange(IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusChangeArgs args)
 	{
 		if (TriggeredThisCombat)
-			return newAmount;
-		if (ship.isPlayerShip)
-			return newAmount;
-		if (!DB.statuses.TryGetValue(status, out var definition))
-			return newAmount;
+			return args.NewAmount;
+		if (args.Ship.isPlayerShip)
+			return args.NewAmount;
+		if (!DB.statuses.TryGetValue(args.Status, out var definition))
+			return args.NewAmount;
 		if (definition.isGood)
-			return newAmount;
+			return args.NewAmount;
 
 		TriggeredThisCombat = true;
-		return newAmount + 1;
+		return args.NewAmount + 1;
 	}
 }

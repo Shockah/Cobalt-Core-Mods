@@ -217,9 +217,9 @@ internal sealed class RemoteExecutionCard : Card, IRegisterable, IHasCustomCardT
 
 	private sealed class Hook : IKokoroApi.IV2.ICardRenderingApi.IHook
 	{
-		public Font? ReplaceTextCardFont(G g, Card card)
+		public Font? ReplaceTextCardFont(IKokoroApi.IV2.ICardRenderingApi.IHook.IReplaceTextCardFontArgs args)
 		{
-			if (card is not RemoteExecutionCard || card.upgrade != Upgrade.A)
+			if (args.Card is not RemoteExecutionCard || args.Card.upgrade != Upgrade.A)
 				return null;
 			return ModEntry.Instance.KokoroApi.Assets.PinchCompactFont;
 		}

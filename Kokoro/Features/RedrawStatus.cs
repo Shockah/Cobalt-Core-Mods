@@ -42,7 +42,7 @@ internal sealed class RedrawStatusManager : HookManager<IRedrawStatusHook>
 {
 	internal static readonly RedrawStatusManager Instance = new();
 	
-	public RedrawStatusManager()
+	public RedrawStatusManager() : base(ModEntry.Instance.Package.Manifest.UniqueName)
 	{
 		Register(StandardRedrawStatusPaymentHook.Instance, 0);
 		Register(StandardRedrawStatusActionHook.Instance, -1000);
@@ -63,7 +63,7 @@ internal sealed class RedrawStatusManager : HookManager<IRedrawStatusHook>
 		if (!combat.hand.Contains(card))
 			return false;
 
-		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 			if (hook.CanRedraw(state, combat, card) is { } result)
 				return result;
 		return false;
@@ -78,13 +78,13 @@ internal sealed class RedrawStatusManager : HookManager<IRedrawStatusHook>
 		if (GetActionHook() is not { } actionHook)
 			return false;
 
-		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 			hook.AfterRedraw(state, combat, card, possibilityHook, paymentHook, actionHook);
 		return true;
 
 		IRedrawStatusHook? GetPossibilityHook()
 		{
-			foreach (var hook in this.GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
+			foreach (var hook in this.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 			{
 				switch (hook.CanRedraw(state, combat, card))
 				{
@@ -98,11 +98,11 @@ internal sealed class RedrawStatusManager : HookManager<IRedrawStatusHook>
 		}
 
 		IRedrawStatusHook? GetPaymentHook()
-			=> this.GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts())
+			=> this.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts())
 				.FirstOrDefault(hook => hook.PayForRedraw(state, combat, card, possibilityHook));
 
 		IRedrawStatusHook? GetActionHook()
-			=> this.GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts())
+			=> this.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts())
 				.FirstOrDefault(hook => hook.DoRedraw(state, combat, card, possibilityHook, paymentHook));
 	}
 	

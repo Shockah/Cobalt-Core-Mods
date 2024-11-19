@@ -22,7 +22,7 @@ public sealed class ApiImplementation : IDynaApi
 
 	public int GetBlastwaveDamage(Card? card, State state, int baseDamage, bool targetPlayer = false, int blastwaveIndex = 0)
 	{
-		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, state.EnumerateAllArtifacts()))
+		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 			baseDamage += hook.ModifyBlastwaveDamage(card, state, targetPlayer, blastwaveIndex);
 		return Math.Max(baseDamage, 0);
 	}

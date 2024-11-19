@@ -1,6 +1,15 @@
-﻿namespace Shockah.Dyna;
+﻿namespace Shockah.Kokoro;
 
 public partial interface IKokoroApi
 {
-	Status TempShieldNextTurnVanillaStatus { get; }
+	public partial interface IV2
+	{
+		IStatusNextTurnApi StatusNextTurn { get; }
+
+		public interface IStatusNextTurnApi
+		{
+			Status Shield { get; }
+			Status TempShield { get; }
+		}
+	}
 }

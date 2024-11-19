@@ -8,15 +8,11 @@ public partial interface IKokoroApi
 
 		public interface IOnTurnEndApi
 		{
-			public interface IOnTurnEndAction : ICardAction
+			public interface IOnTurnEndAction : ICardAction<CardAction>
 			{
 				CardAction Action { get; set; }
 
-				IOnTurnEndAction SetAction(CardAction value)
-				{
-					this.Action = value;
-					return this;
-				}
+				IOnTurnEndAction SetAction(CardAction value);
 			}
 			
 			IOnTurnEndAction? AsAction(CardAction action);

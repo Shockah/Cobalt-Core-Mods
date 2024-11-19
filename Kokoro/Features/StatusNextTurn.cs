@@ -40,48 +40,52 @@ partial class ApiImplementation
 internal sealed class StatusNextTurnManager : HookManager<IOxidationStatusHook>, IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static readonly StatusNextTurnManager Instance = new();
-	
-	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
+
+	private StatusNextTurnManager() : base(ModEntry.Instance.Package.Manifest.UniqueName)
 	{
-		if (status == (Status)ModEntry.Instance.Content.TempShieldNextTurnStatus.Id!.Value)
+	}
+	
+	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+	{
+		if (args.Status == (Status)ModEntry.Instance.Content.TempShieldNextTurnStatus.Id!.Value)
 			return [
-				.. tooltips,
-				.. StatusMeta.GetTooltips(Status.tempShield, amount)
+				.. args.Tooltips,
+				.. StatusMeta.GetTooltips(Status.tempShield, args.Amount)
 			];
-		if (status == (Status)ModEntry.Instance.Content.ShieldNextTurnStatus.Id!.Value)
+		if (args.Status == (Status)ModEntry.Instance.Content.ShieldNextTurnStatus.Id!.Value)
 			return [
-				.. tooltips,
-				.. StatusMeta.GetTooltips(Status.shield, amount)
+				.. args.Tooltips,
+				.. StatusMeta.GetTooltips(Status.shield, args.Amount)
 			];
-		return tooltips;
+		return args.Tooltips;
 	}
 
-	public bool HandleStatusTurnAutoStep(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy setStrategy)
+	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
-		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
+		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 			return false;
 
-		if (status == (Status)ModEntry.Instance.Content.TempShieldNextTurnStatus.Id!.Value)
+		if (args.Status == (Status)ModEntry.Instance.Content.TempShieldNextTurnStatus.Id!.Value)
 		{
-			if (amount != 0)
-				combat.QueueImmediate(new AStatus
+			if (args.Amount != 0)
+				args.Combat.QueueImmediate(new AStatus
 				{
-					targetPlayer = ship.isPlayerShip,
+					targetPlayer = args.Ship.isPlayerShip,
 					status = Status.tempShield,
-					statusAmount = amount
+					statusAmount = args.Amount
 				});
-			amount = 0;
+			args.Amount = 0;
 		}
-		else if (status == (Status)ModEntry.Instance.Content.ShieldNextTurnStatus.Id!.Value)
+		else if (args.Status == (Status)ModEntry.Instance.Content.ShieldNextTurnStatus.Id!.Value)
 		{
-			if (amount != 0)
-				combat.QueueImmediate(new AStatus
+			if (args.Amount != 0)
+				args.Combat.QueueImmediate(new AStatus
 				{
-					targetPlayer = ship.isPlayerShip,
+					targetPlayer = args.Ship.isPlayerShip,
 					status = Status.shield,
-					statusAmount = amount
+					statusAmount = args.Amount
 				});
-			amount = 0;
+			args.Amount = 0;
 		}
 		return false;
 	}

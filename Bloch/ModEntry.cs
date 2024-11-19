@@ -96,7 +96,7 @@ public sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
-		HookManager = new();
+		HookManager = new(package.Manifest.UniqueName);
 		Api = new();
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 

@@ -55,8 +55,8 @@ internal sealed class OneLiners : IRegisterable, IKokoroApi.IV2.IWrappedActionsA
 		return false;
 	}
 
-	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
-		=> action is OneLinerAction oneLinerAction ? oneLinerAction.Actions : null;
+	public IEnumerable<CardAction>? GetWrappedCardActions(IKokoroApi.IV2.IWrappedActionsApi.IHook.IGetWrappedCardActionsArgs args)
+		=> args.Action is OneLinerAction oneLinerAction ? oneLinerAction.Actions : null;
 }
 
 internal sealed class OneLinerAction : CardAction

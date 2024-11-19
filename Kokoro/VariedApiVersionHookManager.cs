@@ -1,5 +1,5 @@
-﻿using Nickel;
-using Shockah.Shared;
+﻿using Nanoray.Pintail;
+using Nickel;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 namespace Shockah.Kokoro;
 
 internal class VariedApiVersionHookManager<TV2Hook, TV1Hook>(
+	string proxyContext,
 	Func<TV1Hook, TV2Hook> mapper
 ) : IEnumerable<TV2Hook>
 	where TV2Hook : class
@@ -38,7 +39,7 @@ internal class VariedApiVersionHookManager<TV2Hook, TV1Hook>(
 	IEnumerator IEnumerable.GetEnumerator()
 		=> GetEnumerator();
 	
-	internal IEnumerable<TV2Hook> GetHooksWithProxies(IProxyProvider proxyProvider, IEnumerable<object> objects)
+	internal IEnumerable<TV2Hook> GetHooksWithProxies(IProxyManager<string> proxyManager, IEnumerable<object> objects)
 		=> Hooks
 			.Select(hook => (Hook: hook, Priority: Hooks.TryGetOrderingValue(hook, out var priority) ? -priority : 0))
 			.Concat(
@@ -46,9 +47,21 @@ internal class VariedApiVersionHookManager<TV2Hook, TV1Hook>(
 					.Select(o =>
 					{
 						if (IsV2Hook(o.GetType()))
-							return (Hook: proxyProvider.TryProxy<TV2Hook>(o, out var hook) ? hook : null, Priority: proxyProvider.TryProxy<IKokoroApi.IV2.IHookPriority>(o, out var hookPriority) ? hookPriority.HookPriority : 0);
+						{
+							if (!proxyManager.TryProxy(o, "AnyMod", proxyContext, out TV2Hook? hook))
+								return (Hook: null, Priority: 0);
+
+							var priority = proxyManager.TryProxy(o, "AnyMod", proxyContext, out IKokoroApi.IV2.IHookPriority? hookPriority) ? hookPriority.HookPriority : 0;
+							return (Hook: hook, Priority: priority);
+						}
 						else
-							return (Hook: proxyProvider.TryProxy<TV1Hook>(o, out var hook) ? mapper(hook) : null, Priority: proxyProvider.TryProxy<IHookPriority>(o, out var hookPriority) ? hookPriority.HookPriority : 0);
+						{
+							if (!proxyManager.TryProxy(o, "AnyMod", proxyContext, out TV1Hook? hook))
+								return (Hook: null, Priority: 0);
+
+							var priority = proxyManager.TryProxy(o, "AnyMod", proxyContext, out IHookPriority? hookPriority) ? hookPriority.HookPriority : 0;
+							return (Hook: mapper(hook), Priority: priority);
+						}
 
 						static bool IsV2Hook(Type type)
 							=> type.Name == nameof(IKokoroApi.IV2.IKokoroV2ApiHook) || (type.BaseType is { } baseType && IsV2Hook(baseType)) || type.GetInterfaces().Any(IsV2Hook);

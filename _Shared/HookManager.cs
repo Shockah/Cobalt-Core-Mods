@@ -1,11 +1,14 @@
-﻿using Nickel;
+﻿using Nanoray.Pintail;
+using Nickel;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.Shared;
 
-public class HookManager<THook> : IEnumerable<THook> where THook : class
+internal class HookManager<THook>(
+	string proxyContext
+) : IEnumerable<THook> where THook : class
 {
 	protected readonly OrderedList<THook, double> Hooks = [];
 
@@ -21,12 +24,19 @@ public class HookManager<THook> : IEnumerable<THook> where THook : class
 	IEnumerator IEnumerable.GetEnumerator()
 		=> GetEnumerator();
 	
-	internal IEnumerable<THook> GetHooksWithProxies(IProxyProvider proxyProvider, IEnumerable<object> objects)
+	internal IEnumerable<THook> GetHooksWithProxies(IProxyManager<string> proxyManager, IEnumerable<object> objects)
 		=> Hooks
 			.Select(hook => (Hook: hook, Priority: Hooks.TryGetOrderingValue(hook, out var priority) ? -priority : 0))
 			.Concat(
 				objects
-					.Select(o => (Hook: proxyProvider.TryProxy<THook>(o, out var hook) ? hook : null, Priority: proxyProvider.TryProxy<IHookPriority>(o, out var hookPriority) ? hookPriority.HookPriority : 0))
+					.Select(o =>
+					{
+						if (!proxyManager.TryProxy(o, "AnyMod", proxyContext, out THook? hook))
+							return (Hook: null, Priority: 0);
+
+						var priority = proxyManager.TryProxy(o, "AnyMod", proxyContext, out IHookPriority? hookPriority) ? hookPriority.HookPriority : 0;
+						return (Hook: hook, Priority: priority);
+					})
 					.Where(e => e.Hook is not null)
 					.Select(e => (Hook: e.Hook!, Priority: e.Priority))
 			)

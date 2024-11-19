@@ -77,7 +77,7 @@ internal sealed class RevampCard : Card, IRegisterable
 
 				if (Choose)
 				{
-					c.QueueImmediate(ModEntry.Instance.KokoroApi.TemporaryUpgrades.MakeChooseTemporaryUpgradeAction(card.uuid));
+					c.QueueImmediate(ModEntry.Instance.KokoroApi.TemporaryUpgrades.MakeChooseTemporaryUpgradeAction(card.uuid).AsCardAction);
 				}
 				else
 				{

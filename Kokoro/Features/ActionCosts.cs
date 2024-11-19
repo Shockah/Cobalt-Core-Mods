@@ -357,7 +357,7 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 
 	private static IKokoroApi.IV2.IActionCostsApi.IMockPaymentEnvironment? CurrentDrawingEnvironment;
 
-	private ActionCostsManager()
+	private ActionCostsManager() : base(ModEntry.Instance.Package.Manifest.UniqueName)
 	{
 		RegisterStatusResourceCostIcon(Status.shield, (Spr)ModEntry.Instance.Content.ShieldCostSatisfiedSprite.Id!.Value, (Spr)ModEntry.Instance.Content.ShieldCostUnsatisfiedSprite.Id!.Value);
 		RegisterStatusResourceCostIcon(Status.evade, (Spr)ModEntry.Instance.Content.EvadeCostSatisfiedSprite.Id!.Value, (Spr)ModEntry.Instance.Content.EvadeCostUnsatisfiedSprite.Id!.Value);
@@ -443,7 +443,7 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 	
 	internal void OnActionCostsTransactionFinished(State state, Combat combat, Card? card, IKokoroApi.IV2.IActionCostsApi.IWholeTransactionPaymentResult transactionPaymentResult)
 	{
-		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 			hook.OnActionCostsTransactionFinished(new ApiImplementation.V2Api.ActionCostsApi.OnActionCostsTransactionFinishedArgs(state, combat, card, transactionPaymentResult));
 	}
 	

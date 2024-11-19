@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Newtonsoft.Json;
 using Nickel;
 using System;
 using System.Linq;
@@ -8,6 +9,8 @@ namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
+	#region V1
+	
 	partial class ActionApiImplementation
 	{
 		public ACardOffering WithDestination(ACardOffering action, CardDestination? destination, bool? insertRandomly = null)
@@ -42,6 +45,100 @@ partial class ApiImplementation
 				Instance.Api.SetExtensionData(copy, "destinationInsertRandomly", insertRandomly.Value);
 
 			return copy;
+		}
+	}
+	
+	#endregion
+	
+	partial class V2Api
+	{
+		public IKokoroApi.IV2.ICardOfferingAndRewardDestinationApi CardOfferingAndRewardDestination { get; } = new CardOfferingAndRewardDestinationApi();
+		
+		public sealed class CardOfferingAndRewardDestinationApi : IKokoroApi.IV2.ICardOfferingAndRewardDestinationApi
+		{
+			public IKokoroApi.IV2.ICardOfferingAndRewardDestinationApi.ICardOfferingAction AsCardOffering(ACardOffering action)
+				=> new ActionWrapper { Wrapped = action };
+
+			public IKokoroApi.IV2.ICardOfferingAndRewardDestinationApi.ICardOfferingAction MakeCardOffering(ACardOffering action)
+			{
+				var wrapped = Mutil.DeepCopy(action);
+				return new ActionWrapper { Wrapped = wrapped };
+			}
+
+			public IKokoroApi.IV2.ICardOfferingAndRewardDestinationApi.ICardReward AsCardReward(CardReward route)
+				=> new RouteWrapper { Wrapped = route };
+
+			public IKokoroApi.IV2.ICardOfferingAndRewardDestinationApi.ICardReward MakeCardReward(CardReward route)
+			{
+				var wrapped = Mutil.DeepCopy(route);
+				return new RouteWrapper { Wrapped = wrapped };
+			}
+
+			private sealed class ActionWrapper : IKokoroApi.IV2.ICardOfferingAndRewardDestinationApi.ICardOfferingAction
+			{
+				public required ACardOffering Wrapped { get; init; }
+
+				[JsonIgnore]
+				public ACardOffering AsCardAction
+					=> Wrapped;
+
+				public CardDestination? Destination
+				{
+					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<CardDestination>(Wrapped, "destination");
+					set => ModEntry.Instance.Helper.ModData.SetOptionalModData(Wrapped, "destination", value);
+				}
+				
+				public bool? InsertRandomly
+				{
+					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(Wrapped, "destinationInsertRandomly");
+					set => ModEntry.Instance.Helper.ModData.SetOptionalModData(Wrapped, "destinationInsertRandomly", value);
+				}
+				
+				public IKokoroApi.IV2.ICardOfferingAndRewardDestinationApi.ICardOfferingAction SetDestination(CardDestination? value)
+				{
+					Destination = value;
+					return this;
+				}
+
+				public IKokoroApi.IV2.ICardOfferingAndRewardDestinationApi.ICardOfferingAction SetInsertRandomly(bool? value)
+				{
+					InsertRandomly = value;
+					return this;
+				}
+			}
+			
+			private sealed class RouteWrapper : IKokoroApi.IV2.ICardOfferingAndRewardDestinationApi.ICardReward
+			{
+				public required CardReward Wrapped { get; init; }
+
+				[JsonIgnore]
+				public CardReward AsRoute
+					=> Wrapped;
+
+				public CardDestination? Destination
+				{
+					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<CardDestination>(Wrapped, "destination");
+					set => ModEntry.Instance.Helper.ModData.SetOptionalModData(Wrapped, "destination", value);
+				}
+				
+				public bool? InsertRandomly
+				{
+					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(Wrapped, "destinationInsertRandomly");
+					set => ModEntry.Instance.Helper.ModData.SetOptionalModData(Wrapped, "destinationInsertRandomly", value);
+				}
+				
+				public IKokoroApi.IV2.ICardOfferingAndRewardDestinationApi.ICardReward SetDestination(CardDestination? value)
+				{
+					Destination = value;
+					return this;
+				}
+
+				public IKokoroApi.IV2.ICardOfferingAndRewardDestinationApi.ICardReward SetInsertRandomly(bool? value)
+				{
+					InsertRandomly = value;
+					return this;
+				}
+			}
 		}
 	}
 }

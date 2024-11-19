@@ -8,15 +8,11 @@ public partial interface IKokoroApi
 
 		public interface IOnDiscardApi
 		{
-			public interface IOnDiscardAction : ICardAction
+			public interface IOnDiscardAction : ICardAction<CardAction>
 			{
 				CardAction Action { get; set; }
 
-				IOnDiscardAction SetAction(CardAction value)
-				{
-					this.Action = value;
-					return this;
-				}
+				IOnDiscardAction SetAction(CardAction value);
 			}
 			
 			IOnDiscardAction? AsAction(CardAction action);

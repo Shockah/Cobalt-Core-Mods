@@ -12,15 +12,11 @@ public partial interface IKokoroApi
 		{
 			ICardTraitEntry SpontaneousTriggeredTrait { get; }
 			
-			public interface ISpontaneousAction : ICardAction
+			public interface ISpontaneousAction : ICardAction<CardAction>
 			{
 				CardAction Action { get; set; }
 
-				ISpontaneousAction SetAction(CardAction value)
-				{
-					this.Action = value;
-					return this;
-				}
+				ISpontaneousAction SetAction(CardAction value);
 			}
 			
 			ISpontaneousAction? AsAction(CardAction action);

@@ -28,22 +28,22 @@ internal sealed class WormStatusManager : IKokoroApi.IV2.IStatusLogicApi.IHook, 
 {
 	internal static readonly WormStatusManager Instance = new();
 
-	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
+	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
-		foreach (var tooltip in tooltips)
+		foreach (var tooltip in args.Tooltips)
 		{
 			if (tooltip is TTGlossary glossary && glossary.key == $"status.{ModEntry.Instance.Content.WormStatus.Id!.Value}" && (glossary.vals is null || glossary.vals.Length == 0 || Equals(glossary.vals[0], "<c=boldPink>0</c>")))
 				glossary.vals = ["<c=boldPink>1</c>"];
 		}
-		return tooltips;
+		return args.Tooltips;
 	}
 
-	public void OnStatusTurnTrigger(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)
+	public void OnStatusTurnTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IOnStatusTurnTriggerArgs args)
 	{
-		if (status != (Status)ModEntry.Instance.Content.WormStatus.Id!.Value || timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
+		if (args.Status != (Status)ModEntry.Instance.Content.WormStatus.Id!.Value || args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 			return;
 
-		var otherShip = ship.isPlayerShip ? combat.otherShip : state.ship;
+		var otherShip = args.Ship.isPlayerShip ? args.Combat.otherShip : args.State.ship;
 		var wormAmount = otherShip.Get((Status)ModEntry.Instance.Content.WormStatus.Id!.Value);
 		if (wormAmount <= 0)
 			return;
@@ -55,11 +55,11 @@ internal sealed class WormStatusManager : IKokoroApi.IV2.IStatusLogicApi.IHook, 
 				.Select(x => x + otherShip.x)
 				.ToList();
 
-			foreach (var partXWithIntent in partXsWithIntent.Shuffle(state.rngActions).Take(wormAmount))
-				combat.Queue(new AStunPart { worldX = partXWithIntent });
+			foreach (var partXWithIntent in partXsWithIntent.Shuffle(args.State.rngActions).Take(wormAmount))
+				args.Combat.Queue(new AStunPart { worldX = partXWithIntent });
 		}
 
-		combat.Queue(new AStatus
+		args.Combat.Queue(new AStatus
 		{
 			targetPlayer = otherShip.isPlayerShip,
 			status = (Status)ModEntry.Instance.Content.WormStatus.Id!.Value,

@@ -60,7 +60,7 @@ internal sealed class UnstableCompoundArtifact : Artifact, IRegisterable, IDynaH
 			return;
 
 		foreach (var action in __result)
-			foreach (var wrappedAction in ModEntry.Instance.KokoroApi.Actions.GetWrappedCardActionsRecursively(action))
+			foreach (var wrappedAction in ModEntry.Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively(action))
 				if (wrappedAction is AAttack attack && attack.IsBlastwave() && attack.GetBlastwaveRange() <= 1)
 					ModEntry.Instance.Helper.ModData.SetModData(attack, "BlastwaveRange", 2);
 	}

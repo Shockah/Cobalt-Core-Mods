@@ -60,11 +60,11 @@ internal sealed class MindMapManager : IKokoroApi.IV2.IStatusRenderingApi.IHook
 		c.QueueImmediate(new Action { Amount = retain });
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
+	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
-		if (status == MindMapStatus.Status)
-			return [..tooltips, new TTGlossary("cardtrait.retain")];
-		return tooltips;
+		if (args.Status == MindMapStatus.Status)
+			return [.. args.Tooltips, new TTGlossary("cardtrait.retain")];
+		return args.Tooltips;
 	}
 
 	private sealed class Action : CardAction

@@ -95,10 +95,10 @@ internal sealed class SplitPersonalityManager : IKokoroApi.IV2.IStatusRenderingA
 		]);
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
+	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
-		if (status == SplitPersonalityStatus.Status)
-			return [.. tooltips, new TTGlossary("action.spawn")];
-		return tooltips;
+		if (args.Status == SplitPersonalityStatus.Status)
+			return [.. args.Tooltips, new TTGlossary("action.spawn")];
+		return args.Tooltips;
 	}
 }

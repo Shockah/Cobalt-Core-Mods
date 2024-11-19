@@ -95,7 +95,7 @@ internal sealed class ChargeManager
 		var targetShip = targetPlayer ? state.ship : combat.otherShip;
 		var worldX = targetShip.x + targetShip.parts.IndexOf(part);
 		part.SetStickedCharge(null);
-		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, state.EnumerateAllArtifacts()))
+		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 			hook.OnChargeTrigger(state, combat, targetShip, worldX);
 		charge.OnTrigger(state, combat, targetShip, part);
 		return true;
@@ -136,7 +136,7 @@ internal sealed class ChargeManager
 		if (charge.GetLightsIcon(state) is not { } lightsIcon)
 			return;
 		texture = SpriteLoader.Get(lightsIcon)!;
-		var color = Color.Lerp(Colors.white, Colors.black, (ModEntry.Instance.KokoroApi.TotalGameTime.TotalSeconds + position.x / 160.0) % 1.0);
+		var color = Color.Lerp(Colors.white, Colors.black, (MG.inst.g.time + position.x / 160.0) % 1.0);
 		Draw.Sprite(lightsIcon, position.x - texture.Width / 2.0, position.y - texture.Height / 2.0 + charge.YOffset, color: color);
 	}
 
@@ -409,7 +409,7 @@ public sealed class FireChargeAction : CardAction
 		if (ownerShip.GetPartAtWorldX(worldX) is { } firingPart)
 			firingPart.pulse = 1;
 
-		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, s.EnumerateAllArtifacts()))
+		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
 			hook.OnChargeFired(s, c, targetShip, worldX);
 	}
 
@@ -464,10 +464,10 @@ public sealed class FireChargeAction : CardAction
 				Audio.Play(Event.Hits_DroneCollision);
 				part.SetStickedCharge(null);
 				// reversed order - charges are expected to QueueImmediate their actions, which reverses their order
-				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, s.EnumerateAllArtifacts()))
+				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
 					hook.OnChargeTrigger(s, c, targetShip, worldX);
 				Charge.OnTrigger(s, c, targetShip, part);
-				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, s.EnumerateAllArtifacts()))
+				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
 					hook.OnChargeTrigger(s, c, targetShip, worldX);
 				existingCharge.OnTrigger(s, c, targetShip, part);
 			}
@@ -476,7 +476,7 @@ public sealed class FireChargeAction : CardAction
 				Audio.Play(Event.Hits_ShieldHit);
 				part.SetStickedCharge(Charge);
 
-				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, s.EnumerateAllArtifacts()))
+				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
 					hook.OnChargeSticked(s, c, targetShip, worldX);
 			}
 		}

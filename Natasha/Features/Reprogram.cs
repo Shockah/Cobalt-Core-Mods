@@ -91,13 +91,13 @@ internal sealed class Reprogram : IRegisterable
 
 	private sealed class Hook : IKokoroApi.IV2.IStatusRenderingApi.IHook
 	{
-		public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
+		public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 		{
-			if (status == ReprogrammedStatus.Status)
-				return [.. tooltips, .. new RepairKit().GetTooltips()];
-			if (status == DeprogrammedStatus.Status)
-				return [.. tooltips, .. new Asteroid().GetTooltips()];
-			return tooltips;
+			if (args.Status == ReprogrammedStatus.Status)
+				return [.. args.Tooltips, .. new RepairKit().GetTooltips()];
+			if (args.Status == DeprogrammedStatus.Status)
+				return [.. args.Tooltips, .. new Asteroid().GetTooltips()];
+			return args.Tooltips;
 		}
 	}
 }

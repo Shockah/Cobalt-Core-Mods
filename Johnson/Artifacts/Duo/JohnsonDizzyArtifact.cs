@@ -68,9 +68,9 @@ internal sealed class JohnsonDizzyArtifact : Artifact, IRegisterable
 
 		foreach (var baseAction in __result)
 		{
-			foreach (var wrappedAction in ModEntry.Instance.KokoroApi.Actions.GetWrappedCardActionsRecursively(baseAction))
+			foreach (var wrappedAction in ModEntry.Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively(baseAction))
 			{
-				if (wrappedAction is AStatus statusAction && statusAction.mode == AStatusMode.Add && statusAction.status == Status.shield)
+				if (wrappedAction is AStatus { mode: AStatusMode.Add, status: Status.shield } statusAction)
 				{
 					statusAction.statusAmount += strenghten;
 					if (string.IsNullOrEmpty(statusAction.artifactPulse))

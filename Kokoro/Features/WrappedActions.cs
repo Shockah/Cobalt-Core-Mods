@@ -67,7 +67,7 @@ internal sealed class WrappedActionManager : VariedApiVersionHookManager<IKokoro
 {
 	internal static readonly WrappedActionManager Instance = new();
 
-	private WrappedActionManager() : base(hook => new V1ToV2WrappedActionHookWrapper(hook))
+	private WrappedActionManager() : base(ModEntry.Instance.Package.Manifest.UniqueName, hook => new V1ToV2WrappedActionHookWrapper(hook))
 	{
 	}
 

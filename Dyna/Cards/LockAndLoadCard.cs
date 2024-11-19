@@ -1,6 +1,7 @@
 ﻿using daisyowl.text;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -23,7 +24,7 @@ internal sealed class LockAndLoadCard : Card, IRegisterable
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "LockAndLoad", "name"]).Localize
 		});
 
-		ModEntry.Instance.KokoroApi.RegisterCardRenderHook(new Hook(), 0);
+		ModEntry.Instance.KokoroApi.CardRendering.RegisterHook(new Hook());
 	}
 
 	public override CardData GetData(State state)
@@ -93,15 +94,15 @@ internal sealed class LockAndLoadCard : Card, IRegisterable
 			]
 		};
 
-	private sealed class Hook : ICardRenderHook
+	private sealed class Hook : IKokoroApi.IV2.ICardRenderingApi.IHook
 	{
-		public Font? ReplaceTextCardFont(G g, Card card)
+		public Font? ReplaceTextCardFont(IKokoroApi.IV2.ICardRenderingApi.IHook.IReplaceTextCardFontArgs args)
 		{
-			if (card is not LockAndLoadCard)
+			if (args.Card is not LockAndLoadCard)
 				return null;
-			if (card.upgrade != Upgrade.B)
+			if (args.Card.upgrade != Upgrade.B)
 				return null;
-			return ModEntry.Instance.KokoroApi.PinchCompactFont;
+			return ModEntry.Instance.KokoroApi.Assets.PinchCompactFont;
 		}
 	}
 }

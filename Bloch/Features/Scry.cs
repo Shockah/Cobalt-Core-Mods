@@ -109,7 +109,7 @@ internal sealed class ScryAction : CardAction
 			if (cardsToDiscard.Count != 0)
 				Audio.Play(Event.CardHandling);
 
-			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, s.EnumerateAllArtifacts()))
+			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
 				hook.OnScryResult(s, c, PresentedCards, cardsToDiscard, FromInsight);
 		}
 	}

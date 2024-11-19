@@ -27,7 +27,7 @@ internal sealed class HardHatArtifact : Artifact, IRegisterable
 	public override List<Tooltip>? GetExtraTooltips()
 		=> [
 			.. StatusMeta.GetTooltips(Status.energyLessNextTurn, Math.Max(MG.inst.g.state.ship.Get(Status.energyLessNextTurn), 1)),
-			.. StatusMeta.GetTooltips(ModEntry.Instance.KokoroApi.TempShieldNextTurnVanillaStatus, 2),
+			.. StatusMeta.GetTooltips(ModEntry.Instance.KokoroApi.StatusNextTurn.TempShield, 2),
 		];
 
 	public override void OnTurnEnd(State state, Combat combat)
@@ -41,7 +41,7 @@ internal sealed class HardHatArtifact : Artifact, IRegisterable
 		combat.QueueImmediate(new AStatus
 		{
 			targetPlayer = true,
-			status = ModEntry.Instance.KokoroApi.TempShieldNextTurnVanillaStatus,
+			status = ModEntry.Instance.KokoroApi.StatusNextTurn.TempShield,
 			statusAmount = 2,
 			artifactPulse = Key()
 		});

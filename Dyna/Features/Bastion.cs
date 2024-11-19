@@ -1,9 +1,10 @@
 ﻿using Nickel;
+using Shockah.Kokoro;
 using System.Collections.Generic;
 
 namespace Shockah.Dyna;
 
-internal sealed class BastionManager : IDynaHook, IStatusRenderHook
+internal sealed class BastionManager : IDynaHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static IStatusEntry BastionStatus { get; private set; } = null!;
 
@@ -22,7 +23,7 @@ internal sealed class BastionManager : IDynaHook, IStatusRenderHook
 		});
 
 		ModEntry.Instance.Api.RegisterHook(this, 0);
-		ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(this, 0);
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(this);
 	}
 
 	public void OnChargeTrigger(State state, Combat combat, Ship ship, int worldX)
@@ -40,11 +41,11 @@ internal sealed class BastionManager : IDynaHook, IStatusRenderHook
 		});
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
-		=> status == BastionStatus.Status
+	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+		=> args.Status == BastionStatus.Status
 			? [
-				..tooltips,
-				..StatusMeta.GetTooltips(Status.tempShield, amount),
-				..StatusMeta.GetTooltips(Status.shield, amount)
-			] : tooltips;
+				.. args.Tooltips,
+				.. StatusMeta.GetTooltips(Status.tempShield, args.Amount),
+				.. StatusMeta.GetTooltips(Status.shield, args.Amount)
+			] : args.Tooltips;
 }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using Nickel.Common;
+using Shockah.Kokoro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ public sealed class ModEntry : SimpleMod
 	internal readonly IJohnsonApi Api = new ApiImplementation();
 
 	internal IHarmony Harmony { get; }
-	internal IKokoroApi KokoroApi { get; }
+	internal IKokoroApi.IV2 KokoroApi { get; }
 	internal IDuoArtifactsApi? DuoArtifactsApi { get; }
 	internal ITyAndSashaApi? TyAndSashaApi { get; private set; }
 	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
@@ -113,7 +114,7 @@ public sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
-		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 		DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
 
 		helper.Events.OnModLoadPhaseFinished += (_, phase) =>

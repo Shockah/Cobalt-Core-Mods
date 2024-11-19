@@ -18,7 +18,7 @@ internal static class BloodTapExt
 internal sealed class BloodTapManager
 {
 	private readonly Dictionary<Status, Func<State, Combat, Status, List<CardAction>>> StatusOptions = [];
-	private readonly HookManager<IBloodTapOptionProvider> StatusOptionProviders = [];
+	private readonly HookManager<IBloodTapOptionProvider> StatusOptionProviders = new HookManager<IBloodTapOptionProvider>(ModEntry.Instance.Package.Manifest.UniqueName);
 
 	public BloodTapManager()
 	{

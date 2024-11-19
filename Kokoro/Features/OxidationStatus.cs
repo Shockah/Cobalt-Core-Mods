@@ -60,44 +60,44 @@ internal sealed class OxidationStatusManager : VariedApiVersionHookManager<IKoko
 
 	internal static readonly OxidationStatusManager Instance = new();
 
-	private OxidationStatusManager() : base(hook => new V1ToV2OxidationStatusHookWrapper(hook))
+	private OxidationStatusManager() : base(ModEntry.Instance.Package.Manifest.UniqueName, hook => new V1ToV2OxidationStatusHookWrapper(hook))
 	{
 	}
 
 	public int GetOxidationStatusMaxValue(State state, Ship ship)
 	{
 		var value = BaseOxidationStatusMaxValue;
-		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 			value = hook.ModifyOxidationRequirement(new ApiImplementation.V2Api.OxidationStatusApi.ModifyOxidationRequirementArgs(state, ship, value));
 		return value;
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
+	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
-		var oxidationMaxValue = ship is null ? BaseOxidationStatusMaxValue : GetOxidationStatusMaxValue(MG.inst.g.state ?? DB.fakeState, ship);
-		foreach (var tooltip in tooltips)
+		var oxidationMaxValue = args.Ship is null ? BaseOxidationStatusMaxValue : GetOxidationStatusMaxValue(MG.inst.g.state ?? DB.fakeState, args.Ship);
+		foreach (var tooltip in args.Tooltips)
 		{
 			if (tooltip is TTGlossary glossary && glossary.key == $"status.{ModEntry.Instance.Content.OxidationStatus.Status}")
 				glossary.vals = [$"<c=boldPink>{oxidationMaxValue}</c>"];
 		}
-		return tooltips;
+		return args.Tooltips;
 	}
 
-	public bool HandleStatusTurnAutoStep(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy setStrategy)
+	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
-		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
+		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
 			return false;
 
-		if (status == Status.corrode && ship.Get(ModEntry.Instance.Content.OxidationStatus.Status) >= GetOxidationStatusMaxValue(state, ship))
+		if (args.Status == Status.corrode && args.Ship.Get(ModEntry.Instance.Content.OxidationStatus.Status) >= GetOxidationStatusMaxValue(args.State, args.Ship))
 		{
-			amount++;
-			setStrategy = IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.Direct;
+			args.Amount++;
+			args.SetStrategy = IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.Direct;
 			return false;
 		}
-		if (status == ModEntry.Instance.Content.OxidationStatus.Status && amount >= GetOxidationStatusMaxValue(state, ship))
+		if (args.Status == ModEntry.Instance.Content.OxidationStatus.Status && args.Amount >= GetOxidationStatusMaxValue(args.State, args.Ship))
 		{
-			amount = 0;
-			setStrategy = IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueSet;
+			args.Amount = 0;
+			args.SetStrategy = IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueSet;
 			return false;
 		}
 
@@ -107,6 +107,6 @@ internal sealed class OxidationStatusManager : VariedApiVersionHookManager<IKoko
 
 internal sealed class V1ToV2OxidationStatusHookWrapper(IOxidationStatusHook v1) : IKokoroApi.IV2.IOxidationStatusApi.IHook
 {
-	public int ModifyOxidationRequirement(State state, Ship ship, int value)
-		=> v1.ModifyOxidationRequirement(state, ship, value);
+	public int ModifyOxidationRequirement(IKokoroApi.IV2.IOxidationStatusApi.IHook.IModifyOxidationRequirementArgs args)
+		=> v1.ModifyOxidationRequirement(args.State, args.Ship, args.Value);
 }

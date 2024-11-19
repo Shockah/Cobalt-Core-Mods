@@ -26,25 +26,25 @@ internal sealed class IntuitionManager : IKokoroApi.IV2.IStatusLogicApi.IHook, I
 		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(this);
 	}
 
-	public void OnStatusTurnTrigger(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)
+	public void OnStatusTurnTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IOnStatusTurnTriggerArgs args)
 	{
-		if (status != IntuitionStatus.Status)
+		if (args.Status != IntuitionStatus.Status)
 			return;
-		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
+		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
 			return;
 
-		combat.QueueImmediate(new AStatus
+		args.Combat.QueueImmediate(new AStatus
 		{
-			targetPlayer = ship.isPlayerShip,
+			targetPlayer = args.Ship.isPlayerShip,
 			status = AuraManager.InsightStatus.Status,
-			statusAmount = oldAmount
+			statusAmount = args.OldAmount
 		});
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
+	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
-		if (status == IntuitionStatus.Status)
-			return [..tooltips, ..StatusMeta.GetTooltips(AuraManager.InsightStatus.Status, amount)];
-		return tooltips;
+		if (args.Status == IntuitionStatus.Status)
+			return [.. args.Tooltips, .. StatusMeta.GetTooltips(AuraManager.InsightStatus.Status, args.Amount)];
+		return args.Tooltips;
 	}
 }

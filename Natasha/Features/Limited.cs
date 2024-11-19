@@ -110,7 +110,7 @@ internal sealed class Limited : IRegisterable
 		var baseUses = GetBaseLimitedUses(card.Key(), card.upgrade);
 		var uses = baseUses;
 
-		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, state.EnumerateAllArtifacts()))
+		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 			if (hook.ModifyLimitedUses(state, card, baseUses, ref uses))
 				break;
 

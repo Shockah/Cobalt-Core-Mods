@@ -292,7 +292,7 @@ internal sealed class BlastwaveManager
 				Run(g, s, c, 1);
 
 			var targetShip = TargetPlayer ? s.ship : c.otherShip;
-			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, s.EnumerateAllArtifacts()))
+			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
 				hook.OnBlastwaveTrigger(s, c, targetShip, WorldX, HitMidrow);
 		}
 
@@ -350,7 +350,7 @@ internal sealed class BlastwaveManager
 						artifact.OnEnemyGetHit(state, combat, part);
 				}
 
-				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, state.EnumerateAllArtifacts()))
+				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 					hook.OnBlastwaveHit(state, combat, targetShip, WorldX, worldX, HitMidrow);
 			}
 
@@ -395,7 +395,7 @@ internal sealed class BlastwaveManager
 					combat.DestroyDroneAt(state, worldX, !TargetPlayer);
 				}
 
-				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.KokoroApi, state.EnumerateAllArtifacts()))
+				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 					hook.OnBlastwaveHit(state, combat, targetShip, worldX, WorldX, HitMidrow);
 			}
 

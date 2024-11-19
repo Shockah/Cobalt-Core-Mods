@@ -46,7 +46,7 @@ internal sealed class DroneShiftManager : HookManager<IDroneShiftHook>
 {
 	internal static readonly DroneShiftManager Instance = new();
 	
-	public DroneShiftManager()
+	public DroneShiftManager() : base(ModEntry.Instance.Package.Manifest.UniqueName)
 	{
 		Register(VanillaDroneShiftHook.Instance, 0);
 		Register(VanillaDebugDroneShiftHook.Instance, 1_000_000_000);
@@ -70,7 +70,7 @@ internal sealed class DroneShiftManager : HookManager<IDroneShiftHook>
 
 	public IDroneShiftHook? GetHandlingHook(State state, Combat combat, int direction, DroneShiftHookContext context = DroneShiftHookContext.Action)
 	{
-		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 		{
 			var hookResult = hook.IsDroneShiftPossible(state, combat, direction, context);
 			if (hookResult == false)
@@ -83,7 +83,7 @@ internal sealed class DroneShiftManager : HookManager<IDroneShiftHook>
 
 	public void AfterDroneShift(State state, Combat combat, int direction, IDroneShiftHook hook)
 	{
-		foreach (var hooks in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
+		foreach (var hooks in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 			hooks.AfterDroneShift(state, combat, direction, hook);
 	}
 	

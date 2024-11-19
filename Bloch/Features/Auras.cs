@@ -202,32 +202,32 @@ internal sealed class AuraManager : IKokoroApi.IV2.IStatusLogicApi.IHook, IKokor
 		ReducedDamage = toReduce;
 	}
 
-	public bool HandleStatusTurnAutoStep(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy setStrategy)
+	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
-		if (status != IntensifyStatus.Status)
+		if (args.Status != IntensifyStatus.Status)
 			return false;
-		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
+		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 			return false;
-		if (amount == 0)
+		if (args.Amount == 0)
 			return false;
 
-		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is ComposureArtifact) is { } composureArtifact)
+		if (args.State.EnumerateAllArtifacts().FirstOrDefault(a => a is ComposureArtifact) is { } composureArtifact)
 		{
 			composureArtifact.Pulse();
-			amount = Math.Max(amount - 1, 0);
+			args.Amount = Math.Max(args.Amount - 1, 0);
 		}
 		else
 		{
-			amount /= 2;
+			args.Amount /= 2;
 		}
 		return false;
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
+	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
-		if (status == InsightStatus.Status)
-			return [..tooltips, ..new ScryAction { Amount = 1 }.GetTooltips(DB.fakeState)];
-		return tooltips;
+		if (args.Status == InsightStatus.Status)
+			return [.. args.Tooltips, ..new ScryAction { Amount = 1 }.GetTooltips(DB.fakeState)];
+		return args.Tooltips;
 	}
 
 	internal sealed class ChooseAuraAction : CardAction

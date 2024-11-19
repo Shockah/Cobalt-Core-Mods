@@ -86,9 +86,9 @@ internal sealed class AccessViolationCard : Card, IRegisterable, IHasCustomCardT
 
 	private sealed class Hook : IKokoroApi.IV2.ICardRenderingApi.IHook
 	{
-		public Font? ReplaceTextCardFont(G g, Card card)
+		public Font? ReplaceTextCardFont(IKokoroApi.IV2.ICardRenderingApi.IHook.IReplaceTextCardFontArgs args)
 		{
-			if (card is not AccessViolationCard)
+			if (args.Card is not AccessViolationCard)
 				return null;
 			return ModEntry.Instance.KokoroApi.Assets.PinchCompactFont;
 		}

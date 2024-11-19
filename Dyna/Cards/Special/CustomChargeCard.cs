@@ -6,6 +6,7 @@ using Nanoray.Shrike.Harmony;
 using Nanoray.Shrike;
 using Newtonsoft.Json;
 using Nickel;
+using Shockah.Kokoro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 	private static List<ISpriteEntry> TriadIcon = null!;
 
 	[JsonProperty]
-	public int FlipIndex { get; private set; } = 0;
+	public int FlipIndex { get; private set; }
 
 	[JsonProperty]
 	private bool LastFlipped;
@@ -64,7 +65,7 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetAllTooltips_Postfix))
 		);
 
-		ModEntry.Instance.KokoroApi.RegisterCardRenderHook(new Hook(), 0);
+		ModEntry.Instance.KokoroApi.CardRendering.RegisterHook(new Hook());
 	}
 
 	public override CardData GetData(State state)
@@ -126,6 +127,7 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 
 	private static IEnumerable<CodeInstruction> Card_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -152,6 +154,7 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.GetDisplayName(@long: false), ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static Spr Card_Render_Transpiler_ReplaceFloppableIcon(Spr sprite, Card card)
@@ -196,22 +199,22 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 			});
 	}
 
-	private sealed class Hook : ICardRenderHook
+	private sealed class Hook : IKokoroApi.IV2.ICardRenderingApi.IHook
 	{
-		public Matrix ModifyNonTextCardRenderMatrix(G g, Card card, List<CardAction> actions)
+		public Matrix ModifyNonTextCardRenderMatrix(IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyNonTextCardRenderMatrixArgs args)
 		{
-			if (card is not CustomChargeCard)
+			if (args.Card is not CustomChargeCard)
 				return Matrix.Identity;
-			if (card.upgrade != Upgrade.A)
+			if (args.Card.upgrade != Upgrade.A)
 				return Matrix.Identity;
 			return Matrix.CreateScale(1.5f);
 		}
 
-		public Matrix ModifyCardActionRenderMatrix(G g, Card card, List<CardAction> actions, CardAction action, int actionWidth)
+		public Matrix ModifyCardActionRenderMatrix(IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyCardActionRenderMatrixArgs args)
 		{
-			if (card is not CustomChargeCard)
+			if (args.Card is not CustomChargeCard)
 				return Matrix.Identity;
-			if (card.upgrade != Upgrade.A)
+			if (args.Card.upgrade != Upgrade.A)
 				return Matrix.Identity;
 			return Matrix.CreateScale(1f / 1.5f);
 		}

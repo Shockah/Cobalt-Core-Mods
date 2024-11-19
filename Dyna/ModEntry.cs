@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using Nickel.Common;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ public sealed class ModEntry : SimpleMod
 	internal readonly Harmony Harmony;
 	internal readonly HookManager<IDynaHook> HookManager;
 	internal readonly ApiImplementation Api;
-	internal readonly IKokoroApi KokoroApi;
+	internal readonly IKokoroApi.IV2 KokoroApi;
 	internal readonly IDuoArtifactsApi? DuoArtifactsApi;
 	internal readonly IMoreDifficultiesApi? MoreDifficultiesApi;
 	internal readonly ISogginsApi? SogginsApi;
@@ -118,9 +119,9 @@ public sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = new(package.Manifest.UniqueName);
-		HookManager = new();
+		HookManager = new(package.Manifest.UniqueName);
 		Api = new();
-		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 		DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
 		SogginsApi = helper.ModRegistry.GetApi<ISogginsApi>("Shockah.Soggins");
 

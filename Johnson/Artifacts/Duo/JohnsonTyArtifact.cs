@@ -68,7 +68,7 @@ internal sealed class JohnsonTyArtifact : Artifact, IRegisterable
 		if (card.upgrade != Upgrade.None)
 			return;
 
-		var action = ModEntry.Instance.KokoroApi.TemporaryUpgrades.MakeChooseTemporaryUpgradeAction(card.uuid);
+		var action = ModEntry.Instance.KokoroApi.TemporaryUpgrades.MakeChooseTemporaryUpgradeAction(card.uuid).AsCardAction;
 		action.artifactPulse = Key();
 		combat.Queue(action);
 	}

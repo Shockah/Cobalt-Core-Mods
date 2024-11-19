@@ -1,10 +1,11 @@
 ﻿using Nickel;
+using Shockah.Kokoro;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.Dyna;
 
-internal sealed class NitroManager : IDynaHook, IStatusRenderHook
+internal sealed class NitroManager : IDynaHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static IStatusEntry TempNitroStatus { get; private set; } = null!;
 	internal static IStatusEntry NitroStatus { get; private set; } = null!;
@@ -35,7 +36,7 @@ internal sealed class NitroManager : IDynaHook, IStatusRenderHook
 		});
 
 		ModEntry.Instance.Api.RegisterHook(this, 0);
-		ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(this, 0);
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(this);
 	}
 
 	public int ModifyBlastwaveDamage(Card? card, State state, bool targetPlayer, int blastwaveIndex)
@@ -59,6 +60,8 @@ internal sealed class NitroManager : IDynaHook, IStatusRenderHook
 		});
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
-		=> status == TempNitroStatus.Status || status == NitroStatus.Status ? tooltips.Concat(new BlastwaveManager.BlastwaveAction { Source = new(), Damage = amount, WorldX = 0 }.GetTooltips(DB.fakeState)).ToList() : tooltips;
+	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+		=> args.Status == TempNitroStatus.Status || args.Status == NitroStatus.Status
+			? args.Tooltips.Concat(new BlastwaveManager.BlastwaveAction { Source = new(), Damage = args.Amount, WorldX = 0 }.GetTooltips(DB.fakeState)).ToList()
+			: args.Tooltips;
 }

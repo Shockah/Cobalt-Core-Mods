@@ -83,7 +83,7 @@ internal sealed class CardRenderManager : VariedApiVersionHookManager<IKokoroApi
 	private static List<CardAction>? LastCardActions;
 	private static readonly Stack<Matrix?> CardRenderMatrixStack = new();
 
-	private CardRenderManager() : base(hook => new V1ToV2CardRenderingHookWrapper(hook))
+	private CardRenderManager() : base(ModEntry.Instance.Package.Manifest.UniqueName, hook => new V1ToV2CardRenderingHookWrapper(hook))
 	{
 	}
 
@@ -391,18 +391,18 @@ internal sealed class CardRenderManager : VariedApiVersionHookManager<IKokoroApi
 
 internal sealed class V1ToV2CardRenderingHookWrapper(ICardRenderHook v1) : IKokoroApi.IV2.ICardRenderingApi.IHook
 {
-	public bool ShouldDisableCardRenderingTransformations(G g, Card card)
-		=> v1.ShouldDisableCardRenderingTransformations(g, card);
+	public bool ShouldDisableCardRenderingTransformations(IKokoroApi.IV2.ICardRenderingApi.IHook.IShouldDisableCardRenderingTransformationsArgs args)
+		=> v1.ShouldDisableCardRenderingTransformations(args.G, args.Card);
 		
-	public Font? ReplaceTextCardFont(G g, Card card)
-		=> v1.ReplaceTextCardFont(g, card);
+	public Font? ReplaceTextCardFont(IKokoroApi.IV2.ICardRenderingApi.IHook.IReplaceTextCardFontArgs args)
+		=> v1.ReplaceTextCardFont(args.G, args.Card);
 		
-	public Vec ModifyTextCardScale(G g, Card card)
-		=> v1.ModifyTextCardScale(g, card);
+	public Vec ModifyTextCardScale(IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyTextCardScaleArgs args)
+		=> v1.ModifyTextCardScale(args.G, args.Card);
 		
-	public Matrix ModifyNonTextCardRenderMatrix(G g, Card card, List<CardAction> actions)
-		=> v1.ModifyNonTextCardRenderMatrix(g, card, actions);
+	public Matrix ModifyNonTextCardRenderMatrix(IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyNonTextCardRenderMatrixArgs args)
+		=> v1.ModifyNonTextCardRenderMatrix(args.G, args.Card, args.Actions);
 
-	public Matrix ModifyCardActionRenderMatrix(G g, Card card, List<CardAction> actions, CardAction action, int actionWidth)
-		=> v1.ModifyCardActionRenderMatrix(g, card, actions, action, actionWidth);
+	public Matrix ModifyCardActionRenderMatrix(IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyCardActionRenderMatrixArgs args)
+		=> v1.ModifyCardActionRenderMatrix(args.G, args.Card, args.Actions, args.Action, args.ActionWidth);
 }
