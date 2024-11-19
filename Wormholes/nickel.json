@@ -1,0 +1,16 @@
+﻿{
+	"UniqueName": "Shockah.Wormholes",
+	"Version": "{{ModVersion}}",
+	"DisplayName": "Wormholes",
+	"Description": "Is that... a wormhole? Adds a pair of wormholes on each map, which lets you traverse forward or backward, with some down/upsides.",
+	"Author": "Shockah",
+	"RequiredApiVersion": "1.5.0",
+	"ModType": "Nickel.Legacy",
+	"EntryPointAssembly": "Wormholes.dll",
+	"Dependencies": [
+		{
+			"UniqueName": "Nickel.Legacy",
+			"Version": "1.5.0"
+		}
+	]
+}

@@ -165,6 +165,108 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 		DuoArtifactsApi = contact.LoadedManifests.Any(m => m.Name == "Shockah.DuoArtifacts") ? contact.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts") : null;
 		Api = new();
+	}
+
+	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
+	{
+		this.Helper = helper;
+		this.Package = package;
+
+		this.FrogproofTrait = helper.Content.Cards.RegisterTrait("Frogproof", new()
+		{
+			Icon = (_, _) => (Spr)Instance.FrogproofSprite.Id!.Value,
+			Name = _ => I18n.FrogproofCardTraitName,
+			Tooltips = (_, _) => [Api.FrogproofCardTraitTooltip]
+		});
+
+		helper.Content.Cards.OnGetDynamicInnateCardTraitOverrides += (_, e) =>
+		{
+			switch (FrogproofManager.GetFrogproofType(e.State, e.State.route as Combat, e.Card, FrogproofHookContext.Rendering))
+			{
+				case FrogproofType.Innate:
+					e.SetOverride(FrogproofTrait, true);
+					break;
+				case FrogproofType.InnateHiddenIfNotNeeded:
+					if (!(MG.inst.g.state ?? e.State).IsOutsideRun() && Instance.Api.IsRunWithSmug(MG.inst.g.state ?? e.State))
+						e.SetOverride(FrogproofTrait, true);
+					break;
+			}
+		};
+
+		helper.Events.OnModLoadPhaseFinished += (_, phase) =>
+		{
+			if (phase != ModLoadPhase.AfterDbInit)
+				return;
+
+			helper.ModRegistry.AwaitApi<IDraculaApi>(
+				"Shockah.Dracula",
+				api =>
+				{
+					api.RegisterBloodTapOptionProvider((Status)FrogproofingStatus.Id!.Value, (_, _, status) => [
+						new AHurt { targetPlayer = true, hurtAmount = 1 },
+						new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+					]);
+					api.RegisterBloodTapOptionProvider((Status)ExtraApologiesStatus.Id!.Value, (_, _, status) => [
+						new AHurt { targetPlayer = true, hurtAmount = 1 },
+						new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+					]);
+					api.RegisterBloodTapOptionProvider((Status)ConstantApologiesStatus.Id!.Value, (_, _, status) => [
+						new AHurt { targetPlayer = true, hurtAmount = 2 },
+						new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+					]);
+					api.RegisterBloodTapOptionProvider((Status)BidingTimeStatus.Id!.Value, (_, _, status) => [
+						new AHurt { targetPlayer = true, hurtAmount = 1 },
+						new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+					]);
+					api.RegisterBloodTapOptionProvider((Status)DoublersLuckStatus.Id!.Value, (_, _, status) => [
+						new AHurt { targetPlayer = true, hurtAmount = 1 },
+						new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+					]);
+					api.RegisterBloodTapOptionProvider(Status.backwardsMissiles, (_, _, status) => [
+						new AHurt { targetPlayer = true, hurtAmount = 1 },
+						new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+					]);
+				}
+			);
+
+			helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>(
+				"TheJazMaster.MoreDifficulties",
+				api => api.RegisterAltStarters(
+					deck: (Deck)SogginsDeck.Id!.Value,
+					starterDeck: new StarterDeck
+					{
+						cards = [
+							new TakeCoverCard(),
+							new ThoughtsAndPrayersCard()
+						],
+						artifacts = [
+							new SmugArtifact()
+						]
+					}
+				)
+			);
+
+			helper.ModRegistry.AwaitApi<IAppleArtifactApi>(
+				"APurpleApple.GenericArtifacts",
+				api => api.SetPaletteAction(
+					(Deck)SogginsDeck.Id!.Value,
+					_ => Instance.KokoroApi.SpoofedActions.MakeAction(
+						new AAddCard
+						{
+							card = new RandomPlaceholderApologyCard(),
+							destination = CardDestination.Hand,
+							amount = 1
+						},
+						new AAddApologyCard
+						{
+							Destination = CardDestination.Hand,
+							Amount = 1
+						}
+					).AsCardAction,
+					new TTText(I18n.PaletteTooltip)
+				)
+			);
+		};
 
 		SmugStatusManager = new();
 		FrogproofManager = new();
@@ -552,107 +654,5 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 		SogginsCharacter.AddNameLocalisation(I18n.SogginsName);
 		SogginsCharacter.AddDescLocalisation(I18n.SogginsDescription);
 		registry.RegisterCharacter(SogginsCharacter);
-	}
-
-	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
-	{
-		this.Helper = helper;
-		this.Package = package;
-
-		this.FrogproofTrait = helper.Content.Cards.RegisterTrait("Frogproof", new()
-		{
-			Icon = (_, _) => (Spr)Instance.FrogproofSprite.Id!.Value,
-			Name = _ => I18n.FrogproofCardTraitName,
-			Tooltips = (_, _) => [Api.FrogproofCardTraitTooltip]
-		});
-
-		helper.Content.Cards.OnGetDynamicInnateCardTraitOverrides += (_, e) =>
-		{
-			switch (FrogproofManager.GetFrogproofType(e.State, e.State.route as Combat, e.Card, FrogproofHookContext.Rendering))
-			{
-				case FrogproofType.Innate:
-					e.SetOverride(FrogproofTrait, true);
-					break;
-				case FrogproofType.InnateHiddenIfNotNeeded:
-					if (!(MG.inst.g.state ?? e.State).IsOutsideRun() && Instance.Api.IsRunWithSmug(MG.inst.g.state ?? e.State))
-						e.SetOverride(FrogproofTrait, true);
-					break;
-			}
-		};
-
-		helper.Events.OnModLoadPhaseFinished += (_, phase) =>
-		{
-			if (phase != ModLoadPhase.AfterDbInit)
-				return;
-
-			helper.ModRegistry.AwaitApi<IDraculaApi>(
-				"Shockah.Dracula",
-				api =>
-				{
-					api.RegisterBloodTapOptionProvider((Status)FrogproofingStatus.Id!.Value, (_, _, status) => [
-						new AHurt { targetPlayer = true, hurtAmount = 1 },
-						new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
-					]);
-					api.RegisterBloodTapOptionProvider((Status)ExtraApologiesStatus.Id!.Value, (_, _, status) => [
-						new AHurt { targetPlayer = true, hurtAmount = 1 },
-						new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
-					]);
-					api.RegisterBloodTapOptionProvider((Status)ConstantApologiesStatus.Id!.Value, (_, _, status) => [
-						new AHurt { targetPlayer = true, hurtAmount = 2 },
-						new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
-					]);
-					api.RegisterBloodTapOptionProvider((Status)BidingTimeStatus.Id!.Value, (_, _, status) => [
-						new AHurt { targetPlayer = true, hurtAmount = 1 },
-						new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
-					]);
-					api.RegisterBloodTapOptionProvider((Status)DoublersLuckStatus.Id!.Value, (_, _, status) => [
-						new AHurt { targetPlayer = true, hurtAmount = 1 },
-						new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
-					]);
-					api.RegisterBloodTapOptionProvider(Status.backwardsMissiles, (_, _, status) => [
-						new AHurt { targetPlayer = true, hurtAmount = 1 },
-						new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
-					]);
-				}
-			);
-
-			helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>(
-				"TheJazMaster.MoreDifficulties",
-				api => api.RegisterAltStarters(
-					deck: (Deck)SogginsDeck.Id!.Value,
-					starterDeck: new StarterDeck
-					{
-						cards = [
-							new TakeCoverCard(),
-							new ThoughtsAndPrayersCard()
-						],
-						artifacts = [
-							new SmugArtifact()
-						]
-					}
-				)
-			);
-
-			helper.ModRegistry.AwaitApi<IAppleArtifactApi>(
-				"APurpleApple.GenericArtifacts",
-				api => api.SetPaletteAction(
-					(Deck)SogginsDeck.Id!.Value,
-					_ => Instance.KokoroApi.SpoofedActions.MakeAction(
-						new AAddCard
-						{
-							card = new RandomPlaceholderApologyCard(),
-							destination = CardDestination.Hand,
-							amount = 1
-						},
-						new AAddApologyCard
-						{
-							Destination = CardDestination.Hand,
-							Amount = 1
-						}
-					).AsCardAction,
-					new TTText(I18n.PaletteTooltip)
-				)
-			);
-		};
 	}
 }

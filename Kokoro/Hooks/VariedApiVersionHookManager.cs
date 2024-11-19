@@ -39,7 +39,7 @@ internal class VariedApiVersionHookManager<TV2Hook, TV1Hook>(
 			.Select(hook => (Hook: hook, Priority: Hooks.TryGetOrderingValue(hook, out var priority) ? -priority : 0))
 			.Concat(
 				objects
-					.Select(o =>
+					.Select<object, (TV2Hook? Hook, double Priority)>(o =>
 					{
 						if (IsV2Hook(o.GetType()))
 						{

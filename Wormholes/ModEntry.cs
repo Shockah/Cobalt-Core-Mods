@@ -29,8 +29,6 @@ public sealed class ModEntry : IModManifest, ISpriteManifest
 	public void BootMod(IModLoaderContact contact)
 	{
 		Instance = this;
-		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.dll"));
-		ReflectionExt.CurrentAssemblyLoadContext.LoadFromAssemblyPath(Path.Combine(ModRootFolder!.FullName, "Shrike.Harmony.dll"));
 
 		Harmony harmony = new(Name);
 		EventsPatches.Apply(harmony);

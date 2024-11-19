@@ -7,14 +7,6 @@
     "RequiredApiVersion": "0.7.0",
     "ModType": "Nickel.Legacy",
     "EntryPointAssembly": "CodexHelper.dll",
-    "AssemblyReferences": [
-        {
-            "Name": "Shrike"
-        },
-        {
-            "Name": "Shrike.Harmony"
-        }
-    ],
     "Dependencies": [
         {
             "UniqueName": "Nickel.Legacy",

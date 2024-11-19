@@ -52,9 +52,9 @@ internal sealed class PeriRiggsArtifact : DuoArtifact, IKokoroApi.IV2.IEvadeHook
 		EvadesLeft--;
 	}
 
-	private static void VanillaEvadeHook_IsEvadePossible_Postfix(State state, ref bool? __result)
+	private static void VanillaEvadeHook_IsEvadePossible_Postfix(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePossibleArgs args, ref bool? __result)
 	{
-		var artifact = state.EnumerateAllArtifacts().OfType<PeriRiggsArtifact>().FirstOrDefault();
+		var artifact = args.State.EnumerateAllArtifacts().OfType<PeriRiggsArtifact>().FirstOrDefault();
 		if (artifact is null)
 			return;
 

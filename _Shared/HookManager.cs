@@ -29,7 +29,7 @@ internal class HookManager<THook>(
 			.Select(hook => (Hook: hook, Priority: Hooks.TryGetOrderingValue(hook, out var priority) ? -priority : 0))
 			.Concat(
 				objects
-					.Select(o =>
+					.Select<object, (THook? Hook, double Priority)>(o =>
 					{
 						if (!proxyManager.TryProxy(o, "AnyMod", proxyContext, out THook? hook))
 							return (Hook: null, Priority: 0);

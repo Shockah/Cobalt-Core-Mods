@@ -154,14 +154,6 @@ public sealed class ModEntry : SimpleMod
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
-		_ = new BleedingManager();
-		_ = new BloodMirrorManager();
-		_ = new LifestealManager();
-		_ = new TransfusionManager();
-		_ = new NegativeOverdriveManager();
-		_ = new CardScalingManager();
-		BloodTapManager = new();
-		CardSelectFilters.Register(package, helper);
 
 		helper.Events.OnModLoadPhaseFinished += (_, phase) =>
 		{
@@ -176,9 +168,6 @@ public sealed class ModEntry : SimpleMod
 			foreach (var registerableType in LateRegisterableTypes)
 				AccessTools.DeclaredMethod(registerableType, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
 		};
-
-		DynamicWidthCardAction.ApplyPatches(Harmony, logger);
-		ASpecificCardOffering.ApplyPatches(Harmony, logger);
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -406,6 +395,18 @@ public sealed class ModEntry : SimpleMod
 			Name = this.AnyLocalizations.Bind(["ship", "name"]).Localize,
 			Description = this.AnyLocalizations.Bind(["ship", "description"]).Localize,
 		});
+		
+		_ = new BleedingManager();
+		_ = new BloodMirrorManager();
+		_ = new LifestealManager();
+		_ = new TransfusionManager();
+		_ = new NegativeOverdriveManager();
+		_ = new CardScalingManager();
+		BloodTapManager = new();
+		CardSelectFilters.Register(package, helper);
+
+		DynamicWidthCardAction.ApplyPatches(Harmony, logger);
+		ASpecificCardOffering.ApplyPatches(Harmony, logger);
 
 		BloodTapManager.RegisterOptionProvider(BloodMirrorStatus.Status, (_, _, status) => [
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },

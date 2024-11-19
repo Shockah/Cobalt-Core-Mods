@@ -12,7 +12,7 @@ using IModManifest = CobaltCoreModding.Definitions.ModManifests.IModManifest;
 
 namespace Shockah.Kokoro;
 
-public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IStatusManifest, INickelManifest
+public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManifest, IStatusManifest, INickelManifest, IPrelaunchManifest
 {
 	internal const string ExtensionDataJsonKey = "KokoroModData";
 
@@ -23,6 +23,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 	internal IHarmony Harmony { get; private set; } = null!;
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
+
 	public IEnumerable<DependencyEntry> Dependencies => [];
 
 	public DirectoryInfo? GameRootFolder { get; set; }
@@ -102,6 +103,9 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 
 		SetupSerializationChanges();
 	}
+	
+	public void FinalizePreperations(IPrelaunchContactPoint prelaunchManifest)
+		=> ActionCostsManager.SetupLate();
 
 	public object GetApi(IManifest requestingMod)
 		=> new ApiImplementation(requestingMod);

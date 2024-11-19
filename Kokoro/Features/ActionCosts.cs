@@ -359,16 +359,6 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 
 	private ActionCostsManager() : base(ModEntry.Instance.Package.Manifest.UniqueName)
 	{
-		RegisterStatusResourceCostIcon(Status.shield, (Spr)ModEntry.Instance.Content.ShieldCostSatisfiedSprite.Id!.Value, (Spr)ModEntry.Instance.Content.ShieldCostUnsatisfiedSprite.Id!.Value);
-		RegisterStatusResourceCostIcon(Status.evade, (Spr)ModEntry.Instance.Content.EvadeCostSatisfiedSprite.Id!.Value, (Spr)ModEntry.Instance.Content.EvadeCostUnsatisfiedSprite.Id!.Value);
-		RegisterStatusResourceCostIcon(Status.heat, (Spr)ModEntry.Instance.Content.HeatCostSatisfiedSprite.Id!.Value, (Spr)ModEntry.Instance.Content.HeatCostUnsatisfiedSprite.Id!.Value);
-		RegisterResourceCostIcon(new ActionCostEnergyResource().ResourceKey, (Spr)ModEntry.Instance.Content.EnergyCostSatisfiedSprite.Id!.Value, (Spr)ModEntry.Instance.Content.EnergyCostUnsatisfiedSprite.Id!.Value);
-
-		void RegisterStatusResourceCostIcon(Status status, Spr costSatisfiedIcon, Spr costUnsatisfiedIcon)
-		{
-			RegisterResourceCostIcon(new ActionCostStatusResource { Status = status, TargetPlayer = true }.ResourceKey, costSatisfiedIcon, costUnsatisfiedIcon);
-			RegisterResourceCostIcon(new ActionCostStatusResource { Status = status, TargetPlayer = false }.ResourceKey, costSatisfiedIcon, costUnsatisfiedIcon);
-		}
 	}
 	
 	internal static void Setup(IHarmony harmony)
@@ -394,6 +384,20 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 			original: AccessTools.DeclaredMethod(typeof(State), nameof(State.Render)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(State_Render_Postfix))
 		);
+	}
+
+	internal static void SetupLate()
+	{
+		RegisterStatusResourceCostIcon(Status.shield, (Spr)ModEntry.Instance.Content.ShieldCostSatisfiedSprite.Id!.Value, (Spr)ModEntry.Instance.Content.ShieldCostUnsatisfiedSprite.Id!.Value);
+		RegisterStatusResourceCostIcon(Status.evade, (Spr)ModEntry.Instance.Content.EvadeCostSatisfiedSprite.Id!.Value, (Spr)ModEntry.Instance.Content.EvadeCostUnsatisfiedSprite.Id!.Value);
+		RegisterStatusResourceCostIcon(Status.heat, (Spr)ModEntry.Instance.Content.HeatCostSatisfiedSprite.Id!.Value, (Spr)ModEntry.Instance.Content.HeatCostUnsatisfiedSprite.Id!.Value);
+		Instance.RegisterResourceCostIcon(new ActionCostEnergyResource().ResourceKey, (Spr)ModEntry.Instance.Content.EnergyCostSatisfiedSprite.Id!.Value, (Spr)ModEntry.Instance.Content.EnergyCostUnsatisfiedSprite.Id!.Value);
+
+		void RegisterStatusResourceCostIcon(Status status, Spr costSatisfiedIcon, Spr costUnsatisfiedIcon)
+		{
+			Instance.RegisterResourceCostIcon(new ActionCostStatusResource { Status = status, TargetPlayer = true }.ResourceKey, costSatisfiedIcon, costUnsatisfiedIcon);
+			Instance.RegisterResourceCostIcon(new ActionCostStatusResource { Status = status, TargetPlayer = false }.ResourceKey, costSatisfiedIcon, costUnsatisfiedIcon);
+		}
 	}
 
 	internal void RegisterResourceCostIcon(string resourceKey, Spr costSatisfiedIcon, Spr costUnsatisfiedIcon, int amount = 1)
