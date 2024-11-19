@@ -51,8 +51,8 @@ internal sealed class OnDiscardManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 		);
 	}
 
-	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
-		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
+	public IEnumerable<CardAction>? GetWrappedCardActions(IKokoroApi.IV2.IWrappedActionsApi.IHook.IGetWrappedCardActionsArgs args)
+		=> args.Action is TriggerAction triggerAction ? [triggerAction.Action] : null;
 
 	private static void Combat_TryPlayCard_Prefix(Card card)
 		=> LastCardPlayed = card;

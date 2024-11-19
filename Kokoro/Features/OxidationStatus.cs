@@ -44,6 +44,12 @@ partial class ApiImplementation
 
 			public void UnregisterHook(IKokoroApi.IV2.IOxidationStatusApi.IHook hook)
 				=> OxidationStatusManager.Instance.Unregister(hook);
+			
+			internal record struct ModifyOxidationRequirementArgs(
+				State State,
+				Ship Ship,
+				int Value
+			) : IKokoroApi.IV2.IOxidationStatusApi.IHook.IModifyOxidationRequirementArgs;
 		}
 	}
 }
@@ -62,7 +68,7 @@ internal sealed class OxidationStatusManager : VariedApiVersionHookManager<IKoko
 	{
 		var value = BaseOxidationStatusMaxValue;
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
-			value = hook.ModifyOxidationRequirement(state, ship, value);
+			value = hook.ModifyOxidationRequirement(new ApiImplementation.V2Api.OxidationStatusApi.ModifyOxidationRequirementArgs(state, ship, value));
 		return value;
 	}
 

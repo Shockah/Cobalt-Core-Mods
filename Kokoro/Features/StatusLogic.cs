@@ -34,6 +34,51 @@ partial class ApiImplementation
 
 			public void UnregisterHook(IKokoroApi.IV2.IStatusLogicApi.IHook hook)
 				=> StatusLogicManager.Instance.Unregister(hook);
+			
+			internal record struct ModifyStatusChangeArgs(
+				State State,
+				Combat Combat,
+				Ship Ship,
+				Status Status,
+				int OldAmount,
+				int NewAmount
+			) : IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusChangeArgs;
+			
+			internal record struct IsAffectedByBoostArgs(
+				State State,
+				Combat Combat,
+				Ship Ship,
+				Status Status
+			) : IKokoroApi.IV2.IStatusLogicApi.IHook.IIsAffectedByBoostArgs;
+			
+			internal record struct OnStatusTurnTriggerArgs(
+				State State,
+				Combat Combat,
+				IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming Timing,
+				Ship Ship,
+				Status Status,
+				int OldAmount,
+				int NewAmount
+			) : IKokoroApi.IV2.IStatusLogicApi.IHook.IOnStatusTurnTriggerArgs;
+
+			internal sealed class HandleStatusTurnAutoStepArgs(
+				State state,
+				Combat combat,
+				IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing,
+				Ship ship,
+				Status status,
+				int amount,
+				IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy setStrategy
+			) : IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs
+			{
+				public State State { get; } = state;
+				public Combat Combat { get; } = combat;
+				public IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming Timing { get; } = timing;
+				public Ship Ship { get; } = ship;
+				public Status Status { get; } = status;
+				public int Amount { get; set; } = amount;
+				public IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy SetStrategy { get; set; } = setStrategy;
+			}
 		}
 	}
 }
@@ -93,14 +138,14 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 	public int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount)
 	{
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
-			newAmount = hook.ModifyStatusChange(state, combat, ship, status, oldAmount, newAmount);
+			newAmount = hook.ModifyStatusChange(new ApiImplementation.V2Api.StatusLogicApi.ModifyStatusChangeArgs(state, combat, ship, status, oldAmount, newAmount));
 		return newAmount;
 	}
 
 	public bool IsAffectedByBoost(State state, Combat combat, Ship ship, Status status)
 	{
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
-			if (hook.IsAffectedByBoost(state, combat, ship, status) is { } result)
+			if (hook.IsAffectedByBoost(new ApiImplementation.V2Api.StatusLogicApi.IsAffectedByBoostArgs(state, combat, ship, status)) is { } result)
 				return result;
 		return true;
 	}
@@ -121,11 +166,15 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 			var newAmount = oldAmount;
 			var setStrategy = AutoStepSetStrategies.GetValueOrDefault(status, IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueImmediateAdd);
 
+			var handleStatusTurnAutoStepArgs = new ApiImplementation.V2Api.StatusLogicApi.HandleStatusTurnAutoStepArgs(state, combat, timing, ship, status, newAmount, setStrategy);
 			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
-				if (hook.HandleStatusTurnAutoStep(state, combat, timing, ship, status, ref newAmount, ref setStrategy))
+				if (hook.HandleStatusTurnAutoStep(handleStatusTurnAutoStepArgs))
 					break;
+			newAmount = handleStatusTurnAutoStepArgs.Amount;
+			setStrategy = handleStatusTurnAutoStepArgs.SetStrategy;
+			
 			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
-				hook.OnStatusTurnTrigger(state, combat, timing, ship, status, oldAmount, newAmount);
+				hook.OnStatusTurnTrigger(new ApiImplementation.V2Api.StatusLogicApi.OnStatusTurnTriggerArgs(state, combat, timing, ship, status, oldAmount, newAmount));
 
 			if (newAmount == oldAmount)
 				continue;

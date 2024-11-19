@@ -125,9 +125,9 @@ internal sealed class ConditionalActionManager : IKokoroApi.IV2.IWrappedActionsA
 		);
 	}
 	
-	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
+	public IEnumerable<CardAction>? GetWrappedCardActions(IKokoroApi.IV2.IWrappedActionsApi.IHook.IGetWrappedCardActionsArgs args)
 	{
-		if (action is not AConditional conditional)
+		if (args.Action is not AConditional conditional)
 			return null;
 		if (conditional.Action is not { } wrappedAction)
 			return null;

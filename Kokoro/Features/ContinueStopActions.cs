@@ -91,9 +91,9 @@ internal sealed class ContinueStopActionManager : IKokoroApi.IV2.IWrappedActions
 		);
 	}
 	
-	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
+	public IEnumerable<CardAction>? GetWrappedCardActions(IKokoroApi.IV2.IWrappedActionsApi.IHook.IGetWrappedCardActionsArgs args)
 	{
-		if (action is not AContinued continued)
+		if (args.Action is not AContinued continued)
 			return null;
 		if (continued.Action is not { } wrappedAction)
 			return null;

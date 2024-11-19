@@ -51,7 +51,7 @@ internal class VariedApiVersionHookManager<TV2Hook, TV1Hook>(
 							return (Hook: proxyProvider.TryProxy<TV1Hook>(o, out var hook) ? mapper(hook) : null, Priority: proxyProvider.TryProxy<IHookPriority>(o, out var hookPriority) ? hookPriority.HookPriority : 0);
 
 						static bool IsV2Hook(Type type)
-							=> type == typeof(IKokoroApi.IV2.IKokoroV2ApiHook) || (type.BaseType is { } baseType && IsV2Hook(baseType)) || type.GetInterfaces().Any(IsV2Hook);
+							=> type.Name == nameof(IKokoroApi.IV2.IKokoroV2ApiHook) || (type.BaseType is { } baseType && IsV2Hook(baseType)) || type.GetInterfaces().Any(IsV2Hook);
 					})
 					.Where(e => e.Hook is not null)
 					.Select(e => (Hook: e.Hook!, Priority: e.Priority))

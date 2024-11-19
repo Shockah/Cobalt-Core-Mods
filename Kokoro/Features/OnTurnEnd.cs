@@ -44,8 +44,8 @@ internal sealed class OnTurnEndManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 		);
 	}
 	
-	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
-		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
+	public IEnumerable<CardAction>? GetWrappedCardActions(IKokoroApi.IV2.IWrappedActionsApi.IHook.IGetWrappedCardActionsArgs args)
+		=> args.Action is TriggerAction triggerAction ? [triggerAction.Action] : null;
 
 	private static void AEndTurn_Begin_Prefix(State s, Combat c)
 	{

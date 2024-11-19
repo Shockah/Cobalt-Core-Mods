@@ -17,7 +17,14 @@ public partial interface IKokoroApi
 			
 			public interface IHook : IKokoroV2ApiHook
 			{
-				int ModifyOxidationRequirement(State state, Ship ship, int value) => 0;
+				int ModifyOxidationRequirement(IModifyOxidationRequirementArgs args) => 0;
+				
+				public interface IModifyOxidationRequirementArgs
+				{
+					State State { get; }
+					Ship Ship { get; }
+					int Value { get; }
+				}
 			}
 		}
 	}

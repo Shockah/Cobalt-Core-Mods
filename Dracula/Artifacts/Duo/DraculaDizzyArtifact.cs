@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace Shockah.Dracula;
 
-internal sealed class DraculaDizzyArtifact : Artifact, IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook, IHookPriority
+internal sealed class DraculaDizzyArtifact : Artifact, IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IHookPriority
 {
 	internal const int ResultingOxidation = 2;
 
@@ -44,18 +44,18 @@ internal sealed class DraculaDizzyArtifact : Artifact, IRegisterable, IKokoroApi
 	public double HookPriority
 		=> 1;
 
-	public bool HandleStatusTurnAutoStep(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy setStrategy)
+	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
-		if (status != ModEntry.Instance.KokoroApi.OxidationStatus.Status)
+		if (args.Status != ModEntry.Instance.KokoroApi.OxidationStatus.Status)
 			return false;
-		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
+		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
 			return false;
 
-		var maxTriggers = state.EnumerateAllArtifacts().Any(a => a is ThinBloodArtifact) ? 2 : 1;
-		var triggers = Math.Min(maxTriggers, ship.Get(ModEntry.Instance.BleedingStatus.Status));
+		var maxTriggers = args.State.EnumerateAllArtifacts().Any(a => a is ThinBloodArtifact) ? 2 : 1;
+		var triggers = Math.Min(maxTriggers, args.Ship.Get(ModEntry.Instance.BleedingStatus.Status));
 		if (triggers > 0)
 		{
-			amount += triggers * ResultingOxidation;
+			args.Amount += triggers * ResultingOxidation;
 			Pulse();
 		}
 		return false;

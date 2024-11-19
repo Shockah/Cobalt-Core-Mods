@@ -39,6 +39,35 @@ partial class ApiImplementation
 
 			public void UnregisterHook(IKokoroApi.IV2.ICardRenderingApi.IHook hook)
 				=> CardRenderManager.Instance.Unregister(hook);
+			
+			internal record struct ShouldDisableCardRenderingTransformationsArgs(
+				G G,
+				Card Card
+			) : IKokoroApi.IV2.ICardRenderingApi.IHook.IShouldDisableCardRenderingTransformationsArgs;
+			
+			internal record struct ReplaceTextCardFontArgs(
+				G G,
+				Card Card
+			) : IKokoroApi.IV2.ICardRenderingApi.IHook.IReplaceTextCardFontArgs;
+			
+			internal record struct ModifyTextCardScaleArgs(
+				G G,
+				Card Card
+			) : IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyTextCardScaleArgs;
+			
+			internal record struct ModifyNonTextCardRenderMatrixArgs(
+				G G,
+				Card Card,
+				List<CardAction> Actions
+			) : IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyNonTextCardRenderMatrixArgs;
+			
+			internal record struct ModifyCardActionRenderMatrixArgs(
+				G G,
+				Card Card,
+				List<CardAction> Actions,
+				CardAction Action,
+				int ActionWidth
+			) : IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyCardActionRenderMatrixArgs;
 		}
 	}
 }
@@ -79,24 +108,24 @@ internal sealed class CardRenderManager : VariedApiVersionHookManager<IKokoroApi
 	}
 	
 	public bool ShouldDisableCardRenderingTransformations(G g, Card card)
-		=> Hooks.Any(h => h.ShouldDisableCardRenderingTransformations(g, card));
+		=> Hooks.Any(h => h.ShouldDisableCardRenderingTransformations(new ApiImplementation.V2Api.CardRenderingApi.ShouldDisableCardRenderingTransformationsArgs(g, card)));
 
 	public Font? ReplaceTextCardFont(G g, Card card)
 	{
 		foreach (var hook in Hooks)
-			if (hook.ReplaceTextCardFont(g, card) is { } font)
+			if (hook.ReplaceTextCardFont(new ApiImplementation.V2Api.CardRenderingApi.ReplaceTextCardFontArgs(g, card)) is { } font)
 				return font;
 		return null;
 	}
 
 	public Vec ModifyTextCardScale(G g, Card card)
-		=> Hooks.Aggregate(Vec.One, (v, hook) => v * hook.ModifyTextCardScale(g, card));
+		=> Hooks.Aggregate(Vec.One, (v, hook) => v * hook.ModifyTextCardScale(new ApiImplementation.V2Api.CardRenderingApi.ModifyTextCardScaleArgs(g, card)));
 
 	public Matrix ModifyNonTextCardRenderMatrix(G g, Card card, List<CardAction> actions)
-		=> Hooks.Aggregate(Matrix.Identity, (m, hook) => m * hook.ModifyNonTextCardRenderMatrix(g, card, actions));
+		=> Hooks.Aggregate(Matrix.Identity, (m, hook) => m * hook.ModifyNonTextCardRenderMatrix(new ApiImplementation.V2Api.CardRenderingApi.ModifyNonTextCardRenderMatrixArgs(g, card, actions)));
 
 	public Matrix ModifyCardActionRenderMatrix(G g, Card card, List<CardAction> actions, CardAction action, int actionWidth)
-		=> Hooks.Aggregate(Matrix.Identity, (m, hook) => m * hook.ModifyCardActionRenderMatrix(g, card, actions, action, actionWidth));
+		=> Hooks.Aggregate(Matrix.Identity, (m, hook) => m * hook.ModifyCardActionRenderMatrix(new ApiImplementation.V2Api.CardRenderingApi.ModifyCardActionRenderMatrixArgs(g, card, actions, action, actionWidth)));
 	
 	private static void ResetSpriteBatch()
 	{

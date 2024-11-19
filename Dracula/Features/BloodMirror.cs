@@ -32,15 +32,15 @@ internal sealed class BloodMirrorManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 		);
 	}
 
-	public bool HandleStatusTurnAutoStep(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy setStrategy)
+	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
-		if (status != ModEntry.Instance.BloodMirrorStatus.Status)
+		if (args.Status != ModEntry.Instance.BloodMirrorStatus.Status)
 			return false;
-		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
+		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 			return false;
 
-		if (amount > 0)
-			amount--;
+		if (args.Amount > 0)
+			args.Amount--;
 		return false;
 	}
 

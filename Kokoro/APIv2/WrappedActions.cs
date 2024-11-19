@@ -19,7 +19,12 @@ public partial interface IKokoroApi
 			
 			public interface IHook : IKokoroV2ApiHook
 			{
-				IEnumerable<CardAction>? GetWrappedCardActions(CardAction action);
+				IEnumerable<CardAction>? GetWrappedCardActions(IGetWrappedCardActionsArgs args);
+				
+				public interface IGetWrappedCardActionsArgs
+				{
+					CardAction Action { get; }
+				}
 			}
 		}
 	}

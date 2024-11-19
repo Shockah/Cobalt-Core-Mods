@@ -17,37 +17,37 @@ internal sealed class BleedingManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 		);
 	}
 
-	public void OnStatusTurnTrigger(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)
+	public void OnStatusTurnTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IOnStatusTurnTriggerArgs args)
 	{
-		if (status != ModEntry.Instance.BleedingStatus.Status)
+		if (args.Status != ModEntry.Instance.BleedingStatus.Status)
 			return;
-		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
+		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
 			return;
-		if (oldAmount <= 0)
+		if (args.OldAmount <= 0)
 			return;
 
-		var thinBloodArtifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is ThinBloodArtifact);
-		var triggers = thinBloodArtifact is null ? 1 : Math.Min(2, oldAmount);
+		var thinBloodArtifact = args.State.EnumerateAllArtifacts().FirstOrDefault(a => a is ThinBloodArtifact);
+		var triggers = thinBloodArtifact is null ? 1 : Math.Min(2, args.OldAmount);
 
-		combat.QueueImmediate(Enumerable.Range(0, triggers).Select(i => new AHurt
+		args.Combat.QueueImmediate(Enumerable.Range(0, triggers).Select(i => new AHurt
 		{
-			targetPlayer = ship.isPlayerShip,
+			targetPlayer = args.Ship.isPlayerShip,
 			hurtAmount = 1,
 			hurtShieldsFirst = true,
 			artifactPulse = i == 1 ? thinBloodArtifact?.Key() : null
 		}));
 	}
 
-	public bool HandleStatusTurnAutoStep(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy setStrategy)
+	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
-		if (status != ModEntry.Instance.BleedingStatus.Status)
+		if (args.Status != ModEntry.Instance.BleedingStatus.Status)
 			return false;
-		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
+		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
 			return false;
 
-		var triggers = state.EnumerateAllArtifacts().Any(a => a is ThinBloodArtifact) ? 2 : 1;
-		if (amount > 0)
-			amount = Math.Max(amount - triggers, 0);
+		var triggers = args.State.EnumerateAllArtifacts().Any(a => a is ThinBloodArtifact) ? 2 : 1;
+		if (args.Amount > 0)
+			args.Amount = Math.Max(args.Amount - triggers, 0);
 		return false;
 	}
 }

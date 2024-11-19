@@ -11,9 +11,9 @@ internal sealed class CardScalingManager : IKokoroApi.IV2.ICardRenderingApi.IHoo
 		ModEntry.Instance.KokoroApi.CardRendering.RegisterHook(this);
 	}
 
-	public Matrix ModifyNonTextCardRenderMatrix(G g, Card card, List<CardAction> actions)
-		=> (card as IDraculaCard)?.ModifyNonTextCardRenderMatrix(g, actions) ?? Matrix.Identity;
+	public Matrix ModifyNonTextCardRenderMatrix(IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyNonTextCardRenderMatrixArgs args)
+		=> (args.Card as IDraculaCard)?.ModifyNonTextCardRenderMatrix(args.G, args.Actions) ?? Matrix.Identity;
 
-	public Matrix ModifyCardActionRenderMatrix(G g, Card card, List<CardAction> actions, CardAction action, int actionWidth)
-		=> (card as IDraculaCard)?.ModifyCardActionRenderMatrix(g, actions, action, actionWidth) ?? Matrix.Identity;
+	public Matrix ModifyCardActionRenderMatrix(IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyCardActionRenderMatrixArgs args)
+		=> (args.Card as IDraculaCard)?.ModifyCardActionRenderMatrix(args.G, args.Actions, args.Action, args.ActionWidth) ?? Matrix.Identity;
 }

@@ -86,8 +86,8 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 		}, 0);
 	}
 
-	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
-		=> action is TriggerAction triggerAction ? [triggerAction.Action] : null;
+	public IEnumerable<CardAction>? GetWrappedCardActions(IKokoroApi.IV2.IWrappedActionsApi.IHook.IGetWrappedCardActionsArgs args)
+		=> args.Action is TriggerAction triggerAction ? [triggerAction.Action] : null;
 
 	private static void QueueSpontaneousActions(State state, Combat combat, IEnumerable<Card> cards)
 	{

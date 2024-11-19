@@ -14,7 +14,15 @@ public partial interface IKokoroApi
 		{
 			public interface IHook : IKokoroV2ApiHook
 			{
-				void OnActionCostsTransactionFinished(State state, Combat combat, Card? card, IWholeTransactionPaymentResult transactionPaymentResult) { }
+				void OnActionCostsTransactionFinished(IOnActionCostsTransactionFinishedArgs args) { }
+
+				public interface IOnActionCostsTransactionFinishedArgs
+				{
+					State State { get; }
+					Combat Combat { get; }
+					Card? Card { get; }
+					IWholeTransactionPaymentResult TransactionPaymentResult { get; }
+				}
 			}
 			
 			public interface ICostAction : ICardAction<CardAction>

@@ -6,6 +6,8 @@ namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
+	#region V1
+	
 	public ExternalStatus TempShieldNextTurnStatus
 		=> Instance.Content.TempShieldNextTurnStatus;
 
@@ -17,6 +19,22 @@ partial class ApiImplementation
 
 	public Status ShieldNextTurnVanillaStatus
 		=> (Status)ShieldNextTurnStatus.Id!.Value;
+	
+	#endregion
+
+	partial class V2Api
+	{
+		public IKokoroApi.IV2.IStatusNextTurnApi StatusNextTurn { get; } = new StatusNextTurnApi();
+		
+		public sealed class StatusNextTurnApi : IKokoroApi.IV2.IStatusNextTurnApi
+		{
+			public Status Shield
+				=> (Status)ModEntry.Instance.Content.ShieldNextTurnStatus.Id!.Value;
+			
+			public Status TempShield
+				=> (Status)ModEntry.Instance.Content.TempShieldNextTurnStatus.Id!.Value;
+		}
+	}
 }
 
 internal sealed class StatusNextTurnManager : HookManager<IOxidationStatusHook>, IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook

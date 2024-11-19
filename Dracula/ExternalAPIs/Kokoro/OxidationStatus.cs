@@ -15,9 +15,16 @@ public partial interface IKokoroApi
 			void RegisterHook(IHook hook, double priority = 0);
 			void UnregisterHook(IHook hook);
 			
-			public interface IHook
+			public interface IHook : IKokoroV2ApiHook
 			{
-				int ModifyOxidationRequirement(State state, Ship ship, int value) => 0;
+				int ModifyOxidationRequirement(IModifyOxidationRequirementArgs args) => 0;
+				
+				public interface IModifyOxidationRequirementArgs
+				{
+					State State { get; }
+					Ship Ship { get; }
+					int Value { get; }
+				}
 			}
 		}
 	}

@@ -39,9 +39,9 @@ internal sealed class HiddenActionManager : IKokoroApi.IV2.IWrappedActionsApi.IH
 		);
 	}
 	
-	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
+	public IEnumerable<CardAction>? GetWrappedCardActions(IKokoroApi.IV2.IWrappedActionsApi.IHook.IGetWrappedCardActionsArgs args)
 	{
-		if (action is not AHidden hidden)
+		if (args.Action is not AHidden hidden)
 			return null;
 		if (hidden.Action is not { } wrappedAction)
 			return null;

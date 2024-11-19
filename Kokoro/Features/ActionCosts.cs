@@ -336,6 +336,13 @@ partial class ApiImplementation
 					return baseTransaction;
 				return allTransactions.MinBy(t => t.TestPayment(environment).TotalUnpaid)!;
 			}
+			
+			internal record struct OnActionCostsTransactionFinishedArgs(
+				State State,
+				Combat Combat,
+				Card? Card,
+				IKokoroApi.IV2.IActionCostsApi.IWholeTransactionPaymentResult TransactionPaymentResult
+			) : IKokoroApi.IV2.IActionCostsApi.IHook.IOnActionCostsTransactionFinishedArgs;
 		}
 	}
 }
@@ -437,12 +444,12 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 	internal void OnActionCostsTransactionFinished(State state, Combat combat, Card? card, IKokoroApi.IV2.IActionCostsApi.IWholeTransactionPaymentResult transactionPaymentResult)
 	{
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
-			hook.OnActionCostsTransactionFinished(state, combat, card, transactionPaymentResult);
+			hook.OnActionCostsTransactionFinished(new ApiImplementation.V2Api.ActionCostsApi.OnActionCostsTransactionFinishedArgs(state, combat, card, transactionPaymentResult));
 	}
 	
-	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
+	public IEnumerable<CardAction>? GetWrappedCardActions(IKokoroApi.IV2.IWrappedActionsApi.IHook.IGetWrappedCardActionsArgs args)
 	{
-		if (action is not AResourceCost resourceCostAction)
+		if (args.Action is not AResourceCost resourceCostAction)
 			return null;
 		if (resourceCostAction.Action is not { } wrappedAction)
 			return null;

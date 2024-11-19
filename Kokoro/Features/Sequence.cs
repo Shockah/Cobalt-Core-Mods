@@ -104,8 +104,8 @@ internal sealed class SequenceManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 		return false;
 	}
 
-	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
-		=> action is SequenceAction sequenceAction ? [sequenceAction.Action] : null;
+	public IEnumerable<CardAction>? GetWrappedCardActions(IKokoroApi.IV2.IWrappedActionsApi.IHook.IGetWrappedCardActionsArgs args)
+		=> args.Action is SequenceAction sequenceAction ? [sequenceAction.Action] : null;
 }
 
 internal sealed class SequenceAction : CardAction, IKokoroApi.IV2.ISequenceApi.ISequenceAction

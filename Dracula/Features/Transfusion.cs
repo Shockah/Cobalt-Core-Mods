@@ -50,52 +50,52 @@ internal sealed class TransfusionManager : IKokoroApi.IV2.IStatusLogicApi.IHook,
 		}, priority: 0);
 	}
 
-	public void OnStatusTurnTrigger(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship, Status status, int oldAmount, int newAmount)
+	public void OnStatusTurnTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IOnStatusTurnTriggerArgs args)
 	{
-		if (status != ModEntry.Instance.TransfusionStatus.Status)
+		if (args.Status != ModEntry.Instance.TransfusionStatus.Status)
 			return;
-		if (timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
+		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 			return;
-		if (oldAmount <= 0)
+		if (args.OldAmount <= 0)
 			return;
 
-		var progress = ship.Get(ModEntry.Instance.TransfusingStatus.Status);
-		var thinBloodArtifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is ThinBloodArtifact);
-		var triggers = Math.Min(thinBloodArtifact is null ? 1 : 2, oldAmount - progress);
+		var progress = args.Ship.Get(ModEntry.Instance.TransfusingStatus.Status);
+		var thinBloodArtifact = args.State.EnumerateAllArtifacts().FirstOrDefault(a => a is ThinBloodArtifact);
+		var triggers = Math.Min(thinBloodArtifact is null ? 1 : 2, args.OldAmount - progress);
 
-		combat.QueueImmediate(new AStatus
+		args.Combat.QueueImmediate(new AStatus
 		{
-			targetPlayer = ship.isPlayerShip,
+			targetPlayer = args.Ship.isPlayerShip,
 			status = ModEntry.Instance.TransfusingStatus.Status,
 			statusAmount = triggers,
 			artifactPulse = triggers > 1 ? thinBloodArtifact?.Key() : null,
 		});
 	}
 
-	public bool? ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)
-		=> status == ModEntry.Instance.TransfusingStatus.Status ? false : null;
+	public bool? ShouldShowStatus(IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldShowStatusArgs args)
+		=> args.Status == ModEntry.Instance.TransfusingStatus.Status ? false : null;
 
-	public bool? ShouldOverrideStatusRenderingAsBars(State state, Combat combat, Ship ship, Status status, int amount)
-		=> status == ModEntry.Instance.TransfusionStatus.Status ? true : null;
+	public bool? ShouldOverrideStatusRenderingAsBars(IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldOverrideStatusRenderingAsBarsArgs args)
+		=> args.Status == ModEntry.Instance.TransfusionStatus.Status ? true : null;
 
-	public (IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(State state, Combat combat, Ship ship, Status status, int amount)
+	public (IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingArgs args)
 	{
-		if (status != ModEntry.Instance.TransfusionStatus.Status)
+		if (args.Status != ModEntry.Instance.TransfusionStatus.Status)
 			return ([], null);
-		var transfusing = Math.Min(ship.Get(ModEntry.Instance.TransfusingStatus.Status), amount);
+		var transfusing = Math.Min(args.Ship.Get(ModEntry.Instance.TransfusingStatus.Status), args.Amount);
 		return (
 			Colors: Enumerable.Range(0, transfusing).Select(_ => ModEntry.Instance.KokoroApi.StatusRendering.DefaultActiveStatusBarColor)
-				.Concat(Enumerable.Range(0, amount - transfusing).Select(_ => ModEntry.Instance.KokoroApi.StatusRendering.DefaultInactiveStatusBarColor))
+				.Concat(Enumerable.Range(0, args.Amount - transfusing).Select(_ => ModEntry.Instance.KokoroApi.StatusRendering.DefaultInactiveStatusBarColor))
 				.ToList(),
 			BarTickWidth: null
 		);
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, bool isForShipStatus, List<Tooltip> tooltips)
+	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
-		if (status != ModEntry.Instance.TransfusionStatus.Status)
-			return tooltips;
-		return tooltips.Concat(StatusMeta.GetTooltips(ModEntry.Instance.TransfusingStatus.Status, 1)).ToList();
+		if (args.Status != ModEntry.Instance.TransfusionStatus.Status)
+			return args.Tooltips;
+		return args.Tooltips.Concat(StatusMeta.GetTooltips(ModEntry.Instance.TransfusingStatus.Status, 1)).ToList();
 	}
 
 	private static void Ship_DirectHullDamage_Prefix(Ship __instance, out int __state)

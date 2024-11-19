@@ -46,6 +46,43 @@ partial class ApiImplementation
 
 			public Color DefaultInactiveStatusBarColor
 				=> DefaultActiveStatusBarColor.fadeAlpha(0.3);
+			
+			internal record struct GetExtraStatusesToShowArgs(
+				State State,
+				Combat Combat,
+				Ship Ship
+			) : IKokoroApi.IV2.IStatusRenderingApi.IHook.IGetExtraStatusesToShowArgs;
+			
+			internal record struct ShouldShowStatusArgs(
+				State State,
+				Combat Combat,
+				Ship Ship,
+				Status Status,
+				int Amount
+			) : IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldShowStatusArgs;
+			
+			internal record struct ShouldOverrideStatusRenderingAsBarsArgs(
+				State State,
+				Combat Combat,
+				Ship Ship,
+				Status Status,
+				int Amount
+			) : IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldOverrideStatusRenderingAsBarsArgs;
+			
+			internal record struct OverrideStatusRenderingArgs(
+				State State,
+				Combat Combat,
+				Ship Ship,
+				Status Status,
+				int Amount
+			) : IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingArgs;
+			
+			internal record struct OverrideStatusTooltipsArgs(
+				Status Status,
+				int Amount,
+				Ship? Ship,
+				List<Tooltip> Tooltips
+			) : IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs;
 		}
 	}
 }
@@ -86,7 +123,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 	public bool ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)
 	{
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
-			if (hook.ShouldShowStatus(state, combat, ship, status, amount) is { } result)
+			if (hook.ShouldShowStatus(new ApiImplementation.V2Api.StatusRenderingApi.ShouldShowStatusArgs(state, combat, ship, status, amount)) is { } result)
 				return result;
 		return true;
 	}
@@ -95,7 +132,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 	{
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, state.EnumerateAllArtifacts()))
 		{
-			var hookResult = hook.ShouldOverrideStatusRenderingAsBars(state, combat, ship, status, amount);
+			var hookResult = hook.ShouldOverrideStatusRenderingAsBars(new ApiImplementation.V2Api.StatusRenderingApi.ShouldOverrideStatusRenderingAsBarsArgs(state, combat, ship, status, amount));
 			switch (hookResult)
 			{
 				case false:
@@ -110,7 +147,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 	internal List<Tooltip> OverrideStatusTooltips(Status status, int amount, List<Tooltip> tooltips)
 	{
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Api, (MG.inst.g.state ?? DB.fakeState).EnumerateAllArtifacts()))
-			tooltips = hook.OverrideStatusTooltips(status, amount, RenderingStatusForShip, tooltips);
+			tooltips = hook.OverrideStatusTooltips(new ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusTooltipsArgs(status, amount, RenderingStatusForShip, tooltips));
 		return tooltips;
 	}
 	
@@ -127,7 +164,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 		var hook = Instance.GetOverridingAsBarsHook(state, combat, __instance, status, amount);
 		if (hook is null)
 			return;
-		var @override = hook.OverrideStatusRendering(state, combat, __instance, status, amount);
+		var @override = hook.OverrideStatusRendering(new ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusRenderingArgs(state, combat, __instance, status, amount));
 		StatusBarRenderingOverrides[status] = @override;
 
 		var barTickWidth = @override.BarTickWidth ?? __result.barTickWidth;
@@ -183,7 +220,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 			.Select(kvp => (Status: kvp.Key, Priority: 0.0, Amount: kvp.Value))
 			.Concat(
 				Instance
-					.SelectMany(hook => hook.GetExtraStatusesToShow(g.state, combat, ship))
+					.SelectMany(hook => hook.GetExtraStatusesToShow(new ApiImplementation.V2Api.StatusRenderingApi.GetExtraStatusesToShowArgs(g.state, combat, ship)))
 					.Select(e => (Status: e.Status, Priority: e.Priority, Amount: ship.Get(e.Status)))
 			)
 			.OrderByDescending(e => e.Priority)
