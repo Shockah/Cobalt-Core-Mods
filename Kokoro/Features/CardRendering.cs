@@ -83,7 +83,7 @@ internal sealed class CardRenderManager : VariedApiVersionHookManager<IKokoroApi
 	private static List<CardAction>? LastCardActions;
 	private static readonly Stack<Matrix?> CardRenderMatrixStack = new();
 
-	private CardRenderManager() : base(ModEntry.Instance.Package.Manifest.UniqueName, hook => new V1ToV2CardRenderingHookWrapper(hook))
+	private CardRenderManager() : base(ModEntry.Instance.Package.Manifest.UniqueName, new HookMapper<IKokoroApi.IV2.ICardRenderingApi.IHook, ICardRenderHook>(hook => new V1ToV2CardRenderingHookWrapper(hook)))
 	{
 	}
 

@@ -6,6 +6,7 @@ using Nanoray.PluginManager;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ public sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly Harmony Harmony;
-	internal readonly IKokoroApi? KokoroApi;
+	internal readonly IKokoroApi.IV2? KokoroApi;
 	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
@@ -30,7 +31,7 @@ public sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = new(package.Manifest.UniqueName);
-		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro");
+		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")?.V2;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -141,6 +142,8 @@ public sealed class ModEntry : SimpleMod
 
 	private static void RunSummaryRoute_Render_Postfix(RunSummaryRoute __instance)
 	{
+		// ReSharper disable UselessBinaryOperation
+		// ReSharper disable RedundantAssignment
 		var slideIn = Vault.GetSlideIn(__instance.introAnimTime);
 		var index = 0;
 		var baseY = 98 + __instance.scroll + slideIn;
@@ -151,10 +154,13 @@ public sealed class ModEntry : SimpleMod
 			Draw.Text(enemyName, 400, baseY + index * 12, color: Colors.textBold, align: TAlign.Right);
 			index++;
 		}
+		// ReSharper restore RedundantAssignment
+		// ReSharper restore UselessBinaryOperation
 	}
 
 	private static IEnumerable<CodeInstruction> RunSummaryRoute_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -260,6 +266,7 @@ public sealed class ModEntry : SimpleMod
 			Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Package.Manifest.GetDisplayName(@long: false), ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static void RunSummaryRoute_Render_Transpiler_HijackArtifactRender(Artifact artifact, G g, Vec restingPosition, bool showAsUnknown, bool autoFocus, bool showCount)
@@ -304,7 +311,7 @@ public sealed class ModEntry : SimpleMod
 	private static Rect RunSummaryRoute_Render_Transpiler_HijackCardRender(string str, double x, double y, Font? font, Color? color, Color? colorForce, double? progress, double? maxWidth, TAlign? align, bool dontDraw, int? lineHeight, Color? outline, BlendState? blend, SamplerState? samplerState, Effect? effect, bool dontSubstituteLocFont, double letterSpacing, double extraScale, Card card)
 	{
 		if (LastRunSummaryRoute is not { } route)
-			return Draw.Text(str, x, y, Instance.KokoroApi?.PinchCompactFont ?? font, color, colorForce, progress, maxWidth, align, dontDraw, lineHeight, outline, blend, samplerState, effect, dontSubstituteLocFont, letterSpacing, extraScale);
+			return Draw.Text(str, x, y, Instance.KokoroApi?.Assets.PinchCompactFont ?? font, color, colorForce, progress, maxWidth, align, dontDraw, lineHeight, outline, blend, samplerState, effect, dontSubstituteLocFont, letterSpacing, extraScale);
 		var fakeState = Instance.Helper.ModData.GetModData<State>(route, "FakeState");
 
 		var traitIndex = 0;
@@ -326,13 +333,13 @@ public sealed class ModEntry : SimpleMod
 			traitIndex++;
 		}
 
-		if (card.GetTimesPlayed(fakeState) is { } timesPlayed && timesPlayed > 0)
+		if (card.GetTimesPlayed(fakeState) is { } timesPlayed and > 0)
 		{
 			var counterColor = Color.Lerp(color ?? Colors.textMain, Colors.black, 0.5);
 			str = $"{str} <c={counterColor}>({timesPlayed})</c>";
 		}
 
-		var rect = Draw.Text(str, x, y, Instance.KokoroApi?.PinchCompactFont ?? font, color, colorForce, progress, maxWidth, align, dontDraw, lineHeight, outline, blend, samplerState, effect, dontSubstituteLocFont, letterSpacing, extraScale);
+		var rect = Draw.Text(str, x, y, Instance.KokoroApi?.Assets.PinchCompactFont ?? font, color, colorForce, progress, maxWidth, align, dontDraw, lineHeight, outline, blend, samplerState, effect, dontSubstituteLocFont, letterSpacing, extraScale);
 		var box = MG.inst.g.Push(new UIKey(StableUK.card, card.uuid), new Rect(x - 82, y - 14, rect.w + 4, rect.h + 4));
 
 		if (box.IsHover())

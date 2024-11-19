@@ -11,7 +11,7 @@ internal sealed class RerollArtifact : Artifact
 
 	public override List<Tooltip>? GetExtraTooltips()
 		=> [
-			..base.GetExtraTooltips() ?? [],
+			.. base.GetExtraTooltips() ?? [],
 			new TTText(ModEntry.Instance.Localizations.Localize(["artifact", "extraDescription", RerollsLeft switch
 			{
 				0 => "zero",

@@ -100,7 +100,7 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 		{ Status.lockdown, IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueAdd },
 	};
 
-	private StatusLogicManager() : base(ModEntry.Instance.Package.Manifest.UniqueName, hook => new V1ToV2StatusLogicHookWrapper(hook))
+	private StatusLogicManager() : base(ModEntry.Instance.Package.Manifest.UniqueName, new HookMapper<IKokoroApi.IV2.IStatusLogicApi.IHook, IStatusLogicHook>(hook => new V1ToV2StatusLogicHookWrapper(hook)))
 	{
 		Register(VanillaBoostStatusLogicHook.Instance, 0);
 		Register(VanillaTimestopStatusLogicHook.Instance, 1_000_000);

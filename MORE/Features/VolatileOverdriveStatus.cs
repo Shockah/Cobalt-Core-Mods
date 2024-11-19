@@ -1,12 +1,13 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.MORE;
 
-internal sealed class VolatileOverdriveStatus : IRegisterable, IStatusLogicHook, IStatusRenderHook
+internal sealed class VolatileOverdriveStatus : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static VolatileOverdriveStatus Instance { get; private set; } = null!;
 	internal IStatusEntry Entry { get; private set; } = null!;
@@ -80,18 +81,18 @@ internal sealed class VolatileOverdriveStatus : IRegisterable, IStatusLogicHook,
 			]);
 		}, 0);
 
-		ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(Instance, 0);
-		ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(Instance, 0);
+		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(Instance);
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(Instance);
 	}
 
-	public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
+	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
-		if (status != Entry.Status)
+		if (args.Status != Entry.Status)
 			return false;
-		if (timing != StatusTurnTriggerTiming.TurnEnd)
+		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
 			return false;
 
-		amount -= Math.Sign(amount);
+		args.Amount -= Math.Sign(args.Amount);
 		return false;
 	}
 

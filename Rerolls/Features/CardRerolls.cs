@@ -8,6 +8,8 @@ namespace Shockah.Rerolls;
 
 internal sealed class CardRerollManager
 {
+	private static readonly UK RerollButtonUk = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
+	
 	private static ACardOffering? ActionContext;
 
 	public CardRerollManager()
@@ -90,13 +92,13 @@ internal sealed class CardRerollManager
 		SharedArt.ButtonText(
 			g,
 			new Vec(210, 228),
-			(UIKey)(UK)21370001,
+			RerollButtonUk,
 			ModEntry.Instance.Localizations.Localize(["button"]),
 			inactive: artifact.RerollsLeft <= 0,
 			onMouseDown: new MouseDownHandler(() => Reroll(g, __instance)),
 			platformButtonHint: Btn.Y
 		);
-		if (g.boxes.FirstOrDefault(b => b.key == new UIKey((UK)21370001)) is { } box)
+		if (g.boxes.FirstOrDefault(b => b.key == RerollButtonUk) is { } box)
 			box.onInputPhase = new InputPhaseHandler(() =>
 			{
 				if (Input.GetGpDown(Btn.Y))

@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -296,7 +297,7 @@ internal sealed class BombEvent : IRegisterable
 			};
 		}
 
-		internal sealed class SelfDestructTimerStatus : IRegisterable, IStatusLogicHook
+		internal sealed class SelfDestructTimerStatus : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 		{
 			internal static SelfDestructTimerStatus Instance { get; private set; } = null!;
 			internal IStatusEntry Entry { get; private set; } = null!;
@@ -318,17 +319,17 @@ internal sealed class BombEvent : IRegisterable
 					Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "SelfDestructTimer", "description"]).Localize
 				});
 
-				ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(Instance, 0);
+				ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(Instance);
 			}
 
-			public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
+			public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 			{
-				if (status != Entry.Status)
+				if (args.Status != Entry.Status)
 					return false;
-				if (timing != StatusTurnTriggerTiming.TurnStart)
+				if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 					return false;
 
-				amount -= Math.Sign(amount);
+				args.Amount -= Math.Sign(args.Amount);
 				return false;
 			}
 		}

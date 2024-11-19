@@ -13,9 +13,9 @@ internal sealed class MapWormhole : MapNodeContents
 	}
 
 	public override List<Tooltip> GetTooltips(G g)
-		=> new() { new TTText(I18n.WormholeTooltip) };
+		=> [new TTText(I18n.WormholeTooltip)];
 
-	public override Route MakeRoute(State s)
+	public override Route MakeRoute(State s, Vec coord)
 	{
 		ModEntry.Instance.WormholeMode = IsFurther ? WormholeMode.Backward : WormholeMode.Forward;
 		s.map.currentLocation = OtherWormholePosition;

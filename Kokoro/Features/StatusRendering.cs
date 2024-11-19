@@ -94,7 +94,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 	private Ship? RenderingStatusForShip;
 	private static readonly Dictionary<Status, (IReadOnlyList<Color> Colors, int? BarTickWidth)> StatusBarRenderingOverrides = [];
 
-	private StatusRenderManager() : base(ModEntry.Instance.Package.Manifest.UniqueName, hook => new V1ToV2StatusRenderingHookWrapper(hook))
+	private StatusRenderManager() : base(ModEntry.Instance.Package.Manifest.UniqueName, new HookMapper<IKokoroApi.IV2.IStatusRenderingApi.IHook, IStatusRenderHook>(hook => new V1ToV2StatusRenderingHookWrapper(hook)))
 	{
 	}
 

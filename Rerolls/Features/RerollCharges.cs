@@ -36,7 +36,7 @@ internal sealed class RerollChargeManager
 	{
 		if (!ModEntry.Instance.Settings.ProfileBased.Current.ShopRerolls)
 			return;
-		if (s.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault() is not { } artifact)
+		if (s.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault() is null)
 			return;
 
 		var indexToAppend = __result.FindIndex(c => c.key == ".shopAboutToDestroyYou");

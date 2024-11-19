@@ -60,7 +60,7 @@ internal sealed class OxidationStatusManager : VariedApiVersionHookManager<IKoko
 
 	internal static readonly OxidationStatusManager Instance = new();
 
-	private OxidationStatusManager() : base(ModEntry.Instance.Package.Manifest.UniqueName, hook => new V1ToV2OxidationStatusHookWrapper(hook))
+	private OxidationStatusManager() : base(ModEntry.Instance.Package.Manifest.UniqueName, new HookMapper<IKokoroApi.IV2.IOxidationStatusApi.IHook, IOxidationStatusHook>(hook => new V1ToV2OxidationStatusHookWrapper(hook)))
 	{
 	}
 

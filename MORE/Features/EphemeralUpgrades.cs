@@ -134,13 +134,10 @@ internal sealed class EphemeralUpgrades : IRegisterable
 				new AEnergy { changeAmount = __instance.GetData(s).cost, disabled = !__instance.flipped }
 			],
 			Upgrade.B => [
-				ModEntry.Instance.KokoroApi.ActionCosts.Make(
-					cost: ModEntry.Instance.KokoroApi.ActionCosts.Cost(
-						resource: ModEntry.Instance.KokoroApi.ActionCosts.EnergyResource(),
-						amount: 4
-					),
-					action: new AHeal { targetPlayer = true, healAmount = 4 }
-				)
+				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
+					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.EnergyResource, 4),
+					new AHeal { targetPlayer = true, healAmount = 4 }
+				).AsCardAction,
 			],
 			_ => __result
 		};

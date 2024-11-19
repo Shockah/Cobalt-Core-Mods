@@ -4,19 +4,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Shockah.Kokoro;
 
 internal class VariedApiVersionHookManager<TV2Hook, TV1Hook>(
 	string proxyContext,
-	Func<TV1Hook, TV2Hook> mapper
+	IHookMapper<TV2Hook, TV1Hook> hookMapper
 ) : IEnumerable<TV2Hook>
 	where TV2Hook : class
 	where TV1Hook : class
 {
 	protected readonly OrderedList<TV2Hook, double> Hooks = [];
-	private readonly ConditionalWeakTable<TV1Hook, TV2Hook> V1ToV2MappedHooks = [];
 
 	public void Register(TV2Hook hook, double priority)
 		=> Hooks.Add(hook, -priority);
@@ -25,13 +23,10 @@ internal class VariedApiVersionHookManager<TV2Hook, TV1Hook>(
 		=> Hooks.Remove(hook);
 
 	public void Register(TV1Hook hook, double priority)
-		=> Register(V1ToV2MappedHooks.GetValue(hook, key => mapper(key)), priority);
+		=> Register(hookMapper.MapToV2(hook), priority);
 
 	public void Unregister(TV1Hook hook)
-	{
-		if (V1ToV2MappedHooks.TryGetValue(hook, out var v2Hook))
-			Unregister(v2Hook);
-	}
+		=> Unregister(hookMapper.MapToV2(hook));
 
 	public IEnumerator<TV2Hook> GetEnumerator()
 		=> Hooks.GetEnumerator();
@@ -60,7 +55,7 @@ internal class VariedApiVersionHookManager<TV2Hook, TV1Hook>(
 								return (Hook: null, Priority: 0);
 
 							var priority = proxyManager.TryProxy(o, "AnyMod", proxyContext, out IHookPriority? hookPriority) ? hookPriority.HookPriority : 0;
-							return (Hook: mapper(hook), Priority: priority);
+							return (Hook: hookMapper.MapToV2(hook), Priority: priority);
 						}
 
 						static bool IsV2Hook(Type type)
