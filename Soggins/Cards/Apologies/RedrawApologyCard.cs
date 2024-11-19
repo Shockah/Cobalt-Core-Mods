@@ -22,7 +22,7 @@ public sealed class RedrawApologyCard : ApologyCard, IRegisterableCard
 		=> [
 			new AStatus
 			{
-				status = ModEntry.Instance.KokoroApi.RedrawVanillaStatus,
+				status = ModEntry.Instance.KokoroApi.RedrawStatus.Status,
 				statusAmount = 1,
 				targetPlayer = true
 			}

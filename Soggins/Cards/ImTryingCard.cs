@@ -64,17 +64,10 @@ public sealed class ImTryingCard : Card, IRegisterableCard, IFrogproofCard
 		var cardsInHandAfterPlaying = GetCardsInHandAfterPlaying(c);
 
 		if (upgrade == Upgrade.B)
-			actions.Add(new ADrawCard
-			{
-				count = 2
-			});
+			actions.Add(new ADrawCard { count = 2 });
 
-		actions.Add(new AVariableHint
-		{
-			hand = true,
-			handAmount = cardsInHandAfterPlaying
-		});
-		actions.Add(Instance.KokoroApi.Actions.MakeExhaustEntireHandImmediate());
+		actions.Add(new AVariableHint { hand = true, handAmount = cardsInHandAfterPlaying });
+		actions.Add(new AExhaustEntireHand());
 
 		actions.Add(ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
 			new AAddCard
