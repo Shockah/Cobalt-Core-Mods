@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Newtonsoft.Json;
 using Nickel;
 using System.Reflection;
 
@@ -6,10 +7,15 @@ namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
-	partial class ActionApiImplementation
+	partial class V2Api
 	{
-		public IKokoroApi.IActionApi.ICustomCardUpgrade MakeCustomCardUpgrade(CardUpgrade route)
-			=> new CustomCardUpgradeManager.RouteWrapper(route);
+		public IKokoroApi.IV2.ICustomCardUpgradeApi CustomCardUpgrade { get; } = new CustomCardUpgradeApi();
+		
+		public sealed class CustomCardUpgradeApi : IKokoroApi.IV2.ICustomCardUpgradeApi
+		{
+			public IKokoroApi.IV2.ICustomCardUpgradeApi.IRoute MakeCustom(CardUpgrade route)
+				=> new CustomCardUpgradeManager.RouteWrapper(Mutil.DeepCopy(route));
+		}
 	}
 }
 
@@ -36,8 +42,9 @@ internal sealed class CustomCardUpgradeManager
 		return false;
 	}
 	
-	internal sealed class RouteWrapper(CardUpgrade route) : IKokoroApi.IActionApi.ICustomCardUpgrade
+	internal sealed class RouteWrapper(CardUpgrade route) : IKokoroApi.IV2.ICustomCardUpgradeApi.IRoute
 	{
+		[JsonIgnore]
 		public CardUpgrade AsRoute
 			=> route;
 
@@ -47,7 +54,7 @@ internal sealed class CustomCardUpgradeManager
 			set => ModEntry.Instance.Helper.ModData.SetModData(route, "IsInPlace", value);
 		}
 
-		public IKokoroApi.IActionApi.ICustomCardUpgrade SetInPlace(bool value)
+		public IKokoroApi.IV2.ICustomCardUpgradeApi.IRoute SetInPlace(bool value)
 		{
 			this.IsInPlace = value;
 			return this;
