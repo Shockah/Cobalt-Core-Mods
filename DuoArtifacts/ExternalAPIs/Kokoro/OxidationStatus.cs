@@ -1,9 +1,31 @@
-﻿using CobaltCoreModding.Definitions.ExternalItems;
-
-namespace Shockah.DuoArtifacts;
+﻿namespace Shockah.Kokoro;
 
 public partial interface IKokoroApi
 {
-	ExternalStatus OxidationStatus { get; }
-	Tooltip GetOxidationStatusTooltip(State state, Ship ship);
+	public partial interface IV2
+	{
+		IOxidationStatusApi OxidationStatus { get; }
+
+		public interface IOxidationStatusApi
+		{
+			Status Status { get; }
+			
+			int GetOxidationStatusMaxValue(State state, Ship ship);
+			
+			void RegisterHook(IHook hook, double priority = 0);
+			void UnregisterHook(IHook hook);
+			
+			public interface IHook : IKokoroV2ApiHook
+			{
+				int ModifyOxidationRequirement(IModifyOxidationRequirementArgs args) => 0;
+				
+				public interface IModifyOxidationRequirementArgs
+				{
+					State State { get; }
+					Ship Ship { get; }
+					int Value { get; }
+				}
+			}
+		}
+	}
 }

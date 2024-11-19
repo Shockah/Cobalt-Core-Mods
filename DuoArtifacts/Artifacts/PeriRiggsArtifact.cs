@@ -1,11 +1,12 @@
 ﻿using HarmonyLib;
 using Nanoray.Pintail;
 using Nickel;
+using Shockah.Kokoro;
 using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-internal sealed class PeriRiggsArtifact : DuoArtifact, IEvadeHook
+internal sealed class PeriRiggsArtifact : DuoArtifact, IKokoroApi.IV2.IEvadeHookApi.IHook
 {
 	private const int EvadesPerTurn = 2;
 
@@ -15,7 +16,7 @@ internal sealed class PeriRiggsArtifact : DuoArtifact, IEvadeHook
 	{
 		base.ApplyPatches(harmony);
 		harmony.Patch(
-			original: AccessTools.DeclaredMethod(AccessTools.AllAssemblies().First(a => (a.GetName().Name ?? a.GetName().FullName) == "Kokoro").GetType("Shockah.Kokoro.VanillaEvadeHook"), nameof(IEvadeHook.IsEvadePossible)),
+			original: AccessTools.DeclaredMethod(AccessTools.AllAssemblies().First(a => (a.GetName().Name ?? a.GetName().FullName) == "Kokoro").GetType("Shockah.Kokoro.VanillaEvadeHook"), nameof(IKokoroApi.IV2.IEvadeHookApi.IHook.IsEvadePossible)),
 			postfix: new HarmonyMethod(GetType(), nameof(VanillaEvadeHook_IsEvadePossible_Postfix))
 		);
 	}
@@ -40,11 +41,11 @@ internal sealed class PeriRiggsArtifact : DuoArtifact, IEvadeHook
 	public override int? GetDisplayNumber(State s)
 		=> EvadesLeft;
 
-	void IEvadeHook.AfterEvade(State state, Combat combat, int direction, IEvadeHook hook)
+	public void AfterEvade(IKokoroApi.IV2.IEvadeHookApi.IHook.IAfterEvadeArgs args)
 	{
-		if (hook is not IProxyObject.IWithProxyTargetInstanceProperty hookMarker)
+		if (args.Hook is not IProxyObject.IWithProxyTargetInstanceProperty hookMarker)
 			return;
-		if (Instance.KokoroApi.VanillaEvadeHook is not IProxyObject.IWithProxyTargetInstanceProperty vanillaEvadeHookMarker)
+		if (Instance.KokoroApi.EvadeHook.VanillaEvadeHook is not IProxyObject.IWithProxyTargetInstanceProperty vanillaEvadeHookMarker)
 			return;
 		if (!ReferenceEquals(hookMarker.ProxyTargetInstance, vanillaEvadeHookMarker.ProxyTargetInstance))
 			return;

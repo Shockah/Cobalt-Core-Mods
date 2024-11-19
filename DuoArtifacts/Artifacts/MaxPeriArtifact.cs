@@ -7,7 +7,7 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class MaxPeriArtifact : DuoArtifact
 {
-	private static int ModifyBaseDamageNestingCounter = 0;
+	private static int ModifyBaseDamageNestingCounter;
 
 	protected internal override void ApplyPatches(IHarmony harmony)
 	{
@@ -24,7 +24,7 @@ internal sealed class MaxPeriArtifact : DuoArtifact
 
 		var oldHand = combat.hand.ToList();
 		oldHand.Insert(handPosition, card);
-		var attacks = oldHand.Where(c => c.GetActions(state, combat).SelectMany(a => ModEntry.Instance.KokoroApi.Actions.GetWrappedCardActionsRecursively(a)).Any(a => a is AAttack)).ToList();
+		var attacks = oldHand.Where(c => c.GetActions(state, combat).SelectMany(a => ModEntry.Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively(a)).Any(a => a is AAttack)).ToList();
 		if (!attacks.Contains(card) || attacks.Count == 1)
 			return;
 
@@ -39,7 +39,7 @@ internal sealed class MaxPeriArtifact : DuoArtifact
 		if (ModifyBaseDamageNestingCounter > 0)
 			return base.ModifyBaseDamage(baseDamage, card, state, combat, fromPlayer);
 		ModifyBaseDamageNestingCounter++;
-		var attacks = combat.hand.Where(c => c == card || c.GetActions(state, combat).SelectMany(a => ModEntry.Instance.KokoroApi.Actions.GetWrappedCardActionsRecursively(a)).Any(a => a is AAttack)).ToList();
+		var attacks = combat.hand.Where(c => c == card || c.GetActions(state, combat).SelectMany(a => ModEntry.Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively(a)).Any(a => a is AAttack)).ToList();
 		ModifyBaseDamageNestingCounter--;
 
 		if (!attacks.Contains(card) || attacks.Count == 1)
@@ -60,7 +60,7 @@ internal sealed class MaxPeriArtifact : DuoArtifact
 		if (artifact is null)
 			return;
 
-		var attacks = c.hand.Where(card => card == __instance || card.GetActions(s, c).SelectMany(a => ModEntry.Instance.KokoroApi.Actions.GetWrappedCardActionsRecursively(a)).Any(a => a is AAttack)).ToList();
+		var attacks = c.hand.Where(card => card == __instance || card.GetActions(s, c).SelectMany(a => ModEntry.Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively(a)).Any(a => a is AAttack)).ToList();
 		if (!attacks.Contains(__instance) || attacks.Count == 1)
 			return;
 

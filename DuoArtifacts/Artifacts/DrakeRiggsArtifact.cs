@@ -1,16 +1,17 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System.IO;
 using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-internal sealed class DrakeRiggsArtifact : DuoArtifact, IEvadeHook, IHookPriority
+internal sealed class DrakeRiggsArtifact : DuoArtifact, IKokoroApi.IV2.IEvadeHookApi.IHook, IKokoroApi.IV2.IHookPriority
 {
 	internal static ExternalSprite InactiveSprite { get; private set; } = null!;
 
-	public bool UsedThisTurn = false;
+	public bool UsedThisTurn;
 
 	protected internal override void RegisterArt(ISpriteRegistry registry, string namePrefix, DuoArtifactDefinition definition)
 	{
@@ -32,19 +33,19 @@ internal sealed class DrakeRiggsArtifact : DuoArtifact, IEvadeHook, IHookPriorit
 	public double HookPriority
 		=> -10;
 
-	public bool? IsEvadePossible(State state, Combat combat, EvadeHookContext context)
+	public bool? IsEvadePossible(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePossibleArgs args)
 	{
 		if (UsedThisTurn)
 			return null;
 		return true;
 	}
 
-	public void PayForEvade(State state, Combat combat, int direction)
+	public void PayForEvade(IKokoroApi.IV2.IEvadeHookApi.IHook.IPayForEvadeArgs args)
 	{
-		var artifact = state.EnumerateAllArtifacts().OfType<DrakeRiggsArtifact>().First();
+		var artifact = args.State.EnumerateAllArtifacts().OfType<DrakeRiggsArtifact>().First();
 		artifact.Pulse();
 		artifact.UsedThisTurn = true;
-		combat.QueueImmediate(new AStatus
+		args.Combat.QueueImmediate(new AStatus
 		{
 			status = Status.heat,
 			statusAmount = 1,

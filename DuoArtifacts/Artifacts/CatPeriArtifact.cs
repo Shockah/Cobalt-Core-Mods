@@ -1,8 +1,9 @@
-﻿using System.Linq;
+﻿using Shockah.Kokoro;
+using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-internal sealed class CatPeriArtifact : DuoArtifact, IStatusLogicHook
+internal sealed class CatPeriArtifact : DuoArtifact, IKokoroApi.IV2.IStatusLogicApi.IHook
 {
 	public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
 	{
@@ -22,10 +23,10 @@ internal sealed class CatPeriArtifact : DuoArtifact, IStatusLogicHook
 		Pulse();
 	}
 
-	public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
+	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
-		if (timing == StatusTurnTriggerTiming.TurnEnd && status == Status.overdrive && amount > 0)
-			amount--;
+		if (args is { Timing: IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd, Status: Status.overdrive, Amount: > 0 })
+			args.Amount--;
 		Pulse();
 		return false;
 	}

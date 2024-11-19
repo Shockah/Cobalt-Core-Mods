@@ -34,7 +34,7 @@ internal sealed class DuoArtifactDatabase
 		=> TypeToComboDictionary.Keys.Select(t => (Artifact)Activator.CreateInstance(t)!);
 
 	public IEnumerable<Type> GetExactDuoArtifactTypes(IEnumerable<Deck> combo)
-		=> ComboToTypeDictionary.TryGetValue(FixCombo(new HashSet<Deck>(combo)), out var types) ? types : Array.Empty<Type>();
+		=> ComboToTypeDictionary.TryGetValue(FixCombo(combo.ToHashSet()), out var types) ? types : Array.Empty<Type>();
 
 	public IEnumerable<Artifact> InstantiateExactDuoArtifacts(IEnumerable<Deck> combo)
 		=> GetExactDuoArtifactTypes(combo).Select(t => (Artifact)Activator.CreateInstance(t)!);
@@ -66,19 +66,19 @@ internal sealed class DuoArtifactDatabase
 
 		static (Color, Color, double) GetLerpInfo(List<Color> colors, double totalFraction)
 		{
-			double singleFraction = 1.0 / colors.Count;
-			int whichFraction = ((int)Math.Round(totalFraction / singleFraction) + colors.Count - 1) % colors.Count;
-			double fractionStart = singleFraction * whichFraction;
-			double fractionEnd = singleFraction * (whichFraction + 1);
-			double fraction = (totalFraction - fractionStart) / (fractionEnd - fractionStart);
+			var singleFraction = 1.0 / colors.Count;
+			var whichFraction = ((int)Math.Round(totalFraction / singleFraction) + colors.Count - 1) % colors.Count;
+			var fractionStart = singleFraction * whichFraction;
+			var fractionEnd = singleFraction * (whichFraction + 1);
+			var fraction = (totalFraction - fractionStart) / (fractionEnd - fractionStart);
 			return (colors[whichFraction], colors[(whichFraction + 1) % colors.Count], fraction);
 		}
 
-		double animationLength = colors.Count * SingleColorTransitionAnimationLengthSeconds;
-		double animationPosition = ModEntry.Instance.KokoroApi.TotalGameTime.TotalSeconds % animationLength;
-		double totalFraction = animationPosition / animationLength;
+		var animationLength = colors.Count * SingleColorTransitionAnimationLengthSeconds;
+		var animationPosition = MG.inst.g.time % animationLength;
+		var totalFraction = animationPosition / animationLength;
 		var (fromColor, toColor, fraction) = GetLerpInfo(colors, totalFraction);
-		double lerpFraction = Math.Sin(fraction * Math.PI) * 0.5 + 0.5;
+		var lerpFraction = Math.Sin(fraction * Math.PI) * 0.5 + 0.5;
 		return Color.Lerp(fromColor, toColor, lerpFraction);
 	}
 
@@ -89,7 +89,7 @@ internal sealed class DuoArtifactDatabase
 		if (!type.IsAssignableTo(typeof(Artifact)))
 			throw new ArgumentException($"Type {type} is not a subclass of the {typeof(Artifact)} type.");
 
-		var comboSet = FixCombo(new HashSet<Deck>(combo));
+		var comboSet = FixCombo(combo.ToHashSet());
 		if (comboSet.Count < 2)
 			throw new ArgumentException("Tried to register a duo artifact for less than 2 characters.");
 		TypeToComboDictionary[type] = comboSet;

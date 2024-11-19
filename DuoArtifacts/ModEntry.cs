@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using Nickel.Legacy;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	public ILogger? Logger { get; set; }
 	internal IModHelper Helper { get; private set; } = null!;
 
-	internal IKokoroApi KokoroApi { get; private set; } = null!;
+	internal IKokoroApi.IV2 KokoroApi { get; private set; } = null!;
 	internal readonly DuoArtifactDatabase Database = new();
 	internal ExternalSprite[] DuoGlowSprites { get; private set; } = new ExternalSprite[2];
 	internal ExternalSprite[] TrioGlowSprites { get; private set; } = new ExternalSprite[3];
@@ -39,7 +40,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	public void BootMod(IModLoaderContact contact)
 	{
 		Instance = this;
-		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 	}
 
 	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
@@ -142,7 +143,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.ApplyLatePatches(Harmony);
 	}
 
-	object? IApiProviderManifest.GetApi(IManifest requestingMod)
+	object IApiProviderManifest.GetApi(IManifest requestingMod)
 		=> new ApiImplementation(Database);
 
 	public void LoadManifest(ISpriteRegistry registry)

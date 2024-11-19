@@ -70,7 +70,7 @@ internal sealed class DrakeMaxArtifactCard : Card
 			actions.Add(new AExhaustWherever { uuid = card.uuid });
 		actions.Add(new AStatus
 		{
-			status = (Status)ModEntry.Instance.KokoroApi.WormStatus.Id!.Value,
+			status = ModEntry.Instance.KokoroApi.WormStatus.Status,
 			statusAmount = cards.Count,
 			targetPlayer = false
 		});

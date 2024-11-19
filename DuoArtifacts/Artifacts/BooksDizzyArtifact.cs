@@ -21,13 +21,15 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	private static ExternalSprite ShieldCostSprite = null!;
 
 	private static readonly Stack<(int Shield, int MaxShield, int Shards, int MaxShards)> OldStatusStates = new();
-	private static int TemporarilyAppliedShieldToShardsCounter = 0;
+	private static int TemporarilyAppliedShieldToShardsCounter;
 	private static int RenderActionShardAvailable;
 
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 	[SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "Set via IL")]
 	private static int ShardCostIconIndex;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 
-	public int ShardsToRestoreOnNextCombat = 0;
+	public int ShardsToRestoreOnNextCombat;
 
 	protected internal override void ApplyPatches(IHarmony harmony)
 	{
@@ -132,7 +134,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	private static void AddStatusNoPulse(Ship ship, Status status, int n)
 	{
 		double? statusEffectPulse = ship.statusEffectPulses.TryGetValue(status, out var dictValue) ? dictValue : null;
-		bool pendingOneShotStatusAnimation = ship.pendingOneShotStatusAnimations.Contains(status);
+		var pendingOneShotStatusAnimation = ship.pendingOneShotStatusAnimations.Contains(status);
 
 		ship.Add(status, n);
 
@@ -146,9 +148,6 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		else
 			ship.pendingOneShotStatusAnimations.Remove(status);
 	}
-
-	private static bool AnyStatusState
-		=> OldStatusStates.Count != 0;
 
 	private static void PushStatusState(Ship ship)
 		=> OldStatusStates.Push((Shield: ship.Get(Status.shield), MaxShield: ship.Get(Status.maxShield), Shards: ship.Get(Status.shard), MaxShards: ship.Get(Status.maxShard)));
@@ -166,7 +165,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
 
-		int shards = __instance.Get(Status.shard);
+		var shards = __instance.Get(Status.shard);
 		PushStatusState(__instance);
 		AddStatusNoPulse(__instance, Status.maxShield, shards);
 		AddStatusNoPulse(__instance, Status.shield, shards);
@@ -181,16 +180,16 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			return;
 
 		var (_, oldShards) = PopStatusState();
-		int currentShield = __instance.Get(Status.shield);
-		int currentShards = __instance.Get(Status.shard);
+		var currentShield = __instance.Get(Status.shield);
+		var currentShards = __instance.Get(Status.shard);
 
-		int resultingShield = currentShield - oldShards;
+		var resultingShield = currentShield - oldShards;
 
-		int shardsToRemove = Math.Max(0, -resultingShield);
+		var shardsToRemove = Math.Max(0, -resultingShield);
 		resultingShield += shardsToRemove;
-		int resultingShards = currentShards - shardsToRemove;
+		var resultingShards = currentShards - shardsToRemove;
 
-		int extraHullToRemove = Math.Max(0, -resultingShards);
+		var extraHullToRemove = Math.Max(0, -resultingShards);
 		resultingShards += extraHullToRemove;
 
 		if (resultingShards != currentShards)
@@ -213,7 +212,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		if (!g.state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
 
-		int shield = g.state.ship.Get(Status.shield);
+		var shield = g.state.ship.Get(Status.shield);
 		PushStatusState(g.state.ship);
 		AddStatusNoPulse(g.state.ship, Status.maxShard, shield);
 		AddStatusNoPulse(g.state.ship, Status.shard, shield);
@@ -233,16 +232,16 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			return;
 
 		var (oldShield, _) = PopStatusState();
-		int currentShards = g.state.ship.Get(Status.shard);
-		int currentShield = g.state.ship.Get(Status.shield);
+		var currentShards = g.state.ship.Get(Status.shard);
+		var currentShield = g.state.ship.Get(Status.shield);
 
-		int resultingShards = currentShards - oldShield;
+		var resultingShards = currentShards - oldShield;
 
-		int shieldToRemove = Math.Max(0, -resultingShards);
+		var shieldToRemove = Math.Max(0, -resultingShards);
 		resultingShards += shieldToRemove;
-		int resultingShield = currentShield - shieldToRemove;
+		var resultingShield = currentShield - shieldToRemove;
 
-		int leftOverToRemove = Math.Max(0, -resultingShield);
+		var leftOverToRemove = Math.Max(0, -resultingShield);
 		resultingShield += leftOverToRemove;
 
 		if (resultingShield != currentShield)
@@ -261,6 +260,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 
 	private static IEnumerable<CodeInstruction> Card_MakeAllActionIcons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -282,6 +282,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static int Card_MakeAllActionIcons_Transpiler_ModifyStatusValue(int value, State state)
@@ -296,6 +297,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 
 	private static IEnumerable<CodeInstruction> Card_RenderAction_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -320,10 +322,12 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static IEnumerable<CodeInstruction> Card_RenderAction_ShardcostIcon_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -346,6 +350,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static int Card_RenderAction_ShardcostIcon_Transpiler_ModifySprite(int spriteId, bool costMet)
@@ -355,10 +360,10 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 		if (MG.inst.g.state is not { } state || !state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return spriteId;
 
-		int shield = state.ship.Get(Status.shield);
-		int shards = state.ship.Get(Status.shard);
+		var shield = state.ship.Get(Status.shield);
+		var shards = state.ship.Get(Status.shard);
 
-		int totalIndex = ShardCostIconIndex + (shards + shield - RenderActionShardAvailable);
+		var totalIndex = ShardCostIconIndex + (shards + shield - RenderActionShardAvailable);
 		if (totalIndex > shards)
 			return ShieldCostSprite.Id!.Value;
 		return spriteId;
@@ -366,6 +371,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 
 	private static IEnumerable<CodeInstruction> AVariableHint_GetTooltips_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -390,6 +396,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static int AVariableHint_GetTooltips_Transpiler_ModifyStatusValue(int value, AVariableHint hint, State state)
@@ -424,13 +431,13 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 			return;
 		if (__instance.upgrade == Upgrade.B)
 			return;
-		__result.Add(Instance.KokoroApi.Actions.MakeHidden(new AStatus
+		__result.Add(Instance.KokoroApi.HiddenActions.MakeAction(new AStatus
 		{
 			status = Status.shard,
 			statusAmount = 0,
 			mode = AStatusMode.Set,
 			targetPlayer = true
-		}));
+		}).AsCardAction);
 	}
 
 	private static void Inverter_GetShieldAmt_Postfix(State s, ref int __result)
@@ -444,13 +451,13 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	{
 		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
-		__result.Add(Instance.KokoroApi.Actions.MakeHidden(new AStatus
+		__result.Add(Instance.KokoroApi.HiddenActions.MakeAction(new AStatus
 		{
 			status = Status.shard,
 			statusAmount = 0,
 			mode = AStatusMode.Set,
 			targetPlayer = true
-		}));
+		}).AsCardAction);
 	}
 
 	private static void Glimmershot_GetShard_Postfix(State s, ref int __result)
@@ -464,12 +471,12 @@ internal sealed class BooksDizzyArtifact : DuoArtifact
 	{
 		if (!s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			return;
-		__result.Add(Instance.KokoroApi.Actions.MakeHidden(new AStatus
+		__result.Add(Instance.KokoroApi.HiddenActions.MakeAction(new AStatus
 		{
 			status = Status.shield,
 			statusAmount = 0,
 			mode = AStatusMode.Set,
 			targetPlayer = true
-		}));
+		}).AsCardAction);
 	}
 }

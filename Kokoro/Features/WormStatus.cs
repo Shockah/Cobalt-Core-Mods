@@ -7,6 +7,8 @@ namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
+	#region V1
+	
 	public ExternalStatus WormStatus
 		=> Instance.Content.WormStatus;
 
@@ -22,6 +24,19 @@ partial class ApiImplementation
 				Title = ModEntry.Instance.Localizations.Localize(["status", "Worm", "name"]),
 				Description = ModEntry.Instance.Localizations.Localize(["status", "Worm", "description", "stateless"]),
 			} : new TTGlossary($"status.{Instance.Content.WormStatus.Id!.Value}", value.Value);
+	
+	#endregion
+	
+	partial class V2Api
+	{
+		public IKokoroApi.IV2.IWormStatusApi WormStatus { get; } = new WormStatusApi();
+		
+		public sealed class WormStatusApi : IKokoroApi.IV2.IWormStatusApi
+		{
+			public Status Status
+				=> (Status)ModEntry.Instance.Content.WormStatus.Id!.Value;
+		}
+	}
 }
 
 internal sealed class WormStatusManager : IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook

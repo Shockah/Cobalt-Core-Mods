@@ -23,7 +23,7 @@ public sealed class DuoArtifactDefinition
 		new(typeof(CatPeriArtifact), [Deck.colorless, Deck.peri], I18n.CatPeriArtifactName, I18n.CatPeriArtifactTooltip, "CatPeri", "cardtrait.temporary", "status.overdriveAlt"),
 		new(typeof(CatRiggsArtifact), [Deck.colorless, Deck.riggs], I18n.CatRiggsArtifactName, I18n.CatRiggsArtifactTooltip, "CatRiggs", new TTGlossary("cardtrait.discount", 1)),
 		new(typeof(DizzyDrakeArtifact), [Deck.dizzy, Deck.eunice], I18n.DizzyDrakeArtifactName, I18n.DizzyDrakeArtifactTooltip, "DizzyDrake", "action.overheat", "status.shieldAlt"),
-		new(typeof(DizzyIsaacArtifact), [Deck.dizzy, Deck.goat], I18n.DizzyIsaacArtifactName, I18n.DizzyIsaacArtifactTooltip, "DizzyIsaac", "action.spawn", new(() => Instance.KokoroApi.GetOxidationStatusTooltip(MG.inst.g.state ?? DB.fakeState, (MG.inst.g.state ?? DB.fakeState).ship)), "status.corrodeAlt"),
+		new(typeof(DizzyIsaacArtifact), [Deck.dizzy, Deck.goat], I18n.DizzyIsaacArtifactName, I18n.DizzyIsaacArtifactTooltip, "DizzyIsaac", "action.spawn", new(() => StatusMeta.GetTooltips(Instance.KokoroApi.OxidationStatus.Status, 1)[0]), "status.corrodeAlt"),
 		new(typeof(DizzyMaxArtifact), [Deck.dizzy, Deck.hacker], I18n.DizzyMaxArtifactName, I18n.DizzyMaxArtifactTooltip, "DizzyMax", "status.shieldAlt", new TTGlossary("status.boost", 1)),
 		new(typeof(DizzyPeriArtifact), [Deck.dizzy, Deck.peri], I18n.DizzyPeriArtifactName, I18n.DizzyPeriArtifactTooltip, "DizzyPeri", "status.shieldAlt", "status.overdriveAlt", "status.perfectShield"),
 		new(typeof(DizzyRiggsArtifact), [Deck.dizzy, Deck.riggs], I18n.DizzyRiggsArtifactName, I18n.DizzyRiggsArtifactTooltip, "DizzyRiggs", "status.shieldAlt", "status.evade"),

@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Shockah.Kokoro;
+using System;
 
 namespace Shockah.DuoArtifacts;
 
-public sealed class DizzyPeriArtifact : DuoArtifact, IStatusLogicHook, IHookPriority
+public sealed class DizzyPeriArtifact : DuoArtifact, IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IHookPriority
 {
 	public override void OnTurnStart(State state, Combat combat)
 	{
 		base.OnTurnStart(state, combat);
 
-		int toSubtract = Math.Clamp(state.ship.Get(Status.overdrive), 0, state.ship.Get(Status.shield));
+		var toSubtract = Math.Clamp(state.ship.Get(Status.overdrive), 0, state.ship.Get(Status.shield));
 		if (toSubtract > 0)
 			combat.QueueImmediate(new AStatus
 			{
@@ -30,18 +31,18 @@ public sealed class DizzyPeriArtifact : DuoArtifact, IStatusLogicHook, IHookPrio
 	public double HookPriority
 		=> double.MinValue;
 
-	public int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount)
+	public int ModifyStatusChange(IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusChangeArgs args)
 	{
-		if (status != Status.shield)
-			return newAmount;
+		if (args.Status != Status.shield)
+			return args.NewAmount;
 
-		int maxShield = ship.GetMaxShield();
-		int overshield = Math.Max(0, newAmount - maxShield);
+		var maxShield = args.Ship.GetMaxShield();
+		var overshield = Math.Max(0, args.NewAmount - maxShield);
 		if (overshield <= 0)
-			return newAmount;
+			return args.NewAmount;
 
-		newAmount -= overshield;
-		combat.QueueImmediate(new AStatus
+		var newAmount = args.NewAmount - overshield;
+		args.Combat.QueueImmediate(new AStatus
 		{
 			status = Status.overdrive,
 			statusAmount = overshield,

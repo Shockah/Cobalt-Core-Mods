@@ -1,6 +1,8 @@
-﻿namespace Shockah.DuoArtifacts;
+﻿using Shockah.Kokoro;
 
-internal sealed class IsaacRiggsArtifact : DuoArtifact, IEvadeHook, IDroneShiftHook, IHookPriority
+namespace Shockah.DuoArtifacts;
+
+internal sealed class IsaacRiggsArtifact : DuoArtifact, IKokoroApi.IV2.IEvadeHookApi.IHook, IKokoroApi.IV2.IDroneShiftHookApi.IHook, IKokoroApi.IV2.IHookPriority
 {
 	public override void OnTurnStart(State state, Combat combat)
 	{
@@ -18,12 +20,12 @@ internal sealed class IsaacRiggsArtifact : DuoArtifact, IEvadeHook, IDroneShiftH
 	public double HookPriority
 		=> -100;
 
-	public bool? IsEvadePossible(State state, Combat combat, EvadeHookContext context)
-		=> state.ship.Get(Status.droneShift) > 0 ? true : null;
+	public bool? IsEvadePossible(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePossibleArgs args)
+		=> args.State.ship.Get(Status.droneShift) > 0 ? true : null;
 
-	public void PayForEvade(State state, Combat combat, int direction)
+	public void PayForEvade(IKokoroApi.IV2.IEvadeHookApi.IHook.IPayForEvadeArgs args)
 	{
-		combat.QueueImmediate(new AStatus
+		args.Combat.QueueImmediate(new AStatus
 		{
 			status = Status.droneShift,
 			statusAmount = -1,
@@ -32,12 +34,12 @@ internal sealed class IsaacRiggsArtifact : DuoArtifact, IEvadeHook, IDroneShiftH
 		});
 	}
 
-	public bool? IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
-		=> state.ship.Get(Status.evade) > 0 ? true : null;
+	public bool? IsDroneShiftPossible(IKokoroApi.IV2.IDroneShiftHookApi.IHook.IIsDroneShiftPossibleArgs args)
+		=> args.State.ship.Get(Status.evade) > 0 ? true : null;
 
-	public void PayForDroneShift(State state, Combat combat, int direction)
+	public void PayForDroneShift(IKokoroApi.IV2.IDroneShiftHookApi.IHook.IPayForDroneShiftArgs args)
 	{
-		combat.QueueImmediate(new AStatus
+		args.Combat.QueueImmediate(new AStatus
 		{
 			status = Status.evade,
 			statusAmount = -1,

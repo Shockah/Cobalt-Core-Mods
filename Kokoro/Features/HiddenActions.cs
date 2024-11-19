@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
+using Newtonsoft.Json;
 using Nickel;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
+	#region V1
+	
 	partial class ActionApiImplementation
 	{
 		public bool TryGetHiddenAction(CardAction maybeSpontanenousAction, [MaybeNullWhen(false)] out CardAction action)
@@ -24,6 +27,22 @@ partial class ApiImplementation
 		
 		public CardAction MakeHidden(CardAction action, bool showTooltips = false)
 			=> new AHidden { Action = action, ShowTooltips = showTooltips };
+	}
+	
+	#endregion
+	
+	partial class V2Api
+	{
+		public IKokoroApi.IV2.IHiddenActionsApi HiddenActions { get; } = new HiddenActionsApi();
+		
+		public sealed class HiddenActionsApi : IKokoroApi.IV2.IHiddenActionsApi
+		{
+			public IKokoroApi.IV2.IHiddenActionsApi.IHiddenAction? AsAction(CardAction action)
+				=> action as IKokoroApi.IV2.IHiddenActionsApi.IHiddenAction;
+
+			public IKokoroApi.IV2.IHiddenActionsApi.IHiddenAction MakeAction(CardAction action)
+				=> new AHidden { Action = action };
+		}
 	}
 }
 
@@ -78,18 +97,20 @@ internal sealed class HiddenActionManager : IKokoroApi.IV2.IWrappedActionsApi.IH
 	}
 }
 
-public sealed class AHidden : CardAction
+public sealed class AHidden : CardAction, IKokoroApi.IV2.IHiddenActionsApi.IHiddenAction
 {
-	public CardAction? Action;
-	public bool ShowTooltips;
+	public required CardAction Action { get; set; }
+	public bool ShowTooltips { get; set; }
+
+	[JsonIgnore]
+	public CardAction AsCardAction
+		=> this;
 
 	public override void Begin(G g, State s, Combat c)
 	{
 		base.Begin(g, s, c);
 		timer = 0;
 
-		if (Action is null)
-			return;
 		Action.whoDidThis = whoDidThis;
 		c.QueueImmediate(Action);
 	}
@@ -99,4 +120,16 @@ public sealed class AHidden : CardAction
 
 	public override bool CanSkipTimerIfLastEvent()
 		=> Action?.CanSkipTimerIfLastEvent() ?? base.CanSkipTimerIfLastEvent();
+	
+	public IKokoroApi.IV2.IHiddenActionsApi.IHiddenAction SetAction(CardAction value)
+	{
+		Action = value;
+		return this;
+	}
+	
+	public IKokoroApi.IV2.IHiddenActionsApi.IHiddenAction SetShowTooltips(bool value)
+	{
+		ShowTooltips = value;
+		return this;
+	}
 }

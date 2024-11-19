@@ -44,7 +44,7 @@ internal sealed class DizzyIsaacArtifact : DuoArtifact
 	private static void ASpawn_Begin_Finalizer()
 		=> DestroyingShip = null;
 
-	private static void StuffBase_DoDestroyedEffect_Postfix(StuffBase __instance)
+	private static void StuffBase_DoDestroyedEffect_Postfix()
 	{
 		if (DestroyingShip is null)
 			return;
@@ -56,7 +56,7 @@ internal sealed class DizzyIsaacArtifact : DuoArtifact
 		artifact.Pulse();
 		(MG.inst.g.state?.route as Combat)?.Queue(new AStatus
 		{
-			status = (Status)Instance.KokoroApi.OxidationStatus.Id!.Value,
+			status = Instance.KokoroApi.OxidationStatus.Status,
 			statusAmount = 1,
 			targetPlayer = DestroyingShip.isPlayerShip
 		});
