@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -28,34 +29,34 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			=> chance * (ship.Get((Status)Instance.DoublersLuckStatus.Id!.Value) + 1);
 	}
 
-	private sealed class SmugClampStatusLogicHook : IStatusLogicHook
+	private sealed class SmugClampStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
 	{
-		public int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount)
+		public int ModifyStatusChange(IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusChangeArgs args)
 		{
-			if (status != (Status)Instance.SmugStatus.Id!.Value)
-				return newAmount;
-			return Math.Clamp(newAmount, Instance.Api.GetMinSmug(ship), Instance.Api.GetMaxSmug(ship) + 1);
+			if (args.Status != (Status)Instance.SmugStatus.Id!.Value)
+				return args.NewAmount;
+			return Math.Clamp(args.NewAmount, Instance.Api.GetMinSmug(args.Ship), Instance.Api.GetMaxSmug(args.Ship) + 1);
 		}
 	}
 
-	private sealed class DoubleTimeSmugFreezeStatusLogicHook : IStatusLogicHook
+	private sealed class DoubleTimeSmugFreezeStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
 	{
-		public int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount)
+		public int ModifyStatusChange(IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusChangeArgs args)
 		{
-			if (status != (Status)Instance.SmugStatus.Id!.Value)
-				return newAmount;
-			return ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0 ? oldAmount : newAmount;
+			if (args.Status != (Status)Instance.SmugStatus.Id!.Value)
+				return args.NewAmount;
+			return args.Ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0 ? args.OldAmount : args.NewAmount;
 		}
 	}
 
 	private static ModEntry Instance => ModEntry.Instance;
 
-	internal SmugStatusManager()
+	internal SmugStatusManager() : base(Instance.Package.Manifest.UniqueName)
 	{
 		Register(new ExtraApologiesSmugHook(), 0);
 		Register(new DoublersLuckSmugHook(), -100);
-		Instance.KokoroApi.RegisterStatusLogicHook(new SmugClampStatusLogicHook(), double.MinValue);
-		Instance.KokoroApi.RegisterStatusLogicHook(new DoubleTimeSmugFreezeStatusLogicHook(), -1000);
+		Instance.KokoroApi.StatusLogic.RegisterHook(new SmugClampStatusLogicHook(), double.MinValue);
+		Instance.KokoroApi.StatusLogic.RegisterHook(new DoubleTimeSmugFreezeStatusLogicHook(), -1000);
 	}
 
 	internal static void ApplyPatches(Harmony harmony)
@@ -103,7 +104,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			return 1; // oversmug
 
 		var chance = smug.Value < Instance.Api.GetMinSmug(ship) ? Constants.BotchChances[0] : Constants.BotchChances[smug.Value - Instance.Api.GetMinSmug(ship)];
-		foreach (var hook in GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 			chance = hook.ModifySmugBotchChance(state, ship, card, chance);
 		return Math.Clamp(chance, 0, 1);
 	}
@@ -119,7 +120,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			return 0; // oversmug
 
 		var chance = smug.Value < Instance.Api.GetMinSmug(ship) ? Constants.DoubleChances[0] : Constants.DoubleChances[smug.Value - Instance.Api.GetMinSmug(ship)];
-		foreach (var hook in GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 			chance = hook.ModifySmugDoubleChance(state, ship, card, chance);
 		return Math.Clamp(chance, 0, 1);
 	}
@@ -144,7 +145,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 	public static Card GenerateAndTrackApology(State state, Combat combat, Rand rng, bool forDual = false, Type? ignoringType = null)
 	{
-		var timesApologyWasGiven = Instance.KokoroApi.ObtainExtensionData<Dictionary<string, int>>(combat, "TimesApologyWasGiven");
+		var timesApologyWasGiven = Instance.Helper.ModData.ObtainModData<Dictionary<string, int>>(combat, "TimesApologyWasGiven");
 		var misprintedApologyArtifact = state.EnumerateAllArtifacts().OfType<MisprintedApologyArtifact>().FirstOrDefault();
 
 		ApologyCard apology;
@@ -283,7 +284,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 				});
 
 				var apologies = swing;
-				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
+				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 					apologies = hook.ModifyApologyAmountForBotchingBySmug(state, combat, card, apologies);
 
 				actions.AddRange(Enumerable.Range(0, apologies).Select(_ => new AAddCard
@@ -292,14 +293,14 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 					destination = CardDestination.Hand
 				}));
 
-				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
+				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 					hook.OnCardBotchedBySmug(state, combat, card);
 				Instance.NarrativeManager.DidBotchCard = true;
 				break;
 			case SmugResult.Double:
 				var toAdd = card.GetActionsOverridden(state, combat);
 
-				var isSpawnAction = actions.SelectMany(Instance.KokoroApi.Actions.GetWrappedCardActionsRecursively).Any(a => a is ASpawn);
+				var isSpawnAction = actions.SelectMany(Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively).Any(a => a is ASpawn);
 				if (isSpawnAction)
 					toAdd.Add(new ADroneMove { dir = 1 });
 
@@ -318,7 +319,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 				actions.InsertRange(0, toAdd);
 
-				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
+				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 					hook.OnCardDoubledBySmug(state, combat, card);
 				Instance.NarrativeManager.DidDoubleCard = true;
 				Instance.NarrativeManager.DidDoubleLaunchAction = isSpawnAction;

@@ -50,7 +50,7 @@ public sealed class SogginsCatArtifact : Artifact, IRegisterableArtifact, ISmugH
 
 	public void OnCardBotchedBySmug(State state, Combat combat, Card card)
 	{
-		if (Instance.KokoroApi.GetCardsEverywhere(state).Count(c => c.GetMeta().deck == Deck.colorless) < 7)
+		if (state.deck.Concat(combat.hand).Concat(combat.discard).Concat(combat.exhausted).Count(c => c.GetMeta().deck == Deck.colorless) < 7)
 			return;
 
 		combat.Queue(new AEnergy

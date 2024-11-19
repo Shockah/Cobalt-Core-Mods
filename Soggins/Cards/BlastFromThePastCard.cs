@@ -1,5 +1,6 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.IO;
@@ -54,25 +55,24 @@ public sealed class BlastFromThePastCard : Card, IRegisterableCard, IFrogproofCa
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		bool backwards = upgrade != Upgrade.A;
+		var backwards = upgrade != Upgrade.A;
 		List<CardAction> actions = [];
 
 		if (upgrade == Upgrade.None)
-			actions.Add(Instance.KokoroApi.ConditionalActions.Make(
-				Instance.KokoroApi.ConditionalActions.Equation(
-					Instance.KokoroApi.ConditionalActions.Status((Status)Instance.SmugStatus.Id!.Value),
-					Instance.Api.GetMinSmug(s.ship) == -3 ? IKokoroApi.IConditionalActionApi.EquationOperator.Equal : IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual,
-					Instance.KokoroApi.ConditionalActions.Constant(-3),
-					IKokoroApi.IConditionalActionApi.EquationStyle.State,
-					hideOperator: Instance.Api.GetMinSmug(s.ship) == -3
-				),
+			actions.Add(Instance.KokoroApi.Conditional.MakeAction(
+				Instance.KokoroApi.Conditional.Equation(
+					Instance.KokoroApi.Conditional.Status((Status)Instance.SmugStatus.Id!.Value),
+					Instance.Api.GetMinSmug(s.ship) == -3 ? IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal : IKokoroApi.IV2.IConditionalApi.EquationOperator.LessThanOrEqual,
+					Instance.KokoroApi.Conditional.Constant(-3),
+					IKokoroApi.IV2.IConditionalApi.EquationStyle.State
+				).SetHideOperator(Instance.Api.GetMinSmug(s.ship) == -3),
 				new AStatus
 				{
 					status = Status.backwardsMissiles,
 					statusAmount = 1,
 					targetPlayer = true
 				}
-			));
+			).AsCardAction);
 
 		actions.Add(new ASpawn
 		{

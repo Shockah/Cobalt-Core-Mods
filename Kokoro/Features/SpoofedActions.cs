@@ -1,31 +1,35 @@
 ﻿using HarmonyLib;
+using Newtonsoft.Json;
 using Nickel;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace Shockah.Kokoro;
 
 partial class ApiImplementation
 {
+	#region V1
+	
 	partial class ActionApiImplementation
 	{
-		public bool TryGetSpoofedAction(CardAction maybeSpoofedAction, [MaybeNullWhen(false)] out CardAction renderAction, [MaybeNullWhen(false)] out CardAction realAction)
-		{
-			if (maybeSpoofedAction is not ASpoofed spoofedAction)
-			{
-				renderAction = null;
-				realAction = null;
-				return false;
-			}
-
-			renderAction = spoofedAction.RenderAction;
-			realAction = spoofedAction.RealAction;
-			return true;
-		}
-		
 		public CardAction MakeSpoofed(CardAction renderAction, CardAction realAction)
 			=> new ASpoofed { RenderAction = renderAction, RealAction = realAction };
+	}
+	
+	#endregion
+	
+	partial class V2Api
+	{
+		public IKokoroApi.IV2.ISpoofedActionsApi SpoofedActions { get; } = new SpoofedActionsApi();
+		
+		public sealed class SpoofedActionsApi : IKokoroApi.IV2.ISpoofedActionsApi
+		{
+			public IKokoroApi.IV2.ISpoofedActionsApi.ISpoofedAction? AsAction(CardAction action)
+				=> action as IKokoroApi.IV2.ISpoofedActionsApi.ISpoofedAction;
+
+			public IKokoroApi.IV2.ISpoofedActionsApi.ISpoofedAction MakeAction(CardAction renderAction, CardAction realAction)
+				=> new ASpoofed { RenderAction = renderAction, RealAction = realAction };
+		}
 	}
 }
 
@@ -66,10 +70,14 @@ internal sealed class SpoofedActionManager : IWrappedActionHook
 	}
 }
 
-public sealed class ASpoofed : CardAction
+public sealed class ASpoofed : CardAction, IKokoroApi.IV2.ISpoofedActionsApi.ISpoofedAction
 {
-	public required CardAction RenderAction;
-	public required CardAction RealAction;
+	public required CardAction RenderAction { get; set; }
+	public required CardAction RealAction { get; set; }
+
+	[JsonIgnore]
+	public CardAction AsCardAction
+		=> this;
 
 	public override void Begin(G g, State s, Combat c)
 	{
@@ -88,4 +96,14 @@ public sealed class ASpoofed : CardAction
 
 	public override bool CanSkipTimerIfLastEvent()
 		=> RealAction?.CanSkipTimerIfLastEvent() ?? base.CanSkipTimerIfLastEvent();
+	
+	public IKokoroApi.IV2.ISpoofedActionsApi.ISpoofedAction SetRenderAction(CardAction value)
+	{
+		throw new System.NotImplementedException();
+	}
+
+	public IKokoroApi.IV2.ISpoofedActionsApi.ISpoofedAction SetRealAction(CardAction value)
+	{
+		throw new System.NotImplementedException();
+	}
 }

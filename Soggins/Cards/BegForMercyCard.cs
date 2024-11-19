@@ -1,5 +1,6 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.IO;
@@ -52,19 +53,18 @@ public sealed class BegForMercyCard : Card, IRegisterableCard, IFrogproofCard
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			Instance.KokoroApi.ConditionalActions.Make(
-				Instance.KokoroApi.ConditionalActions.Equation(
-					Instance.KokoroApi.ConditionalActions.Status((Status)Instance.SmugStatus.Id!.Value),
-					Instance.Api.GetMinSmug(s.ship) == GetRequiredSmug() ? IKokoroApi.IConditionalActionApi.EquationOperator.Equal : IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual,
-					Instance.KokoroApi.ConditionalActions.Constant(GetRequiredSmug()),
-					IKokoroApi.IConditionalActionApi.EquationStyle.State,
-					hideOperator: Instance.Api.GetMinSmug(s.ship) == GetRequiredSmug()
-				),
+			Instance.KokoroApi.Conditional.MakeAction(
+				Instance.KokoroApi.Conditional.Equation(
+					Instance.KokoroApi.Conditional.Status((Status)Instance.SmugStatus.Id!.Value),
+					Instance.Api.GetMinSmug(s.ship) == GetRequiredSmug() ? IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal : IKokoroApi.IV2.IConditionalApi.EquationOperator.LessThanOrEqual,
+					Instance.KokoroApi.Conditional.Constant(GetRequiredSmug()),
+					IKokoroApi.IV2.IConditionalApi.EquationStyle.State
+				).SetHideOperator(Instance.Api.GetMinSmug(s.ship) == GetRequiredSmug()),
 				new AHeal
 				{
 					healAmount = 1,
 					targetPlayer = true
 				}
-			)
+			).AsCardAction
 		];
 }

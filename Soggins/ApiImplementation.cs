@@ -44,16 +44,16 @@ public sealed class ApiImplementation : ISogginsApi
 		=> GetSmugTooltip();
 
 	public bool IsRunWithSmug(State state)
-		=> Instance.KokoroApi.TryGetExtensionData(state, IsRunWithSmugKey, out bool value) && value;
+		=> Instance.Helper.ModData.GetModDataOrDefault<bool>(state, IsRunWithSmugKey);
 
 	public bool IsSmugEnabled(State state, Ship ship)
-		=> Instance.KokoroApi.TryGetExtensionData(ship, IsSmugEnabledKey, out bool value) && value;
+		=> Instance.Helper.ModData.GetModDataOrDefault<bool>(ship, IsSmugEnabledKey);
 
 	public void SetSmugEnabled(State state, Ship ship, bool enabled = true)
 	{
 		if (enabled && ship == state.ship)
-			Instance.KokoroApi.SetExtensionData(state, IsRunWithSmugKey, true);
-		Instance.KokoroApi.SetExtensionData(ship, IsSmugEnabledKey, enabled);
+			Instance.Helper.ModData.SetModData(state, IsRunWithSmugKey, true);
+		Instance.Helper.ModData.SetModData(ship, IsSmugEnabledKey, enabled);
 	}
 
 	public int GetMinSmug(Ship ship)

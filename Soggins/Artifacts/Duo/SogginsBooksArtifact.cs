@@ -58,9 +58,7 @@ public sealed class SogginsBooksArtifact : Artifact, IRegisterableArtifact
 		if (combat.turn == 0)
 			return;
 
-		var count = Instance.KokoroApi
-			.GetCardsEverywhere(state, hand: false, exhaustPile: false)
-			.Count(c => c is ApologyCard);
+		var count = state.deck.Concat(combat.discard).Count(c => c is ApologyCard);
 
 		for (var i = 0; i < count / 2; i++)
 			combat.Queue(new AStatus

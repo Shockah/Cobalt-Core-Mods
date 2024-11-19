@@ -1,5 +1,6 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.IO;
@@ -48,49 +49,37 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				Instance.KokoroApi.ConditionalActions.Make(
-					Instance.KokoroApi.ConditionalActions.Equation(
-						Instance.KokoroApi.ConditionalActions.Status((Status)Instance.SmugStatus.Id!.Value),
-						Instance.Api.GetMinSmug(s.ship) == -2 ? IKokoroApi.IConditionalActionApi.EquationOperator.Equal : IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual,
-						Instance.KokoroApi.ConditionalActions.Constant(-2),
-						IKokoroApi.IConditionalActionApi.EquationStyle.State,
-						hideOperator: Instance.Api.GetMinSmug(s.ship) == -2
-					),
-					new AAttack
-					{
-						damage = GetDmg(s, 3)
-					}
-				),
-				Instance.KokoroApi.ConditionalActions.Make(
-					Instance.KokoroApi.ConditionalActions.Equation(
-						Instance.KokoroApi.ConditionalActions.Status((Status)Instance.SmugStatus.Id!.Value),
-						Instance.Api.GetMinSmug(s.ship) == -3 ? IKokoroApi.IConditionalActionApi.EquationOperator.Equal : IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual,
-						Instance.KokoroApi.ConditionalActions.Constant(-3),
-						IKokoroApi.IConditionalActionApi.EquationStyle.State,
-						hideOperator: Instance.Api.GetMinSmug(s.ship) == -3
-					),
-					new AAttack
-					{
-						damage = GetDmg(s, 2)
-					}
-				),
+				Instance.KokoroApi.Conditional.MakeAction(
+					Instance.KokoroApi.Conditional.Equation(
+						Instance.KokoroApi.Conditional.Status((Status)Instance.SmugStatus.Id!.Value),
+						Instance.Api.GetMinSmug(s.ship) == -2 ? IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal : IKokoroApi.IV2.IConditionalApi.EquationOperator.LessThanOrEqual,
+						Instance.KokoroApi.Conditional.Constant(-2),
+						IKokoroApi.IV2.IConditionalApi.EquationStyle.State
+					).SetHideOperator(Instance.Api.GetMinSmug(s.ship) == -2),
+					new AAttack { damage = GetDmg(s, 3) }
+				).AsCardAction,
+				Instance.KokoroApi.Conditional.MakeAction(
+					Instance.KokoroApi.Conditional.Equation(
+						Instance.KokoroApi.Conditional.Status((Status)Instance.SmugStatus.Id!.Value),
+						Instance.Api.GetMinSmug(s.ship) == -3 ? IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal : IKokoroApi.IV2.IConditionalApi.EquationOperator.LessThanOrEqual,
+						Instance.KokoroApi.Conditional.Constant(-3),
+						IKokoroApi.IV2.IConditionalApi.EquationStyle.State
+					).SetHideOperator(Instance.Api.GetMinSmug(s.ship) == -3),
+					new AAttack { damage = GetDmg(s, 2) }
+				).AsCardAction,
 				new ADummyAction(),
 				new ADummyAction()
 			],
 			_ => [
-				Instance.KokoroApi.ConditionalActions.Make(
-					Instance.KokoroApi.ConditionalActions.Equation(
-						Instance.KokoroApi.ConditionalActions.Status((Status)Instance.SmugStatus.Id!.Value),
-						Instance.Api.GetMinSmug(s.ship) == -3 ? IKokoroApi.IConditionalActionApi.EquationOperator.Equal : IKokoroApi.IConditionalActionApi.EquationOperator.LessThanOrEqual,
-						Instance.KokoroApi.ConditionalActions.Constant(-3),
-						IKokoroApi.IConditionalActionApi.EquationStyle.State,
-						hideOperator: Instance.Api.GetMinSmug(s.ship) == -3
-					),
-					new AAttack
-					{
-						damage = GetDmg(s, 5)
-					}
-				),
+				Instance.KokoroApi.Conditional.MakeAction(
+					Instance.KokoroApi.Conditional.Equation(
+						Instance.KokoroApi.Conditional.Status((Status)Instance.SmugStatus.Id!.Value),
+						Instance.Api.GetMinSmug(s.ship) == -3 ? IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal : IKokoroApi.IV2.IConditionalApi.EquationOperator.LessThanOrEqual,
+						Instance.KokoroApi.Conditional.Constant(-3),
+						IKokoroApi.IV2.IConditionalApi.EquationStyle.State
+					).SetHideOperator(Instance.Api.GetMinSmug(s.ship) == -3),
+					new AAttack { damage = GetDmg(s, 5) }
+				).AsCardAction,
 				new ADummyAction(),
 				new ADummyAction()
 			]

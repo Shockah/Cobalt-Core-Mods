@@ -52,19 +52,15 @@ public sealed class DoSomethingCard : Card, IRegisterableCard
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new ADelay
-			{
-				time = -0.5
-			},
-			Instance.KokoroApi.Actions.MakePlayRandomCardsFromAnywhere(
-				cardIds: Instance.KokoroApi.GetCardsEverywhere(
-					state: s,
-					hand: false,
-					drawPile: upgrade != Upgrade.A,
-					discardPile: upgrade != Upgrade.None,
-					exhaustPile: upgrade == Upgrade.B
-				).Where(c => c.Key() != Key()).Select(c => c.uuid),
-				amount: upgrade == Upgrade.B ? 2 : 1
-			)
+			new ADelay { time = -0.5 },
+			Instance.KokoroApi.PlayCardsFromAnywhere.MakeAction(
+				Enumerable.Empty<Card>()
+					.Concat(upgrade != Upgrade.A ? s.deck : [])
+					.Concat(upgrade != Upgrade.None ? c.discard : [])
+					.Concat(upgrade == Upgrade.B ? c.exhausted : [])
+					.Where(c => c.Key() != Key())
+					.Select(c => c.uuid),
+				upgrade == Upgrade.B ? 2 : 1
+			).AsCardAction
 		];
 }

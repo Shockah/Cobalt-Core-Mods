@@ -76,20 +76,20 @@ public sealed class ImTryingCard : Card, IRegisterableCard, IFrogproofCard
 		});
 		actions.Add(Instance.KokoroApi.Actions.MakeExhaustEntireHandImmediate());
 
-		actions.Add(ModEntry.Instance.KokoroApi.Actions.MakeSpoofed(
-			renderAction: new AAddCard
+		actions.Add(ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
+			new AAddCard
 			{
 				card = new RandomPlaceholderApologyCard(),
 				destination = CardDestination.Hand,
 				amount = cardsInHandAfterPlaying,
 				xHint = 1
 			},
-			realAction: new AAddApologyCard
+			new AAddApologyCard
 			{
 				Destination = CardDestination.Hand,
 				Amount = cardsInHandAfterPlaying
 			}
-		));
+		).AsCardAction);
 
 		return actions;
 	}

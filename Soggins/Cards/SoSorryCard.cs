@@ -53,37 +53,37 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 		if (upgrade == Upgrade.B)
 			amount *= 2;
 
-		actions.Add(ModEntry.Instance.KokoroApi.Actions.MakeSpoofed(
-			renderAction: new AAddCard
+		actions.Add(ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
+			new AAddCard
 			{
 				card = new RandomPlaceholderApologyCard(),
 				destination = CardDestination.Hand,
 				amount = amount,
 				xHint = 1
 			},
-			realAction: new AAddApologyCard
+			new AAddApologyCard
 			{
 				Destination = CardDestination.Hand,
 				Amount = amount
 			}
-		));
+		).AsCardAction);
 
 		if (upgrade == Upgrade.A)
-			actions.Add(ModEntry.Instance.KokoroApi.Actions.MakeSpoofed(
-				renderAction: new AAddCard
+			actions.Add(ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
+				new AAddCard
 				{
 					card = new RandomPlaceholderApologyCard(),
 					destination = CardDestination.Hand,
 					amount = 2,
 					omitFromTooltips = true
 				},
-				realAction: new AAddApologyCard
+				new AAddApologyCard
 				{
 					Destination = CardDestination.Hand,
 					Amount = 2,
 					omitFromTooltips = true
 				}
-			));
+			).AsCardAction);
 
 		while (actions.Count < 5)
 			actions.Add(new ADummyAction());

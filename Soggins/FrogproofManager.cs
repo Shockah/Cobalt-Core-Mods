@@ -3,11 +3,11 @@ using Shockah.Shared;
 
 namespace Shockah.Soggins;
 
-public sealed class FrogproofManager : HookManager<IFrogproofHook>
+internal sealed class FrogproofManager : HookManager<IFrogproofHook>
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	internal FrogproofManager()
+	public FrogproofManager() : base(Instance.Package.Manifest.UniqueName)
 	{
 		Register(FrogproofCardTraitFrogproofHook.Instance, 0);
 		Register(NonVanillaNonCharacterCardFrogproofHook.Instance, 1);
@@ -33,7 +33,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 
 	public FrogproofType GetFrogproofType(State state, Combat? combat, Card card, FrogproofHookContext context)
 	{
-		foreach (var hook in GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 		{
 			var hookResult = hook.GetFrogproofType(state, combat, card, context);
 			if (hookResult == FrogproofType.None)
@@ -46,7 +46,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 
 	public IFrogproofHook? GetHandlingHook(State state, Combat? combat, Card card, FrogproofHookContext context = FrogproofHookContext.Action)
 	{
-		foreach (var hook in GetHooksWithProxies(Instance.KokoroApi, state.EnumerateAllArtifacts()))
+		foreach (var hook in GetHooksWithProxies(Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 		{
 			var hookResult = hook.GetFrogproofType(state, combat, card, context);
 			if (hookResult == FrogproofType.None)
@@ -69,7 +69,7 @@ public sealed class FrogproofManager : HookManager<IFrogproofHook>
 	}
 
 	private static void State_EndRun_Postfix(State __instance)
-		=> Instance.KokoroApi.RemoveExtensionData(__instance, ApiImplementation.IsRunWithSmugKey);
+		=> Instance.Helper.ModData.RemoveModData(__instance, ApiImplementation.IsRunWithSmugKey);
 }
 
 public sealed class FrogproofCardTraitFrogproofHook : IFrogproofHook

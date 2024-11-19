@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using Nickel.Legacy;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = null!;
-	internal IKokoroApi KokoroApi { get; private set; } = null!;
+	internal IKokoroApi.IV2 KokoroApi { get; private set; } = null!;
 	internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; }
 	private Harmony Harmony { get; set; } = null!;
 
@@ -32,7 +33,8 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	public DirectoryInfo? GameRootFolder { get; set; }
 	public DirectoryInfo? ModRootFolder { get; set; }
 	public ILogger? Logger { get; set; }
-	public IModHelper Helper { get; private set; } = null!;
+	internal IModHelper Helper { get; private set; } = null!;
+	internal IPluginPackage<Nickel.IModManifest> Package { get; private set; } = null!;
 
 	internal SmugStatusManager SmugStatusManager { get; private set; } = null!;
 	internal FrogproofManager FrogproofManager { get; private set; } = null!;
@@ -160,10 +162,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	public void BootMod(IModLoaderContact contact)
 	{
 		Instance = this;
-		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!;
-		KokoroApi.RegisterTypeForExtensionData(typeof(State));
-		KokoroApi.RegisterTypeForExtensionData(typeof(Combat));
-		KokoroApi.RegisterTypeForExtensionData(typeof(Ship));
+		KokoroApi = contact.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 		DuoArtifactsApi = contact.LoadedManifests.Any(m => m.Name == "Shockah.DuoArtifacts") ? contact.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts") : null;
 		Api = new();
 
@@ -558,6 +557,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
 	{
 		this.Helper = helper;
+		this.Package = package;
 
 		this.FrogproofTrait = helper.Content.Cards.RegisterTrait("Frogproof", new()
 		{
@@ -637,19 +637,19 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 				"APurpleApple.GenericArtifacts",
 				api => api.SetPaletteAction(
 					(Deck)SogginsDeck.Id!.Value,
-					_ => Instance.KokoroApi.Actions.MakeSpoofed(
-						renderAction: new AAddCard
+					_ => Instance.KokoroApi.SpoofedActions.MakeAction(
+						new AAddCard
 						{
 							card = new RandomPlaceholderApologyCard(),
 							destination = CardDestination.Hand,
 							amount = 1
 						},
-						realAction: new AAddApologyCard
+						new AAddApologyCard
 						{
 							Destination = CardDestination.Hand,
 							Amount = 1
 						}
-					),
+					).AsCardAction,
 					new TTText(I18n.PaletteTooltip)
 				)
 			);

@@ -1,14 +1,16 @@
-﻿namespace Shockah.Soggins;
+﻿using Shockah.Kokoro;
 
-internal sealed class StatusLogicManager : IStatusLogicHook
+namespace Shockah.Soggins;
+
+internal sealed class StatusLogicManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
 	internal StatusLogicManager()
 	{
-		Instance.KokoroApi.RegisterStatusLogicHook(this, 0);
+		Instance.KokoroApi.StatusLogic.RegisterHook(this);
 	}
 
-	public bool? IsAffectedByBoost(State state, Combat combat, Ship ship, Status status)
-		=> status == (Status)Instance.DoubleTimeStatus.Id!.Value || status == (Status)Instance.BotchesStatus.Id!.Value || status == (Status)Instance.SmugStatus.Id!.Value ? false : null;
+	public bool? IsAffectedByBoost(IKokoroApi.IV2.IStatusLogicApi.IHook.IIsAffectedByBoostArgs args)
+		=> args.Status == (Status)Instance.DoubleTimeStatus.Id!.Value || args.Status == (Status)Instance.BotchesStatus.Id!.Value || args.Status == (Status)Instance.SmugStatus.Id!.Value ? false : null;
 }

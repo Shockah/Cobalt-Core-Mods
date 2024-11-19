@@ -1,21 +1,22 @@
-﻿using System;
+﻿using Shockah.Kokoro;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Shockah.Soggins;
 
-internal sealed class StatusRenderManager : IStatusRenderHook
+internal sealed class StatusRenderManager : IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
 	internal StatusRenderManager()
 	{
-		Instance.KokoroApi.RegisterStatusRenderHook(this, double.MinValue);
+		Instance.KokoroApi.StatusRendering.RegisterHook(this, double.MinValue);
 	}
 
-	public IEnumerable<(Status Status, double Priority)> GetExtraStatusesToShow(State state, Combat combat, Ship ship)
+	public IEnumerable<(Status Status, double Priority)> GetExtraStatusesToShow(IKokoroApi.IV2.IStatusRenderingApi.IHook.IGetExtraStatusesToShowArgs args)
 	{
-		if (Instance.Api.GetSmug(state, ship) is not null)
+		if (Instance.Api.GetSmug(args.State, args.Ship) is not null)
 			yield return (Status: (Status)Instance.SmugStatus.Id!.Value, Priority: 10);
 	}
 
@@ -39,7 +40,7 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 		var goodColor = Colors.cheevoGold;
 		if (Instance.Api.IsOversmug(state, ship))
 		{
-			var f = Math.Sin(Instance.KokoroApi.TotalGameTime.TotalSeconds * Math.PI * 2) * 0.5 + 0.5;
+			var f = Math.Sin(MG.inst.g.time * Math.PI * 2) * 0.5 + 0.5;
 			goodColor = Color.Lerp(Colors.downside, Colors.white, f);
 		}
 
@@ -58,7 +59,7 @@ internal sealed class StatusRenderManager : IStatusRenderHook
 			else if (smug > 0 && smugIndex <= smug && smugIndex > 0)
 				colors[barIndex] = goodColor;
 			else
-				colors[barIndex] = Instance.KokoroApi.DefaultInactiveStatusBarColor;
+				colors[barIndex] = Instance.KokoroApi.StatusRendering.DefaultInactiveStatusBarColor;
 		}
 		return (colors, null);
 	}

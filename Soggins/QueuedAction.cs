@@ -6,8 +6,6 @@ namespace Shockah.Soggins;
 
 internal sealed class QueuedAction
 {
-	private static ModEntry Instance => ModEntry.Instance;
-
 	private static readonly List<QueuedAction> QueuedActions = [];
 
 	public Action? Action { get; set; }
@@ -21,7 +19,7 @@ internal sealed class QueuedAction
 	{
 		foreach (var action in QueuedActions.ToList())
 		{
-			if (action.WaitForTotalGameTime is { } waitForTotalGameTime && Instance.KokoroApi.TotalGameTime.TotalSeconds < waitForTotalGameTime)
+			if (action.WaitForTotalGameTime is { } waitForTotalGameTime && MG.inst.g.time < waitForTotalGameTime)
 				continue;
 			if (action.WaitForCombatQueueDrain && (combat.cardActions.Count != 0 || combat.currentCardAction is not null))
 				continue;

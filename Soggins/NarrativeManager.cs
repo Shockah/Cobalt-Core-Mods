@@ -84,7 +84,7 @@ internal sealed class NarrativeManager
 			Narrative.SpeakBecauseOfAction(g, combat, $".{Instance.SogginsDeck.GlobalName}_Botch");
 			QueuedAction.Queue(new QueuedAction
 			{
-				WaitForTotalGameTime = responseDelay is null ? null : Instance.KokoroApi.TotalGameTime.TotalSeconds + responseDelay.Value,
+				WaitForTotalGameTime = responseDelay is null ? null : MG.inst.g.time + responseDelay.Value,
 				Action = () => Narrative.SpeakBecauseOfAction(g, combat, $".{Instance.SogginsDeck.GlobalName}_BotchResponse_{deckKey}")
 			});
 			return true;
@@ -96,7 +96,7 @@ internal sealed class NarrativeManager
 			Narrative.SpeakBecauseOfAction(g, combat, $".{Instance.SogginsDeck.GlobalName}_Double");
 			QueuedAction.Queue(new QueuedAction
 			{
-				WaitForTotalGameTime = responseDelay is null ? null : Instance.KokoroApi.TotalGameTime.TotalSeconds + responseDelay.Value,
+				WaitForTotalGameTime = responseDelay is null ? null : MG.inst.g.time + responseDelay.Value,
 				Action = () =>
 				{
 					var storyKey = $".{Instance.SogginsDeck.GlobalName}_Double{(wasLaunchAction ? "Launch" : "")}Response";

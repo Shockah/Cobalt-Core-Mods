@@ -49,16 +49,16 @@ public sealed class ExtraApologyCard : Card, IRegisterableCard
 				statusAmount = 1,
 				targetPlayer = true
 			},
-			ModEntry.Instance.KokoroApi.Actions.MakeSpoofed(
-				renderAction: new AAddCard
+			ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
+				new AAddCard
 				{
 					card = new RandomPlaceholderApologyCard(),
 					destination = CardDestination.Hand
 				},
-				realAction: new AAddApologyCard
+				new AAddApologyCard
 				{
 					Destination = CardDestination.Hand,
 				}
-			)
+			).AsCardAction,
 		];
 }
