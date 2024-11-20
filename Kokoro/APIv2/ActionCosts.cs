@@ -111,16 +111,16 @@ public partial interface IKokoroApi
 
 			public interface ICombinedCost : ICost
 			{
-				IReadOnlyList<ICost> Costs { get; set; }
+				IList<ICost> Costs { get; set; }
 				int Spacing { get; set; }
 
-				ICombinedCost SetCosts(IReadOnlyList<ICost> value);
+				ICombinedCost SetCosts(IEnumerable<ICost> value);
 				ICombinedCost SetSpacing(int value);
 			}
 
 			public interface IResourceCost : ICost
 			{
-				IReadOnlyList<IResource> PotentialResources { get; set; }
+				IList<IResource> PotentialResources { get; set; }
 				int Amount { get; set; }
 				ResourceCostDisplayStyle DisplayStyle { get; set; }
 				int Spacing { get; set; }
@@ -128,7 +128,7 @@ public partial interface IKokoroApi
 				Spr? CostSatisfiedIconOverride { get; set; }
 				Spr? CostUnsatisfiedIconOverride { get; set; }
 
-				IResourceCost SetPotentialResources(IReadOnlyList<IResource> value);
+				IResourceCost SetPotentialResources(IEnumerable<IResource> value);
 				IResourceCost SetAmount(int value);
 				IResourceCost SetDisplayStyle(ResourceCostDisplayStyle value);
 				IResourceCost SetSpacing(int value);
@@ -169,10 +169,10 @@ public partial interface IKokoroApi
 
 			IResourceCost? AsResourceCost(ICost cost);
 			IResourceCost MakeResourceCost(IResource resource, int amount);
-			IResourceCost MakeResourceCost(IReadOnlyList<IResource> potentialResources, int amount);
+			IResourceCost MakeResourceCost(IEnumerable<IResource> potentialResources, int amount);
 			
 			ICombinedCost? AsCombinedCost(ICost cost);
-			ICombinedCost MakeCombinedCost(IReadOnlyList<ICost> costs);
+			ICombinedCost MakeCombinedCost(IEnumerable<ICost> costs);
 
 			IMockPaymentEnvironment MakeMockPaymentEnvironment(IPaymentEnvironment? @default = null);
 			IPaymentEnvironment MakeStatePaymentEnvironment(State state, Combat combat);

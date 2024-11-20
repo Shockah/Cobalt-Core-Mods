@@ -302,20 +302,23 @@ partial class ApiImplementation
 			public IKokoroApi.IV2.IActionCostsApi.IResourceCost MakeResourceCost(IKokoroApi.IV2.IActionCostsApi.IResource resource, int amount)
 				=> MakeResourceCost([resource], amount);
 
-			public IKokoroApi.IV2.IActionCostsApi.IResourceCost MakeResourceCost(IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.IResource> potentialResources, int amount)
-				=> new ResourceActionCost
+			public IKokoroApi.IV2.IActionCostsApi.IResourceCost MakeResourceCost(IEnumerable<IKokoroApi.IV2.IActionCostsApi.IResource> potentialResources, int amount)
+			{
+				var potentialResourceList = potentialResources.ToList();
+				return new ResourceActionCost
 				{
-					PotentialResources = potentialResources,
+					PotentialResources = potentialResourceList,
 					Amount = amount,
 					DisplayStyle = amount >= 5 ? IKokoroApi.IV2.IActionCostsApi.ResourceCostDisplayStyle.IconAndNumber : IKokoroApi.IV2.IActionCostsApi.ResourceCostDisplayStyle.RepeatedIcon,
-					ShowOutgoingIcon = potentialResources.All(r => r is IKokoroApi.IV2.IActionCostsApi.IStatusResource { TargetPlayer: false }),
+					ShowOutgoingIcon = potentialResourceList.All(r => r is IKokoroApi.IV2.IActionCostsApi.IStatusResource { TargetPlayer: false }),
 				};
+			}
 
 			public IKokoroApi.IV2.IActionCostsApi.ICombinedCost? AsCombinedCost(IKokoroApi.IV2.IActionCostsApi.ICost cost)
 				=> cost as IKokoroApi.IV2.IActionCostsApi.ICombinedCost;
 
-			public IKokoroApi.IV2.IActionCostsApi.ICombinedCost MakeCombinedCost(IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.ICost> costs)
-				=> new CombinedResourceActionCost { Costs = costs };
+			public IKokoroApi.IV2.IActionCostsApi.ICombinedCost MakeCombinedCost(IEnumerable<IKokoroApi.IV2.IActionCostsApi.ICost> costs)
+				=> new CombinedResourceActionCost { Costs = costs.ToList() };
 
 			public IKokoroApi.IV2.IActionCostsApi.IMockPaymentEnvironment MakeMockPaymentEnvironment(IKokoroApi.IV2.IActionCostsApi.IPaymentEnvironment? @default = null)
 				=> new ActionCostMockPaymentEnvironment(@default);
@@ -797,10 +800,10 @@ internal sealed class AResourceCost : CardAction, IKokoroApi.IV2.IActionCostsApi
 
 internal sealed class ResourceActionCost : IKokoroApi.IV2.IActionCostsApi.IResourceCost
 {
-	public required IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.IResource> PotentialResources { get; set; }
+	public required IList<IKokoroApi.IV2.IActionCostsApi.IResource> PotentialResources { get; set; }
 	public required int Amount { get; set; }
 	public IKokoroApi.IV2.IActionCostsApi.ResourceCostDisplayStyle DisplayStyle { get; set; }
-	public int Spacing { get; set; } = -1;
+	public int Spacing { get; set; } = -3;
 	public bool ShowOutgoingIcon { get; set; }
 	
 	[JsonIgnore]
@@ -811,7 +814,7 @@ internal sealed class ResourceActionCost : IKokoroApi.IV2.IActionCostsApi.IResou
 
 	[JsonIgnore]
 	public IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.IResource> MonitoredResources
-		=> PotentialResources;
+		=> PotentialResources.ToList();
 	
 	public IEnumerable<IKokoroApi.IV2.IActionCostsApi.ITransaction> GetPossibleTransactions(IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.ICost> context, IKokoroApi.IV2.IActionCostsApi.ITransaction baseTransaction)
 	{
@@ -820,9 +823,10 @@ internal sealed class ResourceActionCost : IKokoroApi.IV2.IActionCostsApi.IResou
 
 		IEnumerable<IKokoroApi.IV2.IActionCostsApi.ITransaction> GetPossibleTransactions(IKokoroApi.IV2.IActionCostsApi.ITransaction currentTransaction, int amountLeft)
 		{
-			if (amountLeft <= 0 || PotentialResources.Count == 0)
+			if (amountLeft < 0)
+				yield break;
+			if (amountLeft == 0 || PotentialResources.Count == 0)
 				yield return currentTransaction;
-					
 			if (PotentialResources.Count == 1)
 				yield return currentTransaction.AddPayment(newContext, PotentialResources[0], amountLeft);
 
@@ -1004,9 +1008,9 @@ internal sealed class ResourceActionCost : IKokoroApi.IV2.IActionCostsApi.IResou
 	public List<Tooltip> GetTooltips(State state, Combat? combat)
 		=> PotentialResources.SelectMany(r => r.GetTooltips(state, combat, Amount)).ToList();
 	
-	public IKokoroApi.IV2.IActionCostsApi.IResourceCost SetPotentialResources(IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.IResource> value)
+	public IKokoroApi.IV2.IActionCostsApi.IResourceCost SetPotentialResources(IEnumerable<IKokoroApi.IV2.IActionCostsApi.IResource> value)
 	{
-		PotentialResources = value;
+		PotentialResources = value.ToList();
 		return this;
 	}
 
@@ -1138,7 +1142,7 @@ internal sealed class ActionCostEnergyResource : BaseActionCostResource, IKokoro
 
 internal sealed class CombinedResourceActionCost : IKokoroApi.IV2.IActionCostsApi.ICombinedCost
 {
-	public required IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.ICost> Costs { get; set; }
+	public required IList<IKokoroApi.IV2.IActionCostsApi.ICost> Costs { get; set; }
 	public int Spacing { get; set; } = 1;
 
 	[JsonIgnore]
@@ -1149,7 +1153,7 @@ internal sealed class CombinedResourceActionCost : IKokoroApi.IV2.IActionCostsAp
 	{
 		return GetAll(Costs, baseTransaction);
 		
-		IEnumerable<IKokoroApi.IV2.IActionCostsApi.ITransaction> GetAll(IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.ICost> costsLeft, IKokoroApi.IV2.IActionCostsApi.ITransaction currentTransaction)
+		IEnumerable<IKokoroApi.IV2.IActionCostsApi.ITransaction> GetAll(IList<IKokoroApi.IV2.IActionCostsApi.ICost> costsLeft, IKokoroApi.IV2.IActionCostsApi.ITransaction currentTransaction)
 		{
 			if (costsLeft.Count == 0)
 			{
@@ -1184,9 +1188,9 @@ internal sealed class CombinedResourceActionCost : IKokoroApi.IV2.IActionCostsAp
 	public List<Tooltip> GetTooltips(State state, Combat? combat)
 		=> Costs.SelectMany(c => c.GetTooltips(state, combat)).ToList();
 	
-	public IKokoroApi.IV2.IActionCostsApi.ICombinedCost SetCosts(IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.ICost> value)
+	public IKokoroApi.IV2.IActionCostsApi.ICombinedCost SetCosts(IEnumerable<IKokoroApi.IV2.IActionCostsApi.ICost> value)
 	{
-		Costs = value;
+		Costs = value.ToList();
 		return this;
 	}
 

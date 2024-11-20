@@ -31,6 +31,9 @@ internal class HookManager<THook>(
 				objects
 					.Select<object, (THook? Hook, double Priority)>(o =>
 					{
+						while (o is IProxyObject.IWithProxyTargetInstanceProperty proxyObject)
+							o = proxyObject.ProxyTargetInstance;
+						
 						if (!proxyManager.TryProxy(o, "AnyMod", proxyContext, out THook? hook))
 							return (Hook: null, Priority: 0);
 

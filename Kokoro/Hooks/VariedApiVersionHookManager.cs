@@ -41,6 +41,9 @@ internal class VariedApiVersionHookManager<TV2Hook, TV1Hook>(
 				objects
 					.Select<object, (TV2Hook? Hook, double Priority)>(o =>
 					{
+						while (o is IProxyObject.IWithProxyTargetInstanceProperty proxyObject)
+							o = proxyObject.ProxyTargetInstance;
+						
 						if (IsV2Hook(o.GetType()))
 						{
 							if (!proxyManager.TryProxy(o, "AnyMod", proxyContext, out TV2Hook? hook))
