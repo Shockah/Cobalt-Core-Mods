@@ -76,7 +76,7 @@ internal sealed class OxidationStatusManager : VariedApiVersionHookManager<IKoko
 		args.Value = BaseOxidationStatusMaxValue;
 		
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			args.Value = hook.ModifyOxidationRequirement(args);
+			args.Value += hook.ModifyOxidationRequirement(args);
 		return args.Value;
 	}
 
