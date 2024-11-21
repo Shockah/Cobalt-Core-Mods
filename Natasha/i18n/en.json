@@ -6,30 +6,6 @@
             "An <c=textBold>actual</c> hacker. Her cards often <c=keyword>exhaust after several uses</c> and <c=keyword>apply negative statuses to enemies</c>."
         ]
     },
-    "action": {
-        "ChangeLimitedUses": {
-            "Add": {
-                "name": {
-                    "positive": "Add Uses",
-                    "negative": "Remove Uses"
-                },
-                "description": {
-                    "positive": "Add <c=boldPink>{{Amount}}</c> <c=cardtrait>limited</c> uses to this card.",
-                    "negative": "Remove <c=boldPink>{{Amount}}</c> <c=cardtrait>limited</c> uses from this card."
-                }
-            },
-            "Set": {
-                "name": "Set Uses",
-                "description": "Set <c=cardtrait>limited</c> uses on this card to <c=boldPink>{{Amount}}</c>."
-            }
-        }
-    },
-    "x": {
-        "LimitedUses": {
-            "stateful": "<c=action>X</c> = Times this <c=cardtrait>limited</c> card can still be played, excluding this play (<c=boldPink>{{Count}}</c>).",
-            "stateless": "<c=action>X</c> = Times this <c=cardtrait>limited</c> card can still be played, excluding this play."
-        }
-    },
     "status": {
         "Reprogrammed": {
             "name": "Reprogrammed",
@@ -38,16 +14,6 @@
         "Deprogrammed": {
             "name": "Deprogrammed",
             "description": "The next <c=midrow>object</c> launched by this ship is replaced with an <c=midrow>Asteroid</c>."
-        }
-    },
-    "cardTrait": {
-        "Limited": {
-            "name": "Limited",
-            "description": {
-                "stateful": "This card can be used <c=boldPink>{{Count}}</c> times this combat before it gets <c=cardtrait>exhausted</c>.",
-                "outOfCombat": "This card can be used <c=boldPink>{{Count}}</c> times each combat before it gets <c=cardtrait>exhausted</c>.",
-                "withoutCard": "This card can be used multiple times each combat before it gets <c=cardtrait>exhausted</c>."
-            }
         }
     },
     "condition": {

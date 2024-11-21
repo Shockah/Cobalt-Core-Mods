@@ -1,11 +1,12 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using System.Collections.Generic;
 using System.Reflection;
 
 namespace Shockah.Natasha;
 
-internal sealed class RamDiskArtifact : Artifact, IRegisterable, INatashaHook
+internal sealed class RamDiskArtifact : Artifact, IRegisterable, IKokoroApi.IV2.ILimitedApi.IHook
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -25,13 +26,16 @@ internal sealed class RamDiskArtifact : Artifact, IRegisterable, INatashaHook
 
 	public override List<Tooltip>? GetExtraTooltips()
 		=> [
-			.. (Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? []),
+			.. (ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? []),
 			new TTGlossary("cardtrait.singleUse"),
 		];
 
-	public bool ModifyLimitedUses(State state, Card card, int baseUses, ref int uses)
+	public bool ModifyLimitedUses(IKokoroApi.IV2.ILimitedApi.IHook.IModifyLimitedUsesArgs args)
 	{
-		uses += 3;
+		args.Uses += 3;
 		return false;
 	}
+
+	public bool? IsSingleUseLimited(IKokoroApi.IV2.ILimitedApi.IHook.IIsSingleUseLimitedArgs args)
+		=> true;
 }

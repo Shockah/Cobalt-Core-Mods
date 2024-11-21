@@ -23,15 +23,15 @@ internal sealed class VoltageTuningCard : Card, IRegisterable, IHasCustomCardTra
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "VoltageTuning", "name"]).Localize
 		});
 
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 3);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 3);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> (HashSet<ICardTraitEntry>)(upgrade switch
 		{
 			Upgrade.A => [],
-			_ => [Limited.Trait],
+			_ => [ModEntry.Instance.KokoroApi.Limited.Trait],
 		});
 
 	public override CardData GetData(State state)
@@ -42,7 +42,7 @@ internal sealed class VoltageTuningCard : Card, IRegisterable, IHasCustomCardTra
 		{
 			Upgrade.B => [
 				new AStatus { targetPlayer = false, status = Status.boost, statusAmount = 2, disabled = flipped },
-				new ChangeLimitedUsesAction { CardId = uuid, Amount = -2, disabled = flipped },
+				ModEntry.Instance.KokoroApi.Limited.MakeChangeLimitedUsesAction(uuid, -2).AsCardAction.Disabled(flipped),
 				new ADummyAction(),
 				new AStatus { targetPlayer = false, status = Status.boost, statusAmount = -2, disabled = !flipped },
 			],
@@ -53,7 +53,7 @@ internal sealed class VoltageTuningCard : Card, IRegisterable, IHasCustomCardTra
 			],
 			_ => [
 				new AStatus { targetPlayer = false, status = Status.boost, statusAmount = 1, disabled = flipped },
-				new ChangeLimitedUsesAction { CardId = uuid, Amount = -2, disabled = flipped },
+				ModEntry.Instance.KokoroApi.Limited.MakeChangeLimitedUsesAction(uuid, -2).AsCardAction.Disabled(flipped),
 				new ADummyAction(),
 				new AStatus { targetPlayer = false, status = Status.boost, statusAmount = -1, disabled = !flipped },
 			]

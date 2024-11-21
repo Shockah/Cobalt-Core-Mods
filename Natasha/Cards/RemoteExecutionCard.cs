@@ -32,7 +32,7 @@ internal sealed class RemoteExecutionCard : Card, IRegisterable, IHasCustomCardT
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "RemoteExecution", "name"]).Localize
 		});
 
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 5);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 5);
 
 		ModEntry.Instance.KokoroApi.CardRendering.RegisterHook(new Hook());
 
@@ -45,7 +45,7 @@ internal sealed class RemoteExecutionCard : Card, IRegisterable, IHasCustomCardT
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> (HashSet<ICardTraitEntry>)(upgrade switch
 		{
-			Upgrade.B => [Limited.Trait],
+			Upgrade.B => [ModEntry.Instance.KokoroApi.Limited.Trait],
 			_ => [],
 		});
 

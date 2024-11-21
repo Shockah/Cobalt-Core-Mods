@@ -24,13 +24,13 @@ internal sealed class ReprogramCard : Card, IRegisterable, IHasCustomCardTraits
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Reprogram", "name"]).Localize
 		});
 
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 3);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 3);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> (HashSet<ICardTraitEntry>)(upgrade switch
 		{
-			Upgrade.B => [Limited.Trait],
+			Upgrade.B => [ModEntry.Instance.KokoroApi.Limited.Trait],
 			_ => [],
 		});
 

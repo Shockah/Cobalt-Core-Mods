@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Shockah.Natasha;
 
-internal sealed class KeyloggerArtifact : Artifact, IRegisterable, INatashaHook
+internal sealed class KeyloggerArtifact : Artifact, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -32,7 +32,7 @@ internal sealed class KeyloggerArtifact : Artifact, IRegisterable, INatashaHook
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> [.. (Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? [])];
+		=> [.. (ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? [])];
 
 	private static void AEndTurn_Begin_Prefix(State s, Combat c)
 	{
@@ -42,7 +42,7 @@ internal sealed class KeyloggerArtifact : Artifact, IRegisterable, INatashaHook
 			return;
 		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is KeyloggerArtifact) is not { } artifact)
 			return;
-		if (!c.hand.Any(card => ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, Limited.Trait)))
+		if (!c.hand.Any(card => ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, ModEntry.Instance.KokoroApi.Limited.Trait)))
 			return;
 
 		c.QueueImmediate(new Action { artifactPulse = artifact.Key() });
@@ -54,7 +54,7 @@ internal sealed class KeyloggerArtifact : Artifact, IRegisterable, INatashaHook
 		{
 			base.Begin(g, s, c);
 
-			var limitedCards = c.hand.Where(card => ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, Limited.Trait)).ToList();
+			var limitedCards = c.hand.Where(card => ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, ModEntry.Instance.KokoroApi.Limited.Trait)).ToList();
 			switch (limitedCards.Count)
 			{
 				case 0:
@@ -70,7 +70,7 @@ internal sealed class KeyloggerArtifact : Artifact, IRegisterable, INatashaHook
 
 			void HandleCard(Card card)
 			{
-				card.SetLimitedUses(card.GetLimitedUses(s) + 1);
+				ModEntry.Instance.KokoroApi.Limited.SetLimitedUses(s, card, ModEntry.Instance.KokoroApi.Limited.GetLimitedUses(s, card) + 1);
 				Audio.Play(Event.Status_PowerUp);
 			}
 		}

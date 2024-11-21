@@ -26,8 +26,8 @@ internal sealed class AccessViolationCard : Card, IRegisterable, IHasCustomCardT
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/AccessViolation.png"), StableSpr.cards_hacker).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "AccessViolation", "name"]).Localize
 		});
-
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
+		
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
 
 		ModEntry.Instance.KokoroApi.CardRendering.RegisterHook(new Hook());
 	}
@@ -35,7 +35,7 @@ internal sealed class AccessViolationCard : Card, IRegisterable, IHasCustomCardT
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> (HashSet<ICardTraitEntry>)(upgrade switch
 		{
-			Upgrade.B => [Limited.Trait],
+			Upgrade.B => [ModEntry.Instance.KokoroApi.Limited.Trait],
 			_ => [],
 		});
 
@@ -55,7 +55,7 @@ internal sealed class AccessViolationCard : Card, IRegisterable, IHasCustomCardT
 		public int ExtraUses;
 
 		public override List<Tooltip> GetTooltips(State s)
-			=> [.. Limited.Trait.Configuration.Tooltips?.Invoke(s, null) ?? []];
+			=> [.. ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(s, null) ?? []];
 
 		public override void Begin(G g, State s, Combat c)
 		{
@@ -64,15 +64,15 @@ internal sealed class AccessViolationCard : Card, IRegisterable, IHasCustomCardT
 			var index = 0;
 			foreach (var card in c.exhausted.ToList())
 			{
-				if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, Limited.Trait))
+				if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, ModEntry.Instance.KokoroApi.Limited.Trait))
 					continue;
 
 				c.exhausted.Remove(card);
 				card.waitBeforeMoving = index++ * 0.05;
 				c.SendCardToDiscard(s, card);
-
+				
 				if (ExtraUses != 0)
-					card.SetLimitedUses(card.GetLimitedUses(s) + ExtraUses);
+					ModEntry.Instance.KokoroApi.Limited.SetLimitedUses(s, card, ModEntry.Instance.KokoroApi.Limited.GetLimitedUses(s, card) + ExtraUses);
 			}
 
 			if (index != 0)

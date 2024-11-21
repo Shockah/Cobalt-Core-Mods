@@ -41,7 +41,7 @@ internal sealed class OperationAltairArtifact : Artifact, IRegisterable
 	public override List<Tooltip>? GetExtraTooltips()
 		=> [
 			new TTGlossary("cardtrait.singleUse"),
-			.. (Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? []),
+			.. (ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? []),
 		];
 
 	public override void OnCombatStart(State state, Combat combat)
@@ -115,7 +115,7 @@ internal sealed class OperationAltairArtifact : Artifact, IRegisterable
 		finally
 		{
 			foreach (var card in allCards)
-				card.ResetLimitedUses();
+				ModEntry.Instance.KokoroApi.Limited.ResetLimitedUses(state, card);
 
 			IsSimulating = false;
 			pfx.Restore();

@@ -46,6 +46,10 @@
 		"TimesPlayed": {
 			"stateful": "<c=action>X</c> = Times this card was played this combat, including this play (<c=boldPink>{{Count}}</c>).",
 			"stateless": "<c=action>X</c> = Times this card was played this combat, including this play."
+		},
+		"LimitedUses": {
+			"stateful": "<c=action>X</c> = Times this <c=cardtrait>limited</c> card can still be played, excluding this play (<c=boldPink>{{Count}}</c>).",
+			"stateless": "<c=action>X</c> = Times this <c=cardtrait>limited</c> card can still be played, excluding this play."
 		}
 	},
 	"resourceCost": {
@@ -174,6 +178,33 @@
 		"description": {
 			"stateful": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played (currently <c=boldPink>{{Current}}</c>/<c=boldPink>{{Steps}}</c>).",
 			"stateless": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played."
+		}
+	},
+	"timesPlayed": {
+		"condition": "times this card was played this combat (including this play)"
+	},
+	"limited": {
+		"name": "Limited",
+		"description": {
+			"stateful": "This card can be used <c=boldPink>{{Count}}</c> times this combat before it gets <c=cardtrait>exhausted</c>.",
+			"outOfCombat": "This card can be used <c=boldPink>{{Count}}</c> times each combat before it gets <c=cardtrait>exhausted</c>.",
+			"withoutCard": "This card can be used multiple times each combat before it gets <c=cardtrait>exhausted</c>."
+		},
+		"changeLimitedUses": {
+			"Add": {
+				"name": {
+					"positive": "Add Uses",
+					"negative": "Remove Uses"
+				},
+				"description": {
+					"positive": "Add <c=boldPink>{{Amount}}</c> <c=cardtrait>limited</c> uses to this card.",
+					"negative": "Remove <c=boldPink>{{Amount}}</c> <c=cardtrait>limited</c> uses from this card."
+				}
+			},
+			"Set": {
+				"name": "Set Uses",
+				"description": "Set <c=cardtrait>limited</c> uses on this card to <c=boldPink>{{Amount}}</c>."
+			}
 		}
 	}
 }

@@ -23,13 +23,13 @@ internal sealed class BufferCard : Card, IRegisterable, IHasCustomCardTraits
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Buffer", "name"]).Localize
 		});
 
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 1);
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 3);
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 1);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 1);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 3);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 1);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-		=> new HashSet<ICardTraitEntry> { Limited.Trait };
+		=> new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Limited.Trait };
 
 	public override CardData GetData(State state)
 		=> new() { cost = 0 };
@@ -39,13 +39,13 @@ internal sealed class BufferCard : Card, IRegisterable, IHasCustomCardTraits
 		{
 			Upgrade.B => [
 				ModEntry.Instance.KokoroApi.OnTurnEnd.MakeAction(
-					new ChangeLimitedUsesAction { CardId = uuid, Amount = 1 }
+					ModEntry.Instance.KokoroApi.Limited.MakeChangeLimitedUsesAction(uuid, 1).AsCardAction
 				).AsCardAction,
 				new AEnergy { changeAmount = 2 },
 			],
 			_ => [
 				ModEntry.Instance.KokoroApi.OnTurnEnd.MakeAction(
-					new ChangeLimitedUsesAction { CardId = uuid, Amount = 1 }
+					ModEntry.Instance.KokoroApi.Limited.MakeChangeLimitedUsesAction(uuid, 1).AsCardAction
 				).AsCardAction,
 				new AEnergy { changeAmount = 1 },
 			]

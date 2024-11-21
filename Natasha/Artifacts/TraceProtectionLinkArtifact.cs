@@ -25,13 +25,13 @@ internal sealed class TraceProtectionLinkArtifact : Artifact, IRegisterable
 
 	public override List<Tooltip>? GetExtraTooltips()
 		=> [
-			.. (Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? []),
+			.. (ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? []),
 			.. StatusMeta.GetTooltips(Status.tempShield, 2),
 		];
 
 	public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
 	{
-		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Limited.Trait))
+		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, ModEntry.Instance.KokoroApi.Limited.Trait))
 			return;
 
 		combat.QueueImmediate(new AStatus

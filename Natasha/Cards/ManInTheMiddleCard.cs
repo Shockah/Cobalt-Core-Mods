@@ -46,9 +46,9 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "ManInTheMiddle", "name"]).Localize
 		});
 
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 5);
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 3);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 5);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 3);
 
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.IsVisible)),
@@ -57,7 +57,7 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-		=> new HashSet<ICardTraitEntry> { Limited.Trait };
+		=> new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Limited.Trait };
 
 	public override CardData GetData(State state)
 		=> new() { cost = 1, description = ModEntry.Instance.Localizations.Localize(["card", "ManInTheMiddle", "description", upgrade.ToString()]) };

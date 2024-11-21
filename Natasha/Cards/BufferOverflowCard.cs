@@ -23,13 +23,13 @@ internal sealed class BufferOverflowCard : Card, IRegisterable, IHasCustomCardTr
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BufferOverflow", "name"]).Localize
 		});
 
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 4);
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 4);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-		=> new HashSet<ICardTraitEntry> { Limited.Trait };
+		=> new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Limited.Trait };
 
 	public override CardData GetData(State state)
 		=> new() { cost = 1 };

@@ -23,11 +23,11 @@ internal sealed class DenialOfServiceCard : Card, IRegisterable, IHasCustomCardT
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "DenialOfService", "name"]).Localize
 		});
 
-		Limited.SetBaseLimitedUses(entry.UniqueName, 3);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, 3);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-		=> new HashSet<ICardTraitEntry> { Limited.Trait };
+		=> new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Limited.Trait };
 
 	public override CardData GetData(State state)
 		=> upgrade switch

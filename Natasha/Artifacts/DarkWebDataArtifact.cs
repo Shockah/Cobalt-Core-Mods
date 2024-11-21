@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Shockah.Natasha;
 
-internal sealed class DarkWebDataArtifact : Artifact, IRegisterable, INatashaHook
+internal sealed class DarkWebDataArtifact : Artifact, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -32,18 +32,18 @@ internal sealed class DarkWebDataArtifact : Artifact, IRegisterable, INatashaHoo
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> [.. (Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? [])];
+		=> [.. (ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? [])];
 
 	public override void OnReceiveArtifact(State state)
 	{
 		base.OnReceiveArtifact(state);
-		state.GetCurrentQueue().QueueImmediate(new ACardSelect
+		state.GetCurrentQueue().QueueImmediate(ModEntry.Instance.KokoroApi.Limited.MakeCardSelect(new ACardSelect
 		{
 			browseAction = new CardSelectAction(),
 			browseSource = CardBrowse.Source.Deck,
 			filterExhaust = true,
 			filterTemporary = false,
-		}.SetFilterLimited(false));
+		}).SetLimited(false).AsCardAction);
 	}
 
 	private static void ArtifactReward_GetBlockedArtifacts_Postfix(State s, ref HashSet<Type> __result)
@@ -60,11 +60,11 @@ internal sealed class DarkWebDataArtifact : Artifact, IRegisterable, INatashaHoo
 				return null;
 
 			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, ModEntry.Instance.Helper.Content.Cards.ExhaustCardTrait, false, permanent: true);
-			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, Limited.Trait, true, permanent: true);
+			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, ModEntry.Instance.KokoroApi.Limited.Trait, true, permanent: true);
 
 			return new CustomShowCards
 			{
-				messageKey = $"{ModEntry.Instance.Package.Manifest.UniqueName}::{typeof(DarkWebDataArtifact).Name}::ShowCards",
+				messageKey = $"{ModEntry.Instance.Package.Manifest.UniqueName}::{nameof(DarkWebDataArtifact)}::ShowCards",
 				Message = ModEntry.Instance.Localizations.Localize(["artifact", "DarkWebData", "ui", "done"]),
 				cardIds = [selectedCard.uuid]
 			};

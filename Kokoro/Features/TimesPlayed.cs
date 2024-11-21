@@ -101,7 +101,7 @@ internal sealed class TimesPlayedCondition : IKokoroApi.IV2.ITimesPlayedApi.ITim
 	public required int CurrentTimesPlayed { get; set; }
 
 	public string GetTooltipDescription(State state, Combat? combat)
-		=> ModEntry.Instance.Localizations.Localize(["condition", "TimesPlayed"]);
+		=> ModEntry.Instance.Localizations.Localize(["timesPlayed", "condition"]);
 
 	public int GetValue(State state, Combat combat)
 		=> CurrentTimesPlayed;

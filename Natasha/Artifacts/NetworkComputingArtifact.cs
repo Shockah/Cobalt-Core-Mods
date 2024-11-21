@@ -1,11 +1,12 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using System.Collections.Generic;
 using System.Reflection;
 
 namespace Shockah.Natasha;
 
-internal sealed class NetworkComputingArtifact : Artifact, IRegisterable, INatashaHook
+internal sealed class NetworkComputingArtifact : Artifact, IRegisterable, IKokoroApi.IV2.ILimitedApi.IHook
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -24,13 +25,13 @@ internal sealed class NetworkComputingArtifact : Artifact, IRegisterable, INatas
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> [.. (Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? [])];
+		=> [.. (ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? [])];
 
 	public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
 	{
 		base.OnPlayerPlayCard(energyCost, deck, card, state, combat, handPosition, handCount);
 
-		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Limited.Trait))
+		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, ModEntry.Instance.KokoroApi.Limited.Trait))
 			return;
 
 		if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(card, "PlayedViaNetworkComputing"))
@@ -50,9 +51,9 @@ internal sealed class NetworkComputingArtifact : Artifact, IRegisterable, INatas
 			ModEntry.Instance.Helper.ModData.RemoveModData(card, "PlayedViaNetworkComputing");
 	}
 
-	public bool ModifyLimitedUses(State state, Card card, int baseUses, ref int uses)
+	public bool ModifyLimitedUses(IKokoroApi.IV2.ILimitedApi.IHook.IModifyLimitedUsesArgs args)
 	{
-		uses--;
+		args.Uses--;
 		return false;
 	}
 

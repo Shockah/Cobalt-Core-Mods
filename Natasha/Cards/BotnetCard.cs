@@ -23,15 +23,15 @@ internal sealed class BotnetCard : Card, IRegisterable, IHasCustomCardTraits
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Botnet", "name"]).Localize
 		});
 
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 2);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 2);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> (HashSet<ICardTraitEntry>)(upgrade switch
 		{
 			Upgrade.B => [],
-			_ => [Limited.Trait],
+			_ => [ModEntry.Instance.KokoroApi.Limited.Trait],
 		});
 
 	public override CardData GetData(State state)

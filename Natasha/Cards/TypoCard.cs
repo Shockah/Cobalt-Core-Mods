@@ -24,13 +24,13 @@ internal sealed class TypoCard : Card, IRegisterable, IHasCustomCardTraits
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Typo", "name"]).Localize
 		});
 
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> (HashSet<ICardTraitEntry>)(upgrade switch
 		{
-			Upgrade.B => [Limited.Trait],
+			Upgrade.B => [ModEntry.Instance.KokoroApi.Limited.Trait],
 			_ => [],
 		});
 

@@ -23,13 +23,13 @@ internal sealed class BruteForceCard : Card, IRegisterable, IHasCustomCardTraits
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BruteForce", "name"]).Localize
 		});
 
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 4);
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 4);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 4);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 4);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-		=> new HashSet<ICardTraitEntry> { Limited.Trait };
+		=> new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Limited.Trait };
 
 	public override CardData GetData(State state)
 		=> upgrade switch
@@ -45,14 +45,14 @@ internal sealed class BruteForceCard : Card, IRegisterable, IHasCustomCardTraits
 				ModEntry.Instance.KokoroApi.TimesPlayed.MakeVariableHintAction(uuid).AsCardAction.Disabled(flipped),
 				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this) + 1), xHint = 1, disabled = flipped },
 				new ADummyAction(),
-				new LimitedUsesVariableHint { CardId = uuid, disabled = !flipped },
-				new AAttack { damage = GetDmg(s, this.GetLimitedUses(s)), xHint = 1, disabled = !flipped },
+				ModEntry.Instance.KokoroApi.Limited.MakeVariableHint(uuid).AsCardAction.Disabled(!flipped),
+				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.Limited.GetLimitedUses(s, this)), xHint = 1, disabled = !flipped },
 			],
 			_ => [
 				ModEntry.Instance.KokoroApi.TimesPlayed.MakeVariableHintAction(uuid).AsCardAction,
 				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this) + 1), xHint = 1 },
-				new LimitedUsesVariableHint { CardId = uuid },
-				new AAttack { damage = GetDmg(s, this.GetLimitedUses(s)), xHint = 1 },
+				ModEntry.Instance.KokoroApi.Limited.MakeVariableHint(uuid).AsCardAction,
+				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.Limited.GetLimitedUses(s, this)), xHint = 1 },
 			]
 		};
 }

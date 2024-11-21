@@ -24,13 +24,13 @@ internal sealed class SelfAlteringCodeCard : Card, IRegisterable, IHasCustomCard
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "SelfAlteringCode", "name"]).Localize
 		});
 
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> (HashSet<ICardTraitEntry>)(upgrade switch
 		{
-			Upgrade.B => [Limited.Trait],
+			Upgrade.B => [ModEntry.Instance.KokoroApi.Limited.Trait],
 			_ => [],
 		});
 
@@ -60,7 +60,7 @@ internal sealed class SelfAlteringCodeCard : Card, IRegisterable, IHasCustomCard
 		public required int Amount;
 
 		public override List<Tooltip> GetTooltips(State s)
-			=> [.. Limited.Trait.Configuration.Tooltips?.Invoke(s, null) ?? []];
+			=> [.. ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(s, null) ?? []];
 
 		public override void Begin(G g, State s, Combat c)
 		{
@@ -69,10 +69,10 @@ internal sealed class SelfAlteringCodeCard : Card, IRegisterable, IHasCustomCard
 			var didAnything = false;
 			foreach (var card in c.hand)
 			{
-				if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, Limited.Trait))
+				if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, ModEntry.Instance.KokoroApi.Limited.Trait))
 					continue;
 
-				card.SetLimitedUses(card.GetLimitedUses(s) + Amount);
+				ModEntry.Instance.KokoroApi.Limited.SetLimitedUses(s, card, ModEntry.Instance.KokoroApi.Limited.GetLimitedUses(s, card) + Amount);
 				didAnything = true;
 			}
 

@@ -23,13 +23,13 @@ internal sealed class SpywareCard : Card, IRegisterable, IHasCustomCardTraits
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Spyware", "name"]).Localize
 		});
 
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 4);
-		Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 3);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 4);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 3);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-		=> new HashSet<ICardTraitEntry> { Limited.Trait };
+		=> new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Limited.Trait };
 
 	public override CardData GetData(State state)
 		=> new() { cost = 1 };
@@ -38,13 +38,13 @@ internal sealed class SpywareCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new LimitedUsesVariableHint { CardId = uuid },
-				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = this.GetLimitedUses(s), xHint = 1 },
+				ModEntry.Instance.KokoroApi.Limited.MakeVariableHint(uuid).AsCardAction,
+				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = ModEntry.Instance.KokoroApi.Limited.GetLimitedUses(s, this), xHint = 1 },
 				new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 2 },
 			],
 			_ => [
-				new LimitedUsesVariableHint { CardId = uuid },
-				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = this.GetLimitedUses(s), xHint = 1 },
+				ModEntry.Instance.KokoroApi.Limited.MakeVariableHint(uuid).AsCardAction,
+				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = ModEntry.Instance.KokoroApi.Limited.GetLimitedUses(s, this), xHint = 1 },
 			]
 		};
 }

@@ -68,6 +68,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		EnergyAsStatusManager.Setup(Harmony);
 		EvadeManager.Setup(Harmony);
 		HiddenActionManager.Setup(Harmony);
+		LimitedManager.Setup(Harmony);
 		MultiCardBrowseManager.Setup(Harmony);
 		OnDiscardManager.Setup(Harmony);
 		OnTurnEndManager.Setup(Harmony);
