@@ -20,8 +20,7 @@ public partial interface IKokoroApi
 			{
 				IEnumerable<(Status Status, double Priority)> GetExtraStatusesToShow(IGetExtraStatusesToShowArgs args) => [];
 				bool? ShouldShowStatus(IShouldShowStatusArgs args) => null;
-				bool? ShouldOverrideStatusRenderingAsBars(IShouldOverrideStatusRenderingAsBarsArgs args) => null;
-				(IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(IOverrideStatusRenderingArgs args) => new(); // TODO: combine with `ShouldOverrideStatusRenderingAsBars`
+				(IReadOnlyList<Color> Colors, int? BarTickWidth)? OverrideStatusRenderingAsBars(IOverrideStatusRenderingAsBarsArgs args) => null;
 				List<Tooltip> OverrideStatusTooltips(IOverrideStatusTooltipsArgs args) => args.Tooltips;
 				
 				public interface IGetExtraStatusesToShowArgs
@@ -40,16 +39,7 @@ public partial interface IKokoroApi
 					int Amount { get; }
 				}
 				
-				public interface IShouldOverrideStatusRenderingAsBarsArgs
-				{
-					State State { get; }
-					Combat Combat { get; }
-					Ship Ship { get; }
-					Status Status { get; }
-					int Amount { get; }
-				}
-				
-				public interface IOverrideStatusRenderingArgs
+				public interface IOverrideStatusRenderingAsBarsArgs
 				{
 					State State { get; }
 					Combat Combat { get; }

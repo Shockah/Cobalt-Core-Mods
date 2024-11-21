@@ -1,7 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
-using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;

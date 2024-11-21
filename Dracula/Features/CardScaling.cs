@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Shockah.Kokoro;
-using System.Collections.Generic;
 
 namespace Shockah.Dracula;
 

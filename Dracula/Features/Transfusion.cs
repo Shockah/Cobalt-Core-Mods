@@ -75,13 +75,11 @@ internal sealed class TransfusionManager : IKokoroApi.IV2.IStatusLogicApi.IHook,
 	public bool? ShouldShowStatus(IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldShowStatusArgs args)
 		=> args.Status == ModEntry.Instance.TransfusingStatus.Status ? false : null;
 
-	public bool? ShouldOverrideStatusRenderingAsBars(IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldOverrideStatusRenderingAsBarsArgs args)
-		=> args.Status == ModEntry.Instance.TransfusionStatus.Status ? true : null;
-
-	public (IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingArgs args)
+	public (IReadOnlyList<Color> Colors, int? BarTickWidth)? OverrideStatusRenderingAsBars(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingAsBarsArgs args)
 	{
-		if (args.Status != ModEntry.Instance.TransfusionStatus.Status)
-			return ([], null);
+		if (args.Status != ModEntry.Instance.TransfusingStatus.Status)
+			return null;
+		
 		var transfusing = Math.Min(args.Ship.Get(ModEntry.Instance.TransfusingStatus.Status), args.Amount);
 		return (
 			Colors: Enumerable.Range(0, transfusing).Select(_ => ModEntry.Instance.KokoroApi.StatusRendering.DefaultActiveStatusBarColor)

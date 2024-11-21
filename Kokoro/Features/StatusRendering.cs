@@ -69,22 +69,10 @@ partial class ApiImplementation
 				public int Amount { get; internal set; }
 			}
 			
-			internal sealed class ShouldOverrideStatusRenderingAsBarsArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldOverrideStatusRenderingAsBarsArgs
+			internal sealed class OverrideStatusRenderingAsBarsArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingAsBarsArgs
 			{
 				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly ShouldOverrideStatusRenderingAsBarsArgs Instance = new();
-				
-				public State State { get; internal set; } = null!;
-				public Combat Combat { get; internal set; } = null!;
-				public Ship Ship { get; internal set; } = null!;
-				public Status Status { get; internal set; }
-				public int Amount { get; internal set; }
-			}
-			
-			internal sealed class OverrideStatusRenderingArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingArgs
-			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly OverrideStatusRenderingArgs Instance = new();
+				internal static readonly OverrideStatusRenderingAsBarsArgs Instance = new();
 				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
@@ -155,9 +143,9 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 		return true;
 	}
 
-	public IKokoroApi.IV2.IStatusRenderingApi.IHook? GetOverridingAsBarsHook(State state, Combat combat, Ship ship, Status status, int amount)
+	public (IReadOnlyList<Color> Colors, int? BarTickWidth)? GetStatusRenderingBarOverride(State state, Combat combat, Ship ship, Status status, int amount)
 	{
-		var args = ApiImplementation.V2Api.StatusRenderingApi.ShouldOverrideStatusRenderingAsBarsArgs.Instance;
+		var args = ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusRenderingAsBarsArgs.Instance;
 		args.State = state;
 		args.Combat = combat;
 		args.Ship = ship;
@@ -165,16 +153,8 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 		args.Amount = amount;
 		
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-		{
-			var hookResult = hook.ShouldOverrideStatusRenderingAsBars(args);
-			switch (hookResult)
-			{
-				case false:
-					return null;
-				case true:
-					return hook;
-			}
-		}
+			if (hook.OverrideStatusRenderingAsBars(args) is { } @override)
+				return @override;
 		return null;
 	}
 
@@ -200,19 +180,9 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 			return;
 		if (state.route is not Combat combat)
 			return;
-
-		var hook = Instance.GetOverridingAsBarsHook(state, combat, __instance, status, amount);
-		if (hook is null)
+		if (Instance.GetStatusRenderingBarOverride(state, combat, __instance, status, amount) is not { } @override)
 			return;
 		
-		var args = ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusRenderingArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Ship = __instance;
-		args.Status = status;
-		args.Amount = amount;
-		
-		var @override = hook.OverrideStatusRendering(args);
 		StatusBarRenderingOverrides[status] = @override;
 
 		var barTickWidth = @override.BarTickWidth ?? __result.barTickWidth;
@@ -338,12 +308,9 @@ internal sealed class V1ToV2StatusRenderingHookWrapper(IStatusRenderHook v1) : I
 		
 	public bool? ShouldShowStatus(IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldShowStatusArgs args)
 		=> v1.ShouldShowStatus(args.State, args.Combat, args.Ship, args.Status, args.Amount);
-		
-	public bool? ShouldOverrideStatusRenderingAsBars(IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldOverrideStatusRenderingAsBarsArgs args)
-		=> v1.ShouldOverrideStatusRenderingAsBars(args.State, args.Combat, args.Ship, args.Status, args.Amount);
-		
-	public (IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingArgs args)
-		=> v1.OverrideStatusRendering(args.State, args.Combat, args.Ship, args.Status, args.Amount);
+	
+	public (IReadOnlyList<Color> Colors, int? BarTickWidth)? OverrideStatusRenderingAsBars(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingAsBarsArgs args)
+		=> v1.ShouldOverrideStatusRenderingAsBars(args.State, args.Combat, args.Ship, args.Status, args.Amount) == true ? v1.OverrideStatusRendering(args.State, args.Combat, args.Ship, args.Status, args.Amount) : null;
 		
 	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 		=> v1.OverrideStatusTooltips(args.Status, args.Amount, args.Ship, args.Tooltips);
