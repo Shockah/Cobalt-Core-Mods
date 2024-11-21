@@ -26,6 +26,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	public DirectoryInfo? ModRootFolder { get; set; }
 	public ILogger? Logger { get; set; }
 	internal IModHelper Helper { get; private set; } = null!;
+	internal IPluginPackage<Nickel.IModManifest> Package { get; private set; } = null!;
 
 	internal IKokoroApi.IV2 KokoroApi { get; private set; } = null!;
 	internal readonly DuoArtifactDatabase Database = new();
@@ -46,6 +47,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	public void OnNickelLoad(IPluginPackage<Nickel.IModManifest> package, IModHelper helper)
 	{
 		this.Helper = helper;
+		this.Package = package;
 		this.Harmony = helper.Utilities.Harmony;
 		Settings = helper.Storage.LoadJson<Settings>(helper.Storage.GetMainStorageFile("json"));
 

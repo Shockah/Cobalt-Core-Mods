@@ -52,12 +52,13 @@ internal sealed class PeriRiggsArtifact : DuoArtifact, IKokoroApi.IV2.IEvadeHook
 		EvadesLeft--;
 	}
 
-	private static void VanillaEvadeHook_IsEvadePossible_Postfix(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePossibleArgs args, ref bool? __result)
+	private static void VanillaEvadeHook_IsEvadePossible_Postfix(object args, ref bool? __result)
 	{
-		var artifact = args.State.EnumerateAllArtifacts().OfType<PeriRiggsArtifact>().FirstOrDefault();
-		if (artifact is null)
+		if (!Instance.Helper.Utilities.ProxyManager.TryProxy<string, IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePossibleArgs>(args, "Shockah.Kokoro", Instance.Package.Manifest.UniqueName, out var typedArgs))
 			return;
-
+		if (typedArgs.State.EnumerateAllArtifacts().OfType<PeriRiggsArtifact>().FirstOrDefault() is not { } artifact)
+			return;
+		
 		if (artifact.EvadesLeft <= 0)
 			__result = null;
 	}
