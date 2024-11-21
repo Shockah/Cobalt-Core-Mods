@@ -109,8 +109,8 @@ internal sealed class ContinueStopActionManager : IKokoroApi.IV2.IWrappedActions
 		if (isWorkingOnActions || !__state)
 			return;
 
-		ModEntry.Instance.Api.ObtainExtensionData(__instance, "ContinueFlags", () => new HashSet<Guid>()).Clear();
-		ModEntry.Instance.Api.ObtainExtensionData(__instance, "StopFlags", () => new HashSet<Guid>()).Clear();
+		ModEntry.Instance.Helper.ModData.ObtainModData(__instance, "ContinueFlags", () => new HashSet<Guid>()).Clear();
+		ModEntry.Instance.Helper.ModData.ObtainModData(__instance, "StopFlags", () => new HashSet<Guid>()).Clear();
 	}
 	
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
@@ -160,7 +160,7 @@ public sealed class AContinue : CardAction, IKokoroApi.IV2.IContinueStopApi.ITri
 		base.Begin(g, s, c);
 		timer = 0;
 
-		var continueFlags = Instance.Api.ObtainExtensionData(c, Type == IKokoroApi.IV2.IContinueStopApi.ActionType.Continue ? "ContinueFlags" : "StopFlags", () => new HashSet<Guid>());
+		var continueFlags = Instance.Helper.ModData.ObtainModData(c, Type == IKokoroApi.IV2.IContinueStopApi.ActionType.Continue ? "ContinueFlags" : "StopFlags", () => new HashSet<Guid>());
 		continueFlags.Add(Id);
 	}
 
@@ -213,7 +213,7 @@ public sealed class AContinued : CardAction, IKokoroApi.IV2.IContinueStopApi.IFl
 		base.Begin(g, s, c);
 		timer = 0;
 
-		var continueFlags = Instance.Api.ObtainExtensionData(c, Type == IKokoroApi.IV2.IContinueStopApi.ActionType.Continue ? "ContinueFlags" : "StopFlags", () => new HashSet<Guid>());
+		var continueFlags = Instance.Helper.ModData.ObtainModData(c, Type == IKokoroApi.IV2.IContinueStopApi.ActionType.Continue ? "ContinueFlags" : "StopFlags", () => new HashSet<Guid>());
 		if (!ShouldContinue())
 			return;
 

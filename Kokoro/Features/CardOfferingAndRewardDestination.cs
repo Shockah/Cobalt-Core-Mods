@@ -16,34 +16,16 @@ partial class ApiImplementation
 		public ACardOffering WithDestination(ACardOffering action, CardDestination? destination, bool? insertRandomly = null)
 		{
 			var copy = Mutil.DeepCopy(action);
-
-			if (destination is null)
-				Instance.Api.RemoveExtensionData(copy, "destination");
-			else
-				Instance.Api.SetExtensionData(copy, "destination", destination.Value);
-
-			if (insertRandomly is null)
-				Instance.Api.RemoveExtensionData(copy, "destinationInsertRandomly");
-			else
-				Instance.Api.SetExtensionData(copy, "destinationInsertRandomly", insertRandomly.Value);
-
+			Instance.Helper.ModData.SetOptionalModData(copy, "destination", destination);
+			Instance.Helper.ModData.SetOptionalModData(copy, "destinationInsertRandomly", insertRandomly);
 			return copy;
 		}
 
 		public CardReward WithDestination(CardReward route, CardDestination? destination, bool? insertRandomly = null)
 		{
 			var copy = Mutil.DeepCopy(route);
-
-			if (destination is null)
-				Instance.Api.RemoveExtensionData(copy, "destination");
-			else
-				Instance.Api.SetExtensionData(copy, "destination", destination.Value);
-
-			if (insertRandomly is null)
-				Instance.Api.RemoveExtensionData(copy, "destinationInsertRandomly");
-			else
-				Instance.Api.SetExtensionData(copy, "destinationInsertRandomly", insertRandomly.Value);
-
+			Instance.Helper.ModData.SetOptionalModData(copy, "destination", destination);
+			Instance.Helper.ModData.SetOptionalModData(copy, "destinationInsertRandomly", insertRandomly);
 			return copy;
 		}
 	}
@@ -188,19 +170,17 @@ internal sealed class CardOfferingAndRewardDestinationManager
 	{
 		if (__result is not CardReward route)
 			return;
-
-		if (ModEntry.Instance.Api.TryGetExtensionData(__instance, "destination", out CardDestination destination))
-			ModEntry.Instance.Api.SetExtensionData(route, "destination", destination);
-		if (ModEntry.Instance.Api.TryGetExtensionData(__instance, "destinationInsertRandomly", out bool destinationInsertRandomly))
-			ModEntry.Instance.Api.SetExtensionData(route, "destinationInsertRandomly", destinationInsertRandomly);
+		
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(route, "destination", ModEntry.Instance.Helper.ModData.GetOptionalModData<CardDestination>(__instance, "destination"));
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(route, "destinationInsertRandomly", ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "destinationInsertRandomly"));
 	}
 	
 	private static bool CardReward_TakeCard_Prefix(CardReward __instance, G g, Card card)
 	{
 		if (g.state.route is Combat combat)
 		{
-			var destination = ModEntry.Instance.Api.TryGetExtensionData(__instance, "destination", out CardDestination modDataDestination) ? modDataDestination : CardDestination.Hand;
-			bool? insertRandomly = ModEntry.Instance.Api.TryGetExtensionData(__instance, "destinationInsertRandomly", out bool modDataDestinationInsertRandomly) ? modDataDestinationInsertRandomly : null;
+			var destination = ModEntry.Instance.Helper.ModData.GetOptionalModData<CardDestination>(__instance, "destination") ?? CardDestination.Hand;
+			var insertRandomly = ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "destinationInsertRandomly");
 
 			SendCardToDestination(g.state, combat, card, destination, insertRandomly);
 			foreach (var artifact in g.state.EnumerateAllArtifacts())

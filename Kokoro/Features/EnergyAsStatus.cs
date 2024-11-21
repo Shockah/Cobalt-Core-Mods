@@ -19,7 +19,7 @@ partial class ApiImplementation
 		{
 			var copy = Mutil.DeepCopy(action);
 			copy.targetPlayer = true;
-			Instance.Api.SetExtensionData(copy, "energy", energy);
+			Instance.Helper.ModData.SetModData(copy, "energy", energy);
 			return copy;
 		}
 	}
@@ -42,7 +42,7 @@ partial class ApiImplementation
 			{
 				if (action is IKokoroApi.IV2.IEnergyAsStatusApi.IStatusAction statusAction)
 					return statusAction;
-				if (Instance.Api.TryGetExtensionData(action, "energy", out bool isEnergy) && isEnergy)
+				if (Instance.Helper.ModData.GetModDataOrDefault<bool>(action, "energy"))
 					return new StatusWrapper { Wrapped = action };
 				return null;
 			}
@@ -54,7 +54,7 @@ partial class ApiImplementation
 					targetPlayer = true,
 					statusAmount = amount,
 				};
-				Instance.Api.SetExtensionData(wrapped, "energy", true);
+				Instance.Helper.ModData.SetModData(wrapped, "energy", true);
 				return new StatusWrapper { Wrapped = wrapped };
 			}
 
@@ -86,7 +86,7 @@ internal sealed class EnergyAsStatusManager
 	
 	private static void AStatus_GetTooltips_Postfix(AStatus __instance, ref List<Tooltip> __result)
 	{
-		if (!ModEntry.Instance.Api.ObtainExtensionData(__instance, "energy", () => false))
+		if (!ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(__instance, "energy"))
 			return;
 
 		__result.Clear();
@@ -101,8 +101,9 @@ internal sealed class EnergyAsStatusManager
 
 	private static void AStatus_GetIcon_Postfix(AStatus __instance, ref Icon? __result)
 	{
-		if (!ModEntry.Instance.Api.ObtainExtensionData(__instance, "energy", () => false))
+		if (!ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(__instance, "energy"))
 			return;
+		
 		__result = new(
 			path: (Spr)ModEntry.Instance.Content.EnergySprite.Id!.Value,
 			number: __instance.mode == AStatusMode.Set ? null : __instance.statusAmount,
@@ -138,7 +139,7 @@ public sealed class EnergyVariableHint : AVariableHint, IKokoroApi.IV2.IEnergyAs
 				Description = ModEntry.Instance.Localizations.Localize(["energyVariableHint"]),
 				vals =
 				[
-					(s.route is Combat combat) ? $" </c>(<c=keyword>{ModEntry.Instance.Api.ObtainExtensionData(this, "energyTooltipOverride", () => (int?)null) ?? combat.energy}</c>)" : ""
+					(s.route is Combat combat) ? $" </c>(<c=keyword>{ModEntry.Instance.Helper.ModData.GetOptionalModData<int>(this, "energyTooltipOverride") ?? combat.energy}</c>)" : ""
 				]
 			}
 		];
