@@ -1,13 +1,13 @@
 {
     "UniqueName": "Shockah.BetterRunSummaries",
-    "Version": "1.0.1",
-    "RequiredApiVersion": "0.9.0",
+    "Version": "{{ModVersion}}",
+    "RequiredApiVersion": "1.6.0-beta1",
     "EntryPointAssembly": "BetterRunSummaries.dll",
     "LoadPhase": "AfterGameAssembly",
     "Dependencies": [
         {
             "UniqueName": "Shockah.Kokoro",
-            "Version": "1.7.1",
+            "Version": "1.13.0-beta1",
             "IsRequired": false
         }
     ]

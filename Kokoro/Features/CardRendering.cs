@@ -40,34 +40,54 @@ partial class ApiImplementation
 			public void UnregisterHook(IKokoroApi.IV2.ICardRenderingApi.IHook hook)
 				=> CardRenderManager.Instance.Unregister(hook);
 			
-			internal record struct ShouldDisableCardRenderingTransformationsArgs(
-				G G,
-				Card Card
-			) : IKokoroApi.IV2.ICardRenderingApi.IHook.IShouldDisableCardRenderingTransformationsArgs;
+			internal sealed class ShouldDisableCardRenderingTransformationsArgs : IKokoroApi.IV2.ICardRenderingApi.IHook.IShouldDisableCardRenderingTransformationsArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly ShouldDisableCardRenderingTransformationsArgs Instance = new();
+				
+				public G G { get; internal set; } = null!;
+				public Card Card { get; internal set; } = null!;
+			}
 			
-			internal record struct ReplaceTextCardFontArgs(
-				G G,
-				Card Card
-			) : IKokoroApi.IV2.ICardRenderingApi.IHook.IReplaceTextCardFontArgs;
+			internal sealed class ReplaceTextCardFontArgs : IKokoroApi.IV2.ICardRenderingApi.IHook.IReplaceTextCardFontArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly ReplaceTextCardFontArgs Instance = new();
+				
+				public G G { get; internal set; } = null!;
+				public Card Card { get; internal set; } = null!;
+			}
 			
-			internal record struct ModifyTextCardScaleArgs(
-				G G,
-				Card Card
-			) : IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyTextCardScaleArgs;
+			internal sealed class ModifyTextCardScaleArgs : IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyTextCardScaleArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly ModifyTextCardScaleArgs Instance = new();
+				
+				public G G { get; internal set; } = null!;
+				public Card Card { get; internal set; } = null!;
+			}
 			
-			internal record struct ModifyNonTextCardRenderMatrixArgs(
-				G G,
-				Card Card,
-				List<CardAction> Actions
-			) : IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyNonTextCardRenderMatrixArgs;
+			internal sealed class ModifyNonTextCardRenderMatrixArgs : IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyNonTextCardRenderMatrixArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly ModifyNonTextCardRenderMatrixArgs Instance = new();
+				
+				public G G { get; internal set; } = null!;
+				public Card Card { get; internal set; } = null!;
+				public List<CardAction> Actions { get; internal set; } = null!;
+			}
 			
-			internal record struct ModifyCardActionRenderMatrixArgs(
-				G G,
-				Card Card,
-				List<CardAction> Actions,
-				CardAction Action,
-				int ActionWidth
-			) : IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyCardActionRenderMatrixArgs;
+			internal sealed class ModifyCardActionRenderMatrixArgs : IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyCardActionRenderMatrixArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly ModifyCardActionRenderMatrixArgs Instance = new();
+				
+				public G G { get; internal set; } = null!;
+				public Card Card { get; internal set; } = null!;
+				public List<CardAction> Actions { get; internal set; } = null!;
+				public CardAction Action { get; internal set; } = null!;
+				public int ActionWidth { get; internal set; }
+			}
 		}
 	}
 }
@@ -106,26 +126,54 @@ internal sealed class CardRenderManager : VariedApiVersionHookManager<IKokoroApi
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_MakeAllActionIcons_Transpiler))
 		);
 	}
-	
+
 	public bool ShouldDisableCardRenderingTransformations(G g, Card card)
-		=> Hooks.Any(h => h.ShouldDisableCardRenderingTransformations(new ApiImplementation.V2Api.CardRenderingApi.ShouldDisableCardRenderingTransformationsArgs(g, card)));
+	{
+		var args = ApiImplementation.V2Api.CardRenderingApi.ShouldDisableCardRenderingTransformationsArgs.Instance;
+		args.G = g;
+		args.Card = card;
+		return Hooks.Any(h => h.ShouldDisableCardRenderingTransformations(args));
+	}
 
 	public Font? ReplaceTextCardFont(G g, Card card)
 	{
+		var args = ApiImplementation.V2Api.CardRenderingApi.ReplaceTextCardFontArgs.Instance;
+		args.G = g;
+		args.Card = card;
+		
 		foreach (var hook in Hooks)
-			if (hook.ReplaceTextCardFont(new ApiImplementation.V2Api.CardRenderingApi.ReplaceTextCardFontArgs(g, card)) is { } font)
+			if (hook.ReplaceTextCardFont(args) is { } font)
 				return font;
 		return null;
 	}
 
 	public Vec ModifyTextCardScale(G g, Card card)
-		=> Hooks.Aggregate(Vec.One, (v, hook) => v * hook.ModifyTextCardScale(new ApiImplementation.V2Api.CardRenderingApi.ModifyTextCardScaleArgs(g, card)));
+	{
+		var args = ApiImplementation.V2Api.CardRenderingApi.ModifyTextCardScaleArgs.Instance;
+		args.G = g;
+		args.Card = card;
+		return Hooks.Aggregate(Vec.One, (v, hook) => v * hook.ModifyTextCardScale(args));
+	}
 
 	public Matrix ModifyNonTextCardRenderMatrix(G g, Card card, List<CardAction> actions)
-		=> Hooks.Aggregate(Matrix.Identity, (m, hook) => m * hook.ModifyNonTextCardRenderMatrix(new ApiImplementation.V2Api.CardRenderingApi.ModifyNonTextCardRenderMatrixArgs(g, card, actions)));
+	{
+		var args = ApiImplementation.V2Api.CardRenderingApi.ModifyNonTextCardRenderMatrixArgs.Instance;
+		args.G = g;
+		args.Card = card;
+		args.Actions = actions;
+		return Hooks.Aggregate(Matrix.Identity, (m, hook) => m * hook.ModifyNonTextCardRenderMatrix(args));
+	}
 
 	public Matrix ModifyCardActionRenderMatrix(G g, Card card, List<CardAction> actions, CardAction action, int actionWidth)
-		=> Hooks.Aggregate(Matrix.Identity, (m, hook) => m * hook.ModifyCardActionRenderMatrix(new ApiImplementation.V2Api.CardRenderingApi.ModifyCardActionRenderMatrixArgs(g, card, actions, action, actionWidth)));
+	{
+		var args = ApiImplementation.V2Api.CardRenderingApi.ModifyCardActionRenderMatrixArgs.Instance;
+		args.G = g;
+		args.Card = card;
+		args.Actions = actions;
+		args.Action = action;
+		args.ActionWidth = actionWidth;
+		return Hooks.Aggregate(Matrix.Identity, (m, hook) => m * hook.ModifyCardActionRenderMatrix(args));
+	}
 	
 	private static void ResetSpriteBatch()
 	{

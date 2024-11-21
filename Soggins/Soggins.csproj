@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Shockah.Soggins</RootNamespace>
-		<Version>1.3.5</Version>
+		<Version>1.4.0-beta1</Version>
 		<IsLegacyMod>True</IsLegacyMod>
-		<IncludedModProjectPaths>assets</IncludedModProjectPaths>
 	</PropertyGroup>
+	<ItemGroup>
+		<ModFiles Include="assets/**" />
+	</ItemGroup>
 	<Import Project="..\Configuration.Mod.props" />
 </Project>

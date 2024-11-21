@@ -1,13 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Shockah.Kokoro</RootNamespace>
-		<Version>1.12.1</Version>
+		<Version>1.13.0-beta1</Version>
 		<IsLegacyMod>True</IsLegacyMod>
-		<IncludedModProjectPaths>assets;i18n</IncludedModProjectPaths>
 	</PropertyGroup>
+	<ItemGroup>
+		<ModFiles Include="i18n/**" />
+		<ModFiles Include="assets/**" />
+	</ItemGroup>
 	<Import Project="..\Configuration.Mod.props" />
 	<ItemGroup>
-		<PackageReference Include="Pintail" Version="2.6.0" IncludeAssets="compile" PrivateAssets="all" />
 		<PackageReference Include="ImGui.NET" Version="1.89.5.0" IncludeAssets="compile" PrivateAssets="all" />
 		<PackageReference Include="Mitosis" Version="2.0.1" />
 	</ItemGroup>

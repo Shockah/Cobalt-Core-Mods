@@ -340,12 +340,17 @@ partial class ApiImplementation
 				return allTransactions.MinBy(t => t.TestPayment(environment).TotalUnpaid)!;
 			}
 			
-			internal record struct OnActionCostsTransactionFinishedArgs(
-				State State,
-				Combat Combat,
-				Card? Card,
-				IKokoroApi.IV2.IActionCostsApi.IWholeTransactionPaymentResult TransactionPaymentResult
-			) : IKokoroApi.IV2.IActionCostsApi.IHook.IOnActionCostsTransactionFinishedArgs;
+			internal sealed class OnActionCostsTransactionFinishedArgs : IKokoroApi.IV2.IActionCostsApi.IHook.IOnActionCostsTransactionFinishedArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly OnActionCostsTransactionFinishedArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public Card? Card { get; internal set; }
+				public int Direction { get; internal set; }
+				public IKokoroApi.IV2.IActionCostsApi.IWholeTransactionPaymentResult TransactionPaymentResult { get; internal set; } = null!;
+			}
 		}
 	}
 }
@@ -450,8 +455,14 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 	
 	internal void OnActionCostsTransactionFinished(State state, Combat combat, Card? card, IKokoroApi.IV2.IActionCostsApi.IWholeTransactionPaymentResult transactionPaymentResult)
 	{
+		var args = ApiImplementation.V2Api.ActionCostsApi.OnActionCostsTransactionFinishedArgs.Instance;
+		args.State = state;
+		args.Combat = combat;
+		args.Card = card;
+		args.TransactionPaymentResult = transactionPaymentResult;
+		
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			hook.OnActionCostsTransactionFinished(new ApiImplementation.V2Api.ActionCostsApi.OnActionCostsTransactionFinishedArgs(state, combat, card, transactionPaymentResult));
+			hook.OnActionCostsTransactionFinished(args);
 	}
 	
 	public IEnumerable<CardAction>? GetWrappedCardActions(IKokoroApi.IV2.IWrappedActionsApi.IHook.IGetWrappedCardActionsArgs args)

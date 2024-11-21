@@ -168,5 +168,12 @@
 	"spontaneous": {
 		"name": "Spontaneous",
 		"description": "This action only triggers whenever a turn starts with this card in hand, or if it's drawn for the first time this turn."
+	},
+	"sequence": {
+		"name": "  Sequence",
+		"description": {
+			"stateful": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played (currently <c=boldPink>{{Current}}</c>/<c=boldPink>{{Steps}}</c>).",
+			"stateless": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played."
+		}
 	}
 }

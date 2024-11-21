@@ -3,13 +3,13 @@
     "Version": "{{ModVersion}}",
     "DisplayName": "Natasha",
     "Author": "Shockah",
-    "RequiredApiVersion": "1.2.0",
+    "RequiredApiVersion": "1.6.0-beta1",
     "EntryPointAssembly": "Natasha.dll",
     "LoadPhase": "AfterDbInit",
     "Dependencies": [
         {
             "UniqueName": "Shockah.Kokoro",
-            "Version": "1.11.0"
+            "Version": "1.13.0-beta1"
         }
     ],
     "UpdateChecks": {

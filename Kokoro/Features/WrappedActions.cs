@@ -56,9 +56,13 @@ partial class ApiImplementation
 			public IEnumerable<CardAction> GetWrappedCardActionsRecursively(CardAction action, bool includingWrapperActions)
 				=> WrappedActionManager.Instance.GetWrappedCardActionsRecursively(action, includingWrapperActions);
 			
-			internal record struct GetWrappedCardActionsArgs(
-				CardAction Action
-			) : IKokoroApi.IV2.IWrappedActionsApi.IHook.IGetWrappedCardActionsArgs;
+			internal sealed class GetWrappedCardActionsArgs : IKokoroApi.IV2.IWrappedActionsApi.IHook.IGetWrappedCardActionsArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly GetWrappedCardActionsArgs Instance = new();
+				
+				public CardAction Action { get; internal set; } = null!;
+			}
 		}
 	}
 }
@@ -84,13 +88,20 @@ internal sealed class WrappedActionManager : VariedApiVersionHookManager<IKokoro
 	}
 
 	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
-		=> Hooks.Select(hook => hook.GetWrappedCardActions(new ApiImplementation.V2Api.WrappedActionsApi.GetWrappedCardActionsArgs(action))).OfType<List<CardAction>>().FirstOrDefault();
+	{
+		var args = ApiImplementation.V2Api.WrappedActionsApi.GetWrappedCardActionsArgs.Instance;
+		args.Action = action;
+		return Hooks.Select(hook => hook.GetWrappedCardActions(args)).OfType<List<CardAction>>().FirstOrDefault();
+	}
 
 	public IEnumerable<CardAction> GetWrappedCardActionsRecursively(CardAction action, bool includingWrapperActions)
 	{
+		var args = ApiImplementation.V2Api.WrappedActionsApi.GetWrappedCardActionsArgs.Instance;
+		args.Action = action;
+		
 		foreach (var hook in Hooks)
 		{
-			var wrappedActions = hook.GetWrappedCardActions(new ApiImplementation.V2Api.WrappedActionsApi.GetWrappedCardActionsArgs(action));
+			var wrappedActions = hook.GetWrappedCardActions(args);
 			if (wrappedActions is not null)
 			{
 				foreach (var wrappedAction in wrappedActions)

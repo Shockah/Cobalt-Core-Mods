@@ -1,8 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Shockah.MORE</RootNamespace>
-		<Version>1.1.1</Version>
-		<IncludedModProjectPaths>i18n;assets</IncludedModProjectPaths>
+		<Version>1.2.0-beta1</Version>
 	</PropertyGroup>
+	<ItemGroup>
+		<ModFiles Include="i18n/**" />
+		<ModFiles Include="assets/**" />
+	</ItemGroup>
 	<Import Project="..\Configuration.Mod.props" />
 </Project>

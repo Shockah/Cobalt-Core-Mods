@@ -1,8 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Shockah.BetterRunSummaries</RootNamespace>
-		<Version>1.0.1</Version>
-		<IncludedModProjectPaths>i18n;assets</IncludedModProjectPaths>
+		<Version>1.1.0-beta1</Version>
 	</PropertyGroup>
+	<ItemGroup>
+		<ModFiles Include="i18n/**" />
+	</ItemGroup>
 	<Import Project="..\Configuration.Mod.props" />
 </Project>

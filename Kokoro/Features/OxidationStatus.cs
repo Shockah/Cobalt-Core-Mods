@@ -45,11 +45,15 @@ partial class ApiImplementation
 			public void UnregisterHook(IKokoroApi.IV2.IOxidationStatusApi.IHook hook)
 				=> OxidationStatusManager.Instance.Unregister(hook);
 			
-			internal record struct ModifyOxidationRequirementArgs(
-				State State,
-				Ship Ship,
-				int Value
-			) : IKokoroApi.IV2.IOxidationStatusApi.IHook.IModifyOxidationRequirementArgs;
+			internal sealed class ModifyOxidationRequirementArgs : IKokoroApi.IV2.IOxidationStatusApi.IHook.IModifyOxidationRequirementArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly ModifyOxidationRequirementArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Ship Ship { get; internal set; } = null!;
+				public int Value { get; internal set; }
+			}
 		}
 	}
 }
@@ -66,10 +70,14 @@ internal sealed class OxidationStatusManager : VariedApiVersionHookManager<IKoko
 
 	public int GetOxidationStatusMaxValue(State state, Ship ship)
 	{
-		var value = BaseOxidationStatusMaxValue;
+		var args = ApiImplementation.V2Api.OxidationStatusApi.ModifyOxidationRequirementArgs.Instance;
+		args.State = state;
+		args.Ship = ship;
+		args.Value = BaseOxidationStatusMaxValue;
+		
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			value = hook.ModifyOxidationRequirement(new ApiImplementation.V2Api.OxidationStatusApi.ModifyOxidationRequirementArgs(state, ship, value));
-		return value;
+			args.Value = hook.ModifyOxidationRequirement(args);
+		return args.Value;
 	}
 
 	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)

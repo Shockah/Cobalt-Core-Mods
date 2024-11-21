@@ -47,42 +47,62 @@ partial class ApiImplementation
 			public Color DefaultInactiveStatusBarColor
 				=> DefaultActiveStatusBarColor.fadeAlpha(0.3);
 			
-			internal record struct GetExtraStatusesToShowArgs(
-				State State,
-				Combat Combat,
-				Ship Ship
-			) : IKokoroApi.IV2.IStatusRenderingApi.IHook.IGetExtraStatusesToShowArgs;
+			internal sealed class GetExtraStatusesToShowArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IGetExtraStatusesToShowArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly GetExtraStatusesToShowArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public Ship Ship { get; internal set; } = null!;
+			}
 			
-			internal record struct ShouldShowStatusArgs(
-				State State,
-				Combat Combat,
-				Ship Ship,
-				Status Status,
-				int Amount
-			) : IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldShowStatusArgs;
+			internal sealed class ShouldShowStatusArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldShowStatusArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly ShouldShowStatusArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public Ship Ship { get; internal set; } = null!;
+				public Status Status { get; internal set; }
+				public int Amount { get; internal set; }
+			}
 			
-			internal record struct ShouldOverrideStatusRenderingAsBarsArgs(
-				State State,
-				Combat Combat,
-				Ship Ship,
-				Status Status,
-				int Amount
-			) : IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldOverrideStatusRenderingAsBarsArgs;
+			internal sealed class ShouldOverrideStatusRenderingAsBarsArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldOverrideStatusRenderingAsBarsArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly ShouldOverrideStatusRenderingAsBarsArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public Ship Ship { get; internal set; } = null!;
+				public Status Status { get; internal set; }
+				public int Amount { get; internal set; }
+			}
 			
-			internal record struct OverrideStatusRenderingArgs(
-				State State,
-				Combat Combat,
-				Ship Ship,
-				Status Status,
-				int Amount
-			) : IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingArgs;
+			internal sealed class OverrideStatusRenderingArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly OverrideStatusRenderingArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public Ship Ship { get; internal set; } = null!;
+				public Status Status { get; internal set; }
+				public int Amount { get; internal set; }
+			}
 			
-			internal record struct OverrideStatusTooltipsArgs(
-				Status Status,
-				int Amount,
-				Ship? Ship,
-				List<Tooltip> Tooltips
-			) : IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs;
+			internal sealed class OverrideStatusTooltipsArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly OverrideStatusTooltipsArgs Instance = new();
+				
+				public Status Status { get; internal set; }
+				public int Amount { get; internal set; }
+				public Ship? Ship { get; internal set; }
+				public List<Tooltip> Tooltips { get; internal set; } = null!;
+			}
 		}
 	}
 }
@@ -122,17 +142,31 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 
 	public bool ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)
 	{
+		var args = ApiImplementation.V2Api.StatusRenderingApi.ShouldShowStatusArgs.Instance;
+		args.State = state;
+		args.Combat = combat;
+		args.Ship = ship;
+		args.Status = status;
+		args.Amount = amount;
+		
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			if (hook.ShouldShowStatus(new ApiImplementation.V2Api.StatusRenderingApi.ShouldShowStatusArgs(state, combat, ship, status, amount)) is { } result)
+			if (hook.ShouldShowStatus(args) is { } result)
 				return result;
 		return true;
 	}
 
 	public IKokoroApi.IV2.IStatusRenderingApi.IHook? GetOverridingAsBarsHook(State state, Combat combat, Ship ship, Status status, int amount)
 	{
+		var args = ApiImplementation.V2Api.StatusRenderingApi.ShouldOverrideStatusRenderingAsBarsArgs.Instance;
+		args.State = state;
+		args.Combat = combat;
+		args.Ship = ship;
+		args.Status = status;
+		args.Amount = amount;
+		
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 		{
-			var hookResult = hook.ShouldOverrideStatusRenderingAsBars(new ApiImplementation.V2Api.StatusRenderingApi.ShouldOverrideStatusRenderingAsBarsArgs(state, combat, ship, status, amount));
+			var hookResult = hook.ShouldOverrideStatusRenderingAsBars(args);
 			switch (hookResult)
 			{
 				case false:
@@ -146,8 +180,14 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 
 	internal List<Tooltip> OverrideStatusTooltips(Status status, int amount, List<Tooltip> tooltips)
 	{
+		var args = ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusTooltipsArgs.Instance;
+		args.Status = status;
+		args.Amount = amount;
+		args.Ship = RenderingStatusForShip;
+		args.Tooltips = tooltips;
+		
 		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, (MG.inst.g.state ?? DB.fakeState).EnumerateAllArtifacts()))
-			tooltips = hook.OverrideStatusTooltips(new ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusTooltipsArgs(status, amount, RenderingStatusForShip, tooltips));
+			tooltips = hook.OverrideStatusTooltips(args);
 		return tooltips;
 	}
 	
@@ -164,7 +204,15 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 		var hook = Instance.GetOverridingAsBarsHook(state, combat, __instance, status, amount);
 		if (hook is null)
 			return;
-		var @override = hook.OverrideStatusRendering(new ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusRenderingArgs(state, combat, __instance, status, amount));
+		
+		var args = ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusRenderingArgs.Instance;
+		args.State = state;
+		args.Combat = combat;
+		args.Ship = __instance;
+		args.Status = status;
+		args.Amount = amount;
+		
+		var @override = hook.OverrideStatusRendering(args);
 		StatusBarRenderingOverrides[status] = @override;
 
 		var barTickWidth = @override.BarTickWidth ?? __result.barTickWidth;
@@ -214,13 +262,18 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 	private static void Ship_RenderStatuses_Transpiler_ModifyStatusesToShow(Ship ship, G g)
 	{
 		var combat = g.state.route as Combat ?? DB.fakeCombat;
+		
+		var args = ApiImplementation.V2Api.StatusRenderingApi.GetExtraStatusesToShowArgs.Instance;
+		args.State = g.state;
+		args.Combat = combat;
+		args.Ship = ship;
 
 		ship._statusListCache = ship.statusEffects
 			.Where(kvp => kvp.Key != Status.shield && kvp.Key != Status.tempShield)
 			.Select(kvp => (Status: kvp.Key, Priority: 0.0, Amount: kvp.Value))
 			.Concat(
 				Instance
-					.SelectMany(hook => hook.GetExtraStatusesToShow(new ApiImplementation.V2Api.StatusRenderingApi.GetExtraStatusesToShowArgs(g.state, combat, ship)))
+					.SelectMany(hook => hook.GetExtraStatusesToShow(args))
 					.Select(e => (Status: e.Status, Priority: e.Priority, Amount: ship.Get(e.Status)))
 			)
 			.OrderByDescending(e => e.Priority)

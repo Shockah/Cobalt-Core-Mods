@@ -43,7 +43,7 @@ internal sealed class SequenceManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 
 	internal static void Setup(IHarmony harmony)
 	{
-		BaseIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icons/Sequence.png"));
+		BaseIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Sequence.png"));
 
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
@@ -135,9 +135,9 @@ internal sealed class SequenceAction : CardAction, IKokoroApi.IV2.ISequenceApi.I
 			{
 				Icon = SequenceManager.ObtainIcon(SequenceStep, SequenceLength),
 				TitleColor = Colors.action,
-				Title = ModEntry.Instance.Localizations.Localize(["action", "Sequence", "name"]),
+				Title = ModEntry.Instance.Localizations.Localize(["sequence", "name"]),
 				Description = ModEntry.Instance.Localizations.Localize(
-					["action", "Sequence", "description", currentSequenceStep == -1 ? "stateless" : "stateful"],
+					["sequence", "description", currentSequenceStep == -1 ? "stateless" : "stateful"],
 					currentSequenceStep == -1
 						? new { Step = SequenceStep, Steps = SequenceLength }
 						: new { Step = SequenceStep, Steps = SequenceLength, Current = currentSequenceStep }

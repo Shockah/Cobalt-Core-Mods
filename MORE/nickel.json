@@ -4,13 +4,13 @@
     "DisplayName": "MORE (Mix Of Random Elements)",
     "Description": "Adds various content all around, most notably events.",
     "Author": "Shockah",
-    "RequiredApiVersion": "1.3.1",
+    "RequiredApiVersion": "1.6.0-beta1",
     "EntryPointAssembly": "MORE.dll",
     "LoadPhase": "AfterDbInit",
     "Dependencies": [
         {
             "UniqueName": "Shockah.Kokoro",
-            "Version": "1.11.0"
+            "Version": "1.13.0-beta1"
         }
     ],
     "UpdateChecks": {

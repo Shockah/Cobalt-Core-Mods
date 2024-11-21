@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Shockah.Wormholes</RootNamespace>
-		<Version>1.1.0</Version>
+		<Version>1.2.0-beta1</Version>
 		<IsLegacyMod>True</IsLegacyMod>
-		<IncludedModProjectPaths>assets</IncludedModProjectPaths>
 	</PropertyGroup>
+	<ItemGroup>
+		<ModFiles Include="assets/**" />
+	</ItemGroup>
 	<Import Project="..\Configuration.Mod.props" />
 </Project>
