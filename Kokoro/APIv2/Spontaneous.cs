@@ -16,8 +16,11 @@ public partial interface IKokoroApi
 		public interface ISpontaneousApi
 		{
 			/// <summary>
-			/// The card trait that is being temporarily added to cards, which already triggered their spontaneous actions.
+			/// The card trait that is being temporarily added to cards, which already triggered their spontaneous actions this turn.
 			/// </summary>
+			/// <remarks>
+			/// This trait is not meant to be added via <see cref="IModCards"/> methods - it is purely visual, and adding it will not change any behavior.
+			/// </remarks>
 			ICardTraitEntry SpontaneousTriggeredTrait { get; }
 			
 			/// <summary>

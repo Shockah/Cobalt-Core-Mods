@@ -8,15 +8,21 @@ public partial interface IKokoroApi
 
 		public interface ITimesPlayedApi
 		{
+			ITimesPlayedVariableHintAction? AsVariableHintAction(CardAction action);
+			ITimesPlayedVariableHintAction MakeVariableHintAction(int cardId);
+			
+			ITimesPlayedConditionExpression? AsConditionExpression(IConditionalApi.IExpression expression);
+			ITimesPlayedConditionExpression MakeConditionExpression(int currentTimesPlayed);
+			
+			int GetTimesPlayed(Card card);
+			void SetTimesPlayed(Card card, int value);
+			
 			public interface ITimesPlayedVariableHintAction : ICardAction<AVariableHint>
 			{
 				int CardId { get; set; }
 
 				ITimesPlayedVariableHintAction SetCardId(int value);
 			}
-			
-			ITimesPlayedVariableHintAction? AsVariableHintAction(CardAction action);
-			ITimesPlayedVariableHintAction MakeVariableHintAction(int cardId);
 
 			public interface ITimesPlayedConditionExpression : IConditionalApi.IIntExpression
 			{
@@ -24,12 +30,6 @@ public partial interface IKokoroApi
 				
 				ITimesPlayedConditionExpression SetCurrentTimesPlayed(int value);
 			}
-			
-			ITimesPlayedConditionExpression? AsConditionExpression(IConditionalApi.IExpression expression);
-			ITimesPlayedConditionExpression MakeConditionExpression(int currentTimesPlayed);
-			
-			int GetTimesPlayed(Card card);
-			void SetTimesPlayed(Card card, int value);
 		}
 	}
 }

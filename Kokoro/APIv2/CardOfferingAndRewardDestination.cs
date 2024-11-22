@@ -8,29 +8,35 @@ public partial interface IKokoroApi
 
 		public interface ICardOfferingAndRewardDestinationApi
 		{
+			ICardOfferingAction? AsCardOffering(ACardOffering action);
+			
+			ICardOfferingAction MakeCardOffering(ACardOffering action);
+			
+			ICardReward? AsCardReward(CardReward route);
+			
+			ICardReward MakeCardReward(CardReward route);
+			
 			public interface ICardOfferingAction : ICardAction<ACardOffering>
 			{
 				CardDestination? Destination { get; set; }
+				
 				bool? InsertRandomly { get; set; }
 
 				ICardOfferingAction SetDestination(CardDestination? value);
+				
 				ICardOfferingAction SetInsertRandomly(bool? value);
 			}
 			
 			public interface ICardReward : IRoute<CardReward>
 			{
 				CardDestination? Destination { get; set; }
+				
 				bool? InsertRandomly { get; set; }
 
 				ICardReward SetDestination(CardDestination? value);
+				
 				ICardReward SetInsertRandomly(bool? value);
 			}
-			
-			ICardOfferingAction? AsCardOffering(ACardOffering action);
-			ICardOfferingAction MakeCardOffering(ACardOffering action);
-			
-			ICardReward? AsCardReward(CardReward route);
-			ICardReward MakeCardReward(CardReward route);
 		}
 	}
 }
