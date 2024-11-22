@@ -37,14 +37,10 @@ partial class ApiImplementation
 				=> action as IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction;
 
 			public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction MakeAction(int cardId)
-			{
-				throw new NotImplementedException();
-			}
+				=> new APlaySpecificCardFromAnywhere { CardIds = [cardId] };
 
 			public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction MakeAction(IEnumerable<int> cardIds, int amount = 1)
-			{
-				throw new NotImplementedException();
-			}
+				=> new APlayRandomCardsFromAnywhere { CardIds = cardIds.ToHashSet(), Amount = amount };
 		}
 	}
 }

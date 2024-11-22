@@ -57,14 +57,10 @@ partial class ApiImplementation
 				=> Kokoro.StandardRedrawStatusActionHook.Instance;
 			
 			public bool IsRedrawPossible(State state, Combat combat, Card card)
-			{
-				throw new NotImplementedException();
-			}
+				=> RedrawStatusManager.Instance.IsRedrawPossible(state, combat, card);
 
 			public bool DoRedraw(State state, Combat combat, Card card)
-			{
-				throw new NotImplementedException();
-			}
+				=> RedrawStatusManager.Instance.DoRedraw(state, combat, card);
 
 			public void RegisterHook(IKokoroApi.IV2.IRedrawStatusApi.IHook hook, double priority = 0)
 				=> RedrawStatusManager.Instance.HookManager.Register(hook, priority);
