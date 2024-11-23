@@ -15,7 +15,7 @@ public partial interface IKokoroApi
 			/// <summary>
 			/// Casts the action as an on turn end action, if it is one.
 			/// </summary>
-			/// <param name="action">The potentially on turn end action.</param>
+			/// <param name="action">The potential on turn end action.</param>
 			/// <returns>The on turn end action, if the given action is one, or <c>null</c> otherwise.</returns>
 			IOnTurnEndAction? AsAction(CardAction action);
 			

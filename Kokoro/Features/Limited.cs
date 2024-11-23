@@ -52,10 +52,10 @@ partial class ApiImplementation
 			public IKokoroApi.IV2.ILimitedApi.IChangeLimitedUsesAction MakeChangeLimitedUsesAction(int cardId, int amount, AStatusMode mode = AStatusMode.Add)
 				=> new ChangeLimitedUsesAction { CardId = cardId, Amount = amount, Mode = mode };
 
-			public IKokoroApi.IV2.ILimitedApi.ICardSelect MakeCardSelect(ACardSelect action)
+			public IKokoroApi.IV2.ILimitedApi.ICardSelect ModifyCardSelect(ACardSelect action)
 				=> new CardSelectWrapper { Wrapped = action };
 
-			public IKokoroApi.IV2.ILimitedApi.ICardBrowse MakeCardBrowse(CardBrowse route)
+			public IKokoroApi.IV2.ILimitedApi.ICardBrowse ModifyCardBrowse(CardBrowse route)
 				=> new CardBrowseWrapper { Wrapped = route };
 
 			public void RegisterHook(IKokoroApi.IV2.ILimitedApi.IHook hook, double priority = 0)
@@ -68,7 +68,7 @@ partial class ApiImplementation
 			{
 				public required ACardSelect Wrapped { get; init; }
 
-				public bool? Limited
+				public bool? FilterLimited
 				{
 					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(Wrapped, "FilterLimited");
 					set => ModEntry.Instance.Helper.ModData.SetOptionalModData(Wrapped, "FilterLimited", value);
@@ -78,9 +78,9 @@ partial class ApiImplementation
 				public ACardSelect AsCardAction
 					=> Wrapped;
 				
-				public IKokoroApi.IV2.ILimitedApi.ICardSelect SetLimited(bool? value)
+				public IKokoroApi.IV2.ILimitedApi.ICardSelect SetFilterLimited(bool? value)
 				{
-					Limited = value;
+					FilterLimited = value;
 					return this;
 				}
 			}
@@ -89,7 +89,7 @@ partial class ApiImplementation
 			{
 				public required CardBrowse Wrapped { get; init; }
 
-				public bool? Limited
+				public bool? FilterLimited
 				{
 					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(Wrapped, "FilterLimited");
 					set => ModEntry.Instance.Helper.ModData.SetOptionalModData(Wrapped, "FilterLimited", value);
@@ -98,9 +98,9 @@ partial class ApiImplementation
 				public CardBrowse AsRoute
 					=> Wrapped;
 				
-				public IKokoroApi.IV2.ILimitedApi.ICardBrowse SetLimited(bool? value)
+				public IKokoroApi.IV2.ILimitedApi.ICardBrowse SetFilterLimited(bool? value)
 				{
-					Limited = value;
+					FilterLimited = value;
 					return this;
 				}
 			}

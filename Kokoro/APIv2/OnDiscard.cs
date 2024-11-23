@@ -15,7 +15,7 @@ public partial interface IKokoroApi
 			/// <summary>
 			/// Casts the action as an on discard action, if it is one.
 			/// </summary>
-			/// <param name="action">The potentially on discard action.</param>
+			/// <param name="action">The potential on discard action.</param>
 			/// <returns>The on discard action, if the given action is one, or <c>null</c> otherwise.</returns>
 			IOnDiscardAction? AsAction(CardAction action);
 			

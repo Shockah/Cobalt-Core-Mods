@@ -56,7 +56,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 					browseAction = new ExhaustCardBrowseAction
 					{
 						OnSuccess = [
-							ModEntry.Instance.KokoroApi.CustomCardBrowse.MakeCustom(new ACardSelect
+							ModEntry.Instance.KokoroApi.CustomCardBrowse.ModifyCardSelect(new ACardSelect
 							{
 								browseAction = new PutCardInHandBrowseAction(),
 								ignoreCardType = Key()
@@ -78,7 +78,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 				}
 			],
 			Upgrade.A => [
-				ModEntry.Instance.KokoroApi.CustomCardBrowse.MakeCustom(new ACardSelect
+				ModEntry.Instance.KokoroApi.CustomCardBrowse.ModifyCardSelect(new ACardSelect
 				{
 					browseAction = new ExhaustCardBrowseAction
 					{

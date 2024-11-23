@@ -16,7 +16,7 @@ public partial interface IKokoroApi
 			/// <summary>
 			/// Casts the action as a hidden action, if it is one.
 			/// </summary>
-			/// <param name="action">The potentially hidden action.</param>
+			/// <param name="action">The potential hidden action.</param>
 			/// <returns>The hidden action, if the given action is one, or <c>null</c> otherwise.</returns>
 			IHiddenAction? AsAction(CardAction action);
 			

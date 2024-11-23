@@ -26,7 +26,7 @@ public partial interface IKokoroApi
 			/// <summary>
 			/// Casts the action as a spontaneous action, if it is one.
 			/// </summary>
-			/// <param name="action">The potentially spontaneous action.</param>
+			/// <param name="action">The potential spontaneous action.</param>
 			/// <returns>The spontaneous action, if the given action is one, or <c>null</c> otherwise.</returns>
 			ISpontaneousAction? AsAction(CardAction action);
 			

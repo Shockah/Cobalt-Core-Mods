@@ -55,13 +55,13 @@ partial class ApiImplementation
 		
 		public sealed class CustomCardBrowseApi : IKokoroApi.IV2.ICustomCardBrowseApi
 		{
-			public IKokoroApi.IV2.ICustomCardBrowseApi.IAction MakeCustom(ACardSelect action)
-				=> new ActionWrapper { Wrapped = Mutil.DeepCopy(action) };
+			public IKokoroApi.IV2.ICustomCardBrowseApi.ICardSelect ModifyCardSelect(ACardSelect action)
+				=> new CardSelectWrapper { Wrapped = Mutil.DeepCopy(action) };
 
-			public IKokoroApi.IV2.ICustomCardBrowseApi.IRoute MakeCustom(CardBrowse route)
-				=> new RouteWrapper { Wrapped = Mutil.DeepCopy(route) };
+			public IKokoroApi.IV2.ICustomCardBrowseApi.ICardBrowse ModifyCardBrowse(CardBrowse route)
+				=> new CardBrowseWrapper { Wrapped = Mutil.DeepCopy(route) };
 			
-			private sealed class ActionWrapper : IKokoroApi.IV2.ICustomCardBrowseApi.IAction
+			private sealed class CardSelectWrapper : IKokoroApi.IV2.ICustomCardBrowseApi.ICardSelect
 			{
 				public required ACardSelect Wrapped { get; init; }
 
@@ -75,14 +75,14 @@ partial class ApiImplementation
 				public ACardSelect AsCardAction
 					=> Wrapped;
 				
-				public IKokoroApi.IV2.ICustomCardBrowseApi.IAction SetCustomBrowseSource(IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource? source)
+				public IKokoroApi.IV2.ICustomCardBrowseApi.ICardSelect SetCustomBrowseSource(IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource? source)
 				{
 					CustomBrowseSource = source;
 					return this;
 				}
 			}
 			
-			private sealed class RouteWrapper : IKokoroApi.IV2.ICustomCardBrowseApi.IRoute
+			private sealed class CardBrowseWrapper : IKokoroApi.IV2.ICustomCardBrowseApi.ICardBrowse
 			{
 				public required CardBrowse Wrapped { get; init; }
 
@@ -95,7 +95,7 @@ partial class ApiImplementation
 				public CardBrowse AsRoute
 					=> Wrapped;
 				
-				public IKokoroApi.IV2.ICustomCardBrowseApi.IRoute SetCustomBrowseSource(IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource? source)
+				public IKokoroApi.IV2.ICustomCardBrowseApi.ICardBrowse SetCustomBrowseSource(IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource? source)
 				{
 					CustomBrowseSource = source;
 					return this;

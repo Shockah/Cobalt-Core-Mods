@@ -31,8 +31,8 @@ public partial interface IKokoroApi
 				IRoute SetCustomBrowseSource(ICustomCardBrowseSource? source);
 			}
 
-			IAction MakeCustom(ACardSelect action);
-			IRoute MakeCustom(CardBrowse route);
+			IAction ModifyCardSelect(ACardSelect action);
+			IRoute ModifyCardBrowse(CardBrowse route);
 		}
 	}
 }

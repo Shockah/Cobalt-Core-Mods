@@ -12,7 +12,7 @@ public sealed class ASpecificCardOffering : CardAction
 	public override Route? BeginWithRoute(G g, State s, Combat c)
 	{
 		timer = 0;
-		return ModEntry.Instance.KokoroApi.CardOfferingAndRewardDestination.MakeCardReward(
+		return ModEntry.Instance.KokoroApi.CardDestination.ModifyCardReward(
 			new CardReward
 			{
 				cards = Cards.Select(c =>

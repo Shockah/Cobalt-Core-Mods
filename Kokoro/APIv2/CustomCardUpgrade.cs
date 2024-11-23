@@ -8,14 +8,14 @@ public partial interface IKokoroApi
 		
 		public interface ICustomCardUpgradeApi
 		{
+			IRoute MakeCustom(CardUpgrade route);
+			
 			public interface IRoute : IRoute<CardUpgrade>
 			{
 				bool IsInPlace { get; set; }
 
 				IRoute SetInPlace(bool value);
 			}
-
-			IRoute MakeCustom(CardUpgrade route);
 		}
 	}
 }

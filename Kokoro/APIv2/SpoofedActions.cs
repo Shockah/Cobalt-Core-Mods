@@ -16,7 +16,7 @@ public partial interface IKokoroApi
 			/// <summary>
 			/// Casts the action as a spoofed action, if it is one.
 			/// </summary>
-			/// <param name="action">The potentially spoofed action.</param>
+			/// <param name="action">The potential spoofed action.</param>
 			/// <returns>The spoofed action, if the given action is one, or <c>null</c> otherwise.</returns>
 			ISpoofedAction? AsAction(CardAction action);
 			

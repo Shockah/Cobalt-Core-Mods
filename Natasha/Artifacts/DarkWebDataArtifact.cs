@@ -37,13 +37,13 @@ internal sealed class DarkWebDataArtifact : Artifact, IRegisterable
 	public override void OnReceiveArtifact(State state)
 	{
 		base.OnReceiveArtifact(state);
-		state.GetCurrentQueue().QueueImmediate(ModEntry.Instance.KokoroApi.Limited.MakeCardSelect(new ACardSelect
+		state.GetCurrentQueue().QueueImmediate(ModEntry.Instance.KokoroApi.Limited.ModifyCardSelect(new ACardSelect
 		{
 			browseAction = new CardSelectAction(),
 			browseSource = CardBrowse.Source.Deck,
 			filterExhaust = true,
 			filterTemporary = false,
-		}).SetLimited(false).AsCardAction);
+		}).SetFilterLimited(false).AsCardAction);
 	}
 
 	private static void ArtifactReward_GetBlockedArtifacts_Postfix(State s, ref HashSet<Type> __result)
