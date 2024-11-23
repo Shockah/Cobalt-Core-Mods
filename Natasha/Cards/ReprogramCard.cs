@@ -46,7 +46,7 @@ internal sealed class ReprogramCard : Card, IRegisterable, IHasCustomCardTraits
 		=> [
 			ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 				ModEntry.Instance.KokoroApi.Conditional.Equation(
-					ModEntry.Instance.KokoroApi.TimesPlayed.MakeConditionExpression(ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this) + 1),
+					ModEntry.Instance.KokoroApi.TimesPlayed.MakeConditionExpression(s, c, uuid),
 					IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal,
 					ModEntry.Instance.KokoroApi.Conditional.Constant(1),
 					IKokoroApi.IV2.IConditionalApi.EquationStyle.Formal

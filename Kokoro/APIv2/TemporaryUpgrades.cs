@@ -87,7 +87,7 @@ public partial interface IKokoroApi
 			/// <summary>
 			/// Creates a new action that sets a given card's temporary upgrade.
 			/// </summary>
-			/// <param name="cardId">The ID of a card to set the upgrade for.</param>
+			/// <param name="cardId">The ID of the card to set the upgrade for.</param>
 			/// <param name="upgrade">The upgrade to set.</param>
 			/// <returns>The new action.</returns>
 			ISetTemporaryUpgradeAction MakeSetTemporaryUpgradeAction(int cardId, Upgrade? upgrade);
@@ -102,7 +102,7 @@ public partial interface IKokoroApi
 			/// <summary>
 			/// Creates a new action that will present a screen to choose a temporary upgrade to set for the given card.
 			/// </summary>
-			/// <param name="cardId">The ID of a card to set the upgrade for.</param>
+			/// <param name="cardId">The ID of the card to set the upgrade for.</param>
 			/// <returns>The new action.</returns>
 			IChooseTemporaryUpgradeAction MakeChooseTemporaryUpgradeAction(int cardId);
 

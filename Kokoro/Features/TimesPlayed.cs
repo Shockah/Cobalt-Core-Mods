@@ -22,8 +22,8 @@ partial class ApiImplementation
 			public IKokoroApi.IV2.ITimesPlayedApi.ITimesPlayedConditionExpression? AsConditionExpression(IKokoroApi.IV2.IConditionalApi.IExpression expression)
 				=> expression as IKokoroApi.IV2.ITimesPlayedApi.ITimesPlayedConditionExpression;
 
-			public IKokoroApi.IV2.ITimesPlayedApi.ITimesPlayedConditionExpression MakeConditionExpression(int currentTimesPlayed)
-				=> new TimesPlayedCondition { CurrentTimesPlayed = currentTimesPlayed };
+			public IKokoroApi.IV2.ITimesPlayedApi.ITimesPlayedConditionExpression MakeConditionExpression(State state, Combat combat, int cardId)
+				=> new TimesPlayedCondition { CardId = cardId, CurrentTimesPlayed = state.FindCard(cardId) is { } card ? GetTimesPlayed(card) : 0 };
 
 			public int GetTimesPlayed(Card card)
 				=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(card, "TimesPlayed");
@@ -98,6 +98,8 @@ internal sealed class TimesPlayedVariableHint : AVariableHint, IKokoroApi.IV2.IT
 
 internal sealed class TimesPlayedCondition : IKokoroApi.IV2.ITimesPlayedApi.ITimesPlayedConditionExpression, IKokoroApi.IConditionalActionApi.IIntExpression
 {
+	public required int CardId { get; internal set; }
+
 	public required int CurrentTimesPlayed { get; set; }
 
 	public string GetTooltipDescription(State state, Combat? combat)
@@ -111,6 +113,14 @@ internal sealed class TimesPlayedCondition : IKokoroApi.IV2.ITimesPlayedApi.ITim
 		if (!dontRender)
 			Draw.Sprite(TimesPlayedManager.Icon.Sprite, position.x, position.y, color: isDisabled ? Colors.disabledIconTint : Colors.white);
 		position.x += 8;
+	}
+	
+	public IKokoroApi.IV2.ITimesPlayedApi.ITimesPlayedConditionExpression SetCard(State state, Combat combat, int cardId)
+	{
+		CardId = cardId;
+		if (state.FindCard(cardId) is { } card)
+			CurrentTimesPlayed = ModEntry.Instance.Api.V2.TimesPlayed.GetTimesPlayed(card);
+		return this;
 	}
 	
 	public IKokoroApi.IV2.ITimesPlayedApi.ITimesPlayedConditionExpression SetCurrentTimesPlayed(int value)

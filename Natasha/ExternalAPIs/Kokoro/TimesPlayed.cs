@@ -26,7 +26,7 @@ public partial interface IKokoroApi
 			}
 			
 			ITimesPlayedConditionExpression? AsConditionExpression(IConditionalApi.IExpression expression);
-			ITimesPlayedConditionExpression MakeConditionExpression(int currentTimesPlayed);
+			ITimesPlayedConditionExpression MakeConditionExpression(State state, Combat combat, int cardId);
 			
 			int GetTimesPlayed(Card card);
 			void SetTimesPlayed(Card card, int value);
