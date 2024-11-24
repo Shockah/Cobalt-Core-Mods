@@ -130,7 +130,7 @@ public partial interface IKokoroApi
 			/// Registers a new hook related to the Limited card trait.
 			/// </summary>
 			/// <param name="hook">The hook.</param>
-			/// <param name="priority">The priority for the hook. Higher priority hooks are called before lower priority ones. Defaults to <c>0</c></param>
+			/// <param name="priority">The priority for the hook. Higher priority hooks are called before lower priority ones. Defaults to <c>0</c>.</param>
 			void RegisterHook(IHook hook, double priority = 0);
 			
 			/// <summary>

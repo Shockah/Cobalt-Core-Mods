@@ -65,28 +65,28 @@ public partial interface IKokoroApi
 				CardAction Action { get; set; }
 
 				/// <summary>
-				/// Sets the ID of the card to check the amount of times it was played this combat.
+				/// Sets <see cref="CardId"/>.
 				/// </summary>
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
 				ISequenceAction SetCardId(int value);
 				
 				/// <summary>
-				/// Sets the step of the sequence at which this action triggers.
+				/// Sets <see cref="SequenceStep"/>.
 				/// </summary>
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
 				ISequenceAction SetSequenceStep(int value);
 				
 				/// <summary>
-				/// Sets the total length of the sequence.
+				/// Sets <see cref="SequenceLength"/>.
 				/// </summary>
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
 				ISequenceAction SetSequenceLength(int value);
 				
 				/// <summary>
-				/// Sets the action to run every N-th play of the card.
+				/// Sets <see cref="Action"/>.
 				/// </summary>
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>

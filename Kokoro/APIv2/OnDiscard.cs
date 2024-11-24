@@ -37,7 +37,7 @@ public partial interface IKokoroApi
 				CardAction Action { get; set; }
 
 				/// <summary>
-				/// Sets the action to run on discard.
+				/// Sets <see cref="Action"/>.
 				/// </summary>
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>

@@ -44,14 +44,14 @@ public partial interface IKokoroApi
 				bool ShowTooltips { get; set; }
 
 				/// <summary>
-				/// Sets the action being hidden.
+				/// Sets <see cref="Action"/>.
 				/// </summary>
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
 				IHiddenAction SetAction(CardAction value);
 				
 				/// <summary>
-				/// Sets whether tooltips for the hidden action should be shown.
+				/// Sets <see cref="ShowTooltips"/>.
 				/// </summary>
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>

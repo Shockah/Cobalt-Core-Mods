@@ -122,14 +122,14 @@ public partial interface IKokoroApi
 				Upgrade? Upgrade { get; set; }
 
 				/// <summary>
-				/// Sets the ID of a card to set the upgrade for.
+				/// Sets <see cref="CardId"/>.
 				/// </summary>
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
 				ISetTemporaryUpgradeAction SetCardId(int value);
 				
 				/// <summary>
-				/// Sets the upgrade to set.
+				/// Sets <see cref="Upgrade"/>.
 				/// </summary>
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
@@ -147,7 +147,7 @@ public partial interface IKokoroApi
 				int CardId { get; set; }
 
 				/// <summary>
-				/// Sets the ID of a card to set the upgrade for.
+				/// Sets <see cref="CardId"/>.
 				/// </summary>
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>

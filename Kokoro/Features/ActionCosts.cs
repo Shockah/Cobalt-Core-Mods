@@ -818,10 +818,10 @@ internal sealed class ResourceActionCost : IKokoroApi.IV2.IActionCostsApi.IResou
 	public bool ShowOutgoingIcon { get; set; }
 	
 	[JsonIgnore]
-	public Spr? CostSatisfiedIconOverride { get; set; }
+	public IReadOnlyList<Spr>? CostSatisfiedIconOverride { get; set; }
 	
 	[JsonIgnore]
-	public Spr? CostUnsatisfiedIconOverride { get; set; }
+	public IReadOnlyList<Spr>? CostUnsatisfiedIconOverride { get; set; }
 
 	[JsonIgnore]
 	public IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.IResource> MonitoredResources
@@ -888,16 +888,16 @@ internal sealed class ResourceActionCost : IKokoroApi.IV2.IActionCostsApi.IResou
 
 						if (payment.Paid != 0)
 						{
-							if (CostSatisfiedIconOverride is { } icon)
-								iconsResult.AddRange(Enumerable.Repeat(icon, payment.Paid));
+							if (CostSatisfiedIconOverride is { } icons)
+								iconsResult.AddRange(icons);
 							else
 								iconsResult.AddRange(ActionCostsManager.Instance.GetResourceCostIcons(payment.Payment.Resource.ResourceKey, payment.Paid).Select(i => i.CostSatisfiedIcon));
 						}
 						
 						if (payment.Unpaid != 0)
 						{
-							if (CostUnsatisfiedIconOverride is { } icon)
-								iconsResult.AddRange(Enumerable.Repeat(icon, payment.Unpaid));
+							if (CostUnsatisfiedIconOverride is { } icons)
+								iconsResult.AddRange(icons);
 							else
 								iconsResult.AddRange(ActionCostsManager.Instance.GetResourceCostIcons(payment.Payment.Resource.ResourceKey, payment.Unpaid).Select(i => i.CostUnsatisfiedIcon));
 						}
@@ -940,8 +940,8 @@ internal sealed class ResourceActionCost : IKokoroApi.IV2.IActionCostsApi.IResou
 				{
 					if (relatedPayments.All(p => p.Unpaid == 0))
 					{
-						if (CostSatisfiedIconOverride is { } icon)
-							return [icon];
+						if (CostSatisfiedIconOverride is { } iconOverride)
+							return iconOverride;
 
 						var iconsResult = new List<Spr>();
 						foreach (var paidResource in relatedPayments.Select(p => p.Payment.Resource).DistinctBy(r => r.ResourceKey))
@@ -955,8 +955,8 @@ internal sealed class ResourceActionCost : IKokoroApi.IV2.IActionCostsApi.IResou
 					}
 					else
 					{
-						if (CostUnsatisfiedIconOverride is { } icon)
-							return [icon];
+						if (CostUnsatisfiedIconOverride is { } iconOverride)
+							return iconOverride;
 
 						var icons = ActionCostsManager.Instance.GetResourceCostIcons(PotentialResources[0].ResourceKey, 1);
 						return icons.Count == 0 ? [] : [icons[0].CostUnsatisfiedIcon];
@@ -1049,13 +1049,13 @@ internal sealed class ResourceActionCost : IKokoroApi.IV2.IActionCostsApi.IResou
 		return this;
 	}
 
-	public IKokoroApi.IV2.IActionCostsApi.IResourceCost SetCostSatisfiedIconOverride(Spr? value)
+	public IKokoroApi.IV2.IActionCostsApi.IResourceCost SetCostSatisfiedIconOverride(IReadOnlyList<Spr>? value)
 	{
 		CostSatisfiedIconOverride = value;
 		return this;
 	}
 
-	public IKokoroApi.IV2.IActionCostsApi.IResourceCost SetCostUnsatisfiedIconOverride(Spr? value)
+	public IKokoroApi.IV2.IActionCostsApi.IResourceCost SetCostUnsatisfiedIconOverride(IReadOnlyList<Spr>? value)
 	{
 		CostUnsatisfiedIconOverride = value;
 		return this;

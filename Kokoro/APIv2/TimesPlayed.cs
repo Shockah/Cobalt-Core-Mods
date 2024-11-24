@@ -67,7 +67,7 @@ public partial interface IKokoroApi
 				int CardId { get; set; }
 
 				/// <summary>
-				/// Sets the ID of the card to check the amount of times it was played this combat.
+				/// Sets <see cref="CardId"/>.
 				/// </summary>
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
