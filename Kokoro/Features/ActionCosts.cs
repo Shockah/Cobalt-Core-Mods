@@ -145,12 +145,12 @@ partial class ApiImplementation
 			private readonly IKokoroApi.IActionCostApi.IActionCost V1 = v1;
 			
 			[JsonIgnore]
-			public IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.IResource> MonitoredResources
-				=> V1.PotentialResources.Select(MakeResourceFromLegacyData).ToList();
+			public IReadOnlySet<IKokoroApi.IV2.IActionCostsApi.IResource> MonitoredResources
+				=> V1.PotentialResources.Select(MakeResourceFromLegacyData).ToHashSet();
 
 			public IEnumerable<IKokoroApi.IV2.IActionCostsApi.ITransaction> GetPossibleTransactions(IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.ICost> context, IKokoroApi.IV2.IActionCostsApi.ITransaction baseTransaction)
 			{
-				var potentialResources = MonitoredResources;
+				var potentialResources = V1.PotentialResources.Select(MakeResourceFromLegacyData).ToList();
 				var newContext = new List<IKokoroApi.IV2.IActionCostsApi.ICost>(context) { this };
 				return GetPossibleTransactions(baseTransaction, V1.ResourceAmount);
 
@@ -824,8 +824,8 @@ internal sealed class ResourceActionCost : IKokoroApi.IV2.IActionCostsApi.IResou
 	public IReadOnlyList<Spr>? CostUnsatisfiedIconOverride { get; set; }
 
 	[JsonIgnore]
-	public IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.IResource> MonitoredResources
-		=> PotentialResources.ToList();
+	public IReadOnlySet<IKokoroApi.IV2.IActionCostsApi.IResource> MonitoredResources
+		=> PotentialResources.ToHashSet();
 	
 	public IEnumerable<IKokoroApi.IV2.IActionCostsApi.ITransaction> GetPossibleTransactions(IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.ICost> context, IKokoroApi.IV2.IActionCostsApi.ITransaction baseTransaction)
 	{
@@ -1157,8 +1157,8 @@ internal sealed class CombinedResourceActionCost : IKokoroApi.IV2.IActionCostsAp
 	public int Spacing { get; set; } = 1;
 
 	[JsonIgnore]
-	public IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.IResource> MonitoredResources
-		=> Costs.SelectMany(c => c.MonitoredResources).ToList();
+	public IReadOnlySet<IKokoroApi.IV2.IActionCostsApi.IResource> MonitoredResources
+		=> Costs.SelectMany(c => c.MonitoredResources).ToHashSet();
 
 	public IEnumerable<IKokoroApi.IV2.IActionCostsApi.ITransaction> GetPossibleTransactions(IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.ICost> context, IKokoroApi.IV2.IActionCostsApi.ITransaction baseTransaction)
 	{

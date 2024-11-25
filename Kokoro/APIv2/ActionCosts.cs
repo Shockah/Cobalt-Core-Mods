@@ -435,11 +435,10 @@ public partial interface IKokoroApi
 			/// </summary>
 			public interface ICost
 			{
-				// TODO: make it back into a set
 				/// <summary>
 				/// A list of resources this action cost monitors.
 				/// </summary>
-				IReadOnlyList<IResource> MonitoredResources { get; }
+				IReadOnlySet<IResource> MonitoredResources { get; }
 
 				/// <summary>
 				/// Enumerates all possible transactions that could satisfy this cost.
