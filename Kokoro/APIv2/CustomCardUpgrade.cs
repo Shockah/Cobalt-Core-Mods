@@ -8,7 +8,7 @@ public partial interface IKokoroApi
 		
 		public interface ICustomCardUpgradeApi
 		{
-			IRoute MakeCustom(CardUpgrade route);
+			IRoute ModifyCardUpgrade(CardUpgrade route);
 			
 			public interface IRoute : IRoute<CardUpgrade>
 			{

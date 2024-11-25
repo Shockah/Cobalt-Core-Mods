@@ -41,7 +41,7 @@ internal sealed class BastionManager : IDynaHook, IKokoroApi.IV2.IStatusRenderin
 		});
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 		=> args.Status == BastionStatus.Status
 			? [
 				.. args.Tooltips,

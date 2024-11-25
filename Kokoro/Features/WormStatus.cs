@@ -43,7 +43,7 @@ internal sealed class WormStatusManager : IKokoroApi.IV2.IStatusLogicApi.IHook, 
 {
 	internal static readonly WormStatusManager Instance = new();
 
-	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
 		foreach (var tooltip in args.Tooltips)
 		{

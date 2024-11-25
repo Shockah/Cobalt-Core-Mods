@@ -254,7 +254,7 @@ public partial interface IKokoroApi
 				/// <param name="combat">The current combat.</param>
 				/// <param name="amount">The amount of the resource that will be paid.</param>
 				/// <returns>The list of tooltips for this resource cost.</returns>
-				List<Tooltip> GetTooltips(State state, Combat? combat, int amount);
+				IReadOnlyList<Tooltip> GetTooltips(State state, Combat combat, int amount);
 			}
 
 			/// <summary>
@@ -464,7 +464,7 @@ public partial interface IKokoroApi
 				/// <param name="state">The game state.</param>
 				/// <param name="combat">The current combat.</param>
 				/// <returns>The list of tooltips for this action cost.</returns>
-				List<Tooltip> GetTooltips(State state, Combat? combat);
+				IReadOnlyList<Tooltip> GetTooltips(State state, Combat combat);
 			}
 
 			/// <summary>

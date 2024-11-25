@@ -33,7 +33,7 @@ internal sealed class CrunchTimeManager : IKokoroApi.IV2.IStatusRenderingApi.IHo
 		}, 0);
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
 		if (args.Status != ModEntry.Instance.CrunchTimeStatus.Status)
 			return args.Tooltips;

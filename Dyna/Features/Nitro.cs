@@ -60,7 +60,7 @@ internal sealed class NitroManager : IDynaHook, IKokoroApi.IV2.IStatusRenderingA
 		});
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 		=> args.Status == TempNitroStatus.Status || args.Status == NitroStatus.Status
 			? args.Tooltips.Concat(new BlastwaveManager.BlastwaveAction { Source = new(), Damage = args.Amount, WorldX = 0 }.GetTooltips(DB.fakeState)).ToList()
 			: args.Tooltips;

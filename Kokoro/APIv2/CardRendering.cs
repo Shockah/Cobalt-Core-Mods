@@ -147,7 +147,7 @@ public partial interface IKokoroApi
 					/// <summary>
 					/// The list of visible actions on the card.
 					/// </summary>
-					List<CardAction> Actions { get; }
+					IReadOnlyList<CardAction> Actions { get; }
 				}
 				
 				/// <summary>
@@ -168,7 +168,7 @@ public partial interface IKokoroApi
 					/// <summary>
 					/// The list of visible actions on the card.
 					/// </summary>
-					List<CardAction> Actions { get; }
+					IReadOnlyList<CardAction> Actions { get; }
 					
 					/// <summary>
 					/// The action being rendered.

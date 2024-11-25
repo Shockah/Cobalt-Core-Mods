@@ -390,6 +390,6 @@ internal sealed class V2ToV1EvadeHookWrapper(IKokoroApi.IV2.IEvadeHookApi.IHook 
 		args.State = state;
 		args.Combat = combat;
 		args.Direction = direction;
-		return v2.ProvideEvadeActions(args);
+		return v2.ProvideEvadeActions(args)?.ToList();
 	}
 }

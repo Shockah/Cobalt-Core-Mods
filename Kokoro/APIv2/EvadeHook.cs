@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
 
@@ -16,6 +18,7 @@ public partial interface IKokoroApi
 			void RegisterHook(IHook hook, double priority = 0);
 			void UnregisterHook(IHook hook);
 			
+			[JsonConverter(typeof(StringEnumConverter))]
 			public enum EvadeHookContext
 			{
 				Rendering, Action
@@ -26,7 +29,7 @@ public partial interface IKokoroApi
 				bool? IsEvadePossible(IIsEvadePossibleArgs args) => null;
 				void PayForEvade(IPayForEvadeArgs args) { }
 				void AfterEvade(IAfterEvadeArgs args) { }
-				List<CardAction>? ProvideEvadeActions(IProvideEvadeActionsArgs args) => null;
+				IReadOnlyList<CardAction>? ProvideEvadeActions(IProvideEvadeActionsArgs args) => null;
 				
 				public interface IIsEvadePossibleArgs
 				{

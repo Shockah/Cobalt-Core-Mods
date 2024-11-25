@@ -61,7 +61,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		CardRenderManager.Setup(Harmony);
 		ConditionalActionManager.Setup(Harmony);
 		ContinueStopActionManager.Setup(Harmony);
-		CustomCardBrowseManager.Setup(Harmony);
+		CustomCardBrowseSourceManager.Setup(Harmony);
 		CustomCardUpgradeManager.Setup(Harmony);
 		DroneShiftManager.Setup(Harmony);
 		VariableHintTargetPlayerManager.Setup(Harmony);

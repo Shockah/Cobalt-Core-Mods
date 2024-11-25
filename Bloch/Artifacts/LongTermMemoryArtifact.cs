@@ -117,11 +117,11 @@ internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 			if (customActions.Count == 0)
 				return null;
 
-			var route = ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeRoute(r =>
+			var route = ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeRoute(new CardBrowse
 			{
-				r.browseSource = CardBrowse.Source.Hand;
-				r.browseAction = new TitleAction();
-				r.allowCancel = true;
+				browseSource = CardBrowse.Source.Hand,
+				browseAction = new TitleAction(),
+				allowCancel = true,
 			})
 				.SetEnabledSorting(false)
 				.SetBrowseActionIsOnlyForTitle(true)

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
 
@@ -136,6 +138,7 @@ public partial interface IKokoroApi
 			/// <summary>
 			/// The operator to compare two sides of an <see cref="IEquation">equation</see> with.
 			/// </summary>
+			[JsonConverter(typeof(StringEnumConverter))]
 			public enum EquationOperator
 			{
 				/// <summary>
@@ -172,6 +175,7 @@ public partial interface IKokoroApi
 			/// <summary>
 			/// The wording style to use for the tooltip of an equation.
 			/// </summary>
+			[JsonConverter(typeof(StringEnumConverter))]
 			public enum EquationStyle
 			{
 				/// <summary>
@@ -299,7 +303,7 @@ public partial interface IKokoroApi
 				/// <param name="state">The game state.</param>
 				/// <param name="combat">The current combat.</param>
 				/// <returns>The list of tooltips for this conditional expression.</returns>
-				List<Tooltip> GetTooltips(State state, Combat combat) => [];
+				IReadOnlyList<Tooltip> GetTooltips(State state, Combat combat) => [];
 			}
 
 			/// <summary>

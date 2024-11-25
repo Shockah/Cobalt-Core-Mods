@@ -60,7 +60,7 @@ internal sealed class MindMapManager : IKokoroApi.IV2.IStatusRenderingApi.IHook
 		c.QueueImmediate(new Action { Amount = retain });
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
 		if (args.Status == MindMapStatus.Status)
 			return [.. args.Tooltips, new TTGlossary("cardtrait.retain")];
@@ -73,11 +73,11 @@ internal sealed class MindMapManager : IKokoroApi.IV2.IStatusRenderingApi.IHook
 
 		public override Route? BeginWithRoute(G g, State s, Combat c)
 		{
-			var route = ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeRoute(r =>
+			var route = ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeRoute(new CardBrowse
 			{
-				r.browseSource = CardBrowse.Source.Hand;
-				r.browseAction = new BrowseAction { Amount = Amount };
-				r.filterRetain = false;
+				browseSource = CardBrowse.Source.Hand,
+				browseAction = new BrowseAction { Amount = Amount },
+				filterRetain = false,
 			}).SetMaxSelected(Amount).AsRoute;
 			c.Queue(new ADelay
 			{

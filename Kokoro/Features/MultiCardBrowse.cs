@@ -19,11 +19,11 @@ partial class ApiImplementation
 			public IKokoroApi.IV2.IMultiCardBrowseApi.IMultiCardBrowseRoute? AsRoute(CardBrowse route)
 				=> route as IKokoroApi.IV2.IMultiCardBrowseApi.IMultiCardBrowseRoute;
 
-			public IKokoroApi.IV2.IMultiCardBrowseApi.IMultiCardBrowseRoute MakeRoute(Action<CardBrowse>? @delegate = null)
+			public IKokoroApi.IV2.IMultiCardBrowseApi.IMultiCardBrowseRoute MakeRoute(CardBrowse route)
 			{
-				var route = new MultiCardBrowseManager.MultiCardBrowse();
-				@delegate?.Invoke(route);
-				return route;
+				var multiCardBrowse = new MultiCardBrowseManager.MultiCardBrowse();
+				multiCardBrowse.SetupFromRoute(route);
+				return multiCardBrowse;
 			}
 
 			public IReadOnlyList<Card>? GetSelectedCards(CardAction action)
@@ -218,6 +218,45 @@ internal sealed class MultiCardBrowseManager
 			ModEntry.Instance.Helper.ModData.SetModData<IReadOnlyList<Card>>(action.Action, "SelectedCards", _listCache.Where(card => SelectedCards.Contains(card.uuid)).ToList());
 			g.state.GetCurrentQueue().QueueImmediate(action.Action);
 			g.CloseRoute(this, CBResult.Done);
+		}
+
+		internal void SetupFromRoute(CardBrowse route)
+		{
+			{
+				allowCancel = route.allowCancel;
+				allowCloseOverride = route.allowCloseOverride;
+				mode = route.mode;
+				browseSource = route.browseSource;
+				browseAction = route.browseAction;
+				sortMode = route.sortMode;
+				filterUnremovableAtShops = route.filterUnremovableAtShops;
+				filterExhaust = route.filterExhaust;
+				filterRetain = route.filterRetain;
+				filterBuoyant = route.filterBuoyant;
+				filterTemporary = route.filterTemporary;
+				includeTemporaryCards = route.includeTemporaryCards;
+				filterOutTheseRarities = route.filterOutTheseRarities?.ToList();
+				filterMinCost = route.filterMinCost;
+				filterMaxCost = route.filterMaxCost;
+				filterUpgrade = route.filterUpgrade;
+				filterAvailableUpgrade = route.filterAvailableUpgrade;
+				filterUUID = route.filterUUID;
+				ignoreCardType = route.ignoreCardType;
+				hideUnknownCards = route.hideUnknownCards;
+			}
+
+			if (route is MultiCardBrowse multiCardBrowse)
+			{
+				CustomActions = multiCardBrowse.CustomActions is null ? null : Mutil.DeepCopy(multiCardBrowse.CustomActions);
+				MinSelected = multiCardBrowse.MinSelected;
+				MaxSelected = multiCardBrowse.MaxSelected;
+				EnabledSorting = multiCardBrowse.EnabledSorting;
+				BrowseActionIsOnlyForTitle = multiCardBrowse.BrowseActionIsOnlyForTitle;
+				CardsOverride = multiCardBrowse.CardsOverride is null ? null : Mutil.DeepCopy(multiCardBrowse.CardsOverride);
+			}
+			
+			ModEntry.Instance.ExtensionDataManager.CopyAllModData(route, this);
+			ModEntry.Instance.Helper.ModData.CopyAllModData(route, this);
 		}
 		
 		public IKokoroApi.IV2.IMultiCardBrowseApi.IMultiCardBrowseRoute SetCustomActions(IReadOnlyList<IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction>? value)

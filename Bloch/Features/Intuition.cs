@@ -41,7 +41,7 @@ internal sealed class IntuitionManager : IKokoroApi.IV2.IStatusLogicApi.IHook, I
 		});
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
 		if (args.Status == IntuitionStatus.Status)
 			return [.. args.Tooltips, .. StatusMeta.GetTooltips(AuraManager.InsightStatus.Status, args.Amount)];

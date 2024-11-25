@@ -89,7 +89,7 @@ partial class ApiImplementation
 				public Status Status { get; internal set; }
 				public int Amount { get; internal set; }
 				public Ship? Ship { get; internal set; }
-				public List<Tooltip> Tooltips { get; internal set; } = null!;
+				public IReadOnlyList<Tooltip> Tooltips { get; internal set; } = null!;
 			}
 		}
 	}
@@ -158,7 +158,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 		return null;
 	}
 
-	internal List<Tooltip> OverrideStatusTooltips(Status status, int amount, List<Tooltip> tooltips)
+	internal IReadOnlyList<Tooltip> OverrideStatusTooltips(Status status, int amount, IReadOnlyList<Tooltip> tooltips)
 	{
 		var args = ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusTooltipsArgs.Instance;
 		args.Status = status;
@@ -172,7 +172,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 	}
 	
 	private static void StatusMeta_GetTooltips_Postfix(Status status, int amt, ref List<Tooltip> __result)
-		=> __result = Instance.OverrideStatusTooltips(status, amt, __result);
+		=> __result = Instance.OverrideStatusTooltips(status, amt, __result).ToList();
 	
 	private static void Ship_GetStatusSize_Postfix(Ship __instance, Status status, int amount, ref Ship.StatusPlan __result)
 	{
@@ -312,6 +312,6 @@ internal sealed class V1ToV2StatusRenderingHookWrapper(IStatusRenderHook v1) : I
 	public (IReadOnlyList<Color> Colors, int? BarTickWidth)? OverrideStatusRenderingAsBars(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingAsBarsArgs args)
 		=> v1.ShouldOverrideStatusRenderingAsBars(args.State, args.Combat, args.Ship, args.Status, args.Amount) == true ? v1.OverrideStatusRendering(args.State, args.Combat, args.Ship, args.Status, args.Amount) : null;
 		
-	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
-		=> v1.OverrideStatusTooltips(args.Status, args.Amount, args.Ship, args.Tooltips);
+	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+		=> v1.OverrideStatusTooltips(args.Status, args.Amount, args.Ship, args.Tooltips.ToList());
 }

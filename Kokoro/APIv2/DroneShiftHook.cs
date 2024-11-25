@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
 
@@ -16,6 +18,7 @@ public partial interface IKokoroApi
 			void RegisterHook(IHook hook, double priority = 0);
 			void UnregisterHook(IHook hook);
 			
+			[JsonConverter(typeof(StringEnumConverter))]
 			public enum DroneShiftHookContext
 			{
 				Rendering, Action
@@ -26,7 +29,7 @@ public partial interface IKokoroApi
 				bool? IsDroneShiftPossible(IIsDroneShiftPossibleArgs args) => null;
 				void PayForDroneShift(IPayForDroneShiftArgs args) { }
 				void AfterDroneShift(IAfterDroneShiftArgs args) { }
-				List<CardAction>? ProvideDroneShiftActions(IProvideDroneShiftActionsArgs args) => null;
+				IReadOnlyList<CardAction>? ProvideDroneShiftActions(IProvideDroneShiftActionsArgs args) => null;
 				
 				public interface IIsDroneShiftPossibleArgs
 				{

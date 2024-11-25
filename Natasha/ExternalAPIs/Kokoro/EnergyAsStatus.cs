@@ -8,13 +8,6 @@ public partial interface IKokoroApi
 
 		public interface IEnergyAsStatusApi
 		{
-			public interface IVariableHint : ICardAction<AVariableHint>
-			{
-				int? TooltipOverride { get; set; }
-
-				IVariableHint SetTooltipOverride(int? value);
-			}
-
 			public interface IStatusAction : ICardAction<AStatus>;
 
 			IVariableHint? AsVariableHint(AVariableHint action);
@@ -22,6 +15,13 @@ public partial interface IKokoroApi
 
 			IStatusAction? AsStatusAction(AStatus action);
 			IStatusAction MakeStatusAction(int amount);
+			
+			public interface IVariableHint : ICardAction<AVariableHint>
+			{
+				int? TooltipOverride { get; set; }
+
+				IVariableHint SetTooltipOverride(int? value);
+			}
 		}
 	}
 }

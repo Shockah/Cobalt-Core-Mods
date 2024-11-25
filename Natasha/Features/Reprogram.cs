@@ -91,7 +91,7 @@ internal sealed class Reprogram : IRegisterable
 
 	private sealed class Hook : IKokoroApi.IV2.IStatusRenderingApi.IHook
 	{
-		public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+		public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 		{
 			if (args.Status == ReprogrammedStatus.Status)
 				return [.. args.Tooltips, .. new RepairKit().GetTooltips()];

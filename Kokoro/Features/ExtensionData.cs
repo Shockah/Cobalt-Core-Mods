@@ -178,21 +178,21 @@ internal sealed class ExtensionDataManager : IReferenceCloneListener
 		cloneEngineLazy.Value.RegisterCloneListener(this);
 		IsRegisteredCloneListener = true;
 	}
-
-	public void OnClone<T>(ICloneEngine engine, T source, T destination) where T : class
+	
+	internal void CopyAllModData(object from, object to)
 	{
-		if (source.GetType().IsValueType)
-			throw new ArgumentException("Mod data can only be put on reference (class) types", nameof(source));
-		if (destination.GetType().IsValueType)
-			throw new ArgumentException("Mod data can only be put on reference (class) types", nameof(destination));
-
-		if (!ExtensionDataStorage.TryGetValue(source, out var allSourceObjectData))
+		if (from.GetType().IsValueType)
+			throw new ArgumentException("Mod data can only be put on reference (class) types", nameof(from));
+		if (to.GetType().IsValueType)
+			throw new ArgumentException("Mod data can only be put on reference (class) types", nameof(to));
+		
+		if (!ExtensionDataStorage.TryGetValue(from, out var allSourceObjectData))
 			return;
-
-		if (!ExtensionDataStorage.TryGetValue(destination, out var allTargetObjectData))
+		
+		if (!ExtensionDataStorage.TryGetValue(to, out var allTargetObjectData))
 		{
 			allTargetObjectData = [];
-			ExtensionDataStorage.AddOrUpdate(destination, allTargetObjectData);
+			ExtensionDataStorage.AddOrUpdate(to, allTargetObjectData);
 		}
 
 		foreach (var (modUniqueName, sourceModObjectData) in allSourceObjectData)
@@ -202,11 +202,11 @@ internal sealed class ExtensionDataManager : IReferenceCloneListener
 				targetModObjectData = [];
 				allTargetObjectData[modUniqueName] = targetModObjectData;
 			}
-
+			
 			foreach (var (key, value) in sourceModObjectData)
 				targetModObjectData[key] = DeepCopy(value);
 		}
-
+		
 		static object? DeepCopy(object? o)
 		{
 			if (o is null)
@@ -224,4 +224,7 @@ internal sealed class ExtensionDataManager : IReferenceCloneListener
 			throw new ArgumentException($"Cannot deep copy {o}", nameof(o));
 		}
 	}
+
+	public void OnClone<T>(ICloneEngine engine, T source, T destination) where T : class
+		=> CopyAllModData(source, destination);
 }

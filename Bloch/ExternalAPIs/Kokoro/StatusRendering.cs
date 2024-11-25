@@ -21,7 +21,7 @@ public partial interface IKokoroApi
 				IEnumerable<(Status Status, double Priority)> GetExtraStatusesToShow(IGetExtraStatusesToShowArgs args) => [];
 				bool? ShouldShowStatus(IShouldShowStatusArgs args) => null;
 				(IReadOnlyList<Color> Colors, int? BarTickWidth)? OverrideStatusRenderingAsBars(IOverrideStatusRenderingAsBarsArgs args) => null;
-				List<Tooltip> OverrideStatusTooltips(IOverrideStatusTooltipsArgs args) => args.Tooltips;
+				IReadOnlyList<Tooltip> OverrideStatusTooltips(IOverrideStatusTooltipsArgs args) => args.Tooltips;
 				
 				public interface IGetExtraStatusesToShowArgs
 				{
@@ -53,7 +53,7 @@ public partial interface IKokoroApi
 					Status Status { get; }
 					int Amount { get; }
 					Ship? Ship { get; }
-					List<Tooltip> Tooltips { get; }
+					IReadOnlyList<Tooltip> Tooltips { get; }
 				}
 			}
 		}

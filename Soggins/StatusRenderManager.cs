@@ -64,14 +64,16 @@ internal sealed class StatusRenderManager : IKokoroApi.IV2.IStatusRenderingApi.I
 		return (colors, null);
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
+		var newTooltips = args.Tooltips.ToList();
+		
 		if (args.Status == (Status)Instance.SmugStatus.Id!.Value)
 		{
 			if (args.Ship is not null)
 			{
-				if (args.Tooltips.FirstOrDefault() is TTGlossary)
-					args.Tooltips[0] = new CustomTTGlossary(
+				if (newTooltips.FirstOrDefault() is TTGlossary)
+					newTooltips[0] = new CustomTTGlossary(
 						CustomTTGlossary.GlossaryType.status,
 						() => I18n.SmugStatusName,
 						() => I18n.SmugStatusLongDescription
@@ -81,19 +83,19 @@ internal sealed class StatusRenderManager : IKokoroApi.IV2.IStatusRenderingApi.I
 				{
 					var botchChance = Math.Clamp(Instance.Api.GetSmugBotchChance(state, state.ship, null), 0, 1);
 					var doubleChance = Math.Clamp(Instance.Api.GetSmugDoubleChance(state, state.ship, null), 0, 1 - botchChance);
-					args.Tooltips.Add(new TTText(string.Format(I18n.SmugStatusOddsDescription, doubleChance * 100, botchChance * 100)));
+					newTooltips.Add(new TTText(string.Format(I18n.SmugStatusOddsDescription, doubleChance * 100, botchChance * 100)));
 				}
 			}
 		}
 		else if (args.Status == (Status)Instance.BidingTimeStatus.Id!.Value)
 		{
-			args.Tooltips.Add(new TTGlossary($"status.{Instance.DoubleTimeStatus.Id!.Value}", args.Amount));
+			newTooltips.Add(new TTGlossary($"status.{Instance.DoubleTimeStatus.Id!.Value}", args.Amount));
 		}
 		else if (args.Status == (Status)Instance.DoublersLuckStatus.Id!.Value)
 		{
-			args.Tooltips.Clear();
-			args.Tooltips.Add(new TTGlossary($"status.{Instance.DoublersLuckStatus.Id!.Value}", args.Amount + 1));
+			newTooltips.Clear();
+			newTooltips.Add(new TTGlossary($"status.{Instance.DoublersLuckStatus.Id!.Value}", args.Amount + 1));
 		}
-		return args.Tooltips;
+		return newTooltips;
 	}
 }

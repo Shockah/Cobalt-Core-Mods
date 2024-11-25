@@ -89,7 +89,7 @@ internal sealed class TransfusionManager : IKokoroApi.IV2.IStatusLogicApi.IHook,
 		);
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
 		if (args.Status != ModEntry.Instance.TransfusionStatus.Status)
 			return args.Tooltips;
@@ -117,6 +117,9 @@ internal sealed class TransfusionManager : IKokoroApi.IV2.IStatusLogicApi.IHook,
 
 	private static void Combat_Update_Postfix(Combat __instance, G g)
 	{
+		DoForShip(g.state.ship);
+		DoForShip(__instance.otherShip);
+
 		void DoForShip(Ship ship)
 		{
 			var progress = ship.Get(ModEntry.Instance.TransfusingStatus.Status);
@@ -161,9 +164,6 @@ internal sealed class TransfusionManager : IKokoroApi.IV2.IStatusLogicApi.IHook,
 				timer = 0,
 			});
 		}
-
-		DoForShip(g.state.ship);
-		DoForShip(__instance.otherShip);
 	}
 
 	public sealed class AReenableTransfusion : CardAction

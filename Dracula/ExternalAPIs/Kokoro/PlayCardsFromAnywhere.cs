@@ -10,6 +10,10 @@ public partial interface IKokoroApi
 
 		public interface IPlayCardsFromAnywhereApi
 		{
+			IPlayCardsFromAnywhereAction? AsAction(CardAction action);
+			IPlayCardsFromAnywhereAction MakeAction(int cardId);
+			IPlayCardsFromAnywhereAction MakeAction(IEnumerable<int> cardIds, int amount = 1);
+			
 			public interface IPlayCardsFromAnywhereAction : ICardAction<CardAction>
 			{
 				HashSet<int> CardIds { get; set; }
@@ -20,10 +24,6 @@ public partial interface IKokoroApi
 				IPlayCardsFromAnywhereAction SetAmount(int value);
 				IPlayCardsFromAnywhereAction SetShowTheCardIfNotInHand(bool value);
 			}
-			
-			IPlayCardsFromAnywhereAction? AsAction(CardAction action);
-			IPlayCardsFromAnywhereAction MakeAction(int cardId);
-			IPlayCardsFromAnywhereAction MakeAction(IEnumerable<int> cardIds, int amount = 1);
 		}
 	}
 }

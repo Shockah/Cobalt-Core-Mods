@@ -45,7 +45,7 @@ internal sealed class StatusNextTurnManager : HookManager<IOxidationStatusHook>,
 	{
 	}
 	
-	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
 		if (args.Status == (Status)ModEntry.Instance.Content.TempShieldNextTurnStatus.Id!.Value)
 			return [

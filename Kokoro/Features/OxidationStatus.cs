@@ -80,7 +80,7 @@ internal sealed class OxidationStatusManager : VariedApiVersionHookManager<IKoko
 		return args.Value;
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
 		var oxidationMaxValue = args.Ship is null ? BaseOxidationStatusMaxValue : GetOxidationStatusMaxValue(MG.inst.g.state ?? DB.fakeState, args.Ship);
 		foreach (var tooltip in args.Tooltips)

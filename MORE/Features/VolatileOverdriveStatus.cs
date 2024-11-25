@@ -96,6 +96,6 @@ internal sealed class VolatileOverdriveStatus : IRegisterable, IKokoroApi.IV2.IS
 		return false;
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(Status status, int amount, bool isForShipStatus, List<Tooltip> tooltips)
-		=> status == Entry.Status ? tooltips.Concat(StatusMeta.GetTooltips(Status.overdrive, 1)).ToList() : tooltips;
+	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+		=> args.Status == Entry.Status ? args.Tooltips.Concat(StatusMeta.GetTooltips(Status.overdrive, 1)).ToList() : args.Tooltips;
 }

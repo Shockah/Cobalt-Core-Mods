@@ -223,7 +223,7 @@ internal sealed class AuraManager : IKokoroApi.IV2.IStatusLogicApi.IHook, IKokor
 		return false;
 	}
 
-	public List<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
 		if (args.Status == InsightStatus.Status)
 			return [.. args.Tooltips, ..new ScryAction { Amount = 1 }.GetTooltips(DB.fakeState)];

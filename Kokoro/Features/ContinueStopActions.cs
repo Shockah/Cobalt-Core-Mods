@@ -21,7 +21,7 @@ partial class ApiImplementation
 		}
 
 		public CardAction MakeContinued(Guid id, CardAction action)
-			=> new AContinued { Ids = [id], Type = IKokoroApi.IV2.IContinueStopApi.ActionType.Continue, Operator = IKokoroApi.IV2.IContinueStopApi.FlagOperator.And, Action = action };
+			=> new AContinued { Ids = new HashSet<Guid> { id }, Type = IKokoroApi.IV2.IContinueStopApi.ActionType.Continue, Operator = IKokoroApi.IV2.IContinueStopApi.FlagOperator.And, Action = action };
 
 		public IEnumerable<CardAction> MakeContinued(Guid id, IEnumerable<CardAction> action)
 			=> action.Select(a => MakeContinued(id, a));
@@ -33,7 +33,7 @@ partial class ApiImplementation
 		}
 
 		public CardAction MakeStopped(Guid id, CardAction action)
-			=> new AContinued { Ids = [id], Type = IKokoroApi.IV2.IContinueStopApi.ActionType.Stop, Operator = IKokoroApi.IV2.IContinueStopApi.FlagOperator.Or, Action = action };
+			=> new AContinued { Ids = new HashSet<Guid> { id }, Type = IKokoroApi.IV2.IContinueStopApi.ActionType.Stop, Operator = IKokoroApi.IV2.IContinueStopApi.FlagOperator.Or, Action = action };
 
 		public IEnumerable<CardAction> MakeStopped(Guid id, IEnumerable<CardAction> action)
 			=> action.Select(a => MakeStopped(id, a));
@@ -200,7 +200,7 @@ public sealed class AContinued : CardAction, IKokoroApi.IV2.IContinueStopApi.IFl
 	private static ModEntry Instance => ModEntry.Instance;
 
 	public required IKokoroApi.IV2.IContinueStopApi.ActionType Type { get; set; }
-	public required HashSet<Guid> Ids { get; set; }
+	public required ISet<Guid> Ids { get; set; }
 	public required IKokoroApi.IV2.IContinueStopApi.FlagOperator Operator { get; set; }
 	public required CardAction Action { get; set; }
 
@@ -235,6 +235,10 @@ public sealed class AContinued : CardAction, IKokoroApi.IV2.IContinueStopApi.IFl
 							if (Ids.Any(id => continueFlags.Contains(id)))
 								return true;
 							return false;
+						case IKokoroApi.IV2.IContinueStopApi.FlagOperator.Single:
+							if (Ids.Where(id => continueFlags.Contains(id)).Take(2).Count() == 1)
+								return true;
+							return false;
 						default:
 							throw new ArgumentOutOfRangeException();
 					}
@@ -247,6 +251,10 @@ public sealed class AContinued : CardAction, IKokoroApi.IV2.IContinueStopApi.IFl
 							return false;
 						case IKokoroApi.IV2.IContinueStopApi.FlagOperator.Or:
 							if (Ids.Any(id => continueFlags.Contains(id)))
+								return false;
+							return true;
+						case IKokoroApi.IV2.IContinueStopApi.FlagOperator.Single:
+							if (Ids.Where(id => continueFlags.Contains(id)).Take(2).Count() == 1)
 								return false;
 							return true;
 						default:

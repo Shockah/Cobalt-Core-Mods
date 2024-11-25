@@ -12,9 +12,9 @@ internal interface IRegisterable
 
 internal interface IDraculaCard : IRegisterable
 {
-	Matrix ModifyNonTextCardRenderMatrix(G g, List<CardAction> actions)
+	Matrix ModifyNonTextCardRenderMatrix(G g, IReadOnlyList<CardAction> actions)
 		=> Matrix.Identity;
 
-	Matrix ModifyCardActionRenderMatrix(G g, List<CardAction> actions, CardAction action, int actionWidth)
+	Matrix ModifyCardActionRenderMatrix(G g, IReadOnlyList<CardAction> actions, CardAction action, int actionWidth)
 		=> Matrix.Identity;
 }

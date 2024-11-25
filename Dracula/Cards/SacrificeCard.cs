@@ -56,7 +56,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 					browseAction = new ExhaustCardBrowseAction
 					{
 						OnSuccess = [
-							ModEntry.Instance.KokoroApi.CustomCardBrowse.ModifyCardSelect(new ACardSelect
+							ModEntry.Instance.KokoroApi.CustomCardBrowseSource.ModifyCardSelect(new ACardSelect
 							{
 								browseAction = new PutCardInHandBrowseAction(),
 								ignoreCardType = Key()
@@ -78,7 +78,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 				}
 			],
 			Upgrade.A => [
-				ModEntry.Instance.KokoroApi.CustomCardBrowse.ModifyCardSelect(new ACardSelect
+				ModEntry.Instance.KokoroApi.CustomCardBrowseSource.ModifyCardSelect(new ACardSelect
 				{
 					browseAction = new ExhaustCardBrowseAction
 					{
@@ -172,9 +172,9 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 		}
 	}
 
-	public sealed class ExhaustOrSingleUseBrowseSource : IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource
+	public sealed class ExhaustOrSingleUseBrowseSource : IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource
 	{
-		public IEnumerable<Tooltip> GetSearchTooltips(State state)
+		public IReadOnlyList<Tooltip> GetSearchTooltips(State state)
 			=> [new GlossaryTooltip("action.searchCardNew")
 			{	
 				Icon = StableSpr.icons_searchCardNew,
@@ -183,19 +183,19 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 				Description = ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "searchAction", "exhaustOrSingleUse"]),
 			}];
 
-		public string GetTitle(State state, Combat? combat, List<Card> cards)
+		public string GetTitle(State state, Combat? combat, IReadOnlyList<Card> cards)
 			=> ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "ui", "exhaustOrSingleUse"], new { Count = cards.Count });
 
-		public List<Card> GetCards(State state, Combat? combat)
+		public IReadOnlyList<Card> GetCards(State state, Combat? combat)
 			=> [
 				.. combat?.exhausted ?? [],
 				.. combat?.GetSingleUseCardsPlayed() ?? []
 			];
 	}
 
-	public sealed class HandDrawDiscardBrowseSource : IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource
+	public sealed class HandDrawDiscardBrowseSource : IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource
 	{
-		public IEnumerable<Tooltip> GetSearchTooltips(State state)
+		public IReadOnlyList<Tooltip> GetSearchTooltips(State state)
 			=> [new GlossaryTooltip("action.searchCardNew")
 			{	
 				Icon = StableSpr.icons_searchCardNew,
@@ -204,10 +204,10 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 				Description = ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "searchAction", "handDrawDiscard"]),
 			}];
 		
-		public string GetTitle(State state, Combat? combat, List<Card> cards)
+		public string GetTitle(State state, Combat? combat, IReadOnlyList<Card> cards)
 			=> ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "ui", "handDrawDiscard"], new { Count = cards.Count });
 
-		public List<Card> GetCards(State state, Combat? combat)
+		public IReadOnlyList<Card> GetCards(State state, Combat? combat)
 			=> [
 				.. state.deck,
 				.. combat?.hand ?? [],

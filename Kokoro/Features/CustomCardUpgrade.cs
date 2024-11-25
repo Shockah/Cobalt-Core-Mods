@@ -13,7 +13,7 @@ partial class ApiImplementation
 		
 		public sealed class CustomCardUpgradeApi : IKokoroApi.IV2.ICustomCardUpgradeApi
 		{
-			public IKokoroApi.IV2.ICustomCardUpgradeApi.IRoute MakeCustom(CardUpgrade route)
+			public IKokoroApi.IV2.ICustomCardUpgradeApi.IRoute ModifyCardUpgrade(CardUpgrade route)
 				=> new CustomCardUpgradeManager.RouteWrapper(Mutil.DeepCopy(route));
 		}
 	}

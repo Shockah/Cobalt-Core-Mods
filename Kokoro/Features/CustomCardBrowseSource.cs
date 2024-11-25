@@ -18,15 +18,15 @@ partial class ApiImplementation
 	
 	partial class ActionApiImplementation
 	{
-		private sealed class V1ToV2CustomCardBrowseSourceWrapper(ICustomCardBrowseSource v1) : IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource
+		private sealed class V1ToV2CustomCardBrowseSourceWrapper(ICustomCardBrowseSource v1) : IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource
 		{
-			public IEnumerable<Tooltip> GetSearchTooltips(State state)
-				=> v1.GetSearchTooltips(state);
+			public IReadOnlyList<Tooltip> GetSearchTooltips(State state)
+				=> v1.GetSearchTooltips(state).ToList();
 
-			public string GetTitle(State state, Combat combat, List<Card> cards)
-				=> v1.GetTitle(state, combat, cards);
+			public string GetTitle(State state, Combat combat, IReadOnlyList<Card> cards)
+				=> v1.GetTitle(state, combat, cards.ToList());
 
-			public List<Card> GetCards(State state, Combat combat)
+			public IReadOnlyList<Card> GetCards(State state, Combat combat)
 				=> v1.GetCards(state, combat);
 		}
 		
@@ -51,23 +51,23 @@ partial class ApiImplementation
 	
 	partial class V2Api
 	{
-		public IKokoroApi.IV2.ICustomCardBrowseApi CustomCardBrowse { get; } = new CustomCardBrowseApi();
+		public IKokoroApi.IV2.ICustomCardBrowseSourceApi CustomCardBrowseSource { get; } = new CustomCardBrowseSourceApi();
 		
-		public sealed class CustomCardBrowseApi : IKokoroApi.IV2.ICustomCardBrowseApi
+		public sealed class CustomCardBrowseSourceApi : IKokoroApi.IV2.ICustomCardBrowseSourceApi
 		{
-			public IKokoroApi.IV2.ICustomCardBrowseApi.ICardSelect ModifyCardSelect(ACardSelect action)
+			public IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICardSelect ModifyCardSelect(ACardSelect action)
 				=> new CardSelectWrapper { Wrapped = Mutil.DeepCopy(action) };
 
-			public IKokoroApi.IV2.ICustomCardBrowseApi.ICardBrowse ModifyCardBrowse(CardBrowse route)
+			public IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICardBrowse ModifyCardBrowse(CardBrowse route)
 				=> new CardBrowseWrapper { Wrapped = Mutil.DeepCopy(route) };
 			
-			private sealed class CardSelectWrapper : IKokoroApi.IV2.ICustomCardBrowseApi.ICardSelect
+			private sealed class CardSelectWrapper : IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICardSelect
 			{
 				public required ACardSelect Wrapped { get; init; }
 
-				public IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource? CustomBrowseSource
+				public IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource? CustomBrowseSource
 				{
-					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource>(Wrapped, "CustomCardBrowseSource");
+					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource>(Wrapped, "CustomCardBrowseSource");
 					set => ModEntry.Instance.Helper.ModData.SetOptionalModData(Wrapped, "CustomCardBrowseSource", value);
 				}
 
@@ -75,27 +75,27 @@ partial class ApiImplementation
 				public ACardSelect AsCardAction
 					=> Wrapped;
 				
-				public IKokoroApi.IV2.ICustomCardBrowseApi.ICardSelect SetCustomBrowseSource(IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource? source)
+				public IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICardSelect SetCustomBrowseSource(IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource? source)
 				{
 					CustomBrowseSource = source;
 					return this;
 				}
 			}
 			
-			private sealed class CardBrowseWrapper : IKokoroApi.IV2.ICustomCardBrowseApi.ICardBrowse
+			private sealed class CardBrowseWrapper : IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICardBrowse
 			{
 				public required CardBrowse Wrapped { get; init; }
 
-				public IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource? CustomBrowseSource
+				public IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource? CustomBrowseSource
 				{
-					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource>(Wrapped, "CustomCardBrowseSource");
+					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource>(Wrapped, "CustomCardBrowseSource");
 					set => ModEntry.Instance.Helper.ModData.SetOptionalModData(Wrapped, "CustomCardBrowseSource", value);
 				}
 
 				public CardBrowse AsRoute
 					=> Wrapped;
 				
-				public IKokoroApi.IV2.ICustomCardBrowseApi.ICardBrowse SetCustomBrowseSource(IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource? source)
+				public IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICardBrowse SetCustomBrowseSource(IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource? source)
 				{
 					CustomBrowseSource = source;
 					return this;
@@ -105,7 +105,7 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class CustomCardBrowseManager
+internal sealed class CustomCardBrowseSourceManager
 {
 	internal static void Setup(IHarmony harmony)
 	{
@@ -152,7 +152,7 @@ internal sealed class CustomCardBrowseManager
 
 	private static void ACardSelect_BeginWithRoute_Transpiler_ApplySource(CardBrowse browse, ACardSelect select)
 	{
-		if (!ModEntry.Instance.Helper.ModData.TryGetModData(select, "CustomCardBrowseSource", out IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource? customCardSource))
+		if (!ModEntry.Instance.Helper.ModData.TryGetModData(select, "CustomCardBrowseSource", out IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource? customCardSource))
 			return;
 
 		ModEntry.Instance.Helper.ModData.SetModData(browse, "CustomCardBrowseSource", customCardSource);
@@ -160,7 +160,7 @@ internal sealed class CustomCardBrowseManager
 
 	private static void ACardSelect_GetTooltips_Postfix(ACardSelect __instance, State s, ref List<Tooltip> __result)
 	{
-		if (!ModEntry.Instance.Helper.ModData.TryGetModData<IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource>(__instance, "CustomCardBrowseSource", out var customCardSource))
+		if (!ModEntry.Instance.Helper.ModData.TryGetModData<IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource>(__instance, "CustomCardBrowseSource", out var customCardSource))
 			return;
 
 		__result = customCardSource.GetSearchTooltips(s).ToList();
@@ -168,10 +168,10 @@ internal sealed class CustomCardBrowseManager
 	
 	private static void CardBrowse_GetCardList_Postfix(CardBrowse __instance, G g, ref List<Card> __result)
 	{
-		if (!ModEntry.Instance.Helper.ModData.TryGetModData<IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource>(__instance, "CustomCardBrowseSource", out var customCardSource))
+		if (!ModEntry.Instance.Helper.ModData.TryGetModData<IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource>(__instance, "CustomCardBrowseSource", out var customCardSource))
 			return;
 
-		__result = customCardSource.GetCards(g.state, g.state.route as Combat ?? DB.fakeCombat);
+		__result = customCardSource.GetCards(g.state, g.state.route as Combat ?? DB.fakeCombat).ToList();
 	}
 
 	private static IEnumerable<CodeInstruction> CardBrowse_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
@@ -214,7 +214,7 @@ internal sealed class CustomCardBrowseManager
 
 	private static bool CardBrowse_Render_Transpiler_GetCardSourceText(CardBrowse self, G g, ref string title)
 	{
-		if (!ModEntry.Instance.Helper.ModData.TryGetModData<IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource>(self, "CustomCardBrowseSource", out var customCardSource))
+		if (!ModEntry.Instance.Helper.ModData.TryGetModData<IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource>(self, "CustomCardBrowseSource", out var customCardSource))
 			return false;
 
 		var cards = customCardSource.GetCards(g.state, g.state.route as Combat ?? DB.fakeCombat);

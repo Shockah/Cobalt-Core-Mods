@@ -71,10 +71,10 @@ internal sealed class ScryAction : CardAction
 
 		c.Queue(new ADelay { timer = 0.0 });
 
-		return ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeRoute(r =>
+		return ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeRoute(new CardBrowse
 		{
-			r.browseSource = CardBrowse.Source.DrawPile;
-			r.browseAction = new BrowseAction { PresentedCards = cards, FromInsight = FromInsight };
+			browseSource = CardBrowse.Source.DrawPile,
+			browseAction = new BrowseAction { PresentedCards = cards, FromInsight = FromInsight },
 		})
 			.SetCardsOverride(cards)
 			.SetEnabledSorting(false)

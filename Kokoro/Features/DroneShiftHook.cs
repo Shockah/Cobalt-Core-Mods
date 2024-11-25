@@ -374,6 +374,6 @@ internal sealed class V2ToV1DroneShiftHookWrapper(IKokoroApi.IV2.IDroneShiftHook
 		args.State = state;
 		args.Combat = combat;
 		args.Direction = direction;
-		return v2.ProvideDroneShiftActions(args);
+		return v2.ProvideDroneShiftActions(args)?.ToList();
 	}
 }

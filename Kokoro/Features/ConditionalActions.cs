@@ -430,7 +430,7 @@ internal sealed class ConditionalActionHasStatusExpression : IKokoroApi.IV2.ICon
 	string IKokoroApi.IConditionalActionApi.IExpression.GetTooltipDescription(State state, Combat? combat)
 		=> GetTooltipDescription(state, combat ?? DB.fakeCombat);
 
-	public List<Tooltip> GetTooltips(State state, Combat combat)
+	public IReadOnlyList<Tooltip> GetTooltips(State state, Combat combat)
 	{
 		var ship = TargetPlayer ? state.ship : combat?.otherShip;
 		var amount = ship?.Get(Status) ?? 1;
@@ -438,7 +438,7 @@ internal sealed class ConditionalActionHasStatusExpression : IKokoroApi.IV2.ICon
 	}
 
 	List<Tooltip> IKokoroApi.IConditionalActionApi.IExpression.GetTooltips(State state, Combat? combat)
-		=> GetTooltips(state, combat ?? DB.fakeCombat);
+		=> GetTooltips(state, combat ?? DB.fakeCombat).ToList();
 	
 	public IKokoroApi.IV2.IConditionalApi.IHasStatusExpression SetStatus(Status value)
 	{
@@ -494,7 +494,7 @@ internal sealed class ConditionalActionStatusExpression : IKokoroApi.IV2.ICondit
 	string IKokoroApi.IConditionalActionApi.IExpression.GetTooltipDescription(State state, Combat? combat)
 		=> GetTooltipDescription(state, combat ?? DB.fakeCombat);
 
-	public List<Tooltip> GetTooltips(State state, Combat combat)
+	public IReadOnlyList<Tooltip> GetTooltips(State state, Combat combat)
 	{
 		var ship = TargetPlayer ? state.ship : combat?.otherShip;
 		var amount = ship?.Get(Status) ?? 1;
@@ -502,7 +502,7 @@ internal sealed class ConditionalActionStatusExpression : IKokoroApi.IV2.ICondit
 	}
 
 	List<Tooltip> IKokoroApi.IConditionalActionApi.IExpression.GetTooltips(State state, Combat? combat)
-		=> GetTooltips(state, combat ?? DB.fakeCombat);
+		=> GetTooltips(state, combat ?? DB.fakeCombat).ToList();
 	
 	public IKokoroApi.IV2.IConditionalApi.IStatusExpression SetStatus(Status value)
 	{

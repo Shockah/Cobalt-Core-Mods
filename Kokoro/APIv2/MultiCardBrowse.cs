@@ -12,7 +12,7 @@ public partial interface IKokoroApi
 		public interface IMultiCardBrowseApi
 		{
 			IMultiCardBrowseRoute? AsRoute(CardBrowse route);
-			IMultiCardBrowseRoute MakeRoute(Action<CardBrowse>? @delegate = null);
+			IMultiCardBrowseRoute MakeRoute(CardBrowse route);
 			
 			IReadOnlyList<Card>? GetSelectedCards(CardAction action);
 
