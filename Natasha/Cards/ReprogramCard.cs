@@ -50,7 +50,7 @@ internal sealed class ReprogramCard : Card, IRegisterable, IHasCustomCardTraits
 					IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal,
 					ModEntry.Instance.KokoroApi.Conditional.Constant(1),
 					IKokoroApi.IV2.IConditionalApi.EquationStyle.Formal
-				).SetHideOperator(true),
+				).SetShowOperator(false),
 				new AStatus
 				{
 					targetPlayer = false,

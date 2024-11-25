@@ -23,10 +23,10 @@ partial class ApiImplementation
 			public IEnumerable<Tooltip> GetSearchTooltips(State state)
 				=> v1.GetSearchTooltips(state);
 
-			public string GetTitle(State state, Combat? combat, List<Card> cards)
+			public string GetTitle(State state, Combat combat, List<Card> cards)
 				=> v1.GetTitle(state, combat, cards);
 
-			public List<Card> GetCards(State state, Combat? combat)
+			public List<Card> GetCards(State state, Combat combat)
 				=> v1.GetCards(state, combat);
 		}
 		
@@ -171,7 +171,7 @@ internal sealed class CustomCardBrowseManager
 		if (!ModEntry.Instance.Helper.ModData.TryGetModData<IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource>(__instance, "CustomCardBrowseSource", out var customCardSource))
 			return;
 
-		__result = customCardSource.GetCards(g.state, g.state.route as Combat);
+		__result = customCardSource.GetCards(g.state, g.state.route as Combat ?? DB.fakeCombat);
 	}
 
 	private static IEnumerable<CodeInstruction> CardBrowse_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
@@ -217,8 +217,8 @@ internal sealed class CustomCardBrowseManager
 		if (!ModEntry.Instance.Helper.ModData.TryGetModData<IKokoroApi.IV2.ICustomCardBrowseApi.ICustomCardBrowseSource>(self, "CustomCardBrowseSource", out var customCardSource))
 			return false;
 
-		var cards = customCardSource.GetCards(g.state, g.state.route as Combat);
-		title = customCardSource.GetTitle(g.state, g.state.route as Combat, cards);
+		var cards = customCardSource.GetCards(g.state, g.state.route as Combat ?? DB.fakeCombat);
+		title = customCardSource.GetTitle(g.state, g.state.route as Combat ?? DB.fakeCombat, cards);
 		return true;
 	}
 }

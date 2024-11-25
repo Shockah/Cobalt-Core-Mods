@@ -8,15 +8,15 @@ public partial interface IKokoroApi
 
 		public interface IVariableHintTargetPlayerApi
 		{
+			IVariableHint? AsVariableHint(AVariableHint action);
+			IVariableHint MakeVariableHint(AVariableHint action);
+			
 			public interface IVariableHint : ICardAction<AVariableHint>
 			{
 				bool TargetPlayer { get; set; }
 
 				IVariableHint SetTargetPlayer(bool value);
 			}
-			
-			IVariableHint? AsVariableHint(AVariableHint action);
-			IVariableHint MakeVariableHint(AVariableHint action);
 		}
 	}
 }

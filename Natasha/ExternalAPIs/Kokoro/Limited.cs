@@ -113,7 +113,7 @@ public partial interface IKokoroApi
 			IChangeLimitedUsesAction MakeChangeLimitedUsesAction(int cardId, int amount, AStatusMode mode = AStatusMode.Add);
 
 			/// <summary>
-			/// Allows modifying a <see cref="ACardSelect"/> action with Limited-related changes.
+			/// Allows modifying an <see cref="ACardSelect"/> action with Limited-related changes.
 			/// </summary>
 			/// <param name="action">The action to modify.</param>
 			/// <returns>A wrapper, granting access to the modifications.</returns>
@@ -200,7 +200,7 @@ public partial interface IKokoroApi
 			}
 			
 			/// <summary>
-			/// A <see cref="ACardSelect"/> action wrapper, which allows modifying it with Limited-related changes.
+			/// An <see cref="ACardSelect"/> action wrapper, which allows modifying it with Limited-related changes.
 			/// </summary>
 			public interface ICardSelect : ICardAction<ACardSelect>
 			{

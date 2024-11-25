@@ -59,7 +59,7 @@ public sealed class BegForMercyCard : Card, IRegisterableCard, IFrogproofCard
 					Instance.Api.GetMinSmug(s.ship) == GetRequiredSmug() ? IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal : IKokoroApi.IV2.IConditionalApi.EquationOperator.LessThanOrEqual,
 					Instance.KokoroApi.Conditional.Constant(GetRequiredSmug()),
 					IKokoroApi.IV2.IConditionalApi.EquationStyle.State
-				).SetHideOperator(Instance.Api.GetMinSmug(s.ship) == GetRequiredSmug()),
+				).SetShowOperator(Instance.Api.GetMinSmug(s.ship) != GetRequiredSmug()),
 				new AHeal
 				{
 					healAmount = 1,

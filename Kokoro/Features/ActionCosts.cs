@@ -188,7 +188,7 @@ partial class ApiImplementation
 				V1.RenderSuffix(g, ref position, isDisabled, dontRender);
 			}
 
-			public List<Tooltip> GetTooltips(State state, Combat? combat)
+			public List<Tooltip> GetTooltips(State state, Combat combat)
 				=> V1.GetTooltips(state, combat);
 		}
 
@@ -207,7 +207,7 @@ partial class ApiImplementation
 			public void Pay(State state, Combat combat, int amount)
 				=> V1.PayResource(state, combat, amount);
 
-			public List<Tooltip> GetTooltips(State state, Combat? combat, int amount)
+			public List<Tooltip> GetTooltips(State state, Combat combat, int amount)
 				=> V1.GetTooltips(state, combat, amount);
 		}
 
@@ -780,7 +780,7 @@ internal sealed class AResourceCost : CardAction, IKokoroApi.IV2.IActionCostsApi
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
-			.. Cost.GetTooltips(s, s.route as Combat),
+			.. Cost.GetTooltips(s, s.route as Combat ?? DB.fakeCombat),
 			.. Action.GetTooltips(s)
 		];
 	
@@ -1016,7 +1016,7 @@ internal sealed class ResourceActionCost : IKokoroApi.IV2.IActionCostsApi.IResou
 		}
 	}
 
-	public List<Tooltip> GetTooltips(State state, Combat? combat)
+	public List<Tooltip> GetTooltips(State state, Combat combat)
 		=> PotentialResources.SelectMany(r => r.GetTooltips(state, combat, Amount)).ToList();
 	
 	public IKokoroApi.IV2.IActionCostsApi.IResourceCost SetPotentialResources(IEnumerable<IKokoroApi.IV2.IActionCostsApi.IResource> value)
@@ -1068,7 +1068,7 @@ internal abstract class BaseActionCostResource : IKokoroApi.IV2.IActionCostsApi.
 	
 	public abstract int GetCurrentResourceAmount(State state, Combat combat);
 	public abstract void Pay(State state, Combat combat, int amount);
-	public abstract List<Tooltip> GetTooltips(State state, Combat? combat, int amount);
+	public abstract List<Tooltip> GetTooltips(State state, Combat combat, int amount);
 	
 	public override bool Equals(object? obj)
 		=> obj is BaseActionCostResource resource && resource.ResourceKey == ResourceKey;
@@ -1098,7 +1098,7 @@ internal sealed class ActionCostStatusResource : BaseActionCostResource, IKokoro
 		ship.Add(Status, -amount);
 	}
 
-	public override List<Tooltip> GetTooltips(State state, Combat? combat, int amount)
+	public override List<Tooltip> GetTooltips(State state, Combat combat, int amount)
 	{
 		if (amount <= 0)
 			return [];
@@ -1133,7 +1133,7 @@ internal sealed class ActionCostEnergyResource : BaseActionCostResource, IKokoro
 	public override void Pay(State state, Combat combat, int amount)
 		=> combat.energy = Math.Max(combat.energy - amount, 0);
 
-	public override List<Tooltip> GetTooltips(State state, Combat? combat, int amount)
+	public override List<Tooltip> GetTooltips(State state, Combat combat, int amount)
 	{
 		if (amount <= 0)
 			return [];
@@ -1196,7 +1196,7 @@ internal sealed class CombinedResourceActionCost : IKokoroApi.IV2.IActionCostsAp
 		}
 	}
 
-	public List<Tooltip> GetTooltips(State state, Combat? combat)
+	public List<Tooltip> GetTooltips(State state, Combat combat)
 		=> Costs.SelectMany(c => c.GetTooltips(state, combat)).ToList();
 	
 	public IKokoroApi.IV2.IActionCostsApi.ICombinedCost SetCosts(IEnumerable<IKokoroApi.IV2.IActionCostsApi.ICost> value)

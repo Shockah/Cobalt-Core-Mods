@@ -96,13 +96,13 @@ internal sealed class TimesPlayedVariableHint : AVariableHint, IKokoroApi.IV2.IT
 	}
 }
 
-internal sealed class TimesPlayedCondition : IKokoroApi.IV2.ITimesPlayedApi.ITimesPlayedConditionExpression, IKokoroApi.IConditionalActionApi.IIntExpression
+internal sealed class TimesPlayedCondition : IKokoroApi.IV2.ITimesPlayedApi.ITimesPlayedConditionExpression
 {
 	public required int CardId { get; internal set; }
 
 	public required int CurrentTimesPlayed { get; set; }
 
-	public string GetTooltipDescription(State state, Combat? combat)
+	public string GetTooltipDescription(State state, Combat combat)
 		=> ModEntry.Instance.Localizations.Localize(["timesPlayed", "condition"]);
 
 	public int GetValue(State state, Combat combat)

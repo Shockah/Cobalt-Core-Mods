@@ -65,7 +65,7 @@ public sealed class BlastFromThePastCard : Card, IRegisterableCard, IFrogproofCa
 					Instance.Api.GetMinSmug(s.ship) == -3 ? IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal : IKokoroApi.IV2.IConditionalApi.EquationOperator.LessThanOrEqual,
 					Instance.KokoroApi.Conditional.Constant(-3),
 					IKokoroApi.IV2.IConditionalApi.EquationStyle.State
-				).SetHideOperator(Instance.Api.GetMinSmug(s.ship) == -3),
+				).SetShowOperator(Instance.Api.GetMinSmug(s.ship) != -3),
 				new AStatus
 				{
 					status = Status.backwardsMissiles,

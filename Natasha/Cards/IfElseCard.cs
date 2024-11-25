@@ -49,7 +49,7 @@ internal sealed class IfElseCard : Card, IRegisterable, IHasCustomCardTraits
 					IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal,
 					ModEntry.Instance.KokoroApi.Conditional.Constant(0),
 					IKokoroApi.IV2.IConditionalApi.EquationStyle.Possession
-				).SetHideOperator(true),
+				).SetShowOperator(false),
 				new OneLinerAction
 				{
 					Actions = [
@@ -67,7 +67,7 @@ internal sealed class IfElseCard : Card, IRegisterable, IHasCustomCardTraits
 						IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal,
 						ModEntry.Instance.KokoroApi.Conditional.Constant(0),
 						IKokoroApi.IV2.IConditionalApi.EquationStyle.Possession
-					).SetHideOperator(true),
+					).SetShowOperator(false),
 					new OneLinerAction
 					{
 						Actions = [

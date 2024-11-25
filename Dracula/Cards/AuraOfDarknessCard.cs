@@ -44,7 +44,7 @@ internal sealed class AuraOfDarknessCard : Card, IDraculaCard
 						IKokoroApi.IV2.IConditionalApi.EquationOperator.GreaterThanOrEqual,
 						ModEntry.Instance.KokoroApi.Conditional.Constant(3),
 						IKokoroApi.IV2.IConditionalApi.EquationStyle.Possession
-					).SetHideOperator(true),
+					).SetShowOperator(false),
 					ModEntry.Instance.KokoroApi.ContinueStop.MakeTriggerAction(IKokoroApi.IV2.IContinueStopApi.ActionType.Stop, out var stopId).AsCardAction
 				).AsCardAction,
 				.. ModEntry.Instance.KokoroApi.ContinueStop.MakeFlaggedActions(IKokoroApi.IV2.IContinueStopApi.ActionType.Stop, stopId, [
