@@ -9,17 +9,17 @@ partial class ApiImplementation
 {
 	partial class V2Api
 	{
-		public IKokoroApi.IV2.ICustomCardUpgradeApi CustomCardUpgrade { get; } = new CustomCardUpgradeApi();
+		public IKokoroApi.IV2.IInPlaceCardUpgradeApi InPlaceCardUpgrade { get; } = new InPlaceCardUpgradeApi();
 		
-		public sealed class CustomCardUpgradeApi : IKokoroApi.IV2.ICustomCardUpgradeApi
+		public sealed class InPlaceCardUpgradeApi : IKokoroApi.IV2.IInPlaceCardUpgradeApi
 		{
-			public IKokoroApi.IV2.ICustomCardUpgradeApi.IRoute ModifyCardUpgrade(CardUpgrade route)
-				=> new CustomCardUpgradeManager.RouteWrapper(Mutil.DeepCopy(route));
+			public IKokoroApi.IV2.IInPlaceCardUpgradeApi.ICardUpgrade ModifyCardUpgrade(CardUpgrade route)
+				=> new InPlaceCardUpgradeManager.CardUpgradeWrapper(Mutil.DeepCopy(route));
 		}
 	}
 }
 
-internal sealed class CustomCardUpgradeManager
+internal sealed class InPlaceCardUpgradeManager
 {
 	internal static void Setup(IHarmony harmony)
 	{
@@ -42,7 +42,7 @@ internal sealed class CustomCardUpgradeManager
 		return false;
 	}
 	
-	internal sealed class RouteWrapper(CardUpgrade route) : IKokoroApi.IV2.ICustomCardUpgradeApi.IRoute
+	internal sealed class CardUpgradeWrapper(CardUpgrade route) : IKokoroApi.IV2.IInPlaceCardUpgradeApi.ICardUpgrade
 	{
 		[JsonIgnore]
 		public CardUpgrade AsRoute
@@ -54,7 +54,7 @@ internal sealed class CustomCardUpgradeManager
 			set => ModEntry.Instance.Helper.ModData.SetModData(route, "IsInPlace", value);
 		}
 
-		public IKokoroApi.IV2.ICustomCardUpgradeApi.IRoute SetInPlace(bool value)
+		public IKokoroApi.IV2.IInPlaceCardUpgradeApi.ICardUpgrade SetIsInPlace(bool value)
 		{
 			this.IsInPlace = value;
 			return this;

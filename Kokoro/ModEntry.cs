@@ -62,12 +62,11 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		ConditionalActionManager.Setup(Harmony);
 		ContinueStopActionManager.Setup(Harmony);
 		CustomCardBrowseSourceManager.Setup(Harmony);
-		CustomCardUpgradeManager.Setup(Harmony);
 		DroneShiftManager.Setup(Harmony);
-		VariableHintTargetPlayerManager.Setup(Harmony);
 		EnergyAsStatusManager.Setup(Harmony);
 		EvadeManager.Setup(Harmony);
 		HiddenActionManager.Setup(Harmony);
+		InPlaceCardUpgradeManager.Setup(Harmony);
 		LimitedManager.Setup(Harmony);
 		MultiCardBrowseManager.Setup(Harmony);
 		OnDiscardManager.Setup(Harmony);
@@ -82,15 +81,16 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		StatusRenderManager.Setup(Harmony);
 		TemporaryUpgradesManager.Setup(Harmony);
 		TimesPlayedManager.Setup(Harmony);
+		VariableHintTargetPlayerManager.Setup(Harmony);
 		WrappedActionManager.Setup(Harmony);
 		
-		StatusLogicManager.Instance.Register(WormStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(OxidationStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(StatusNextTurnManager.Instance, 0);
+		StatusLogicManager.Instance.Register(WormStatusManager.Instance, 0);
 		
-		StatusRenderManager.Instance.Register(WormStatusManager.Instance, 0);
 		StatusRenderManager.Instance.Register(OxidationStatusManager.Instance, 0);
 		StatusRenderManager.Instance.Register(StatusNextTurnManager.Instance, 0);
+		StatusRenderManager.Instance.Register(WormStatusManager.Instance, 0);
 		
 		WrappedActionManager.Instance.Register(ActionCostsManager.Instance, 0);
 		WrappedActionManager.Instance.Register(ConditionalActionManager.Instance, 0);
