@@ -25,6 +25,12 @@ public partial interface IKokoroApi
 			ICardTraitEntry Trait { get; }
 			
 			/// <summary>
+			/// The default amount of times a Limited card can be played before it exhausts, if not overridden in any way.
+			/// Defaults to 2.
+			/// </summary>
+			int DefaultLimitedUses { get; }
+			
+			/// <summary>
 			/// Returns the amount of times a card with the given key can be played before it exhausts.
 			/// </summary>
 			/// <param name="key">The <see cref="Card.Key">key</see> of the card.</param>

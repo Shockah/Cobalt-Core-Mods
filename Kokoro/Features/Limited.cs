@@ -18,7 +18,10 @@ partial class ApiImplementation
 		{
 			public ICardTraitEntry Trait
 				=> LimitedManager.Trait;
-			
+
+			public int DefaultLimitedUses
+				=> LimitedManager.DefaultLimitedUses;
+
 			public int GetBaseLimitedUses(string key, Upgrade upgrade)
 				=> LimitedManager.GetBaseLimitedUses(key, upgrade);
 
@@ -130,11 +133,13 @@ partial class ApiImplementation
 
 internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IHook>
 {
+	internal const int DefaultLimitedUses = 2;
+	
 	internal static readonly LimitedManager Instance = new();
 	
 	internal static ICardTraitEntry Trait = null!;
 
-	private static readonly Dictionary<string, Dictionary<Upgrade, int>> DefaultLimitedUses = [];
+	private static readonly Dictionary<string, Dictionary<Upgrade, int>> BaseLimitedUses = [];
 	private static readonly Dictionary<int, Spr> Icons = [];
 	
 	private LimitedManager() : base(ModEntry.Instance.Package.Manifest.UniqueName)
@@ -217,9 +222,9 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 
 	public static int GetBaseLimitedUses(string key, Upgrade upgrade)
 	{
-		if (!DefaultLimitedUses.TryGetValue(key, out var perUpgrade))
-			return 2;
-		return perUpgrade.GetValueOrDefault(upgrade, 2);
+		if (!BaseLimitedUses.TryGetValue(key, out var perUpgrade))
+			return DefaultLimitedUses;
+		return perUpgrade.GetValueOrDefault(upgrade, DefaultLimitedUses);
 	}
 
 	public static int GetStartingLimitedUses(State state, Card card)
@@ -246,10 +251,10 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 
 	public static void SetBaseLimitedUses(string key, Upgrade upgrade, int value)
 	{
-		if (!DefaultLimitedUses.TryGetValue(key, out var perUpgrade))
+		if (!BaseLimitedUses.TryGetValue(key, out var perUpgrade))
 		{
 			perUpgrade = [];
-			DefaultLimitedUses[key] = perUpgrade;
+			BaseLimitedUses[key] = perUpgrade;
 		}
 		perUpgrade[upgrade] = value;
 	}

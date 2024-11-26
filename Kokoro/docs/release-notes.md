@@ -4,16 +4,18 @@
 
 ## Upcoming release
 
-* Added an extra required method to the `ICustomCardBrowseSource`.
-* Incorporated Bloch's `MultiCardBrowse`.
-* Incorporated Bloch's `OnDiscard`.
-* Incorporated Bloch's `OnTurnEnd`.
-* Incorporated Bloch's `Spontaneous`.
-* Incorporated Johnson's Temporary Upgrades.
-* Incorporated Natasha's `TimesPlayed`.
-* Incorporated Natasha's `Sequence`.
-* Incorporated Natasha's `Limited`.
-* Removed `MidrowScorching`.
+* Refactored and implemented a new version (V2) of the API.
+* [V2] Implemented the Finite card trait.
+* [V2] Incorporated Bloch's `MultiCardBrowse`.
+* [V2] Incorporated Bloch's `OnDiscard`.
+* [V2] Incorporated Bloch's `OnTurnEnd`.
+* [V2] Incorporated Bloch's `Spontaneous`.
+* [V2] Incorporated Johnson's Temporary Upgrades.
+* [V2] Incorporated Natasha's `TimesPlayed`.
+* [V2] Incorporated Natasha's `Sequence`.
+* [V2] Incorporated Natasha's `Limited`.
+* [V1] Added an extra required method to the `ICustomCardBrowseSource`.
+* [V1] Removed `MidrowScorching`.
 
 ## 1.12.1
 Released 25 August 2024.
