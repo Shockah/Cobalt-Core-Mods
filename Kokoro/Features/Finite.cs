@@ -142,26 +142,26 @@ internal sealed class FiniteManager : HookManager<IKokoroApi.IV2.IFiniteApi.IHoo
 		Trait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Finite", new()
 		{
 			Icon = (state, card) => ObtainIcon(card is null ? 10 : GetFiniteUses(state, card)),
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["limited", "name"]).Localize,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["finite", "name"]).Localize,
 			Tooltips = (state, card) =>
 			{
 				string description;
 				if (card is null)
-					description = ModEntry.Instance.Localizations.Localize(["limited", "description", "withoutCard"]);
+					description = ModEntry.Instance.Localizations.Localize(["finite", "description", "withoutCard"]);
 				else if (state.route is Combat)
-					description = ModEntry.Instance.Localizations.Localize(["limited", "description", "stateful"], new { Count = GetFiniteUses(state, card) });
+					description = ModEntry.Instance.Localizations.Localize(["finite", "description", "stateful"], new { Count = GetFiniteUses(state, card) });
 				else
-					description = ModEntry.Instance.Localizations.Localize(["limited", "description", "outOfCombat"], new { Count = GetStartingFiniteUses(state, card) });
+					description = ModEntry.Instance.Localizations.Localize(["finite", "description", "outOfCombat"], new { Count = GetStartingFiniteUses(state, card) });
 
 				return [
 					new GlossaryTooltip($"cardtrait.{MethodBase.GetCurrentMethod()!.DeclaringType!.Namespace!}::Finite")
 					{
 						Icon = ObtainIcon(card is null ? 10 : GetFiniteUses(DB.fakeState, card)),
 						TitleColor = Colors.cardtrait,
-						Title = ModEntry.Instance.Localizations.Localize(["limited", "name"]),
+						Title = ModEntry.Instance.Localizations.Localize(["finite", "name"]),
 						Description = description,
 					},
-					new TTGlossary("cardtrait.exhaust"),
+					new TTGlossary("cardtrait.infinite"),
 				];
 			}
 		});
@@ -272,14 +272,14 @@ internal sealed class FiniteManager : HookManager<IKokoroApi.IV2.IFiniteApi.IHoo
 
 		icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite($"Finite{amount}", () =>
 		{
-			var exhaustIcon = SpriteLoader.Get(StableSpr.icons_infinite)!;
-			return TextureUtils.CreateTexture(exhaustIcon.Width, exhaustIcon.Height, () =>
+			var infiniteIcon = SpriteLoader.Get(StableSpr.icons_infinite)!;
+			return TextureUtils.CreateTexture(infiniteIcon.Width, infiniteIcon.Height, () =>
 			{
-				Draw.Sprite(exhaustIcon, 0, 0);
+				Draw.Sprite(infiniteIcon, 0, 0);
 
 				var text = amount > 9 ? "+" : amount.ToString();
 				var textRect = Draw.Text(text, 0, 0, outline: Colors.black, dontDraw: true, dontSubstituteLocFont: true);
-				Draw.Text(text, exhaustIcon.Width - textRect.w, exhaustIcon.Height - textRect.h - 1, color: Colors.white, outline: Colors.black, dontSubstituteLocFont: true);
+				Draw.Text(text, infiniteIcon.Width - textRect.w, infiniteIcon.Height - textRect.h - 1, color: Colors.white, outline: Colors.black, dontSubstituteLocFont: true);
 			});
 		}).Sprite;
 
@@ -389,13 +389,13 @@ internal sealed class ChangeFiniteUsesAction : CardAction, IKokoroApi.IV2.IFinit
 				TitleColor = Colors.action,
 				Title = Mode switch
 				{
-					AStatusMode.Add => ModEntry.Instance.Localizations.Localize(["limited", "changeFiniteUses", "Add", "name", Amount >= 0 ? "positive" : "negative"]),
-					_ => ModEntry.Instance.Localizations.Localize(["limited", "changeFiniteUses", Mode.ToString(), "name"])
+					AStatusMode.Add => ModEntry.Instance.Localizations.Localize(["finite", "changeFiniteUses", "Add", "name", Amount >= 0 ? "positive" : "negative"]),
+					_ => ModEntry.Instance.Localizations.Localize(["finite", "changeFiniteUses", Mode.ToString(), "name"])
 				},
 				Description = Mode switch
 				{
-					AStatusMode.Add => ModEntry.Instance.Localizations.Localize(["limited", "changeFiniteUses", "Add", "description", Amount >= 0 ? "positive" : "negative"], new { Amount = Math.Abs(Amount) }),
-					_ => ModEntry.Instance.Localizations.Localize(["limited", "changeFiniteUses", Mode.ToString(), "description"], new { Amount = Amount })
+					AStatusMode.Add => ModEntry.Instance.Localizations.Localize(["finite", "changeFiniteUses", "Add", "description", Amount >= 0 ? "positive" : "negative"], new { Amount = Math.Abs(Amount) }),
+					_ => ModEntry.Instance.Localizations.Localize(["finite", "changeFiniteUses", Mode.ToString(), "description"], new { Amount = Amount })
 				}
 			}
 		];

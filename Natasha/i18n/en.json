@@ -16,9 +16,6 @@
             "description": "The next <c=midrow>object</c> launched by this ship is replaced with an <c=midrow>Asteroid</c>."
         }
     },
-    "condition": {
-        "TimesPlayed": "times this card was played this combat (including this play)"
-    },
     "artifact": {
         "DarkWebData": {
             "name": "DARK WEB DATA",

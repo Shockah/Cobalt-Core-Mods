@@ -1,5 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
@@ -42,15 +43,15 @@ internal sealed class BruteForceCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				ModEntry.Instance.KokoroApi.TimesPlayed.MakeVariableHintAction(uuid).AsCardAction.Disabled(flipped),
-				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this) + 1), xHint = 1, disabled = flipped },
+				ModEntry.Instance.KokoroApi.TimesPlayed.MakeVariableHintAction(uuid, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat).AsCardAction.Disabled(flipped),
+				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat) + 1), xHint = 1, disabled = flipped },
 				new ADummyAction(),
 				ModEntry.Instance.KokoroApi.Limited.MakeVariableHint(uuid).AsCardAction.Disabled(!flipped),
 				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.Limited.GetLimitedUses(s, this)), xHint = 1, disabled = !flipped },
 			],
 			_ => [
-				ModEntry.Instance.KokoroApi.TimesPlayed.MakeVariableHintAction(uuid).AsCardAction,
-				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this) + 1), xHint = 1 },
+				ModEntry.Instance.KokoroApi.TimesPlayed.MakeVariableHintAction(uuid, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat).AsCardAction,
+				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat) + 1), xHint = 1 },
 				ModEntry.Instance.KokoroApi.Limited.MakeVariableHint(uuid).AsCardAction,
 				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.Limited.GetLimitedUses(s, this)), xHint = 1 },
 			]

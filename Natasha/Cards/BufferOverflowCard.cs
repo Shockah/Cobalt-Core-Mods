@@ -1,5 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
@@ -38,12 +39,12 @@ internal sealed class BufferOverflowCard : Card, IRegisterable, IHasCustomCardTr
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				ModEntry.Instance.KokoroApi.TimesPlayed.MakeVariableHintAction(uuid).AsCardAction,
-				new AAttack { damage = GetDmg(s, (ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this) + 1) * 2), xHint = 2 },
+				ModEntry.Instance.KokoroApi.TimesPlayed.MakeVariableHintAction(uuid, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat).AsCardAction,
+				new AAttack { damage = GetDmg(s, (ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat) + 1) * 2), xHint = 2 },
 			],
 			_ => [
-				ModEntry.Instance.KokoroApi.TimesPlayed.MakeVariableHintAction(uuid).AsCardAction,
-				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this) + 1), xHint = 1 },
+				ModEntry.Instance.KokoroApi.TimesPlayed.MakeVariableHintAction(uuid, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat).AsCardAction,
+				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat) + 1), xHint = 1 },
 			]
 		};
 }

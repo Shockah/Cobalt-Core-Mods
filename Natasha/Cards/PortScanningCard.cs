@@ -1,5 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
@@ -35,14 +36,14 @@ internal sealed class PortScanningCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 1, 3, new AAttack { damage = GetDmg(s, 1) }).AsCardAction,
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 2, 3, new AAttack { damage = GetDmg(s, 2) }).AsCardAction,
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 3, 3, new AAttack { damage = GetDmg(s, 2), brittle = true }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 1, 3, new AAttack { damage = GetDmg(s, 1) }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 2, 3, new AAttack { damage = GetDmg(s, 2) }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 3, 3, new AAttack { damage = GetDmg(s, 2), brittle = true }).AsCardAction,
 			],
 			_ => [
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 1, 3, new AAttack { damage = GetDmg(s, 1) }).AsCardAction,
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 2, 3, new AAttack { damage = GetDmg(s, 2) }).AsCardAction,
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 3, 3, new AAttack { damage = GetDmg(s, 2), weaken = true }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 1, 3, new AAttack { damage = GetDmg(s, 1) }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 2, 3, new AAttack { damage = GetDmg(s, 2) }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 3, 3, new AAttack { damage = GetDmg(s, 2), weaken = true }).AsCardAction,
 			]
 		};
 }

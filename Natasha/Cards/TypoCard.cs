@@ -1,6 +1,7 @@
 ﻿using FSPRO;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
@@ -41,19 +42,19 @@ internal sealed class TypoCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 1, 2, new AStatus { targetPlayer = false, status = Status.powerdrive, statusAmount = 1 }).AsCardAction,
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 2, 2, new AStatus { targetPlayer = true, status = Status.powerdrive, statusAmount = 1 }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 1, 2, new AStatus { targetPlayer = false, status = Status.powerdrive, statusAmount = 1 }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 2, 2, new AStatus { targetPlayer = true, status = Status.powerdrive, statusAmount = 1 }).AsCardAction,
 			],
 			Upgrade.A => [
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 1, 3, new AStatus { targetPlayer = false, status = Status.overdrive, statusAmount = 1 }).AsCardAction,
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 2, 3, new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 }).AsCardAction,
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 3, 3, new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 }).AsCardAction,
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 3, 3, new DiscardSelfAction { CardId = uuid }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 1, 3, new AStatus { targetPlayer = false, status = Status.overdrive, statusAmount = 1 }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 2, 3, new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 3, 3, new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 3, 3, new DiscardSelfAction { CardId = uuid }).AsCardAction,
 			],
 			_ => [
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 1, 2, new AStatus { targetPlayer = false, status = Status.overdrive, statusAmount = 1 }).AsCardAction,
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 2, 2, new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 }).AsCardAction,
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 2, 2, new DiscardSelfAction { CardId = uuid }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 1, 2, new AStatus { targetPlayer = false, status = Status.overdrive, statusAmount = 1 }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 2, 2, new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 2, 2, new DiscardSelfAction { CardId = uuid }).AsCardAction,
 			]
 		};
 

@@ -1,5 +1,6 @@
 ﻿using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
@@ -44,12 +45,12 @@ internal sealed class PingCard : Card, IRegisterable, IHasCustomCardTraits
 				new ADrawCard { count = 2 },
 			],
 			Upgrade.A => [
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 1, 2, new AAttack { damage = GetDmg(s, 3) }).AsCardAction,
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 2, 2, new ADrawCard { count = 3 }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 1, 2, new AAttack { damage = GetDmg(s, 3) }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 2, 2, new ADrawCard { count = 3 }).AsCardAction,
 			],
 			_ => [
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 1, 2, new AAttack { damage = GetDmg(s, 2) }).AsCardAction,
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, 2, 2, new ADrawCard { count = 2 }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 1, 2, new AAttack { damage = GetDmg(s, 2) }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 2, 2, new ADrawCard { count = 2 }).AsCardAction,
 			]
 		};
 }

@@ -1,4 +1,7 @@
-﻿namespace Shockah.Kokoro;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace Shockah.Kokoro;
 
 public partial interface IKokoroApi
 {
@@ -23,11 +26,34 @@ public partial interface IKokoroApi
 			/// Creates a new sequence action, wrapping the provided action.
 			/// </summary>
 			/// <param name="cardId">The ID of the card to check the amount of times it was played this combat.</param>
+			/// <param name="interval">The interval in which the sequence resets.</param>
 			/// <param name="sequenceStep">The step of the sequence at which this action triggers.</param>
 			/// <param name="sequenceLength">The total length of the sequence.</param>
 			/// <param name="action">The action to wrap.</param>
 			/// <returns>The new sequence action.</returns>
-			ISequenceAction MakeAction(int cardId, int sequenceStep, int sequenceLength, CardAction action);
+			ISequenceAction MakeAction(int cardId, Interval interval, int sequenceStep, int sequenceLength, CardAction action);
+
+			/// <summary>
+			/// Defines an interval in which the sequence resets.
+			/// </summary>
+			[JsonConverter(typeof(StringEnumConverter))]
+			public enum Interval
+			{
+				/// <summary>
+				/// The sequence is never reset during a run.
+				/// </summary>
+				Run,
+				
+				/// <summary>
+				/// The sequence resets each combat.
+				/// </summary>
+				Combat,
+				
+				/// <summary>
+				/// The sequence resets each turn.
+				/// </summary>
+				Turn
+			}
 			
 			/// <summary>
 			/// Represents an action, which only triggers every N plays of the card each combat.
@@ -50,6 +76,11 @@ public partial interface IKokoroApi
 				int CardId { get; set; }
 				
 				/// <summary>
+				/// The interval in which the sequence resets.
+				/// </summary>
+				Interval Interval { get; set; }
+				
+				/// <summary>
 				/// The step of the sequence at which this action triggers.
 				/// </summary>
 				int SequenceStep { get; set; }
@@ -70,6 +101,13 @@ public partial interface IKokoroApi
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
 				ISequenceAction SetCardId(int value);
+
+				/// <summary>
+				/// Sets <see cref="Interval"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				ISequenceAction SetInterval(Interval value);
 				
 				/// <summary>
 				/// Sets <see cref="SequenceStep"/>.

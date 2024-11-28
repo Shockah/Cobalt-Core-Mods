@@ -556,7 +556,7 @@ internal sealed class ConditionalActionEquation : IKokoroApi.IV2.IConditionalApi
 	{
 		Lhs.Render(g, ref position, isDisabled, dontRender);
 
-		if (!ShowOperator)
+		if (ShowOperator)
 		{
 			var operatorIcon = Operator switch
 			{

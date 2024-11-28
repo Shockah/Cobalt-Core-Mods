@@ -44,12 +44,26 @@
 	},
 	"x": {
 		"TimesPlayed": {
-			"stateful": "<c=action>X</c> = Times this card was played this combat, including this play (<c=boldPink>{{Count}}</c>).",
-			"stateless": "<c=action>X</c> = Times this card was played this combat, including this play."
+			"Run": {
+				"stateful": "<c=action>X</c> = Times this card was played this run, including this play (<c=boldPink>{{Count}}</c>).",
+				"stateless": "<c=action>X</c> = Times this card was played this run, including this play."
+			},
+			"Combat": {
+				"stateful": "<c=action>X</c> = Times this card was played this combat, including this play (<c=boldPink>{{Count}}</c>).",
+				"stateless": "<c=action>X</c> = Times this card was played this combat, including this play."
+			},
+			"Turn": {
+				"stateful": "<c=action>X</c> = Times this card was played this turn, including this play (<c=boldPink>{{Count}}</c>).",
+				"stateless": "<c=action>X</c> = Times this card was played this turn, including this play."
+			}
 		},
 		"LimitedUses": {
 			"stateful": "<c=action>X</c> = Times this <c=cardtrait>limited</c> card can still be played, excluding this play (<c=boldPink>{{Count}}</c>).",
 			"stateless": "<c=action>X</c> = Times this <c=cardtrait>limited</c> card can still be played, excluding this play."
+		},
+		"FiniteUses": {
+			"stateful": "<c=action>X</c> = Times this <c=cardtrait>finite</c> card can still be played, excluding this play (<c=boldPink>{{Count}}</c>).",
+			"stateless": "<c=action>X</c> = Times this <c=cardtrait>finite</c> card can still be played, excluding this play."
 		}
 	},
 	"resourceCost": {
@@ -174,14 +188,34 @@
 		"description": "This action only triggers whenever a turn starts with this card in hand, or if it's drawn for the first time this turn."
 	},
 	"sequence": {
-		"name": "  Sequence",
-		"description": {
-			"stateful": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played (currently <c=boldPink>{{Current}}</c>/<c=boldPink>{{Steps}}</c>).",
-			"stateless": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played."
+		"Run": {
+			"name": "  Sequence: Run",
+			"description": {
+				"stateful": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this run (currently <c=boldPink>{{Current}}</c>/<c=boldPink>{{Steps}}</c>).",
+				"stateless": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this run."
+			}
+		},
+		"Combat": {
+			"name": "  Sequence: Combat",
+			"description": {
+				"stateful": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this combat (currently <c=boldPink>{{Current}}</c>/<c=boldPink>{{Steps}}</c>).",
+				"stateless": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this combat."
+			}
+		},
+		"Turn": {
+			"name": "  Sequence: Turn",
+			"description": {
+				"stateful": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this turn (currently <c=boldPink>{{Current}}</c>/<c=boldPink>{{Steps}}</c>).",
+				"stateless": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this turn."
+			}
 		}
 	},
 	"timesPlayed": {
-		"condition": "times this card was played this combat (including this play)"
+		"condition": {
+			"Run": "times this card was played this run (including this play)",
+			"Combat": "times this card was played this combat (including this play)",
+			"Turn": "times this card was played this turn (including this play)"
+		}
 	},
 	"limited": {
 		"name": "Limited",
@@ -204,6 +238,30 @@
 			"Set": {
 				"name": "Set Uses",
 				"description": "Set <c=cardtrait>limited</c> uses on this card to <c=boldPink>{{Amount}}</c>."
+			}
+		}
+	},
+	"finite": {
+		"name": "Finite",
+		"description": {
+			"stateful": "This card can be used <c=boldPink>{{Count}}</c> times this turn before it gets discarded.",
+			"outOfCombat": "This card can be used <c=boldPink>{{Count}}</c> times each turn before it gets discarded.",
+			"withoutCard": "This card can be used multiple times each turn before it gets discarded."
+		},
+		"changeFiniteUses": {
+			"Add": {
+				"name": {
+					"positive": "Add Uses",
+					"negative": "Remove Uses"
+				},
+				"description": {
+					"positive": "Add <c=boldPink>{{Amount}}</c> <c=cardtrait>finite</c> uses to this card.",
+					"negative": "Remove <c=boldPink>{{Amount}}</c> <c=cardtrait>finite</c> uses from this card."
+				}
+			},
+			"Set": {
+				"name": "Set Uses",
+				"description": "Set <c=cardtrait>finite</c> uses on this card to <c=boldPink>{{Amount}}</c>."
 			}
 		}
 	}
