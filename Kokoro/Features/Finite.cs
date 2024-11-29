@@ -170,20 +170,20 @@ internal sealed class FiniteManager : HookManager<IKokoroApi.IV2.IFiniteApi.IHoo
 		{
 			foreach (var card in state.deck)
 				ResetFiniteUses(state, card);
-		}, 0);
+		});
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
 			foreach (var card in state.deck)
 				ResetFiniteUses(state, card);
-		}, 0);
+		});
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (Card card, State state) =>
 		{
 			if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Trait))
 				return;
 			SetFiniteUses(state, card, GetFiniteUses(state, card) - 1);
-		}, 0);
+		});
 
 		ModEntry.Instance.Helper.Content.Cards.OnGetFinalDynamicCardTraitOverrides += OnGetFinalDynamicCardTraitOverrides;
 

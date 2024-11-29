@@ -83,7 +83,7 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 			foreach (var card in state.GetAllCards())
 				if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, SpontaneousTriggeredTrait))
 					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, SpontaneousTriggeredTrait, null, permanent: false);
-		}, 0);
+		});
 	}
 
 	public IEnumerable<CardAction>? GetWrappedCardActions(IKokoroApi.IV2.IWrappedActionsApi.IHook.IGetWrappedCardActionsArgs args)

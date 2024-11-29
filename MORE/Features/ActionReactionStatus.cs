@@ -39,7 +39,7 @@ internal sealed class ActionReactionStatus : IRegisterable, IKokoroApi.IV2.IStat
 				hurtAmount = 1,
 				statusPulse = Instance.Entry.Status
 			});
-		}, 0);
+		});
 
 		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(Instance);
 	}

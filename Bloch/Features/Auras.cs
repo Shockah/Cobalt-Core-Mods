@@ -97,13 +97,13 @@ internal sealed class AuraManager : IKokoroApi.IV2.IStatusLogicApi.IHook, IKokor
 				new ScryAction { Amount = maxInsight, FromInsight = true },
 				new ADrawCard { count = maxInsight }
 			]);
-		}, 0);
+		});
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
 			foreach (var card in state.deck)
 				ModEntry.Instance.Helper.ModData.RemoveModData(card, "ChosenAuras");
-		}, 0);
+		});
 
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),

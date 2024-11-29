@@ -74,7 +74,7 @@ internal sealed class BlastwaveManager
 				return;
 			var worldX = state.ship.x + state.ship.parts.IndexOf(part);
 			TriggerBlastwaveIfNeeded(state, combat, worldX, targetPlayer: true, hitMidrow: false);
-		}, 0);
+		});
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnEnemyGetHit), (State state, Combat combat, Part? part) =>
 		{
@@ -82,7 +82,7 @@ internal sealed class BlastwaveManager
 				return;
 			var worldX = combat.otherShip.x + combat.otherShip.parts.IndexOf(part);
 			TriggerBlastwaveIfNeeded(state, combat, worldX, targetPlayer: false, hitMidrow: false);
-		}, 0);
+		});
 	}
 
 	private static void TriggerBlastwaveIfNeeded(State state, Combat combat, int worldX, bool targetPlayer, bool hitMidrow)

@@ -41,14 +41,14 @@ internal sealed class FluxPartModManager : IDynaHook
 			if (AttackContext is null)
 				return;
 			TriggerFluxIfNeeded(state, combat, part, targetPlayer: true);
-		}, 0);
+		});
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnEnemyGetHit), (State state, Combat combat, Part? part) =>
 		{
 			if (AttackContext is null)
 				return;
 			TriggerFluxIfNeeded(state, combat, part, targetPlayer: false);
-		}, 0);
+		});
 
 		ModEntry.Instance.Api.RegisterHook(this, 0);
 	}

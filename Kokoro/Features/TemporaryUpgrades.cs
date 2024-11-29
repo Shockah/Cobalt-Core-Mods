@@ -147,7 +147,7 @@ internal sealed class TemporaryUpgradesManager
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
 			state.rewardsQueue.Queue(new RemoveTemporaryUpgradesAction());
-		}, 0);
+		});
 
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(State), nameof(State.EndRun)),

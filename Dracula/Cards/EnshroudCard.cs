@@ -61,7 +61,7 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 					}
 				}
 			}
-		}, 0);
+		});
 
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(HARDMODE), nameof(HARDMODE.OnTurnStart)),

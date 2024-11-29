@@ -179,14 +179,14 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 		{
 			foreach (var card in state.deck)
 				ResetLimitedUses(state, card);
-		}, 0);
+		});
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (Card card, State state) =>
 		{
 			if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Trait))
 				return;
 			SetLimitedUses(state, card, GetLimitedUses(state, card) - 1);
-		}, 0);
+		});
 
 		ModEntry.Instance.Helper.Content.Cards.OnGetFinalDynamicCardTraitOverrides += OnGetFinalDynamicCardTraitOverrides;
 

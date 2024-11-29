@@ -35,7 +35,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 			if (!card.GetDataWithOverrides(state).singleUse)
 				return;
 			combat.GetSingleUseCardsPlayed().Add(card);
-		}, 0);
+		});
 	}
 
 	public override CardData GetData(State state)

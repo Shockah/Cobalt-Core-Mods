@@ -33,7 +33,7 @@ internal sealed class VolatileOverdriveStatus : IRegisterable, IKokoroApi.IV2.IS
 		{
 			var ship = fromPlayer ? state.ship : (combat ?? DB.fakeCombat).otherShip;
 			return ship.Get(Instance.Entry.Status);
-		}, 0);
+		});
 
 		helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerTakeNormalDamage), (State state, Combat combat, Part? part) =>
 		{
@@ -56,7 +56,7 @@ internal sealed class VolatileOverdriveStatus : IRegisterable, IKokoroApi.IV2.IS
 					statusAmount = 1
 				}
 			]);
-		}, 0);
+		});
 
 		helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnEnemyGetHit), (Combat combat, Part? part) =>
 		{
@@ -79,7 +79,7 @@ internal sealed class VolatileOverdriveStatus : IRegisterable, IKokoroApi.IV2.IS
 					statusAmount = 1
 				}
 			]);
-		}, 0);
+		});
 
 		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(Instance);
 		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(Instance);

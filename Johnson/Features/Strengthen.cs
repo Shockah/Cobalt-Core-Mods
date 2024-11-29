@@ -46,7 +46,7 @@ internal sealed class StrengthenManager
 			if (strengthen > 0 && state.EnumerateAllArtifacts().Any(a => a is JohnsonPeriArtifact))
 				strengthen++;
 			return strengthen;
-		}, 0);
+		});
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
@@ -56,6 +56,6 @@ internal sealed class StrengthenManager
 					continue;
 				card.SetStrengthen(0);
 			}
-		}, 0);
+		});
 	}
 }

@@ -66,14 +66,14 @@ internal sealed class TimesPlayedManager
 				ModEntry.Instance.Api.V2.TimesPlayed.SetTimesPlayed(card, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat, 0);
 				ModEntry.Instance.Api.V2.TimesPlayed.SetTimesPlayed(card, IKokoroApi.IV2.ITimesPlayedApi.Interval.Turn, 0);
 			}
-		}, 0);
+		});
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (Card card) =>
 		{
 			ModEntry.Instance.Api.V2.TimesPlayed.SetTimesPlayed(card, IKokoroApi.IV2.ITimesPlayedApi.Interval.Turn, ModEntry.Instance.Api.V2.TimesPlayed.GetTimesPlayed(card, IKokoroApi.IV2.ITimesPlayedApi.Interval.Turn) + 1);
 			ModEntry.Instance.Api.V2.TimesPlayed.SetTimesPlayed(card, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat, ModEntry.Instance.Api.V2.TimesPlayed.GetTimesPlayed(card, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat) + 1);
 			ModEntry.Instance.Api.V2.TimesPlayed.SetTimesPlayed(card, IKokoroApi.IV2.ITimesPlayedApi.Interval.Run, ModEntry.Instance.Api.V2.TimesPlayed.GetTimesPlayed(card, IKokoroApi.IV2.ITimesPlayedApi.Interval.Run) + 1);
-		}, 0);
+		});
 	}
 }
 

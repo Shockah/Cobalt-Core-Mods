@@ -30,7 +30,7 @@ internal sealed class CrunchTimeManager : IKokoroApi.IV2.IStatusRenderingApi.IHo
 				amount = stacks,
 				statusPulse = ModEntry.Instance.CrunchTimeStatus.Status
 			});
-		}, 0);
+		});
 	}
 
 	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)

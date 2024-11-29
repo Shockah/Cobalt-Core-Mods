@@ -61,7 +61,7 @@ internal sealed class Reprogram : IRegisterable
 			}
 
 			return thing;
-		}, 0);
+		});
 
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(ASpawn), nameof(ASpawn.Begin)),

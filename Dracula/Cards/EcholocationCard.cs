@@ -45,7 +45,7 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 				ignoreHermes = true,
 				isTeleport = true
 			});
-		}, 0);
+		});
 	}
 
 	public override CardData GetData(State state)
