@@ -8,7 +8,7 @@ internal sealed class BooksRiggsArtifact : DuoArtifact
 		if (combat.turn == 0)
 			return;
 
-		int toAdd = state.ship.Get(Status.shard) / 3;
+		var toAdd = state.ship.Get(Status.shard) / 3;
 		if (toAdd <= 0)
 			return;
 

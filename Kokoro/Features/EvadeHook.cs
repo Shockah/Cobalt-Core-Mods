@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Nickel;
+using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,33 +16,72 @@ namespace Shockah.Kokoro;
 partial class ApiImplementation
 {
 	#region V1
-	
+
 	public IEvadeHook VanillaEvadeHook
-		=> EvadeManager.Instance.HookMapper.MapToV1(Kokoro.VanillaEvadeHook.Instance);
+	{
+		get
+		{
+			if (LoggedBrokenV1ApiCalls.Add((Manifest.Name, nameof(VanillaEvadeHook))))
+				ModEntry.Instance.Logger!.LogError("`{ModName}` attempted to access `{V1Api}` V1 API, but it can no longer be used - the mod may not work correctly.", Manifest.Name, nameof(VanillaEvadeHook));
+			return FakeVanillaEvadeV1Hook.Instance;
+		}
+	}
 
 	public IEvadeHook VanillaDebugEvadeHook
-		=> EvadeManager.Instance.HookMapper.MapToV1(Kokoro.VanillaDebugEvadeHook.Instance);
+	{
+		get
+		{
+			if (LoggedBrokenV1ApiCalls.Add((Manifest.Name, nameof(VanillaDebugEvadeHook))))
+				ModEntry.Instance.Logger!.LogError("`{ModName}` attempted to access `{V1Api}` V1 API, but it can no longer be used - the mod may not work correctly.", Manifest.Name, nameof(VanillaDebugEvadeHook));
+			return FakeVanillaDebugEvadeV1Hook.Instance;
+		}
+	}
 
 	public void RegisterEvadeHook(IEvadeHook hook, double priority)
-		=> EvadeManager.Instance.HookManager.Register(hook, priority);
+	{
+		if (LoggedBrokenV1ApiCalls.Add((Manifest.Name, nameof(RegisterEvadeHook))))
+			ModEntry.Instance.Logger!.LogError("`{ModName}` attempted to access `{V1Api}` V1 API, but it can no longer be used - the mod may not work correctly.", Manifest.Name, nameof(RegisterEvadeHook));
+	}
 
 	public void UnregisterEvadeHook(IEvadeHook hook)
-		=> EvadeManager.Instance.HookManager.Unregister(hook);
+	{
+		if (LoggedBrokenV1ApiCalls.Add((Manifest.Name, nameof(UnregisterEvadeHook))))
+			ModEntry.Instance.Logger!.LogError("`{ModName}` attempted to access `{V1Api}` V1 API, but it can no longer be used - the mod may not work correctly.", Manifest.Name, nameof(UnregisterEvadeHook));
+	}
 
 	public bool IsEvadePossible(State state, Combat combat, int direction, EvadeHookContext context)
-		=> EvadeManager.Instance.IsEvadePossible(state, combat, direction, context);
+	{
+		if (LoggedBrokenV1ApiCalls.Add((Manifest.Name, nameof(IsEvadePossible))))
+			ModEntry.Instance.Logger!.LogError("`{ModName}` attempted to access `{V1Api}` V1 API, but it can no longer be used - the mod may not work correctly.", Manifest.Name, nameof(IsEvadePossible));
+		return false;
+	}
 
 	public bool IsEvadePossible(State state, Combat combat, EvadeHookContext context)
-		=> EvadeManager.Instance.IsEvadePossible(state, combat, 0, context);
+	{
+		if (LoggedBrokenV1ApiCalls.Add((Manifest.Name, nameof(IsEvadePossible))))
+			ModEntry.Instance.Logger!.LogError("`{ModName}` attempted to access `{V1Api}` V1 API, but it can no longer be used - the mod may not work correctly.", Manifest.Name, nameof(IsEvadePossible));
+		return false;
+	}
 
 	public IEvadeHook? GetEvadeHandlingHook(State state, Combat combat, int direction, EvadeHookContext context)
-		=> EvadeManager.Instance.GetHandlingHook(state, combat, direction, context) is { } hook ? EvadeManager.Instance.HookMapper.MapToV1(hook) : null;
+	{
+		if (LoggedBrokenV1ApiCalls.Add((Manifest.Name, nameof(GetEvadeHandlingHook))))
+			ModEntry.Instance.Logger!.LogError("`{ModName}` attempted to access `{V1Api}` V1 API, but it can no longer be used - the mod may not work correctly.", Manifest.Name, nameof(GetEvadeHandlingHook));
+		return null;
+	}
 
 	public IEvadeHook? GetEvadeHandlingHook(State state, Combat combat, EvadeHookContext context)
-		=> EvadeManager.Instance.GetHandlingHook(state, combat, 0, context) is { } hook ? EvadeManager.Instance.HookMapper.MapToV1(hook) : null;
+	{
+		if (LoggedBrokenV1ApiCalls.Add((Manifest.Name, nameof(GetEvadeHandlingHook))))
+			ModEntry.Instance.Logger!.LogError("`{ModName}` attempted to access `{V1Api}` V1 API, but it can no longer be used - the mod may not work correctly.", Manifest.Name, nameof(GetEvadeHandlingHook));
+		return null;
+	}
 
 	public void AfterEvade(State state, Combat combat, int direction, IEvadeHook hook)
-		=> EvadeManager.Instance.AfterEvade(state, combat, direction, EvadeManager.Instance.HookMapper.MapToV2(hook));
+	{
+		if (LoggedBrokenV1ApiCalls.Add((Manifest.Name, nameof(AfterEvade))))
+			ModEntry.Instance.Logger!.LogError("`{ModName}` attempted to access `{V1Api}` V1 API, but it can no longer be used - the mod may not work correctly.", Manifest.Name, nameof(AfterEvade));
+	}
 	
 	#endregion
 	
@@ -51,11 +91,30 @@ partial class ApiImplementation
 		
 		public sealed class EvadeHookApi : IKokoroApi.IV2.IEvadeHookApi
 		{
-			public IKokoroApi.IV2.IEvadeHookApi.IHook VanillaEvadeHook
-				=> Kokoro.VanillaEvadeHook.Instance;
+			public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry DefaultAction
+				=> EvadeManager.Instance.DefaultActionEntry;
 			
-			public IKokoroApi.IV2.IEvadeHookApi.IHook VanillaDebugEvadeHook
-				=> Kokoro.VanillaDebugEvadeHook.Instance;
+			public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption DefaultActionPaymentOption
+				=> DefaultEvadePaymentOption.Instance;
+			
+			public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption DebugActionPaymentOption
+				=> DebugEvadePaymentOption.Instance;
+			
+			public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition DefaultActionLockdownPrecondition
+				=> LockdownEvadePrecondition.Instance;
+			
+			public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition DefaultActionAnchorPrecondition
+				=> AnchorEvadePrecondition.Instance;
+
+			public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry RegisterAction(IKokoroApi.IV2.IEvadeHookApi.IEvadeAction action, double priority = 0)
+			{
+				var entry = new EvadeActionEntry(action);
+				EvadeManager.Instance.ActionEntries.Add(entry, priority);
+				return entry;
+			}
+
+			public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IResult MakePreconditionResult(bool isAllowed)
+				=> new EvadePreconditionResult(isAllowed);
 
 			public void RegisterHook(IKokoroApi.IV2.IEvadeHookApi.IHook hook, double priority = 0)
 				=> EvadeManager.Instance.HookManager.Register(hook, priority);
@@ -63,46 +122,173 @@ partial class ApiImplementation
 			public void UnregisterHook(IKokoroApi.IV2.IEvadeHookApi.IHook hook)
 				=> EvadeManager.Instance.HookManager.Unregister(hook);
 			
-			internal sealed class IsEvadePossibleArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePossibleArgs
+			internal sealed class EvadeActionEntry(
+				IKokoroApi.IV2.IEvadeHookApi.IEvadeAction action
+			) : IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly IsEvadePossibleArgs Instance = new();
-				
-				public State State { get; internal set; } = null!;
-				public Combat Combat { get; internal set; } = null!;
-				public int Direction { get; internal set; }
-				public IKokoroApi.IV2.IEvadeHookApi.EvadeHookContext Context { get; internal set; }
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeAction Action { get; } = action;
+
+				public IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption> PaymentOptions
+					=> PaymentOptionsOrderedList;
+
+				public IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition> Preconditions
+					=> PreconditionsOrderedList;
+
+				private readonly OrderedList<IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption, double> PaymentOptionsOrderedList = new(ascending: false);
+				private readonly OrderedList<IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition, double> PreconditionsOrderedList = new(ascending: false);
+
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry RegisterPaymentOption(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption paymentOption, double priority = 0)
+				{
+					PaymentOptionsOrderedList.Add(paymentOption, priority);
+					return this;
+				}
+
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry UnregisterPaymentOption(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption paymentOption)
+				{
+					PaymentOptionsOrderedList.Remove(paymentOption);
+					return this;
+				}
+
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry RegisterPrecondition(IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition precondition, double priority = 0)
+				{
+					PreconditionsOrderedList.Add(precondition, priority);
+					return this;
+				}
+
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry UnregisterPrecondition(IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition precondition)
+				{
+					PreconditionsOrderedList.Remove(precondition);
+					return this;
+				}
 			}
 			
-			internal sealed class PayForEvadeArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IPayForEvadeArgs
+			internal sealed class EvadePreconditionResult(
+				bool isAllowed
+			) : IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IResult
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly PayForEvadeArgs Instance = new();
+				public bool IsAllowed { get; set; } = isAllowed;
+				public bool ShakeShipOnFail { get; set; } = true;
+				public IList<CardAction> ActionsOnFail { get; set; } = [];
 				
-				public State State { get; internal set; } = null!;
-				public Combat Combat { get; internal set; } = null!;
-				public int Direction { get; internal set; }
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IResult SetIsAllowed(bool value)
+				{
+					IsAllowed = value;
+					return this;
+				}
+
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IResult SetShakeShipOnFail(bool value)
+				{
+					ShakeShipOnFail = value;
+					return this;
+				}
+
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IResult SetActionsOnFail(IList<CardAction> value)
+				{
+					ActionsOnFail = value;
+					return this;
+				}
 			}
 			
-			internal sealed class AfterEvadeArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IAfterEvadeArgs
+			internal sealed class ActionCanDoEvadeArgs : IKokoroApi.IV2.IEvadeHookApi.IEvadeAction.ICanDoEvadeArgs
 			{
 				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly AfterEvadeArgs Instance = new();
+				internal static readonly ActionCanDoEvadeArgs Instance = new();
 				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
-				public int Direction { get; internal set; }
-				public IKokoroApi.IV2.IEvadeHookApi.IHook Hook { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
 			}
 			
-			internal sealed class ProvideEvadeActionsArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IProvideEvadeActionsArgs
+			internal sealed class ActionProvideEvadeActionsArgs : IKokoroApi.IV2.IEvadeHookApi.IEvadeAction.IProvideEvadeActionsArgs
 			{
 				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly ProvideEvadeActionsArgs Instance = new();
+				internal static readonly ActionProvideEvadeActionsArgs Instance = new();
 				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
-				public int Direction { get; internal set; }
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption PaymentOption { get; internal set; } = null!;
+			}
+			
+			internal sealed class PaymentOptionCanPayForEvadeArgs : IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.ICanPayForEvadeArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly PaymentOptionCanPayForEvadeArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+			}
+			
+			internal sealed class PaymentOptionProvideEvadePaymentActionsArgs : IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.IProvideEvadePaymentActionsArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly PaymentOptionProvideEvadePaymentActionsArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+			}
+			
+			internal sealed class PreconditionIsEvadeAllowedArgs : IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IIsEvadeAllowedArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly PreconditionIsEvadeAllowedArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+			}
+			
+			internal sealed class HookIsEvadeActionEnabledArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadeActionEnabledArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly HookIsEvadeActionEnabledArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+			}
+			
+			internal sealed class HookIsEvadePaymentOptionEnabledArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePaymentOptionEnabledArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly HookIsEvadePaymentOptionEnabledArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption PaymentOption { get; internal set; } = null!;
+			}
+			
+			internal sealed class HookIsEvadePreconditionEnabledArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePreconditionEnabledArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly HookIsEvadePreconditionEnabledArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition Precondition { get; internal set; } = null!;
+			}
+			
+			internal sealed class HookAfterEvadeArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IAfterEvadeArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly HookAfterEvadeArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption PaymentOption { get; internal set; } = null!;
+				public IReadOnlyList<CardAction> QueuedActions { get; internal set; } = null!;
 			}
 		}
 	}
@@ -111,20 +297,25 @@ partial class ApiImplementation
 internal sealed class EvadeManager
 {
 	internal static readonly EvadeManager Instance = new();
-	internal readonly BidirectionalHookMapper<IKokoroApi.IV2.IEvadeHookApi.IHook, IEvadeHook> HookMapper = new(
-		hook => new V1ToV2EvadeHookWrapper(hook),
-		hook => new V2ToV1EvadeHookWrapper(hook)
-	);
-	internal readonly VariedApiVersionHookManager<IKokoroApi.IV2.IEvadeHookApi.IHook, IEvadeHook> HookManager;
+
+	internal readonly HookManager<IKokoroApi.IV2.IEvadeHookApi.IHook> HookManager;
+	internal readonly OrderedList<IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry, double> ActionEntries;
+	internal readonly IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry DefaultActionEntry;
 	
-	public EvadeManager()
+	private EvadeManager()
 	{
-		HookManager = new(ModEntry.Instance.Package.Manifest.UniqueName, HookMapper);
+		HookManager = new(ModEntry.Instance.Package.Manifest.UniqueName);
+		ActionEntries = new(ascending: false);
 		
-		HookManager.Register(VanillaEvadeHook.Instance, 0);
-		HookManager.Register(VanillaDebugEvadeHook.Instance, 1_000_000_000);
-		HookManager.Register(VanillaTrashAnchorEvadeHook.Instance, 1000);
-		HookManager.Register(VanillaLockdownEvadeHook.Instance, 1001);
+		var defaultActionEntry = new ApiImplementation.V2Api.EvadeHookApi.EvadeActionEntry(DefaultEvadeAction.Instance)
+			.RegisterPaymentOption(DefaultEvadePaymentOption.Instance)
+			.RegisterPaymentOption(DebugEvadePaymentOption.Instance, 1_000_000_000)
+			.RegisterPrecondition(LockdownEvadePrecondition.Instance)
+			.RegisterPrecondition(AnchorEvadePrecondition.Instance);
+		DefaultActionEntry = defaultActionEntry;
+		ActionEntries.Add(defaultActionEntry, 0);
+		
+		HookManager.Register(DebugEvadeHook.Instance, 1_000_000_000);
 	}
 
 	internal static void Setup(IHarmony harmony)
@@ -134,43 +325,56 @@ internal sealed class EvadeManager
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderMoveButtons_Transpiler))
 		);
 		harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Combat), "DoEvade"),
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DoEvade)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DoEvade_Prefix))
 		);
 	}
 
-	public bool IsEvadePossible(State state, Combat combat, int direction, EvadeHookContext context)
-		=> GetHandlingHook(state, combat, direction, context) is not null;
-
-	public IKokoroApi.IV2.IEvadeHookApi.IHook? GetHandlingHook(State state, Combat combat, int direction, EvadeHookContext context = EvadeHookContext.Action)
+	private static IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry> FilterEnabled(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction, IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry> enumerable)
 	{
-		var args = ApiImplementation.V2Api.EvadeHookApi.IsEvadePossibleArgs.Instance;
+		var args = ApiImplementation.V2Api.EvadeHookApi.HookIsEvadeActionEnabledArgs.Instance;
 		args.State = state;
 		args.Combat = combat;
 		args.Direction = direction;
-		args.Context = (IKokoroApi.IV2.IEvadeHookApi.EvadeHookContext)(int)context;
 		
-		foreach (var hook in HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+		var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
+		return enumerable.Where(e =>
 		{
-			var hookResult = hook.IsEvadePossible(args);
-			if (hookResult == false)
-				return null;
-			if (hookResult == true)
-				return hook;
-		}
-		return null;
+			args.Entry = e;
+			return hooks.All(h => h.IsEvadeActionEnabled(args));
+		});
 	}
 
-	public void AfterEvade(State state, Combat combat, int direction, IKokoroApi.IV2.IEvadeHookApi.IHook hook)
+	private static IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption> FilterEnabled(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction, IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry entry, IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption> enumerable)
 	{
-		var args = ApiImplementation.V2Api.EvadeHookApi.AfterEvadeArgs.Instance;
+		var args = ApiImplementation.V2Api.EvadeHookApi.HookIsEvadePaymentOptionEnabledArgs.Instance;
 		args.State = state;
 		args.Combat = combat;
 		args.Direction = direction;
-		args.Hook = hook;
+		args.Entry = entry;
 		
-		foreach (var hooks in HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			hooks.AfterEvade(args);
+		var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
+		return enumerable.Where(paymentOption =>
+		{
+			args.PaymentOption = paymentOption;
+			return hooks.All(h => h.IsEvadePaymentOptionEnabled(args));
+		});
+	}
+
+	private static IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition> FilterEnabled(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction, IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry entry, IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition> enumerable)
+	{
+		var args = ApiImplementation.V2Api.EvadeHookApi.HookIsEvadePreconditionEnabledArgs.Instance;
+		args.State = state;
+		args.Combat = combat;
+		args.Direction = direction;
+		args.Entry = entry;
+		
+		var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
+		return enumerable.Where(precondition =>
+		{
+			args.Precondition = precondition;
+			return hooks.All(h => h.IsEvadePreconditionEnabled(args));
+		});
 	}
 	
 	private static IEnumerable<CodeInstruction> Combat_RenderMoveButtons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
@@ -238,158 +442,215 @@ internal sealed class EvadeManager
 	{
 		if (g.state.route is not Combat combat)
 			return false;
-		return Instance.IsEvadePossible(g.state, combat, direction, EvadeHookContext.Rendering);
-	}
-	
-	private static bool Combat_DoEvade_Prefix(G g, int dir)
-	{
-		if (g.state.route is not Combat combat)
-			return true;
 
-		var hook = Instance.GetHandlingHook(g.state, combat, dir);
-		if (hook is not null)
+		return GetActionEntry() is not null;
+
+		IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? GetActionEntry()
 		{
-			{
-				var args = ApiImplementation.V2Api.EvadeHookApi.ProvideEvadeActionsArgs.Instance;
-				args.State = g.state;
-				args.Combat = combat;
-				args.Direction = dir;
-				combat.Queue(hook.ProvideEvadeActions(args) ?? [new AMove { dir = dir, targetPlayer = true, fromEvade = true }]);
-			}
+			var typedDirection = (IKokoroApi.IV2.IEvadeHookApi.Direction)direction;
 			
+			var canDoEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.ActionCanDoEvadeArgs.Instance;
+			canDoEvadeArgs.State = g.state;
+			canDoEvadeArgs.Combat = combat;
+			canDoEvadeArgs.Direction = typedDirection;
+
+			return FilterEnabled(g.state, combat, typedDirection, Instance.ActionEntries).FirstOrDefault(entry =>
 			{
-				var args = ApiImplementation.V2Api.EvadeHookApi.PayForEvadeArgs.Instance;
-				args.State = g.state;
-				args.Combat = combat;
-				args.Direction = dir;
-				hook.PayForEvade(args);
-			}
-			
-			Instance.AfterEvade(g.state, combat, dir, hook);
+				if (!entry.Action.CanDoEvadeAction(canDoEvadeArgs))
+					return false;
+				
+				var paymentOptionCanPayForEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionCanPayForEvadeArgs.Instance;
+				paymentOptionCanPayForEvadeArgs.State = g.state;
+				paymentOptionCanPayForEvadeArgs.Combat = combat;
+				paymentOptionCanPayForEvadeArgs.Direction = typedDirection;
+				paymentOptionCanPayForEvadeArgs.Entry = entry;
+
+				if (!FilterEnabled(g.state, combat, typedDirection, entry, entry.PaymentOptions).Any(paymentOption => paymentOption.CanPayForEvade(paymentOptionCanPayForEvadeArgs)))
+					return false;
+
+				return true;
+			});
 		}
+	}
+	
+	private static bool Combat_DoEvade_Prefix(Combat __instance, G g, int dir)
+	{
+		if (!__instance.PlayerCanAct(g.state))
+			return false;
+		
+		var typedDirection = (IKokoroApi.IV2.IEvadeHookApi.Direction)dir;
+
+		foreach (var entry in FilterEnabled(g.state, __instance, typedDirection, Instance.ActionEntries))
+		{
+			var canDoEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.ActionCanDoEvadeArgs.Instance;
+			canDoEvadeArgs.State = g.state;
+			canDoEvadeArgs.Combat = __instance;
+			canDoEvadeArgs.Direction = typedDirection;
+
+			if (!entry.Action.CanDoEvadeAction(canDoEvadeArgs))
+				continue;
+			
+			var preconditionIsEvadeAllowedArgs = ApiImplementation.V2Api.EvadeHookApi.PreconditionIsEvadeAllowedArgs.Instance;
+			preconditionIsEvadeAllowedArgs.State = g.state;
+			preconditionIsEvadeAllowedArgs.Combat = __instance;
+			preconditionIsEvadeAllowedArgs.Direction = typedDirection;
+			preconditionIsEvadeAllowedArgs.Entry = entry;
+
+			foreach (var precondition in FilterEnabled(g.state, __instance, typedDirection, entry, entry.Preconditions))
+			{
+				var preconditionResult = precondition.IsEvadeAllowed(preconditionIsEvadeAllowedArgs);
+				if (!preconditionResult.IsAllowed)
+				{
+					if (preconditionResult.ShakeShipOnFail)
+					{
+						Audio.Play(Event.Status_PowerDown);
+						g.state.ship.shake += 1.0;
+					}
+					__instance.Queue(preconditionResult.ActionsOnFail);
+					return false;
+				}
+			}
+
+			foreach (var paymentOption in FilterEnabled(g.state, __instance, typedDirection, entry, entry.PaymentOptions))
+			{
+				var paymentOptionCanPayForEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionCanPayForEvadeArgs.Instance;
+				paymentOptionCanPayForEvadeArgs.State = g.state;
+				paymentOptionCanPayForEvadeArgs.Combat = __instance;
+				paymentOptionCanPayForEvadeArgs.Direction = typedDirection;
+				paymentOptionCanPayForEvadeArgs.Entry = entry;
+
+				if (!paymentOption.CanPayForEvade(paymentOptionCanPayForEvadeArgs))
+					continue;
+				
+				var paymentOptionProvideEvadePaymentActionsArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionProvideEvadePaymentActionsArgs.Instance;
+				paymentOptionProvideEvadePaymentActionsArgs.State = g.state;
+				paymentOptionProvideEvadePaymentActionsArgs.Combat = __instance;
+				paymentOptionProvideEvadePaymentActionsArgs.Direction = typedDirection;
+				paymentOptionProvideEvadePaymentActionsArgs.Entry = entry;
+
+				var paymentActions = paymentOption.ProvideEvadePaymentActions(paymentOptionProvideEvadePaymentActionsArgs);
+				
+				var actionProvideEvadeActionsArgs = ApiImplementation.V2Api.EvadeHookApi.ActionProvideEvadeActionsArgs.Instance;
+				actionProvideEvadeActionsArgs.State = g.state;
+				actionProvideEvadeActionsArgs.Combat = __instance;
+				actionProvideEvadeActionsArgs.Direction = typedDirection;
+				actionProvideEvadeActionsArgs.PaymentOption = paymentOption;
+
+				var evadeActions = entry.Action.ProvideEvadeActions(actionProvideEvadeActionsArgs);
+
+				List<CardAction> allActions = [.. paymentActions, .. evadeActions];
+				__instance.Queue(allActions);
+				
+				var hookAfterEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.HookAfterEvadeArgs.Instance;
+				hookAfterEvadeArgs.State = g.state;
+				hookAfterEvadeArgs.Combat = __instance;
+				hookAfterEvadeArgs.Direction = typedDirection;
+				hookAfterEvadeArgs.Entry = entry;
+				hookAfterEvadeArgs.PaymentOption = paymentOption;
+				hookAfterEvadeArgs.QueuedActions = allActions;
+				
+				foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, g.state.EnumerateAllArtifacts()))
+					hook.AfterEvade(hookAfterEvadeArgs);
+				
+				return false;
+			}
+		}
+
 		return false;
 	}
 }
 
-public sealed class VanillaEvadeHook : IKokoroApi.IV2.IEvadeHookApi.IHook
+internal sealed class DefaultEvadeAction : IKokoroApi.IV2.IEvadeHookApi.IEvadeAction
 {
-	public static VanillaEvadeHook Instance { get; private set; } = new();
+	public static DefaultEvadeAction Instance { get; private set; } = new();
+	
+	private DefaultEvadeAction() { }
+	
+	public bool CanDoEvadeAction(IKokoroApi.IV2.IEvadeHookApi.IEvadeAction.ICanDoEvadeArgs args)
+		=> true;
 
-	private VanillaEvadeHook() { }
-
-	public bool? IsEvadePossible(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePossibleArgs args)
-		=> args.State.ship.Get(Status.evade) > 0 ? true : null;
-
-	public void PayForEvade(IKokoroApi.IV2.IEvadeHookApi.IHook.IPayForEvadeArgs args)
-		=> args.State.ship.Add(Status.evade, -1);
+	public IReadOnlyList<CardAction> ProvideEvadeActions(IKokoroApi.IV2.IEvadeHookApi.IEvadeAction.IProvideEvadeActionsArgs args)
+		=> [new AMove { targetPlayer = true, dir = (int)args.Direction, fromEvade = true }];
 }
 
-public sealed class VanillaDebugEvadeHook : IKokoroApi.IV2.IEvadeHookApi.IHook
+internal sealed class DefaultEvadePaymentOption : IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption
 {
-	public static VanillaDebugEvadeHook Instance { get; private set; } = new();
+	public static DefaultEvadePaymentOption Instance { get; private set; } = new();
+	
+	private DefaultEvadePaymentOption() { }
+	
+	public bool CanPayForEvade(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.ICanPayForEvadeArgs args)
+		=> args.State.ship.Get(Status.evade) > 0;
 
-	private VanillaDebugEvadeHook() { }
-
-	public bool? IsEvadePossible(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePossibleArgs args)
-		=> FeatureFlags.Debug && Input.shift ? true : null;
+	public IReadOnlyList<CardAction> ProvideEvadePaymentActions(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.IProvideEvadePaymentActionsArgs args)
+	{
+		args.State.ship.Add(Status.evade, -1);
+		return [];
+	}
 }
 
-public sealed class VanillaTrashAnchorEvadeHook : IKokoroApi.IV2.IEvadeHookApi.IHook
+internal sealed class DebugEvadePaymentOption : IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption
 {
-	public static VanillaTrashAnchorEvadeHook Instance { get; private set; } = new();
+	public static DebugEvadePaymentOption Instance { get; private set; } = new();
+	
+	private DebugEvadePaymentOption() { }
+	
+	public bool CanPayForEvade(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.ICanPayForEvadeArgs args)
+		=> FeatureFlags.Debug && Input.shift;
 
-	private VanillaTrashAnchorEvadeHook() { }
-
-	public bool? IsEvadePossible(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePossibleArgs args)
-	{
-		if (args.Context != IKokoroApi.IV2.IEvadeHookApi.EvadeHookContext.Action)
-			return null;
-		if (!args.Combat.hand.Any(c => c is TrashAnchor))
-			return null;
-
-		Audio.Play(Event.Status_PowerDown);
-		args.State.ship.shake += 1.0;
-		return false;
-	}
-
-	public void PayForEvade(IKokoroApi.IV2.IEvadeHookApi.IHook.IPayForEvadeArgs args)
-		=> args.State.ship.Add(Status.evade, -1);
+	public IReadOnlyList<CardAction> ProvideEvadePaymentActions(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.IProvideEvadePaymentActionsArgs args)
+		=> [];
 }
 
-public sealed class VanillaLockdownEvadeHook : IKokoroApi.IV2.IEvadeHookApi.IHook
+internal sealed class LockdownEvadePrecondition : IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition
 {
-	public static VanillaLockdownEvadeHook Instance { get; private set; } = new();
-
-	private VanillaLockdownEvadeHook() { }
-
-	public bool? IsEvadePossible(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePossibleArgs args)
+	public static LockdownEvadePrecondition Instance { get; private set; } = new();
+	
+	private LockdownEvadePrecondition() { }
+	
+	public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IResult IsEvadeAllowed(IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IIsEvadeAllowedArgs args)
 	{
-		if (args.Context != IKokoroApi.IV2.IEvadeHookApi.EvadeHookContext.Action)
-			return null;
-		if (args.State.ship.Get(Status.lockdown) <= 0)
-			return null;
-
-		Audio.Play(Event.Status_PowerDown);
-		args.State.ship.shake += 1.0;
-		return false;
+		var isLockdowned = args.State.ship.Get(Status.lockdown) > 0;
+		return ModEntry.Instance.Api.V2.EvadeHook.MakePreconditionResult(!isLockdowned);
 	}
-
-	public void PayForEvade(IKokoroApi.IV2.IEvadeHookApi.IHook.IPayForEvadeArgs args)
-		=> args.State.ship.Add(Status.evade, -1);
 }
 
-internal sealed class V1ToV2EvadeHookWrapper(IEvadeHook v1) : IKokoroApi.IV2.IEvadeHookApi.IHook
+internal sealed class AnchorEvadePrecondition : IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition
 {
-	public bool? IsEvadePossible(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePossibleArgs args)
-		=> v1.IsEvadePossible(args.State, args.Combat, args.Direction, (EvadeHookContext)(int)args.Context);
+	public static AnchorEvadePrecondition Instance { get; private set; } = new();
 	
-	public void PayForEvade(IKokoroApi.IV2.IEvadeHookApi.IHook.IPayForEvadeArgs args)
-		=> v1.PayForEvade(args.State, args.Combat, args.Direction);
+	private AnchorEvadePrecondition() { }
 	
-	public void AfterEvade(IKokoroApi.IV2.IEvadeHookApi.IHook.IAfterEvadeArgs args)
-		=> v1.AfterEvade(args.State, args.Combat, args.Direction, EvadeManager.Instance.HookMapper.MapToV1(args.Hook));
-	
-	public List<CardAction>? ProvideEvadeActions(IKokoroApi.IV2.IEvadeHookApi.IHook.IProvideEvadeActionsArgs args)
-		=> v1.ProvideEvadeActions(args.State, args.Combat, args.Direction);
+	public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IResult IsEvadeAllowed(IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IIsEvadeAllowedArgs args)
+	{
+		var hasAnchor = args.Combat.hand.Any(c => c is TrashAnchor);
+		return ModEntry.Instance.Api.V2.EvadeHook.MakePreconditionResult(!hasAnchor);
+	}
 }
 
-internal sealed class V2ToV1EvadeHookWrapper(IKokoroApi.IV2.IEvadeHookApi.IHook v2) : IEvadeHook
+internal sealed class DebugEvadeHook : IKokoroApi.IV2.IEvadeHookApi.IHook
 {
-	public bool? IsEvadePossible(State state, Combat combat, int direction, EvadeHookContext context)
-	{
-		var args = ApiImplementation.V2Api.EvadeHookApi.IsEvadePossibleArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Direction = direction;
-		args.Context = (IKokoroApi.IV2.IEvadeHookApi.EvadeHookContext)(int)context;
-		return v2.IsEvadePossible(args);
-	}
+	public static DebugEvadeHook Instance { get; private set; } = new();
 	
-	public void PayForEvade(State state, Combat combat, int direction)
-	{
-		var args = ApiImplementation.V2Api.EvadeHookApi.PayForEvadeArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Direction = direction;
-		v2.PayForEvade(args);
-	}
+	private DebugEvadeHook() { }
 	
-	public void AfterEvade(State state, Combat combat, int direction, IEvadeHook hook)
+	public bool IsEvadePreconditionEnabled(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePaymentOptionEnabledArgs args)
 	{
-		var args = ApiImplementation.V2Api.EvadeHookApi.AfterEvadeArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Direction = direction;
-		args.Hook = EvadeManager.Instance.HookMapper.MapToV2(hook);
-		v2.AfterEvade(args);
+		var isDebug = FeatureFlags.Debug && Input.shift;
+		return !isDebug || args.Entry == ModEntry.Instance.Api.V2.EvadeHook.DefaultAction;
 	}
+}
 
-	public List<CardAction>? ProvideEvadeActions(State state, Combat combat, int direction)
-	{
-		var args = ApiImplementation.V2Api.EvadeHookApi.ProvideEvadeActionsArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Direction = direction;
-		return v2.ProvideEvadeActions(args)?.ToList();
-	}
+internal sealed class FakeVanillaEvadeV1Hook : IEvadeHook
+{
+	public static FakeVanillaEvadeV1Hook Instance { get; private set; } = new();
+	
+	private FakeVanillaEvadeV1Hook() { }
+}
+
+internal sealed class FakeVanillaDebugEvadeV1Hook : IEvadeHook
+{
+	public static FakeVanillaDebugEvadeV1Hook Instance { get; private set; } = new();
+	
+	private FakeVanillaDebugEvadeV1Hook() { }
 }

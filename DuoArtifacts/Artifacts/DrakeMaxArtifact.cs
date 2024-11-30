@@ -65,15 +65,14 @@ internal sealed class DrakeMaxArtifactCard : Card
 			.OfType<WormFood>()
 			.ToList();
 
-		List<CardAction> actions = new();
-		foreach (var card in cards)
-			actions.Add(new AExhaustWherever { uuid = card.uuid });
-		actions.Add(new AStatus
-		{
-			status = ModEntry.Instance.KokoroApi.WormStatus.Status,
-			statusAmount = cards.Count,
-			targetPlayer = false
-		});
-		return actions;
+		return [
+			.. cards.Select(card => new AExhaustWherever { uuid = card.uuid }),
+			new AStatus
+			{
+				status = ModEntry.Instance.KokoroApi.WormStatus.Status,
+				statusAmount = cards.Count,
+				targetPlayer = false
+			}
+		];
 	}
 }

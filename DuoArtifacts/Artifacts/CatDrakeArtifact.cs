@@ -6,8 +6,8 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class CatDrakeArtifact : DuoArtifact
 {
-	private static int SerenityChange = 0;
-	private static int TimeStopChange = 0;
+	private static int SerenityChange;
+	private static int TimeStopChange;
 
 	protected internal override void ApplyPatches(IHarmony harmony)
 	{
@@ -23,12 +23,12 @@ internal sealed class CatDrakeArtifact : DuoArtifact
 		);
 	}
 
-	private static void Ship_Set_Prefix(Ship __instance, Status status, ref int __state)
+	private static void Ship_Set_Prefix(Ship __instance, Status status, out int __state)
 		=> __state = __instance.Get(status);
 
 	private static void Ship_Set_Postfix(Ship __instance, Status status, ref int __state)
 	{
-		int change = __instance.Get(status) - __state;
+		var change = __instance.Get(status) - __state;
 		switch (status)
 		{
 			case Status.serenity:
@@ -44,8 +44,8 @@ internal sealed class CatDrakeArtifact : DuoArtifact
 	{
 		if (SerenityChange == 0 && TimeStopChange == 0)
 			return;
-		int serenityChange = SerenityChange;
-		int timeStopChange = TimeStopChange;
+		var serenityChange = SerenityChange;
+		var timeStopChange = TimeStopChange;
 
 		var artifact = g.state.EnumerateAllArtifacts().FirstOrDefault(a => a is CatDrakeArtifact);
 		if (artifact is null)

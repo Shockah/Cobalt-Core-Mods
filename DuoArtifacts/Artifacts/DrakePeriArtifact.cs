@@ -25,7 +25,7 @@ internal sealed class DrakePeriArtifact : DuoArtifact
 		if (artifact is null)
 			return;
 
-		int toConvert = LastOverdrive ?? state.ship.Get(Status.overdrive);
+		var toConvert = LastOverdrive ?? state.ship.Get(Status.overdrive);
 		if (toConvert <= 0)
 			return;
 

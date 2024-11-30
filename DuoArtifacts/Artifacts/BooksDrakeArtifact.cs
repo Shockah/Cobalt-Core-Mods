@@ -26,6 +26,7 @@ internal sealed class BooksDrakeArtifact : DuoArtifact
 
 	private static IEnumerable<CodeInstruction> AAttack_Begin_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -48,6 +49,7 @@ internal sealed class BooksDrakeArtifact : DuoArtifact
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static void AAttack_Begin_Transpiler_Modify(AAttack attack, State state, Combat combat)

@@ -24,7 +24,7 @@ internal sealed class DizzyMaxArtifact : DuoArtifact
 
 	public override List<Tooltip>? GetExtraTooltips()
 	{
-		var tooltips = base.GetExtraTooltips() ?? new();
+		var tooltips = base.GetExtraTooltips() ?? [];
 		tooltips.Insert(0, new TTCard { card = new DizzyMaxArtifactCard() });
 		return tooltips;
 	}
@@ -57,9 +57,9 @@ internal sealed class DizzyMaxArtifactCard : Card
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		List<CardAction> actions = new();
+		List<CardAction> actions = [];
 
-		List<Status> statuses = new() { Status.tempShield, Status.shield };
+		List<Status> statuses = [Status.tempShield, Status.shield];
 		var booksDizzyArtifact = s.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksDizzyArtifact);
 		if (booksDizzyArtifact is not null)
 			statuses.Add(Status.shard);
@@ -117,7 +117,7 @@ internal sealed class DizzyMaxArtifactCard : Card
 		toPay = new();
 		foreach (var status in statuses)
 		{
-			int toTake = Math.Min(amount, ship.Get(status));
+			var toTake = Math.Min(amount, ship.Get(status));
 			amount -= toTake;
 			toPay[status] = toTake;
 

@@ -26,6 +26,7 @@ internal sealed class DizzyDrakeArtifact : DuoArtifact
 
 	private static IEnumerable<CodeInstruction> AOverheat_Begin_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -38,6 +39,7 @@ internal sealed class DizzyDrakeArtifact : DuoArtifact
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static void AOverheat_Begin_Transpiler_Damage(Ship ship, State state, Combat combat, int damage)
@@ -49,7 +51,7 @@ internal sealed class DizzyDrakeArtifact : DuoArtifact
 			return;
 		}
 
-		int totalShield = ship.Get(Status.shield) + ship.Get(Status.tempShield);
+		var totalShield = ship.Get(Status.shield) + ship.Get(Status.tempShield);
 		if (state.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
 			totalShield += ship.Get(Status.shard);
 

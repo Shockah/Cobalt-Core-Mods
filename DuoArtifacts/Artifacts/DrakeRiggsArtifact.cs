@@ -1,17 +1,24 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
 using CobaltCoreModding.Definitions.ModContactPoints;
+using Nickel;
 using Shockah.Kokoro;
 using Shockah.Shared;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-internal sealed class DrakeRiggsArtifact : DuoArtifact, IKokoroApi.IV2.IEvadeHookApi.IHook, IKokoroApi.IV2.IHookPriority
+internal sealed class DrakeRiggsArtifact : DuoArtifact
 {
 	internal static ExternalSprite InactiveSprite { get; private set; } = null!;
 
 	public bool UsedThisTurn;
+	
+	protected internal override void ApplyPatches(IHarmony harmony)
+	{
+		Instance.KokoroApi.EvadeHook.DefaultAction.RegisterPaymentOption(new EvadePaymentOption(), -100);
+	}
 
 	protected internal override void RegisterArt(ISpriteRegistry registry, string namePrefix, DuoArtifactDefinition definition)
 	{
@@ -30,26 +37,30 @@ internal sealed class DrakeRiggsArtifact : DuoArtifact, IKokoroApi.IV2.IEvadeHoo
 		UsedThisTurn = false;
 	}
 
-	public double HookPriority
-		=> -10;
-
-	public bool? IsEvadePossible(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePossibleArgs args)
+	private sealed class EvadePaymentOption : IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption
 	{
-		if (UsedThisTurn)
-			return null;
-		return true;
-	}
-
-	public void PayForEvade(IKokoroApi.IV2.IEvadeHookApi.IHook.IPayForEvadeArgs args)
-	{
-		var artifact = args.State.EnumerateAllArtifacts().OfType<DrakeRiggsArtifact>().First();
-		artifact.Pulse();
-		artifact.UsedThisTurn = true;
-		args.Combat.QueueImmediate(new AStatus
+		public bool CanPayForEvade(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.ICanPayForEvadeArgs args)
 		{
-			status = Status.heat,
-			statusAmount = 1,
-			targetPlayer = true
-		});
+			if (args.State.EnumerateAllArtifacts().OfType<DrakeRiggsArtifact>().FirstOrDefault() is not { } artifact)
+				return false;
+			return !artifact.UsedThisTurn;
+		}
+
+		public IReadOnlyList<CardAction> ProvideEvadePaymentActions(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.IProvideEvadePaymentActionsArgs args)
+		{
+			if (args.State.EnumerateAllArtifacts().OfType<DrakeRiggsArtifact>().FirstOrDefault() is not { } artifact)
+				return [];
+			if (artifact.UsedThisTurn)
+				return [];
+			
+			artifact.UsedThisTurn = true;
+			return [new AStatus
+			{
+				status = Status.heat,
+				statusAmount = 1,
+				targetPlayer = true,
+				artifactPulse = artifact.Key(),
+			}];
+		}
 	}
 }

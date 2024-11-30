@@ -6,7 +6,7 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class DizzyRiggsArtifact : DuoArtifact
 {
-	private static int ShieldChange = 0;
+	private static int ShieldChange;
 
 	protected internal override void ApplyPatches(IHarmony harmony)
 	{
@@ -34,14 +34,14 @@ internal sealed class DizzyRiggsArtifact : DuoArtifact
 		ShieldChange = 0;
 	}
 
-	private static void Ship_Set_Prefix(Ship __instance, Status status, ref int __state)
+	private static void Ship_Set_Prefix(Ship __instance, Status status, out int __state)
 		=> __state = __instance.Get(status);
 
 	private static void Ship_Set_Postfix(Ship __instance, Status status, ref int __state)
 	{
 		if (status != Status.shield)
 			return;
-		int change = __instance.Get(Status.shield) - __state;
+		var change = __instance.Get(Status.shield) - __state;
 		ShieldChange += change;
 	}
 

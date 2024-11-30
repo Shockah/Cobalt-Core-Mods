@@ -16,7 +16,7 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 	private const int AttackBuff = 1;
 	private const int BuffCost = 2;
 
-	public bool IsPaidForAndActive = false;
+	public bool IsPaidForAndActive;
 
 	protected internal override void ApplyPatches(IHarmony harmony)
 	{
@@ -44,8 +44,8 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 		if (!combat.stuff.Values.Any(o => o is AttackDrone && !o.targetPlayer))
 			return;
 
-		int shards = state.ship.Get(Status.shard);
-		int shield = 0;
+		var shards = state.ship.Get(Status.shard);
+		var shield = 0;
 
 		var booksDizzyArtifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksDizzyArtifact);
 		if (booksDizzyArtifact is not null)
@@ -55,9 +55,9 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 			return;
 
 		Pulse();
-		int leftToPay = BuffCost;
+		var leftToPay = BuffCost;
 
-		int shardsToPay = Math.Min(shards, leftToPay);
+		var shardsToPay = Math.Min(shards, leftToPay);
 		if (shardsToPay > 0)
 		{
 			combat.QueueImmediate(new AStatus
@@ -69,7 +69,7 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 			leftToPay -= shardsToPay;
 		}
 
-		int shieldToPay = Math.Min(shield, leftToPay);
+		var shieldToPay = Math.Min(shield, leftToPay);
 		if (shieldToPay > 0)
 		{
 			booksDizzyArtifact?.Pulse();
@@ -106,6 +106,7 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 
 	private static IEnumerable<CodeInstruction> AttackDrone_GetActions_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -122,5 +123,6 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 }

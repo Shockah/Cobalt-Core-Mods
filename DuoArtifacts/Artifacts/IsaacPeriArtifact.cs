@@ -91,6 +91,7 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 
 	private static IEnumerable<CodeInstruction> AAttack_Begin_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -118,6 +119,7 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static bool AAttack_Begin_Transpiler_Modify(AAttack attack, State state, bool libraFlag)
@@ -140,6 +142,7 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 
 	private static IEnumerable<CodeInstruction> AAttack_DoLibraEffect_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -160,6 +163,7 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static int AAttack_DoLibraEffect_Transpiler_Modify(int amount, Ship ship)
@@ -189,6 +193,7 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 
 	private static IEnumerable<CodeInstruction> AttackDrone_GetActions_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -205,28 +210,26 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static IEnumerable<CodeInstruction> AttackDrone_GetTooltips_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.ForEach(
 					SequenceMatcherRelativeBounds.WholeSequence,
-					new ElementMatch<CodeInstruction>[]
-					{
+					[
 						ILMatches.Call("AttackDamage")
-					},
-					matcher =>
-					{
-						return matcher
-							.Insert(
-								SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-								new CodeInstruction(OpCodes.Ldarg_0),
-								new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(IsaacPeriArtifact), nameof(GetModifiedAttackDamage)))
-							);
-					},
+					],
+					matcher => matcher
+						.Insert(
+							SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+							new CodeInstruction(OpCodes.Ldarg_0),
+							new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(IsaacPeriArtifact), nameof(GetModifiedAttackDamage)))
+						),
 					minExpectedOccurences: 2,
 					maxExpectedOccurences: 2
 				)
@@ -237,5 +240,6 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 }

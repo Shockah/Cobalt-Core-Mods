@@ -10,10 +10,10 @@ internal class HookManager<THook>(
 	string proxyContext
 ) : IEnumerable<THook> where THook : class
 {
-	protected readonly OrderedList<THook, double> Hooks = [];
+	protected readonly OrderedList<THook, double> Hooks = new(ascending: false);
 
 	public void Register(THook hook, double priority)
-		=> Hooks.Add(hook, -priority);
+		=> Hooks.Add(hook, priority);
 
 	public void Unregister(THook hook)
 		=> Hooks.Remove(hook);
@@ -26,7 +26,7 @@ internal class HookManager<THook>(
 	
 	internal IEnumerable<THook> GetHooksWithProxies(IProxyManager<string> proxyManager, IEnumerable<object> objects)
 		=> Hooks
-			.Select(hook => (Hook: hook, Priority: Hooks.TryGetOrderingValue(hook, out var priority) ? -priority : 0))
+			.Select(hook => (Hook: hook, Priority: Hooks.TryGetOrderingValue(hook, out var priority) ? priority : 0))
 			.Concat(
 				objects
 					.Select<object, (THook? Hook, double Priority)>(o =>

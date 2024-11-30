@@ -12,9 +12,9 @@ internal sealed class BooksPeriArtifact : DuoArtifact
 	private const int AttackBuff = 1;
 	private const int BuffCost = 1;
 
-	private static bool IsDuringTryPlayCard = false;
-	private static bool? PaidExtraForAttack = null;
-	private static int ModifyBaseDamageNestingCounter = 0;
+	private static bool IsDuringTryPlayCard;
+	private static bool? PaidExtraForAttack;
+	private static int ModifyBaseDamageNestingCounter;
 
 	protected internal override void ApplyPatches(IHarmony harmony)
 	{
@@ -47,6 +47,8 @@ internal sealed class BooksPeriArtifact : DuoArtifact
 			return base.ModifyBaseDamage(baseDamage, card, state, combat, fromPlayer);
 		ModifyBaseDamageNestingCounter++;
 
+		return TryToPay() ? AttackBuff : base.ModifyBaseDamage(baseDamage, card, state, combat, fromPlayer);
+
 		bool TryToPay()
 		{
 			if (PaidExtraForAttack is not null)
@@ -55,14 +57,14 @@ internal sealed class BooksPeriArtifact : DuoArtifact
 				return PaidExtraForAttack.Value;
 			}
 
-			var totalShardCost = card!.GetActionsOverridden(state, combat!)
+			var totalShardCost = card.GetActionsOverridden(state, combat)
 				.Select(a => a.shardcost)
 				.WhereNotNull()
 				.Sum();
 			ModifyBaseDamageNestingCounter--;
 
-			int shards = state.ship.Get(Status.shard);
-			int shield = 0;
+			var shards = state.ship.Get(Status.shard);
+			var shield = 0;
 
 			var booksDizzyArtifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksDizzyArtifact);
 			if (booksDizzyArtifact is not null)
@@ -75,12 +77,12 @@ internal sealed class BooksPeriArtifact : DuoArtifact
 			}
 
 			Pulse();
-			int leftToPay = BuffCost;
+			var leftToPay = BuffCost;
 
-			int shardsToPay = Math.Min(shards, leftToPay);
+			var shardsToPay = Math.Min(shards, leftToPay);
 			if (shardsToPay > 0)
 			{
-				combat!.QueueImmediate(new AStatus
+				combat.QueueImmediate(new AStatus
 				{
 					status = Status.shard,
 					statusAmount = -shardsToPay,
@@ -89,11 +91,11 @@ internal sealed class BooksPeriArtifact : DuoArtifact
 				leftToPay -= shardsToPay;
 			}
 
-			int shieldToPay = Math.Min(shield, leftToPay);
+			var shieldToPay = Math.Min(shield, leftToPay);
 			if (shieldToPay > 0)
 			{
 				booksDizzyArtifact?.Pulse();
-				combat!.QueueImmediate(new AStatus
+				combat.QueueImmediate(new AStatus
 				{
 					status = Status.shard,
 					statusAmount = -shieldToPay,
@@ -107,8 +109,6 @@ internal sealed class BooksPeriArtifact : DuoArtifact
 			PaidExtraForAttack = true;
 			return true;
 		}
-
-		return TryToPay() ? AttackBuff : base.ModifyBaseDamage(baseDamage, card, state, combat, fromPlayer);
 	}
 
 	private static void Combat_DrainCardActions_Postfix(Combat __instance, G g)

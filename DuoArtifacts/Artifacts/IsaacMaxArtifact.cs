@@ -6,8 +6,8 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class IsaacMaxArtifact : DuoArtifact
 {
-	public bool WaitingForActionDrain = false;
-	private static bool IsDuringTryPlayCard = false;
+	public bool WaitingForActionDrain;
+	private static bool IsDuringTryPlayCard;
 
 	protected internal override void ApplyPatches(IHarmony harmony)
 	{
@@ -65,12 +65,12 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 			.Where(o => !o.bubbleShield)
 			.ToList();
 		var emptyMidrowSlots = Enumerable.Range(shipMinX, shipMaxX - shipMinX + 1)
-			.Where(x => !midrowObjects.Any(o => o.x == x))
+			.Where(x => midrowObjects.All(o => o.x != x))
 			.ToList();
 
-		bool didSomething = false;
+		var didSomething = false;
 
-		if (unbubbledMidrowObjects.Any())
+		if (unbubbledMidrowObjects.Count != 0)
 		{
 			var midrowObject = unbubbledMidrowObjects[state.rngActions.NextInt() % unbubbledMidrowObjects.Count];
 			combat.QueueImmediate(new ABubble
@@ -79,10 +79,10 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 			});
 			didSomething = true;
 		}
-		else if (emptyMidrowSlots.Any())
+		else if (emptyMidrowSlots.Count != 0)
 		{
 			var slot = emptyMidrowSlots[state.rngActions.NextInt() % emptyMidrowSlots.Count];
-			var missilePartX = state.ship.parts.FindIndex(p => p.active && p.type == PType.missiles);
+			var missilePartX = state.ship.parts.FindIndex(p => p is { active: true, type: PType.missiles });
 			if (missilePartX != -1)
 			{
 				var offset = slot - (shipMinX + missilePartX);

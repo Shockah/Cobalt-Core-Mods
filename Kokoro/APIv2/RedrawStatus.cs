@@ -25,6 +25,14 @@ public partial interface IKokoroApi
 				bool PayForRedraw(IPayForRedrawArgs args) => false;
 				bool DoRedraw(IDoRedrawArgs args) => false;
 				void AfterRedraw(IAfterRedrawArgs args) { }
+				bool? OverrideHookEnablement(IOverrideHookEnablementArgs args) => null;
+
+				public enum HookType
+				{
+					Possibility,
+					Payment,
+					Action
+				}
 				
 				public interface ICanRedrawArgs
 				{
@@ -58,6 +66,14 @@ public partial interface IKokoroApi
 					IHook PossibilityHook { get; }
 					IHook PaymentHook { get; }
 					IHook ActionHook { get; }
+				}
+
+				public interface IOverrideHookEnablementArgs
+				{
+					State State { get; }
+					Combat Combat { get; }
+					HookType HookType { get; }
+					IHook Hook { get; }
 				}
 			}
 		}

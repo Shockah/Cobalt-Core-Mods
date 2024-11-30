@@ -19,7 +19,7 @@ internal sealed class CatDizzyArtifact : DuoArtifact
 {
 	internal static ExternalSprite InactiveSprite { get; private set; } = null!;
 
-	public bool TriggeredThisCombat = false;
+	public bool TriggeredThisCombat;
 
 	protected internal override void ApplyPatches(IHarmony harmony)
 	{
@@ -67,6 +67,7 @@ internal sealed class CatDizzyArtifact : DuoArtifact
 
 	private static IEnumerable<CodeInstruction> Ship_NormalDamage_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -92,6 +93,7 @@ internal sealed class CatDizzyArtifact : DuoArtifact
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static void Ship_NormalDamage_Transpiler_ApplyPerfectShieldIfNeeded(Ship ship, State state, int remainingDamage)

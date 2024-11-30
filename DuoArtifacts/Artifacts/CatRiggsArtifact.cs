@@ -13,7 +13,7 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class CatRiggsArtifact : DuoArtifact
 {
-	public bool DoingInitialDraw = false;
+	public bool DoingInitialDraw;
 	public bool WaitingForFirstExtraDraw = true;
 
 	protected internal override void ApplyPatches(IHarmony harmony)
@@ -35,15 +35,12 @@ internal sealed class CatRiggsArtifact : DuoArtifact
 	public override void OnDrawCard(State state, Combat combat, int count)
 	{
 		base.OnDrawCard(state, combat, count);
-		if (DoingInitialDraw)
-		{
-			DoingInitialDraw = false;
-			return;
-		}
+		DoingInitialDraw = false;
 	}
 
 	private static IEnumerable<CodeInstruction> Combat_SendCardToHand_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -69,6 +66,7 @@ internal sealed class CatRiggsArtifact : DuoArtifact
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static void Combat_SendCardToHand_Transpiler_DidDrawCard(State state, Card card)

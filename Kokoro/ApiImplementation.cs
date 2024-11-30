@@ -12,6 +12,7 @@ public sealed partial class ApiImplementation : IKokoroApi
 	private static ModEntry Instance => ModEntry.Instance;
 	private static readonly Dictionary<Type, ConditionalWeakTable<object, object?>> ProxyCache = [];
 	private readonly IManifest Manifest;
+	private readonly HashSet<(string, string)> LoggedBrokenV1ApiCalls = [];
 
 	public ApiImplementation(IManifest manifest)
 	{

@@ -1,8 +1,4 @@
-﻿using HarmonyLib;
-using Nanoray.Pintail;
-using Nickel;
-using Shockah.Kokoro;
-using System.Linq;
+﻿using Shockah.Kokoro;
 
 namespace Shockah.DuoArtifacts;
 
@@ -11,15 +7,6 @@ internal sealed class PeriRiggsArtifact : DuoArtifact, IKokoroApi.IV2.IEvadeHook
 	private const int EvadesPerTurn = 2;
 
 	public int EvadesLeft = EvadesPerTurn;
-
-	protected internal override void ApplyPatches(IHarmony harmony)
-	{
-		base.ApplyPatches(harmony);
-		harmony.Patch(
-			original: AccessTools.DeclaredMethod(AccessTools.AllAssemblies().First(a => (a.GetName().Name ?? a.GetName().FullName) == "Kokoro").GetType("Shockah.Kokoro.VanillaEvadeHook"), nameof(IKokoroApi.IV2.IEvadeHookApi.IHook.IsEvadePossible)),
-			postfix: new HarmonyMethod(GetType(), nameof(VanillaEvadeHook_IsEvadePossible_Postfix))
-		);
-	}
 
 	public override void OnCombatStart(State state, Combat combat)
 	{
@@ -43,23 +30,22 @@ internal sealed class PeriRiggsArtifact : DuoArtifact, IKokoroApi.IV2.IEvadeHook
 
 	public void AfterEvade(IKokoroApi.IV2.IEvadeHookApi.IHook.IAfterEvadeArgs args)
 	{
-		if (args.Hook is not IProxyObject.IWithProxyTargetInstanceProperty hookMarker)
+		if (args.Entry != Instance.KokoroApi.EvadeHook.DefaultAction)
 			return;
-		if (Instance.KokoroApi.EvadeHook.VanillaEvadeHook is not IProxyObject.IWithProxyTargetInstanceProperty vanillaEvadeHookMarker)
+		if (args.PaymentOption != Instance.KokoroApi.EvadeHook.DefaultActionPaymentOption)
 			return;
-		if (!ReferenceEquals(hookMarker.ProxyTargetInstance, vanillaEvadeHookMarker.ProxyTargetInstance))
-			return;
+		
 		EvadesLeft--;
 	}
 
-	private static void VanillaEvadeHook_IsEvadePossible_Postfix(object args, ref bool? __result)
+	public bool IsEvadePaymentOptionEnabled(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePaymentOptionEnabledArgs args)
 	{
-		if (!Instance.Helper.Utilities.ProxyManager.TryProxy<string, IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePossibleArgs>(args, "Shockah.Kokoro", Instance.Package.Manifest.UniqueName, out var typedArgs))
-			return;
-		if (typedArgs.State.EnumerateAllArtifacts().OfType<PeriRiggsArtifact>().FirstOrDefault() is not { } artifact)
-			return;
-		
-		if (artifact.EvadesLeft <= 0)
-			__result = null;
+		if (EvadesLeft > 0)
+			return true;
+		if (args.Entry != Instance.KokoroApi.EvadeHook.DefaultAction)
+			return true;
+		if (args.PaymentOption != Instance.KokoroApi.EvadeHook.DefaultActionPaymentOption)
+			return true;
+		return false;
 	}
 }

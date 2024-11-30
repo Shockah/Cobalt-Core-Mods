@@ -4,8 +4,7 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class CatMaxArtifact : DuoArtifact
 {
-	private static readonly List<Status> PossibleStatuses = new()
-	{
+	private static readonly List<Status> PossibleStatuses = [
 		Status.overdrive,
 		Status.powerdrive,
 		Status.ace,
@@ -38,7 +37,7 @@ internal sealed class CatMaxArtifact : DuoArtifact
 		Status.stunSource,
 		Status.temporaryCheap,
 		Status.bubbleJuice
-	};
+	];
 
 	public override void OnTurnStart(State state, Combat combat)
 	{

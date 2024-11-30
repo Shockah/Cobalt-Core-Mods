@@ -113,6 +113,17 @@ partial class ApiImplementation
 				public IKokoroApi.IV2.IRedrawStatusApi.IHook PaymentHook { get; internal set; } = null!;
 				public IKokoroApi.IV2.IRedrawStatusApi.IHook ActionHook { get; internal set; } = null!;
 			}
+			
+			internal sealed class OverrideHookEnablementArgs : IKokoroApi.IV2.IRedrawStatusApi.IHook.IOverrideHookEnablementArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly OverrideHookEnablementArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType HookType { get; internal set; }
+				public IKokoroApi.IV2.IRedrawStatusApi.IHook Hook { get; internal set; } = null!;
+			}
 		}
 	}
 }
@@ -142,6 +153,20 @@ internal sealed class RedrawStatusManager
 		);
 	}
 
+	private bool IsHookEnabled(State state, Combat combat, IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType hookType, IKokoroApi.IV2.IRedrawStatusApi.IHook testedHook)
+	{
+		var args = ApiImplementation.V2Api.RedrawStatusApi.OverrideHookEnablementArgs.Instance;
+		args.State = state;
+		args.Combat = combat;
+		args.HookType = hookType;
+		args.Hook = testedHook;
+		
+		foreach (var hook in HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+			if (hook.OverrideHookEnablement(args) is { } result)
+				return result;
+		return true;
+	}
+
 	public bool IsRedrawPossible(State state, Combat combat, Card card)
 	{
 		if (!combat.isPlayerTurn)
@@ -155,7 +180,7 @@ internal sealed class RedrawStatusManager
 		args.Card = card;
 
 		foreach (var hook in HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			if (hook.CanRedraw(args) is { } result)
+			if (IsHookEnabled(state, combat, IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType.Possibility, hook) && hook.CanRedraw(args) is { } result)
 				return result;
 		return false;
 	}
@@ -190,6 +215,9 @@ internal sealed class RedrawStatusManager
 			
 			foreach (var hook in HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 			{
+				if (!IsHookEnabled(state, combat, IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType.Possibility, hook))
+					continue;
+				
 				switch (hook.CanRedraw(args))
 				{
 					case false:
@@ -210,7 +238,7 @@ internal sealed class RedrawStatusManager
 			args.PossibilityHook = possibilityHook;
 			
 			return HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts())
-				.FirstOrDefault(hook => hook.PayForRedraw(args));
+				.FirstOrDefault(hook => IsHookEnabled(state, combat, IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType.Payment, hook) && hook.PayForRedraw(args));
 		}
 
 		IKokoroApi.IV2.IRedrawStatusApi.IHook? GetActionHook()
@@ -223,7 +251,7 @@ internal sealed class RedrawStatusManager
 			args.PaymentHook = paymentHook;
 			
 			return HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts())
-				.FirstOrDefault(hook => hook.DoRedraw(args));
+				.FirstOrDefault(hook => IsHookEnabled(state, combat, IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType.Action, hook) && hook.DoRedraw(args));
 		}
 	}
 	

@@ -31,16 +31,37 @@ internal sealed class CatIsaacArtifact : DuoArtifact
 
 	private static bool Combat_BeginCardAction_Prefix(Combat __instance, G g, CardAction a)
 	{
-		if (a is not ASpawn action || !action.fromPlayer)
+		if (a is not ASpawn { fromPlayer: true } action)
 			return true;
 
-		var siloPartX = action.fromX ?? g.state.ship.parts.FindIndex(p => p.active && p.type == PType.missiles);
+		var siloPartX = action.fromX ?? g.state.ship.parts.FindIndex(p => p is { active: true, type: PType.missiles });
 		if (siloPartX == -1)
 			return true;
 
 		var artifact = g.state.EnumerateAllArtifacts().OfType<CatIsaacArtifact>().FirstOrDefault();
 		if (artifact is null || artifact.Charges <= 0)
 			return true;
+
+		var launchX = g.state.ship.x + siloPartX + action.offset;
+		if (CanLaunch(launchX))
+			return true;
+
+		var shoveValue = GetShoveValue();
+		if (shoveValue == 0)
+			return true;
+
+		artifact.Pulse();
+		artifact.Charges--;
+		__instance.QueueImmediate(action);
+		for (var i = 0; i < Math.Abs(shoveValue); i++)
+		{
+			__instance.QueueImmediate(new AKickMiette
+			{
+				x = launchX + i * Math.Sign(shoveValue),
+				dir = Math.Sign(shoveValue)
+			});
+		}
+		return false;
 
 		bool CanLaunch(int x)
 		{
@@ -55,50 +76,29 @@ internal sealed class CatIsaacArtifact : DuoArtifact
 			return true;
 		}
 
-		var launchX = g.state.ship.x + siloPartX + action.offset;
-		if (CanLaunch(launchX))
-			return true;
-
 		int GetShoveValue()
 		{
-			int leftWall = __instance.leftWall ?? int.MinValue;
-			int rightWall = __instance.rightWall ?? int.MaxValue;
+			var leftWall = __instance.leftWall ?? int.MinValue;
+			var rightWall = __instance.rightWall ?? int.MaxValue;
 
-			for (int i = 1; i < int.MaxValue; i++)
+			for (var i = 1; i < int.MaxValue; i++)
 			{
-				bool leftInWall = launchX - i < leftWall || launchX - i >= rightWall;
-				bool rightInWall = launchX + i < leftWall || launchX + i >= rightWall;
+				var leftInWall = launchX - i < leftWall || launchX - i >= rightWall;
+				var rightInWall = launchX + i < leftWall || launchX + i >= rightWall;
 				if (leftInWall && rightInWall)
 					return 0;
 
-				bool left = !leftInWall && CanLaunch(launchX - i);
-				bool right = !rightInWall && CanLaunch(launchX + i);
+				var left = !leftInWall && CanLaunch(launchX - i);
+				var right = !rightInWall && CanLaunch(launchX + i);
 
 				if (left && right)
 					return g.state.rngActions.NextInt() % 2 == 0 ? -i : i;
-				else if (left)
+				if (left)
 					return -i;
-				else if (right)
+				if (right)
 					return i;
 			}
 			return 0;
 		}
-
-		int shoveValue = GetShoveValue();
-		if (shoveValue == 0)
-			return true;
-
-		artifact.Pulse();
-		artifact.Charges--;
-		__instance.QueueImmediate(action);
-		for (int i = 0; i < Math.Abs(shoveValue); i++)
-		{
-			__instance.QueueImmediate(new AKickMiette
-			{
-				x = launchX + i * Math.Sign(shoveValue),
-				dir = Math.Sign(shoveValue)
-			});
-		}
-		return false;
 	}
 }

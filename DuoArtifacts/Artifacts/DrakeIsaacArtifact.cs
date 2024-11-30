@@ -22,8 +22,8 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 		if (s.route is not Combat combat)
 			return base.GetDisplayNumber(s);
 
-		int drones = combat.stuff.Values.Count(o => o is AttackDrone or ShieldDrone && o.fromPlayer);
-		int heatToGain = drones - 1;
+		var drones = combat.stuff.Values.Count(o => o is AttackDrone or ShieldDrone && o.fromPlayer);
+		var heatToGain = drones - 1;
 		return Math.Max(heatToGain, 0);
 	}
 
@@ -46,8 +46,8 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 	public override void OnTurnStart(State state, Combat combat)
 	{
 		base.OnTurnStart(state, combat);
-		int drones = combat.stuff.Values.Count(o => o is AttackDrone or ShieldDrone && o.fromPlayer);
-		int heatToGain = drones - 1;
+		var drones = combat.stuff.Values.Count(o => o is AttackDrone or ShieldDrone && o.fromPlayer);
+		var heatToGain = drones - 1;
 
 		if (heatToGain <= 0)
 			return;
