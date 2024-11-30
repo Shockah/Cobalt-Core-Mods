@@ -30,9 +30,19 @@ internal sealed class PeriRiggsArtifact : DuoArtifact, IKokoroApi.IV2.IEvadeHook
 
 	public void AfterEvade(IKokoroApi.IV2.IEvadeHookApi.IHook.IAfterEvadeArgs args)
 	{
-		if (args.Entry != Instance.KokoroApi.EvadeHook.DefaultAction)
+		if (Instance.Helper.Utilities.Unproxy(args.Entry) != Instance.Helper.Utilities.Unproxy(Instance.KokoroApi.EvadeHook.DefaultAction))
 			return;
-		if (args.PaymentOption != Instance.KokoroApi.EvadeHook.DefaultActionPaymentOption)
+		if (Instance.Helper.Utilities.Unproxy(args.PaymentOption) != Instance.Helper.Utilities.Unproxy(Instance.KokoroApi.EvadeHook.DefaultActionPaymentOption))
+			return;
+		
+		EvadesLeft--;
+	}
+
+	public void EvadePostconditionFailed(IKokoroApi.IV2.IEvadeHookApi.IHook.IEvadePostconditionFailedArgs args)
+	{
+		if (Instance.Helper.Utilities.Unproxy(args.Entry) != Instance.Helper.Utilities.Unproxy(Instance.KokoroApi.EvadeHook.DefaultAction))
+			return;
+		if (Instance.Helper.Utilities.Unproxy(args.PaymentOption) != Instance.Helper.Utilities.Unproxy(Instance.KokoroApi.EvadeHook.DefaultActionPaymentOption))
 			return;
 		
 		EvadesLeft--;
@@ -42,10 +52,11 @@ internal sealed class PeriRiggsArtifact : DuoArtifact, IKokoroApi.IV2.IEvadeHook
 	{
 		if (EvadesLeft > 0)
 			return true;
-		if (args.Entry != Instance.KokoroApi.EvadeHook.DefaultAction)
+		if (Instance.Helper.Utilities.Unproxy(args.Entry) != Instance.Helper.Utilities.Unproxy(Instance.KokoroApi.EvadeHook.DefaultAction))
 			return true;
-		if (args.PaymentOption != Instance.KokoroApi.EvadeHook.DefaultActionPaymentOption)
+		if (Instance.Helper.Utilities.Unproxy(args.PaymentOption) != Instance.Helper.Utilities.Unproxy(Instance.KokoroApi.EvadeHook.DefaultActionPaymentOption))
 			return true;
+		
 		return false;
 	}
 }

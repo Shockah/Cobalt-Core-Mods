@@ -100,11 +100,14 @@ partial class ApiImplementation
 			public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption DebugActionPaymentOption
 				=> DebugEvadePaymentOption.Instance;
 			
-			public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition DefaultActionLockdownPrecondition
-				=> LockdownEvadePrecondition.Instance;
-			
 			public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition DefaultActionAnchorPrecondition
 				=> AnchorEvadePrecondition.Instance;
+			
+			public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition DefaultActionEngineLockPrecondition
+				=> EngineLockEvadePrecondition.Instance;
+			
+			public IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition DefaultActionEngineStallPostcondition
+				=> EngineStallEvadePostcondition.Instance;
 
 			public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry RegisterAction(IKokoroApi.IV2.IEvadeHookApi.IEvadeAction action, double priority = 0)
 			{
@@ -115,6 +118,9 @@ partial class ApiImplementation
 
 			public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IResult MakePreconditionResult(bool isAllowed)
 				=> new EvadePreconditionResult(isAllowed);
+
+			public IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IResult MakePostconditionResult(bool isAllowed)
+				=> new EvadePostconditionResult(isAllowed);
 
 			public void RegisterHook(IKokoroApi.IV2.IEvadeHookApi.IHook hook, double priority = 0)
 				=> EvadeManager.Instance.HookManager.Register(hook, priority);
@@ -134,8 +140,12 @@ partial class ApiImplementation
 				public IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition> Preconditions
 					=> PreconditionsOrderedList;
 
+				public IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition> Postconditions
+					=> PostconditionsOrderedList;
+
 				private readonly OrderedList<IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption, double> PaymentOptionsOrderedList = new(ascending: false);
 				private readonly OrderedList<IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition, double> PreconditionsOrderedList = new(ascending: false);
+				private readonly OrderedList<IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition, double> PostconditionsOrderedList = new(ascending: false);
 
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry RegisterPaymentOption(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption paymentOption, double priority = 0)
 				{
@@ -158,6 +168,18 @@ partial class ApiImplementation
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry UnregisterPrecondition(IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition precondition)
 				{
 					PreconditionsOrderedList.Remove(precondition);
+					return this;
+				}
+
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry RegisterPostcondition(IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition postcondition, double priority = 0)
+				{
+					PostconditionsOrderedList.Add(postcondition, priority);
+					return this;
+				}
+
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry UnregisterPostcondition(IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition postcondition)
+				{
+					PostconditionsOrderedList.Remove(postcondition);
 					return this;
 				}
 			}
@@ -183,6 +205,33 @@ partial class ApiImplementation
 				}
 
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IResult SetActionsOnFail(IList<CardAction> value)
+				{
+					ActionsOnFail = value;
+					return this;
+				}
+			}
+			
+			internal sealed class EvadePostconditionResult(
+				bool isAllowed
+			) : IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IResult
+			{
+				public bool IsAllowed { get; set; } = isAllowed;
+				public bool ShakeShipOnFail { get; set; } = true;
+				public IList<CardAction> ActionsOnFail { get; set; } = [];
+				
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IResult SetIsAllowed(bool value)
+				{
+					IsAllowed = value;
+					return this;
+				}
+
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IResult SetShakeShipOnFail(bool value)
+				{
+					ShakeShipOnFail = value;
+					return this;
+				}
+
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IResult SetActionsOnFail(IList<CardAction> value)
 				{
 					ActionsOnFail = value;
 					return this;
@@ -243,6 +292,18 @@ partial class ApiImplementation
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
 			}
 			
+			internal sealed class PostconditionIsEvadeAllowedArgs : IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IIsEvadeAllowedArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly PostconditionIsEvadeAllowedArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption PaymentOption { get; internal set; } = null!;
+			}
+			
 			internal sealed class HookIsEvadeActionEnabledArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadeActionEnabledArgs
 			{
 				// ReSharper disable once MemberHidesStaticFromOuterClass
@@ -278,6 +339,46 @@ partial class ApiImplementation
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition Precondition { get; internal set; } = null!;
 			}
 			
+			internal sealed class HookIsEvadePostconditionEnabledArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePostconditionEnabledArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly HookIsEvadePostconditionEnabledArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption PaymentOption { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition Postcondition { get; internal set; } = null!;
+			}
+			
+			internal sealed class HookEvadePreconditionFailedArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IEvadePreconditionFailedArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly HookEvadePreconditionFailedArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition Precondition { get; internal set; } = null!;
+				public IReadOnlyList<CardAction> QueuedActions { get; internal set; } = null!;
+			}
+			
+			internal sealed class HookEvadePostconditionFailedArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IEvadePostconditionFailedArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly HookEvadePostconditionFailedArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption PaymentOption { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition Postcondition { get; internal set; } = null!;
+				public IReadOnlyList<CardAction> QueuedActions { get; internal set; } = null!;
+			}
+			
 			internal sealed class HookAfterEvadeArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IAfterEvadeArgs
 			{
 				// ReSharper disable once MemberHidesStaticFromOuterClass
@@ -310,8 +411,9 @@ internal sealed class EvadeManager
 		var defaultActionEntry = new ApiImplementation.V2Api.EvadeHookApi.EvadeActionEntry(DefaultEvadeAction.Instance)
 			.RegisterPaymentOption(DefaultEvadePaymentOption.Instance)
 			.RegisterPaymentOption(DebugEvadePaymentOption.Instance, 1_000_000_000)
-			.RegisterPrecondition(LockdownEvadePrecondition.Instance)
-			.RegisterPrecondition(AnchorEvadePrecondition.Instance);
+			.RegisterPrecondition(AnchorEvadePrecondition.Instance)
+			.RegisterPrecondition(EngineLockEvadePrecondition.Instance)
+			.RegisterPostcondition(EngineStallEvadePostcondition.Instance);
 		DefaultActionEntry = defaultActionEntry;
 		ActionEntries.Add(defaultActionEntry, 0);
 		
@@ -328,9 +430,18 @@ internal sealed class EvadeManager
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DoEvade)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DoEvade_Prefix))
 		);
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AMove), nameof(AMove.Begin)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMove_Begin_Transpiler))
+		);
 	}
 
-	private static IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry> FilterEnabled(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction, IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry> enumerable)
+	private static IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry> FilterEnabled(
+		State state,
+		Combat combat,
+		IKokoroApi.IV2.IEvadeHookApi.Direction direction,
+		IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry> enumerable
+	)
 	{
 		var args = ApiImplementation.V2Api.EvadeHookApi.HookIsEvadeActionEnabledArgs.Instance;
 		args.State = state;
@@ -345,7 +456,13 @@ internal sealed class EvadeManager
 		});
 	}
 
-	private static IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption> FilterEnabled(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction, IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry entry, IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption> enumerable)
+	private static IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption> FilterEnabled(
+		State state,
+		Combat combat,
+		IKokoroApi.IV2.IEvadeHookApi.Direction direction,
+		IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry entry,
+		IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption> enumerable
+	)
 	{
 		var args = ApiImplementation.V2Api.EvadeHookApi.HookIsEvadePaymentOptionEnabledArgs.Instance;
 		args.State = state;
@@ -361,7 +478,13 @@ internal sealed class EvadeManager
 		});
 	}
 
-	private static IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition> FilterEnabled(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction, IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry entry, IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition> enumerable)
+	private static IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition> FilterEnabled(
+		State state,
+		Combat combat,
+		IKokoroApi.IV2.IEvadeHookApi.Direction direction,
+		IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry entry,
+		IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition> enumerable
+	)
 	{
 		var args = ApiImplementation.V2Api.EvadeHookApi.HookIsEvadePreconditionEnabledArgs.Instance;
 		args.State = state;
@@ -374,6 +497,30 @@ internal sealed class EvadeManager
 		{
 			args.Precondition = precondition;
 			return hooks.All(h => h.IsEvadePreconditionEnabled(args));
+		});
+	}
+
+	private static IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition> FilterEnabled(
+		State state,
+		Combat combat,
+		IKokoroApi.IV2.IEvadeHookApi.Direction direction,
+		IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry entry,
+		IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption paymentOption,
+		IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition> enumerable
+	)
+	{
+		var args = ApiImplementation.V2Api.EvadeHookApi.HookIsEvadePostconditionEnabledArgs.Instance;
+		args.State = state;
+		args.Combat = combat;
+		args.Direction = direction;
+		args.Entry = entry;
+		args.PaymentOption = paymentOption;
+		
+		var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
+		return enumerable.Where(postcondition =>
+		{
+			args.Postcondition = postcondition;
+			return hooks.All(h => h.IsEvadePostconditionEnabled(args));
 		});
 	}
 	
@@ -506,7 +653,20 @@ internal sealed class EvadeManager
 						Audio.Play(Event.Status_PowerDown);
 						g.state.ship.shake += 1.0;
 					}
+					
 					__instance.Queue(preconditionResult.ActionsOnFail);
+					
+					var hookEvadePreconditionFailedArgs = ApiImplementation.V2Api.EvadeHookApi.HookEvadePreconditionFailedArgs.Instance;
+					hookEvadePreconditionFailedArgs.State = g.state;
+					hookEvadePreconditionFailedArgs.Combat = __instance;
+					hookEvadePreconditionFailedArgs.Direction = typedDirection;
+					hookEvadePreconditionFailedArgs.Entry = entry;
+					hookEvadePreconditionFailedArgs.Precondition = precondition;
+					hookEvadePreconditionFailedArgs.QueuedActions = preconditionResult.ActionsOnFail.ToList();
+				
+					foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, g.state.EnumerateAllArtifacts()))
+						hook.EvadePreconditionFailed(hookEvadePreconditionFailedArgs);
+					
 					return false;
 				}
 			}
@@ -529,6 +689,43 @@ internal sealed class EvadeManager
 				paymentOptionProvideEvadePaymentActionsArgs.Entry = entry;
 
 				var paymentActions = paymentOption.ProvideEvadePaymentActions(paymentOptionProvideEvadePaymentActionsArgs);
+				
+				var postconditionIsEvadeAllowedArgs = ApiImplementation.V2Api.EvadeHookApi.PostconditionIsEvadeAllowedArgs.Instance;
+				postconditionIsEvadeAllowedArgs.State = g.state;
+				postconditionIsEvadeAllowedArgs.Combat = __instance;
+				postconditionIsEvadeAllowedArgs.Direction = typedDirection;
+				postconditionIsEvadeAllowedArgs.Entry = entry;
+				postconditionIsEvadeAllowedArgs.PaymentOption = paymentOption;
+				
+				foreach (var postcondition in FilterEnabled(g.state, __instance, typedDirection, entry, paymentOption, entry.Postconditions))
+				{
+					var postconditionResult = postcondition.IsEvadeAllowed(postconditionIsEvadeAllowedArgs);
+					if (!postconditionResult.IsAllowed)
+					{
+						if (postconditionResult.ShakeShipOnFail)
+						{
+							Audio.Play(Event.Status_PowerDown);
+							g.state.ship.shake += 1.0;
+						}
+
+						List<CardAction> queuedActions = [.. paymentActions, .. postconditionResult.ActionsOnFail];
+						__instance.Queue(queuedActions);
+						
+						var hookEvadePostconditionFailedArgs = ApiImplementation.V2Api.EvadeHookApi.HookEvadePostconditionFailedArgs.Instance;
+						hookEvadePostconditionFailedArgs.State = g.state;
+						hookEvadePostconditionFailedArgs.Combat = __instance;
+						hookEvadePostconditionFailedArgs.Direction = typedDirection;
+						hookEvadePostconditionFailedArgs.Entry = entry;
+						hookEvadePostconditionFailedArgs.PaymentOption = paymentOption;
+						hookEvadePostconditionFailedArgs.Postcondition = postcondition;
+						hookEvadePostconditionFailedArgs.QueuedActions = queuedActions;
+				
+						foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, g.state.EnumerateAllArtifacts()))
+							hook.EvadePostconditionFailed(hookEvadePostconditionFailedArgs);
+						
+						return false;
+					}
+				}
 				
 				var actionProvideEvadeActionsArgs = ApiImplementation.V2Api.EvadeHookApi.ActionProvideEvadeActionsArgs.Instance;
 				actionProvideEvadeActionsArgs.State = g.state;
@@ -557,6 +754,58 @@ internal sealed class EvadeManager
 		}
 
 		return false;
+	}
+
+	private static IEnumerable<CodeInstruction> AMove_Begin_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		// ReSharper disable PossibleMultipleEnumeration
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find([
+					ILMatches.Ldarg(3),
+					ILMatches.Ldfld("hand"),
+					ILMatches.Call("OfType"),
+					ILMatches.Call("Any"),
+					ILMatches.Brfalse.GetBranchTarget(out var branchTarget)
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(typeof(AMove), nameof(AMove.fromEvade))),
+					new CodeInstruction(OpCodes.Brtrue, branchTarget.Value)
+				])
+				.Find([
+					ILMatches.Ldloc<Ship>(originalMethod),
+					ILMatches.LdcI4((int)Status.lockdown),
+					ILMatches.Call("Get"),
+					ILMatches.LdcI4(0),
+					ILMatches.Ble.GetBranchTarget(out branchTarget)
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(typeof(AMove), nameof(AMove.fromEvade))),
+					new CodeInstruction(OpCodes.Brtrue, branchTarget.Value)
+				])
+				.Find([
+					ILMatches.Ldloc<Ship>(originalMethod),
+					ILMatches.LdcI4((int)Status.engineStall),
+					ILMatches.Call("Get"),
+					ILMatches.LdcI4(0),
+					ILMatches.Ble.GetBranchTarget(out branchTarget)
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(typeof(AMove), nameof(AMove.fromEvade))),
+					new CodeInstruction(OpCodes.Brtrue, branchTarget.Value)
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Name, ex);
+			return instructions;
+		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 }
 
@@ -602,19 +851,6 @@ internal sealed class DebugEvadePaymentOption : IKokoroApi.IV2.IEvadeHookApi.IEv
 		=> [];
 }
 
-internal sealed class LockdownEvadePrecondition : IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition
-{
-	public static LockdownEvadePrecondition Instance { get; private set; } = new();
-	
-	private LockdownEvadePrecondition() { }
-	
-	public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IResult IsEvadeAllowed(IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IIsEvadeAllowedArgs args)
-	{
-		var isLockdowned = args.State.ship.Get(Status.lockdown) > 0;
-		return ModEntry.Instance.Api.V2.EvadeHook.MakePreconditionResult(!isLockdowned);
-	}
-}
-
 internal sealed class AnchorEvadePrecondition : IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition
 {
 	public static AnchorEvadePrecondition Instance { get; private set; } = new();
@@ -628,13 +864,41 @@ internal sealed class AnchorEvadePrecondition : IKokoroApi.IV2.IEvadeHookApi.IEv
 	}
 }
 
+internal sealed class EngineLockEvadePrecondition : IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition
+{
+	public static EngineLockEvadePrecondition Instance { get; private set; } = new();
+	
+	private EngineLockEvadePrecondition() { }
+	
+	public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IResult IsEvadeAllowed(IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IIsEvadeAllowedArgs args)
+	{
+		var isLocked = args.State.ship.Get(Status.lockdown) > 0;
+		return ModEntry.Instance.Api.V2.EvadeHook.MakePreconditionResult(!isLocked);
+	}
+}
+
+internal sealed class EngineStallEvadePostcondition : IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition
+{
+	public static EngineStallEvadePostcondition Instance { get; private set; } = new();
+	
+	private EngineStallEvadePostcondition() { }
+	
+	public IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IResult IsEvadeAllowed(IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IIsEvadeAllowedArgs args)
+	{
+		var isLocked = args.State.ship.Get(Status.engineStall) > 0;
+		if (isLocked)
+			args.State.ship.Add(Status.engineStall, -1);
+		return ModEntry.Instance.Api.V2.EvadeHook.MakePostconditionResult(!isLocked);
+	}
+}
+
 internal sealed class DebugEvadeHook : IKokoroApi.IV2.IEvadeHookApi.IHook
 {
 	public static DebugEvadeHook Instance { get; private set; } = new();
 	
 	private DebugEvadeHook() { }
 	
-	public bool IsEvadePreconditionEnabled(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePaymentOptionEnabledArgs args)
+	public bool IsEvadePreconditionEnabled(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePreconditionEnabledArgs args)
 	{
 		var isDebug = FeatureFlags.Debug && Input.shift;
 		return !isDebug || args.Entry == ModEntry.Instance.Api.V2.EvadeHook.DefaultAction;

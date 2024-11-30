@@ -17,6 +17,7 @@ public partial interface IKokoroApi
 			IDroneShiftActionEntry RegisterAction(IDroneShiftAction action, double priority = 0);
 
 			IDroneShiftPrecondition.IResult MakePreconditionResult(bool isAllowed);
+			IDroneShiftPostcondition.IResult MakePostconditionResult(bool isAllowed);
 			
 			void RegisterHook(IHook hook, double priority = 0);
 			void UnregisterHook(IHook hook);
@@ -32,12 +33,16 @@ public partial interface IKokoroApi
 				IDroneShiftAction Action { get; }
 				IEnumerable<IDroneShiftPaymentOption> PaymentOptions { get; }
 				IEnumerable<IDroneShiftPrecondition> Preconditions { get; }
+				IEnumerable<IDroneShiftPostcondition> Postconditions { get; }
 
 				IDroneShiftActionEntry RegisterPaymentOption(IDroneShiftPaymentOption paymentOption, double priority = 0);
 				IDroneShiftActionEntry UnregisterPaymentOption(IDroneShiftPaymentOption paymentOption);
 
 				IDroneShiftActionEntry RegisterPrecondition(IDroneShiftPrecondition precondition, double priority = 0);
 				IDroneShiftActionEntry UnregisterPrecondition(IDroneShiftPrecondition precondition);
+
+				IDroneShiftActionEntry RegisterPostcondition(IDroneShiftPostcondition postcondition, double priority = 0);
+				IDroneShiftActionEntry UnregisterPostcondition(IDroneShiftPostcondition postcondition);
 			}
 			
 			public interface IDroneShiftAction
@@ -106,12 +111,40 @@ public partial interface IKokoroApi
 					IDroneShiftActionEntry Entry { get; }
 				}
 			}
+
+			public interface IDroneShiftPostcondition
+			{
+				IResult IsDroneShiftAllowed(IIsDroneShiftAllowedArgs args);
+
+				public interface IResult
+				{
+					bool IsAllowed { get; set; }
+					bool ShakeShipOnFail { get; set; }
+					IList<CardAction> ActionsOnFail { get; set; }
+					
+					IResult SetIsAllowed(bool value);
+					IResult SetShakeShipOnFail(bool value);
+					IResult SetActionsOnFail(IList<CardAction> value);
+				}
+				
+				public interface IIsDroneShiftAllowedArgs
+				{
+					State State { get; }
+					Combat Combat { get; }
+					Direction Direction { get; }
+					IDroneShiftActionEntry Entry { get; }
+					IDroneShiftPaymentOption PaymentOption { get; }
+				}
+			}
 			
 			public interface IHook : IKokoroV2ApiHook
 			{
 				bool IsDroneShiftActionEnabled(IIsDroneShiftActionEnabledArgs args) => true;
 				bool IsDroneShiftPaymentOptionEnabled(IIsDroneShiftPaymentOptionEnabledArgs args) => true;
 				bool IsDroneShiftPreconditionEnabled(IIsDroneShiftPreconditionEnabledArgs args) => true;
+				bool IsDroneShiftPostconditionEnabled(IIsDroneShiftPostconditionEnabledArgs args) => true;
+				void DroneShiftPreconditionFailed(IDroneShiftPreconditionFailedArgs args) { }
+				void DroneShiftPostconditionFailed(IDroneShiftPostconditionFailedArgs args) { }
 				void AfterDroneShift(IAfterDroneShiftArgs args) { }
 
 				public interface IIsDroneShiftActionEnabledArgs
@@ -138,6 +171,37 @@ public partial interface IKokoroApi
 					Direction Direction { get; }
 					IDroneShiftActionEntry Entry { get; }
 					IDroneShiftPrecondition Precondition { get; }
+				}
+
+				public interface IIsDroneShiftPostconditionEnabledArgs
+				{
+					State State { get; }
+					Combat Combat { get; }
+					Direction Direction { get; }
+					IDroneShiftActionEntry Entry { get; }
+					IDroneShiftPaymentOption PaymentOption { get; }
+					IDroneShiftPostcondition Postcondition { get; }
+				}
+
+				public interface IDroneShiftPreconditionFailedArgs
+				{
+					State State { get; }
+					Combat Combat { get; }
+					Direction Direction { get; }
+					IDroneShiftActionEntry Entry { get; }
+					IDroneShiftPrecondition Precondition { get; }
+					IReadOnlyList<CardAction> QueuedActions { get; }
+				}
+
+				public interface IDroneShiftPostconditionFailedArgs
+				{
+					State State { get; }
+					Combat Combat { get; }
+					Direction Direction { get; }
+					IDroneShiftActionEntry Entry { get; }
+					IDroneShiftPaymentOption PaymentOption { get; }
+					IDroneShiftPostcondition Postcondition { get; }
+					IReadOnlyList<CardAction> QueuedActions { get; }
 				}
 
 				public interface IAfterDroneShiftArgs
