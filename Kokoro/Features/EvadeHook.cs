@@ -290,6 +290,7 @@ partial class ApiImplementation
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+				public bool ForRendering { get; internal set; }
 			}
 			
 			internal sealed class PostconditionIsEvadeAllowedArgs : IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IIsEvadeAllowedArgs
@@ -544,6 +545,23 @@ internal sealed class EvadeManager
 					ILMatches.Instruction(OpCodes.Ret)
 				])
 				.Replace(new CodeInstruction(OpCodes.Nop).WithLabels(labels))
+				.Find([
+					ILMatches.Ldarg(1).ExtractLabels(out labels),
+					ILMatches.Ldfld("state"),
+					ILMatches.Ldfld("ship"),
+					ILMatches.LdcI4((int)Status.lockdown),
+					ILMatches.Call("Get"),
+					ILMatches.LdcI4(0),
+					ILMatches.Ble,
+					ILMatches.Instruction(OpCodes.Ret)
+				])
+				.Replace(new CodeInstruction(OpCodes.Nop).WithLabels(labels))
+				.Find([
+					ILMatches.Isinst<TrashAnchor>(),
+					ILMatches.Brfalse,
+					ILMatches.Instruction(OpCodes.Leave)
+				])
+				.Replace(new CodeInstruction(OpCodes.Pop))
 				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.WholeSequence, [
 					ILMatches.Ldarg(1).Anchor(out var gPointer1),
 					ILMatches.LdcI4((int)StableUK.btn_move_left),
@@ -606,6 +624,16 @@ internal sealed class EvadeManager
 				if (!entry.Action.CanDoEvadeAction(canDoEvadeArgs))
 					return false;
 				
+				var preconditionIsEvadeAllowedArgs = ApiImplementation.V2Api.EvadeHookApi.PreconditionIsEvadeAllowedArgs.Instance;
+				preconditionIsEvadeAllowedArgs.State = g.state;
+				preconditionIsEvadeAllowedArgs.Combat = combat;
+				preconditionIsEvadeAllowedArgs.Direction = typedDirection;
+				preconditionIsEvadeAllowedArgs.Entry = entry;
+				preconditionIsEvadeAllowedArgs.ForRendering = true;
+
+				if (FilterEnabled(g.state, combat, typedDirection, entry, entry.Preconditions).Any(precondition => !precondition.IsEvadeAllowed(preconditionIsEvadeAllowedArgs).IsAllowed))
+					return false;
+				
 				var paymentOptionCanPayForEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionCanPayForEvadeArgs.Instance;
 				paymentOptionCanPayForEvadeArgs.State = g.state;
 				paymentOptionCanPayForEvadeArgs.Combat = combat;
@@ -642,6 +670,7 @@ internal sealed class EvadeManager
 			preconditionIsEvadeAllowedArgs.Combat = __instance;
 			preconditionIsEvadeAllowedArgs.Direction = typedDirection;
 			preconditionIsEvadeAllowedArgs.Entry = entry;
+			preconditionIsEvadeAllowedArgs.ForRendering = false;
 
 			foreach (var precondition in FilterEnabled(g.state, __instance, typedDirection, entry, entry.Preconditions))
 			{

@@ -281,6 +281,7 @@ partial class ApiImplementation
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
 				public IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftActionEntry Entry { get; internal set; } = null!;
+				public bool ForRendering { get; internal set; }
 			}
 			
 			internal sealed class PostconditionIsDroneShiftAllowedArgs : IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPostcondition.IIsDroneShiftAllowedArgs
@@ -532,13 +533,9 @@ internal sealed class DroneShiftManager
 					ILMatches.Ldloc<Combat>(originalMethod),
 					ILMatches.Ldfld("stuff"),
 					ILMatches.Call("get_Count"),
-					ILMatches.Brfalse
+					ILMatches.Brfalse.GetBranchTarget(out var branchTarget)
 				])
-				.EncompassUntil(SequenceMatcherPastBoundsDirection.After, [
-					ILMatches.Call("Any"),
-					ILMatches.Brtrue,
-					ILMatches.Instruction(OpCodes.Ret)
-				])
+				.EncompassUntil(SequenceMatcherPastBoundsDirection.After, new ElementMatch<CodeInstruction>("branch target", i => i.labels.Contains(branchTarget)))
 				.Remove()
 				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.WholeSequence, [
 					ILMatches.Ldarg(1).Anchor(out var gPointer1),
@@ -602,6 +599,16 @@ internal sealed class DroneShiftManager
 				if (!entry.Action.CanDoDroneShiftAction(canDoDroneShiftArgs))
 					return false;
 				
+				var preconditionIsDroneShiftAllowedArgs = ApiImplementation.V2Api.DroneShiftHookApi.PreconditionIsDroneShiftAllowedArgs.Instance;
+				preconditionIsDroneShiftAllowedArgs.State = g.state;
+				preconditionIsDroneShiftAllowedArgs.Combat = combat;
+				preconditionIsDroneShiftAllowedArgs.Direction = typedDirection;
+				preconditionIsDroneShiftAllowedArgs.Entry = entry;
+				preconditionIsDroneShiftAllowedArgs.ForRendering = true;
+
+				if (FilterEnabled(g.state, combat, typedDirection, entry, entry.Preconditions).Any(precondition => !precondition.IsDroneShiftAllowed(preconditionIsDroneShiftAllowedArgs).IsAllowed))
+					return false;
+				
 				var paymentOptionCanPayForDroneShiftArgs = ApiImplementation.V2Api.DroneShiftHookApi.PaymentOptionCanPayForDroneShiftArgs.Instance;
 				paymentOptionCanPayForDroneShiftArgs.State = g.state;
 				paymentOptionCanPayForDroneShiftArgs.Combat = combat;
@@ -638,6 +645,7 @@ internal sealed class DroneShiftManager
 			preconditionIsDroneShiftAllowedArgs.Combat = __instance;
 			preconditionIsDroneShiftAllowedArgs.Direction = typedDirection;
 			preconditionIsDroneShiftAllowedArgs.Entry = entry;
+			preconditionIsDroneShiftAllowedArgs.ForRendering = false;
 
 			foreach (var precondition in FilterEnabled(g.state, __instance, typedDirection, entry, entry.Preconditions))
 			{

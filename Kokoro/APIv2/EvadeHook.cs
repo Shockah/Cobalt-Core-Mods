@@ -112,6 +112,7 @@ public partial interface IKokoroApi
 					Combat Combat { get; }
 					Direction Direction { get; }
 					IEvadeActionEntry Entry { get; }
+					bool ForRendering { get; }
 				}
 			}
 
