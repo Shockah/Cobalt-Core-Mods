@@ -47,7 +47,7 @@ public partial interface IKokoroApi
 			}
 			
 			/// <summary>
-			/// An <see cref="CardBrowse"/> route wrapper, which allows modifying it with a custom card browse source.
+			/// A <see cref="CardBrowse"/> route wrapper, which allows modifying it with a custom card browse source.
 			/// </summary>
 			public interface ICardBrowse : IRoute<CardBrowse>
 			{
@@ -75,8 +75,23 @@ public partial interface IKokoroApi
 				/// <param name="state">The game state.</param>
 				/// <returns>The list of tooltips for this custom card browse source.</returns>
 				IReadOnlyList<Tooltip> GetSearchTooltips(State state);
-				string GetTitle(State state, Combat combat, IReadOnlyList<Card> cards);
+				
+				/// <summary>
+				/// Provides a list of cards in this browse source.
+				/// </summary>
+				/// <param name="state">The game state.</param>
+				/// <param name="combat">The current combat.</param>
+				/// <returns>The list of cards in this browse source.</returns>
 				IReadOnlyList<Card> GetCards(State state, Combat combat);
+				
+				/// <summary>
+				/// Provides the title for a card browse screen.
+				/// </summary>
+				/// <param name="state">The game state.</param>
+				/// <param name="combat">The current combat.</param>
+				/// <param name="cards">The cards in this browse source, returned via <see cref="GetCards"/>.</param>
+				/// <returns>The title.</returns>
+				string GetTitle(State state, Combat combat, IReadOnlyList<Card> cards);
 			}
 		}
 	}

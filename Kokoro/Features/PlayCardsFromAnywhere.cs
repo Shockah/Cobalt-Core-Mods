@@ -19,10 +19,10 @@ partial class ApiImplementation
 	partial class ActionApiImplementation
 	{
 		public CardAction MakePlaySpecificCardFromAnywhere(int cardId, bool showTheCardIfNotInHand = true)
-			=> new APlaySpecificCardFromAnywhere { CardIds = [cardId], ShowTheCardIfNotInHand = showTheCardIfNotInHand };
+			=> new APlaySpecificCardFromAnywhere { Cards = [(CardId: cardId, FallbackCard: null)], ShowTheCardIfNotInHand = showTheCardIfNotInHand };
 
 		public CardAction MakePlayRandomCardsFromAnywhere(IEnumerable<int> cardIds, int amount = 1, bool showTheCardIfNotInHand = true)
-			=> new APlayRandomCardsFromAnywhere { CardIds = cardIds.ToHashSet(), Amount = amount, ShowTheCardIfNotInHand = showTheCardIfNotInHand };
+			=> new APlayRandomCardsFromAnywhere { Amount = amount, ShowTheCardIfNotInHand = showTheCardIfNotInHand }.SetCardIds(cardIds).AsCardAction;
 	}
 	
 	#endregion
@@ -37,10 +37,19 @@ partial class ApiImplementation
 				=> action as IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction;
 
 			public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction MakeAction(int cardId)
-				=> new APlaySpecificCardFromAnywhere { CardIds = [cardId] };
+				=> new APlaySpecificCardFromAnywhere { Cards = [(CardId: cardId, FallbackCard: null)] };
+
+			public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction MakeAction(Card card)
+				=> new APlaySpecificCardFromAnywhere { Cards = [(CardId: card.uuid, FallbackCard: card)] };
 
 			public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction MakeAction(IEnumerable<int> cardIds, int amount = 1)
-				=> new APlayRandomCardsFromAnywhere { CardIds = cardIds.ToHashSet(), Amount = amount };
+				=> new APlayRandomCardsFromAnywhere { Amount = amount }.SetCardIds(cardIds);
+
+			public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction MakeAction(IEnumerable<Card> cards, int amount = 1)
+				=> new APlayRandomCardsFromAnywhere { Amount = amount }.SetCards(cards);
+
+			public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction MakeAction(IEnumerable<(int CardId, Card? FallbackCard)> cards, int amount = 1)
+				=> new APlayRandomCardsFromAnywhere { Amount = amount }.SetCards(cards);
 		}
 	}
 }
@@ -128,7 +137,7 @@ internal sealed class PlaySpecificCardFromAnywhereManager
 
 public sealed class APlaySpecificCardFromAnywhere : CardAction, IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction
 {
-	public required HashSet<int> CardIds { get; set; }
+	public IList<(int CardId, Card? FallbackCard)> Cards { get; set; } = [];
 	public int Amount { get; set; } = 1;
 	public bool ShowTheCardIfNotInHand { get; set; } = true;
 
@@ -145,20 +154,20 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction, IKokoroApi.IV2.I
 	public override void Begin(G g, State s, Combat c)
 	{
 		base.Begin(g, s, c);
-		if (Amount <= 0 || CardIds.Count == 0)
+		if (Amount <= 0 || Cards.Count == 0)
 		{
 			timer = 0;
 			return;
 		}
-		if (Amount != 1 || CardIds.Count != 1)
+		if (Amount != 1 || Cards.Count != 1)
 		{
 			timer = 0;
-			c.QueueImmediate(new APlayRandomCardsFromAnywhere { CardIds = CardIds, Amount = Amount, ShowTheCardIfNotInHand = ShowTheCardIfNotInHand });
+			c.QueueImmediate(new APlayRandomCardsFromAnywhere { Cards = Cards, Amount = Amount, ShowTheCardIfNotInHand = ShowTheCardIfNotInHand });
 			return;
 		}
 
-		var cardId = CardIds.Single();
-		if (c.hand.Concat(s.deck).Concat(c.discard).Concat(c.exhausted).FirstOrDefault(c => c.uuid == cardId) is not { } card)
+		var cardEntry = Cards.Single();
+		if ((c.hand.Concat(s.deck).Concat(c.discard).Concat(c.exhausted).FirstOrDefault(c => c.uuid == cardEntry.CardId) ?? cardEntry.FallbackCard) is not { } card)
 			return;
 
 		var entry = GetEntry();
@@ -176,14 +185,14 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction, IKokoroApi.IV2.I
 			return;
 		}
 
-		s.RemoveCardFromWhereverItIs(cardId);
+		s.RemoveCardFromWhereverItIs(card.uuid);
 
 		var handCopy = c.hand.ToList();
 		c.hand.Clear();
 		c.SendCardToHand(s, card);
 		c.hand.InsertRange(0, handCopy);
 
-		c.QueueImmediate(new APlaySpecificCardFromAnywhere { CardIds = [card.uuid], OriginalDestination = entry?.OriginalDestination, OriginalIndex = entry?.OriginalIndex ?? 0 });
+		c.QueueImmediate(new APlaySpecificCardFromAnywhere { Cards = [cardEntry], OriginalDestination = entry?.OriginalDestination, OriginalIndex = entry?.OriginalIndex ?? 0 });
 		c.QueueImmediate(new ADelay { time = -0.2 });
 
 		(Card Card, CardDestination OriginalDestination, int OriginalIndex)? GetEntry()
@@ -217,9 +226,21 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction, IKokoroApi.IV2.I
 		}
 	}
 	
-	public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction SetCardIds(HashSet<int> value)
+	public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction SetCardIds(IEnumerable<int> value)
 	{
-		CardIds = value;
+		Cards = value.Select<int, (int CardId, Card? FallbackCard)>(id => (CardId: id, FallbackCard: null)).ToList();
+		return this;
+	}
+
+	public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction SetCards(IEnumerable<Card> value)
+	{
+		Cards = value.Select(c => (CardId: c.uuid, FallbackCard: (Card?)c)).ToList();
+		return this;
+	}
+
+	public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction SetCards(IEnumerable<(int CardId, Card? FallbackCard)> value)
+	{
+		Cards = value.ToList();
 		return this;
 	}
 
@@ -238,7 +259,7 @@ public sealed class APlaySpecificCardFromAnywhere : CardAction, IKokoroApi.IV2.I
 
 public sealed class APlayRandomCardsFromAnywhere : CardAction, IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction
 {
-	public required HashSet<int> CardIds { get; set; }
+	public IList<(int CardId, Card? FallbackCard)> Cards { get; set; } = [];
 	public required int Amount { get; set; }
 	public bool ShowTheCardIfNotInHand { get; set; } = true;
 
@@ -250,19 +271,30 @@ public sealed class APlayRandomCardsFromAnywhere : CardAction, IKokoroApi.IV2.IP
 	{
 		base.Begin(g, s, c);
 
-		var potentialCards = CardIds
-			.Order()
-			.Select(s.FindCard)
+		var potentialCards = Cards
+			.Select(e => s.FindCard(e.CardId) ?? e.FallbackCard)
 			.OfType<Card>()
 			.Where(c => !c.GetDataWithOverrides(s).unplayable);
 
 		foreach (var card in potentialCards.Shuffle(s.rngActions).Take(Amount))
-			c.QueueImmediate(new APlaySpecificCardFromAnywhere { CardIds = [card.uuid], ShowTheCardIfNotInHand = ShowTheCardIfNotInHand });
+			c.QueueImmediate(new APlaySpecificCardFromAnywhere { Cards = [(CardId: card.uuid, FallbackCard: card)], ShowTheCardIfNotInHand = ShowTheCardIfNotInHand });
 	}
 	
-	public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction SetCardIds(HashSet<int> value)
+	public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction SetCardIds(IEnumerable<int> value)
 	{
-		CardIds = value;
+		Cards = value.Select<int, (int CardId, Card? FallbackCard)>(id => (CardId: id, FallbackCard: null)).ToList();
+		return this;
+	}
+
+	public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction SetCards(IEnumerable<Card> value)
+	{
+		Cards = value.Select(c => (CardId: c.uuid, FallbackCard: (Card?)c)).ToList();
+		return this;
+	}
+
+	public IKokoroApi.IV2.IPlayCardsFromAnywhereApi.IPlayCardsFromAnywhereAction SetCards(IEnumerable<(int CardId, Card? FallbackCard)> value)
+	{
+		Cards = value.ToList();
 		return this;
 	}
 

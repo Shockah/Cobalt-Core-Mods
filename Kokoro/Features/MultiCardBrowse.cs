@@ -39,8 +39,8 @@ partial class ApiImplementation
 			{
 				public CardAction Action { get; set; } = action;
 				public string Title { get; set; } = title;
-				public int MinSelected { get; set; }
-				public int MaxSelected { get; set; } = int.MaxValue;
+				public int? MinSelected { get; set; }
+				public int? MaxSelected { get; set; }
 			
 				public IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction SetAction(CardAction value)
 				{
@@ -54,13 +54,13 @@ partial class ApiImplementation
 					return this;
 				}
 
-				public IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction SetMinSelected(int value)
+				public IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction SetMinSelected(int? value)
 				{
 					this.MinSelected = value;
 					return this;
 				}
 
-				public IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction SetMaxSelected(int value)
+				public IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction SetMaxSelected(int? value)
 				{
 					this.MaxSelected = value;
 					return this;
@@ -159,7 +159,7 @@ internal sealed class MultiCardBrowseManager
 			for (var i = 0; i < allActions.Count; i++)
 			{
 				var action = allActions[i];
-				var inactive = SelectedCards.Count < action.MinSelected || SelectedCards.Count > action.MaxSelected;
+				var inactive = SelectedCards.Count < (action.MinSelected ?? MinSelected) || SelectedCards.Count > (action.MaxSelected ?? MaxSelected);
 				SharedArt.ButtonText(
 					g,
 					new Vec(390, (GetBackButtonMode() == BackMode.None ? 228 : 202) - (allActions.Count - 1 - i) * 26),
@@ -209,7 +209,7 @@ internal sealed class MultiCardBrowseManager
 		
 		private void Finish(G g, IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction action)
 		{
-			if (SelectedCards.Count < action.MinSelected || SelectedCards.Count > action.MaxSelected)
+			if (SelectedCards.Count < (action.MinSelected ?? MinSelected) || SelectedCards.Count > (action.MaxSelected ?? MaxSelected))
 			{
 				Audio.Play(Event.ZeroEnergy);
 				return;
