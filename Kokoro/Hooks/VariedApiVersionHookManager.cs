@@ -4,8 +4,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Shockah.Kokoro;
+
+internal enum VariedApiVersionHookType
+{
+	None, V1, V2
+}
 
 internal class VariedApiVersionHookManager<TV2Hook, TV1Hook>(
 	string proxyContext,
@@ -15,6 +21,9 @@ internal class VariedApiVersionHookManager<TV2Hook, TV1Hook>(
 	where TV1Hook : class
 {
 	protected readonly OrderedList<TV2Hook, double> Hooks = [];
+	private readonly Dictionary<Type, VariedApiVersionHookType> HookTypes = [];
+	private readonly Lazy<HashSet<string>> V2HookMethodNames = new(() => typeof(TV2Hook).GetMethods().Select(m => m.Name).ToHashSet());
+	private readonly Lazy<HashSet<string>> V1HookMethodNames = new(() => typeof(TV1Hook).GetMethods().Select(m => m.Name).ToHashSet());
 
 	public void Register(TV2Hook hook, double priority)
 		=> Hooks.Add(hook, -priority);
@@ -39,24 +48,53 @@ internal class VariedApiVersionHookManager<TV2Hook, TV1Hook>(
 			.Select(hook => (Hook: hook, Priority: Hooks.TryGetOrderingValue(hook, out var priority) ? -priority : 0))
 			.Concat(
 				objects
+					.Where(o => !HookTypes.TryGetValue(o.GetType(), out var hookType) || hookType != VariedApiVersionHookType.None)
 					.Select<object, (TV2Hook? Hook, double Priority)>(o =>
 					{
 						while (o is IProxyObject.IWithProxyTargetInstanceProperty proxyObject)
 							o = proxyObject.ProxyTargetInstance;
-						
-						if (IsV2Hook(o.GetType()))
-						{
-							if (!proxyManager.TryProxy(o, "AnyMod", proxyContext, out TV2Hook? hook))
-								return (Hook: null, Priority: 0);
+						var oType = o.GetType();
 
+						var hookType = HookTypes.GetValueOrDefault(oType);
+						var hookWasUnknownType = hookType == VariedApiVersionHookType.None;
+						if (hookWasUnknownType)
+							hookType = IsV2Hook(oType) ? VariedApiVersionHookType.V2 : VariedApiVersionHookType.V1;
+						
+						if (hookType == VariedApiVersionHookType.V2)
+						{
+							if (!oType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Any(m => V2HookMethodNames.Value.Contains(m.Name)))
+							{
+								HookTypes[oType] = VariedApiVersionHookType.None;
+								return (Hook: null, Priority: 0);
+							}
+							
+							if (!proxyManager.TryProxy(o, "AnyMod", proxyContext, out TV2Hook? hook))
+							{
+								HookTypes[oType] = VariedApiVersionHookType.None;
+								return (Hook: null, Priority: 0);
+							}
+
+							if (hookWasUnknownType)
+								HookTypes[oType] = VariedApiVersionHookType.V2;
 							var priority = proxyManager.TryProxy(o, "AnyMod", proxyContext, out IKokoroApi.IV2.IHookPriority? hookPriority) ? hookPriority.HookPriority : 0;
 							return (Hook: hook, Priority: priority);
 						}
 						else
 						{
-							if (!proxyManager.TryProxy(o, "AnyMod", proxyContext, out TV1Hook? hook))
+							if (!oType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Any(m => V1HookMethodNames.Value.Contains(m.Name)))
+							{
+								HookTypes[oType] = VariedApiVersionHookType.None;
 								return (Hook: null, Priority: 0);
+							}
+							
+							if (!proxyManager.TryProxy(o, "AnyMod", proxyContext, out TV1Hook? hook))
+							{
+								HookTypes[oType] = VariedApiVersionHookType.None;
+								return (Hook: null, Priority: 0);
+							}
 
+							if (hookWasUnknownType)
+								HookTypes[oType] = VariedApiVersionHookType.V1;
 							var priority = proxyManager.TryProxy(o, "AnyMod", proxyContext, out IHookPriority? hookPriority) ? hookPriority.HookPriority : 0;
 							return (Hook: hookMapper.MapToV2(hook), Priority: priority);
 						}

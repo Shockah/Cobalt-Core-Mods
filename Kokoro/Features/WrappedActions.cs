@@ -91,7 +91,7 @@ internal sealed class WrappedActionManager : VariedApiVersionHookManager<IKokoro
 	{
 		var args = ApiImplementation.V2Api.WrappedActionsApi.GetWrappedCardActionsArgs.Instance;
 		args.Action = action;
-		return Hooks.Select(hook => hook.GetWrappedCardActions(args)).OfType<List<CardAction>>().FirstOrDefault();
+		return Hooks.Select(hook => hook.GetWrappedCardActions(args)).OfType<IEnumerable<CardAction>>().FirstOrDefault();
 	}
 
 	public IEnumerable<CardAction> GetWrappedCardActionsRecursively(CardAction action, bool includingWrapperActions)
