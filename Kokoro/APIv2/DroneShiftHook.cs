@@ -49,7 +49,8 @@ public partial interface IKokoroApi
 			{
 				bool CanDoDroneShiftAction(ICanDoDroneShiftArgs args);
 				IReadOnlyList<CardAction> ProvideDroneShiftActions(IProvideDroneShiftActionsArgs args);
-				
+				void DroneShiftButtonHovered(IDroneShiftButtonHoveredArgs args) { }
+
 				public interface ICanDoDroneShiftArgs
 				{
 					State State { get; }
@@ -64,12 +65,20 @@ public partial interface IKokoroApi
 					Direction Direction { get; }
 					IDroneShiftPaymentOption PaymentOption { get; }
 				}
+
+				public interface IDroneShiftButtonHoveredArgs
+				{
+					State State { get; }
+					Combat Combat { get; }
+					Direction Direction { get; }
+				}
 			}
 
 			public interface IDroneShiftPaymentOption
 			{
 				bool CanPayForDroneShift(ICanPayForDroneShiftArgs args);
 				IReadOnlyList<CardAction> ProvideDroneShiftPaymentActions(IProvideDroneShiftPaymentActionsArgs args);
+				void DroneShiftButtonHovered(IDroneShiftButtonHoveredArgs args) { }
 				
 				public interface ICanPayForDroneShiftArgs
 				{
@@ -86,11 +95,20 @@ public partial interface IKokoroApi
 					Direction Direction { get; }
 					IDroneShiftActionEntry Entry { get; }
 				}
+
+				public interface IDroneShiftButtonHoveredArgs
+				{
+					State State { get; }
+					Combat Combat { get; }
+					Direction Direction { get; }
+					IDroneShiftActionEntry Entry { get; }
+				}
 			}
 
 			public interface IDroneShiftPrecondition
 			{
 				IResult IsDroneShiftAllowed(IIsDroneShiftAllowedArgs args);
+				void DroneShiftButtonHovered(IDroneShiftButtonHoveredArgs args) { }
 
 				public interface IResult
 				{
@@ -111,11 +129,21 @@ public partial interface IKokoroApi
 					IDroneShiftActionEntry Entry { get; }
 					bool ForRendering { get; }
 				}
+
+				public interface IDroneShiftButtonHoveredArgs
+				{
+					State State { get; }
+					Combat Combat { get; }
+					Direction Direction { get; }
+					IDroneShiftActionEntry Entry { get; }
+					IResult Result { get; }
+				}
 			}
 
 			public interface IDroneShiftPostcondition
 			{
 				IResult IsDroneShiftAllowed(IIsDroneShiftAllowedArgs args);
+				void DroneShiftButtonHovered(IDroneShiftButtonHoveredArgs args) { }
 
 				public interface IResult
 				{
@@ -135,6 +163,17 @@ public partial interface IKokoroApi
 					Direction Direction { get; }
 					IDroneShiftActionEntry Entry { get; }
 					IDroneShiftPaymentOption PaymentOption { get; }
+					bool ForRendering { get; }
+				}
+
+				public interface IDroneShiftButtonHoveredArgs
+				{
+					State State { get; }
+					Combat Combat { get; }
+					Direction Direction { get; }
+					IDroneShiftActionEntry Entry { get; }
+					IDroneShiftPaymentOption PaymentOption { get; }
+					IResult Result { get; }
 				}
 			}
 			

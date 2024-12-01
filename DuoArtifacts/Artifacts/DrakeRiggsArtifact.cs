@@ -62,5 +62,8 @@ internal sealed class DrakeRiggsArtifact : DuoArtifact
 				artifactPulse = artifact.Key(),
 			}];
 		}
+
+		public void EvadeButtonHovered(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.IEvadeButtonHoveredArgs args)
+			=> args.State.ship.statusEffectPulses[Status.heat] = 0.05;
 	}
 }

@@ -52,7 +52,8 @@ public partial interface IKokoroApi
 			{
 				bool CanDoEvadeAction(ICanDoEvadeArgs args);
 				IReadOnlyList<CardAction> ProvideEvadeActions(IProvideEvadeActionsArgs args);
-				
+				void EvadeButtonHovered(IEvadeButtonHoveredArgs args) { }
+
 				public interface ICanDoEvadeArgs
 				{
 					State State { get; }
@@ -67,12 +68,20 @@ public partial interface IKokoroApi
 					Direction Direction { get; }
 					IEvadePaymentOption PaymentOption { get; }
 				}
+
+				public interface IEvadeButtonHoveredArgs
+				{
+					State State { get; }
+					Combat Combat { get; }
+					Direction Direction { get; }
+				}
 			}
 
 			public interface IEvadePaymentOption
 			{
 				bool CanPayForEvade(ICanPayForEvadeArgs args);
 				IReadOnlyList<CardAction> ProvideEvadePaymentActions(IProvideEvadePaymentActionsArgs args);
+				void EvadeButtonHovered(IEvadeButtonHoveredArgs args) { }
 				
 				public interface ICanPayForEvadeArgs
 				{
@@ -89,11 +98,20 @@ public partial interface IKokoroApi
 					Direction Direction { get; }
 					IEvadeActionEntry Entry { get; }
 				}
+
+				public interface IEvadeButtonHoveredArgs
+				{
+					State State { get; }
+					Combat Combat { get; }
+					Direction Direction { get; }
+					IEvadeActionEntry Entry { get; }
+				}
 			}
 
 			public interface IEvadePrecondition
 			{
 				IResult IsEvadeAllowed(IIsEvadeAllowedArgs args);
+				void EvadeButtonHovered(IEvadeButtonHoveredArgs args) { }
 
 				public interface IResult
 				{
@@ -114,11 +132,21 @@ public partial interface IKokoroApi
 					IEvadeActionEntry Entry { get; }
 					bool ForRendering { get; }
 				}
+
+				public interface IEvadeButtonHoveredArgs
+				{
+					State State { get; }
+					Combat Combat { get; }
+					Direction Direction { get; }
+					IEvadeActionEntry Entry { get; }
+					IResult Result { get; }
+				}
 			}
 
 			public interface IEvadePostcondition
 			{
 				IResult IsEvadeAllowed(IIsEvadeAllowedArgs args);
+				void EvadeButtonHovered(IEvadeButtonHoveredArgs args) { }
 
 				public interface IResult
 				{
@@ -138,6 +166,17 @@ public partial interface IKokoroApi
 					Direction Direction { get; }
 					IEvadeActionEntry Entry { get; }
 					IEvadePaymentOption PaymentOption { get; }
+					bool ForRendering { get; }
+				}
+
+				public interface IEvadeButtonHoveredArgs
+				{
+					State State { get; }
+					Combat Combat { get; }
+					Direction Direction { get; }
+					IEvadeActionEntry Entry { get; }
+					IEvadePaymentOption PaymentOption { get; }
+					IResult Result { get; }
 				}
 			}
 			

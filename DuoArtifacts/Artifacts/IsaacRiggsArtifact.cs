@@ -62,5 +62,11 @@ internal sealed class IsaacRiggsArtifact : DuoArtifact
 			artifact.Pulse();
 			return [];
 		}
+
+		public void EvadeButtonHovered(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.IEvadeButtonHoveredArgs args)
+			=> args.State.ship.statusEffectPulses[Status.droneShift] = 0.05;
+
+		public void DroneShiftButtonHovered(IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPaymentOption.IDroneShiftButtonHoveredArgs args)
+			=> args.State.ship.statusEffectPulses[Status.evade] = 0.05;
 	}
 }

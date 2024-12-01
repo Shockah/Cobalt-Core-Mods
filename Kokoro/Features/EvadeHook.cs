@@ -259,6 +259,16 @@ partial class ApiImplementation
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption PaymentOption { get; internal set; } = null!;
 			}
 			
+			internal sealed class ActionEvadeButtonHoveredArgs : IKokoroApi.IV2.IEvadeHookApi.IEvadeAction.IEvadeButtonHoveredArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly ActionEvadeButtonHoveredArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+			}
+			
 			internal sealed class PaymentOptionCanPayForEvadeArgs : IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.ICanPayForEvadeArgs
 			{
 				// ReSharper disable once MemberHidesStaticFromOuterClass
@@ -281,6 +291,17 @@ partial class ApiImplementation
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
 			}
 			
+			internal sealed class PaymentOptionEvadeButtonHoveredArgs : IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.IEvadeButtonHoveredArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly PaymentOptionEvadeButtonHoveredArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+			}
+			
 			internal sealed class PreconditionIsEvadeAllowedArgs : IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IIsEvadeAllowedArgs
 			{
 				// ReSharper disable once MemberHidesStaticFromOuterClass
@@ -293,6 +314,18 @@ partial class ApiImplementation
 				public bool ForRendering { get; internal set; }
 			}
 			
+			internal sealed class PreconditionEvadeButtonHoveredArgs : IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IEvadeButtonHoveredArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly PreconditionEvadeButtonHoveredArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IResult Result { get; internal set; } = null!;
+			}
+			
 			internal sealed class PostconditionIsEvadeAllowedArgs : IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IIsEvadeAllowedArgs
 			{
 				// ReSharper disable once MemberHidesStaticFromOuterClass
@@ -303,6 +336,20 @@ partial class ApiImplementation
 				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption PaymentOption { get; internal set; } = null!;
+				public bool ForRendering { get; internal set; }
+			}
+			
+			internal sealed class PostconditionEvadeButtonHoveredArgs : IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IEvadeButtonHoveredArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly PostconditionEvadeButtonHoveredArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption PaymentOption { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IResult Result { get; internal set; } = null!;
 			}
 			
 			internal sealed class HookIsEvadeActionEnabledArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadeActionEnabledArgs
@@ -425,6 +472,7 @@ internal sealed class EvadeManager
 	{
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderMoveButtons)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderMoveButtons_Postfix)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderMoveButtons_Transpiler))
 		);
 		harmony.Patch(
@@ -524,6 +572,114 @@ internal sealed class EvadeManager
 			return hooks.All(h => h.IsEvadePostconditionEnabled(args));
 		});
 	}
+
+	private static void Combat_RenderMoveButtons_Postfix(Combat __instance, G g)
+	{
+		if (__instance.isHoveringMove != 2)
+			return;
+		
+		__instance.isHoveringMove = 0;
+
+		IKokoroApi.IV2.IEvadeHookApi.Direction typedDirection;
+		if (g.hoverKey?.k == StableUK.btn_move_left)
+			typedDirection = IKokoroApi.IV2.IEvadeHookApi.Direction.Left;
+		else if (g.hoverKey?.k == StableUK.btn_move_right)
+			typedDirection = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+		else
+			return;
+			
+		var canDoEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.ActionCanDoEvadeArgs.Instance;
+		canDoEvadeArgs.State = g.state;
+		canDoEvadeArgs.Combat = __instance;
+		canDoEvadeArgs.Direction = typedDirection;
+
+		var preconditionFailed = false;
+		foreach (var entry in FilterEnabled(g.state, __instance, typedDirection, Instance.ActionEntries))
+		{
+			if (!entry.Action.CanDoEvadeAction(canDoEvadeArgs))
+				continue;
+			
+			var buttonHoveredArgs = ApiImplementation.V2Api.EvadeHookApi.ActionEvadeButtonHoveredArgs.Instance;
+			buttonHoveredArgs.State = g.state;
+			buttonHoveredArgs.Combat = __instance;
+			buttonHoveredArgs.Direction = typedDirection;
+			entry.Action.EvadeButtonHovered(buttonHoveredArgs);
+			
+			var preconditionIsEvadeAllowedArgs = ApiImplementation.V2Api.EvadeHookApi.PreconditionIsEvadeAllowedArgs.Instance;
+			preconditionIsEvadeAllowedArgs.State = g.state;
+			preconditionIsEvadeAllowedArgs.Combat = __instance;
+			preconditionIsEvadeAllowedArgs.Direction = typedDirection;
+			preconditionIsEvadeAllowedArgs.Entry = entry;
+			preconditionIsEvadeAllowedArgs.ForRendering = true;
+
+			foreach (var precondition in FilterEnabled(g.state, __instance, typedDirection, entry, entry.Preconditions))
+			{
+				var result = precondition.IsEvadeAllowed(preconditionIsEvadeAllowedArgs);
+
+				var preconditionButtonHoveredArgs = ApiImplementation.V2Api.EvadeHookApi.PreconditionEvadeButtonHoveredArgs.Instance;
+				preconditionButtonHoveredArgs.State = g.state;
+				preconditionButtonHoveredArgs.Combat = __instance;
+				preconditionButtonHoveredArgs.Direction = typedDirection;
+				preconditionButtonHoveredArgs.Entry = entry;
+				preconditionButtonHoveredArgs.Result = result;
+				precondition.EvadeButtonHovered(preconditionButtonHoveredArgs);
+
+				if (!result.IsAllowed)
+				{
+					preconditionFailed = true;
+					break;
+				}
+			}
+			
+			var paymentOptionCanPayForEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionCanPayForEvadeArgs.Instance;
+			paymentOptionCanPayForEvadeArgs.State = g.state;
+			paymentOptionCanPayForEvadeArgs.Combat = __instance;
+			paymentOptionCanPayForEvadeArgs.Direction = typedDirection;
+			paymentOptionCanPayForEvadeArgs.Entry = entry;
+			
+			foreach (var paymentOption in FilterEnabled(g.state, __instance, typedDirection, entry, entry.PaymentOptions))
+			{
+				if (!paymentOption.CanPayForEvade(paymentOptionCanPayForEvadeArgs))
+					continue;
+
+				var paymentOptionButtonHoveredArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionEvadeButtonHoveredArgs.Instance;
+				paymentOptionButtonHoveredArgs.State = g.state;
+				paymentOptionButtonHoveredArgs.Combat = __instance;
+				paymentOptionButtonHoveredArgs.Direction = typedDirection;
+				paymentOptionButtonHoveredArgs.Entry = entry;
+				paymentOption.EvadeButtonHovered(paymentOptionButtonHoveredArgs);
+
+				if (preconditionFailed)
+					return;
+				
+				var postconditionIsEvadeAllowedArgs = ApiImplementation.V2Api.EvadeHookApi.PostconditionIsEvadeAllowedArgs.Instance;
+				postconditionIsEvadeAllowedArgs.State = g.state;
+				postconditionIsEvadeAllowedArgs.Combat = __instance;
+				postconditionIsEvadeAllowedArgs.Direction = typedDirection;
+				postconditionIsEvadeAllowedArgs.Entry = entry;
+				postconditionIsEvadeAllowedArgs.PaymentOption = paymentOption;
+				postconditionIsEvadeAllowedArgs.ForRendering = true;
+
+				foreach (var postcondition in FilterEnabled(g.state, __instance, typedDirection, entry, paymentOption, entry.Postconditions))
+				{
+					var result = postcondition.IsEvadeAllowed(postconditionIsEvadeAllowedArgs);
+
+					var postconditionButtonHoveredArgs = ApiImplementation.V2Api.EvadeHookApi.PostconditionEvadeButtonHoveredArgs.Instance;
+					postconditionButtonHoveredArgs.State = g.state;
+					postconditionButtonHoveredArgs.Combat = __instance;
+					postconditionButtonHoveredArgs.Direction = typedDirection;
+					postconditionButtonHoveredArgs.Entry = entry;
+					postconditionButtonHoveredArgs.Result = result;
+					postcondition.EvadeButtonHovered(postconditionButtonHoveredArgs);
+
+					if (!result.IsAllowed)
+						return;
+				}
+
+				return;
+			}
+		}
+	}
 	
 	private static IEnumerable<CodeInstruction> Combat_RenderMoveButtons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
@@ -571,6 +727,7 @@ internal sealed class EvadeManager
 				.Anchors()
 				.PointerMatcher(gPointer1)
 				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Ldc_I4, -1),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderMoveButtons_Transpiler_ShouldRender))),
 					new CodeInstruction(OpCodes.Brfalse, leftEndLabel),
@@ -587,6 +744,7 @@ internal sealed class EvadeManager
 				.PointerMatcher(SequenceMatcherRelativeElement.First)
 				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(leftEndLabel),
+					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Ldc_I4, 1),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderMoveButtons_Transpiler_ShouldRender))),
 					new CodeInstruction(OpCodes.Brfalse, rightEndLabel)
@@ -603,11 +761,8 @@ internal sealed class EvadeManager
 		// ReSharper restore PossibleMultipleEnumeration
 	}
 
-	private static bool Combat_RenderMoveButtons_Transpiler_ShouldRender(G g, int direction)
+	private static bool Combat_RenderMoveButtons_Transpiler_ShouldRender(G g, Combat combat, int direction)
 	{
-		if (g.state.route is not Combat combat)
-			return false;
-
 		return GetActionEntry() is not null;
 
 		IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? GetActionEntry()
@@ -725,6 +880,7 @@ internal sealed class EvadeManager
 				postconditionIsEvadeAllowedArgs.Direction = typedDirection;
 				postconditionIsEvadeAllowedArgs.Entry = entry;
 				postconditionIsEvadeAllowedArgs.PaymentOption = paymentOption;
+				postconditionIsEvadeAllowedArgs.ForRendering = false;
 				
 				foreach (var postcondition in FilterEnabled(g.state, __instance, typedDirection, entry, paymentOption, entry.Postconditions))
 				{
@@ -865,6 +1021,9 @@ internal sealed class DefaultEvadePaymentOption : IKokoroApi.IV2.IEvadeHookApi.I
 		args.State.ship.Add(Status.evade, -1);
 		return [];
 	}
+
+	public void EvadeButtonHovered(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.IEvadeButtonHoveredArgs args)
+		=> args.State.ship.statusEffectPulses[Status.evade] = 0.05;
 }
 
 internal sealed class DebugEvadePaymentOption : IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption
@@ -904,6 +1063,9 @@ internal sealed class EngineLockEvadePrecondition : IKokoroApi.IV2.IEvadeHookApi
 		var isLocked = args.State.ship.Get(Status.lockdown) > 0;
 		return ModEntry.Instance.Api.V2.EvadeHook.MakePreconditionResult(!isLocked);
 	}
+
+	public void EvadeButtonHovered(IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IEvadeButtonHoveredArgs args)
+		=> args.State.ship.statusEffectPulses[Status.lockdown] = 0.05;
 }
 
 internal sealed class EngineStallEvadePostcondition : IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition
@@ -915,10 +1077,13 @@ internal sealed class EngineStallEvadePostcondition : IKokoroApi.IV2.IEvadeHookA
 	public IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IResult IsEvadeAllowed(IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IIsEvadeAllowedArgs args)
 	{
 		var isLocked = args.State.ship.Get(Status.engineStall) > 0;
-		if (isLocked)
+		if (isLocked && !args.ForRendering)
 			args.State.ship.Add(Status.engineStall, -1);
 		return ModEntry.Instance.Api.V2.EvadeHook.MakePostconditionResult(!isLocked);
 	}
+
+	public void EvadeButtonHovered(IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IEvadeButtonHoveredArgs args)
+		=> args.State.ship.statusEffectPulses[Status.engineStall] = 0.05;
 }
 
 internal sealed class DebugEvadeHook : IKokoroApi.IV2.IEvadeHookApi.IHook
@@ -929,8 +1094,20 @@ internal sealed class DebugEvadeHook : IKokoroApi.IV2.IEvadeHookApi.IHook
 	
 	public bool IsEvadePreconditionEnabled(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePreconditionEnabledArgs args)
 	{
-		var isDebug = FeatureFlags.Debug && Input.shift;
-		return !isDebug || args.Entry == ModEntry.Instance.Api.V2.EvadeHook.DefaultAction;
+		if (args.Entry != ModEntry.Instance.Api.V2.EvadeHook.DefaultAction)
+			return true;
+		if (!FeatureFlags.Debug || !Input.shift)
+			return true;
+		return false;
+	}
+	
+	public bool IsEvadePostconditionEnabled(IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePostconditionEnabledArgs args)
+	{
+		if (args.Entry != ModEntry.Instance.Api.V2.EvadeHook.DefaultAction)
+			return true;
+		if (!FeatureFlags.Debug || !Input.shift)
+			return true;
+		return false;
 	}
 }
 
