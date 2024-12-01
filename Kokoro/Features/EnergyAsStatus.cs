@@ -47,12 +47,13 @@ partial class ApiImplementation
 				return null;
 			}
 
-			public IKokoroApi.IV2.IEnergyAsStatusApi.IStatusAction MakeStatusAction(int amount)
+			public IKokoroApi.IV2.IEnergyAsStatusApi.IStatusAction MakeStatusAction(int amount, AStatusMode mode = AStatusMode.Add)
 			{
 				var wrapped = new AStatus
 				{
 					targetPlayer = true,
 					statusAmount = amount,
+					mode = mode,
 				};
 				Instance.Helper.ModData.SetModData(wrapped, "energy", true);
 				return new StatusWrapper { Wrapped = wrapped };
