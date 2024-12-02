@@ -61,6 +61,10 @@ internal static class I18n
 	public static string MaxShieldLowerAltGlossaryDescription => "Max shield is lowered for the rest of combat.";
 	public static CustomTTGlossary MaxShieldLowerAltGlossary = new(CustomTTGlossary.GlossaryType.status, () => StableSpr.icons_maxShieldLower, () => MaxShieldLowerAltGlossaryName, () => MaxShieldLowerAltGlossaryDescription);
 
+	public static string WormStatusName => "Worm";
+	public static string WormStatusStatefulDescription => "Cancels {0} intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>";
+	public static string WormStatusStatelessDescription => "Cancels intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>";
+
 	public static string BooksCatArtifactName => "Shard Synthesizer";
 	public static string BooksCatArtifactTooltip => "At the end of each turn, gain <c=status>SHARD</c> equal to unspent <c=energy>ENERGY</c>.";
 

@@ -1,12 +1,5 @@
 ﻿{
 	"status": {
-		"Worm": {
-			"name": "Worm",
-			"description": {
-				"stateful": "Cancels {0} intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>",
-				"stateless": "Cancels intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>"
-			}
-		},
 		"Oxidation": {
 			"name": "Oxidation",
 			"description": "If oxidation is {0} or more at end of turn, gain 1 <c=status>CORRODE</c> and set oxidation to 0."

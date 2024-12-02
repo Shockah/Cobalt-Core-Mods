@@ -3,7 +3,7 @@
 namespace Shockah.Dracula;
 
 [EnumByName(typeof(Spr))]
-internal static partial class StableSpr { }
+internal static partial class StableSpr;
 
 [EnumByName(typeof(UK))]
-internal static partial class StableUK { }
+internal static partial class StableUK;

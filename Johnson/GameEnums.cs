@@ -3,4 +3,4 @@
 namespace Shockah.Johnson;
 
 [EnumByName(typeof(Spr))]
-internal static partial class StableSpr { }
+internal static partial class StableSpr;

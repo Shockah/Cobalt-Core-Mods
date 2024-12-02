@@ -20,7 +20,7 @@ internal sealed class StatusRenderManager : IKokoroApi.IV2.IStatusRenderingApi.I
 			yield return (Status: (Status)Instance.SmugStatus.Id!.Value, Priority: 10);
 	}
 
-	public (IReadOnlyList<Color> Colors, int? BarTickWidth)? OverrideStatusRenderingAsBars(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingAsBarsArgs args)
+	public (IReadOnlyList<Color> Colors, int? BarSegmentWidth)? OverrideStatusRenderingAsBars(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingAsBarsArgs args)
 	{
 		if (args.Status != (Status)Instance.SmugStatus.Id!.Value && args.Status != (Status)Instance.DoubleTimeStatus.Id!.Value)
 			return null;

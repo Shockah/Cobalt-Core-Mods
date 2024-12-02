@@ -27,9 +27,6 @@ internal sealed partial class Content
 
 	private static ModEntry Instance => ModEntry.Instance;
 
-	internal ExternalSprite WormSprite { get; private set; } = null!;
-	internal ExternalStatus WormStatus { get; private set; } = null!;
-
 	internal ExternalSprite OxidationSprite { get; private set; } = null!;
 	internal IStatusEntry OxidationStatus { get; private set; } = null!;
 
@@ -69,10 +66,6 @@ internal sealed partial class Content
 
 	internal void RegisterArt(ISpriteRegistry registry)
 	{
-		WormSprite = registry.RegisterArtOrThrow(
-			id: $"{typeof(ModEntry).Namespace}.Status.Worm",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "WormStatus.png"))
-		);
 		OxidationSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Status.Oxidation",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "OxidationStatus.png"))
@@ -187,21 +180,6 @@ internal sealed partial class Content
 
 	internal void RegisterStatuses(IStatusRegistry registry)
 	{
-		{
-			WormStatus = new(
-				$"{typeof(ModEntry).Namespace}.Status.Worm",
-				isGood: false,
-				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF009900)),
-				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF879900)),
-				WormSprite,
-				affectedByTimestop: false
-			);
-			WormStatus.AddLocalisation(
-				ModEntry.Instance.Localizations.Localize(["status", "Worm", "name"]),
-				ModEntry.Instance.Localizations.Localize(["status", "Worm", "description", "stateful"])
-			);
-			registry.RegisterStatus(WormStatus);
-		}
 		{
 			OxidationStatus = Instance.Helper.Content.Statuses.RegisterStatus($"{typeof(ModEntry).Namespace}.Status.Oxidation", new()
 			{

@@ -86,11 +86,9 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		
 		StatusLogicManager.Instance.Register(OxidationStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(StatusNextTurnManager.Instance, 0);
-		StatusLogicManager.Instance.Register(WormStatusManager.Instance, 0);
 		
 		StatusRenderManager.Instance.Register(OxidationStatusManager.Instance, 0);
 		StatusRenderManager.Instance.Register(StatusNextTurnManager.Instance, 0);
-		StatusRenderManager.Instance.Register(WormStatusManager.Instance, 0);
 		
 		WrappedActionManager.Instance.Register(ActionCostsManager.Instance, 0);
 		WrappedActionManager.Instance.Register(ConditionalActionManager.Instance, 0);
