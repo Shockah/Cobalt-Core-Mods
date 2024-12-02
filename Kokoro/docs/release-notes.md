@@ -16,6 +16,7 @@
 * [V2] Incorporated Natasha's `Limited`.
 * [V1] Added an extra required method to the `ICustomCardBrowseSource`.
 * [V1] Removed `MidrowScorching`.
+* [V1] Removed `WormStatus`.
 
 ## 1.12.1
 Released 25 August 2024.

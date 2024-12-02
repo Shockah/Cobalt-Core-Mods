@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="../Configuration.props" />
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>Shockah.Media</RootNamespace>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="SkiaSharp" Version="2.88.9" />
+    </ItemGroup>
+</Project>

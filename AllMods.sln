@@ -40,6 +40,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MORE", "MORE\MORE.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Natasha", "Natasha\Natasha.csproj", "{6E364255-1F38-4004-AD23-E64CFE7AEC47}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kokoro.Media", "Kokoro.Media\Kokoro.Media.csproj", "{CB5964AC-8183-46EA-9062-C4405064A48D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_MediaCommon", "_MediaCommon\_MediaCommon.csproj", "{8AA3B346-EE1E-4ADC-A3E4-6ABA4A7BFE22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -98,6 +102,14 @@ Global
 		{6E364255-1F38-4004-AD23-E64CFE7AEC47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E364255-1F38-4004-AD23-E64CFE7AEC47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E364255-1F38-4004-AD23-E64CFE7AEC47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB5964AC-8183-46EA-9062-C4405064A48D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB5964AC-8183-46EA-9062-C4405064A48D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB5964AC-8183-46EA-9062-C4405064A48D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB5964AC-8183-46EA-9062-C4405064A48D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AA3B346-EE1E-4ADC-A3E4-6ABA4A7BFE22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AA3B346-EE1E-4ADC-A3E4-6ABA4A7BFE22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AA3B346-EE1E-4ADC-A3E4-6ABA4A7BFE22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AA3B346-EE1E-4ADC-A3E4-6ABA4A7BFE22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
