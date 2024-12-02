@@ -3,6 +3,7 @@ using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Dracula;
@@ -12,14 +13,14 @@ internal sealed class DrainEssenceCard : Card, IDraculaCard
 	private static ISpriteEntry TopArt = null!;
 	private static ISpriteEntry BottomArt = null!;
 
-	public Matrix ModifyCardActionRenderMatrix(G g, List<CardAction> actions, CardAction action, int actionWidth)
+	public Matrix ModifyCardActionRenderMatrix(G g, IReadOnlyList<CardAction> actions, CardAction action, int actionWidth)
 	{
 		if (upgrade == Upgrade.B)
 			return Matrix.Identity;
 
 		var spacing = 12 * g.mg.PIX_SCALE;
 		var halfYCenterOffset = 16 * g.mg.PIX_SCALE;
-		var index = actions.IndexOf(action);
+		var index = actions.ToList().IndexOf(action);
 		var recenterY = -(int)((index - actions.Count / 2.0 + 0.5) * spacing);
 		return index switch
 		{

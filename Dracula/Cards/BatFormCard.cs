@@ -22,7 +22,7 @@ internal sealed class BatFormCard : Card, IDraculaCard
 	private static List<ISpriteEntry> QuadIcon = null!;
 
 	[JsonProperty]
-	public int FlipIndex { get; private set; } = 0;
+	public int FlipIndex { get; private set; }
 
 	[JsonProperty]
 	private bool LastFlipped { get; set; }
@@ -30,15 +30,14 @@ internal sealed class BatFormCard : Card, IDraculaCard
 	public float ActionSpacingScaling
 		=> 1.5f;
 
-	public Matrix ModifyNonTextCardRenderMatrix(G g, List<CardAction> actions)
+	public Matrix ModifyNonTextCardRenderMatrix(G g, IReadOnlyList<CardAction> actions)
 	{
 		if (upgrade == Upgrade.B)
 			return Matrix.CreateScale(1.5f);
-		else
-			return Matrix.Identity;
+		return Matrix.Identity;
 	}
 
-	public Matrix ModifyCardActionRenderMatrix(G g, List<CardAction> actions, CardAction action, int actionWidth)
+	public Matrix ModifyCardActionRenderMatrix(G g, IReadOnlyList<CardAction> actions, CardAction action, int actionWidth)
 	{
 		if (upgrade == Upgrade.B)
 			return Matrix.CreateScale(1f / 1.5f);
@@ -46,7 +45,7 @@ internal sealed class BatFormCard : Card, IDraculaCard
 		var spacing = 12 * g.mg.PIX_SCALE;
 		var newXOffset = 12 * g.mg.PIX_SCALE;
 		var newYOffset = 10 * g.mg.PIX_SCALE;
-		var index = actions.IndexOf(action);
+		var index = actions.ToList().IndexOf(action);
 		return index switch
 		{
 			0 => Matrix.CreateTranslation(-newXOffset, -newYOffset - (int)((index - actions.Count / 2.0 + 0.5) * spacing), 0),
@@ -174,6 +173,7 @@ internal sealed class BatFormCard : Card, IDraculaCard
 
 	private static IEnumerable<CodeInstruction> Card_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -200,6 +200,7 @@ internal sealed class BatFormCard : Card, IDraculaCard
 			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.GetDisplayName(@long: false), ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static Spr Card_Render_Transpiler_ReplaceFloppableIcon(Spr sprite, Card card)
@@ -214,7 +215,7 @@ internal sealed class BatFormCard : Card, IDraculaCard
 	private static bool Card_Render_Transpiler_ReplaceFlipped(bool flipped, Card card)
 		=> card is not BatFormCard && flipped;
 
-	private static void Card_GetAllTooltips_Postfix(Card __instance, State s, bool showCardTraits, ref IEnumerable<Tooltip> __result)
+	private static void Card_GetAllTooltips_Postfix(Card __instance, bool showCardTraits, ref IEnumerable<Tooltip> __result)
 	{
 		if (!showCardTraits)
 			return;
@@ -224,10 +225,10 @@ internal sealed class BatFormCard : Card, IDraculaCard
 		__result = __result
 			.Select(tooltip =>
 			{
-				if (tooltip is not TTGlossary glossary || glossary.key != "cardtrait.floppable")
+				if (tooltip is not TTGlossary { key: "cardtrait.floppable" })
 					return tooltip;
 
-				string buttonText = PlatformIcons.GetPlatform() switch
+				var buttonText = PlatformIcons.GetPlatform() switch
 				{
 					Platform.NX => Loc.T("controller.nx.b"),
 					Platform.PS => Loc.T("controller.ps.circle"),

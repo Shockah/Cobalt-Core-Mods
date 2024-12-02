@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Shockah.BetterRunSummaries</RootNamespace>
-		<Version>1.1.0-beta1</Version>
+		<Version>1.1.0</Version>
 	</PropertyGroup>
 	<ItemGroup>
 		<ModFiles Include="i18n/**" />

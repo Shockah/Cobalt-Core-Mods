@@ -1,13 +1,18 @@
 {
     "UniqueName": "Shockah.Johnson",
     "Version": "{{ModVersion}}",
-    "RequiredApiVersion": "1.6.0-beta1",
+    "RequiredApiVersion": "1.6.0",
     "EntryPointAssembly": "Johnson.dll",
     "LoadPhase": "AfterDbInit",
     "Dependencies": [
         {
             "UniqueName": "Shockah.Kokoro",
-            "Version": "1.13.0-beta1"
+            "Version": "2.0.0"
         }
-    ]
+    ],
+    "UpdateChecks": {
+        "NexusMods": {
+            "ID": 10
+        }
+    }
 }

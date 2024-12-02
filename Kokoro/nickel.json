@@ -4,13 +4,18 @@
 	"DisplayName": "Kokoro",
 	"Description": "A utility/library mod - a little bit for players, and a lot for modders.",
 	"Author": "Shockah",
-	"RequiredApiVersion": "1.6.0-beta1",
+	"RequiredApiVersion": "1.6.0",
 	"ModType": "Nickel.Legacy",
 	"EntryPointAssembly": "Kokoro.dll",
 	"Dependencies": [
 		{
 			"UniqueName": "Nickel.Legacy",
-			"Version": "1.6.0-beta1"
+			"Version": "1.6.0"
 		}
-	]
+	],
+	"UpdateChecks": {
+		"NexusMods": {
+			"ID": 4
+		}
+	}
 }

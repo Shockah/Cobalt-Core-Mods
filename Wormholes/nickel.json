@@ -4,13 +4,13 @@
 	"DisplayName": "Wormholes",
 	"Description": "Is that... a wormhole? Adds a pair of wormholes on each map, which let you traverse forward or backward, with some down/upsides.",
 	"Author": "Shockah",
-	"RequiredApiVersion": "1.6.0-beta1",
+	"RequiredApiVersion": "1.6.0",
 	"ModType": "Nickel.Legacy",
 	"EntryPointAssembly": "Wormholes.dll",
 	"Dependencies": [
 		{
 			"UniqueName": "Nickel.Legacy",
-			"Version": "1.6.0-beta1"
+			"Version": "1.6.0"
 		}
 	]
 }
