@@ -78,6 +78,15 @@ partial class ApiImplementation
 		{
 			if (v1Cost is LegacyCost legacyCost)
 			{
+				foreach (var resource in legacyCost.PotentialResources)
+				{
+					if (resource is not { CostSatisfiedIcon: { } costSatisfiedIcon, CostUnsatisfiedIcon: { } costUnsatisfiedIcon })
+						continue;
+					if (ActionCostsManager.Instance.ResourceCostIcons.TryGetValue(resource.ResourceKey, out var costIcons) && costIcons.Any(e => e.Amount == 1))
+						continue;
+					ActionCostsManager.Instance.RegisterResourceCostIcon(resource.ResourceKey, costSatisfiedIcon, costUnsatisfiedIcon);
+				}
+				
 				var v2Cost = new ResourceActionCost
 				{
 					PotentialResources = legacyCost.PotentialResources.Select(MakeResourceFromLegacyData).ToList(),
@@ -359,7 +368,7 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 {
 	internal static readonly ActionCostsManager Instance = new();
 
-	private readonly Dictionary<string, OrderedList<(int Amount, Spr SatisfiedIcon, Spr UnsatisfiedIcon), int>> ResourceCostIcons = [];
+	internal readonly Dictionary<string, OrderedList<(int Amount, Spr SatisfiedIcon, Spr UnsatisfiedIcon), int>> ResourceCostIcons = [];
 	private readonly HashSet<string> LoggedMissingResourceCostIconWarnings = [];
 	private readonly HashSet<string> LoggedImpossibleResourceCostIconWarnings = [];
 

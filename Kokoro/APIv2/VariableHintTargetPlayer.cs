@@ -26,6 +26,9 @@ public partial interface IKokoroApi
 			/// <returns>The new wrapper.</returns>
 			IVariableHint MakeVariableHint(AVariableHint action);
 			
+			/// <summary>
+			/// A wrapper for <see cref="AVariableHint"/> that allows specifying the enemy as the target.
+			/// </summary>
 			public interface IVariableHint : ICardAction<AVariableHint>
 			{
 				/// <summary>
