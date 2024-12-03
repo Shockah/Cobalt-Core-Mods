@@ -59,7 +59,7 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 				card = new RandomPlaceholderApologyCard(),
 				destination = CardDestination.Hand,
 				amount = amount,
-				xHint = 1
+				xHint = upgrade == Upgrade.B ? 2 : 1
 			},
 			new AAddApologyCard
 			{
