@@ -110,6 +110,7 @@ internal sealed class DominateCard : Card, IDraculaCard
 
 	private static IEnumerable<CodeInstruction> Card_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -136,6 +137,7 @@ internal sealed class DominateCard : Card, IDraculaCard
 			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.GetDisplayName(@long: false), ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static Spr Card_Render_Transpiler_ReplaceFloppableIcon(Spr sprite, Card card)
@@ -148,7 +150,7 @@ internal sealed class DominateCard : Card, IDraculaCard
 	private static bool Card_Render_Transpiler_ReplaceFlipped(bool flipped, Card card)
 		=> card is not DominateCard && flipped;
 
-	private static void Card_GetAllTooltips_Postfix(Card __instance, State s, bool showCardTraits, ref IEnumerable<Tooltip> __result)
+	private static void Card_GetAllTooltips_Postfix(Card __instance, bool showCardTraits, ref IEnumerable<Tooltip> __result)
 	{
 		if (!showCardTraits)
 			return;
@@ -158,10 +160,10 @@ internal sealed class DominateCard : Card, IDraculaCard
 		__result = __result
 			.Select(tooltip =>
 			{
-				if (tooltip is not TTGlossary glossary || glossary.key != "cardtrait.floppable")
+				if (tooltip is not TTGlossary { key: "cardtrait.floppable" })
 					return tooltip;
 
-				string buttonText = PlatformIcons.GetPlatform() switch
+				var buttonText = PlatformIcons.GetPlatform() switch
 				{
 					Platform.NX => Loc.T("controller.nx.b"),
 					Platform.PS => Loc.T("controller.ps.circle"),
@@ -242,12 +244,10 @@ internal sealed class DominateCard : Card, IDraculaCard
 					continue;
 				if (g.boxes.FirstOrDefault(b => b.key is { } key && key.k == StableUK.midrow && key.v == worldX) is not { } realBox)
 					continue;
-				if ((@object.GetActions(g.state, combat)?.Count ?? 0) == 0)
-					continue;
 
 				var box = g.Push(new UIKey(MidrowExecutionUK, worldX), realBox.rect, onMouseDown: new MouseDownHandler(() => OnMidrowSelected(g, @object)));
 				@object.Render(g, box.rect.xy);
-				if (box.rect.x > 60.0 && box.rect.x < 464.0 && box.IsHover())
+				if (box.rect.x is > 60.0 and < 464.0 && box.IsHover())
 				{
 					if (!Input.gamepadIsActiveInput)
 						MouseUtil.DrawGamepadCursor(box);

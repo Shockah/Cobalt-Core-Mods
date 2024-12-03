@@ -6,6 +6,7 @@
 To be released.
 
 * Updated to latest Nickel and Kokoro.
+* The Dominate card now lets you choose any midrow object, even if it does not have any actions of its own (Jupiter Drone).
 
 ## 1.2.0
 Released 7 August 2024.
