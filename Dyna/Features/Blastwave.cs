@@ -64,25 +64,14 @@ internal sealed class BlastwaveManager
 		);
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
+			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
+			prefix: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Prefix))
+		);
+		ModEntry.Instance.Harmony.TryPatch(
+			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(GetType(), nameof(Card_RenderAction_Prefix))
 		);
-
-		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerTakeNormalDamage), (State state, Combat combat, Part? part) =>
-		{
-			if (part is null)
-				return;
-			var worldX = state.ship.x + state.ship.parts.IndexOf(part);
-			TriggerBlastwaveIfNeeded(state, combat, worldX, targetPlayer: true, hitMidrow: false);
-		});
-
-		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnEnemyGetHit), (State state, Combat combat, Part? part) =>
-		{
-			if (part is null)
-				return;
-			var worldX = combat.otherShip.x + combat.otherShip.parts.IndexOf(part);
-			TriggerBlastwaveIfNeeded(state, combat, worldX, targetPlayer: false, hitMidrow: false);
-		});
 	}
 
 	private static void TriggerBlastwaveIfNeeded(State state, Combat combat, int worldX, bool targetPlayer, bool hitMidrow)
@@ -171,6 +160,13 @@ internal sealed class BlastwaveManager
 			Range = __instance.GetBlastwaveRange(),
 			IsStunwave = __instance.IsStunwave(),
 		}.GetTooltips(s));
+	}
+
+	private static void Ship_NormalDamage_Prefix(Ship __instance, State s, Combat c, int? maybeWorldGridX)
+	{
+		if (maybeWorldGridX is not { } worldGridX)
+			return;
+		TriggerBlastwaveIfNeeded(s, c, worldGridX, targetPlayer: __instance.isPlayerShip, hitMidrow: false);
 	}
 
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
