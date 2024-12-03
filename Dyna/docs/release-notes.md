@@ -6,6 +6,7 @@
 To be released.
 
 * Updated to latest Nickel and Kokoro.
+* Shield and Energy Drones no longer trigger charges.
 
 ## 1.2.3
 Released 8 August 2024.

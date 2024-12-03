@@ -252,6 +252,8 @@ internal sealed class ChargeManager
 	{
 		if (raycastResult.hitDrone || !raycastResult.hitShip)
 			return;
+		if (attack.isBeam)
+			return;
 
 		var targetShip = attack.targetPlayer ? state.ship : combat.otherShip;
 		if (targetShip.GetPartAtWorldX(raycastResult.worldX) is not { } part || part.type == PType.empty)
