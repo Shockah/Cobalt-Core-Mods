@@ -118,7 +118,7 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 				if (g.boxes.FirstOrDefault(b => b.key is { } key && key.k == StableUK.part && key.v == i && key.str == "combat_ship_player") is not { } realBox)
 					continue;
 
-				g.Push(rect: new Rect(realBox.rect.x - i * 16 + 1, realBox.rect.y, realBox.rect.w, realBox.rect.h));
+				g.Push(rect: new Rect(realBox.rect.x - i * 16 + 1, realBox.rect.y + 10, realBox.rect.w, realBox.rect.h));
 
 				combat.otherShip.RenderPartUI(g, combat, part, i, keyPrefix, isPreview: false);
 

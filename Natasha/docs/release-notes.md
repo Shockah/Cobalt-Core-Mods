@@ -6,6 +6,7 @@
 To be released.
 
 * Updated to latest Nickel and Kokoro.
+* Fixed the visuals of the Man-in-the-Middle card.
 
 ## 1.1.0
 Released 26 August 2024.
