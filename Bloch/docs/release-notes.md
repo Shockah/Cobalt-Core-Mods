@@ -2,8 +2,10 @@
 
 # Release notes
 
-## Upcoming release
+## 1.2.0*
+To be released.
 
+* Updated to latest Nickel and Kokoro.
 * Fixed the Long-Term Memory artifact forgetting the already used up actions after using Save & Exit.
 
 ## 1.1.0

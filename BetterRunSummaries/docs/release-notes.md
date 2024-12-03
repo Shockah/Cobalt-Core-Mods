@@ -2,6 +2,11 @@
 
 # Release notes
 
+## 1.1.0*
+To be released.
+
+* Updated to latest Nickel and Kokoro.
+
 ## 1.0.1
 Released 11 May 2024.
 

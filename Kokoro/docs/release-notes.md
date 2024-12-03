@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.0.0*
+To be released.
 
 * Refactored and implemented a new version (V2) of the API.
 * [V2] Implemented the Finite card trait.
