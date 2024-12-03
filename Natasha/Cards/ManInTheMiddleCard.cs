@@ -16,6 +16,7 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 	);
 	
 	private static readonly UK CancelMitmUK = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
+	private static readonly UK PreviewUK = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
 
 	internal static readonly Dictionary<string, INatashaApi.ManInTheMiddleStaticObjectEntry> RegisteredObjects = new List<INatashaApi.ManInTheMiddleStaticObjectEntry>()
 	{
@@ -92,6 +93,7 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 	private sealed class ActionRoute : Route
 	{
 		public required bool Random;
+		public StuffBase? Thing;
 		
 		public override bool GetShowOverworldPanels()
 			=> true;
@@ -108,6 +110,7 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 				g.CloseRoute(this);
 				return;
 			}
+			Thing ??= CreateNextObject(g.state, combat);
 
 			Draw.Rect(0, 0, MG.inst.PIX_W, MG.inst.PIX_H, Colors.black.fadeAlpha(0.5));
 
@@ -144,6 +147,21 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 				ModEntry.Instance.Localizations.Localize(["card", "RemoteExecution", "ui", "cancel"]),
 				onMouseDown: new MouseDownHandler(() => g.CloseRoute(this))
 			);
+			
+			var previewResult = SharedArt.ButtonText(
+				g,
+				new Vec(MG.inst.PIX_W - 69, MG.inst.PIX_H - 59),
+				PreviewUK,
+				"",
+				sprite: StableSpr.buttons_base_gray,
+				spriteHover: StableSpr.buttons_base_gray,
+				spriteDown: StableSpr.buttons_base_gray
+			);
+			
+			Thing.Render(g, new Vec(MG.inst.PIX_W - 46, MG.inst.PIX_H - 63));
+
+			if (previewResult.isHover)
+				g.tooltips.Add(new Vec(MG.inst.PIX_W - 69, MG.inst.PIX_H - 53), Thing.GetTooltips());
 		}
 
 		private void OnPartSelected(G g, int partIndex)
@@ -154,13 +172,16 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 				return;
 			}
 			
-			var @object = Random ? CreateNextObject(g.state, combat) : new Asteroid();
-			combat.QueueImmediate(new ASpawn { fromX = partIndex, thing = @object });
+			Thing ??= CreateNextObject(g.state, combat);
+			combat.QueueImmediate(new ASpawn { fromX = partIndex, thing = Mutil.DeepCopy(Thing) });
 			g.CloseRoute(this);
 		}
 		
-		private static StuffBase CreateNextObject(State state, Combat combat)
+		private StuffBase CreateNextObject(State state, Combat combat)
 		{
+			if (!Random)
+				return new Asteroid();
+			
 			var queue = ObtainObjectQueue(combat);
 
 			var weighted = new WeightedRandom<SerializableObjectEntry>();

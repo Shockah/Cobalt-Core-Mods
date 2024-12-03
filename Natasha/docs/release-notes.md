@@ -6,6 +6,7 @@
 To be released.
 
 * Updated to latest Nickel and Kokoro.
+* Man-in-the-Middle (most notably B) now previews the object you are going to launch.
 * Fixed the visuals of the Man-in-the-Middle card.
 
 ## 1.1.0
