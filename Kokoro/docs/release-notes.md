@@ -2,8 +2,8 @@
 
 # Release notes
 
-## 2.0.0*
-To be released.
+## 2.0.0
+Released 4 December 2024.
 
 * Refactored and implemented a new version (V2) of the API.
 * [V2] Implemented the Finite card trait.
@@ -18,6 +18,7 @@ To be released.
 * [V1] Added an extra required method to the `ICustomCardBrowseSource`.
 * [V1] Removed `MidrowScorching`.
 * [V1] Removed `WormStatus`.
+* [V1] `EvadeHook`/`DroneShiftHook` APIs are no longer usable in this version. If you are using them in your mods, please switch to the V2 version.
 
 ## 1.12.1
 Released 25 August 2024.
