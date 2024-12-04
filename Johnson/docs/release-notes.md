@@ -2,8 +2,8 @@
 
 # Release notes
 
-## 1.3.0*
-To be released.
+## 1.3.0
+Released 4 December 2024.
 
 * Updated to latest Nickel and Kokoro.
 * Fixed some dialogue triggers and expressions.
