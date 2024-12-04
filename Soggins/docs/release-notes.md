@@ -2,8 +2,8 @@
 
 # Release notes
 
-## 1.4.0*
-To be released.
+## 1.4.0
+Released 4 December 2024.
 
 * Updated to latest Nickel and Kokoro.
 * Fixed the So Sorry B card showing up with X, where it was meant to show up as 2X (mechanically it worked correctly though).
