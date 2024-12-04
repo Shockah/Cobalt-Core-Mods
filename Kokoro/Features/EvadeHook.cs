@@ -122,6 +122,15 @@ partial class ApiImplementation
 			public IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition.IResult MakePostconditionResult(bool isAllowed)
 				=> new EvadePostconditionResult(isAllowed);
 
+			public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? GetNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
+				=> EvadeManager.Instance.GetNextAction(state, combat, direction);
+
+			public void DidHoverButton(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
+				=> EvadeManager.Instance.DidHoverButton(state, combat, direction);
+
+			public IKokoroApi.IV2.IEvadeHookApi.IRunActionResult RunNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
+				=> EvadeManager.Instance.RunNextAction(state, combat, direction);
+
 			public void RegisterHook(IKokoroApi.IV2.IEvadeHookApi.IHook hook, double priority = 0)
 				=> EvadeManager.Instance.HookManager.Register(hook, priority);
 
@@ -138,14 +147,22 @@ partial class ApiImplementation
 					=> PaymentOptionsOrderedList;
 
 				public IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition> Preconditions
-					=> PreconditionsOrderedList;
+					=> PreconditionsOrderedList.Entries
+						.Concat(InheritsPreconditionsFrom.SelectMany(e => ((EvadeActionEntry)e).PreconditionsOrderedList.Entries))
+						.OrderByDescending(e => e.OrderingValue)
+						.Select(e => e.Element);
 
 				public IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition> Postconditions
-					=> PostconditionsOrderedList;
+					=> PostconditionsOrderedList.Entries
+						.Concat(InheritsPreconditionsFrom.SelectMany(e => ((EvadeActionEntry)e).PostconditionsOrderedList.Entries))
+						.OrderByDescending(e => e.OrderingValue)
+						.Select(e => e.Element);
 
 				private readonly OrderedList<IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption, double> PaymentOptionsOrderedList = new(ascending: false);
 				private readonly OrderedList<IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition, double> PreconditionsOrderedList = new(ascending: false);
 				private readonly OrderedList<IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition, double> PostconditionsOrderedList = new(ascending: false);
+				private readonly List<IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry> InheritsPreconditionsFrom = [];
+				private readonly List<IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry> InheritsPostconditionsFrom = [];
 
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry RegisterPaymentOption(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption paymentOption, double priority = 0)
 				{
@@ -171,6 +188,14 @@ partial class ApiImplementation
 					return this;
 				}
 
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry InheritPreconditions(IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry entry)
+				{
+					if (InheritsPreconditionsFrom.Contains(entry))
+						return this;
+					InheritsPreconditionsFrom.Add(entry);
+					return this;
+				}
+
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry RegisterPostcondition(IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition postcondition, double priority = 0)
 				{
 					PostconditionsOrderedList.Add(postcondition, priority);
@@ -180,6 +205,14 @@ partial class ApiImplementation
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry UnregisterPostcondition(IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition postcondition)
 				{
 					PostconditionsOrderedList.Remove(postcondition);
+					return this;
+				}
+
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry InheritPostconditions(IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry entry)
+				{
+					if (InheritsPostconditionsFrom.Contains(entry))
+						return this;
+					InheritsPostconditionsFrom.Add(entry);
 					return this;
 				}
 			}
@@ -236,6 +269,21 @@ partial class ApiImplementation
 					ActionsOnFail = value;
 					return this;
 				}
+			}
+			
+			internal sealed class RunActionResult : IKokoroApi.IV2.IEvadeHookApi.IRunActionResult
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly RunActionResult Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? Entry { get; internal set; }
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption? PaymentOption { get; internal set; }
+				public IKokoroApi.IV2.IEvadeHookApi.IHook.IEvadePreconditionFailedArgs? PreconditionFailed { get; internal set; }
+				public IKokoroApi.IV2.IEvadeHookApi.IHook.IEvadePostconditionFailedArgs? PostconditionFailed { get; internal set; }
+				public IKokoroApi.IV2.IEvadeHookApi.IHook.IAfterEvadeArgs? Success { get; internal set; }
 			}
 			
 			internal sealed class ActionCanDoEvadeArgs : IKokoroApi.IV2.IEvadeHookApi.IEvadeAction.ICanDoEvadeArgs
@@ -311,6 +359,7 @@ partial class ApiImplementation
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption PaymentOption { get; internal set; } = null!;
 				public bool ForRendering { get; internal set; }
 			}
 			
@@ -323,6 +372,7 @@ partial class ApiImplementation
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption PaymentOption { get; internal set; } = null!;
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition.IResult Result { get; internal set; } = null!;
 			}
 			
@@ -438,6 +488,16 @@ partial class ApiImplementation
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption PaymentOption { get; internal set; } = null!;
 				public IReadOnlyList<CardAction> QueuedActions { get; internal set; } = null!;
+			}
+			
+			internal sealed class HookShouldShowEvadeButtonArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IShouldShowEvadeButtonArgs
+			{
+				// ReSharper disable once MemberHidesStaticFromOuterClass
+				internal static readonly HookShouldShowEvadeButtonArgs Instance = new();
+				
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
 			}
 		}
 	}
@@ -573,6 +633,283 @@ internal sealed class EvadeManager
 		});
 	}
 
+	public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? GetNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
+	{
+		var canDoEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.ActionCanDoEvadeArgs.Instance;
+		canDoEvadeArgs.State = state;
+		canDoEvadeArgs.Combat = combat;
+		canDoEvadeArgs.Direction = direction;
+
+		return FilterEnabled(state, combat, direction, Instance.ActionEntries).FirstOrDefault(entry =>
+		{
+			if (!entry.Action.CanDoEvadeAction(canDoEvadeArgs))
+				return false;
+				
+			var paymentOptionCanPayForEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionCanPayForEvadeArgs.Instance;
+			paymentOptionCanPayForEvadeArgs.State = state;
+			paymentOptionCanPayForEvadeArgs.Combat = combat;
+			paymentOptionCanPayForEvadeArgs.Direction = direction;
+			paymentOptionCanPayForEvadeArgs.Entry = entry;
+
+			if (!FilterEnabled(state, combat, direction, entry, entry.PaymentOptions).Any(paymentOption => paymentOption.CanPayForEvade(paymentOptionCanPayForEvadeArgs)))
+				return false;
+				
+			var preconditionIsEvadeAllowedArgs = ApiImplementation.V2Api.EvadeHookApi.PreconditionIsEvadeAllowedArgs.Instance;
+			preconditionIsEvadeAllowedArgs.State = state;
+			preconditionIsEvadeAllowedArgs.Combat = combat;
+			preconditionIsEvadeAllowedArgs.Direction = direction;
+			preconditionIsEvadeAllowedArgs.Entry = entry;
+			preconditionIsEvadeAllowedArgs.ForRendering = true;
+
+			if (FilterEnabled(state, combat, direction, entry, entry.Preconditions).Any(precondition => !precondition.IsEvadeAllowed(preconditionIsEvadeAllowedArgs).IsAllowed))
+				return false;
+
+			return true;
+		});
+	}
+
+	public void DidHoverButton(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
+	{
+		var canDoEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.ActionCanDoEvadeArgs.Instance;
+		canDoEvadeArgs.State = state;
+		canDoEvadeArgs.Combat = combat;
+		canDoEvadeArgs.Direction = direction;
+
+		foreach (var entry in FilterEnabled(state, combat, direction, Instance.ActionEntries))
+		{
+			if (!entry.Action.CanDoEvadeAction(canDoEvadeArgs))
+				continue;
+			
+			var buttonHoveredArgs = ApiImplementation.V2Api.EvadeHookApi.ActionEvadeButtonHoveredArgs.Instance;
+			buttonHoveredArgs.State = state;
+			buttonHoveredArgs.Combat = combat;
+			buttonHoveredArgs.Direction = direction;
+			entry.Action.EvadeButtonHovered(buttonHoveredArgs);
+			
+			var paymentOptionCanPayForEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionCanPayForEvadeArgs.Instance;
+			paymentOptionCanPayForEvadeArgs.State = state;
+			paymentOptionCanPayForEvadeArgs.Combat = combat;
+			paymentOptionCanPayForEvadeArgs.Direction = direction;
+			paymentOptionCanPayForEvadeArgs.Entry = entry;
+			
+			foreach (var paymentOption in FilterEnabled(state, combat, direction, entry, entry.PaymentOptions))
+			{
+				if (!paymentOption.CanPayForEvade(paymentOptionCanPayForEvadeArgs))
+					continue;
+
+				var paymentOptionButtonHoveredArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionEvadeButtonHoveredArgs.Instance;
+				paymentOptionButtonHoveredArgs.State = state;
+				paymentOptionButtonHoveredArgs.Combat = combat;
+				paymentOptionButtonHoveredArgs.Direction = direction;
+				paymentOptionButtonHoveredArgs.Entry = entry;
+				paymentOption.EvadeButtonHovered(paymentOptionButtonHoveredArgs);
+			
+				var preconditionIsEvadeAllowedArgs = ApiImplementation.V2Api.EvadeHookApi.PreconditionIsEvadeAllowedArgs.Instance;
+				preconditionIsEvadeAllowedArgs.State = state;
+				preconditionIsEvadeAllowedArgs.Combat = combat;
+				preconditionIsEvadeAllowedArgs.Direction = direction;
+				preconditionIsEvadeAllowedArgs.Entry = entry;
+				preconditionIsEvadeAllowedArgs.PaymentOption = paymentOption;
+				preconditionIsEvadeAllowedArgs.ForRendering = true;
+
+				foreach (var precondition in FilterEnabled(state, combat, direction, entry, entry.Preconditions))
+				{
+					var result = precondition.IsEvadeAllowed(preconditionIsEvadeAllowedArgs);
+
+					var preconditionButtonHoveredArgs = ApiImplementation.V2Api.EvadeHookApi.PreconditionEvadeButtonHoveredArgs.Instance;
+					preconditionButtonHoveredArgs.State = state;
+					preconditionButtonHoveredArgs.Combat = combat;
+					preconditionButtonHoveredArgs.Direction = direction;
+					preconditionButtonHoveredArgs.Entry = entry;
+					preconditionButtonHoveredArgs.PaymentOption = paymentOption;
+					preconditionButtonHoveredArgs.Result = result;
+					precondition.EvadeButtonHovered(preconditionButtonHoveredArgs);
+
+					if (!result.IsAllowed)
+						return;
+				}
+				
+				var postconditionIsEvadeAllowedArgs = ApiImplementation.V2Api.EvadeHookApi.PostconditionIsEvadeAllowedArgs.Instance;
+				postconditionIsEvadeAllowedArgs.State = state;
+				postconditionIsEvadeAllowedArgs.Combat = combat;
+				postconditionIsEvadeAllowedArgs.Direction = direction;
+				postconditionIsEvadeAllowedArgs.Entry = entry;
+				postconditionIsEvadeAllowedArgs.PaymentOption = paymentOption;
+				postconditionIsEvadeAllowedArgs.ForRendering = true;
+
+				foreach (var postcondition in FilterEnabled(state, combat, direction, entry, paymentOption, entry.Postconditions))
+				{
+					var result = postcondition.IsEvadeAllowed(postconditionIsEvadeAllowedArgs);
+
+					var postconditionButtonHoveredArgs = ApiImplementation.V2Api.EvadeHookApi.PostconditionEvadeButtonHoveredArgs.Instance;
+					postconditionButtonHoveredArgs.State = state;
+					postconditionButtonHoveredArgs.Combat = combat;
+					postconditionButtonHoveredArgs.Direction = direction;
+					postconditionButtonHoveredArgs.Entry = entry;
+					postconditionButtonHoveredArgs.Result = result;
+					postcondition.EvadeButtonHovered(postconditionButtonHoveredArgs);
+
+					if (!result.IsAllowed)
+						return;
+				}
+
+				return;
+			}
+		}
+	}
+
+	public IKokoroApi.IV2.IEvadeHookApi.IRunActionResult RunNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
+	{
+		var result = ApiImplementation.V2Api.EvadeHookApi.RunActionResult.Instance;
+		result.State = state;
+		result.Combat = combat;
+		result.Direction = direction;
+		result.Entry = null;
+		result.PaymentOption = null;
+		result.PreconditionFailed = null;
+		result.PostconditionFailed = null;
+		result.Success = null;
+		
+		if (!combat.PlayerCanAct(state))
+			return result;
+
+		foreach (var entry in FilterEnabled(state, combat, direction, Instance.ActionEntries))
+		{
+			var canDoEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.ActionCanDoEvadeArgs.Instance;
+			canDoEvadeArgs.State = state;
+			canDoEvadeArgs.Combat = combat;
+			canDoEvadeArgs.Direction = direction;
+
+			if (!entry.Action.CanDoEvadeAction(canDoEvadeArgs))
+				continue;
+
+			foreach (var paymentOption in FilterEnabled(state, combat, direction, entry, entry.PaymentOptions))
+			{
+				var paymentOptionCanPayForEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionCanPayForEvadeArgs.Instance;
+				paymentOptionCanPayForEvadeArgs.State = state;
+				paymentOptionCanPayForEvadeArgs.Combat = combat;
+				paymentOptionCanPayForEvadeArgs.Direction = direction;
+				paymentOptionCanPayForEvadeArgs.Entry = entry;
+
+				if (!paymentOption.CanPayForEvade(paymentOptionCanPayForEvadeArgs))
+					continue;
+
+				result.Entry = entry;
+				result.PaymentOption = paymentOption;
+				
+				var preconditionIsEvadeAllowedArgs = ApiImplementation.V2Api.EvadeHookApi.PreconditionIsEvadeAllowedArgs.Instance;
+				preconditionIsEvadeAllowedArgs.State = state;
+				preconditionIsEvadeAllowedArgs.Combat = combat;
+				preconditionIsEvadeAllowedArgs.Direction = direction;
+				preconditionIsEvadeAllowedArgs.Entry = entry;
+				preconditionIsEvadeAllowedArgs.ForRendering = false;
+				
+				foreach (var precondition in FilterEnabled(state, combat, direction, entry, entry.Preconditions))
+				{
+					var preconditionResult = precondition.IsEvadeAllowed(preconditionIsEvadeAllowedArgs);
+					if (!preconditionResult.IsAllowed)
+					{
+						if (preconditionResult.ShakeShipOnFail)
+						{
+							Audio.Play(Event.Status_PowerDown);
+							state.ship.shake += 1.0;
+						}
+					
+						combat.Queue(preconditionResult.ActionsOnFail);
+					
+						var hookEvadePreconditionFailedArgs = ApiImplementation.V2Api.EvadeHookApi.HookEvadePreconditionFailedArgs.Instance;
+						hookEvadePreconditionFailedArgs.State = state;
+						hookEvadePreconditionFailedArgs.Combat = combat;
+						hookEvadePreconditionFailedArgs.Direction = direction;
+						hookEvadePreconditionFailedArgs.Entry = entry;
+						hookEvadePreconditionFailedArgs.Precondition = precondition;
+						hookEvadePreconditionFailedArgs.QueuedActions = preconditionResult.ActionsOnFail.ToList();
+				
+						foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+							hook.EvadePreconditionFailed(hookEvadePreconditionFailedArgs);
+
+						result.PreconditionFailed = hookEvadePreconditionFailedArgs;
+						return result;
+					}
+				}
+				
+				var paymentOptionProvideEvadePaymentActionsArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionProvideEvadePaymentActionsArgs.Instance;
+				paymentOptionProvideEvadePaymentActionsArgs.State = state;
+				paymentOptionProvideEvadePaymentActionsArgs.Combat = combat;
+				paymentOptionProvideEvadePaymentActionsArgs.Direction = direction;
+				paymentOptionProvideEvadePaymentActionsArgs.Entry = entry;
+
+				var paymentActions = paymentOption.ProvideEvadePaymentActions(paymentOptionProvideEvadePaymentActionsArgs);
+				
+				var postconditionIsEvadeAllowedArgs = ApiImplementation.V2Api.EvadeHookApi.PostconditionIsEvadeAllowedArgs.Instance;
+				postconditionIsEvadeAllowedArgs.State = state;
+				postconditionIsEvadeAllowedArgs.Combat = combat;
+				postconditionIsEvadeAllowedArgs.Direction = direction;
+				postconditionIsEvadeAllowedArgs.Entry = entry;
+				postconditionIsEvadeAllowedArgs.PaymentOption = paymentOption;
+				postconditionIsEvadeAllowedArgs.ForRendering = false;
+				
+				foreach (var postcondition in FilterEnabled(state, combat, direction, entry, paymentOption, entry.Postconditions))
+				{
+					var postconditionResult = postcondition.IsEvadeAllowed(postconditionIsEvadeAllowedArgs);
+					if (!postconditionResult.IsAllowed)
+					{
+						if (postconditionResult.ShakeShipOnFail)
+						{
+							Audio.Play(Event.Status_PowerDown);
+							state.ship.shake += 1.0;
+						}
+
+						List<CardAction> queuedActions = [.. paymentActions, .. postconditionResult.ActionsOnFail];
+						combat.Queue(queuedActions);
+						
+						var hookEvadePostconditionFailedArgs = ApiImplementation.V2Api.EvadeHookApi.HookEvadePostconditionFailedArgs.Instance;
+						hookEvadePostconditionFailedArgs.State = state;
+						hookEvadePostconditionFailedArgs.Combat = combat;
+						hookEvadePostconditionFailedArgs.Direction = direction;
+						hookEvadePostconditionFailedArgs.Entry = entry;
+						hookEvadePostconditionFailedArgs.PaymentOption = paymentOption;
+						hookEvadePostconditionFailedArgs.Postcondition = postcondition;
+						hookEvadePostconditionFailedArgs.QueuedActions = queuedActions;
+				
+						foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+							hook.EvadePostconditionFailed(hookEvadePostconditionFailedArgs);
+
+						result.PostconditionFailed = hookEvadePostconditionFailedArgs;
+						return result;
+					}
+				}
+				
+				var actionProvideEvadeActionsArgs = ApiImplementation.V2Api.EvadeHookApi.ActionProvideEvadeActionsArgs.Instance;
+				actionProvideEvadeActionsArgs.State = state;
+				actionProvideEvadeActionsArgs.Combat = combat;
+				actionProvideEvadeActionsArgs.Direction = direction;
+				actionProvideEvadeActionsArgs.PaymentOption = paymentOption;
+
+				var evadeActions = entry.Action.ProvideEvadeActions(actionProvideEvadeActionsArgs);
+
+				List<CardAction> allActions = [.. paymentActions, .. evadeActions];
+				combat.Queue(allActions);
+				
+				var hookAfterEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.HookAfterEvadeArgs.Instance;
+				hookAfterEvadeArgs.State = state;
+				hookAfterEvadeArgs.Combat = combat;
+				hookAfterEvadeArgs.Direction = direction;
+				hookAfterEvadeArgs.Entry = entry;
+				hookAfterEvadeArgs.PaymentOption = paymentOption;
+				hookAfterEvadeArgs.QueuedActions = allActions;
+				
+				foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+					hook.AfterEvade(hookAfterEvadeArgs);
+
+				result.Success = hookAfterEvadeArgs;
+				return result;
+			}
+		}
+
+		return result;
+	}
+
 	private static void Combat_RenderMoveButtons_Postfix(Combat __instance, G g)
 	{
 		if (__instance.isHoveringMove != 2)
@@ -587,98 +924,8 @@ internal sealed class EvadeManager
 			typedDirection = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
 		else
 			return;
-			
-		var canDoEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.ActionCanDoEvadeArgs.Instance;
-		canDoEvadeArgs.State = g.state;
-		canDoEvadeArgs.Combat = __instance;
-		canDoEvadeArgs.Direction = typedDirection;
-
-		var preconditionFailed = false;
-		foreach (var entry in FilterEnabled(g.state, __instance, typedDirection, Instance.ActionEntries))
-		{
-			if (!entry.Action.CanDoEvadeAction(canDoEvadeArgs))
-				continue;
-			
-			var buttonHoveredArgs = ApiImplementation.V2Api.EvadeHookApi.ActionEvadeButtonHoveredArgs.Instance;
-			buttonHoveredArgs.State = g.state;
-			buttonHoveredArgs.Combat = __instance;
-			buttonHoveredArgs.Direction = typedDirection;
-			entry.Action.EvadeButtonHovered(buttonHoveredArgs);
-			
-			var preconditionIsEvadeAllowedArgs = ApiImplementation.V2Api.EvadeHookApi.PreconditionIsEvadeAllowedArgs.Instance;
-			preconditionIsEvadeAllowedArgs.State = g.state;
-			preconditionIsEvadeAllowedArgs.Combat = __instance;
-			preconditionIsEvadeAllowedArgs.Direction = typedDirection;
-			preconditionIsEvadeAllowedArgs.Entry = entry;
-			preconditionIsEvadeAllowedArgs.ForRendering = true;
-
-			foreach (var precondition in FilterEnabled(g.state, __instance, typedDirection, entry, entry.Preconditions))
-			{
-				var result = precondition.IsEvadeAllowed(preconditionIsEvadeAllowedArgs);
-
-				var preconditionButtonHoveredArgs = ApiImplementation.V2Api.EvadeHookApi.PreconditionEvadeButtonHoveredArgs.Instance;
-				preconditionButtonHoveredArgs.State = g.state;
-				preconditionButtonHoveredArgs.Combat = __instance;
-				preconditionButtonHoveredArgs.Direction = typedDirection;
-				preconditionButtonHoveredArgs.Entry = entry;
-				preconditionButtonHoveredArgs.Result = result;
-				precondition.EvadeButtonHovered(preconditionButtonHoveredArgs);
-
-				if (!result.IsAllowed)
-				{
-					preconditionFailed = true;
-					break;
-				}
-			}
-			
-			var paymentOptionCanPayForEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionCanPayForEvadeArgs.Instance;
-			paymentOptionCanPayForEvadeArgs.State = g.state;
-			paymentOptionCanPayForEvadeArgs.Combat = __instance;
-			paymentOptionCanPayForEvadeArgs.Direction = typedDirection;
-			paymentOptionCanPayForEvadeArgs.Entry = entry;
-			
-			foreach (var paymentOption in FilterEnabled(g.state, __instance, typedDirection, entry, entry.PaymentOptions))
-			{
-				if (!paymentOption.CanPayForEvade(paymentOptionCanPayForEvadeArgs))
-					continue;
-
-				var paymentOptionButtonHoveredArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionEvadeButtonHoveredArgs.Instance;
-				paymentOptionButtonHoveredArgs.State = g.state;
-				paymentOptionButtonHoveredArgs.Combat = __instance;
-				paymentOptionButtonHoveredArgs.Direction = typedDirection;
-				paymentOptionButtonHoveredArgs.Entry = entry;
-				paymentOption.EvadeButtonHovered(paymentOptionButtonHoveredArgs);
-
-				if (preconditionFailed)
-					return;
-				
-				var postconditionIsEvadeAllowedArgs = ApiImplementation.V2Api.EvadeHookApi.PostconditionIsEvadeAllowedArgs.Instance;
-				postconditionIsEvadeAllowedArgs.State = g.state;
-				postconditionIsEvadeAllowedArgs.Combat = __instance;
-				postconditionIsEvadeAllowedArgs.Direction = typedDirection;
-				postconditionIsEvadeAllowedArgs.Entry = entry;
-				postconditionIsEvadeAllowedArgs.PaymentOption = paymentOption;
-				postconditionIsEvadeAllowedArgs.ForRendering = true;
-
-				foreach (var postcondition in FilterEnabled(g.state, __instance, typedDirection, entry, paymentOption, entry.Postconditions))
-				{
-					var result = postcondition.IsEvadeAllowed(postconditionIsEvadeAllowedArgs);
-
-					var postconditionButtonHoveredArgs = ApiImplementation.V2Api.EvadeHookApi.PostconditionEvadeButtonHoveredArgs.Instance;
-					postconditionButtonHoveredArgs.State = g.state;
-					postconditionButtonHoveredArgs.Combat = __instance;
-					postconditionButtonHoveredArgs.Direction = typedDirection;
-					postconditionButtonHoveredArgs.Entry = entry;
-					postconditionButtonHoveredArgs.Result = result;
-					postcondition.EvadeButtonHovered(postconditionButtonHoveredArgs);
-
-					if (!result.IsAllowed)
-						return;
-				}
-
-				return;
-			}
-		}
+		
+		Instance.DidHoverButton(g.state, __instance, typedDirection);
 	}
 	
 	private static IEnumerable<CodeInstruction> Combat_RenderMoveButtons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
@@ -763,181 +1010,27 @@ internal sealed class EvadeManager
 
 	private static bool Combat_RenderMoveButtons_Transpiler_ShouldRender(G g, Combat combat, int direction)
 	{
-		return GetActionEntry() is not null;
+		var shouldShowEvadeButtonArgs = ApiImplementation.V2Api.EvadeHookApi.HookShouldShowEvadeButtonArgs.Instance;
+		shouldShowEvadeButtonArgs.State = g.state;
+		shouldShowEvadeButtonArgs.Combat = combat;
+		shouldShowEvadeButtonArgs.Direction = (IKokoroApi.IV2.IEvadeHookApi.Direction)direction;
 
-		IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? GetActionEntry()
+		foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, g.state.EnumerateAllArtifacts()))
 		{
-			var typedDirection = (IKokoroApi.IV2.IEvadeHookApi.Direction)direction;
-			
-			var canDoEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.ActionCanDoEvadeArgs.Instance;
-			canDoEvadeArgs.State = g.state;
-			canDoEvadeArgs.Combat = combat;
-			canDoEvadeArgs.Direction = typedDirection;
-
-			return FilterEnabled(g.state, combat, typedDirection, Instance.ActionEntries).FirstOrDefault(entry =>
-			{
-				if (!entry.Action.CanDoEvadeAction(canDoEvadeArgs))
-					return false;
-				
-				var preconditionIsEvadeAllowedArgs = ApiImplementation.V2Api.EvadeHookApi.PreconditionIsEvadeAllowedArgs.Instance;
-				preconditionIsEvadeAllowedArgs.State = g.state;
-				preconditionIsEvadeAllowedArgs.Combat = combat;
-				preconditionIsEvadeAllowedArgs.Direction = typedDirection;
-				preconditionIsEvadeAllowedArgs.Entry = entry;
-				preconditionIsEvadeAllowedArgs.ForRendering = true;
-
-				if (FilterEnabled(g.state, combat, typedDirection, entry, entry.Preconditions).Any(precondition => !precondition.IsEvadeAllowed(preconditionIsEvadeAllowedArgs).IsAllowed))
-					return false;
-				
-				var paymentOptionCanPayForEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionCanPayForEvadeArgs.Instance;
-				paymentOptionCanPayForEvadeArgs.State = g.state;
-				paymentOptionCanPayForEvadeArgs.Combat = combat;
-				paymentOptionCanPayForEvadeArgs.Direction = typedDirection;
-				paymentOptionCanPayForEvadeArgs.Entry = entry;
-
-				if (!FilterEnabled(g.state, combat, typedDirection, entry, entry.PaymentOptions).Any(paymentOption => paymentOption.CanPayForEvade(paymentOptionCanPayForEvadeArgs)))
-					return false;
-
-				return true;
-			});
+			var result = hook.ShouldShowEvadeButton(shouldShowEvadeButtonArgs);
+			if (result == true)
+				break;
+			if (result == false)
+				return false;
 		}
+
+		return Instance.GetNextAction(g.state, combat, (IKokoroApi.IV2.IEvadeHookApi.Direction)direction) is not null;
 	}
 	
 	private static bool Combat_DoEvade_Prefix(Combat __instance, G g, int dir)
 	{
-		if (!__instance.PlayerCanAct(g.state))
-			return false;
-		
 		var typedDirection = (IKokoroApi.IV2.IEvadeHookApi.Direction)dir;
-
-		foreach (var entry in FilterEnabled(g.state, __instance, typedDirection, Instance.ActionEntries))
-		{
-			var canDoEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.ActionCanDoEvadeArgs.Instance;
-			canDoEvadeArgs.State = g.state;
-			canDoEvadeArgs.Combat = __instance;
-			canDoEvadeArgs.Direction = typedDirection;
-
-			if (!entry.Action.CanDoEvadeAction(canDoEvadeArgs))
-				continue;
-			
-			var preconditionIsEvadeAllowedArgs = ApiImplementation.V2Api.EvadeHookApi.PreconditionIsEvadeAllowedArgs.Instance;
-			preconditionIsEvadeAllowedArgs.State = g.state;
-			preconditionIsEvadeAllowedArgs.Combat = __instance;
-			preconditionIsEvadeAllowedArgs.Direction = typedDirection;
-			preconditionIsEvadeAllowedArgs.Entry = entry;
-			preconditionIsEvadeAllowedArgs.ForRendering = false;
-
-			foreach (var precondition in FilterEnabled(g.state, __instance, typedDirection, entry, entry.Preconditions))
-			{
-				var preconditionResult = precondition.IsEvadeAllowed(preconditionIsEvadeAllowedArgs);
-				if (!preconditionResult.IsAllowed)
-				{
-					if (preconditionResult.ShakeShipOnFail)
-					{
-						Audio.Play(Event.Status_PowerDown);
-						g.state.ship.shake += 1.0;
-					}
-					
-					__instance.Queue(preconditionResult.ActionsOnFail);
-					
-					var hookEvadePreconditionFailedArgs = ApiImplementation.V2Api.EvadeHookApi.HookEvadePreconditionFailedArgs.Instance;
-					hookEvadePreconditionFailedArgs.State = g.state;
-					hookEvadePreconditionFailedArgs.Combat = __instance;
-					hookEvadePreconditionFailedArgs.Direction = typedDirection;
-					hookEvadePreconditionFailedArgs.Entry = entry;
-					hookEvadePreconditionFailedArgs.Precondition = precondition;
-					hookEvadePreconditionFailedArgs.QueuedActions = preconditionResult.ActionsOnFail.ToList();
-				
-					foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, g.state.EnumerateAllArtifacts()))
-						hook.EvadePreconditionFailed(hookEvadePreconditionFailedArgs);
-					
-					return false;
-				}
-			}
-
-			foreach (var paymentOption in FilterEnabled(g.state, __instance, typedDirection, entry, entry.PaymentOptions))
-			{
-				var paymentOptionCanPayForEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionCanPayForEvadeArgs.Instance;
-				paymentOptionCanPayForEvadeArgs.State = g.state;
-				paymentOptionCanPayForEvadeArgs.Combat = __instance;
-				paymentOptionCanPayForEvadeArgs.Direction = typedDirection;
-				paymentOptionCanPayForEvadeArgs.Entry = entry;
-
-				if (!paymentOption.CanPayForEvade(paymentOptionCanPayForEvadeArgs))
-					continue;
-				
-				var paymentOptionProvideEvadePaymentActionsArgs = ApiImplementation.V2Api.EvadeHookApi.PaymentOptionProvideEvadePaymentActionsArgs.Instance;
-				paymentOptionProvideEvadePaymentActionsArgs.State = g.state;
-				paymentOptionProvideEvadePaymentActionsArgs.Combat = __instance;
-				paymentOptionProvideEvadePaymentActionsArgs.Direction = typedDirection;
-				paymentOptionProvideEvadePaymentActionsArgs.Entry = entry;
-
-				var paymentActions = paymentOption.ProvideEvadePaymentActions(paymentOptionProvideEvadePaymentActionsArgs);
-				
-				var postconditionIsEvadeAllowedArgs = ApiImplementation.V2Api.EvadeHookApi.PostconditionIsEvadeAllowedArgs.Instance;
-				postconditionIsEvadeAllowedArgs.State = g.state;
-				postconditionIsEvadeAllowedArgs.Combat = __instance;
-				postconditionIsEvadeAllowedArgs.Direction = typedDirection;
-				postconditionIsEvadeAllowedArgs.Entry = entry;
-				postconditionIsEvadeAllowedArgs.PaymentOption = paymentOption;
-				postconditionIsEvadeAllowedArgs.ForRendering = false;
-				
-				foreach (var postcondition in FilterEnabled(g.state, __instance, typedDirection, entry, paymentOption, entry.Postconditions))
-				{
-					var postconditionResult = postcondition.IsEvadeAllowed(postconditionIsEvadeAllowedArgs);
-					if (!postconditionResult.IsAllowed)
-					{
-						if (postconditionResult.ShakeShipOnFail)
-						{
-							Audio.Play(Event.Status_PowerDown);
-							g.state.ship.shake += 1.0;
-						}
-
-						List<CardAction> queuedActions = [.. paymentActions, .. postconditionResult.ActionsOnFail];
-						__instance.Queue(queuedActions);
-						
-						var hookEvadePostconditionFailedArgs = ApiImplementation.V2Api.EvadeHookApi.HookEvadePostconditionFailedArgs.Instance;
-						hookEvadePostconditionFailedArgs.State = g.state;
-						hookEvadePostconditionFailedArgs.Combat = __instance;
-						hookEvadePostconditionFailedArgs.Direction = typedDirection;
-						hookEvadePostconditionFailedArgs.Entry = entry;
-						hookEvadePostconditionFailedArgs.PaymentOption = paymentOption;
-						hookEvadePostconditionFailedArgs.Postcondition = postcondition;
-						hookEvadePostconditionFailedArgs.QueuedActions = queuedActions;
-				
-						foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, g.state.EnumerateAllArtifacts()))
-							hook.EvadePostconditionFailed(hookEvadePostconditionFailedArgs);
-						
-						return false;
-					}
-				}
-				
-				var actionProvideEvadeActionsArgs = ApiImplementation.V2Api.EvadeHookApi.ActionProvideEvadeActionsArgs.Instance;
-				actionProvideEvadeActionsArgs.State = g.state;
-				actionProvideEvadeActionsArgs.Combat = __instance;
-				actionProvideEvadeActionsArgs.Direction = typedDirection;
-				actionProvideEvadeActionsArgs.PaymentOption = paymentOption;
-
-				var evadeActions = entry.Action.ProvideEvadeActions(actionProvideEvadeActionsArgs);
-
-				List<CardAction> allActions = [.. paymentActions, .. evadeActions];
-				__instance.Queue(allActions);
-				
-				var hookAfterEvadeArgs = ApiImplementation.V2Api.EvadeHookApi.HookAfterEvadeArgs.Instance;
-				hookAfterEvadeArgs.State = g.state;
-				hookAfterEvadeArgs.Combat = __instance;
-				hookAfterEvadeArgs.Direction = typedDirection;
-				hookAfterEvadeArgs.Entry = entry;
-				hookAfterEvadeArgs.PaymentOption = paymentOption;
-				hookAfterEvadeArgs.QueuedActions = allActions;
-				
-				foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, g.state.EnumerateAllArtifacts()))
-					hook.AfterEvade(hookAfterEvadeArgs);
-				
-				return false;
-			}
-		}
-
+		Instance.RunNextAction(g.state, __instance, typedDirection);
 		return false;
 	}
 

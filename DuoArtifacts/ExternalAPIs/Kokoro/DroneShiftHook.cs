@@ -50,6 +50,45 @@ public partial interface IKokoroApi
 			/// <param name="isAllowed">Whether the action is allowed.</param>
 			/// <returns>The new result.</returns>
 			IDroneShiftPostcondition.IResult MakePostconditionResult(bool isAllowed);
+
+			/// <summary>
+			/// Returns the next action entry that would be ran if the given droneshift action was requested.
+			/// </summary>
+			/// <remarks>
+			/// This method (along with <see cref="IHook.ShouldShowDroneShiftButton"/>, <see cref="DidHoverButton"/> and <see cref="RunNextAction"/>) can be used to implement custom droneshift buttons.
+			/// </remarks>
+			/// <param name="state">The game state.</param>
+			/// <param name="combat">The current combat.</param>
+			/// <param name="direction">The direction of movement.</param>
+			/// <returns>The action entry that would be ran.</returns>
+			IDroneShiftActionEntry? GetNextAction(State state, Combat combat, Direction direction);
+			
+			/// <summary>
+			/// Raises the events related to hovering over a droneshift button.
+			/// </summary>
+			/// <remarks>
+			/// This method (along with <see cref="IHook.ShouldShowDroneShiftButton"/>, <see cref="GetNextAction"/> and <see cref="RunNextAction"/>) can be used to implement custom droneshift buttons.
+			/// </remarks>
+			/// <seealso cref="IDroneShiftAction.DroneShiftButtonHovered">IDroneShiftAction.DroneShiftButtonHovered</seealso>
+			/// <seealso cref="IDroneShiftPaymentOption.DroneShiftButtonHovered">IDroneShiftPaymentOption.DroneShiftButtonHovered</seealso>
+			/// <seealso cref="IDroneShiftPrecondition.DroneShiftButtonHovered">IDroneShiftPrecondition.DroneShiftButtonHovered</seealso>
+			/// <seealso cref="IDroneShiftPostcondition.DroneShiftButtonHovered">IDroneShiftPostcondition.DroneShiftButtonHovered</seealso>
+			/// <param name="state">The game state.</param>
+			/// <param name="combat">The current combat.</param>
+			/// <param name="direction">The direction of movement.</param>
+			void DidHoverButton(State state, Combat combat, Direction direction);
+			
+			/// <summary>
+			/// Runs the next action entry for the given direction.
+			/// </summary>
+			/// <remarks>
+			/// This method (along with <see cref="IHook.ShouldShowDroneShiftButton"/>, <see cref="GetNextAction"/> and <see cref="DidHoverButton"/>) can be used to implement custom droneshift buttons.
+			/// </remarks>
+			/// <param name="state">The game state.</param>
+			/// <param name="combat">The current combat.</param>
+			/// <param name="direction">The direction of movement.</param>
+			/// <returns>The result of the action.</returns>
+			IRunActionResult RunNextAction(State state, Combat combat, Direction direction);
 			
 			/// <summary>
 			/// Registers a new hook related to <see cref="Status.droneShift"/>.
@@ -74,6 +113,52 @@ public partial interface IKokoroApi
 			{
 				Left = -1,
 				Right = 1
+			}
+
+			/// <summary>
+			/// Describes the result of a single droneshift action execution.
+			/// </summary>
+			public interface IRunActionResult
+			{
+				/// <summary>
+				/// The game state.
+				/// </summary>
+				State State { get; }
+					
+				/// <summary>
+				/// The current combat.
+				/// </summary>
+				Combat Combat { get; }
+					
+				/// <summary>
+				/// The direction of movement.
+				/// </summary>
+				Direction Direction { get; }
+
+				/// <summary>
+				/// The entry of the action that was being ran, if any.
+				/// </summary>
+				IDroneShiftActionEntry? Entry { get; }
+
+				/// <summary>
+				/// The payment option that was used to pay for this action, if any action was taken.
+				/// </summary>
+				IDroneShiftPaymentOption? PaymentOption { get; }
+				
+				/// <summary>
+				/// The precondition failure hook arguments, if the action failed due to one.
+				/// </summary>
+				IHook.IDroneShiftPreconditionFailedArgs? PreconditionFailed { get; }
+				
+				/// <summary>
+				/// The postcondition failure hook arguments, if the action failed due to one.
+				/// </summary>
+				IHook.IDroneShiftPostconditionFailedArgs? PostconditionFailed { get; }
+				
+				/// <summary>
+				/// The after droneshift hook arguments, if the action succeeded.
+				/// </summary>
+				IHook.IAfterDroneShiftArgs? Success { get; }
 			}
 
 			/// <summary>
@@ -132,6 +217,13 @@ public partial interface IKokoroApi
 				IDroneShiftActionEntry UnregisterPrecondition(IDroneShiftPrecondition precondition);
 
 				/// <summary>
+				/// Sets this entry to dynamically inherit all preconditions from another entry.
+				/// </summary>
+				/// <param name="entry">The entry to inherit from.</param>
+				/// <returns>This object after the change.</returns>
+				IDroneShiftActionEntry InheritPreconditions(IDroneShiftActionEntry entry);
+
+				/// <summary>
 				/// Registers a new postcondition that needs to be satisfied before this action can take place, but after it is paid for.
 				/// </summary>
 				/// <param name="postcondition">The new precondition.</param>
@@ -145,6 +237,13 @@ public partial interface IKokoroApi
 				/// <param name="postcondition">The postcondition.</param>
 				/// <returns>This object after the change.</returns>
 				IDroneShiftActionEntry UnregisterPostcondition(IDroneShiftPostcondition postcondition);
+				
+				/// <summary>
+				/// Sets this entry to dynamically inherit all postconditions from another entry.
+				/// </summary>
+				/// <param name="entry">The entry to inherit from.</param>
+				/// <returns>This object after the change.</returns>
+				IDroneShiftActionEntry InheritPostconditions(IDroneShiftActionEntry entry);
 			}
 			
 			/// <summary>
@@ -372,6 +471,9 @@ public partial interface IKokoroApi
 				/// <param name="args">The arguments for this method.</param>
 				void DroneShiftButtonHovered(IDroneShiftButtonHoveredArgs args) { }
 
+				/// <summary>
+				/// Describes the result of a droneshift precondition.
+				/// </summary>
 				public interface IResult
 				{
 					/// <summary>
@@ -437,6 +539,11 @@ public partial interface IKokoroApi
 					IDroneShiftActionEntry Entry { get; }
 					
 					/// <summary>
+					/// The payment option that will be used to pay for the action.
+					/// </summary>
+					IDroneShiftPaymentOption PaymentOption { get; }
+					
+					/// <summary>
 					/// Whether this method was called for rendering purposes, or actual action purposes otherwise.
 					/// </summary>
 					/// <remarks>
@@ -471,6 +578,11 @@ public partial interface IKokoroApi
 					IDroneShiftActionEntry Entry { get; }
 					
 					/// <summary>
+					/// The payment option that will be used to pay for the action.
+					/// </summary>
+					IDroneShiftPaymentOption PaymentOption { get; }
+					
+					/// <summary>
 					/// A description of whether this action can currently be used, and what to do if not.
 					/// </summary>
 					IResult Result { get; }
@@ -495,6 +607,9 @@ public partial interface IKokoroApi
 				/// <param name="args">The arguments for this method.</param>
 				void DroneShiftButtonHovered(IDroneShiftButtonHoveredArgs args) { }
 
+				/// <summary>
+				/// Describes the result of a droneshift postcondition.
+				/// </summary>
 				public interface IResult
 				{
 					/// <summary>
@@ -656,10 +771,17 @@ public partial interface IKokoroApi
 				void DroneShiftPostconditionFailed(IDroneShiftPostconditionFailedArgs args) { }
 				
 				/// <summary>
-				/// An event called whenever an droneshift action succeeds.
+				/// An event called whenever a droneshift action succeeds.
 				/// </summary>
 				/// <param name="args">The arguments for the hook method.</param>
 				void AfterDroneShift(IAfterDroneShiftArgs args) { }
+
+				/// <summary>
+				/// Controls whether the default droneshift buttons are shown.
+				/// </summary>
+				/// <param name="args">The arguments for the hook method.</param>
+				/// <returns><c>true</c> if the button should be shown, <c>false</c> if not, <c>null</c> if the hook does not care.</returns>
+				bool? ShouldShowDroneShiftButton(IShouldShowDroneShiftButtonArgs args) => null;
 
 				/// <summary>
 				/// The arguments for the <see cref="IsDroneShiftActionEnabled"/> hook method.
@@ -896,6 +1018,27 @@ public partial interface IKokoroApi
 					/// The actions that were queued.
 					/// </summary>
 					IReadOnlyList<CardAction> QueuedActions { get; }
+				}
+
+				/// <summary>
+				/// The arguments for the <see cref="ShouldShowDroneShiftButton"/> hook method.
+				/// </summary>
+				public interface IShouldShowDroneShiftButtonArgs
+				{
+					/// <summary>
+					/// The game state.
+					/// </summary>
+					State State { get; }
+					
+					/// <summary>
+					/// The current combat.
+					/// </summary>
+					Combat Combat { get; }
+					
+					/// <summary>
+					/// The direction of movement.
+					/// </summary>
+					Direction Direction { get; }
 				}
 			}
 		}
