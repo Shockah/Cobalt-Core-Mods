@@ -2,8 +2,8 @@
 
 # Release notes
 
-## 1.2.0*
-To be released.
+## 1.2.0
+Released 4 December 2024.
 
 * Updated to latest Nickel and Kokoro.
 * Fixed the Long-Term Memory artifact forgetting the already used up actions after using Save & Exit.
