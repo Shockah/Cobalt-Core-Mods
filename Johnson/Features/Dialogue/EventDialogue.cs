@@ -27,8 +27,8 @@ internal sealed class EventDialogue : BaseDialogue
 			bg = typeof(BGShop).Name,
 			allPresent = [johnsonType],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "flashing" },
-				new Say() { who = "nerd", loopTag = "neutral", flipped = true },
+				new Say { who = johnsonType, loopTag = "flashing" },
+				new Say { who = "nerd", loopTag = "neutral", flipped = true },
 				new Jump() { key = "NewShop" }
 			],
 		};
@@ -38,8 +38,8 @@ internal sealed class EventDialogue : BaseDialogue
 			bg = typeof(BGShop).Name,
 			allPresent = [johnsonType],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "neutral" },
-				new Say() { who = "nerd", loopTag = "neutral", flipped = true },
+				new Say { who = johnsonType, loopTag = "neutral" },
+				new Say { who = "nerd", loopTag = "neutral", flipped = true },
 				new Jump() { key = "NewShop" }
 			],
 		};
@@ -50,7 +50,7 @@ internal sealed class EventDialogue : BaseDialogue
 			bg = typeof(BGSupernova).Name,
 			allPresent = [johnsonType],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "neutral" },
+				new Say { who = johnsonType, loopTag = "neutral" },
 			],
 		};
 		newHardcodedNodes[["CrystallizedFriendEvent_{{CharacterType}}"]] = new()
@@ -60,7 +60,7 @@ internal sealed class EventDialogue : BaseDialogue
 			allPresent = [johnsonType],
 			lines = [
 				new Wait() { secs = 1.5 },
-				new Say() { who = johnsonType, loopTag = "fiddling" },
+				new Say { who = johnsonType, loopTag = "fiddling" },
 			],
 		};
 		newHardcodedNodes[["ChoiceCardRewardOfYourColorChoice_{{CharacterType}}"]] = new()
@@ -69,8 +69,8 @@ internal sealed class EventDialogue : BaseDialogue
 			bg = typeof(BGBootSequence).Name,
 			allPresent = [johnsonType],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "squint" },
-				new Say() { who = "comp", loopTag = "neutral" },
+				new Say { who = johnsonType, loopTag = "squint" },
+				new Say { who = "comp", loopTag = "neutral" },
 			],
 		};
 

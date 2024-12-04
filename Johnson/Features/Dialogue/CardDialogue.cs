@@ -26,7 +26,7 @@ internal sealed class CardDialogue : BaseDialogue
 			oncePerRun = true,
 			allPresent = [johnsonType],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "fiddling" },
+				new Say { who = johnsonType, loopTag = "fiddling" },
 			],
 		};
 
@@ -39,7 +39,7 @@ internal sealed class CardDialogue : BaseDialogue
 				oncePerCombatTags = [$"Played::{new DeadlineCard().Key()}"],
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "fiddling" },
+					new Say { who = johnsonType, loopTag = "fiddling" },
 				],
 			};
 
@@ -52,7 +52,7 @@ internal sealed class CardDialogue : BaseDialogue
 				oncePerCombatTags = [$"Played::{ModEntry.Instance.Package.Manifest.UniqueName}::LayoutOrStrategize"],
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "neutral" },
+					new Say { who = johnsonType, loopTag = "neutral" },
 				],
 			};
 
@@ -65,7 +65,7 @@ internal sealed class CardDialogue : BaseDialogue
 				oncePerCombatTags = [$"Played::{new DownsizeCard().Key()}"],
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "fiddling" },
+					new Say { who = johnsonType, loopTag = "fiddling" },
 				],
 			};
 	}

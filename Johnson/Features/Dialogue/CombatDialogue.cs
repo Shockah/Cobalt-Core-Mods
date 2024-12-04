@@ -27,7 +27,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				enemyShotJustHit = true,
 				minDamageDealtToPlayerThisTurn = 1,
 				lines = [
-					new Say() { who = johnsonType, loopTag = "squint" },
+					new Say { who = johnsonType, loopTag = "squint" },
 				],
 			};
 
@@ -37,8 +37,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			minDamageDealtToPlayerThisTurn = 1,
 			allPresent = [johnsonType, Deck.dizzy.Key()],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "fiddling" },
-				new Say() { who = Deck.dizzy.Key(), loopTag = "squint" },
+				new Say { who = johnsonType, loopTag = "fiddling" },
+				new Say { who = Deck.dizzy.Key(), loopTag = "squint" },
 			],
 		};
 		newNodes[["TookDamage", "Riggs"]] = new()
@@ -47,8 +47,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			minDamageDealtToPlayerThisTurn = 1,
 			allPresent = [johnsonType, Deck.riggs.Key()],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "fiddling" },
-				new Say() { who = Deck.riggs.Key(), loopTag = "neutral" },
+				new Say { who = johnsonType, loopTag = "fiddling" },
+				new Say { who = Deck.riggs.Key(), loopTag = "neutral" },
 			],
 		};
 		newNodes[["TookDamage", "Isaac"]] = new()
@@ -57,8 +57,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			minDamageDealtToPlayerThisTurn = 1,
 			allPresent = [johnsonType, Deck.goat.Key()],
 			lines = [
-				new Say() { who = Deck.goat.Key(), loopTag = "squint" },
-				new Say() { who = johnsonType, loopTag = "neutral" },
+				new Say { who = Deck.goat.Key(), loopTag = "squint" },
+				new Say { who = johnsonType, loopTag = "neutral" },
 			],
 		};
 		newNodes[["TookDamage", "Drake"]] = new()
@@ -67,8 +67,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			minDamageDealtToPlayerThisTurn = 1,
 			allPresent = [johnsonType, Deck.eunice.Key()],
 			lines = [
-				new Say() { who = Deck.eunice.Key(), loopTag = "squint" },
-				new Say() { who = johnsonType, loopTag = "squint" },
+				new Say { who = Deck.eunice.Key(), loopTag = "squint" },
+				new Say { who = johnsonType, loopTag = "squint" },
 			],
 		};
 		newNodes[["TookDamage", "Max"]] = new()
@@ -77,8 +77,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			minDamageDealtToPlayerThisTurn = 1,
 			allPresent = [johnsonType, Deck.hacker.Key()],
 			lines = [
-				new Say() { who = Deck.hacker.Key(), loopTag = "mad" },
-				new Say() { who = johnsonType, loopTag = "flashing" },
+				new Say { who = Deck.hacker.Key(), loopTag = "mad" },
+				new Say { who = johnsonType, loopTag = "flashing" },
 			],
 		};
 		newNodes[["TookDamage", "Books"]] = new()
@@ -87,8 +87,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			minDamageDealtToPlayerThisTurn = 1,
 			allPresent = [johnsonType, Deck.shard.Key()],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "squint" },
-				new Say() { who = Deck.shard.Key(), loopTag = "intense" },
+				new Say { who = johnsonType, loopTag = "squint" },
+				new Say { who = Deck.shard.Key(), loopTag = "intense" },
 			],
 		};
 		newNodes[["TookDamage", "CAT"]] = new()
@@ -97,8 +97,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			minDamageDealtToPlayerThisTurn = 1,
 			allPresent = [johnsonType, "comp"],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "squint" },
-				new Say() { who = "comp", loopTag = "grumpy" },
+				new Say { who = johnsonType, loopTag = "squint" },
+				new Say { who = "comp", loopTag = "grumpy" },
 			],
 		};
 		#endregion
@@ -110,7 +110,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				maxDamageDealtToPlayerThisTurn = 0,
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "neutral" },
+					new Say { who = johnsonType, loopTag = "neutral" },
 				],
 			};
 
@@ -122,7 +122,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				minDamageDealtToEnemyThisTurn = 1,
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "neutral" },
+					new Say { who = johnsonType, loopTag = "neutral" },
 				],
 			};
 
@@ -133,8 +133,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			whoDidThat = johnsonDeck,
 			allPresent = [johnsonType, Deck.dizzy.Key()],
 			lines = [
-				new Say() { who = Deck.dizzy.Key(), loopTag = "neutral" },
-				new Say() { who = johnsonType, loopTag = "fiddling" },
+				new Say { who = Deck.dizzy.Key(), loopTag = "neutral" },
+				new Say { who = johnsonType, loopTag = "fiddling" },
 			],
 		};
 		newNodes[["DealtDamage", "Riggs"]] = new()
@@ -143,8 +143,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			minDamageDealtToEnemyThisTurn = 1,
 			allPresent = [johnsonType, Deck.riggs.Key()],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "neutral" },
-				new Say() { who = Deck.riggs.Key(), loopTag = "neutral" },
+				new Say { who = johnsonType, loopTag = "neutral" },
+				new Say { who = Deck.riggs.Key(), loopTag = "neutral" },
 			],
 		};
 		newNodes[["DealtDamage", "Peri"]] = new()
@@ -154,8 +154,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			whoDidThat = johnsonDeck,
 			allPresent = [johnsonType, Deck.peri.Key()],
 			lines = [
-				new Say() { who = Deck.peri.Key(), loopTag = "neutral" },
-				new Say() { who = johnsonType, loopTag = "fiddling" },
+				new Say { who = Deck.peri.Key(), loopTag = "neutral" },
+				new Say { who = johnsonType, loopTag = "fiddling" },
 			],
 		};
 		newNodes[["DealtDamage", "Isaac"]] = new()
@@ -165,8 +165,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			whoDidThat = johnsonDeck,
 			allPresent = [johnsonType, Deck.goat.Key()],
 			lines = [
-				new Say() { who = Deck.goat.Key(), loopTag = "neutral" },
-				new Say() { who = johnsonType, loopTag = "neutral" },
+				new Say { who = Deck.goat.Key(), loopTag = "neutral" },
+				new Say { who = johnsonType, loopTag = "neutral" },
 			],
 		};
 		newNodes[["DealtDamage", "Drake"]] = new()
@@ -175,8 +175,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			minDamageDealtToEnemyThisTurn = 1,
 			allPresent = [johnsonType, Deck.eunice.Key()],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "fiddling" },
-				new Say() { who = Deck.eunice.Key(), loopTag = "mad" },
+				new Say { who = johnsonType, loopTag = "fiddling" },
+				new Say { who = Deck.eunice.Key(), loopTag = "mad" },
 			],
 		};
 		newNodes[["DealtDamage", "Max"]] = new()
@@ -185,8 +185,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			minDamageDealtToEnemyThisTurn = 1,
 			allPresent = [johnsonType, Deck.hacker.Key()],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "neutral" },
-				new Say() { who = Deck.hacker.Key(), loopTag = "squint" },
+				new Say { who = johnsonType, loopTag = "neutral" },
+				new Say { who = Deck.hacker.Key(), loopTag = "squint" },
 			],
 		};
 		newNodes[["DealtDamage", "Books"]] = new()
@@ -195,8 +195,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			minDamageDealtToEnemyThisTurn = 1,
 			allPresent = [johnsonType, Deck.shard.Key()],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "neutral" },
-				new Say() { who = Deck.shard.Key(), loopTag = "blush" },
+				new Say { who = johnsonType, loopTag = "neutral" },
+				new Say { who = Deck.shard.Key(), loopTag = "blush" },
 			],
 		};
 		newNodes[["DealtDamage", "CAT"]] = new()
@@ -205,8 +205,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			minDamageDealtToEnemyThisTurn = 1,
 			allPresent = [johnsonType, "comp"],
 			lines = [
-				new Say() { who = "comp", loopTag = "smug" },
-				new Say() { who = johnsonType, loopTag = "squint" },
+				new Say { who = "comp", loopTag = "smug" },
+				new Say { who = johnsonType, loopTag = "squint" },
 			],
 		};
 		#endregion
@@ -219,7 +219,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				whoDidThat = johnsonDeck,
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "flashing" },
+					new Say { who = johnsonType, loopTag = "flashing" },
 				],
 			};
 
@@ -230,7 +230,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				maxDamageDealtToPlayerThisTurn = 0,
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "neutral" },
+					new Say { who = johnsonType, loopTag = "neutral" },
 				],
 			}.SetMinShieldLostThisTurn(1);
 
@@ -239,7 +239,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			playerShotJustMissed = true,
 			allPresent = [johnsonType],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "squint" },
+				new Say { who = johnsonType, loopTag = "squint" },
 			],
 		};
 		newNodes[["Missed", "Basic", "1"]] = new()
@@ -247,7 +247,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			playerShotJustMissed = true,
 			allPresent = [johnsonType],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "squint" },
+				new Say { who = johnsonType, loopTag = "squint" },
 			],
 		};
 		newNodes[["Missed", "Basic", "2"]] = new()
@@ -255,7 +255,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			playerShotJustMissed = true,
 			allPresent = [johnsonType],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "fiddling" },
+				new Say { who = johnsonType, loopTag = "fiddling" },
 			],
 		};
 
@@ -267,7 +267,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			oncePerRun = true,
 			allPresent = [johnsonType],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "squint" },
+				new Say { who = johnsonType, loopTag = "squint" },
 			],
 		};
 		newNodes[["AboutToDie", "Basic", "1"]] = new()
@@ -277,7 +277,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			oncePerRun = true,
 			allPresent = [johnsonType],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "fiddling" },
+				new Say { who = johnsonType, loopTag = "fiddling" },
 			],
 		};
 		newNodes[["AboutToDie", "Basic", "2"]] = new()
@@ -287,7 +287,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			oncePerRun = true,
 			allPresent = [johnsonType],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "neutral" },
+				new Say { who = johnsonType, loopTag = "neutral" },
 			],
 		};
 
@@ -298,8 +298,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			oncePerRun = true,
 			allPresent = [johnsonType, Deck.dizzy.Key()],
 			lines = [
-				new Say() { who = Deck.dizzy.Key(), loopTag = "neutral" },
-				new Say() { who = johnsonType, loopTag = "neutral" },
+				new Say { who = Deck.dizzy.Key(), loopTag = "neutral" },
+				new Say { who = johnsonType, loopTag = "neutral" },
 			],
 		};
 		newNodes[["AboutToDie", "Riggs"]] = new()
@@ -309,8 +309,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			oncePerRun = true,
 			allPresent = [johnsonType, Deck.riggs.Key()],
 			lines = [
-				new Say() { who = Deck.riggs.Key(), loopTag = "nervous" },
-				new Say() { who = johnsonType, loopTag = "squint" },
+				new Say { who = Deck.riggs.Key(), loopTag = "nervous" },
+				new Say { who = johnsonType, loopTag = "squint" },
 			],
 		};
 		newNodes[["AboutToDie", "Peri"]] = new()
@@ -320,8 +320,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			oncePerRun = true,
 			allPresent = [johnsonType, Deck.peri.Key()],
 			lines = [
-				new Say() { who = Deck.peri.Key(), loopTag = "neutral" },
-				new Say() { who = johnsonType, loopTag = "fiddling" },
+				new Say { who = Deck.peri.Key(), loopTag = "neutral" },
+				new Say { who = johnsonType, loopTag = "fiddling" },
 			],
 		};
 		newNodes[["AboutToDie", "Isaac"]] = new()
@@ -331,8 +331,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			oncePerRun = true,
 			allPresent = [johnsonType, Deck.goat.Key()],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "fiddling" },
-				new Say() { who = Deck.goat.Key(), loopTag = "squint" },
+				new Say { who = johnsonType, loopTag = "fiddling" },
+				new Say { who = Deck.goat.Key(), loopTag = "squint" },
 			],
 		};
 		newNodes[["AboutToDie", "Drake"]] = new()
@@ -342,8 +342,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			oncePerRun = true,
 			allPresent = [johnsonType, Deck.eunice.Key()],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "fiddling" },
-				new Say() { who = Deck.eunice.Key(), loopTag = "mad" },
+				new Say { who = johnsonType, loopTag = "fiddling" },
+				new Say { who = Deck.eunice.Key(), loopTag = "mad" },
 			],
 		};
 		newNodes[["AboutToDie", "Books"]] = new()
@@ -353,8 +353,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			oncePerRun = true,
 			allPresent = [johnsonType, Deck.shard.Key()],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "squint" },
-				new Say() { who = Deck.shard.Key(), loopTag = "intense" },
+				new Say { who = johnsonType, loopTag = "squint" },
+				new Say { who = Deck.shard.Key(), loopTag = "intense" },
 			],
 		};
 		newNodes[["AboutToDie", "CAT"]] = new()
@@ -364,8 +364,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			oncePerRun = true,
 			allPresent = [johnsonType, "comp"],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "squint" },
-				new Say() { who = "comp", loopTag = "mad" },
+				new Say { who = johnsonType, loopTag = "squint" },
+				new Say { who = "comp", loopTag = "mad" },
 			],
 		};
 		#endregion
@@ -379,7 +379,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				oncePerRun = true,
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "neutral" },
+					new Say { who = johnsonType, loopTag = "neutral" },
 				],
 			};
 
@@ -390,7 +390,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				minEnergy = 1,
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "squint" },
+					new Say { who = johnsonType, loopTag = "squint" },
 				],
 			};
 
@@ -400,17 +400,17 @@ internal sealed class CombatDialogue : BaseDialogue
 				handEmpty = true,
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "neutral" },
+					new Say { who = johnsonType, loopTag = "neutral" },
 				],
 			};
 
 		for (var i = 0; i < 1; i++)
 			newNodes[["TrashHand", "Basic", i.ToString()]] = new()
 			{
-				handEmpty = true,
+				handFullOfTrash = true,
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "neutral" },
+					new Say { who = johnsonType, loopTag = "neutral" },
 				],
 			};
 
@@ -420,7 +420,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				lookup = [$"{ModEntry.Instance.Package.Manifest.UniqueName}::PlayedRecycle"],
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "neutral" },
+					new Say { who = johnsonType, loopTag = "neutral" },
 				],
 			};
 
@@ -432,7 +432,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				oncePerCombatTags = [$"{ModEntry.Instance.Package.Manifest.UniqueName}::NewNonJohnsonNonTrashTempCard"],
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "fiddling" },
+					new Say { who = johnsonType, loopTag = "fiddling" },
 				],
 			};
 
@@ -445,7 +445,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				oncePerRun = true,
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "flashing" },
+					new Say { who = johnsonType, loopTag = "flashing" },
 				],
 			};
 
@@ -459,7 +459,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				nonePresent = ["crab", "scrap"],
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "neutral" },
+					new Say { who = johnsonType, loopTag = "neutral" },
 				],
 			};
 
@@ -474,7 +474,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				nonePresent = ["crab"],
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "squint" },
+					new Say { who = johnsonType, loopTag = "squint" },
 				],
 			};
 
@@ -487,7 +487,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				turnStart = true,
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "fiddling" },
+					new Say { who = johnsonType, loopTag = "fiddling" },
 				],
 			};
 
@@ -499,7 +499,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				oncePerCombatTags = ["johnsonWentMissing"],
 				oncePerRun = true,
 				lines = [
-					new Say() { who = johnsonType, loopTag = "neutral" },
+					new Say { who = johnsonType, loopTag = "neutral" },
 				],
 			};
 
@@ -510,7 +510,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				lookup = [$"{ModEntry.Instance.Package.Manifest.UniqueName}::ReturningFromMissing"],
 				oncePerRun = true,
 				lines = [
-					new Say() { who = johnsonType, loopTag = "fiddling" },
+					new Say { who = johnsonType, loopTag = "fiddling" },
 				],
 			};
 
@@ -522,7 +522,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				oncePerCombatTags = ["OverheatGeneric"],
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "squint" },
+					new Say { who = johnsonType, loopTag = "squint" },
 				],
 			};
 
@@ -532,8 +532,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			oncePerCombatTags = ["OverheatGeneric"],
 			allPresent = [johnsonType, Deck.eunice.Key()],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "squint" },
-				new Say() { who = Deck.eunice.Key(), loopTag = "neutral" },
+				new Say { who = johnsonType, loopTag = "squint" },
+				new Say { who = Deck.eunice.Key(), loopTag = "neutral" },
 			],
 		};
 		#endregion
@@ -545,7 +545,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				hasArtifacts = ["Recalibrator"],
 				allPresent = [johnsonType],
 				lines = [
-					new Say() { who = johnsonType, loopTag = "neutral" },
+					new Say { who = johnsonType, loopTag = "neutral" },
 				],
 			};
 
@@ -557,8 +557,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			oncePerCombat = true,
 			allPresent = [johnsonType, "skunk"],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "neutral" },
-				new Say() { who = "skunk", loopTag = "neutral" },
+				new Say { who = johnsonType, loopTag = "flashing" },
+				new Say { who = "skunk", loopTag = "neutral" },
 			],
 		};
 
@@ -570,8 +570,8 @@ internal sealed class CombatDialogue : BaseDialogue
 			oncePerCombat = true,
 			allPresent = [johnsonType, "bandit"],
 			lines = [
-				new Say() { who = "bandit", loopTag = "neutral" },
-				new Say() { who = johnsonType, loopTag = "squint" },
+				new Say { who = "bandit", loopTag = "neutral" },
+				new Say { who = johnsonType, loopTag = "squint" },
 			],
 		};
 
@@ -584,7 +584,7 @@ internal sealed class CombatDialogue : BaseDialogue
 			excludedScenes = ["Crystal_2"],
 			allPresent = [johnsonType, "crystal"],
 			lines = [
-				new Say() { who = johnsonType, loopTag = "fiddling" },
+				new Say { who = johnsonType, loopTag = "fiddling" },
 			],
 		};
 

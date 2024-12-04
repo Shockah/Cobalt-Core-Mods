@@ -6,6 +6,7 @@
 To be released.
 
 * Updated to latest Nickel and Kokoro.
+* Fixed some dialogue triggers and expressions.
 
 ## 1.2.0
 Released 30 July 2024.
