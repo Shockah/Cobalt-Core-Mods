@@ -2,8 +2,8 @@
 
 # Release notes
 
-## 1.2.0*
-To be released.
+## 1.2.0
+Released 4 December 2024.
 
 * Updated to latest Nickel and Kokoro.
 * Man-in-the-Middle (most notably B) now previews the object you are going to launch.
