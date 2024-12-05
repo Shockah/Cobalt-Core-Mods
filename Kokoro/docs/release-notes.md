@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.0.1
+Released 5 December 2024.
 
 * Fixed status tooltip overrides not applying.
 * Fixed a potential issue with hook arguments during nested calls.
