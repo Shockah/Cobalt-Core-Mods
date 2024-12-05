@@ -47,9 +47,6 @@ partial class ApiImplementation
 			
 			internal sealed class ModifyOxidationRequirementArgs : IKokoroApi.IV2.IOxidationStatusApi.IHook.IModifyOxidationRequirementArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly ModifyOxidationRequirementArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Ship Ship { get; internal set; } = null!;
 				public int Threshold { get; internal set; }
@@ -70,14 +67,21 @@ internal sealed class OxidationStatusManager : VariedApiVersionHookManager<IKoko
 
 	public int GetOxidationStatusMaxValue(State state, Ship ship)
 	{
-		var args = ApiImplementation.V2Api.OxidationStatusApi.ModifyOxidationRequirementArgs.Instance;
-		args.State = state;
-		args.Ship = ship;
-		args.Threshold = BaseOxidationStatusThreshold;
-		
-		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			args.Threshold += hook.ModifyOxidationRequirement(args);
-		return args.Threshold;
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.OxidationStatusApi.ModifyOxidationRequirementArgs>();
+		try
+		{
+			args.State = state;
+			args.Ship = ship;
+			args.Threshold = BaseOxidationStatusThreshold;
+
+			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				args.Threshold += hook.ModifyOxidationRequirement(args);
+			return args.Threshold;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)

@@ -42,36 +42,24 @@ partial class ApiImplementation
 			
 			internal sealed class ShouldDisableCardRenderingTransformationsArgs : IKokoroApi.IV2.ICardRenderingApi.IHook.IShouldDisableCardRenderingTransformationsArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly ShouldDisableCardRenderingTransformationsArgs Instance = new();
-				
 				public G G { get; internal set; } = null!;
 				public Card Card { get; internal set; } = null!;
 			}
 			
 			internal sealed class ReplaceTextCardFontArgs : IKokoroApi.IV2.ICardRenderingApi.IHook.IReplaceTextCardFontArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly ReplaceTextCardFontArgs Instance = new();
-				
 				public G G { get; internal set; } = null!;
 				public Card Card { get; internal set; } = null!;
 			}
 			
 			internal sealed class ModifyTextCardScaleArgs : IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyTextCardScaleArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly ModifyTextCardScaleArgs Instance = new();
-				
 				public G G { get; internal set; } = null!;
 				public Card Card { get; internal set; } = null!;
 			}
 			
 			internal sealed class ModifyNonTextCardRenderMatrixArgs : IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyNonTextCardRenderMatrixArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly ModifyNonTextCardRenderMatrixArgs Instance = new();
-				
 				public G G { get; internal set; } = null!;
 				public Card Card { get; internal set; } = null!;
 				public IReadOnlyList<CardAction> Actions { get; internal set; } = null!;
@@ -79,9 +67,6 @@ partial class ApiImplementation
 			
 			internal sealed class ModifyCardActionRenderMatrixArgs : IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyCardActionRenderMatrixArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly ModifyCardActionRenderMatrixArgs Instance = new();
-				
 				public G G { get; internal set; } = null!;
 				public Card Card { get; internal set; } = null!;
 				public IReadOnlyList<CardAction> Actions { get; internal set; } = null!;
@@ -129,50 +114,85 @@ internal sealed class CardRenderManager : VariedApiVersionHookManager<IKokoroApi
 
 	public bool ShouldDisableCardRenderingTransformations(G g, Card card)
 	{
-		var args = ApiImplementation.V2Api.CardRenderingApi.ShouldDisableCardRenderingTransformationsArgs.Instance;
-		args.G = g;
-		args.Card = card;
-		return Hooks.Any(h => h.ShouldDisableCardRenderingTransformations(args));
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.CardRenderingApi.ShouldDisableCardRenderingTransformationsArgs>();
+		try
+		{
+			args.G = g;
+			args.Card = card;
+			return Hooks.Any(h => h.ShouldDisableCardRenderingTransformations(args));
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	public Font? ReplaceTextCardFont(G g, Card card)
 	{
-		var args = ApiImplementation.V2Api.CardRenderingApi.ReplaceTextCardFontArgs.Instance;
-		args.G = g;
-		args.Card = card;
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.CardRenderingApi.ReplaceTextCardFontArgs>();
+		try
+		{
+			args.G = g;
+			args.Card = card;
 		
-		foreach (var hook in Hooks)
-			if (hook.ReplaceTextCardFont(args) is { } font)
-				return font;
-		return null;
+			foreach (var hook in Hooks)
+				if (hook.ReplaceTextCardFont(args) is { } font)
+					return font;
+			return null;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	public Vec ModifyTextCardScale(G g, Card card)
 	{
-		var args = ApiImplementation.V2Api.CardRenderingApi.ModifyTextCardScaleArgs.Instance;
-		args.G = g;
-		args.Card = card;
-		return Hooks.Aggregate(Vec.One, (v, hook) => v * hook.ModifyTextCardScale(args));
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.CardRenderingApi.ModifyTextCardScaleArgs>();
+		try
+		{
+			args.G = g;
+			args.Card = card;
+			return Hooks.Aggregate(Vec.One, (v, hook) => v * hook.ModifyTextCardScale(args));
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	public Matrix ModifyNonTextCardRenderMatrix(G g, Card card, List<CardAction> actions)
 	{
-		var args = ApiImplementation.V2Api.CardRenderingApi.ModifyNonTextCardRenderMatrixArgs.Instance;
-		args.G = g;
-		args.Card = card;
-		args.Actions = actions;
-		return Hooks.Aggregate(Matrix.Identity, (m, hook) => m * hook.ModifyNonTextCardRenderMatrix(args));
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.CardRenderingApi.ModifyNonTextCardRenderMatrixArgs>();
+		try
+		{
+			args.G = g;
+			args.Card = card;
+			args.Actions = actions;
+			return Hooks.Aggregate(Matrix.Identity, (m, hook) => m * hook.ModifyNonTextCardRenderMatrix(args));
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	public Matrix ModifyCardActionRenderMatrix(G g, Card card, List<CardAction> actions, CardAction action, int actionWidth)
 	{
-		var args = ApiImplementation.V2Api.CardRenderingApi.ModifyCardActionRenderMatrixArgs.Instance;
-		args.G = g;
-		args.Card = card;
-		args.Actions = actions;
-		args.Action = action;
-		args.ActionWidth = actionWidth;
-		return Hooks.Aggregate(Matrix.Identity, (m, hook) => m * hook.ModifyCardActionRenderMatrix(args));
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.CardRenderingApi.ModifyCardActionRenderMatrixArgs>();
+		try
+		{
+			args.G = g;
+			args.Card = card;
+			args.Actions = actions;
+			args.Action = action;
+			args.ActionWidth = actionWidth;
+			return Hooks.Aggregate(Matrix.Identity, (m, hook) => m * hook.ModifyCardActionRenderMatrix(args));
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 	
 	private static void ResetSpriteBatch()

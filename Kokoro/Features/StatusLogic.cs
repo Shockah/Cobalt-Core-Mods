@@ -37,9 +37,6 @@ partial class ApiImplementation
 			
 			internal sealed class ModifyStatusChangeArgs : IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusChangeArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly ModifyStatusChangeArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public Ship Ship { get; internal set; } = null!;
@@ -50,9 +47,6 @@ partial class ApiImplementation
 			
 			internal sealed class IsAffectedByBoostArgs : IKokoroApi.IV2.IStatusLogicApi.IHook.IIsAffectedByBoostArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly IsAffectedByBoostArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public Ship Ship { get; internal set; } = null!;
@@ -61,9 +55,6 @@ partial class ApiImplementation
 			
 			internal sealed class OnStatusTurnTriggerArgs : IKokoroApi.IV2.IStatusLogicApi.IHook.IOnStatusTurnTriggerArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly OnStatusTurnTriggerArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming Timing { get; internal set; }
@@ -75,9 +66,6 @@ partial class ApiImplementation
 			
 			internal sealed class HandleStatusTurnAutoStepArgs : IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly HandleStatusTurnAutoStepArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming Timing { get; internal set; }
@@ -144,31 +132,45 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 
 	public int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount)
 	{
-		var args = ApiImplementation.V2Api.StatusLogicApi.ModifyStatusChangeArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Ship = ship;
-		args.Status = status;
-		args.OldAmount = oldAmount;
-		args.NewAmount = newAmount;
-		
-		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			args.NewAmount = hook.ModifyStatusChange(args);
-		return args.NewAmount;
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusLogicApi.ModifyStatusChangeArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Ship = ship;
+			args.Status = status;
+			args.OldAmount = oldAmount;
+			args.NewAmount = newAmount;
+
+			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				args.NewAmount = hook.ModifyStatusChange(args);
+			return args.NewAmount;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	public bool IsAffectedByBoost(State state, Combat combat, Ship ship, Status status)
 	{
-		var args = ApiImplementation.V2Api.StatusLogicApi.IsAffectedByBoostArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Ship = ship;
-		args.Status = status;
-		
-		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			if (hook.IsAffectedByBoost(args) is { } result)
-				return result;
-		return true;
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusLogicApi.IsAffectedByBoostArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Ship = ship;
+			args.Status = status;
+
+			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				if (hook.IsAffectedByBoost(args) is { } result)
+					return result;
+			return true;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	internal void OnTurnStart(State state, Combat combat, Ship ship)
@@ -187,79 +189,93 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 			var newAmount = oldAmount;
 			var setStrategy = AutoStepSetStrategies.GetValueOrDefault(status, IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueImmediateAdd);
 			
-			var handleStatusTurnAutoStepArgs = ApiImplementation.V2Api.StatusLogicApi.HandleStatusTurnAutoStepArgs.Instance;
-			handleStatusTurnAutoStepArgs.State = state;
-			handleStatusTurnAutoStepArgs.Combat = combat;
-			handleStatusTurnAutoStepArgs.Timing = timing;
-			handleStatusTurnAutoStepArgs.Ship = ship;
-			handleStatusTurnAutoStepArgs.Status = status;
-			handleStatusTurnAutoStepArgs.Amount = newAmount;
-			handleStatusTurnAutoStepArgs.SetStrategy = setStrategy;
-
-			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-				if (hook.HandleStatusTurnAutoStep(handleStatusTurnAutoStepArgs))
-					break;
-			newAmount = handleStatusTurnAutoStepArgs.Amount;
-			setStrategy = handleStatusTurnAutoStepArgs.SetStrategy;
-			
-			var onStatusTurnTriggerArgs = ApiImplementation.V2Api.StatusLogicApi.OnStatusTurnTriggerArgs.Instance;
-			onStatusTurnTriggerArgs.State = state;
-			onStatusTurnTriggerArgs.Combat = combat;
-			onStatusTurnTriggerArgs.Timing = timing;
-			onStatusTurnTriggerArgs.Ship = ship;
-			onStatusTurnTriggerArgs.Status = status;
-			onStatusTurnTriggerArgs.OldAmount = oldAmount;
-			onStatusTurnTriggerArgs.NewAmount = newAmount;
-			
-			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-				hook.OnStatusTurnTrigger(onStatusTurnTriggerArgs);
-
-			if (newAmount == oldAmount)
-				continue;
-
-			switch (setStrategy)
+			var handleStatusTurnAutoStepArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusLogicApi.HandleStatusTurnAutoStepArgs>();
+			try
 			{
-				case IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.Direct:
-					ship.Set(status, newAmount);
-					break;
-				case IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueSet:
-					combat.Queue(new AStatus
+				handleStatusTurnAutoStepArgs.State = state;
+				handleStatusTurnAutoStepArgs.Combat = combat;
+				handleStatusTurnAutoStepArgs.Timing = timing;
+				handleStatusTurnAutoStepArgs.Ship = ship;
+				handleStatusTurnAutoStepArgs.Status = status;
+				handleStatusTurnAutoStepArgs.Amount = newAmount;
+				handleStatusTurnAutoStepArgs.SetStrategy = setStrategy;
+
+				foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+					if (hook.HandleStatusTurnAutoStep(handleStatusTurnAutoStepArgs))
+						break;
+				newAmount = handleStatusTurnAutoStepArgs.Amount;
+				setStrategy = handleStatusTurnAutoStepArgs.SetStrategy;
+
+				var onStatusTurnTriggerArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusLogicApi.OnStatusTurnTriggerArgs>();
+				try
+				{
+					onStatusTurnTriggerArgs.State = state;
+					onStatusTurnTriggerArgs.Combat = combat;
+					onStatusTurnTriggerArgs.Timing = timing;
+					onStatusTurnTriggerArgs.Ship = ship;
+					onStatusTurnTriggerArgs.Status = status;
+					onStatusTurnTriggerArgs.OldAmount = oldAmount;
+					onStatusTurnTriggerArgs.NewAmount = newAmount;
+
+					foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+						hook.OnStatusTurnTrigger(onStatusTurnTriggerArgs);
+
+					if (newAmount == oldAmount)
+						continue;
+
+					switch (setStrategy)
 					{
-						targetPlayer = ship.isPlayerShip,
-						status = status,
-						mode = AStatusMode.Set,
-						statusAmount = newAmount
-					});
-					break;
-				case IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueAdd:
-					combat.Queue(new AStatus
-					{
-						targetPlayer = ship.isPlayerShip,
-						status = status,
-						mode = AStatusMode.Add,
-						statusAmount = newAmount - oldAmount
-					});
-					break;
-				case IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueImmediateSet:
-					combat.QueueImmediate(new AStatus
-					{
-						targetPlayer = ship.isPlayerShip,
-						status = status,
-						mode = AStatusMode.Set,
-						statusAmount = newAmount
-					});
-					break;
-				case IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueImmediateAdd:
-					combat.QueueImmediate(new AStatus
-					{
-						targetPlayer = ship.isPlayerShip,
-						status = status,
-						mode = AStatusMode.Add,
-						statusAmount = newAmount - oldAmount
-					});
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
+						case IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.Direct:
+							ship.Set(status, newAmount);
+							break;
+						case IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueSet:
+							combat.Queue(new AStatus
+							{
+								targetPlayer = ship.isPlayerShip,
+								status = status,
+								mode = AStatusMode.Set,
+								statusAmount = newAmount
+							});
+							break;
+						case IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueAdd:
+							combat.Queue(new AStatus
+							{
+								targetPlayer = ship.isPlayerShip,
+								status = status,
+								mode = AStatusMode.Add,
+								statusAmount = newAmount - oldAmount
+							});
+							break;
+						case IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueImmediateSet:
+							combat.QueueImmediate(new AStatus
+							{
+								targetPlayer = ship.isPlayerShip,
+								status = status,
+								mode = AStatusMode.Set,
+								statusAmount = newAmount
+							});
+							break;
+						case IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueImmediateAdd:
+							combat.QueueImmediate(new AStatus
+							{
+								targetPlayer = ship.isPlayerShip,
+								status = status,
+								mode = AStatusMode.Add,
+								statusAmount = newAmount - oldAmount
+							});
+							break;
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+				}
+				finally
+				{
+					ModEntry.Instance.ArgsPool.Return(onStatusTurnTriggerArgs);
+				}
+			}
+			finally
+			{
+				ModEntry.Instance.ArgsPool.Return(handleStatusTurnAutoStepArgs);
 			}
 		}
 	}

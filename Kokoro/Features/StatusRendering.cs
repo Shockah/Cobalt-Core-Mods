@@ -49,9 +49,6 @@ partial class ApiImplementation
 			
 			internal sealed class GetExtraStatusesToShowArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IGetExtraStatusesToShowArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly GetExtraStatusesToShowArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public Ship Ship { get; internal set; } = null!;
@@ -59,9 +56,6 @@ partial class ApiImplementation
 			
 			internal sealed class ShouldShowStatusArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IShouldShowStatusArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly ShouldShowStatusArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public Ship Ship { get; internal set; } = null!;
@@ -71,9 +65,6 @@ partial class ApiImplementation
 			
 			internal sealed class OverrideStatusRenderingAsBarsArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingAsBarsArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly OverrideStatusRenderingAsBarsArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public Ship Ship { get; internal set; } = null!;
@@ -83,9 +74,6 @@ partial class ApiImplementation
 			
 			internal sealed class OverrideStatusTooltipsArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly OverrideStatusTooltipsArgs Instance = new();
-				
 				public Status Status { get; internal set; }
 				public int Amount { get; internal set; }
 				public Ship? Ship { get; internal set; }
@@ -130,45 +118,66 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 
 	public bool ShouldShowStatus(State state, Combat combat, Ship ship, Status status, int amount)
 	{
-		var args = ApiImplementation.V2Api.StatusRenderingApi.ShouldShowStatusArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Ship = ship;
-		args.Status = status;
-		args.Amount = amount;
-		
-		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			if (hook.ShouldShowStatus(args) is { } result)
-				return result;
-		return true;
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusRenderingApi.ShouldShowStatusArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Ship = ship;
+			args.Status = status;
+			args.Amount = amount;
+
+			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				if (hook.ShouldShowStatus(args) is { } result)
+					return result;
+			return true;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	public (IReadOnlyList<Color> Colors, int? BarTickWidth)? GetStatusRenderingBarOverride(State state, Combat combat, Ship ship, Status status, int amount)
 	{
-		var args = ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusRenderingAsBarsArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Ship = ship;
-		args.Status = status;
-		args.Amount = amount;
-		
-		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			if (hook.OverrideStatusRenderingAsBars(args) is { } @override)
-				return @override;
-		return null;
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusRenderingAsBarsArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Ship = ship;
+			args.Status = status;
+			args.Amount = amount;
+
+			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				if (hook.OverrideStatusRenderingAsBars(args) is { } @override)
+					return @override;
+			return null;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	internal IReadOnlyList<Tooltip> OverrideStatusTooltips(Status status, int amount, IReadOnlyList<Tooltip> tooltips)
 	{
-		var args = ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusTooltipsArgs.Instance;
-		args.Status = status;
-		args.Amount = amount;
-		args.Ship = RenderingStatusForShip;
-		args.Tooltips = tooltips;
-		
-		foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, (MG.inst.g.state ?? DB.fakeState).EnumerateAllArtifacts()))
-			tooltips = hook.OverrideStatusTooltips(args);
-		return tooltips;
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusTooltipsArgs>();
+		try
+		{
+			args.Status = status;
+			args.Amount = amount;
+			args.Ship = RenderingStatusForShip;
+			args.Tooltips = tooltips;
+
+			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, (MG.inst.g.state ?? DB.fakeState).EnumerateAllArtifacts()))
+				args.Tooltips = hook.OverrideStatusTooltips(args);
+			return args.Tooltips;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 	
 	private static void StatusMeta_GetTooltips_Postfix(Status status, int amt, ref List<Tooltip> __result)
@@ -233,24 +242,31 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 	{
 		var combat = g.state.route as Combat ?? DB.fakeCombat;
 		
-		var args = ApiImplementation.V2Api.StatusRenderingApi.GetExtraStatusesToShowArgs.Instance;
-		args.State = g.state;
-		args.Combat = combat;
-		args.Ship = ship;
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusRenderingApi.GetExtraStatusesToShowArgs>();
+		try
+		{
+			args.State = g.state;
+			args.Combat = combat;
+			args.Ship = ship;
 
-		ship._statusListCache = ship.statusEffects
-			.Where(kvp => kvp.Key != Status.shield && kvp.Key != Status.tempShield)
-			.Select(kvp => (Status: kvp.Key, Priority: 0.0, Amount: kvp.Value))
-			.Concat(
-				Instance
-					.SelectMany(hook => hook.GetExtraStatusesToShow(args))
-					.Select(e => (Status: e.Status, Priority: e.Priority, Amount: ship.Get(e.Status)))
-			)
-			.OrderByDescending(e => e.Priority)
-			.DistinctBy(e => e.Status)
-			.Where(e => Instance.ShouldShowStatus(g.state, combat, ship, e.Status, e.Amount))
-			.Select(e => new KeyValuePair<Status, int>(e.Status, e.Amount))
-			.ToList();
+			ship._statusListCache = ship.statusEffects
+				.Where(kvp => kvp.Key != Status.shield && kvp.Key != Status.tempShield)
+				.Select(kvp => (Status: kvp.Key, Priority: 0.0, Amount: kvp.Value))
+				.Concat(
+					Instance
+						.SelectMany(hook => hook.GetExtraStatusesToShow(args))
+						.Select(e => (Status: e.Status, Priority: e.Priority, Amount: ship.Get(e.Status)))
+				)
+				.OrderByDescending(e => e.Priority)
+				.DistinctBy(e => e.Status)
+				.Where(e => Instance.ShouldShowStatus(g.state, combat, ship, e.Status, e.Amount))
+				.Select(e => new KeyValuePair<Status, int>(e.Status, e.Amount))
+				.ToList();
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	private static IEnumerable<CodeInstruction> Ship_RenderStatusRow_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)

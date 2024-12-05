@@ -110,9 +110,6 @@ partial class ApiImplementation
 			
 			internal sealed class ModifyFiniteUsesArgs : IKokoroApi.IV2.IFiniteApi.IHook.IModifyFiniteUsesArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly ModifyFiniteUsesArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Card Card { get; internal set; } = null!;
 				public int BaseUses { get; internal set; }
@@ -221,17 +218,24 @@ internal sealed class FiniteManager : HookManager<IKokoroApi.IV2.IFiniteApi.IHoo
 
 	public static int GetStartingFiniteUses(State state, Card card)
 	{
-		var args = ApiImplementation.V2Api.FiniteApi.ModifyFiniteUsesArgs.Instance;
-		args.State = state;
-		args.Card = card;
-		args.BaseUses = GetBaseFiniteUses(card.Key(), card.upgrade);
-		args.Uses = args.BaseUses;
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.FiniteApi.ModifyFiniteUsesArgs>();
+		try
+		{
+			args.State = state;
+			args.Card = card;
+			args.BaseUses = GetBaseFiniteUses(card.Key(), card.upgrade);
+			args.Uses = args.BaseUses;
 
-		foreach (var hook in Instance.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			if (hook.ModifyFiniteUses(args))
-				break;
+			foreach (var hook in Instance.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				if (hook.ModifyFiniteUses(args))
+					break;
 
-		return Math.Max(args.Uses, 1);
+			return Math.Max(args.Uses, 1);
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	public static void SetBaseFiniteUses(string key, int value)

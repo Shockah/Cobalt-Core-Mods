@@ -110,9 +110,6 @@ partial class ApiImplementation
 			
 			internal sealed class ModifyLimitedUsesArgs : IKokoroApi.IV2.ILimitedApi.IHook.IModifyLimitedUsesArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly ModifyLimitedUsesArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Card Card { get; internal set; } = null!;
 				public int BaseUses { get; internal set; }
@@ -121,9 +118,6 @@ partial class ApiImplementation
 			
 			internal sealed class IsSingleUseLimitedArgs : IKokoroApi.IV2.ILimitedApi.IHook.IIsSingleUseLimitedArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly IsSingleUseLimitedArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Card Card { get; internal set; } = null!;
 			}
@@ -229,17 +223,24 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 
 	public static int GetStartingLimitedUses(State state, Card card)
 	{
-		var args = ApiImplementation.V2Api.LimitedApi.ModifyLimitedUsesArgs.Instance;
-		args.State = state;
-		args.Card = card;
-		args.BaseUses = GetBaseLimitedUses(card.Key(), card.upgrade);
-		args.Uses = args.BaseUses;
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.LimitedApi.ModifyLimitedUsesArgs>();
+		try
+		{
+			args.State = state;
+			args.Card = card;
+			args.BaseUses = GetBaseLimitedUses(card.Key(), card.upgrade);
+			args.Uses = args.BaseUses;
 
-		foreach (var hook in Instance.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			if (hook.ModifyLimitedUses(args))
-				break;
+			foreach (var hook in Instance.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				if (hook.ModifyLimitedUses(args))
+					break;
 
-		return Math.Max(args.Uses, 1);
+			return Math.Max(args.Uses, 1);
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	public static void SetBaseLimitedUses(string key, int value)
@@ -274,14 +275,21 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 
 	public static bool IsSingleUseLimited(State state, Card card)
 	{
-		var args = ApiImplementation.V2Api.LimitedApi.IsSingleUseLimitedArgs.Instance;
-		args.State = state;
-		args.Card = card;
-		
-		foreach (var hook in Instance.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			if (hook.IsSingleUseLimited(args) is { } result)
-				return result;
-		return false;
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.LimitedApi.IsSingleUseLimitedArgs>();
+		try
+		{
+			args.State = state;
+			args.Card = card;
+
+			foreach (var hook in Instance.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				if (hook.IsSingleUseLimited(args) is { } result)
+					return result;
+			return false;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	internal static Spr ObtainIcon(int amount)

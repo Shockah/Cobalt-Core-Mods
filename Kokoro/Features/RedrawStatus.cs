@@ -70,9 +70,6 @@ partial class ApiImplementation
 			
 			internal sealed class CanRedrawArgs : IKokoroApi.IV2.IRedrawStatusApi.IHook.ICanRedrawArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly CanRedrawArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public Card Card { get; internal set; } = null!;
@@ -80,9 +77,6 @@ partial class ApiImplementation
 			
 			internal sealed class PayForRedrawArgs : IKokoroApi.IV2.IRedrawStatusApi.IHook.IPayForRedrawArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly PayForRedrawArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public Card Card { get; internal set; } = null!;
@@ -91,9 +85,6 @@ partial class ApiImplementation
 			
 			internal sealed class DoRedrawArgs : IKokoroApi.IV2.IRedrawStatusApi.IHook.IDoRedrawArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly DoRedrawArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public Card Card { get; internal set; } = null!;
@@ -103,9 +94,6 @@ partial class ApiImplementation
 			
 			internal sealed class AfterRedrawArgs : IKokoroApi.IV2.IRedrawStatusApi.IHook.IAfterRedrawArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly AfterRedrawArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public Card Card { get; internal set; } = null!;
@@ -116,9 +104,6 @@ partial class ApiImplementation
 			
 			internal sealed class OverrideHookEnablementArgs : IKokoroApi.IV2.IRedrawStatusApi.IHook.IOverrideHookEnablementArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly OverrideHookEnablementArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType HookType { get; internal set; }
@@ -155,16 +140,23 @@ internal sealed class RedrawStatusManager
 
 	private bool IsHookEnabled(State state, Combat combat, IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType hookType, IKokoroApi.IV2.IRedrawStatusApi.IHook testedHook)
 	{
-		var args = ApiImplementation.V2Api.RedrawStatusApi.OverrideHookEnablementArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.HookType = hookType;
-		args.Hook = testedHook;
-		
-		foreach (var hook in HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			if (hook.OverrideHookEnablement(args) is { } result)
-				return result;
-		return true;
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.RedrawStatusApi.OverrideHookEnablementArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.HookType = hookType;
+			args.Hook = testedHook;
+
+			foreach (var hook in HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				if (hook.OverrideHookEnablement(args) is { } result)
+					return result;
+			return true;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	public bool IsRedrawPossible(State state, Combat combat, Card card)
@@ -174,15 +166,22 @@ internal sealed class RedrawStatusManager
 		if (!combat.hand.Contains(card))
 			return false;
 
-		var args = ApiImplementation.V2Api.RedrawStatusApi.CanRedrawArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Card = card;
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.RedrawStatusApi.CanRedrawArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Card = card;
 
-		foreach (var hook in HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			if (IsHookEnabled(state, combat, IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType.Possibility, hook) && hook.CanRedraw(args) is { } result)
-				return result;
-		return false;
+			foreach (var hook in HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				if (IsHookEnabled(state, combat, IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType.Possibility, hook) && hook.CanRedraw(args) is { } result)
+					return result;
+			return false;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	public bool DoRedraw(State state, Combat combat, Card card)
@@ -194,64 +193,92 @@ internal sealed class RedrawStatusManager
 		if (GetActionHook() is not { } actionHook)
 			return false;
 		
-		var args = ApiImplementation.V2Api.RedrawStatusApi.AfterRedrawArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Card = card;
-		args.PossibilityHook = possibilityHook;
-		args.PaymentHook = paymentHook;
-		args.ActionHook = actionHook;
-
-		foreach (var hook in HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			hook.AfterRedraw(args);
-		return true;
-
-		IKokoroApi.IV2.IRedrawStatusApi.IHook? GetPossibilityHook()
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.RedrawStatusApi.AfterRedrawArgs>();
+		try
 		{
-			var args = ApiImplementation.V2Api.RedrawStatusApi.CanRedrawArgs.Instance;
-			args.State = state;
-			args.Combat = combat;
-			args.Card = card;
-			
-			foreach (var hook in HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-			{
-				if (!IsHookEnabled(state, combat, IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType.Possibility, hook))
-					continue;
-				
-				switch (hook.CanRedraw(args))
-				{
-					case false:
-						return null;
-					case true:
-						return hook;
-				}
-			}
-			return null;
-		}
-
-		IKokoroApi.IV2.IRedrawStatusApi.IHook? GetPaymentHook()
-		{
-			var args = ApiImplementation.V2Api.RedrawStatusApi.PayForRedrawArgs.Instance;
-			args.State = state;
-			args.Combat = combat;
-			args.Card = card;
-			args.PossibilityHook = possibilityHook;
-			
-			return HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts())
-				.FirstOrDefault(hook => IsHookEnabled(state, combat, IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType.Payment, hook) && hook.PayForRedraw(args));
-		}
-
-		IKokoroApi.IV2.IRedrawStatusApi.IHook? GetActionHook()
-		{
-			var args = ApiImplementation.V2Api.RedrawStatusApi.DoRedrawArgs.Instance;
 			args.State = state;
 			args.Combat = combat;
 			args.Card = card;
 			args.PossibilityHook = possibilityHook;
 			args.PaymentHook = paymentHook;
-			
-			return HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts())
-				.FirstOrDefault(hook => IsHookEnabled(state, combat, IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType.Action, hook) && hook.DoRedraw(args));
+			args.ActionHook = actionHook;
+
+			foreach (var hook in HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				hook.AfterRedraw(args);
+			return true;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
+
+		IKokoroApi.IV2.IRedrawStatusApi.IHook? GetPossibilityHook()
+		{
+			var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.RedrawStatusApi.CanRedrawArgs>();
+			try
+			{
+				args.State = state;
+				args.Combat = combat;
+				args.Card = card;
+
+				foreach (var hook in HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				{
+					if (!IsHookEnabled(state, combat, IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType.Possibility, hook))
+						continue;
+
+					switch (hook.CanRedraw(args))
+					{
+						case false:
+							return null;
+						case true:
+							return hook;
+					}
+				}
+				return null;
+			}
+			finally
+			{
+				ModEntry.Instance.ArgsPool.Return(args);
+			}
+		}
+
+		IKokoroApi.IV2.IRedrawStatusApi.IHook? GetPaymentHook()
+		{
+			var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.RedrawStatusApi.PayForRedrawArgs>();
+			try
+			{
+				args.State = state;
+				args.Combat = combat;
+				args.Card = card;
+				args.PossibilityHook = possibilityHook;
+
+				return HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts())
+					.FirstOrDefault(hook => IsHookEnabled(state, combat, IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType.Payment, hook) && hook.PayForRedraw(args));
+			}
+			finally
+			{
+				ModEntry.Instance.ArgsPool.Return(args);
+			}
+		}
+
+		IKokoroApi.IV2.IRedrawStatusApi.IHook? GetActionHook()
+		{
+			var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.RedrawStatusApi.DoRedrawArgs>();
+			try
+			{
+				args.State = state;
+				args.Combat = combat;
+				args.Card = card;
+				args.PossibilityHook = possibilityHook;
+				args.PaymentHook = paymentHook;
+
+				return HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts())
+					.FirstOrDefault(hook => IsHookEnabled(state, combat, IKokoroApi.IV2.IRedrawStatusApi.IHook.HookType.Action, hook) && hook.DoRedraw(args));
+			}
+			finally
+			{
+				ModEntry.Instance.ArgsPool.Return(args);
+			}
 		}
 	}
 	
@@ -338,43 +365,71 @@ internal sealed class V2ToV1RedrawStatusHookWrapper(IKokoroApi.IV2.IRedrawStatus
 {
 	public bool? CanRedraw(State state, Combat combat, Card card)
 	{
-		var args = ApiImplementation.V2Api.RedrawStatusApi.CanRedrawArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Card = card;
-		return v2.CanRedraw(args);
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.RedrawStatusApi.CanRedrawArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Card = card;
+			return v2.CanRedraw(args);
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	public bool PayForRedraw(State state, Combat combat, Card card, IRedrawStatusHook possibilityHook)
 	{
-		var args = ApiImplementation.V2Api.RedrawStatusApi.PayForRedrawArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Card = card;
-		args.PossibilityHook = RedrawStatusManager.Instance.HookMapper.MapToV2(possibilityHook);
-		return v2.PayForRedraw(args);
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.RedrawStatusApi.PayForRedrawArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Card = card;
+			args.PossibilityHook = RedrawStatusManager.Instance.HookMapper.MapToV2(possibilityHook);
+			return v2.PayForRedraw(args);
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	public bool DoRedraw(State state, Combat combat, Card card, IRedrawStatusHook possibilityHook, IRedrawStatusHook paymentHook)
 	{
-		var args = ApiImplementation.V2Api.RedrawStatusApi.DoRedrawArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Card = card;
-		args.PossibilityHook = RedrawStatusManager.Instance.HookMapper.MapToV2(possibilityHook);
-		args.PaymentHook = RedrawStatusManager.Instance.HookMapper.MapToV2(paymentHook);
-		return v2.DoRedraw(args);
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.RedrawStatusApi.DoRedrawArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Card = card;
+			args.PossibilityHook = RedrawStatusManager.Instance.HookMapper.MapToV2(possibilityHook);
+			args.PaymentHook = RedrawStatusManager.Instance.HookMapper.MapToV2(paymentHook);
+			return v2.DoRedraw(args);
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	public void AfterRedraw(State state, Combat combat, Card card, IRedrawStatusHook possibilityHook, IRedrawStatusHook paymentHook, IRedrawStatusHook actionHook)
 	{
-		var args = ApiImplementation.V2Api.RedrawStatusApi.AfterRedrawArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Card = card;
-		args.PossibilityHook = RedrawStatusManager.Instance.HookMapper.MapToV2(possibilityHook);
-		args.PaymentHook = RedrawStatusManager.Instance.HookMapper.MapToV2(paymentHook);
-		args.ActionHook = RedrawStatusManager.Instance.HookMapper.MapToV2(actionHook);
-		v2.AfterRedraw(args);
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.RedrawStatusApi.AfterRedrawArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Card = card;
+			args.PossibilityHook = RedrawStatusManager.Instance.HookMapper.MapToV2(possibilityHook);
+			args.PaymentHook = RedrawStatusManager.Instance.HookMapper.MapToV2(paymentHook);
+			args.ActionHook = RedrawStatusManager.Instance.HookMapper.MapToV2(actionHook);
+			v2.AfterRedraw(args);
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 }

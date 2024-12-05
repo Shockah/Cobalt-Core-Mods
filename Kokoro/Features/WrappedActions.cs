@@ -58,9 +58,6 @@ partial class ApiImplementation
 			
 			internal sealed class GetWrappedCardActionsArgs : IKokoroApi.IV2.IWrappedActionsApi.IHook.IGetWrappedCardActionsArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly GetWrappedCardActionsArgs Instance = new();
-				
 				public CardAction Action { get; internal set; } = null!;
 			}
 		}
@@ -89,30 +86,44 @@ internal sealed class WrappedActionManager : VariedApiVersionHookManager<IKokoro
 
 	public IEnumerable<CardAction>? GetWrappedCardActions(CardAction action)
 	{
-		var args = ApiImplementation.V2Api.WrappedActionsApi.GetWrappedCardActionsArgs.Instance;
-		args.Action = action;
-		return Hooks.Select(hook => hook.GetWrappedCardActions(args)).OfType<IEnumerable<CardAction>>().FirstOrDefault();
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.WrappedActionsApi.GetWrappedCardActionsArgs>();
+		try
+		{
+			args.Action = action;
+			return Hooks.Select(hook => hook.GetWrappedCardActions(args)).OfType<IEnumerable<CardAction>>().FirstOrDefault();
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	public IEnumerable<CardAction> GetWrappedCardActionsRecursively(CardAction action, bool includingWrapperActions)
 	{
-		var args = ApiImplementation.V2Api.WrappedActionsApi.GetWrappedCardActionsArgs.Instance;
-		args.Action = action;
-		
-		foreach (var hook in Hooks)
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.WrappedActionsApi.GetWrappedCardActionsArgs>();
+		try
 		{
-			var wrappedActions = hook.GetWrappedCardActions(args);
-			if (wrappedActions is not null)
+			args.Action = action;
+
+			foreach (var hook in Hooks)
 			{
-				foreach (var wrappedAction in wrappedActions)
-					foreach (var nestedWrappedAction in GetWrappedCardActionsRecursively(wrappedAction, includingWrapperActions))
-						yield return nestedWrappedAction;
-				if (includingWrapperActions)
-					yield return action;
-				yield break;
+				var wrappedActions = hook.GetWrappedCardActions(args);
+				if (wrappedActions is not null)
+				{
+					foreach (var wrappedAction in wrappedActions)
+						foreach (var nestedWrappedAction in GetWrappedCardActionsRecursively(wrappedAction, includingWrapperActions))
+							yield return nestedWrappedAction;
+					if (includingWrapperActions)
+						yield return action;
+					yield break;
+				}
 			}
+			yield return action;
 		}
-		yield return action;
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 	
 	private static IEnumerable<CodeInstruction> Card_GetActionsOverridden_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)

@@ -264,9 +264,6 @@ partial class ApiImplementation
 			
 			internal sealed class RunActionResult : IKokoroApi.IV2.IDroneShiftHookApi.IRunActionResult
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly RunActionResult Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -279,9 +276,6 @@ partial class ApiImplementation
 			
 			internal sealed class ActionCanDoDroneShiftArgs : IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftAction.ICanDoDroneShiftArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly ActionCanDoDroneShiftArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -289,9 +283,6 @@ partial class ApiImplementation
 			
 			internal sealed class ActionProvideDroneShiftActionsArgs : IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftAction.IProvideDroneShiftActionsArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly ActionProvideDroneShiftActionsArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -300,9 +291,6 @@ partial class ApiImplementation
 			
 			internal sealed class ActionDroneShiftButtonHoveredArgs : IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftAction.IDroneShiftButtonHoveredArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly ActionDroneShiftButtonHoveredArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -310,9 +298,6 @@ partial class ApiImplementation
 			
 			internal sealed class PaymentOptionCanPayForDroneShiftArgs : IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPaymentOption.ICanPayForDroneShiftArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly PaymentOptionCanPayForDroneShiftArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -321,9 +306,6 @@ partial class ApiImplementation
 			
 			internal sealed class PaymentOptionProvideDroneShiftPaymentActionsArgs : IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPaymentOption.IProvideDroneShiftPaymentActionsArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly PaymentOptionProvideDroneShiftPaymentActionsArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -332,9 +314,6 @@ partial class ApiImplementation
 			
 			internal sealed class PaymentOptionDroneShiftButtonHoveredArgs : IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPaymentOption.IDroneShiftButtonHoveredArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly PaymentOptionDroneShiftButtonHoveredArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -343,9 +322,6 @@ partial class ApiImplementation
 			
 			internal sealed class PreconditionIsDroneShiftAllowedArgs : IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPrecondition.IIsDroneShiftAllowedArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly PreconditionIsDroneShiftAllowedArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -356,9 +332,6 @@ partial class ApiImplementation
 			
 			internal sealed class PreconditionDroneShiftButtonHoveredArgs : IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPrecondition.IDroneShiftButtonHoveredArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly PreconditionDroneShiftButtonHoveredArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -369,9 +342,6 @@ partial class ApiImplementation
 			
 			internal sealed class PostconditionIsDroneShiftAllowedArgs : IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPostcondition.IIsDroneShiftAllowedArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly PostconditionIsDroneShiftAllowedArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -382,9 +352,6 @@ partial class ApiImplementation
 			
 			internal sealed class PostconditionDroneShiftButtonHoveredArgs : IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPostcondition.IDroneShiftButtonHoveredArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly PostconditionDroneShiftButtonHoveredArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -395,9 +362,6 @@ partial class ApiImplementation
 			
 			internal sealed class HookIsDroneShiftActionEnabledArgs : IKokoroApi.IV2.IDroneShiftHookApi.IHook.IIsDroneShiftActionEnabledArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly HookIsDroneShiftActionEnabledArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -406,9 +370,6 @@ partial class ApiImplementation
 			
 			internal sealed class HookIsDroneShiftPaymentOptionEnabledArgs : IKokoroApi.IV2.IDroneShiftHookApi.IHook.IIsDroneShiftPaymentOptionEnabledArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly HookIsDroneShiftPaymentOptionEnabledArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -418,9 +379,6 @@ partial class ApiImplementation
 			
 			internal sealed class HookIsDroneShiftPreconditionEnabledArgs : IKokoroApi.IV2.IDroneShiftHookApi.IHook.IIsDroneShiftPreconditionEnabledArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly HookIsDroneShiftPreconditionEnabledArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -430,9 +388,6 @@ partial class ApiImplementation
 			
 			internal sealed class HookIsDroneShiftPostconditionEnabledArgs : IKokoroApi.IV2.IDroneShiftHookApi.IHook.IIsDroneShiftPostconditionEnabledArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly HookIsDroneShiftPostconditionEnabledArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -443,9 +398,6 @@ partial class ApiImplementation
 			
 			internal sealed class HookDroneShiftPreconditionFailedArgs : IKokoroApi.IV2.IDroneShiftHookApi.IHook.IDroneShiftPreconditionFailedArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly HookDroneShiftPreconditionFailedArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -456,9 +408,6 @@ partial class ApiImplementation
 			
 			internal sealed class HookDroneShiftPostconditionFailedArgs : IKokoroApi.IV2.IDroneShiftHookApi.IHook.IDroneShiftPostconditionFailedArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly HookDroneShiftPostconditionFailedArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -470,9 +419,6 @@ partial class ApiImplementation
 			
 			internal sealed class HookAfterDroneShiftArgs : IKokoroApi.IV2.IDroneShiftHookApi.IHook.IAfterDroneShiftArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly HookAfterDroneShiftArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -483,9 +429,6 @@ partial class ApiImplementation
 			
 			internal sealed class HookShouldShowDroneShiftButtonArgs : IKokoroApi.IV2.IDroneShiftHookApi.IHook.IShouldShowDroneShiftButtonArgs
 			{
-				// ReSharper disable once MemberHidesStaticFromOuterClass
-				internal static readonly HookShouldShowDroneShiftButtonArgs Instance = new();
-				
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IDroneShiftHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IDroneShiftHookApi.Direction.Right;
@@ -536,17 +479,24 @@ internal sealed class DroneShiftManager
 		IEnumerable<IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftActionEntry> enumerable
 	)
 	{
-		var args = ApiImplementation.V2Api.DroneShiftHookApi.HookIsDroneShiftActionEnabledArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Direction = direction;
-		
-		var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
-		return enumerable.Where(e =>
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.HookIsDroneShiftActionEnabledArgs>();
+		try
 		{
-			args.Entry = e;
-			return hooks.All(h => h.IsDroneShiftActionEnabled(args));
-		});
+			args.State = state;
+			args.Combat = combat;
+			args.Direction = direction;
+
+			var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
+			return enumerable.Where(e =>
+			{
+				args.Entry = e;
+				return hooks.All(h => h.IsDroneShiftActionEnabled(args));
+			});
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	private static IEnumerable<IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPaymentOption> FilterEnabled(
@@ -557,18 +507,25 @@ internal sealed class DroneShiftManager
 		IEnumerable<IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPaymentOption> enumerable
 	)
 	{
-		var args = ApiImplementation.V2Api.DroneShiftHookApi.HookIsDroneShiftPaymentOptionEnabledArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Direction = direction;
-		args.Entry = entry;
-		
-		var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
-		return enumerable.Where(paymentOption =>
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.HookIsDroneShiftPaymentOptionEnabledArgs>();
+		try
 		{
-			args.PaymentOption = paymentOption;
-			return hooks.All(h => h.IsDroneShiftPaymentOptionEnabled(args));
-		});
+			args.State = state;
+			args.Combat = combat;
+			args.Direction = direction;
+			args.Entry = entry;
+
+			var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
+			return enumerable.Where(paymentOption =>
+			{
+				args.PaymentOption = paymentOption;
+				return hooks.All(h => h.IsDroneShiftPaymentOptionEnabled(args));
+			});
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	private static IEnumerable<IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPrecondition> FilterEnabled(
@@ -579,18 +536,25 @@ internal sealed class DroneShiftManager
 		IEnumerable<IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPrecondition> enumerable
 	)
 	{
-		var args = ApiImplementation.V2Api.DroneShiftHookApi.HookIsDroneShiftPreconditionEnabledArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Direction = direction;
-		args.Entry = entry;
-		
-		var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
-		return enumerable.Where(precondition =>
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.HookIsDroneShiftPreconditionEnabledArgs>();
+		try
 		{
-			args.Precondition = precondition;
-			return hooks.All(h => h.IsDroneShiftPreconditionEnabled(args));
-		});
+			args.State = state;
+			args.Combat = combat;
+			args.Direction = direction;
+			args.Entry = entry;
+
+			var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
+			return enumerable.Where(precondition =>
+			{
+				args.Precondition = precondition;
+				return hooks.All(h => h.IsDroneShiftPreconditionEnabled(args));
+			});
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	private static IEnumerable<IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPostcondition> FilterEnabled(
@@ -602,293 +566,342 @@ internal sealed class DroneShiftManager
 		IEnumerable<IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPostcondition> enumerable
 	)
 	{
-		var args = ApiImplementation.V2Api.DroneShiftHookApi.HookIsDroneShiftPostconditionEnabledArgs.Instance;
-		args.State = state;
-		args.Combat = combat;
-		args.Direction = direction;
-		args.Entry = entry;
-		args.PaymentOption = paymentOption;
-		
-		var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
-		return enumerable.Where(postcondition =>
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.HookIsDroneShiftPostconditionEnabledArgs>();
+		try
 		{
-			args.Postcondition = postcondition;
-			return hooks.All(h => h.IsDroneShiftPostconditionEnabled(args));
-		});
+			args.State = state;
+			args.Combat = combat;
+			args.Direction = direction;
+			args.Entry = entry;
+			args.PaymentOption = paymentOption;
+
+			var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
+			return enumerable.Where(postcondition =>
+			{
+				args.Postcondition = postcondition;
+				return hooks.All(h => h.IsDroneShiftPostconditionEnabled(args));
+			});
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 	
 	public IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftActionEntry? GetNextAction(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction)
 	{
-		var canDoDroneShiftArgs = ApiImplementation.V2Api.DroneShiftHookApi.ActionCanDoDroneShiftArgs.Instance;
-		canDoDroneShiftArgs.State = state;
-		canDoDroneShiftArgs.Combat = combat;
-		canDoDroneShiftArgs.Direction = direction;
+		var canDoDroneShiftArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.ActionCanDoDroneShiftArgs>();
+		var paymentOptionCanPayForDroneShiftArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.PaymentOptionCanPayForDroneShiftArgs>();
+		var preconditionIsDroneShiftAllowedArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.PreconditionIsDroneShiftAllowedArgs>();
 
-		return FilterEnabled(state, combat, direction, Instance.ActionEntries).FirstOrDefault(entry =>
+		try
 		{
-			if (!entry.Action.CanDoDroneShiftAction(canDoDroneShiftArgs))
-				return false;
-				
-			var paymentOptionCanPayForDroneShiftArgs = ApiImplementation.V2Api.DroneShiftHookApi.PaymentOptionCanPayForDroneShiftArgs.Instance;
-			paymentOptionCanPayForDroneShiftArgs.State = state;
-			paymentOptionCanPayForDroneShiftArgs.Combat = combat;
-			paymentOptionCanPayForDroneShiftArgs.Direction = direction;
-			paymentOptionCanPayForDroneShiftArgs.Entry = entry;
-
-			if (!FilterEnabled(state, combat, direction, entry, entry.PaymentOptions).Any(paymentOption => paymentOption.CanPayForDroneShift(paymentOptionCanPayForDroneShiftArgs)))
-				return false;
-				
-			var preconditionIsDroneShiftAllowedArgs = ApiImplementation.V2Api.DroneShiftHookApi.PreconditionIsDroneShiftAllowedArgs.Instance;
-			preconditionIsDroneShiftAllowedArgs.State = state;
-			preconditionIsDroneShiftAllowedArgs.Combat = combat;
-			preconditionIsDroneShiftAllowedArgs.Direction = direction;
-			preconditionIsDroneShiftAllowedArgs.Entry = entry;
-			preconditionIsDroneShiftAllowedArgs.ForRendering = true;
-
-			if (FilterEnabled(state, combat, direction, entry, entry.Preconditions).Any(precondition => !precondition.IsDroneShiftAllowed(preconditionIsDroneShiftAllowedArgs).IsAllowed))
-				return false;
-
-			return true;
-		});
-	}
-
-	public void DidHoverButton(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction)
-	{
-		var canDoDroneShiftArgs = ApiImplementation.V2Api.DroneShiftHookApi.ActionCanDoDroneShiftArgs.Instance;
-		canDoDroneShiftArgs.State = state;
-		canDoDroneShiftArgs.Combat = combat;
-		canDoDroneShiftArgs.Direction = direction;
-
-		foreach (var entry in FilterEnabled(state, combat, direction, Instance.ActionEntries))
-		{
-			if (!entry.Action.CanDoDroneShiftAction(canDoDroneShiftArgs))
-				continue;
-			
-			var buttonHoveredArgs = ApiImplementation.V2Api.DroneShiftHookApi.ActionDroneShiftButtonHoveredArgs.Instance;
-			buttonHoveredArgs.State = state;
-			buttonHoveredArgs.Combat = combat;
-			buttonHoveredArgs.Direction = direction;
-			entry.Action.DroneShiftButtonHovered(buttonHoveredArgs);
-			
-			var paymentOptionCanPayForDroneShiftArgs = ApiImplementation.V2Api.DroneShiftHookApi.PaymentOptionCanPayForDroneShiftArgs.Instance;
-			paymentOptionCanPayForDroneShiftArgs.State = state;
-			paymentOptionCanPayForDroneShiftArgs.Combat = combat;
-			paymentOptionCanPayForDroneShiftArgs.Direction = direction;
-			paymentOptionCanPayForDroneShiftArgs.Entry = entry;
-			
-			foreach (var paymentOption in FilterEnabled(state, combat, direction, entry, entry.PaymentOptions))
-			{
-				if (!paymentOption.CanPayForDroneShift(paymentOptionCanPayForDroneShiftArgs))
-					continue;
-
-				var paymentOptionButtonHoveredArgs = ApiImplementation.V2Api.DroneShiftHookApi.PaymentOptionDroneShiftButtonHoveredArgs.Instance;
-				paymentOptionButtonHoveredArgs.State = state;
-				paymentOptionButtonHoveredArgs.Combat = combat;
-				paymentOptionButtonHoveredArgs.Direction = direction;
-				paymentOptionButtonHoveredArgs.Entry = entry;
-				paymentOption.DroneShiftButtonHovered(paymentOptionButtonHoveredArgs);
-			
-				var preconditionIsDroneShiftAllowedArgs = ApiImplementation.V2Api.DroneShiftHookApi.PreconditionIsDroneShiftAllowedArgs.Instance;
-				preconditionIsDroneShiftAllowedArgs.State = state;
-				preconditionIsDroneShiftAllowedArgs.Combat = combat;
-				preconditionIsDroneShiftAllowedArgs.Direction = direction;
-				preconditionIsDroneShiftAllowedArgs.Entry = entry;
-				preconditionIsDroneShiftAllowedArgs.PaymentOption = paymentOption;
-				preconditionIsDroneShiftAllowedArgs.ForRendering = true;
-
-				foreach (var precondition in FilterEnabled(state, combat, direction, entry, entry.Preconditions))
-				{
-					var result = precondition.IsDroneShiftAllowed(preconditionIsDroneShiftAllowedArgs);
-
-					var preconditionButtonHoveredArgs = ApiImplementation.V2Api.DroneShiftHookApi.PreconditionDroneShiftButtonHoveredArgs.Instance;
-					preconditionButtonHoveredArgs.State = state;
-					preconditionButtonHoveredArgs.Combat = combat;
-					preconditionButtonHoveredArgs.Direction = direction;
-					preconditionButtonHoveredArgs.Entry = entry;
-					preconditionButtonHoveredArgs.PaymentOption = paymentOption;
-					preconditionButtonHoveredArgs.Result = result;
-					precondition.DroneShiftButtonHovered(preconditionButtonHoveredArgs);
-
-					if (!result.IsAllowed)
-						return;
-				}
-				
-				var postconditionIsDroneShiftAllowedArgs = ApiImplementation.V2Api.DroneShiftHookApi.PostconditionIsDroneShiftAllowedArgs.Instance;
-				postconditionIsDroneShiftAllowedArgs.State = state;
-				postconditionIsDroneShiftAllowedArgs.Combat = combat;
-				postconditionIsDroneShiftAllowedArgs.Direction = direction;
-				postconditionIsDroneShiftAllowedArgs.Entry = entry;
-				postconditionIsDroneShiftAllowedArgs.PaymentOption = paymentOption;
-				postconditionIsDroneShiftAllowedArgs.ForRendering = true;
-
-				foreach (var postcondition in FilterEnabled(state, combat, direction, entry, paymentOption, entry.Postconditions))
-				{
-					var result = postcondition.IsDroneShiftAllowed(postconditionIsDroneShiftAllowedArgs);
-
-					var postconditionButtonHoveredArgs = ApiImplementation.V2Api.DroneShiftHookApi.PostconditionDroneShiftButtonHoveredArgs.Instance;
-					postconditionButtonHoveredArgs.State = state;
-					postconditionButtonHoveredArgs.Combat = combat;
-					postconditionButtonHoveredArgs.Direction = direction;
-					postconditionButtonHoveredArgs.Entry = entry;
-					postconditionButtonHoveredArgs.Result = result;
-					postcondition.DroneShiftButtonHovered(postconditionButtonHoveredArgs);
-
-					if (!result.IsAllowed)
-						return;
-				}
-
-				return;
-			}
-		}
-	}
-
-	public IKokoroApi.IV2.IDroneShiftHookApi.IRunActionResult RunNextAction(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction)
-	{
-		var result = ApiImplementation.V2Api.DroneShiftHookApi.RunActionResult.Instance;
-		result.State = state;
-		result.Combat = combat;
-		result.Direction = direction;
-		result.Entry = null;
-		result.PaymentOption = null;
-		result.PreconditionFailed = null;
-		result.PostconditionFailed = null;
-		result.Success = null;
-		
-		if (!combat.PlayerCanAct(state))
-			return result;
-
-		foreach (var entry in FilterEnabled(state, combat, direction, Instance.ActionEntries))
-		{
-			var canDoDroneShiftArgs = ApiImplementation.V2Api.DroneShiftHookApi.ActionCanDoDroneShiftArgs.Instance;
 			canDoDroneShiftArgs.State = state;
 			canDoDroneShiftArgs.Combat = combat;
 			canDoDroneShiftArgs.Direction = direction;
 
-			if (!entry.Action.CanDoDroneShiftAction(canDoDroneShiftArgs))
-				continue;
-
-			foreach (var paymentOption in FilterEnabled(state, combat, direction, entry, entry.PaymentOptions))
+			return FilterEnabled(state, combat, direction, Instance.ActionEntries).FirstOrDefault(entry =>
 			{
-				var paymentOptionCanPayForDroneShiftArgs = ApiImplementation.V2Api.DroneShiftHookApi.PaymentOptionCanPayForDroneShiftArgs.Instance;
+				if (!entry.Action.CanDoDroneShiftAction(canDoDroneShiftArgs))
+					return false;
+
 				paymentOptionCanPayForDroneShiftArgs.State = state;
 				paymentOptionCanPayForDroneShiftArgs.Combat = combat;
 				paymentOptionCanPayForDroneShiftArgs.Direction = direction;
 				paymentOptionCanPayForDroneShiftArgs.Entry = entry;
 
-				if (!paymentOption.CanPayForDroneShift(paymentOptionCanPayForDroneShiftArgs))
-					continue;
+				if (!FilterEnabled(state, combat, direction, entry, entry.PaymentOptions).Any(paymentOption => paymentOption.CanPayForDroneShift(paymentOptionCanPayForDroneShiftArgs)))
+					return false;
 
-				result.Entry = entry;
-				result.PaymentOption = paymentOption;
-				
-				var preconditionIsDroneShiftAllowedArgs = ApiImplementation.V2Api.DroneShiftHookApi.PreconditionIsDroneShiftAllowedArgs.Instance;
 				preconditionIsDroneShiftAllowedArgs.State = state;
 				preconditionIsDroneShiftAllowedArgs.Combat = combat;
 				preconditionIsDroneShiftAllowedArgs.Direction = direction;
 				preconditionIsDroneShiftAllowedArgs.Entry = entry;
-				preconditionIsDroneShiftAllowedArgs.ForRendering = false;
-				
-				foreach (var precondition in FilterEnabled(state, combat, direction, entry, entry.Preconditions))
+				preconditionIsDroneShiftAllowedArgs.ForRendering = true;
+
+				if (FilterEnabled(state, combat, direction, entry, entry.Preconditions).Any(precondition => !precondition.IsDroneShiftAllowed(preconditionIsDroneShiftAllowedArgs).IsAllowed))
+					return false;
+
+				return true;
+			});
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(canDoDroneShiftArgs);
+			ModEntry.Instance.ArgsPool.Return(paymentOptionCanPayForDroneShiftArgs);
+			ModEntry.Instance.ArgsPool.Return(preconditionIsDroneShiftAllowedArgs);
+		}
+	}
+
+	public void DidHoverButton(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction)
+	{
+		var canDoDroneShiftArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.ActionCanDoDroneShiftArgs>();
+		var buttonHoveredArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.ActionDroneShiftButtonHoveredArgs>();
+		var paymentOptionCanPayForDroneShiftArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.PaymentOptionCanPayForDroneShiftArgs>();
+		var paymentOptionButtonHoveredArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.PaymentOptionDroneShiftButtonHoveredArgs>();
+		var preconditionIsDroneShiftAllowedArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.PreconditionIsDroneShiftAllowedArgs>();
+		var preconditionButtonHoveredArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.PreconditionDroneShiftButtonHoveredArgs>();
+		var postconditionIsDroneShiftAllowedArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.PostconditionIsDroneShiftAllowedArgs>();
+		var postconditionButtonHoveredArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.PostconditionDroneShiftButtonHoveredArgs>();
+
+		try
+		{
+			canDoDroneShiftArgs.State = state;
+			canDoDroneShiftArgs.Combat = combat;
+			canDoDroneShiftArgs.Direction = direction;
+
+			foreach (var entry in FilterEnabled(state, combat, direction, Instance.ActionEntries))
+			{
+				if (!entry.Action.CanDoDroneShiftAction(canDoDroneShiftArgs))
+					continue;
+
+				buttonHoveredArgs.State = state;
+				buttonHoveredArgs.Combat = combat;
+				buttonHoveredArgs.Direction = direction;
+				entry.Action.DroneShiftButtonHovered(buttonHoveredArgs);
+
+				paymentOptionCanPayForDroneShiftArgs.State = state;
+				paymentOptionCanPayForDroneShiftArgs.Combat = combat;
+				paymentOptionCanPayForDroneShiftArgs.Direction = direction;
+				paymentOptionCanPayForDroneShiftArgs.Entry = entry;
+
+				foreach (var paymentOption in FilterEnabled(state, combat, direction, entry, entry.PaymentOptions))
 				{
-					var preconditionResult = precondition.IsDroneShiftAllowed(preconditionIsDroneShiftAllowedArgs);
-					if (!preconditionResult.IsAllowed)
+					if (!paymentOption.CanPayForDroneShift(paymentOptionCanPayForDroneShiftArgs))
+						continue;
+
+					paymentOptionButtonHoveredArgs.State = state;
+					paymentOptionButtonHoveredArgs.Combat = combat;
+					paymentOptionButtonHoveredArgs.Direction = direction;
+					paymentOptionButtonHoveredArgs.Entry = entry;
+					paymentOption.DroneShiftButtonHovered(paymentOptionButtonHoveredArgs);
+
+					preconditionIsDroneShiftAllowedArgs.State = state;
+					preconditionIsDroneShiftAllowedArgs.Combat = combat;
+					preconditionIsDroneShiftAllowedArgs.Direction = direction;
+					preconditionIsDroneShiftAllowedArgs.Entry = entry;
+					preconditionIsDroneShiftAllowedArgs.PaymentOption = paymentOption;
+					preconditionIsDroneShiftAllowedArgs.ForRendering = true;
+
+					foreach (var precondition in FilterEnabled(state, combat, direction, entry, entry.Preconditions))
 					{
-						if (preconditionResult.ShakeShipOnFail)
-						{
-							Audio.Play(Event.Status_PowerDown);
-							state.ship.shake += 1.0;
-						}
-					
-						combat.Queue(preconditionResult.ActionsOnFail);
-					
-						var hookDroneShiftPreconditionFailedArgs = ApiImplementation.V2Api.DroneShiftHookApi.HookDroneShiftPreconditionFailedArgs.Instance;
-						hookDroneShiftPreconditionFailedArgs.State = state;
-						hookDroneShiftPreconditionFailedArgs.Combat = combat;
-						hookDroneShiftPreconditionFailedArgs.Direction = direction;
-						hookDroneShiftPreconditionFailedArgs.Entry = entry;
-						hookDroneShiftPreconditionFailedArgs.Precondition = precondition;
-						hookDroneShiftPreconditionFailedArgs.QueuedActions = preconditionResult.ActionsOnFail.ToList();
-				
-						foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-							hook.DroneShiftPreconditionFailed(hookDroneShiftPreconditionFailedArgs);
+						var result = precondition.IsDroneShiftAllowed(preconditionIsDroneShiftAllowedArgs);
 
-						result.PreconditionFailed = hookDroneShiftPreconditionFailedArgs;
-						return result;
+						preconditionButtonHoveredArgs.State = state;
+						preconditionButtonHoveredArgs.Combat = combat;
+						preconditionButtonHoveredArgs.Direction = direction;
+						preconditionButtonHoveredArgs.Entry = entry;
+						preconditionButtonHoveredArgs.PaymentOption = paymentOption;
+						preconditionButtonHoveredArgs.Result = result;
+						precondition.DroneShiftButtonHovered(preconditionButtonHoveredArgs);
+
+						if (!result.IsAllowed)
+							return;
 					}
-				}
-				
-				var paymentOptionProvideDroneShiftPaymentActionsArgs = ApiImplementation.V2Api.DroneShiftHookApi.PaymentOptionProvideDroneShiftPaymentActionsArgs.Instance;
-				paymentOptionProvideDroneShiftPaymentActionsArgs.State = state;
-				paymentOptionProvideDroneShiftPaymentActionsArgs.Combat = combat;
-				paymentOptionProvideDroneShiftPaymentActionsArgs.Direction = direction;
-				paymentOptionProvideDroneShiftPaymentActionsArgs.Entry = entry;
 
-				var paymentActions = paymentOption.ProvideDroneShiftPaymentActions(paymentOptionProvideDroneShiftPaymentActionsArgs);
-				
-				var postconditionIsDroneShiftAllowedArgs = ApiImplementation.V2Api.DroneShiftHookApi.PostconditionIsDroneShiftAllowedArgs.Instance;
-				postconditionIsDroneShiftAllowedArgs.State = state;
-				postconditionIsDroneShiftAllowedArgs.Combat = combat;
-				postconditionIsDroneShiftAllowedArgs.Direction = direction;
-				postconditionIsDroneShiftAllowedArgs.Entry = entry;
-				postconditionIsDroneShiftAllowedArgs.PaymentOption = paymentOption;
-				postconditionIsDroneShiftAllowedArgs.ForRendering = false;
-				
-				foreach (var postcondition in FilterEnabled(state, combat, direction, entry, paymentOption, entry.Postconditions))
-				{
-					var postconditionResult = postcondition.IsDroneShiftAllowed(postconditionIsDroneShiftAllowedArgs);
-					if (!postconditionResult.IsAllowed)
+					postconditionIsDroneShiftAllowedArgs.State = state;
+					postconditionIsDroneShiftAllowedArgs.Combat = combat;
+					postconditionIsDroneShiftAllowedArgs.Direction = direction;
+					postconditionIsDroneShiftAllowedArgs.Entry = entry;
+					postconditionIsDroneShiftAllowedArgs.PaymentOption = paymentOption;
+					postconditionIsDroneShiftAllowedArgs.ForRendering = true;
+
+					foreach (var postcondition in FilterEnabled(state, combat, direction, entry, paymentOption, entry.Postconditions))
 					{
-						if (postconditionResult.ShakeShipOnFail)
-						{
-							Audio.Play(Event.Status_PowerDown);
-							state.ship.shake += 1.0;
-						}
+						var result = postcondition.IsDroneShiftAllowed(postconditionIsDroneShiftAllowedArgs);
 
-						List<CardAction> queuedActions = [.. paymentActions, .. postconditionResult.ActionsOnFail];
-						combat.Queue(queuedActions);
-						
-						var hookDroneShiftPostconditionFailedArgs = ApiImplementation.V2Api.DroneShiftHookApi.HookDroneShiftPostconditionFailedArgs.Instance;
-						hookDroneShiftPostconditionFailedArgs.State = state;
-						hookDroneShiftPostconditionFailedArgs.Combat = combat;
-						hookDroneShiftPostconditionFailedArgs.Direction = direction;
-						hookDroneShiftPostconditionFailedArgs.Entry = entry;
-						hookDroneShiftPostconditionFailedArgs.PaymentOption = paymentOption;
-						hookDroneShiftPostconditionFailedArgs.Postcondition = postcondition;
-						hookDroneShiftPostconditionFailedArgs.QueuedActions = queuedActions;
-				
-						foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-							hook.DroneShiftPostconditionFailed(hookDroneShiftPostconditionFailedArgs);
+						postconditionButtonHoveredArgs.State = state;
+						postconditionButtonHoveredArgs.Combat = combat;
+						postconditionButtonHoveredArgs.Direction = direction;
+						postconditionButtonHoveredArgs.Entry = entry;
+						postconditionButtonHoveredArgs.Result = result;
+						postcondition.DroneShiftButtonHovered(postconditionButtonHoveredArgs);
 
-						result.PostconditionFailed = hookDroneShiftPostconditionFailedArgs;
-						return result;
+						if (!result.IsAllowed)
+							return;
 					}
+
+					return;
 				}
-				
-				var actionProvideDroneShiftActionsArgs = ApiImplementation.V2Api.DroneShiftHookApi.ActionProvideDroneShiftActionsArgs.Instance;
-				actionProvideDroneShiftActionsArgs.State = state;
-				actionProvideDroneShiftActionsArgs.Combat = combat;
-				actionProvideDroneShiftActionsArgs.Direction = direction;
-				actionProvideDroneShiftActionsArgs.PaymentOption = paymentOption;
-
-				var droneShiftActions = entry.Action.ProvideDroneShiftActions(actionProvideDroneShiftActionsArgs);
-
-				List<CardAction> allActions = [.. paymentActions, .. droneShiftActions];
-				combat.Queue(allActions);
-				
-				var hookAfterDroneShiftArgs = ApiImplementation.V2Api.DroneShiftHookApi.HookAfterDroneShiftArgs.Instance;
-				hookAfterDroneShiftArgs.State = state;
-				hookAfterDroneShiftArgs.Combat = combat;
-				hookAfterDroneShiftArgs.Direction = direction;
-				hookAfterDroneShiftArgs.Entry = entry;
-				hookAfterDroneShiftArgs.PaymentOption = paymentOption;
-				hookAfterDroneShiftArgs.QueuedActions = allActions;
-				
-				foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-					hook.AfterDroneShift(hookAfterDroneShiftArgs);
-
-				result.Success = hookAfterDroneShiftArgs;
-				return result;
 			}
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(canDoDroneShiftArgs);
+			ModEntry.Instance.ArgsPool.Return(buttonHoveredArgs);
+			ModEntry.Instance.ArgsPool.Return(paymentOptionCanPayForDroneShiftArgs);
+			ModEntry.Instance.ArgsPool.Return(paymentOptionButtonHoveredArgs);
+			ModEntry.Instance.ArgsPool.Return(preconditionIsDroneShiftAllowedArgs);
+			ModEntry.Instance.ArgsPool.Return(preconditionButtonHoveredArgs);
+			ModEntry.Instance.ArgsPool.Return(postconditionIsDroneShiftAllowedArgs);
+			ModEntry.Instance.ArgsPool.Return(postconditionButtonHoveredArgs);
+		}
+	}
+
+	public IKokoroApi.IV2.IDroneShiftHookApi.IRunActionResult RunNextAction(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction)
+	{
+		var result = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.RunActionResult>();
+		var canDoDroneShiftArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.ActionCanDoDroneShiftArgs>();
+		var paymentOptionCanPayForDroneShiftArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.PaymentOptionCanPayForDroneShiftArgs>();
+		var preconditionIsDroneShiftAllowedArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.PreconditionIsDroneShiftAllowedArgs>();
+		var hookDroneShiftPreconditionFailedArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.HookDroneShiftPreconditionFailedArgs>();
+		var paymentOptionProvideDroneShiftPaymentActionsArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.PaymentOptionProvideDroneShiftPaymentActionsArgs>();
+		var postconditionIsDroneShiftAllowedArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.PostconditionIsDroneShiftAllowedArgs>();
+		var hookDroneShiftPostconditionFailedArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.HookDroneShiftPostconditionFailedArgs>();
+		var actionProvideDroneShiftActionsArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.ActionProvideDroneShiftActionsArgs>();
+		var hookAfterDroneShiftArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.HookAfterDroneShiftArgs>();
+
+		try
+		{
+			result.State = state;
+			result.Combat = combat;
+			result.Direction = direction;
+			result.Entry = null;
+			result.PaymentOption = null;
+			result.PreconditionFailed = null;
+			result.PostconditionFailed = null;
+			result.Success = null;
+
+			if (!combat.PlayerCanAct(state))
+				return result;
+
+			foreach (var entry in FilterEnabled(state, combat, direction, Instance.ActionEntries))
+			{
+				canDoDroneShiftArgs.State = state;
+				canDoDroneShiftArgs.Combat = combat;
+				canDoDroneShiftArgs.Direction = direction;
+
+				if (!entry.Action.CanDoDroneShiftAction(canDoDroneShiftArgs))
+					continue;
+
+				foreach (var paymentOption in FilterEnabled(state, combat, direction, entry, entry.PaymentOptions))
+				{
+					paymentOptionCanPayForDroneShiftArgs.State = state;
+					paymentOptionCanPayForDroneShiftArgs.Combat = combat;
+					paymentOptionCanPayForDroneShiftArgs.Direction = direction;
+					paymentOptionCanPayForDroneShiftArgs.Entry = entry;
+
+					if (!paymentOption.CanPayForDroneShift(paymentOptionCanPayForDroneShiftArgs))
+						continue;
+
+					result.Entry = entry;
+					result.PaymentOption = paymentOption;
+
+					preconditionIsDroneShiftAllowedArgs.State = state;
+					preconditionIsDroneShiftAllowedArgs.Combat = combat;
+					preconditionIsDroneShiftAllowedArgs.Direction = direction;
+					preconditionIsDroneShiftAllowedArgs.Entry = entry;
+					preconditionIsDroneShiftAllowedArgs.ForRendering = false;
+
+					foreach (var precondition in FilterEnabled(state, combat, direction, entry, entry.Preconditions))
+					{
+						var preconditionResult = precondition.IsDroneShiftAllowed(preconditionIsDroneShiftAllowedArgs);
+						if (!preconditionResult.IsAllowed)
+						{
+							if (preconditionResult.ShakeShipOnFail)
+							{
+								Audio.Play(Event.Status_PowerDown);
+								state.ship.shake += 1.0;
+							}
+
+							combat.Queue(preconditionResult.ActionsOnFail);
+
+							hookDroneShiftPreconditionFailedArgs.State = state;
+							hookDroneShiftPreconditionFailedArgs.Combat = combat;
+							hookDroneShiftPreconditionFailedArgs.Direction = direction;
+							hookDroneShiftPreconditionFailedArgs.Entry = entry;
+							hookDroneShiftPreconditionFailedArgs.Precondition = precondition;
+							hookDroneShiftPreconditionFailedArgs.QueuedActions = preconditionResult.ActionsOnFail.ToList();
+
+							foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+								hook.DroneShiftPreconditionFailed(hookDroneShiftPreconditionFailedArgs);
+
+							result.PreconditionFailed = hookDroneShiftPreconditionFailedArgs;
+							return result;
+						}
+					}
+
+					paymentOptionProvideDroneShiftPaymentActionsArgs.State = state;
+					paymentOptionProvideDroneShiftPaymentActionsArgs.Combat = combat;
+					paymentOptionProvideDroneShiftPaymentActionsArgs.Direction = direction;
+					paymentOptionProvideDroneShiftPaymentActionsArgs.Entry = entry;
+
+					var paymentActions = paymentOption.ProvideDroneShiftPaymentActions(paymentOptionProvideDroneShiftPaymentActionsArgs);
+
+					postconditionIsDroneShiftAllowedArgs.State = state;
+					postconditionIsDroneShiftAllowedArgs.Combat = combat;
+					postconditionIsDroneShiftAllowedArgs.Direction = direction;
+					postconditionIsDroneShiftAllowedArgs.Entry = entry;
+					postconditionIsDroneShiftAllowedArgs.PaymentOption = paymentOption;
+					postconditionIsDroneShiftAllowedArgs.ForRendering = false;
+
+					foreach (var postcondition in FilterEnabled(state, combat, direction, entry, paymentOption, entry.Postconditions))
+					{
+						var postconditionResult = postcondition.IsDroneShiftAllowed(postconditionIsDroneShiftAllowedArgs);
+						if (!postconditionResult.IsAllowed)
+						{
+							if (postconditionResult.ShakeShipOnFail)
+							{
+								Audio.Play(Event.Status_PowerDown);
+								state.ship.shake += 1.0;
+							}
+
+							List<CardAction> queuedActions = [.. paymentActions, .. postconditionResult.ActionsOnFail];
+							combat.Queue(queuedActions);
+
+							hookDroneShiftPostconditionFailedArgs.State = state;
+							hookDroneShiftPostconditionFailedArgs.Combat = combat;
+							hookDroneShiftPostconditionFailedArgs.Direction = direction;
+							hookDroneShiftPostconditionFailedArgs.Entry = entry;
+							hookDroneShiftPostconditionFailedArgs.PaymentOption = paymentOption;
+							hookDroneShiftPostconditionFailedArgs.Postcondition = postcondition;
+							hookDroneShiftPostconditionFailedArgs.QueuedActions = queuedActions;
+
+							foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+								hook.DroneShiftPostconditionFailed(hookDroneShiftPostconditionFailedArgs);
+
+							result.PostconditionFailed = hookDroneShiftPostconditionFailedArgs;
+							return result;
+						}
+					}
+
+					actionProvideDroneShiftActionsArgs.State = state;
+					actionProvideDroneShiftActionsArgs.Combat = combat;
+					actionProvideDroneShiftActionsArgs.Direction = direction;
+					actionProvideDroneShiftActionsArgs.PaymentOption = paymentOption;
+
+					var droneShiftActions = entry.Action.ProvideDroneShiftActions(actionProvideDroneShiftActionsArgs);
+
+					List<CardAction> allActions = [.. paymentActions, .. droneShiftActions];
+					combat.Queue(allActions);
+
+					hookAfterDroneShiftArgs.State = state;
+					hookAfterDroneShiftArgs.Combat = combat;
+					hookAfterDroneShiftArgs.Direction = direction;
+					hookAfterDroneShiftArgs.Entry = entry;
+					hookAfterDroneShiftArgs.PaymentOption = paymentOption;
+					hookAfterDroneShiftArgs.QueuedActions = allActions;
+
+					foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+						hook.AfterDroneShift(hookAfterDroneShiftArgs);
+
+					result.Success = hookAfterDroneShiftArgs;
+					return result;
+				}
+			}
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(result);
+			ModEntry.Instance.ArgsPool.Return(canDoDroneShiftArgs);
+			ModEntry.Instance.ArgsPool.Return(paymentOptionCanPayForDroneShiftArgs);
+			ModEntry.Instance.ArgsPool.Return(preconditionIsDroneShiftAllowedArgs);
+			ModEntry.Instance.ArgsPool.Return(hookDroneShiftPreconditionFailedArgs);
+			ModEntry.Instance.ArgsPool.Return(paymentOptionProvideDroneShiftPaymentActionsArgs);
+			ModEntry.Instance.ArgsPool.Return(postconditionIsDroneShiftAllowedArgs);
+			ModEntry.Instance.ArgsPool.Return(hookDroneShiftPostconditionFailedArgs);
+			ModEntry.Instance.ArgsPool.Return(actionProvideDroneShiftActionsArgs);
+			ModEntry.Instance.ArgsPool.Return(hookAfterDroneShiftArgs);
 		}
 
 		return result;
@@ -985,21 +998,28 @@ internal sealed class DroneShiftManager
 
 	private static bool Combat_RenderDroneShiftButtons_Transpiler_ShouldRender(G g, Combat combat, int direction)
 	{
-		var shouldShowDroneShiftButtonArgs = ApiImplementation.V2Api.DroneShiftHookApi.HookShouldShowDroneShiftButtonArgs.Instance;
-		shouldShowDroneShiftButtonArgs.State = g.state;
-		shouldShowDroneShiftButtonArgs.Combat = combat;
-		shouldShowDroneShiftButtonArgs.Direction = (IKokoroApi.IV2.IDroneShiftHookApi.Direction)direction;
-
-		foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, g.state.EnumerateAllArtifacts()))
+		var shouldShowDroneShiftButtonArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.HookShouldShowDroneShiftButtonArgs>();
+		try
 		{
-			var result = hook.ShouldShowDroneShiftButton(shouldShowDroneShiftButtonArgs);
-			if (result == true)
-				break;
-			if (result == false)
-				return false;
+			shouldShowDroneShiftButtonArgs.State = g.state;
+			shouldShowDroneShiftButtonArgs.Combat = combat;
+			shouldShowDroneShiftButtonArgs.Direction = (IKokoroApi.IV2.IDroneShiftHookApi.Direction)direction;
+
+			foreach (var hook in Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, g.state.EnumerateAllArtifacts()))
+			{
+				var result = hook.ShouldShowDroneShiftButton(shouldShowDroneShiftButtonArgs);
+				if (result == true)
+					break;
+				if (result == false)
+					return false;
+			}
+
+			return Instance.GetNextAction(g.state, combat, (IKokoroApi.IV2.IDroneShiftHookApi.Direction)direction) is not null;
 		}
-		
-		return Instance.GetNextAction(g.state, combat, (IKokoroApi.IV2.IDroneShiftHookApi.Direction)direction) is not null;
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(shouldShowDroneShiftButtonArgs);
+		}
 	}
 	
 	private static bool Combat_DoDroneShift_Prefix(Combat __instance, G g, int dir)

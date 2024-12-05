@@ -6,6 +6,7 @@ using Nanoray.PluginManager;
 using Newtonsoft.Json.Serialization;
 using Nickel;
 using Nickel.Legacy;
+using Shockah.Shared;
 using System.Collections.Generic;
 using System.IO;
 using IModManifest = CobaltCoreModding.Definitions.ModManifests.IModManifest;
@@ -21,6 +22,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 	internal IPluginPackage<Nickel.IModManifest> Package { get; private set; } = null!;
 	internal ApiImplementation Api { get; private set; } = null!;
 	internal IHarmony Harmony { get; private set; } = null!;
+	internal MultiPool ArgsPool { get; private set; } = new();
 
 	public string Name { get; init; } = typeof(ModEntry).Namespace!;
 
