@@ -7,6 +7,7 @@
 * Added the Onion Routing card.
 * Removed the Reboot card.
 * Changed the Reprogram card.
+* The Access Violation card is now a rare (was uncommon).
 * Fixed the Reboot card crashing when Table Flip was active.
 
 ## 1.2.0
