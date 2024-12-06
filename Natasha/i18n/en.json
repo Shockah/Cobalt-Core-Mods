@@ -73,6 +73,9 @@
         "DenialOfService": {
             "name": "Denial of Service"
         },
+        "Deprogram": {
+            "name": "Deprogram"
+        },
         "HijackEngines": {
             "name": "Hijack Engines"
         },

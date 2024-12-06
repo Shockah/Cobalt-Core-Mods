@@ -20,6 +20,8 @@ public sealed class ModEntry : SimpleMod
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
 	internal readonly IDeckEntry NatashaDeck;
+	internal readonly ISpriteEntry AddCardAIcon;
+	internal readonly ISpriteEntry AddCardBIcon;
 
 	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
 		typeof(BufferCard),
@@ -51,11 +53,16 @@ public sealed class ModEntry : SimpleMod
 		typeof(ZeroDayExploitCard),
 	];
 
+	internal static readonly IReadOnlyList<Type> UncommonSpecialCardTypes = [
+		typeof(DeprogramCard),
+	];
+
 	internal static readonly IEnumerable<Type> AllCardTypes
 		= [
 			.. CommonCardTypes,
 			.. UncommonCardTypes,
 			.. RareCardTypes,
+			.. UncommonSpecialCardTypes,
 			typeof(LimiterCard),
 			typeof(NatashaExeCard)
 		];
@@ -113,6 +120,9 @@ public sealed class ModEntry : SimpleMod
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize
 		});
+
+		AddCardAIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/AddCardA.png"));
+		AddCardBIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/AddCardB.png"));
 
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
@@ -210,6 +220,8 @@ public sealed class ModEntry : SimpleMod
 		if (RareCardTypes.Contains(type))
 			return Rarity.rare;
 		if (UncommonCardTypes.Contains(type))
+			return Rarity.uncommon;
+		if (UncommonSpecialCardTypes.Contains(type))
 			return Rarity.uncommon;
 		return Rarity.common;
 	}

@@ -65,7 +65,10 @@ internal sealed class OneLinerAction : CardAction
 	public int Spacing = 3;
 
 	public override List<Tooltip> GetTooltips(State s)
-		=> Actions.SelectMany(a => a.GetTooltips(s)).ToList();
+		=> Actions
+			.Where(a => !a.disabled)
+			.SelectMany(a => a.GetTooltips(s))
+			.ToList();
 
 	public override void Begin(G g, State s, Combat c)
 	{

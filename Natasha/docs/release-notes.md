@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Changed the Reprogram card.
 * Fixed the Reboot card crashing when Table Flip was active.
 
 ## 1.2.0
