@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Finite trait that now instead of not working, was crashing the game.
+
 ## 2.0.2
 Released 6 December 2024.
 

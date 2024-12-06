@@ -175,15 +175,9 @@ internal sealed class FiniteManager : HookManager<IKokoroApi.IV2.IFiniteApi.IHoo
 				ResetFiniteUses(state, card);
 		});
 
-		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state, Combat combat) =>
+		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
 			foreach (var card in state.deck)
-				ResetFiniteUses(state, card);
-			foreach (var card in combat.discard)
-				ResetFiniteUses(state, card);
-			foreach (var card in combat.exhausted)
-				ResetFiniteUses(state, card);
-			foreach (var card in combat.hand)
 				ResetFiniteUses(state, card);
 		});
 
