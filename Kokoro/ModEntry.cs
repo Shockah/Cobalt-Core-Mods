@@ -67,6 +67,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		DroneShiftManager.Setup(Harmony);
 		EnergyAsStatusManager.Setup(Harmony);
 		EvadeManager.Setup(Harmony);
+		FiniteManager.Setup(Harmony);
 		HiddenActionManager.Setup(Harmony);
 		InPlaceCardUpgradeManager.Setup(Harmony);
 		LimitedManager.Setup(Harmony);
