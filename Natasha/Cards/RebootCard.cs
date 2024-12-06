@@ -20,7 +20,9 @@ internal sealed class RebootCard : Card, IRegisterable, IHasCustomCardTraits
 			{
 				deck = ModEntry.Instance.NatashaDeck.Deck,
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
-				upgradesTo = [Upgrade.A, Upgrade.B]
+				upgradesTo = [Upgrade.A, Upgrade.B],
+				dontOffer = true,
+				unreleased = true,
 			},
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Reboot.png"), StableSpr.cards_Inverter).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Reboot", "name"]).Localize

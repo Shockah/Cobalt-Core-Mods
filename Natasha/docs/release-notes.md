@@ -4,6 +4,8 @@
 
 ## Upcoming release
 
+* Added the Onion Routing card.
+* Removed the Reboot card.
 * Changed the Reprogram card.
 * Fixed the Reboot card crashing when Table Flip was active.
 

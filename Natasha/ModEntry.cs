@@ -36,25 +36,29 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
-		typeof(AccessViolationCard),
 		typeof(BruteForceCard),
 		typeof(HijackEnginesCard),
 		typeof(ManInTheMiddleCard),
+		typeof(OnionRoutingCard),
 		typeof(ReprogramCard),
 		typeof(TypoCard),
 		typeof(VoltageTuningCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
+		typeof(AccessViolationCard),
 		typeof(BotnetCard),
 		typeof(PortScanningCard),
-		typeof(RebootCard),
 		typeof(RemoteExecutionCard),
 		typeof(ZeroDayExploitCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> UncommonSpecialCardTypes = [
 		typeof(DeprogramCard),
+	];
+
+	internal static readonly IReadOnlyList<Type> RareRemovedCardTypes = [
+		typeof(RebootCard)
 	];
 
 	internal static readonly IEnumerable<Type> AllCardTypes
@@ -218,6 +222,8 @@ public sealed class ModEntry : SimpleMod
 	internal static Rarity GetCardRarity(Type type)
 	{
 		if (RareCardTypes.Contains(type))
+			return Rarity.rare;
+		if (RareRemovedCardTypes.Contains(type))
 			return Rarity.rare;
 		if (UncommonCardTypes.Contains(type))
 			return Rarity.uncommon;

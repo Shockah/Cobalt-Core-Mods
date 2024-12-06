@@ -93,6 +93,9 @@
                 "B": "Launch a <c=midrow>random static object</c> from the chosen part."
             }
         },
+        "OnionRouting": {
+            "name": "Onion Routing"
+        },
         "Ping": {
             "name": "Ping"
         },
