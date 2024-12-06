@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.0.2
+Released 6 December 2024.
 
 * Fixed the Finite trait not working.
 
