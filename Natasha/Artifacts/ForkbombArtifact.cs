@@ -53,6 +53,7 @@ internal sealed class ForkbombArtifact : Artifact, IRegisterable, IKokoroApi.IV2
 		if (definition.isGood)
 			return args.NewAmount;
 
+		Pulse();
 		TriggeredThisCombat = true;
 		return args.NewAmount + 1;
 	}

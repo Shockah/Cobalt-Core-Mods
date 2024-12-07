@@ -9,6 +9,7 @@
 * Changed the Reprogram card.
 * The Access Violation card is now a rare (was uncommon).
 * Fixed the Reboot card crashing when Table Flip was active.
+* The Forkbomb artifact now pulses when it triggers.
 
 ## 1.2.0
 Released 4 December 2024.
