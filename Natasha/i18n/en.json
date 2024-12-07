@@ -43,7 +43,8 @@
         },
         "OperationAltair": {
             "name": "OPERATION ALTAIR",
-            "description": "Each combat, all non-<c=cardtrait>single-use</c> cards start as if they were already played once, without reducing their <c=cardtrait>limited</c> uses."
+            "description": "Each combat, you may choose a non-<c=cardtrait>limited</c>, non-<c=cardtrait>exhaust</c> card in your deck to become <c=cardtrait>Limited 2</c>.",
+            "chooseUiTitle": "Select a card to add <c=cardtrait>limited</c> to."
         },
         "RamDisk": {
             "name": "RAM DISK",

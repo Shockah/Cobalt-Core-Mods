@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Added the Genetic Algorithm artifact.
+* Completely changed the effect of the Operation Altair artifact.
 * Added the Onion Routing card.
 * Removed the Reboot card.
 * Changed the Reprogram card.
