@@ -80,6 +80,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static readonly IReadOnlyList<Type> BossArtifacts = [
+		typeof(GeneticAlgorithmArtifact),
 		typeof(NetworkComputingArtifact),
 		typeof(RamDiskArtifact),
 	];

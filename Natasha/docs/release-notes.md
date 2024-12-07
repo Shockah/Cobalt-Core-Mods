@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added the Genetic Algorithm artifact.
 * Added the Onion Routing card.
 * Removed the Reboot card.
 * Changed the Reprogram card.

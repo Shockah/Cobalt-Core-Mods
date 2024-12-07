@@ -1,7 +1,10 @@
-﻿using Nanoray.PluginManager;
+﻿using HarmonyLib;
+using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Natasha;
@@ -22,6 +25,11 @@ internal sealed class RamDiskArtifact : Artifact, IRegisterable, IKokoroApi.IV2.
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "RamDisk", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "RamDisk", "description"]).Localize
 		});
+		
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ArtifactReward), nameof(ArtifactReward.GetBlockedArtifacts)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ArtifactReward_GetBlockedArtifacts_Postfix))
+		);
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
@@ -38,4 +46,12 @@ internal sealed class RamDiskArtifact : Artifact, IRegisterable, IKokoroApi.IV2.
 
 	public bool? IsSingleUseLimited(IKokoroApi.IV2.ILimitedApi.IHook.IIsSingleUseLimitedArgs args)
 		=> true;
+
+	private static void ArtifactReward_GetBlockedArtifacts_Postfix(State s, ref HashSet<Type> __result)
+	{
+		if (s.EnumerateAllArtifacts().Any(a => a is RamDiskArtifact))
+			__result.Add(typeof(GeneticAlgorithmArtifact));
+		if (s.EnumerateAllArtifacts().Any(a => a is GeneticAlgorithmArtifact))
+			__result.Add(typeof(RamDiskArtifact));
+	}
 }
