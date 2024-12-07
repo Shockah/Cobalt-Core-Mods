@@ -4,13 +4,17 @@
 
 ## Upcoming release
 
+### Artifacts
 * Added the Genetic Algorithm artifact.
 * Completely changed the effect of the Operation Altair artifact.
+* The Keylogger artifact is now a bit easier to use (can target any card in the deck, and will prioritize cards which stayed in hand, then in the draw pile, then in the discard pile).
+* The Forkbomb artifact now pulses when it triggers.
+
+### Cards
 * Added the Onion Routing card.
 * Removed the Reboot card.
 * Changed the Reprogram card.
 * The Access Violation card is now a rare (was uncommon).
-* The Forkbomb artifact now pulses when it triggers.
 
 ## 1.2.0
 Released 4 December 2024.

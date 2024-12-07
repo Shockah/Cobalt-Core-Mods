@@ -1,5 +1,4 @@
 ﻿using FSPRO;
-using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
@@ -24,28 +23,22 @@ internal sealed class KeyloggerArtifact : Artifact, IRegisterable
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Keylogger", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Keylogger", "description"]).Localize
 		});
-
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AEndTurn), nameof(AEndTurn.Begin)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AEndTurn_Begin_Prefix))
-		);
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
 		=> [.. (ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? [])];
 
-	private static void AEndTurn_Begin_Prefix(State s, Combat c)
+	public override void OnTurnEnd(State state, Combat combat)
 	{
-		if (c.energy <= 0)
+		base.OnTurnEnd(state, combat);
+		if (combat.energy <= 0)
 			return;
-		if (c.cardActions.Any(a => a is AEndTurn))
+		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is KeyloggerArtifact) is not { } artifact)
 			return;
-		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is KeyloggerArtifact) is not { } artifact)
-			return;
-		if (!c.hand.Any(card => ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, ModEntry.Instance.KokoroApi.Limited.Trait)))
+		if (!state.deck.Concat(combat.discard).Concat(combat.hand).Any(card => ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, ModEntry.Instance.KokoroApi.Limited.Trait)))
 			return;
 
-		c.QueueImmediate(new Action { artifactPulse = artifact.Key() });
+		combat.QueueImmediate(new Action { artifactPulse = artifact.Key() });
 	}
 
 	private sealed class Action : CardAction
@@ -54,18 +47,27 @@ internal sealed class KeyloggerArtifact : Artifact, IRegisterable
 		{
 			base.Begin(g, s, c);
 
-			var limitedCards = c.hand.Where(card => ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, ModEntry.Instance.KokoroApi.Limited.Trait)).ToList();
-			switch (limitedCards.Count)
+			if (HandleCards(c.hand))
+				return;
+			if (HandleCards(s.deck))
+				return;
+			HandleCards(c.discard);
+
+			bool HandleCards(IEnumerable<Card> cards)
 			{
-				case 0:
-					timer = 0;
-					break;
-				case 1:
-					HandleCard(limitedCards[0]);
-					break;
-				default:
-					HandleCard(limitedCards[s.rngActions.NextInt() % limitedCards.Count]);
-					break;
+				var cardList = cards.Where(card => ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, ModEntry.Instance.KokoroApi.Limited.Trait)).ToList();
+				switch (cardList.Count)
+				{
+					case 0:
+						return false;
+					case 1:
+						HandleCard(cardList[0]);
+						return true;
+					default:
+						HandleCard(cardList[s.rngActions.NextInt() % cardList.Count]);
+						return true;
+				}
+
 			}
 
 			void HandleCard(Card card)
