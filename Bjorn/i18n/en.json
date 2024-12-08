@@ -89,6 +89,14 @@
         "Entangle": {
             "name": "Entangle"
         },
+        "FieldTest": {
+            "name": "Field Test",
+            "description": {
+                "None": "<c=action>Analyze</c> a card that does not <c=cardtrait>exhaust</c>. Play it for free.",
+                "A": "<c=action>Analyze</c> a card. Play it for free.",
+                "B": "Choose a card in your hand. Play it for free."
+            }
+        },
         "FractalStructure": {
             "name": "Fractal Structure"
         },
