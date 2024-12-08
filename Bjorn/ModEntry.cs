@@ -34,6 +34,7 @@ public sealed class ModEntry : SimpleMod
 	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
 		typeof(AssimilateCard),
 		typeof(EntangleCard),
+		typeof(FieldTestCard),
 		typeof(InsuranceCard),
 		typeof(RelativityCard),
 	];
