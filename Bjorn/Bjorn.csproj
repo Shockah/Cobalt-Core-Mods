@@ -2,7 +2,10 @@
 	<PropertyGroup>
 		<RootNamespace>Shockah.Bjorn</RootNamespace>
 		<Version>0.1.0</Version>
-		<IncludedModProjectPaths>i18n;assets</IncludedModProjectPaths>
 	</PropertyGroup>
+	<ItemGroup>
+		<ModFiles Include="i18n/**" />
+		<ModFiles Include="assets/**" />
+	</ItemGroup>
 	<Import Project="..\Configuration.Mod.props" />
 </Project>

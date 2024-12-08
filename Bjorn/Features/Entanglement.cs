@@ -1,12 +1,13 @@
 ﻿using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using System;
 using System.Reflection;
 
 namespace Shockah.Bjorn;
 
-internal sealed class Entanglement : IRegisterable, IStatusRenderHook
+internal sealed class Entanglement : IRegisterable
 {
 	internal static IStatusEntry EntanglementStatus { get; private set; } = null!;
 
@@ -25,7 +26,7 @@ internal sealed class Entanglement : IRegisterable, IStatusRenderHook
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Entanglement", "description"]).Localize
 		});
 
-		ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(new StatusLogicHook(), 0);
+		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(new StatusLogicHook());
 
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(AMove), nameof(AMove.Begin)),
@@ -53,18 +54,18 @@ internal sealed class Entanglement : IRegisterable, IStatusRenderHook
 		c.QueueImmediate(action);
 	}
 
-	private sealed class StatusLogicHook : IStatusLogicHook
+	private sealed class StatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
 	{
-		public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
+		public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 		{
-			if (status != EntanglementStatus.Status)
+			if (args.Status != EntanglementStatus.Status)
 				return false;
-			if (timing != StatusTurnTriggerTiming.TurnStart)
+			if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 				return false;
-			if (amount == 0)
+			if (args.Amount == 0)
 				return false;
 
-			amount -= Math.Sign(amount);
+			args.Amount -= Math.Sign(args.Amount);
 			return false;
 		}
 	}

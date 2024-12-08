@@ -52,7 +52,7 @@
     "midrow": {
         "SmartShieldDrone": {
             "name": "Smart Shield Drone",
-            "description": "Beams <c=status>1 smart shield</c> at its target once per turn."
+            "description": "Beams 1 <c=status>smart shield</c> at its target once per turn."
         }
     },
     "status": {
