@@ -1,7 +1,5 @@
-﻿using daisyowl.text;
-using Nanoray.PluginManager;
+﻿using Nanoray.PluginManager;
 using Nickel;
-using Shockah.Kokoro;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,7 +57,10 @@ internal sealed class AccessViolationCard : Card, IRegisterable, IHasCustomCardT
 	private sealed class Action : CardAction
 	{
 		public override List<Tooltip> GetTooltips(State s)
-			=> [.. ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(s, null) ?? []];
+			=> [
+				new TTGlossary("action.bypass"),
+				.. ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(s, null) ?? []
+			];
 
 		public override void Begin(G g, State s, Combat c)
 		{
