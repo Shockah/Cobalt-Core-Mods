@@ -143,6 +143,20 @@
         "LorentzTransform": {
             "name": "Lorentz Transform"
         },
+        "NeglectSafety": {
+            "name": "Neglect Safety",
+            "description": {
+                "None": {
+                    "normal": "Remove <c=cardtrait>Analyzed</c> from this<c=5f5f5f> / Draw a card</c>. <c=downside>Receive 1 damage.</c>",
+                    "flipped": "<c=5f5f5f>Remove Analyzed from this / </c>Draw a card. <c=downside>Receive 1 damage.</c>"
+                },
+                "A": "Remove <c=cardtrait>Analyzed</c> from this. Draw a card. <c=downside>Receive 1 damage.</c>",
+                "B": {
+                    "normal": "Remove <c=cardtrait>Analyzed</c> from this<c=5f5f5f> / Draw a card</c>. <c=downside>Receive 1 damage.</c>",
+                    "flipped": "<c=5f5f5f>Remove Analyzed from this / </c>Draw a card. <c=downside>Receive 1 damage.</c>"
+                }
+            }
+        },
         "Prototype": {
             "name": "Prototype",
             "description": "When <c=action>analyzed</c>, <c=action>upgrade</c>, then <c=cardtrait>exhaust</c>."
