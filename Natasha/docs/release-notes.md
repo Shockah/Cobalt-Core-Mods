@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.1
+Released 8 December 2024.
 
 * The Access Violation card can no longer play itself.
 
