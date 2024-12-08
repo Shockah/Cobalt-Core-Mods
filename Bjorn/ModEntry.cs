@@ -28,6 +28,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(PrototypingCard),
 		typeof(SafetyProtocolCard),
 		typeof(SmartShieldDroneCard),
+		typeof(TaserCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
