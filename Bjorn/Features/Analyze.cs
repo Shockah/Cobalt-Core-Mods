@@ -59,7 +59,7 @@ internal sealed class AnalyzeManager : IRegisterable
 		AnalyzedTrait = helper.Content.Cards.RegisterTrait("Analyzed", new()
 		{
 			Icon = (_, _) => AnalyzedIcon.Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Spontaneous"]).Localize,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Analyzed", "name"]).Localize,
 			Tooltips = (_, _) => [
 				new GlossaryTooltip($"cardtrait.{package.Manifest.UniqueName}::Analyzed")
 				{
@@ -74,7 +74,7 @@ internal sealed class AnalyzeManager : IRegisterable
 		ReevaluatedTrait = helper.Content.Cards.RegisterTrait("Reevaluated", new()
 		{
 			Icon = (_, _) => ReevaluatedIcon.Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Reevaluated"]).Localize,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Reevaluated", "name"]).Localize,
 			Tooltips = (_, _) => [
 				new GlossaryTooltip($"cardtrait.{package.Manifest.UniqueName}::Reevaluated")
 				{
@@ -299,7 +299,10 @@ internal sealed class AnalyzeCostAction : CardAction
 	public required CardAction Action;
 	public int Count = 1;
 	public int? CardId;
+	public bool Permanent;
+	public bool? FilterAccelerated;
 	public bool? FilterExhaust;
+	public int? FilterMinCost;
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
@@ -320,17 +323,29 @@ internal sealed class AnalyzeCostAction : CardAction
 
 		c.QueueImmediate(new ACardSelect
 		{
-			browseAction = new AnalyzeCostBrowseAction { Action = Action, ToAnalyzeLeft = Count - 1, FilterExhaust = FilterExhaust },
+			browseAction = new AnalyzeCostBrowseAction
+			{
+				Action = Action,
+				ToAnalyzeLeft = Count - 1,
+				Permanent = Permanent,
+				FilterAccelerated = FilterAccelerated,
+				FilterExhaust = FilterExhaust,
+				FilterMinCost = FilterMinCost,
+			},
 			browseSource = CardBrowse.Source.Hand,
 			filterExhaust = FilterExhaust,
-		}.SetFilterAnalyzable(true).SetForceInclude(CardId));
+			filterMinCost = FilterMinCost,
+		}.SetFilterAnalyzable(true).SetFilterAccelerated(FilterAccelerated).SetForceInclude(CardId));
 	}
 
 	private sealed class AnalyzeCostBrowseAction : CardAction
 	{
 		public required CardAction Action;
 		public required int ToAnalyzeLeft;
+		public bool Permanent;
+		public bool? FilterAccelerated;
 		public bool? FilterExhaust;
+		public int? FilterMinCost;
 
 		public override string? GetCardSelectText(State s)
 			=> ModEntry.Instance.Localizations.Localize(["action", "Analyze", "uiTitle"]);
@@ -343,11 +358,19 @@ internal sealed class AnalyzeCostAction : CardAction
 			if (selectedCard is null)
 				return;
 
-			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.AnalyzedTrait, true, permanent: false);
+			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.AnalyzedTrait, true, permanent: Permanent);
 
 			if (ToAnalyzeLeft > 0)
 			{
-				c.QueueImmediate(new AnalyzeCostAction { Action = Action, Count = ToAnalyzeLeft, FilterExhaust = FilterExhaust });
+				c.QueueImmediate(new AnalyzeCostAction
+				{
+					Action = Action,
+					Count = ToAnalyzeLeft,
+					Permanent = Permanent,
+					FilterAccelerated = FilterAccelerated,
+					FilterExhaust = FilterExhaust,
+					FilterMinCost = FilterMinCost,
+				});
 				return;
 			}
 
