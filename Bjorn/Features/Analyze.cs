@@ -27,15 +27,15 @@ internal static class AnalyzeCardExt
 {
 	public static bool IsAnalyzable(this Card card, State state)
 	{
-		if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Analyze.AnalyzedTrait))
+		if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, AnalyzeManager.AnalyzedTrait))
 			return false;
-		if (card.GetDataWithOverrides(state).temporary && !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Analyze.ReevaluatedTrait))
+		if (card.GetDataWithOverrides(state).temporary && !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, AnalyzeManager.ReevaluatedTrait))
 			return false;
 		return true;
 	}
 }
 
-internal sealed class Analyze : IRegisterable
+internal sealed class AnalyzeManager : IRegisterable
 {
 	internal static ISpriteEntry AnalyzeIcon { get; private set; } = null!;
 	internal static ISpriteEntry SelfAnalyzeIcon { get; private set; } = null!;
@@ -102,7 +102,7 @@ internal sealed class Analyze : IRegisterable
 		// TODO: make this a Nickel API
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Mod).Assembly.GetType("Nickel.CardTraitManager"), "SetCardTraitOverride"),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardTraitManager_SetCardTraitOverride_Perfix)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardTraitManager_SetCardTraitOverride_Prefix)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardTraitManager_SetCardTraitOverride_Postfix))
 		);
 	}
@@ -252,7 +252,7 @@ internal sealed class Analyze : IRegisterable
 		return true;
 	}
 
-	private static void CardTraitManager_SetCardTraitOverride_Perfix(Card card, ICardTraitEntry trait, bool? overrideValue, ref bool __state)
+	private static void CardTraitManager_SetCardTraitOverride_Prefix(Card card, ICardTraitEntry trait, bool? overrideValue, ref bool __state)
 	{
 		if (trait != AnalyzedTrait)
 			return;
@@ -303,7 +303,7 @@ internal sealed class AnalyzeCostAction : CardAction
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
-			.. CardId is null ? Analyze.GetAnalyzeTooltips(s) : Analyze.GetAnalyzeOrSelfAnalyzeTooltips(s),
+			.. CardId is null ? AnalyzeManager.GetAnalyzeTooltips(s) : AnalyzeManager.GetAnalyzeOrSelfAnalyzeTooltips(s),
 			.. Action.GetTooltips(s),
 		];
 
@@ -343,7 +343,7 @@ internal sealed class AnalyzeCostAction : CardAction
 			if (selectedCard is null)
 				return;
 
-			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, Analyze.AnalyzedTrait, true, permanent: false);
+			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.AnalyzedTrait, true, permanent: false);
 
 			if (ToAnalyzeLeft > 0)
 			{
@@ -365,20 +365,20 @@ internal sealed class SelfAnalyzeCostAction : CardAction
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
-			.. Analyze.GetSelfAnalyzeTooltips(s),
+			.. AnalyzeManager.GetSelfAnalyzeTooltips(s),
 			.. Action.GetTooltips(s),
 		];
 
 	public override void Begin(G g, State s, Combat c)
 	{
 		base.Begin(g, s, c);
-		if (s.FindCard(CardId) is not { } card || ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, Analyze.AnalyzedTrait))
+		if (s.FindCard(CardId) is not { } card || ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, AnalyzeManager.AnalyzedTrait))
 		{
 			timer = 0;
 			return;
 		}
 
-		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, Analyze.AnalyzedTrait, true, permanent: false);
+		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, true, permanent: false);
 		c.QueueImmediate(Action);
 	}
 }
@@ -388,18 +388,18 @@ internal sealed class OnAnalyzeAction : CardAction
 	public required CardAction Action;
 
 	public override Icon? GetIcon(State s)
-		=> new(Analyze.OnAnalyzeIcon.Sprite, null, Colors.textMain);
+		=> new(AnalyzeManager.OnAnalyzeIcon.Sprite, null, Colors.textMain);
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
 			new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::OnAnalyze")
 			{
-				Icon = Analyze.OnAnalyzeIcon.Sprite,
+				Icon = AnalyzeManager.OnAnalyzeIcon.Sprite,
 				TitleColor = Colors.action,
 				Title = ModEntry.Instance.Localizations.Localize(["action", "OnAnalyze", "name"]),
 				Description = ModEntry.Instance.Localizations.Localize(["action", "OnAnalyze", "description"]),
 			},
-			.. (Analyze.AnalyzedTrait.Configuration.Tooltips?.Invoke(s, null) ?? []),
+			.. (AnalyzeManager.AnalyzedTrait.Configuration.Tooltips?.Invoke(s, null) ?? []),
 			.. Action.GetTooltips(s)
 		];
 
@@ -425,7 +425,7 @@ internal sealed class AnalyzableVariableHint : AVariableHint
 			{
 				Description = ModEntry.Instance.Localizations.Localize(["x", "Analyzable", s.route is Combat ? "stateful" : "stateless"], new { Count = (s.route as Combat)?.hand.Count(card => card.uuid != CardId && card.IsAnalyzable(s)) })
 			},
-			.. Analyze.GetAnalyzeTooltips(s),
+			.. AnalyzeManager.GetAnalyzeTooltips(s),
 		];
 }
 
@@ -443,7 +443,7 @@ internal sealed class AnalyzedCondition : IKokoroApi.IV2.IConditionalApi.IBoolEx
 	{
 		if (!dontRender)
 			Draw.Sprite(
-				Analyze.AnalyzedIcon.Sprite,
+				AnalyzeManager.AnalyzedIcon.Sprite,
 				position.x,
 				position.y,
 				color: isDisabled ? Colors.disabledIconTint : Colors.white
@@ -455,7 +455,7 @@ internal sealed class AnalyzedCondition : IKokoroApi.IV2.IConditionalApi.IBoolEx
 		=> [
 			new GlossaryTooltip($"AConditional::{ModEntry.Instance.Package.Manifest.UniqueName}::Analyzed")
 			{
-				Icon = Analyze.AnalyzedIcon.Sprite,
+				Icon = AnalyzeManager.AnalyzedIcon.Sprite,
 				TitleColor = Colors.action,
 				Title = ModEntry.Instance.Localizations.Localize(["condition", "Analyzed", "title"]),
 				Description = defaultTooltipDescription,
@@ -463,5 +463,5 @@ internal sealed class AnalyzedCondition : IKokoroApi.IV2.IConditionalApi.IBoolEx
 		];
 
 	public IReadOnlyList<Tooltip> GetTooltips(State state, Combat combat)
-		=> [.. Analyze.AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? []];
+		=> [.. AnalyzeManager.AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? []];
 }
