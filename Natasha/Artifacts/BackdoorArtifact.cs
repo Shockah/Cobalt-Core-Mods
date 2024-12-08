@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-using Nanoray.PluginManager;
-using Newtonsoft.Json;
+﻿using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +8,6 @@ namespace Shockah.Natasha;
 
 internal sealed class BackdoorArtifact : Artifact, IRegisterable
 {
-	[JsonProperty]
-	private Status LastStatus = Status.corrode;
-	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Artifacts.RegisterArtifact("Backdoor", new()
@@ -27,29 +22,13 @@ internal sealed class BackdoorArtifact : Artifact, IRegisterable
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Backdoor", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Backdoor", "description"]).Localize
 		});
-		
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.Begin)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AStatus_Begin_Postfix))
-		);
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
 		=> [
-			.. MG.inst.g.state.route is Combat ? new List<Tooltip>
-			{
-				new TTText(ModEntry.Instance.Localizations.Localize(["artifact", "Backdoor", "extraLine"], new { Status = LastStatus.GetLocName().ToUpper() })),
-				new TTDivider(),
-			} : new List<Tooltip>(),
-			.. StatusMeta.GetTooltips(MG.inst.g.state.route is Combat ? LastStatus : Status.corrode, 1),
 			.. ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(MG.inst.g.state, null) ?? [],
+			.. StatusMeta.GetTooltips(Status.corrode, 1),
 		];
-
-	public override void OnCombatStart(State state, Combat combat)
-	{
-		base.OnCombatStart(state, combat);
-		LastStatus = Status.corrode;
-	}
 
 	public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
 	{
@@ -57,30 +36,6 @@ internal sealed class BackdoorArtifact : Artifact, IRegisterable
 		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, ModEntry.Instance.KokoroApi.Limited.Trait))
 			return;
 		combat.Queue(new Action { CardId = card.uuid });
-	}
-
-	private static void AStatus_Begin_Postfix(AStatus __instance, State s, Combat c)
-	{
-		if (__instance.targetPlayer)
-			return;
-		if (DB.statuses[__instance.status].isGood)
-			return;
-		if (s.EnumerateAllArtifacts().OfType<BackdoorArtifact>().FirstOrDefault() is not { } artifact)
-			return;
-
-		var oldAmount = c.otherShip.Get(__instance.status);
-		var newAmount = __instance.mode switch
-		{
-			AStatusMode.Set => __instance.statusAmount,
-			AStatusMode.Add => oldAmount + __instance.statusAmount,
-			AStatusMode.Mult => oldAmount * __instance.statusAmount,
-			_ => oldAmount
-		};
-
-		if (newAmount <= oldAmount)
-			return;
-		
-		artifact.LastStatus = __instance.status;
 	}
 
 	private sealed class Action : CardAction
@@ -102,7 +57,7 @@ internal sealed class BackdoorArtifact : Artifact, IRegisterable
 			c.QueueImmediate(new AStatus
 			{
 				targetPlayer = false,
-				status = artifact.LastStatus,
+				status = Status.corrode,
 				statusAmount = 1,
 				artifactPulse = artifact.Key(),
 			});
