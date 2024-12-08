@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.0
+Released 8 December 2024.
 
 ### Artifacts
 * Added the Backdoor artifact.
@@ -13,9 +14,8 @@
 ### Cards
 * Added the Onion Routing card.
 * Removed the Reboot card.
-* Completely changed the Access Violation card.
+* Completely changed the Access Violation card, and it is now a rare (was uncommon).
 * Changed the Reprogram card.
-* The Access Violation card is now a rare (was uncommon).
 * Changed visuals of the Hijack Engines card.
 * Changed visuals of the Voltage Tuning card.
 
