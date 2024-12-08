@@ -2,14 +2,16 @@
 using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Shockah.Bjorn;
 
-internal sealed class Relativity : IRegisterable, IStatusRenderHook
+internal sealed class Relativity : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	private static readonly UK MoveEnemyLeftUk = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
 	private static readonly UK MoveEnemyRightUk = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
@@ -30,10 +32,10 @@ internal sealed class Relativity : IRegisterable, IStatusRenderHook
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Relativity", "description"]).Localize
 		});
 
-		ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(new StatusLogicHook(), 0);
-		ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(new StatusRenderHook(), 0);
-		ModEntry.Instance.KokoroApi.RegisterEvadeHook(new MovementHook(), -50);
-		ModEntry.Instance.KokoroApi.RegisterDroneShiftHook(new MovementHook(), -50);
+		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(new StatusLogicHook(), 0);
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(new StatusRenderHook(), 0);
+		ModEntry.Instance.KokoroApi.EvadeHook.DefaultAction.RegisterPaymentOption(new MovementPaymentOption(), -50);
+		ModEntry.Instance.KokoroApi.DroneShiftHook.DefaultAction.RegisterPaymentOption(new MovementPaymentOption(), -50);
 
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderMoveButtons)),
@@ -84,46 +86,44 @@ internal sealed class Relativity : IRegisterable, IStatusRenderHook
 		}));
 	}
 
-	private sealed class StatusLogicHook : IStatusLogicHook
+	private sealed class StatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
 	{
-		public int ModifyStatusChange(State state, Combat combat, Ship ship, Status status, int oldAmount, int newAmount)
+		public int ModifyStatusChange(IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusChangeArgs args)
 		{
-			if (status != RelativityStatus.Status)
-				return newAmount;
-			return Math.Min(newAmount, 3);
+			if (args.Status != RelativityStatus.Status)
+				return args.NewAmount;
+			return Math.Min(args.NewAmount, 3);
 		}
 	}
 
-	private sealed class StatusRenderHook : IStatusRenderHook
+	private sealed class StatusRenderHook : IKokoroApi.IV2.IStatusRenderingApi.IHook
 	{
-		public bool? ShouldOverrideStatusRenderingAsBars(State state, Combat combat, Ship ship, Status status, int amount)
-			=> status == RelativityStatus.Status ? true : null;
-
-		public (IReadOnlyList<Color> Colors, int? BarTickWidth) OverrideStatusRendering(State state, Combat combat, Ship ship, Status status, int amount)
+		public (IReadOnlyList<Color> Colors, int? BarSegmentWidth)? OverrideStatusRenderingAsBars(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingAsBarsArgs args)
 		{
-			if (status != RelativityStatus.Status)
+			if (args.Status != RelativityStatus.Status)
 				return default;
 
 			var colors = new Color[3];
 			for (var i = 0; i < colors.Length; i++)
-				colors[i] = amount > i ? ModEntry.Instance.KokoroApi.DefaultActiveStatusBarColor : ModEntry.Instance.KokoroApi.DefaultInactiveStatusBarColor;
+				colors[i] = args.Amount > i ? ModEntry.Instance.KokoroApi.StatusRendering.DefaultActiveStatusBarColor : ModEntry.Instance.KokoroApi.StatusRendering.DefaultInactiveStatusBarColor;
 
-			return (Colors: colors, BarTickWidth: null);
+			return (Colors: colors, BarSegmentWidth: null);
 		}
 
-		public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips)
+		public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 		{
-			if (status != RelativityStatus.Status)
-				return tooltips;
+			if (args.Status != RelativityStatus.Status)
+				return args.Tooltips;
 
-			var index = tooltips.FindIndex(t => t is TTGlossary glossary && glossary.key == $"status.{RelativityStatus.Status}");
+			var tooltipList = args.Tooltips.ToList();
+			var index = tooltipList.FindIndex(t => t is TTGlossary glossary && glossary.key == $"status.{RelativityStatus.Status}");
 			if (index == -1)
-				return tooltips;
+				return tooltipList;
 
 			var (moveLeft, moveRight) = new TTGlossary("").GetLeftRightTooltipKeys("status.evade")!.Value;
 			var (shiftLeft, shiftRight) = new TTGlossary("").GetLeftRightTooltipKeys("status.droneShift")!.Value;
 
-			tooltips[index] = new GlossaryTooltip($"status.{RelativityStatus.Status}")
+			tooltipList[index] = new GlossaryTooltip($"status.{RelativityStatus.Status}")
 			{
 				Icon = RelativityStatus.Configuration.Definition.icon,
 				TitleColor = Colors.status,
@@ -136,22 +136,28 @@ internal sealed class Relativity : IRegisterable, IStatusRenderHook
 					ShiftRight = shiftRight,
 				}),
 			};
-			return tooltips;
+			return tooltipList;
 		}
 	}
 
-	private sealed class MovementHook : IEvadeHook, IDroneShiftHook
+	private sealed class MovementPaymentOption : IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption, IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPaymentOption
 	{
-		public bool? IsEvadePossible(State state, Combat combat, EvadeHookContext context)
-			=> state.ship.Get(RelativityStatus.Status) > 0 ? true : null;
+		public bool CanPayForEvade(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.ICanPayForEvadeArgs args)
+			=> args.State.ship.Get(RelativityStatus.Status) > 0;
 
-		public void PayForEvade(State state, Combat combat, int direction)
-			=> state.ship.Add(RelativityStatus.Status, -1);
+		public IReadOnlyList<CardAction> ProvideEvadePaymentActions(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.IProvideEvadePaymentActionsArgs args)
+		{
+			args.State.ship.Add(RelativityStatus.Status, -1);
+			return [];
+		}
 
-		public bool? IsDroneShiftPossible(State state, Combat combat, DroneShiftHookContext context)
-			=> state.ship.Get(RelativityStatus.Status) > 0 ? true : null;
+		public bool CanPayForDroneShift(IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPaymentOption.ICanPayForDroneShiftArgs args)
+			=> args.State.ship.Get(RelativityStatus.Status) > 0;
 
-		public void PayForDroneShift(State state, Combat combat, int direction)
-			=> state.ship.Add(RelativityStatus.Status, -1);
+		public IReadOnlyList<CardAction> ProvideDroneShiftPaymentActions(IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPaymentOption.IProvideDroneShiftPaymentActionsArgs args)
+		{
+			args.State.ship.Add(RelativityStatus.Status, -1);
+			return [];
+		}
 	}
 }
