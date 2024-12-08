@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -301,7 +302,7 @@ internal sealed class AnalyzeCostAction : CardAction
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
-			.. (CardId is null ? Analyze.GetAnalyzeTooltips(s) : Analyze.GetAnalyzeOrSelfAnalyzeTooltips(s)),
+			.. CardId is null ? Analyze.GetAnalyzeTooltips(s) : Analyze.GetAnalyzeOrSelfAnalyzeTooltips(s),
 			.. Action.GetTooltips(s),
 		];
 
@@ -424,4 +425,41 @@ internal sealed class AnalyzableVariableHint : AVariableHint
 			},
 			.. Analyze.GetAnalyzeTooltips(s),
 		];
+}
+
+internal sealed class AnalyzedCondition : IKokoroApi.IV2.IConditionalApi.IBoolExpression
+{
+	public required bool Analyzed;
+	
+	public bool GetValue(State state, Combat combat)
+		=> Analyzed;
+
+	public string GetTooltipDescription(State state, Combat? combat)
+		=> ModEntry.Instance.Localizations.Localize(["condition", "Analyzed", "description"]);
+
+	public void Render(G g, ref Vec position, bool isDisabled, bool dontRender)
+	{
+		if (!dontRender)
+			Draw.Sprite(
+				Analyze.AnalyzedIcon.Sprite,
+				position.x,
+				position.y,
+				color: isDisabled ? Colors.disabledIconTint : Colors.white
+			);
+		position.x += 8;
+	}
+
+	public IEnumerable<Tooltip> OverrideConditionalTooltip(State state, Combat? combat, Tooltip defaultTooltip, string defaultTooltipDescription)
+		=> [
+			new GlossaryTooltip($"AConditional::{ModEntry.Instance.Package.Manifest.UniqueName}::Analyzed")
+			{
+				Icon = Analyze.AnalyzedIcon.Sprite,
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["condition", "Analyzed", "title"]),
+				Description = defaultTooltipDescription,
+			}
+		];
+
+	public IReadOnlyList<Tooltip> GetTooltips(State state, Combat combat)
+		=> [.. Analyze.AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? []];
 }
