@@ -19,7 +19,7 @@ internal sealed class VoltageTuningCard : Card, IRegisterable, IHasCustomCardTra
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/VoltageTuning.png"), StableSpr.cards_FreezeDry).Sprite,
+			Art = StableSpr.cards_MiningDrill_Top,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "VoltageTuning", "name"]).Localize
 		});
 
@@ -35,7 +35,11 @@ internal sealed class VoltageTuningCard : Card, IRegisterable, IHasCustomCardTra
 		});
 
 	public override CardData GetData(State state)
-		=> new() { cost = 1, floppable = true };
+		=> upgrade switch
+		{
+			Upgrade.A => new() { cost = 1, floppable = true, art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top },
+			_ => new() { cost = 1, floppable = true, art = flipped ? StableSpr.cards_MiningDrill_Bottom : StableSpr.cards_MiningDrill_Top },
+		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch

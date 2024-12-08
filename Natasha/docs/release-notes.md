@@ -16,6 +16,7 @@
 * Completely changed the Access Violation card.
 * Changed the Reprogram card.
 * The Access Violation card is now a rare (was uncommon).
+* Changed visuals of the Voltage Tuning card.
 
 ## 1.2.0
 Released 4 December 2024.
