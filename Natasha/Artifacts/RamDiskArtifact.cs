@@ -50,8 +50,8 @@ internal sealed class RamDiskArtifact : Artifact, IRegisterable, IKokoroApi.IV2.
 	private static void ArtifactReward_GetBlockedArtifacts_Postfix(State s, ref HashSet<Type> __result)
 	{
 		if (s.EnumerateAllArtifacts().Any(a => a is RamDiskArtifact))
-			__result.Add(typeof(GeneticAlgorithmArtifact));
-		if (s.EnumerateAllArtifacts().Any(a => a is GeneticAlgorithmArtifact))
+			__result.Add(typeof(BackdoorArtifact));
+		if (s.EnumerateAllArtifacts().Any(a => a is BackdoorArtifact))
 			__result.Add(typeof(RamDiskArtifact));
 	}
 }

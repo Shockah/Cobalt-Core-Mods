@@ -17,6 +17,11 @@
         }
     },
     "artifact": {
+        "Backdoor": {
+            "name": "BACKDOOR",
+            "description": "Whenever all uses of a <c=cardtrait>limited</c> card are spent, your enemy gains 1 of the last negative status they gained, or <c=status>corrode</c> if none.",
+            "extraLine": "Last status: <c=status>{{Status}}</c>"
+        },
         "DarkWebData": {
             "name": "DARK WEB DATA",
             "description": "Choose a card that <c=cardtrait>exhausts</c>. Replace its <c=cardtrait>Exhaust</c> with <c=cardtrait>Limited 2</c>.",
@@ -28,10 +33,6 @@
         "Forkbomb": {
             "name": "FORKBOMB",
             "description": "Once per combat, whenever your enemy gains a negative status, they gain 1 more."
-        },
-        "GeneticAlgorithm": {
-            "name": "GENETIC ALGORITHM",
-            "description": "Whenever all uses of a <c=cardtrait>limited</c> card are spent, permanently increase its base uses by 1."
         },
         "Keylogger": {
             "name": "KEYLOGGER",

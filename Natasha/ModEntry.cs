@@ -72,6 +72,7 @@ public sealed class ModEntry : SimpleMod
 		];
 
 	internal static readonly IReadOnlyList<Type> CommonArtifacts = [
+		typeof(BackdoorArtifact),
 		typeof(DarkWebDataArtifact),
 		typeof(ForkbombArtifact),
 		typeof(KeyloggerArtifact),
@@ -80,7 +81,6 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static readonly IReadOnlyList<Type> BossArtifacts = [
-		typeof(GeneticAlgorithmArtifact),
 		typeof(NetworkComputingArtifact),
 		typeof(RamDiskArtifact),
 	];

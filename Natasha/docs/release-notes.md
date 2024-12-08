@@ -5,7 +5,7 @@
 ## Upcoming release
 
 ### Artifacts
-* Added the Genetic Algorithm artifact.
+* Added the Backdoor artifact.
 * Completely changed the effect of the Operation Altair artifact.
 * The Keylogger artifact is now a bit easier to use (can target any card in the deck, and will prioritize cards which stayed in hand, then in the draw pile, then in the discard pile).
 * The Forkbomb artifact now pulses when it triggers.
