@@ -35,15 +35,15 @@ public sealed class ElectronGunCard : Card, IRegisterable
 		=> upgrade.Switch<List<CardAction>>(
 			none: () => [
 				new AAttack { damage = GetDmg(s, 1) },
-				new AStatus { targetPlayer = true, status = Relativity.RelativityStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = 1 },
 			],
 			a: () => [
 				new AAttack { damage = GetDmg(s, 2) },
-				new AStatus { targetPlayer = true, status = Relativity.RelativityStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = 1 },
 			],
 			b: () => [
 				new AAttack { damage = GetDmg(s, 2) },
-				new AnalyzeCostAction { Count = 2, Action = new AStatus { targetPlayer = true, status = Relativity.RelativityStatus.Status, statusAmount = 2 } },
+				new AnalyzeCostAction { Count = 2, Action = new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = 2 } },
 			]
 		);
 }

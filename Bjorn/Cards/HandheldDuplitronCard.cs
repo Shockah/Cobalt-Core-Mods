@@ -56,8 +56,8 @@ public sealed class HandheldDuplitronCard : Card, IRegisterable
 
 		public override List<Tooltip> GetTooltips(State s)
 			=> [
-				.. Analyze.GetAnalyzeTooltips(s),
-				.. (Reevaluated ? (Analyze.ReevaluatedTrait.Configuration.Tooltips?.Invoke(s, null) ?? []) : []),
+				.. AnalyzeManager.GetAnalyzeTooltips(s),
+				.. (Reevaluated ? (AnalyzeManager.ReevaluatedTrait.Configuration.Tooltips?.Invoke(s, null) ?? []) : []),
 				new TTGlossary("cardtrait.temporary"),
 			];
 
@@ -91,14 +91,14 @@ public sealed class HandheldDuplitronCard : Card, IRegisterable
 
 				if (selectedCard is null)
 					return;
-				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, Analyze.AnalyzedTrait, true, permanent: false);
+				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.AnalyzedTrait, true, permanent: false);
 
 				var copy = selectedCard.CopyWithNewId();
 				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, copy, ModEntry.Instance.Helper.Content.Cards.TemporaryCardTrait, true, permanent: true);
 				if (Reevaluated)
 				{
-					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, Analyze.AnalyzedTrait, false, permanent: false);
-					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, Analyze.ReevaluatedTrait, true, permanent: false);
+					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.AnalyzedTrait, false, permanent: false);
+					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.ReevaluatedTrait, true, permanent: false);
 				}
 
 				c.QueueImmediate(new AAddCard
