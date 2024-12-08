@@ -27,24 +27,19 @@ internal sealed class HijackEnginesCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> upgrade switch
 		{
-			Upgrade.A => new() { cost = 1, floppable = true },
-			_ => new() { cost = 2, floppable = true },
+			Upgrade.A => new() { cost = 1, flippable = true },
+			_ => new() { cost = 2, flippable = true },
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AStatus { targetPlayer = false, status = Status.autododgeLeft, statusAmount = 1, disabled = flipped },
-				new AAttack { damage = GetDmg(s, 0), disabled = flipped },
-				new ADummyAction(),
-				new AStatus { targetPlayer = false, status = Status.autododgeRight, statusAmount = 1, disabled = !flipped },
-				new AAttack { damage = GetDmg(s, 0), disabled = !flipped }
+				new AStatus { targetPlayer = false, status = flipped ? Status.autododgeLeft : Status.autododgeRight, statusAmount = 1 },
+				new AAttack { damage = GetDmg(s, 0) },
 			],
 			_ => [
-				new AStatus { targetPlayer = false, status = Status.autododgeLeft, statusAmount = 1, disabled = flipped },
-				new ADummyAction(),
-				new AStatus { targetPlayer = false, status = Status.autododgeRight, statusAmount = 1, disabled = !flipped },
+				new AStatus { targetPlayer = false, status = flipped ? Status.autododgeLeft : Status.autododgeRight, statusAmount = 1 },
 			]
 		};
 }
