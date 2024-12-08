@@ -35,19 +35,19 @@ public sealed class LorentzTransformCard : Card, IRegisterable
 		=> upgrade.Switch<List<CardAction>>(
 			none: () => [
 				new AVariableHint { status = Status.evade, secondStatus = Status.droneShift },
-				new AStatus { targetPlayer = true, status = Relativity.RelativityStatus.Status, statusAmount = s.ship.Get(Status.evade) + s.ship.Get(Status.droneShift), xHint = 1 },
+				new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = s.ship.Get(Status.evade) + s.ship.Get(Status.droneShift), xHint = 1 },
 				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = Status.evade, statusAmount = 0, timer = 0 },
 				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = Status.droneShift, statusAmount = 0 },
 			],
 			a: () => [
 				new AVariableHint { status = Status.evade, secondStatus = Status.droneShift },
-				new AStatus { targetPlayer = true, status = Relativity.RelativityStatus.Status, statusAmount = s.ship.Get(Status.evade) + s.ship.Get(Status.droneShift), xHint = 1, timer = 0 },
-				new AStatus { targetPlayer = true, status = Relativity.RelativityStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = s.ship.Get(Status.evade) + s.ship.Get(Status.droneShift), xHint = 1, timer = 0 },
+				new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = 1 },
 				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = Status.evade, statusAmount = 0, timer = 0 },
 				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = Status.droneShift, statusAmount = 0 },
 			],
 			b: () => [
-				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = Relativity.RelativityStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = RelativityManager.RelativityStatus.Status, statusAmount = 2 },
 				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = Status.evade, statusAmount = 0, timer = 0 },
 				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = Status.droneShift, statusAmount = 0 },
 			]
