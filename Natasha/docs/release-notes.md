@@ -13,6 +13,7 @@
 ### Cards
 * Added the Onion Routing card.
 * Removed the Reboot card.
+* Completely changed the Access Violation card.
 * Changed the Reprogram card.
 * The Access Violation card is now a rare (was uncommon).
 

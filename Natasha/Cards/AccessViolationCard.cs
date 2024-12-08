@@ -1,5 +1,4 @@
 ﻿using daisyowl.text;
-using FSPRO;
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
@@ -28,8 +27,6 @@ internal sealed class AccessViolationCard : Card, IRegisterable, IHasCustomCardT
 		});
 		
 		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
-
-		ModEntry.Instance.KokoroApi.CardRendering.RegisterHook(new Hook());
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
@@ -42,55 +39,38 @@ internal sealed class AccessViolationCard : Card, IRegisterable, IHasCustomCardT
 	public override CardData GetData(State state)
 		=> upgrade switch
 		{
-			Upgrade.B => new() { cost = 3, description = ModEntry.Instance.Localizations.Localize(["card", "AccessViolation", "description"]) },
-			Upgrade.A => new() { cost = 2, exhaust = true, description = ModEntry.Instance.Localizations.Localize(["card", "AccessViolation", "description"]) },
-			_ => new() { cost = 3, exhaust = true, description = ModEntry.Instance.Localizations.Localize(["card", "AccessViolation", "description"]) },
+			Upgrade.B => new() { cost = 3, description = ModEntry.Instance.Localizations.Localize(["card", "AccessViolation", "description", upgrade.ToString()]) },
+			Upgrade.A => new() { cost = 3, exhaust = true, description = ModEntry.Instance.Localizations.Localize(["card", "AccessViolation", "description", upgrade.ToString()]) },
+			_ => new() { cost = 3, exhaust = true, description = ModEntry.Instance.Localizations.Localize(["card", "AccessViolation", "description", upgrade.ToString()]) },
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [new Action { ExtraUses = 1 }];
+		=> upgrade switch
+		{
+			Upgrade.A => [
+				new Action(),
+				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 2 },
+			],
+			_ => [
+				new Action(),
+			]
+		};
 
 	private sealed class Action : CardAction
 	{
-		public int ExtraUses;
-
 		public override List<Tooltip> GetTooltips(State s)
 			=> [.. ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(s, null) ?? []];
 
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
-
-			var index = 0;
-			foreach (var card in c.exhausted.ToList())
-			{
-				if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, ModEntry.Instance.KokoroApi.Limited.Trait))
-					continue;
-
-				c.exhausted.Remove(card);
-				card.waitBeforeMoving = index++ * 0.05;
-				c.SendCardToDiscard(s, card);
-				
-				if (ExtraUses != 0)
-					ModEntry.Instance.KokoroApi.Limited.SetLimitedUses(s, card, ModEntry.Instance.KokoroApi.Limited.GetLimitedUses(s, card) + ExtraUses);
-			}
-
-			if (index != 0)
-			{
-				Audio.Play(Event.CardHandling);
-				if (ExtraUses != 0)
-					Audio.Play(ExtraUses > 0 ? Event.Status_PowerUp : Event.Status_PowerDown);
-			}
-		}
-	}
-
-	private sealed class Hook : IKokoroApi.IV2.ICardRenderingApi.IHook
-	{
-		public Font? ReplaceTextCardFont(IKokoroApi.IV2.ICardRenderingApi.IHook.IReplaceTextCardFontArgs args)
-		{
-			if (args.Card is not AccessViolationCard)
-				return null;
-			return ModEntry.Instance.KokoroApi.Assets.PinchCompactFont;
+			timer = 0;
+			
+			c.QueueImmediate(
+				c.exhausted
+					.Where(card => ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, ModEntry.Instance.KokoroApi.Limited.Trait))
+					.Select(card => ModEntry.Instance.KokoroApi.PlayCardsFromAnywhere.MakeAction(card).AsCardAction)
+			);
 		}
 	}
 }

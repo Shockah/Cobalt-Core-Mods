@@ -58,7 +58,11 @@
     "card": {
         "AccessViolation": {
             "name": "Access Violation",
-            "description": "Put all <c=cardtrait>exhausted limited</c> cards in your <c=keyword>discard pile</c>. Give them +1 use."
+            "description": {
+                "None": "Play all already exhausted <c=cardtrait>limited</c> cards.",
+                "A": "Play all already exhausted <c=cardtrait>limited</c> cards. Gain 2 <c=status>shield</c>.",
+                "B": "Play all already exhausted <c=cardtrait>limited</c> cards."
+            }
         },
         "Botnet": {
             "name": "Botnet"
