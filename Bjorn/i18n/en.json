@@ -49,6 +49,12 @@
             "stateless": "<c=action>X</c> = All other analyzable cards in hand."
         }
     },
+    "condition": {
+        "Analyzed": {
+            "title": "Analyzed",
+            "description": "the card is <c=cardtrait>analyzed</c>"
+        }
+    },
     "midrow": {
         "SmartShieldDrone": {
             "name": "Smart Shield Drone",
@@ -138,6 +144,9 @@
         },
         "SmartShieldDrone": {
             "name": "Smart Shield Drone"
+        },
+        "Taser": {
+            "name": "Taser"
         }
     }
 }
