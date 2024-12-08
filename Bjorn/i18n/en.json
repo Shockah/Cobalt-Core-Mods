@@ -14,6 +14,10 @@
         "Reevaluated": {
             "name": "Re-evaluated",
             "description": "This card cannot be chosen for <c=card>Re-evaluation</c>, but can be chosen for <c=action>analysis</c>."
+        },
+        "Accelerated": {
+            "name": "Accelerated",
+            "description": "This card costs 1 less <c=energy>energy</c>."
         }
     },
     "action": {
@@ -72,6 +76,14 @@
         }
     },
     "card": {
+        "Accelerate": {
+            "name": "Accelerate",
+            "description": {
+                "None": "<c=action>Analyze</c> a 2+ cost card. It gains <c=cardtrait>Accelerated</c> for rest of combat.",
+                "A": "<c=action>Analyze</c> a 2+ cost card. It gains <c=cardtrait>Accelerated</c> for rest of combat.",
+                "B": "Permanently <c=action>analyze</c> a 2+ cost card. It gains <c=cardtrait>Accelerated</c>."
+            }
+        },
         "Assimilate": {
             "name": "Assimilate"
         },
