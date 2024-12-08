@@ -36,7 +36,7 @@ public sealed class TaserCard : Card, IRegisterable
 		{
 			Upgrade.B => [
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
-					new AnalyzedCondition { Analyzed = ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, this, Analyze.AnalyzedTrait) },
+					new AnalyzedCondition { Analyzed = ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, this, AnalyzeManager.AnalyzedTrait) },
 					new AStatus { targetPlayer = true, status = Status.stunCharge, statusAmount = 1 }
 				).AsCardAction,
 				new AAttack { damage = GetDmg(s, 1) }
