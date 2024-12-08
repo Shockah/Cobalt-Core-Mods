@@ -69,6 +69,7 @@ internal sealed class AccessViolationCard : Card, IRegisterable, IHasCustomCardT
 			
 			c.QueueImmediate(
 				c.exhausted
+					.Where(card => card is not AccessViolationCard)
 					.Where(card => ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, ModEntry.Instance.KokoroApi.Limited.Trait))
 					.Select(card => ModEntry.Instance.KokoroApi.PlayCardsFromAnywhere.MakeAction(card).AsCardAction)
 			);
