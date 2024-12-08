@@ -299,6 +299,7 @@ internal sealed class AnalyzeCostAction : CardAction
 	public required CardAction Action;
 	public int Count = 1;
 	public int? CardId;
+	public bool? FilterExhaust;
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
@@ -319,16 +320,17 @@ internal sealed class AnalyzeCostAction : CardAction
 
 		c.QueueImmediate(new ACardSelect
 		{
-			browseAction = new AnalyzeCostBrowseAction { Action = Action, ToAnalyzeLeft = Count - 1 },
+			browseAction = new AnalyzeCostBrowseAction { Action = Action, ToAnalyzeLeft = Count - 1, FilterExhaust = FilterExhaust },
 			browseSource = CardBrowse.Source.Hand,
+			filterExhaust = FilterExhaust,
 		}.SetFilterAnalyzable(true).SetForceInclude(CardId));
 	}
 
-	// TODO: register wrapped action
 	private sealed class AnalyzeCostBrowseAction : CardAction
 	{
 		public required CardAction Action;
 		public required int ToAnalyzeLeft;
+		public bool? FilterExhaust;
 
 		public override string? GetCardSelectText(State s)
 			=> ModEntry.Instance.Localizations.Localize(["action", "Analyze", "uiTitle"]);
@@ -345,7 +347,7 @@ internal sealed class AnalyzeCostAction : CardAction
 
 			if (ToAnalyzeLeft > 0)
 			{
-				c.QueueImmediate(new AnalyzeCostAction { Action = Action, Count = ToAnalyzeLeft });
+				c.QueueImmediate(new AnalyzeCostAction { Action = Action, Count = ToAnalyzeLeft, FilterExhaust = FilterExhaust });
 				return;
 			}
 
