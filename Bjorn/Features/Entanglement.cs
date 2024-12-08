@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Shockah.Bjorn;
 
-internal sealed class Entanglement : IRegisterable
+internal sealed class EntanglementManager : IRegisterable
 {
 	internal static IStatusEntry EntanglementStatus { get; private set; } = null!;
 
