@@ -73,10 +73,10 @@ public sealed class ModEntry : SimpleMod
 			.. AllCardTypes,
 			.. AllArtifactTypes,
 			.. DuoArtifacts,
-			typeof(Analyze),
-			typeof(Entanglement),
-			typeof(Relativity),
-			typeof(SmartShield),
+			typeof(AnalyzeManager),
+			typeof(EntanglementManager),
+			typeof(RelativityManager),
+			typeof(SmartShieldManager),
 			typeof(SmartShieldDrone),
 		];
 

@@ -55,7 +55,7 @@ public sealed class DrawConclusionsCard : Card, IRegisterable
 		public bool Random;
 
 		public override List<Tooltip> GetTooltips(State s)
-			=> Analyze.GetAnalyzeTooltips(s);
+			=> AnalyzeManager.GetAnalyzeTooltips(s);
 
 		public override void Begin(G g, State s, Combat c)
 		{
@@ -72,7 +72,7 @@ public sealed class DrawConclusionsCard : Card, IRegisterable
 				}
 
 				var card = analyzableCards[s.rngActions.NextInt() % analyzableCards.Count];
-				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, Analyze.AnalyzedTrait, true, permanent: false);
+				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, true, permanent: false);
 				c.QueueImmediate(new ADrawCard { count = card.GetCurrentCost(s) + Extra });
 			}
 			else
@@ -99,7 +99,7 @@ public sealed class DrawConclusionsCard : Card, IRegisterable
 
 				if (selectedCard is null)
 					return;
-				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, Analyze.AnalyzedTrait, true, permanent: false);
+				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.AnalyzedTrait, true, permanent: false);
 				c.QueueImmediate(new ADrawCard { count = selectedCard.GetCurrentCost(s) + Extra });
 			}
 		}

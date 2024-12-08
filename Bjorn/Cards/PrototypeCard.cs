@@ -50,7 +50,7 @@ public sealed class PrototypeCard : Card, IRegisterable
 				new OnAnalyzeAction { Action = new DiscardSelfAction { CardId = uuid } },
 			],
 			b: () => [
-				new AStatus { targetPlayer = true, status = Relativity.RelativityStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = 1 },
 				new OnAnalyzeAction { Action = new ADrawCard { count = 1 } },
 				new OnAnalyzeAction { Action = new DiscardSelfAction { CardId = uuid } },
 			]

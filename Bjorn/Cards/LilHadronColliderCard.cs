@@ -72,7 +72,7 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 		public required int CardId;
 
 		public override List<Tooltip> GetTooltips(State s)
-			=> Analyze.GetAnalyzeTooltips(s);
+			=> AnalyzeManager.GetAnalyzeTooltips(s);
 
 		public override void Begin(G g, State s, Combat c)
 		{
@@ -80,7 +80,7 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 
 			foreach (var card in c.hand)
 				if (card.uuid != CardId)
-					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, Analyze.AnalyzedTrait, true, permanent: false);
+					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, true, permanent: false);
 		}
 	}
 }

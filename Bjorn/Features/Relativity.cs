@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace Shockah.Bjorn;
 
-internal sealed class Relativity : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
+internal sealed class RelativityManager : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	private static readonly UK MoveEnemyLeftUk = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
 	private static readonly UK MoveEnemyRightUk = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();

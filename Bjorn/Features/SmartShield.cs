@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Bjorn;
 
-internal sealed class SmartShield : IRegisterable
+internal sealed class SmartShieldManager : IRegisterable
 {
 	internal static ISpriteEntry Icon { get; private set; } = null!;
 
@@ -21,13 +21,13 @@ public sealed class SmartShieldAction : CardAction
 	public required int Amount;
 
 	public override Icon? GetIcon(State s)
-		=> new() { path = SmartShield.Icon.Sprite, number = Amount, color = Colors.textMain };
+		=> new() { path = SmartShieldManager.Icon.Sprite, number = Amount, color = Colors.textMain };
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
 			new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::SmartShield")
 			{
-				Icon = SmartShield.Icon.Sprite,
+				Icon = SmartShieldManager.Icon.Sprite,
 				TitleColor = Colors.action,
 				Title = ModEntry.Instance.Localizations.Localize(["action", "SmartShield", "name"]),
 				Description = ModEntry.Instance.Localizations.Localize(["action", "SmartShield", "description"], new { Amount = Amount }),
