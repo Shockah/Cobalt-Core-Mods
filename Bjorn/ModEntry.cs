@@ -43,6 +43,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(AccelerateCard),
 		typeof(HandheldDuplitronCard),
 		typeof(LilHadronColliderCard),
+		typeof(NeglectSafetyCard),
 	];
 
 	internal static readonly IEnumerable<Type> AllCardTypes
