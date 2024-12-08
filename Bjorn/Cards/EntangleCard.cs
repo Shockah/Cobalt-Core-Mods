@@ -34,15 +34,15 @@ public sealed class EntangleCard : Card, IRegisterable
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade.Switch<List<CardAction>>(
 			none: () => [
-				new AStatus { targetPlayer = true, status = Entanglement.EntanglementStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = EntanglementManager.EntanglementStatus.Status, statusAmount = 1 },
 			],
 			a: () => [
-				new AStatus { targetPlayer = true, status = Entanglement.EntanglementStatus.Status, statusAmount = 1 },
-				new AStatus { targetPlayer = true, status = Relativity.RelativityStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = EntanglementManager.EntanglementStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = 1 },
 			],
 			b: () => [
-				new AStatus { targetPlayer = true, status = Entanglement.EntanglementStatus.Status, statusAmount = 3 },
-				new AStatus { targetPlayer = true, status = Relativity.RelativityStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = EntanglementManager.EntanglementStatus.Status, statusAmount = 3 },
+				new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = 2 },
 			]
 		);
 }
