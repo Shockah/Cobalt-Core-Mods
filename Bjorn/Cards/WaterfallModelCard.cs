@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace Shockah.Bjorn;
 
-public sealed class WaterfallModelCard : Card, IRegisterable
+public sealed class WaterfallModelCard : Card, IRegisterable, IHasCustomCardTraits
 {
 	[JsonProperty]
 	private int TimesAnalyzed;
@@ -38,6 +38,9 @@ public sealed class WaterfallModelCard : Card, IRegisterable
 
 	private int TimesNeeded
 		=> upgrade.Switch(5,  4, 3);
+
+	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
+		=> new HashSet<ICardTraitEntry> { AnalyzeManager.ReevaluatedTrait };
 
 	public override CardData GetData(State state)
 	{
