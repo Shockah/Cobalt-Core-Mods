@@ -4,7 +4,7 @@
 
 ## Upcoming release
 
-* Fixed `EnergyAsStatus` not working.
+* Fixed `EnergyAsStatus` not working and having incorrect tooltips.
 
 ## 2.0.3
 Released 6 December 2024.

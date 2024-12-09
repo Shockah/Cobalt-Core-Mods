@@ -152,7 +152,10 @@
 		}
 	},
 	"enemyVariableHint": "<c=action>X</c> = The enemy's {0}{1}{2}{3}.",
-	"energyVariableHint": "<c=action>X</c> = Your <c=status>ENERGY</c> after paying for this card{0}.",
+	"energyVariableHint": {
+		"stateful": "<c=action>X</c> = Your <c=status>ENERGY</c> after paying for this card (<c=keyword>{{Energy}}</c>).",
+		"stateless": "<c=action>X</c> = Your <c=status>ENERGY</c> after paying for this card."
+	},
 	"energy": {
 		"name": "Energy",
 		"description": "How much <c=energy>ENERGY</c> you have remaining this turn."

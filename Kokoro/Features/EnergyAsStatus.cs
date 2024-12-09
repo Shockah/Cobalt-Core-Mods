@@ -160,11 +160,9 @@ public sealed class EnergyVariableHint : AVariableHint, IKokoroApi.IV2.IEnergyAs
 		=> [
 			new GlossaryTooltip("action.xHintEnergy.desc")
 			{
-				Description = ModEntry.Instance.Localizations.Localize(["energyVariableHint"]),
-				vals =
-				[
-					(s.route is Combat combat) ? $" </c>(<c=keyword>{ModEntry.Instance.Helper.ModData.GetOptionalModData<int>(this, "energyTooltipOverride") ?? combat.energy}</c>)" : ""
-				]
+				Description = s.route is Combat combat
+					? ModEntry.Instance.Localizations.Localize(["energyVariableHint", "stateful"], new { Energy = ModEntry.Instance.Helper.ModData.GetOptionalModData<int>(this, "energyTooltipOverride") ?? combat.energy })
+					: ModEntry.Instance.Localizations.Localize(["energyVariableHint", "stateless"]),
 			}
 		];
 
