@@ -75,15 +75,18 @@ internal sealed class RelativityManager : IRegisterable, IKokoroApi.IV2.IStatusR
 		var spread = 96;
 		var buttonTop = 4;
 
-		SharedArt.ButtonSprite(g, new Rect(Combat.cardCenter.x - spread - 24, buttonTop, buttonWidth, buttonHeight), MoveEnemyLeftUk, StableSpr.buttons_move, StableSpr.buttons_move_on, flipX: true, onMouseDown: new MouseDownHandler(() =>
+		var leftResult = SharedArt.ButtonSprite(g, new Rect(Combat.cardCenter.x - spread - 24, buttonTop, buttonWidth, buttonHeight), MoveEnemyLeftUk, StableSpr.buttons_move, StableSpr.buttons_move_on, flipX: true, onMouseDown: new MouseDownHandler(() =>
 		{
 			DoMoveEnemy(g, __instance, -1);
 		}));
 
-		SharedArt.ButtonSprite(g, new Rect(Combat.cardCenter.x + spread + 1, buttonTop, buttonWidth, buttonHeight), MoveEnemyRightUk, StableSpr.buttons_move, StableSpr.buttons_move_on, flipX: false, onMouseDown: new MouseDownHandler(() =>
+		var rightResult = SharedArt.ButtonSprite(g, new Rect(Combat.cardCenter.x + spread + 1, buttonTop, buttonWidth, buttonHeight), MoveEnemyRightUk, StableSpr.buttons_move, StableSpr.buttons_move_on, flipX: false, onMouseDown: new MouseDownHandler(() =>
 		{
 			DoMoveEnemy(g, __instance, 1);
 		}));
+
+		if (leftResult.isHover || rightResult.isHover)
+			g.state.ship.statusEffectPulses[RelativityStatus.Status] = 0.05;
 	}
 
 	private sealed class StatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
@@ -151,6 +154,9 @@ internal sealed class RelativityManager : IRegisterable, IKokoroApi.IV2.IStatusR
 			return [];
 		}
 
+		public void EvadeButtonHovered(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.IEvadeButtonHoveredArgs args)
+			=> args.State.ship.statusEffectPulses[RelativityStatus.Status] = 0.05;
+
 		public bool CanPayForDroneShift(IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPaymentOption.ICanPayForDroneShiftArgs args)
 			=> args.State.ship.Get(RelativityStatus.Status) > 0;
 
@@ -159,5 +165,8 @@ internal sealed class RelativityManager : IRegisterable, IKokoroApi.IV2.IStatusR
 			args.State.ship.Add(RelativityStatus.Status, -1);
 			return [];
 		}
+
+		public void DroneShiftButtonHovered(IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPaymentOption.IDroneShiftButtonHoveredArgs args)
+			=> args.State.ship.statusEffectPulses[RelativityStatus.Status] = 0.05;
 	}
 }
