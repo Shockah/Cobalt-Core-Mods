@@ -83,6 +83,10 @@ internal sealed class EnergyAsStatusManager
 			original: AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.GetIcon)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AStatus_GetIcon_Postfix))
 		);
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.Begin)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AStatus_Begin_Prefix))
+		);
 	}
 	
 	private static void AStatus_GetTooltips_Postfix(AStatus __instance, ref List<Tooltip> __result)
@@ -111,6 +115,25 @@ internal sealed class EnergyAsStatusManager
 			color: Colors.white
 		);
 	}
+
+	private static bool AStatus_Begin_Prefix(AStatus __instance, Combat c)
+	{
+		if (!ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(__instance, "energy"))
+			return true;
+		
+		var currentAmount = c.energy;
+		var newAmount = __instance.mode switch
+		{
+			AStatusMode.Set => __instance.statusAmount,
+			AStatusMode.Add => currentAmount + __instance.statusAmount,
+			AStatusMode.Mult => currentAmount * __instance.statusAmount,
+			_ => currentAmount
+		};
+
+		__instance.timer = 0;
+		c.QueueImmediate(new AEnergy { changeAmount = newAmount - currentAmount });
+		return false;
+	}
 }
 
 public sealed class EnergyVariableHint : AVariableHint, IKokoroApi.IV2.IEnergyAsStatusApi.IVariableHint
@@ -135,7 +158,7 @@ public sealed class EnergyVariableHint : AVariableHint, IKokoroApi.IV2.IEnergyAs
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
-			new GlossaryTooltip("AStatus.Energy")
+			new GlossaryTooltip("action.xHintEnergy.desc")
 			{
 				Description = ModEntry.Instance.Localizations.Localize(["energyVariableHint"]),
 				vals =
