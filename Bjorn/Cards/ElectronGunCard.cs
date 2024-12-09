@@ -8,6 +8,8 @@ namespace Shockah.Bjorn;
 
 public sealed class ElectronGunCard : Card, IRegisterable
 {
+	private bool DuringSafelyGetCurrentCost;
+	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
@@ -28,7 +30,7 @@ public sealed class ElectronGunCard : Card, IRegisterable
 		=> upgrade.Switch<CardData>(
 			none: () => new() { cost = 1 },
 			a: () => new() { cost = 1 },
-			b: () => new() { cost = 1 }
+			b: () => new() { cost = 0 }
 		);
 
 	public override List<CardAction> GetActions(State s, Combat c)
@@ -41,9 +43,31 @@ public sealed class ElectronGunCard : Card, IRegisterable
 				new AAttack { damage = GetDmg(s, 2) },
 				new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = 1 },
 			],
-			b: () => [
-				new AAttack { damage = GetDmg(s, 2) },
-				new AnalyzeCostAction { Count = 2, Action = new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = 2 } },
-			]
+			b: () =>
+			{
+				var energy = c.energy - SafelyGetCurrentCost(s);
+				return [
+					ModEntry.Instance.KokoroApi.EnergyAsStatus.MakeVariableHint().AsCardAction,
+					new AAttack { damage = GetDmg(s, energy), xHint = 1 },
+					new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = energy, xHint = 1 },
+					ModEntry.Instance.KokoroApi.EnergyAsStatus.MakeStatusAction(0, AStatusMode.Set).AsCardAction,
+				];
+			}
 		);
+
+	private int SafelyGetCurrentCost(State state)
+	{
+		if (DuringSafelyGetCurrentCost)
+			return new();
+		
+		try
+		{
+			DuringSafelyGetCurrentCost = true;
+			return GetCurrentCost(state);
+		}
+		finally
+		{
+			DuringSafelyGetCurrentCost = false;
+		}
+	}
 }
