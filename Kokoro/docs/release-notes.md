@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.0.4
+Released 9 December 2024.
 
 * Fixed `EnergyAsStatus` not working and having incorrect tooltips.
 
