@@ -186,6 +186,9 @@
             "name": "Relativity",
             "description": "Move <c=midrow>midrow</c> and both ships by different amounts each in 0-2. Gain 2 <c=status>relativity</c>."
         },
+        "RepulsiveForce": {
+            "name": "Repulsive Force"
+        },
         "SafetyProtocol": {
             "name": "Safety Protocol"
         },
