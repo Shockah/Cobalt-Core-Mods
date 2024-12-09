@@ -36,6 +36,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(EntangleCard),
 		typeof(FieldTestCard),
 		typeof(InsuranceCard),
+		typeof(ReevaluationCard),
 		typeof(RelativityCard),
 	];
 

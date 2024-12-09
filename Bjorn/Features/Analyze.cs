@@ -15,6 +15,18 @@ internal static class AnalyzeCardSelectFiltersExt
 		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "FilterAnalyzable", value);
 		return self;
 	}
+	
+	public static ACardSelect SetFilterAnalyzed(this ACardSelect self, bool? value)
+	{
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "FilterAnalyzed", value);
+		return self;
+	}
+	
+	public static ACardSelect SetFilterReevaluated(this ACardSelect self, bool? value)
+	{
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "FilterReevaluated", value);
+		return self;
+	}
 
 	public static ACardSelect SetForceInclude(this ACardSelect self, int? cardId)
 	{
@@ -161,6 +173,26 @@ internal sealed class AnalyzeManager : IRegisterable
 				__result.RemoveAt(i);
 			}
 		}
+		
+		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "FitlerAnalyzed") is { } filterAnalyzed)
+		{
+			for (var i = __result.Count - 1; i >= 0; i--)
+			{
+				if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(g.state, __result[i], AnalyzedTrait) == filterAnalyzed)
+					continue;
+				__result.RemoveAt(i);
+			}
+		}
+		
+		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "FitlerReevaluated") is { } filterReevaluated)
+		{
+			for (var i = __result.Count - 1; i >= 0; i--)
+			{
+				if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(g.state, __result[i], ReevaluatedTrait) == filterReevaluated)
+					continue;
+				__result.RemoveAt(i);
+			}
+		}
 
 		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<int>(__instance, "ForceInclude") is { } forceIncludeCardId)
 		{
@@ -176,11 +208,11 @@ internal sealed class AnalyzeManager : IRegisterable
 	{
 		if (action is AnalyzeCostAction analyzeCostAction)
 		{
-			bool oldActionDisabled = analyzeCostAction.Action.disabled;
+			var oldActionDisabled = analyzeCostAction.Action.disabled;
 			analyzeCostAction.Action.disabled = analyzeCostAction.disabled;
 
 			var position = g.Push(rect: new()).rect.xy;
-			int initialX = (int)position.x;
+			var initialX = (int)position.x;
 
 			if (!dontDraw)
 				Draw.Sprite((analyzeCostAction.CardId is null ? AnalyzeIcon : AnalyzeOrSelfAnalyzeIcon).Sprite, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
@@ -205,11 +237,11 @@ internal sealed class AnalyzeManager : IRegisterable
 
 		if (action is SelfAnalyzeCostAction selfAnalyzeCostAction)
 		{
-			bool oldActionDisabled = selfAnalyzeCostAction.Action.disabled;
+			var oldActionDisabled = selfAnalyzeCostAction.Action.disabled;
 			selfAnalyzeCostAction.Action.disabled = selfAnalyzeCostAction.disabled;
 
 			var position = g.Push(rect: new()).rect.xy;
-			int initialX = (int)position.x;
+			var initialX = (int)position.x;
 
 			if (!dontDraw)
 				Draw.Sprite(SelfAnalyzeIcon.Sprite, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
@@ -228,11 +260,11 @@ internal sealed class AnalyzeManager : IRegisterable
 
 		if (action is OnAnalyzeAction onAnalyzeAction)
 		{
-			bool oldActionDisabled = onAnalyzeAction.Action.disabled;
+			var oldActionDisabled = onAnalyzeAction.Action.disabled;
 			onAnalyzeAction.Action.disabled = onAnalyzeAction.disabled;
 
 			var position = g.Push(rect: new()).rect.xy;
-			int initialX = (int)position.x;
+			var initialX = (int)position.x;
 
 			if (!dontDraw)
 				Draw.Sprite(OnAnalyzeIcon.Sprite, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
