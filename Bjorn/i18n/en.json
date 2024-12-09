@@ -66,14 +66,19 @@
         }
     },
     "status": {
-        "Relativity": {
-            "name": "Relativity",
-            "description": "Lets you move left or right with <c=boldPink>{{MoveLeft}}</c> / <c=boldPink>{{MoveRight}}</c>, or move all <c=midrow>midrow objects</c> left or right with <c=boldPink>{{ShiftLeft}}</c> / <c=boldPink>{{ShiftRight}}</c>, or move the enemy left or right. Costs 1 relativity per move. Maximum 3."
-        },
         "Entanglement": {
             "name": "Entanglement",
             "description": "Whenever this ship moves, the opposing ship moves the same distance in the other direction. <c=downside>Decreases by 1 each turn.</c>"
+        },
+        "Gadget": {
+            "name": "Gadget",
+            "description": "After combat ends, gain 1 of 2 common artifacts. Does not stack."
+        },
+        "Relativity": {
+            "name": "Relativity",
+            "description": "Lets you move left or right with <c=boldPink>{{MoveLeft}}</c> / <c=boldPink>{{MoveRight}}</c>, or move all <c=midrow>midrow objects</c> left or right with <c=boldPink>{{ShiftLeft}}</c> / <c=boldPink>{{ShiftRight}}</c>, or move the enemy left or right. Costs 1 relativity per move. Maximum 3."
         }
+        
     },
     "card": {
         "Accelerate": {
@@ -181,6 +186,23 @@
         },
         "Taser": {
             "name": "Taser"
+        },
+        "WaterfallModel": {
+            "name": "Waterfall Model",
+            "description": {
+                "None": {
+                    "stateless": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. Every 5 times, gain 1 <c=status>gadget</c>.",
+                    "stateful": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. In {{Times}} times, gain 1 <c=status>gadget</c>."
+                },
+                "A": {
+                    "stateless": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. Every 4 times, gain 1 <c=status>gadget</c>.",
+                    "stateful": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. In {{Times}} times, gain 1 <c=status>gadget</c>."
+                },
+                "B": {
+                    "stateless": "When <c=action>analyzed</c>, <c=downside>gain 2 <c=status>engine lock</c> and end turn</c>. Every 3 times, gain 1 <c=status>gadget</c>.",
+                    "stateful": "When <c=action>analyzed</c>, <c=downside>gain 2 <c=status>engine lock</c> and end turn</c>. In {{Times}} times, gain 1 <c=status>gadget</c>."
+                }
+            }
         }
     }
 }
