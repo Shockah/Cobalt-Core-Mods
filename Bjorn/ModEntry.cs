@@ -38,6 +38,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(InsuranceCard),
 		typeof(ReevaluationCard),
 		typeof(RelativityCard),
+		typeof(RepulsiveForceCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
