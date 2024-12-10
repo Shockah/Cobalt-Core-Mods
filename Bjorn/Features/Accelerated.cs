@@ -14,6 +14,12 @@ internal static class AcceleratedCardSelectFiltersExt
 		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "FilterAccelerated", value);
 		return self;
 	}
+	
+	public static CardBrowse SetFilterAccelerated(this CardBrowse self, bool? value)
+	{
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "FilterAccelerated", value);
+		return self;
+	}
 }
 
 internal sealed class AcceleratedManager : IRegisterable

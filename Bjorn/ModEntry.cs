@@ -23,6 +23,7 @@ public sealed class ModEntry : SimpleMod
 	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
 		typeof(DrawConclusionsCard),
 		typeof(ElectronGunCard),
+		typeof(EntangleCard),
 		typeof(FractalStructureCard),
 		typeof(LorentzTransformCard),
 		typeof(PrototypingCard),
@@ -33,8 +34,8 @@ public sealed class ModEntry : SimpleMod
 
 	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
 		typeof(AssimilateCard),
-		typeof(EntangleCard),
 		typeof(FieldTestCard),
+		typeof(HandheldDuplitronCard),
 		typeof(InsuranceCard),
 		typeof(ReevaluationCard),
 		typeof(RelativityCard),
@@ -43,7 +44,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
 		typeof(AccelerateCard),
-		typeof(HandheldDuplitronCard),
+		typeof(CrystalKnowledgeCard),
 		typeof(LilHadronColliderCard),
 		typeof(NeglectSafetyCard),
 		typeof(WaterfallModelCard),
@@ -80,6 +81,7 @@ public sealed class ModEntry : SimpleMod
 			.. DuoArtifacts,
 			typeof(AcceleratedManager),
 			typeof(AnalyzeManager),
+			typeof(CrystalKnowledgeManager),
 			typeof(EntanglementManager),
 			typeof(GadgetManager),
 			typeof(RelativityManager),
