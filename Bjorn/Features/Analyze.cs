@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Nanoray.PluginManager;
+using Newtonsoft.Json;
 using Nickel;
 using Shockah.Kokoro;
 using System.Collections.Generic;
@@ -16,7 +17,19 @@ internal static class AnalyzeCardSelectFiltersExt
 		return self;
 	}
 	
+	public static CardBrowse SetFilterAnalyzable(this CardBrowse self, bool? value)
+	{
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "FilterAnalyzable", value);
+		return self;
+	}
+	
 	public static ACardSelect SetFilterAnalyzed(this ACardSelect self, bool? value)
+	{
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "FilterAnalyzed", value);
+		return self;
+	}
+	
+	public static CardBrowse SetFilterAnalyzed(this CardBrowse self, bool? value)
 	{
 		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "FilterAnalyzed", value);
 		return self;
@@ -27,8 +40,20 @@ internal static class AnalyzeCardSelectFiltersExt
 		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "FilterReevaluated", value);
 		return self;
 	}
+	
+	public static CardBrowse SetFilterReevaluated(this CardBrowse self, bool? value)
+	{
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "FilterReevaluated", value);
+		return self;
+	}
 
 	public static ACardSelect SetForceInclude(this ACardSelect self, int? cardId)
+	{
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "ForceInclude", cardId);
+		return self;
+	}
+
+	public static CardBrowse SetForceInclude(this CardBrowse self, int? cardId)
 	{
 		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "ForceInclude", cardId);
 		return self;
@@ -329,12 +354,24 @@ internal sealed class AnalyzeManager : IRegisterable
 internal sealed class AnalyzeCostAction : CardAction
 {
 	public required CardAction Action;
-	public int Count = 1;
+	public int MinCount = 1;
+	public int MaxCount = 1;
 	public int? CardId;
 	public bool Permanent;
 	public bool? FilterAccelerated;
 	public bool? FilterExhaust;
 	public int? FilterMinCost;
+
+	[JsonIgnore]
+	public int Count
+	{
+		get => MaxCount;
+		set
+		{
+			MinCount = value;
+			MaxCount = value;
+		}
+	}
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
@@ -342,42 +379,37 @@ internal sealed class AnalyzeCostAction : CardAction
 			.. Action.GetTooltips(s),
 		];
 
-	public override void Begin(G g, State s, Combat c)
+	public override Route? BeginWithRoute(G g, State s, Combat c)
 	{
-		base.Begin(g, s, c);
-		timer = 0;
-
-		if (Count <= 0)
-		{
-			c.QueueImmediate(Action);
-			return;
-		}
-
-		c.QueueImmediate(new ACardSelect
+		var baseRoute = new CardBrowse
 		{
 			browseAction = new AnalyzeCostBrowseAction
 			{
 				Action = Action,
-				ToAnalyzeLeft = Count - 1,
+				RequiredCount = MinCount,
 				Permanent = Permanent,
-				FilterAccelerated = FilterAccelerated,
-				FilterExhaust = FilterExhaust,
-				FilterMinCost = FilterMinCost,
 			},
 			browseSource = CardBrowse.Source.Hand,
 			filterExhaust = FilterExhaust,
 			filterMinCost = FilterMinCost,
-		}.SetFilterAnalyzable(true).SetFilterAccelerated(FilterAccelerated).SetForceInclude(CardId));
+			allowCancel = true,
+		}.SetFilterAnalyzable(true).SetFilterAccelerated(FilterAccelerated).SetForceInclude(CardId);
+		
+		if (Count == 1)
+			return baseRoute;
+
+		baseRoute.allowCancel = false;
+		return ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeRoute(baseRoute)
+			.SetMinSelected(0)
+			.SetMaxSelected(MaxCount)
+			.AsRoute;
 	}
 
 	private sealed class AnalyzeCostBrowseAction : CardAction
 	{
 		public required CardAction Action;
-		public required int ToAnalyzeLeft;
+		public required int RequiredCount;
 		public bool Permanent;
-		public bool? FilterAccelerated;
-		public bool? FilterExhaust;
-		public int? FilterMinCost;
 
 		public override string? GetCardSelectText(State s)
 			=> ModEntry.Instance.Localizations.Localize(["action", "Analyze", "uiTitle"]);
@@ -387,26 +419,32 @@ internal sealed class AnalyzeCostAction : CardAction
 			base.Begin(g, s, c);
 			timer = 0;
 
-			if (selectedCard is null)
-				return;
-
-			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.AnalyzedTrait, true, permanent: Permanent);
-
-			if (ToAnalyzeLeft > 0)
+			if (ModEntry.Instance.KokoroApi.MultiCardBrowse.GetSelectedCards(this) is { } selectedCards)
 			{
-				c.QueueImmediate(new AnalyzeCostAction
-				{
-					Action = Action,
-					Count = ToAnalyzeLeft,
-					Permanent = Permanent,
-					FilterAccelerated = FilterAccelerated,
-					FilterExhaust = FilterExhaust,
-					FilterMinCost = FilterMinCost,
-				});
+				if (selectedCards.Count < RequiredCount)
+					return;
+				
+				foreach (var card in selectedCards)
+					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, true, permanent: Permanent);
+
+				var dummy = new ADummyAction();
+				ModEntry.Instance.Helper.ModData.CopyAllModData(Action, dummy);
+				ModEntry.Instance.Helper.ModData.CopyAllModData(this, Action);
+				ModEntry.Instance.Helper.ModData.CopyAllModData(dummy, Action);
+			}
+			else if (selectedCard is not null)
+			{
+				if (RequiredCount > 1)
+					return;
+				
+				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.AnalyzedTrait, true, permanent: Permanent);
+				Action.selectedCard = selectedCard;
+			}
+			else
+			{
 				return;
 			}
 
-			Action.selectedCard = selectedCard;
 			c.QueueImmediate(Action);
 		}
 	}
