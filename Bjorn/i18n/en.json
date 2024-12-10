@@ -92,6 +92,19 @@
         "Assimilate": {
             "name": "Assimilate"
         },
+        "CrystalKnowledge": {
+            "name": "Crystal Knowledge",
+            "chooseTooltip": {
+                "title": {
+                    "normal": "Choose Reward",
+                    "upgraded": "Choose Upgraded Reward",
+                },
+                "description": {
+                    "normal": "Choose between multiple possible rewards for each tier. The choice is final for the rest of the run. Then actually play these actions.",
+                    "upgraded": "Choose between multiple possible <c=heal>upgraded</c> rewards for each tier. The choice is final for the rest of the run. Then actually play these actions.",
+                }
+            }
+        },
         "DrawConclusions": {
             "name": "Draw Conclusions",
             "description": {
