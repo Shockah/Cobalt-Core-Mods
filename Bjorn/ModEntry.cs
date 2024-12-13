@@ -20,7 +20,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal IDeckEntry BjornDeck { get; }
 
-	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
+	private static readonly IReadOnlyList<Type> CommonCardTypes = [
 		typeof(DrawConclusionsCard),
 		typeof(ElectronGunCard),
 		typeof(EntangleCard),
@@ -32,7 +32,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(TaserCard),
 	];
 
-	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
+	private static readonly IReadOnlyList<Type> UncommonCardTypes = [
 		typeof(AssimilateCard),
 		typeof(FieldTestCard),
 		typeof(HandheldDuplitronCard),
@@ -42,7 +42,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(RepulsiveForceCard),
 	];
 
-	internal static readonly IReadOnlyList<Type> RareCardTypes = [
+	private static readonly IReadOnlyList<Type> RareCardTypes = [
 		typeof(AccelerateCard),
 		typeof(CrystalKnowledgeCard),
 		typeof(LilHadronColliderCard),
@@ -50,7 +50,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(WaterfallModelCard),
 	];
 
-	internal static readonly IEnumerable<Type> AllCardTypes
+	private static readonly IEnumerable<Type> AllCardTypes
 		= [
 			.. CommonCardTypes,
 			.. UncommonCardTypes,
@@ -59,22 +59,24 @@ public sealed class ModEntry : SimpleMod
 			//typeof(BlochExeCard),
 		];
 
-	internal static readonly IReadOnlyList<Type> CommonArtifacts = [
+	private static readonly IReadOnlyList<Type> CommonArtifacts = [
+		typeof(FourDChessArtifact),
+		typeof(RelativityTheoryArtifact),
 	];
 
-	internal static readonly IReadOnlyList<Type> BossArtifacts = [
+	private static readonly IReadOnlyList<Type> BossArtifacts = [
 	];
 
-	internal static readonly IReadOnlyList<Type> DuoArtifacts = [
+	private static readonly IReadOnlyList<Type> DuoArtifacts = [
 	];
 
-	internal static readonly IEnumerable<Type> AllArtifactTypes
+	private static readonly IEnumerable<Type> AllArtifactTypes
 		= [
 			.. CommonArtifacts,
 			.. BossArtifacts,
 		];
 
-	internal static readonly IEnumerable<Type> RegisterableTypes
+	private static readonly IEnumerable<Type> RegisterableTypes
 		= [
 			.. AllCardTypes,
 			.. AllArtifactTypes,
