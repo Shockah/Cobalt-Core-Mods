@@ -82,27 +82,18 @@ internal sealed class MaxShieldCrystalKnowledgeHandler : ICrystalKnowledgeHandle
 
 internal sealed class DrawCrystalKnowledgeHandler : ICrystalKnowledgeHandler
 {
-	public bool IsEnabled(State state)
-		=> state.characters.Any(c => c.deckType is { } deck && CrystalKnowledgeManager.ShardCharacters.Contains(deck));
-	
 	public CardAction? MakeAction(State state, Combat combat, Card card, int tier, bool isUpgraded)
 		=> tier < 2 ? null : new ADrawCard { count = isUpgraded ? 2 : 1 };
 }
 
 internal sealed class OverdriveCrystalKnowledgeHandler : ICrystalKnowledgeHandler
 {
-	public bool IsEnabled(State state)
-		=> state.characters.Any(c => c.deckType is { } deck && CrystalKnowledgeManager.ShardCharacters.Contains(deck));
-	
 	public CardAction? MakeAction(State state, Combat combat, Card card, int tier, bool isUpgraded)
 		=> tier < 2 ? null : new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = isUpgraded ? 2 : 1 };
 }
 
 internal sealed class PowerdriveCrystalKnowledgeHandler : ICrystalKnowledgeHandler
 {
-	public bool IsEnabled(State state)
-		=> state.characters.Any(c => c.deckType is { } deck && CrystalKnowledgeManager.ShardCharacters.Contains(deck));
-	
 	public CardAction? MakeAction(State state, Combat combat, Card card, int tier, bool isUpgraded)
 		=> tier < 4 || !isUpgraded ? null : new AStatus { targetPlayer = true, status = Status.powerdrive, statusAmount = 1 };
 }
