@@ -1,232 +1,242 @@
 {
-    "character": {
-        "name": "Bjorn",
-        "description": [
-            "<c=23EEB6>BJORN</c>",
-            "TBD."
-        ]
-    },
-    "cardTrait": {
-        "Analyzed": {
-            "name": "Analyzed",
-            "description": "This card cannot be chosen for any further <c=action>analysis</c>."
-        },
-        "Reevaluated": {
-            "name": "Re-evaluated",
-            "description": "This card cannot be chosen for <c=card>Re-evaluation</c>, but can be chosen for <c=action>analysis</c>."
-        },
-        "Accelerated": {
-            "name": "Accelerated",
-            "description": "This card costs 1 less <c=energy>energy</c>."
+	"character": {
+		"name": "Bjorn",
+		"description": [
+			"<c=23EEB6>BJORN</c>",
+			"TBD."
+		]
+	},
+	"cardTrait": {
+		"Analyzed": {
+			"name": "Analyzed",
+			"description": "This card cannot be chosen for any further <c=action>analysis</c>."
+		},
+		"Reevaluated": {
+			"name": "Re-evaluated",
+			"description": "This card cannot be chosen for <c=card>Re-evaluation</c>, but can be chosen for <c=action>analysis</c>."
+		},
+		"Accelerated": {
+			"name": "Accelerated",
+			"description": "This card costs 1 less <c=energy>energy</c>."
+		}
+	},
+	"action": {
+		"SmartShield": {
+			"name": "Smart Shield",
+			"description": "Gain up to {{Amount}} <c=status>shield</c>, converting any remaining to <c=status>temp shield</c>."
+		},
+		"Analyze": {
+			"name": "Analyze",
+			"description": "Choose a non-<c=cardtrait>analyzed</c>, non-<c=cardtrait>temp</c> card in hand. It gains <c=cardtrait>Analyzed</c> until end of combat.",
+			"uiTitle": "Select a card to <c=action>Analyze</c>."
+		},
+		"SelfAnalyze": {
+			"name": "Self-Analyze",
+			"description": "This card gains <c=cardtrait>Analyzed</c> until end of combat."
+		},
+		"AnalyzeOrSelfAnalyze": {
+			"name": "(Self-)Analyze",
+			"description": "Choose a non-<c=cardtrait>analyzed</c>, non-<c=cardtrait>temp</c> card in hand. It gains <c=cardtrait>Analyzed</c> until end of combat."
+		},
+		"OnAnalyze": {
+			"name": "On Analyze",
+			"description": "This action only triggers when this card gains <c=cardtrait>Analyzed</c>."
+		},
+		"DiscardSelf": {
+			"name": "Discard Self",
+			"description": "Discard this card."
+		}
+	},
+	"x": {
+		"Analyzable": {
+			"stateful": "<c=action>X</c> = All other analyzable cards in hand (<c=boldPink>{{Count}}</c>).",
+			"stateless": "<c=action>X</c> = All other analyzable cards in hand."
+		}
+	},
+	"condition": {
+		"Analyzed": {
+			"title": "Analyzed",
+			"description": "the card is <c=cardtrait>analyzed</c>"
+		}
+	},
+	"midrow": {
+		"SmartShieldDrone": {
+			"name": "Smart Shield Drone",
+			"description": "Beams 1 <c=status>smart shield</c> at its target once per turn."
+		}
+	},
+	"status": {
+		"Entanglement": {
+			"name": "Entanglement",
+			"description": "Whenever this ship moves, the opposing ship moves the same distance in the other direction. <c=downside>Decreases by 1 each turn.</c>"
+		},
+		"Gadget": {
+			"name": "Gadget",
+			"description": "After combat ends, gain 1 of 2 common artifacts. Does not stack."
+		},
+		"Relativity": {
+			"name": "Relativity",
+			"description": "Lets you move left or right with <c=boldPink>{{MoveLeft}}</c> / <c=boldPink>{{MoveRight}}</c>, or move all <c=midrow>midrow objects</c> left or right with <c=boldPink>{{ShiftLeft}}</c> / <c=boldPink>{{ShiftRight}}</c>, or move the enemy left or right. Costs 1 relativity per move. Maximum 3."
+		}
+		
+	},
+	"artifact": {
+		"FourDChess": {
+			"name": "4D CHESS",
+			"description": "Start each combat with 1 <c=status>relativity</c>."
+		},
+        "RelativityTheory": {
+            "name": "RELATIVITY THEORY",
+            "description": "On your first turn, convert all <c=status>evade</c> and <c=status>droneshift</c> into <c=status>relativity</c>."
         }
-    },
-    "action": {
-        "SmartShield": {
-            "name": "Smart Shield",
-            "description": "Gain up to {{Amount}} <c=status>shield</c>, converting any remaining to <c=status>temp shield</c>."
-        },
-        "Analyze": {
-            "name": "Analyze",
-            "description": "Choose a non-<c=cardtrait>analyzed</c>, non-<c=cardtrait>temp</c> card in hand. It gains <c=cardtrait>Analyzed</c> until end of combat.",
-            "uiTitle": "Select a card to <c=action>Analyze</c>."
-        },
-        "SelfAnalyze": {
-            "name": "Self-Analyze",
-            "description": "This card gains <c=cardtrait>Analyzed</c> until end of combat."
-        },
-        "AnalyzeOrSelfAnalyze": {
-            "name": "(Self-)Analyze",
-            "description": "Choose a non-<c=cardtrait>analyzed</c>, non-<c=cardtrait>temp</c> card in hand. It gains <c=cardtrait>Analyzed</c> until end of combat."
-        },
-        "OnAnalyze": {
-            "name": "On Analyze",
-            "description": "This action only triggers when this card gains <c=cardtrait>Analyzed</c>."
-        },
-        "DiscardSelf": {
-            "name": "Discard Self",
-            "description": "Discard this card."
-        }
-    },
-    "x": {
-        "Analyzable": {
-            "stateful": "<c=action>X</c> = All other analyzable cards in hand (<c=boldPink>{{Count}}</c>).",
-            "stateless": "<c=action>X</c> = All other analyzable cards in hand."
-        }
-    },
-    "condition": {
-        "Analyzed": {
-            "title": "Analyzed",
-            "description": "the card is <c=cardtrait>analyzed</c>"
-        }
-    },
-    "midrow": {
-        "SmartShieldDrone": {
-            "name": "Smart Shield Drone",
-            "description": "Beams 1 <c=status>smart shield</c> at its target once per turn."
-        }
-    },
-    "status": {
-        "Entanglement": {
-            "name": "Entanglement",
-            "description": "Whenever this ship moves, the opposing ship moves the same distance in the other direction. <c=downside>Decreases by 1 each turn.</c>"
-        },
-        "Gadget": {
-            "name": "Gadget",
-            "description": "After combat ends, gain 1 of 2 common artifacts. Does not stack."
-        },
-        "Relativity": {
-            "name": "Relativity",
-            "description": "Lets you move left or right with <c=boldPink>{{MoveLeft}}</c> / <c=boldPink>{{MoveRight}}</c>, or move all <c=midrow>midrow objects</c> left or right with <c=boldPink>{{ShiftLeft}}</c> / <c=boldPink>{{ShiftRight}}</c>, or move the enemy left or right. Costs 1 relativity per move. Maximum 3."
-        }
-        
-    },
-    "card": {
-        "Accelerate": {
-            "name": "Accelerate",
-            "description": {
-                "None": "<c=action>Analyze</c> a 2+ cost card. It gains <c=cardtrait>Accelerated</c> for rest of combat.",
-                "A": "<c=action>Analyze</c> a 2+ cost card. It gains <c=cardtrait>Accelerated</c> for rest of combat.",
-                "B": "Permanently <c=action>analyze</c> a 2+ cost card. It gains <c=cardtrait>Accelerated</c>."
-            }
-        },
-        "Assimilate": {
-            "name": "Assimilate"
-        },
-        "CrystalKnowledge": {
-            "name": "Crystal Knowledge",
-            "chooseTooltip": {
-                "title": {
-                    "normal": "Choose Reward",
-                    "upgraded": "Choose Upgraded Reward",
-                },
-                "description": {
-                    "normal": "Choose between multiple possible rewards for each tier. The choice is final for the rest of the run. Then actually play these actions.",
-                    "upgraded": "Choose between multiple possible <c=heal>upgraded</c> rewards for each tier. The choice is final for the rest of the run. Then actually play these actions.",
-                }
-            }
-        },
-        "DrawConclusions": {
-            "name": "Draw Conclusions",
-            "description": {
-                "None": "<c=action>Analyze</c> a card. Draw cards equal to its cost, +1.",
-                "A": "<c=action>Analyze</c> a card. Draw cards equal to its cost, +2.",
-                "B": "<c=action>Analyze</c> a random card. Draw cards equal to its cost, +1."
-            }
-        },
-        "ElectronGun": {
-            "name": "Electron Gun"
-        },
-        "Entangle": {
-            "name": "Entangle"
-        },
-        "FieldTest": {
-            "name": "Field Test",
-            "description": {
-                "None": "<c=action>Analyze</c> a card that does not <c=cardtrait>exhaust</c>. Play it for free.",
-                "A": "<c=action>Analyze</c> a card. Play it for free.",
-                "B": "Choose a card in your hand. Play it for free."
-            }
-        },
-        "FractalStructure": {
-            "name": "Fractal Structure"
-        },
-        "HandheldDuplitron": {
-            "name": "Handheld Duplitron",
-            "description": {
-                "None": "<c=action>Analyze</c> a card. Create a <c=cardtrait>temp</c> copy of it.",
-                "A": "<c=action>Analyze</c> a card. Create a <c=cardtrait>re-evaluated temp</c> copy of it.",
-                "B": "<c=action>Analyze</c> a card. Create 4 <c=cardtrait>temp</c> copies of it. <c=downside>Lose 1 hull.</c>"
-            }
-        },
-        "Insurance": {
-            "name": "Insurance"
-        },
-        "LilHadronCollider": {
-            "name": "Lil' Hadron Collider",
-            "description": {
-                "None": {
-                    "stateful": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 2X (<c=boldPink>{{Damage}}</c>).",
-                    "stateless": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 2X."
-                },
-                "A": {
-                    "stateful": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 2X (<c=boldPink>{{Damage}}</c>).",
-                    "stateless": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 2X."
-                },
-                "B": {
-                    "stateful": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 3X (<c=boldPink>{{Damage}}</c>).",
-                    "stateless": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 3X."
-                }
-            }
-        },
-        "LorentzTransform": {
-            "name": "Lorentz Transform"
-        },
-        "NeglectSafety": {
-            "name": "Neglect Safety",
-            "description": {
-                "None": {
-                    "normal": "Remove <c=cardtrait>Analyzed</c> from this<c=5f5f5f> / Draw a card</c>. <c=downside>Receive 1 damage.</c>",
-                    "flipped": "<c=5f5f5f>Remove Analyzed from this / </c>Draw a card. <c=downside>Receive 1 damage.</c>"
-                },
-                "A": "Remove <c=cardtrait>Analyzed</c> from this. Draw a card. <c=downside>Receive 1 damage.</c>",
-                "B": {
-                    "normal": "Remove <c=cardtrait>Analyzed</c> from this<c=5f5f5f> / Draw a card</c>. <c=downside>Receive 1 damage.</c>",
-                    "flipped": "<c=5f5f5f>Remove Analyzed from this / </c>Draw a card. <c=downside>Receive 1 damage.</c>"
-                }
-            }
-        },
-        "Prototype": {
-            "name": "Prototype",
-            "description": "When <c=action>analyzed</c>, <c=action>upgrade</c>, then <c=cardtrait>exhaust</c>."
-        },
-        "Prototyping": {
-            "name": "Prototyping",
-            "description": {
-                "None": "Add <c=card>Prototype</c> to your hand.",
-                "A": "Add <c=card>Prototype</c> to your hand.",
-                "B": "Add 2 <c=card>Prototype</c>s to your hand."
-            }
-        },
-        "Reevaluation": {
-            "name": "Re-evaluation",
-            "description": {
-                "None": "Choose a card. Give it <c=cardtrait>Re-evaluated</c> and remove <c=cardtrait>Analyzed</c> until end of combat.",
-                "A": "Choose a card. Give it <c=cardtrait>Re-evaluated</c> and remove <c=cardtrait>Analyzed</c> until end of combat.",
-                "B": "Choose an <c=cardtrait>Analyzed</c> card. It loses <c=cardtrait>Analyzed</c>. <c=downside>Downgrade.</c>"
-            }
-        },
-        "Relativity": {
-            "name": "Relativity",
-            "description": "Move <c=midrow>midrow</c> and both ships by different amounts each in 0-2. Gain 2 <c=status>relativity</c>."
-        },
-        "RepulsiveForce": {
-            "name": "Repulsive Force"
-        },
-        "SafetyProtocol": {
-            "name": "Safety Protocol"
-        },
-        "SmartShieldDrone": {
-            "name": "Smart Shield Drone"
-        },
-        "Taser": {
-            "name": "Taser"
-        },
-        "WaterfallModel": {
-            "name": "Waterfall Model",
-            "description": {
-                "None": {
-                    "stateless": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. Every 5 times, gain 1 <c=status>gadget</c>.",
-                    "stateful": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. In {{Times}} times, gain 1 <c=status>gadget</c>."
-                },
-                "A": {
-                    "stateless": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. Every 4 times, gain 1 <c=status>gadget</c>.",
-                    "stateful": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. In {{Times}} times, gain 1 <c=status>gadget</c>."
-                },
-                "B": {
-                    "stateless": "When <c=action>analyzed</c>, <c=downside>gain 2 <c=status>engine lock</c> and end turn</c>. Every 3 times, gain 1 <c=status>gadget</c>.",
-                    "stateful": "When <c=action>analyzed</c>, <c=downside>gain 2 <c=status>engine lock</c> and end turn</c>. In {{Times}} times, gain 1 <c=status>gadget</c>."
-                }
-            }
-        }
-    }
+	},
+	"card": {
+		"Accelerate": {
+			"name": "Accelerate",
+			"description": {
+				"None": "<c=action>Analyze</c> a 2+ cost card. It gains <c=cardtrait>Accelerated</c> for rest of combat.",
+				"A": "<c=action>Analyze</c> a 2+ cost card. It gains <c=cardtrait>Accelerated</c> for rest of combat.",
+				"B": "Permanently <c=action>analyze</c> a 2+ cost card. It gains <c=cardtrait>Accelerated</c>."
+			}
+		},
+		"Assimilate": {
+			"name": "Assimilate"
+		},
+		"CrystalKnowledge": {
+			"name": "Crystal Knowledge",
+			"chooseTooltip": {
+				"title": {
+					"normal": "Choose Reward",
+					"upgraded": "Choose Upgraded Reward"
+				},
+				"description": {
+					"normal": "Choose between multiple possible rewards for each tier. The choice is final for the rest of the run. Then actually play these actions.",
+					"upgraded": "Choose between multiple possible <c=heal>upgraded</c> rewards for each tier. The choice is final for the rest of the run. Then actually play these actions."
+				}
+			}
+		},
+		"DrawConclusions": {
+			"name": "Draw Conclusions",
+			"description": {
+				"None": "<c=action>Analyze</c> a card. Draw cards equal to its cost, +1.",
+				"A": "<c=action>Analyze</c> a card. Draw cards equal to its cost, +2.",
+				"B": "<c=action>Analyze</c> a random card. Draw cards equal to its cost, +1."
+			}
+		},
+		"ElectronGun": {
+			"name": "Electron Gun"
+		},
+		"Entangle": {
+			"name": "Entangle"
+		},
+		"FieldTest": {
+			"name": "Field Test",
+			"description": {
+				"None": "<c=action>Analyze</c> a card that does not <c=cardtrait>exhaust</c>. Play it for free.",
+				"A": "<c=action>Analyze</c> a card. Play it for free.",
+				"B": "Choose a card in your hand. Play it for free."
+			}
+		},
+		"FractalStructure": {
+			"name": "Fractal Structure"
+		},
+		"HandheldDuplitron": {
+			"name": "Handheld Duplitron",
+			"description": {
+				"None": "<c=action>Analyze</c> a card. Create a <c=cardtrait>temp</c> copy of it.",
+				"A": "<c=action>Analyze</c> a card. Create a <c=cardtrait>re-evaluated temp</c> copy of it.",
+				"B": "<c=action>Analyze</c> a card. Create 4 <c=cardtrait>temp</c> copies of it. <c=downside>Lose 1 hull.</c>"
+			}
+		},
+		"Insurance": {
+			"name": "Insurance"
+		},
+		"LilHadronCollider": {
+			"name": "Lil' Hadron Collider",
+			"description": {
+				"None": {
+					"stateful": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 2X (<c=boldPink>{{Damage}}</c>).",
+					"stateless": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 2X."
+				},
+				"A": {
+					"stateful": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 2X (<c=boldPink>{{Damage}}</c>).",
+					"stateless": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 2X."
+				},
+				"B": {
+					"stateful": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 3X (<c=boldPink>{{Damage}}</c>).",
+					"stateless": "<c=action>X</c> = all other analyzable hand cards. <c=action>Analyze</c> them. Shoot for 3X."
+				}
+			}
+		},
+		"LorentzTransform": {
+			"name": "Lorentz Transform"
+		},
+		"NeglectSafety": {
+			"name": "Neglect Safety",
+			"description": {
+				"None": {
+					"normal": "Remove <c=cardtrait>Analyzed</c> from this<c=5f5f5f> / Draw a card</c>. <c=downside>Receive 1 damage.</c>",
+					"flipped": "<c=5f5f5f>Remove Analyzed from this / </c>Draw a card. <c=downside>Receive 1 damage.</c>"
+				},
+				"A": "Remove <c=cardtrait>Analyzed</c> from this. Draw a card. <c=downside>Receive 1 damage.</c>",
+				"B": {
+					"normal": "Remove <c=cardtrait>Analyzed</c> from this<c=5f5f5f> / Draw a card</c>. <c=downside>Receive 1 damage.</c>",
+					"flipped": "<c=5f5f5f>Remove Analyzed from this / </c>Draw a card. <c=downside>Receive 1 damage.</c>"
+				}
+			}
+		},
+		"Prototype": {
+			"name": "Prototype",
+			"description": "When <c=action>analyzed</c>, <c=action>upgrade</c>, then <c=cardtrait>exhaust</c>."
+		},
+		"Prototyping": {
+			"name": "Prototyping",
+			"description": {
+				"None": "Add <c=card>Prototype</c> to your hand.",
+				"A": "Add <c=card>Prototype</c> to your hand.",
+				"B": "Add 2 <c=card>Prototype</c>s to your hand."
+			}
+		},
+		"Reevaluation": {
+			"name": "Re-evaluation",
+			"description": {
+				"None": "Choose a card. Give it <c=cardtrait>Re-evaluated</c> and remove <c=cardtrait>Analyzed</c> until end of combat.",
+				"A": "Choose a card. Give it <c=cardtrait>Re-evaluated</c> and remove <c=cardtrait>Analyzed</c> until end of combat.",
+				"B": "Choose an <c=cardtrait>Analyzed</c> card. It loses <c=cardtrait>Analyzed</c>. <c=downside>Downgrade.</c>"
+			}
+		},
+		"Relativity": {
+			"name": "Relativity",
+			"description": "Move <c=midrow>midrow</c> and both ships by different amounts each in 0-2. Gain 2 <c=status>relativity</c>."
+		},
+		"RepulsiveForce": {
+			"name": "Repulsive Force"
+		},
+		"SafetyProtocol": {
+			"name": "Safety Protocol"
+		},
+		"SmartShieldDrone": {
+			"name": "Smart Shield Drone"
+		},
+		"Taser": {
+			"name": "Taser"
+		},
+		"WaterfallModel": {
+			"name": "Waterfall Model",
+			"description": {
+				"None": {
+					"stateless": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. Every 5 times, gain 1 <c=status>gadget</c>.",
+					"stateful": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. In {{Times}} times, gain 1 <c=status>gadget</c>."
+				},
+				"A": {
+					"stateless": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. Every 4 times, gain 1 <c=status>gadget</c>.",
+					"stateful": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. In {{Times}} times, gain 1 <c=status>gadget</c>."
+				},
+				"B": {
+					"stateless": "When <c=action>analyzed</c>, <c=downside>gain 2 <c=status>engine lock</c> and end turn</c>. Every 3 times, gain 1 <c=status>gadget</c>.",
+					"stateful": "When <c=action>analyzed</c>, <c=downside>gain 2 <c=status>engine lock</c> and end turn</c>. In {{Times}} times, gain 1 <c=status>gadget</c>."
+				}
+			}
+		}
+	}
 }
