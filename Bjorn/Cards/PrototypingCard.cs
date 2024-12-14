@@ -1,9 +1,8 @@
-﻿using Nanoray.PluginManager;
+﻿using System.Collections.Generic;
+using System.Reflection;
+using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace Shockah.Bjorn;
 
@@ -36,9 +35,7 @@ public sealed class PrototypingCard : Card, IRegisterable
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		var analyzableCount = c.hand.Count(card => card != this && card.IsAnalyzable(s));
-		return upgrade.Switch<List<CardAction>>(
+		=> upgrade.Switch<List<CardAction>>(
 			none: () => [
 				new AAddCard { card = new PrototypeCard(), destination = CardDestination.Hand }
 			],
@@ -49,5 +46,4 @@ public sealed class PrototypingCard : Card, IRegisterable
 				new AAddCard { card = new PrototypeCard(), destination = CardDestination.Hand, amount = 2 }
 			]
 		);
-	}
 }

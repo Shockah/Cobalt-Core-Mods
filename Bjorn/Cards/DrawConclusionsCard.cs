@@ -64,7 +64,7 @@ public sealed class DrawConclusionsCard : Card, IRegisterable
 
 			if (Random)
 			{
-				var analyzableCards = c.hand.Where(card => card.IsAnalyzable(s)).ToList();
+				var analyzableCards = c.hand.Where(card => card.IsAnalyzable(s, c)).ToList();
 				if (analyzableCards.Count == 0)
 				{
 					timer = 0;
@@ -89,7 +89,7 @@ public sealed class DrawConclusionsCard : Card, IRegisterable
 		{
 			public required int Extra;
 
-			public override string? GetCardSelectText(State s)
+			public override string GetCardSelectText(State s)
 				=> ModEntry.Instance.Localizations.Localize(["action", "Analyze", "uiTitle"]);
 
 			public override void Begin(G g, State s, Combat c)

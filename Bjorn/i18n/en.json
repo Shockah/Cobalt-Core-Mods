@@ -88,7 +88,11 @@
         "RelativityTheory": {
             "name": "RELATIVITY THEORY",
             "description": "On your first turn, convert all <c=status>evade</c> and <c=status>droneshift</c> into <c=status>relativity</c>."
-        }
+        },
+		"ScientificMethod": {
+			"name": "SCIENTIFIC METHOD",
+			"description": "<c=action>Analyzing</c> a card gives you 1 <c=status>smart shield</c>."
+		}
 	},
 	"card": {
 		"Accelerate": {

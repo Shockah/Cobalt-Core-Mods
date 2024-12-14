@@ -166,7 +166,7 @@ public sealed class CrystalKnowledgeCard : Card, IRegisterable
 				}
 			];
 
-		public override Route? BeginWithRoute(G g, State s, Combat c)
+		public override Route BeginWithRoute(G g, State s, Combat c)
 			=> new ChooseActionsRoute { CardId = CardId, IsUpgraded = IsUpgraded };
 	}
 	
