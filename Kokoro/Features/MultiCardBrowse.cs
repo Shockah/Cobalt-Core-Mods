@@ -70,7 +70,7 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class MultiCardBrowseManager
+internal static class MultiCardBrowseManager
 {
 	private static MultiCardBrowse? CurrentlyRenderedMenu;
 	
@@ -176,7 +176,8 @@ internal sealed class MultiCardBrowseManager
 		{
 			if (b.key?.ValueFor(StableUK.card) is { } uuid)
 			{
-				if (mode != Mode.Browse || browseAction is null || _listCache.FirstOrDefault(card => card.uuid == uuid) is null)
+				var cardList = GetCardList(g);
+				if (mode != Mode.Browse || browseAction is null || cardList.FirstOrDefault(card => card.uuid == uuid) is null)
 				{
 					this.OnMouseDown(g, b);
 					return;
@@ -215,7 +216,7 @@ internal sealed class MultiCardBrowseManager
 				return;
 			}
 			
-			ModEntry.Instance.Helper.ModData.SetModData<IReadOnlyList<Card>>(action.Action, "SelectedCards", _listCache.Where(card => SelectedCards.Contains(card.uuid)).ToList());
+			ModEntry.Instance.Helper.ModData.SetModData<IReadOnlyList<Card>>(action.Action, "SelectedCards", GetCardList(g).Where(card => SelectedCards.Contains(card.uuid)).ToList());
 			g.state.GetCurrentQueue().QueueImmediate(action.Action);
 			g.CloseRoute(this, CBResult.Done);
 		}
