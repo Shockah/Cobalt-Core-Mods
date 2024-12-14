@@ -104,7 +104,8 @@ public sealed class CrystalKnowledgeCard : Card, IRegisterable
 			realActions = [
 				new AnalyzeCostAction
 				{
-					Count = 5 - freeActionCount,
+					MinCount = 1,
+					MaxCount = 5 - freeActionCount,
 					Action = new PlayActionsAction
 					{
 						CardId = uuid,
