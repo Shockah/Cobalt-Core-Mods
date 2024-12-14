@@ -27,7 +27,10 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 
 	private int GetDamage(State state)
 	{
-		var analyzableCount = (state.route as Combat)?.hand.Count(card => card != this && card.IsAnalyzable(state)) ?? 0;
+		if (state.route is not Combat combat)
+			return 0;
+		
+		var analyzableCount = combat.hand.Count(card => card != this && card.IsAnalyzable(state, combat));
 		return GetDmg(state, upgrade.Switch(
 			none: () => analyzableCount * 2,
 			a: () => analyzableCount * 2,
@@ -46,9 +49,7 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		var analyzableCount = c.hand.Count(card => card != this && card.IsAnalyzable(s));
-		return upgrade.Switch<List<CardAction>>(
+		=> upgrade.Switch<List<CardAction>>(
 			none: () => [
 				new AnalyzableVariableHint { CardId = uuid },
 				new AnalyzeHandAction { CardId = uuid },
@@ -65,7 +66,6 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 				new AAttack { damage = GetDamage(s), xHint = 3 }
 			]
 		);
-	}
 
 	private sealed class AnalyzeHandAction : CardAction
 	{
