@@ -14,6 +14,8 @@ public sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly IHarmony Harmony;
+	internal readonly HookManager<IBjornApi.IHook> HookManager;
+	internal readonly MultiPool ArgsPool;
 	internal readonly IKokoroApi.IV2 KokoroApi;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
@@ -65,6 +67,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	private static readonly IReadOnlyList<Type> BossArtifacts = [
+		typeof(ScientificMethodArtifact),
 	];
 
 	private static readonly IReadOnlyList<Type> DuoArtifacts = [
@@ -95,6 +98,8 @@ public sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
+		HookManager = new(package.Manifest.UniqueName);
+		ArgsPool = new();
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
@@ -149,6 +154,9 @@ public sealed class ModEntry : SimpleMod
 		});
 	}
 
+	public override object GetApi(IModManifest requestingMod)
+		=> new ApiImplementation();
+
 	internal static Rarity GetCardRarity(Type type)
 	{
 		if (RareCardTypes.Contains(type))
@@ -165,5 +173,32 @@ public sealed class ModEntry : SimpleMod
 		if (CommonArtifacts.Contains(type))
 			return [ArtifactPool.Common];
 		return [];
+	}
+	
+	internal IEnumerable<IBjornApi.IHook> FilterIsCanAnalyzeHookEnabled(
+		State state,
+		Combat combat,
+		Card card,
+		IEnumerable<IBjornApi.IHook> enumerable
+	)
+	{
+		var args = ArgsPool.Get<ApiImplementation.IsCanAnalyzeHookEnabledArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Card = card;
+
+			var hooks = Instance.HookManager.GetHooksWithProxies(Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
+			return enumerable.Where(hook =>
+			{
+				args.Hook = hook;
+				return hooks.All(h => h.IsCanAnalyzeHookEnabled(args));
+			});
+		}
+		finally
+		{
+			ArgsPool.Return(args);
+		}
 	}
 }
