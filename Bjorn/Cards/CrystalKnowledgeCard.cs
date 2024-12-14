@@ -104,6 +104,7 @@ public sealed class CrystalKnowledgeCard : Card, IRegisterable
 			realActions = [
 				new AnalyzeCostAction
 				{
+					CardId = uuid,
 					MinCount = 1,
 					MaxCount = 5 - freeActionCount,
 					Action = new PlayActionsAction
@@ -213,17 +214,16 @@ public sealed class CrystalKnowledgeCard : Card, IRegisterable
 				.OrderBy(e => e.Actions.FirstIndex(a => a is not null)!.Value)
 				.ToList();
 
-			var centerX = 240;
-			var topY = 44;
+			const int centerX = 240;
+			const int topY = 44;
 
-			var columns = 5;
-			var choiceWidth = 27;
-			var choiceHeight = 25;
-			var choiceSpacing = 1;
-			var actionYOffset = 7;
-			var actionHoverYOffset = 1;
+			const int columns = 5;
+			const int choiceWidth = 27;
+			const int choiceHeight = 25;
+			const int choiceSpacing = 1;
+			const int actionYOffset = 7;
+			const int actionHoverYOffset = 1;
 
-			// ReSharper disable once UselessBinaryOperation
 			var fullRowWidth = columns * choiceWidth + Math.Max(columns - 1, 0) * choiceSpacing;
 			var choicesStartX = centerX - fullRowWidth / 2;
 
