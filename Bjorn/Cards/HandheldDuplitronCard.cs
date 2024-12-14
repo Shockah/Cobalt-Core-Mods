@@ -81,7 +81,7 @@ public sealed class HandheldDuplitronCard : Card, IRegisterable
 			public required int Amount;
 			public required bool Reevaluated;
 
-			public override string? GetCardSelectText(State s)
+			public override string GetCardSelectText(State s)
 				=> ModEntry.Instance.Localizations.Localize(["action", "Analyze", "uiTitle"]);
 
 			public override void Begin(G g, State s, Combat c)

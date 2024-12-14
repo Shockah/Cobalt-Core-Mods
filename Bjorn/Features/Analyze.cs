@@ -62,13 +62,24 @@ internal static class AnalyzeCardSelectFiltersExt
 
 internal static class AnalyzeCardExt
 {
-	public static bool IsAnalyzable(this Card card, State state)
+	public static bool IsAnalyzable(this Card card, State state, Combat combat)
 	{
-		if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, AnalyzeManager.AnalyzedTrait))
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.CanAnalyzeArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Card = card;
+
+			foreach (var hook in ModEntry.Instance.FilterIsCanAnalyzeHookEnabled(state, combat, card, ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts())))
+				if (hook.CanAnalyze(args))
+					return true;
 			return false;
-		if (card.GetDataWithOverrides(state).temporary && !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, AnalyzeManager.ReevaluatedTrait))
-			return false;
-		return true;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 }
 
@@ -142,6 +153,9 @@ internal sealed class AnalyzeManager : IRegisterable
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardTraitManager_SetCardTraitOverride_Prefix)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardTraitManager_SetCardTraitOverride_Postfix))
 		);
+		
+		ModEntry.Instance.HookManager.Register(NonAnalyzedNonTempCardsAnalyzeHook.Instance, 0);
+		ModEntry.Instance.HookManager.Register(ReevaluatedAnalyzeHook.Instance, 0);
 	}
 
 	public static List<Tooltip> GetAnalyzeTooltips(State state)
@@ -179,6 +193,24 @@ internal sealed class AnalyzeManager : IRegisterable
 			},
 			.. (AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? []),
 		];
+	
+	public static void OnCardsAnalyzed(State state, Combat combat, IReadOnlyList<Card> cards)
+	{
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.OnCardsAnalyzedArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Cards = cards;
+
+			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				hook.OnCardsAnalyzed(args);
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
+	}
 
 	private static void ACardSelect_BeginWithRoute_Postfix(ACardSelect __instance, ref Route? __result)
 	{
@@ -189,11 +221,11 @@ internal sealed class AnalyzeManager : IRegisterable
 
 	private static void CardBrowse_GetCardList_Postfix(CardBrowse __instance, G g, ref List<Card> __result)
 	{
-		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "FilterAnalyzable") is { } filterAnalyzable)
+		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "FilterAnalyzable") is { } filterAnalyzable && g.state.route is Combat combat)
 		{
 			for (var i = __result.Count - 1; i >= 0; i--)
 			{
-				if (__result[i].IsAnalyzable(g.state) == filterAnalyzable)
+				if (__result[i].IsAnalyzable(g.state, combat) == filterAnalyzable)
 					continue;
 				__result.RemoveAt(i);
 			}
@@ -249,7 +281,7 @@ internal sealed class AnalyzeManager : IRegisterable
 
 			position.x += 2;
 
-			g.Push(rect: new(position.x - initialX, 0));
+			g.Push(rect: new(position.x - initialX));
 			position.x += Card.RenderAction(g, state, analyzeCostAction.Action, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
 			g.Pop();
 
@@ -272,7 +304,7 @@ internal sealed class AnalyzeManager : IRegisterable
 				Draw.Sprite(SelfAnalyzeIcon.Sprite, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
 			position.x += 10;
 
-			g.Push(rect: new(position.x - initialX, 0));
+			g.Push(rect: new(position.x - initialX));
 			position.x += Card.RenderAction(g, state, selfAnalyzeCostAction.Action, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
 			g.Pop();
 
@@ -295,7 +327,7 @@ internal sealed class AnalyzeManager : IRegisterable
 				Draw.Sprite(OnAnalyzeIcon.Sprite, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
 			position.x += 10;
 
-			g.Push(rect: new(position.x - initialX, 0));
+			g.Push(rect: new(position.x - initialX));
 			position.x += Card.RenderAction(g, state, onAnalyzeAction.Action, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
 			g.Pop();
 
@@ -379,7 +411,7 @@ internal sealed class AnalyzeCostAction : CardAction
 			.. Action.GetTooltips(s),
 		];
 
-	public override Route? BeginWithRoute(G g, State s, Combat c)
+	public override Route BeginWithRoute(G g, State s, Combat c)
 	{
 		var baseRoute = new CardBrowse
 		{
@@ -411,7 +443,7 @@ internal sealed class AnalyzeCostAction : CardAction
 		public required int RequiredCount;
 		public bool Permanent;
 
-		public override string? GetCardSelectText(State s)
+		public override string GetCardSelectText(State s)
 			=> ModEntry.Instance.Localizations.Localize(["action", "Analyze", "uiTitle"]);
 
 		public override void Begin(G g, State s, Combat c)
@@ -431,6 +463,9 @@ internal sealed class AnalyzeCostAction : CardAction
 				ModEntry.Instance.Helper.ModData.CopyAllModData(Action, dummy);
 				ModEntry.Instance.Helper.ModData.CopyAllModData(this, Action);
 				ModEntry.Instance.Helper.ModData.CopyAllModData(dummy, Action);
+				
+				c.QueueImmediate(Action);
+				AnalyzeManager.OnCardsAnalyzed(s, c, selectedCards);
 			}
 			else if (selectedCard is not null)
 			{
@@ -439,13 +474,10 @@ internal sealed class AnalyzeCostAction : CardAction
 				
 				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.AnalyzedTrait, true, permanent: Permanent);
 				Action.selectedCard = selectedCard;
+				
+				c.QueueImmediate(Action);
+				AnalyzeManager.OnCardsAnalyzed(s, c, [selectedCard]);
 			}
-			else
-			{
-				return;
-			}
-
-			c.QueueImmediate(Action);
 		}
 	}
 }
@@ -473,6 +505,7 @@ internal sealed class SelfAnalyzeCostAction : CardAction
 
 		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, true, permanent: false);
 		c.QueueImmediate(Action);
+		AnalyzeManager.OnCardsAnalyzed(s, c, [card]);
 	}
 }
 
@@ -516,7 +549,10 @@ internal sealed class AnalyzableVariableHint : AVariableHint
 		=> [
 			new GlossaryTooltip($"action::{ModEntry.Instance.Package.Manifest.UniqueName}::AnalyzableVariableHint.desc")
 			{
-				Description = ModEntry.Instance.Localizations.Localize(["x", "Analyzable", s.route is Combat ? "stateful" : "stateless"], new { Count = (s.route as Combat)?.hand.Count(card => card.uuid != CardId && card.IsAnalyzable(s)) })
+				Description = ModEntry.Instance.Localizations.Localize(
+					["x", "Analyzable", s.route is Combat ? "stateful" : "stateless"],
+					new { Count = s.route is Combat combat ? combat.hand.Count(card => card.uuid != CardId && card.IsAnalyzable(s, combat)) : 0 }
+				)
 			},
 			.. AnalyzeManager.GetAnalyzeTooltips(s),
 		];
@@ -557,4 +593,20 @@ internal sealed class AnalyzedCondition : IKokoroApi.IV2.IConditionalApi.IBoolEx
 
 	public IReadOnlyList<Tooltip> GetTooltips(State state, Combat combat)
 		=> [.. AnalyzeManager.AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? []];
+}
+
+internal sealed class NonAnalyzedNonTempCardsAnalyzeHook : IBjornApi.IHook
+{
+	public static readonly NonAnalyzedNonTempCardsAnalyzeHook Instance = new();
+	
+	public bool CanAnalyze(IBjornApi.IHook.ICanAnalyzeArgs args)
+		=> !args.Card.GetDataWithOverrides(args.State).temporary && !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(args.State, args.Card, AnalyzeManager.AnalyzedTrait);
+}
+
+internal sealed class ReevaluatedAnalyzeHook : IBjornApi.IHook
+{
+	public static readonly ReevaluatedAnalyzeHook Instance = new();
+	
+	public bool CanAnalyze(IBjornApi.IHook.ICanAnalyzeArgs args)
+		=> ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(args.State, args.Card, AnalyzeManager.ReevaluatedTrait) && !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(args.State, args.Card, AnalyzeManager.AnalyzedTrait);
 }
