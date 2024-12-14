@@ -425,7 +425,7 @@ internal sealed class AnalyzeCostAction : CardAction
 			filterExhaust = FilterExhaust,
 			filterMinCost = FilterMinCost,
 			allowCancel = true,
-		}.SetFilterAnalyzable(true).SetFilterAccelerated(FilterAccelerated).SetForceInclude(CardId);
+		}.SetFilterAnalyzable(true).SetFilterAccelerated(FilterAccelerated).SetForceInclude(CardId is { } cardId && s.FindCard(cardId) is { } card && card.IsAnalyzable(s, c) ? CardId : null);
 		
 		if (Count == 1)
 			return baseRoute;
