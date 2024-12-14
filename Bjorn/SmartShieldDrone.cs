@@ -46,7 +46,7 @@ internal sealed class SmartShieldDrone : ShieldDrone, IRegisterable
 			.. (bubbleShield ? [new TTGlossary("midrow.bubbleShield")] : Array.Empty<Tooltip>())
 		];
 
-	public override List<CardAction>? GetActions(State s, Combat c)
+	public override List<CardAction> GetActions(State s, Combat c)
 	{
 		var attack = new AAttack
 		{
