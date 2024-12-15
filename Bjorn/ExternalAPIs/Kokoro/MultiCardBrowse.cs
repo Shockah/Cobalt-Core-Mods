@@ -34,6 +34,13 @@ public partial interface IKokoroApi
 			/// <param name="action">The action the cards were set on. See <see cref="CardBrowse.browseAction"/>.</param>
 			/// <returns>The list of selected cards, or <c>null</c> if the action was not used with a <see cref="IMultiCardBrowseRoute"/> or choice was cancelled.</returns>
 			IReadOnlyList<Card>? GetSelectedCards(CardAction action);
+			
+			/// <summary>
+			/// Overrides the list of cards selected with a <see cref="IMultiCardBrowseRoute"/>.
+			/// </summary>
+			/// <param name="action">The action to set the cards on. See <see cref="CardBrowse.browseAction"/>.</param>
+			/// <param name="cards">The list of selected cards, or <c>null</c> if the action was not used with a <see cref="IMultiCardBrowseRoute"/> or choice was cancelled.</param>
+			void SetSelectedCards(CardAction action, IEnumerable<Card>? cards);
 
 			/// <summary>
 			/// Creates a custom action for a <see cref="IMultiCardBrowseRoute"/>, shown as a button.
