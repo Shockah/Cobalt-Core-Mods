@@ -398,7 +398,7 @@ internal sealed class AnalyzeCostAction : CardAction
 	public int Count
 	{
 		get => MaxCount;
-		set
+		init
 		{
 			MinCount = value;
 			MaxCount = value;
@@ -521,7 +521,7 @@ internal sealed class OnAnalyzeAction : CardAction
 				Title = ModEntry.Instance.Localizations.Localize(["action", "OnAnalyze", "name"]),
 				Description = ModEntry.Instance.Localizations.Localize(["action", "OnAnalyze", "description"]),
 			},
-			.. (AnalyzeManager.AnalyzedTrait.Configuration.Tooltips?.Invoke(s, null) ?? []),
+			.. AnalyzeManager.AnalyzedTrait.Configuration.Tooltips?.Invoke(s, null) ?? [],
 			.. Action.GetTooltips(s)
 		];
 
