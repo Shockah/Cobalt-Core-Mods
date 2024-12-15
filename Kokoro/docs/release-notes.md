@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* `MultiCardBrowse` now preserves the order of selected cards.
+
 ## 2.0.4
 Released 9 December 2024.
 

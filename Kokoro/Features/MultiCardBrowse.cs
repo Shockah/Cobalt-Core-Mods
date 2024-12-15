@@ -70,7 +70,7 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class MultiCardBrowseManager
+internal static class MultiCardBrowseManager
 {
 	private static MultiCardBrowse? CurrentlyRenderedMenu;
 	
@@ -133,7 +133,7 @@ internal sealed class MultiCardBrowseManager
 		public bool BrowseActionIsOnlyForTitle { get; set; }
 		public IReadOnlyList<Card>? CardsOverride { get; set; }
 		
-		internal readonly HashSet<int> SelectedCards = [];
+		internal readonly List<int> SelectedCards = [];
 
 		public MultiCardBrowse()
 		{
@@ -183,7 +183,9 @@ internal sealed class MultiCardBrowseManager
 				}
 
 				Audio.Play(Event.Click);
-				if (!SelectedCards.Remove(uuid))
+				if (SelectedCards.Contains(uuid))
+					SelectedCards.Remove(uuid);
+				else
 					SelectedCards.Add(uuid);
 			}
 			else if (b.key?.k == (UIKey)ChooseUk)
@@ -215,7 +217,7 @@ internal sealed class MultiCardBrowseManager
 				return;
 			}
 			
-			ModEntry.Instance.Helper.ModData.SetModData<IReadOnlyList<Card>>(action.Action, "SelectedCards", _listCache.Where(card => SelectedCards.Contains(card.uuid)).ToList());
+			ModEntry.Instance.Helper.ModData.SetModData<IReadOnlyList<Card>>(action.Action, "SelectedCards", SelectedCards.Select(uuid => _listCache.FirstOrDefault(card => card.uuid == uuid)).OfType<Card>().ToList());
 			g.state.GetCurrentQueue().QueueImmediate(action.Action);
 			g.CloseRoute(this, CBResult.Done);
 		}
