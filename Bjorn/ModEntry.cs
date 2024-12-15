@@ -64,9 +64,11 @@ public sealed class ModEntry : SimpleMod
 	private static readonly IReadOnlyList<Type> CommonArtifacts = [
 		typeof(FourDChessArtifact),
 		typeof(RelativityTheoryArtifact),
+		typeof(SpecialRelativityArtifact),
 	];
 
 	private static readonly IReadOnlyList<Type> BossArtifacts = [
+		typeof(OutsideTheBoxArtifact),
 		typeof(ScientificMethodArtifact),
 	];
 
