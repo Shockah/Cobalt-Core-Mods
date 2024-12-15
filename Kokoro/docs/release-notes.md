@@ -2,10 +2,6 @@
 
 # Release notes
 
-## Upcoming release
-
-* Changed a bit how `MultiCardBrowse` is implemented, making it easier to extend by other mods.
-
 ## 2.0.4
 Released 9 December 2024.
 
