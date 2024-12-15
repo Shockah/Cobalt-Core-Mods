@@ -24,7 +24,10 @@ internal sealed class ScientificMethodArtifact : Artifact, IRegisterable, IBjorn
 	}
 
 	public override List<Tooltip> GetExtraTooltips()
-		=> new SmartShieldAction { Amount = 1 }.GetTooltips(DB.fakeState);
+		=> [
+			.. AnalyzeManager.GetAnalyzeTooltips(DB.fakeState),
+			.. new SmartShieldAction { Amount = 1 }.GetTooltips(DB.fakeState),
+		];
 
 	public void OnCardsAnalyzed(IBjornApi.IHook.IOnCardsAnalyzedArgs args)
 		=> args.Combat.QueueImmediate(new SmartShieldAction { Amount = args.Cards.Count });

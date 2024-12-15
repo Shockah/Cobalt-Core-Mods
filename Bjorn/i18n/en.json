@@ -85,6 +85,10 @@
 			"name": "4D CHESS",
 			"description": "Start each combat with 1 <c=status>relativity</c>."
 		},
+		"OutsideTheBox": {
+			"name": "OUTSIDE THE BOX",
+			"description": "You can <c=action>analyze</c> <c=cardtrait>temp</c> cards."
+		},
         "RelativityTheory": {
             "name": "RELATIVITY THEORY",
             "description": "On your first turn, convert all <c=status>evade</c> and <c=status>droneshift</c> into <c=status>relativity</c>."
@@ -92,6 +96,10 @@
 		"ScientificMethod": {
 			"name": "SCIENTIFIC METHOD",
 			"description": "<c=action>Analyzing</c> a card gives you 1 <c=status>smart shield</c>."
+		},
+		"SpecialRelativity": {
+			"name": "SPECIAL RELATIVITY",
+			"description": "You may store 1 extra <c=status>relativity</c>."
 		}
 	},
 	"card": {
