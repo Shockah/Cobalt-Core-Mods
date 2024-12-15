@@ -87,7 +87,7 @@ internal sealed class RelativityManager : IRegisterable, IKokoroApi.IV2.IStatusR
 
 	private static void Combat_RenderMoveButtons_Postfix(Combat __instance, G g)
 	{
-		if (!__instance.PlayerCanAct(g.state))
+		if (!__instance.isPlayerTurn || g.state.ship.hull <= 0 || __instance.otherShip.hull <= 0)
 			return;
 		if (g.state.ship.Get(RelativityStatus.Status) <= 0)
 			return;
