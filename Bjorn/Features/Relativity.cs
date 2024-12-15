@@ -32,8 +32,8 @@ internal sealed class RelativityManager : IRegisterable, IKokoroApi.IV2.IStatusR
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Relativity", "description"]).Localize
 		});
 
-		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(new StatusLogicHook(), 0);
-		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(new StatusRenderHook(), 0);
+		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(new StatusLogicHook());
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(new StatusRenderHook());
 		ModEntry.Instance.KokoroApi.EvadeHook.DefaultAction.RegisterPaymentOption(new MovementPaymentOption(), -50);
 		ModEntry.Instance.KokoroApi.DroneShiftHook.DefaultAction.RegisterPaymentOption(new MovementPaymentOption(), -50);
 
@@ -41,6 +41,26 @@ internal sealed class RelativityManager : IRegisterable, IKokoroApi.IV2.IStatusR
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderMoveButtons)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderMoveButtons_Postfix))
 		);
+	}
+
+	internal static int GetRelativityLimit(State state, Combat combat)
+	{
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.ModifyRelativityLimitArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.BaseLimit = 3;
+			args.Limit = args.BaseLimit;
+			
+			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				hook.ModifyRelativityLimit(args);
+			return args.Limit;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	private static void DoMoveEnemy(G g, Combat combat, int dir)
@@ -67,13 +87,15 @@ internal sealed class RelativityManager : IRegisterable, IKokoroApi.IV2.IStatusR
 
 	private static void Combat_RenderMoveButtons_Postfix(Combat __instance, G g)
 	{
+		if (!__instance.PlayerCanAct(g.state))
+			return;
 		if (g.state.ship.Get(RelativityStatus.Status) <= 0)
 			return;
 
-		var buttonWidth = 24;
-		var buttonHeight = 33;
-		var spread = 96;
-		var buttonTop = 4;
+		const int buttonWidth = 24;
+		const int buttonHeight = 33;
+		const int spread = 96;
+		const int buttonTop = 4;
 
 		var leftResult = SharedArt.ButtonSprite(g, new Rect(Combat.cardCenter.x - spread - 24, buttonTop, buttonWidth, buttonHeight), MoveEnemyLeftUk, StableSpr.buttons_move, StableSpr.buttons_move_on, flipX: true, onMouseDown: new MouseDownHandler(() =>
 		{
@@ -95,7 +117,7 @@ internal sealed class RelativityManager : IRegisterable, IKokoroApi.IV2.IStatusR
 		{
 			if (args.Status != RelativityStatus.Status)
 				return args.NewAmount;
-			return Math.Min(args.NewAmount, 3);
+			return Math.Min(args.NewAmount, GetRelativityLimit(args.State, args.Combat));
 		}
 	}
 
@@ -104,9 +126,9 @@ internal sealed class RelativityManager : IRegisterable, IKokoroApi.IV2.IStatusR
 		public (IReadOnlyList<Color> Colors, int? BarSegmentWidth)? OverrideStatusRenderingAsBars(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingAsBarsArgs args)
 		{
 			if (args.Status != RelativityStatus.Status)
-				return default;
+				return null;
 
-			var colors = new Color[3];
+			var colors = new Color[GetRelativityLimit(args.State, args.Combat)];
 			for (var i = 0; i < colors.Length; i++)
 				colors[i] = args.Amount > i ? ModEntry.Instance.KokoroApi.StatusRendering.DefaultActiveStatusBarColor : ModEntry.Instance.KokoroApi.StatusRendering.DefaultInactiveStatusBarColor;
 
