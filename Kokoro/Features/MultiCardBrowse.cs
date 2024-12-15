@@ -29,6 +29,9 @@ partial class ApiImplementation
 			public IReadOnlyList<Card>? GetSelectedCards(CardAction action)
 				=> ModEntry.Instance.Helper.ModData.GetOptionalModData<IReadOnlyList<Card>>(action, "SelectedCards");
 
+			public void SetSelectedCards(CardAction action, IEnumerable<Card>? cards)
+				=> ModEntry.Instance.Helper.ModData.SetOptionalModData<IReadOnlyList<Card>>(action, "SelectedCards", cards?.ToList());
+
 			public IKokoroApi.IV2.IMultiCardBrowseApi.ICustomAction MakeCustomAction(CardAction action, string title)
 				=> new CustomAction(action, title);
 			
