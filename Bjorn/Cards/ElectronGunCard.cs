@@ -58,7 +58,7 @@ public sealed class ElectronGunCard : Card, IRegisterable
 	private int SafelyGetCurrentCost(State state)
 	{
 		if (DuringSafelyGetCurrentCost)
-			return new();
+			return 0;
 		
 		try
 		{

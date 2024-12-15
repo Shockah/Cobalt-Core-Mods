@@ -10,6 +10,8 @@ namespace Shockah.Bjorn;
 
 public sealed class SafetyProtocolCard : Card, IRegisterable
 {
+	private int GetDataReentry;
+	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
@@ -27,11 +29,26 @@ public sealed class SafetyProtocolCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> upgrade.Switch<CardData>(
-			none: () => new() { cost = 0, floppable = true, infinite = true },
-			a: () => new() { cost = 0, floppable = true, infinite = true },
-			b: () => new() { cost = 0, floppable = true }
-		);
+	{
+		GetDataReentry++;
+		try
+		{
+			var unplayable = GetDataReentry == 1 && state.route is Combat combat && (
+				flipped
+					? combat.energy < GetCurrentCost(state)
+					: combat.hand.All(card => !card.IsAnalyzable(state, combat))
+			);
+			return upgrade.Switch<CardData>(
+				none: () => new() { cost = 0, floppable = true, infinite = true, unplayable = unplayable },
+				a: () => new() { cost = 0, floppable = true, infinite = true, unplayable = unplayable },
+				b: () => new() { cost = 0, floppable = true, unplayable = unplayable }
+			);
+		}
+		finally
+		{
+			GetDataReentry--;
+		}
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade.Switch<List<CardAction>>(
