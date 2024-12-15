@@ -253,11 +253,11 @@ internal sealed class AnalyzeManager : IRegisterable
 
 		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<int>(__instance, "ForceInclude") is { } forceIncludeCardId)
 		{
-			var index = __result.FindIndex(card => card.uuid == forceIncludeCardId);
+			var index = __instance._listCache.FindIndex(card => card.uuid == forceIncludeCardId);
 			if (index != -1)
-				__result.RemoveAt(index);
+				__instance._listCache.RemoveAt(index);
 			if (g.state.FindCard(forceIncludeCardId) is { } card)
-				__result.Insert(0, card);
+				__instance._listCache.Insert(0, card);
 		}
 	}
 
@@ -458,11 +458,7 @@ internal sealed class AnalyzeCostAction : CardAction
 				
 				foreach (var card in selectedCards)
 					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, true, permanent: Permanent);
-
-				var dummy = new ADummyAction();
-				ModEntry.Instance.Helper.ModData.CopyAllModData(Action, dummy);
-				ModEntry.Instance.Helper.ModData.CopyAllModData(this, Action);
-				ModEntry.Instance.Helper.ModData.CopyAllModData(dummy, Action);
+				ModEntry.Instance.KokoroApi.MultiCardBrowse.SetSelectedCards(Action, selectedCards);
 				
 				c.QueueImmediate(Action);
 				AnalyzeManager.OnCardsAnalyzed(s, c, selectedCards);
