@@ -7,6 +7,7 @@
 * `MultiCardBrowse` now preserves the order of selected cards.
 * Added an option to manually set the cards selected by `MultiCardBrowse`.
 * Added missing implementations for some methods of the Finite card trait API.
+* Added vanilla shard cost icons to Kokoro's action cost system.
 
 ## 2.0.4
 Released 9 December 2024.

@@ -21,8 +21,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ISpriteRegistryExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LinqExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MouseDownHandler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MultiPool.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RandExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ReflectionExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StateExt.cs" />

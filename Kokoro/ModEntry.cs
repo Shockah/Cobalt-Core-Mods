@@ -6,7 +6,6 @@ using Nanoray.PluginManager;
 using Newtonsoft.Json.Serialization;
 using Nickel;
 using Nickel.Legacy;
-using Shockah.Shared;
 using System.Collections.Generic;
 using System.IO;
 using IModManifest = CobaltCoreModding.Definitions.ModManifests.IModManifest;

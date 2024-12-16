@@ -402,6 +402,7 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 
 	internal static void SetupLate()
 	{
+		RegisterStatusResourceCostIcon(Status.shard, StableSpr.icons_shardcost, StableSpr.icons_shardcostoff);
 		RegisterStatusResourceCostIcon(Status.shield, (Spr)ModEntry.Instance.Content.ShieldCostSatisfiedSprite.Id!.Value, (Spr)ModEntry.Instance.Content.ShieldCostUnsatisfiedSprite.Id!.Value);
 		RegisterStatusResourceCostIcon(Status.evade, (Spr)ModEntry.Instance.Content.EvadeCostSatisfiedSprite.Id!.Value, (Spr)ModEntry.Instance.Content.EvadeCostUnsatisfiedSprite.Id!.Value);
 		RegisterStatusResourceCostIcon(Status.heat, (Spr)ModEntry.Instance.Content.HeatCostSatisfiedSprite.Id!.Value, (Spr)ModEntry.Instance.Content.HeatCostUnsatisfiedSprite.Id!.Value);
