@@ -34,8 +34,8 @@ public sealed class PrototypeCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> upgrade.Switch<CardData>(
 			none: () => new() { cost = 0, exhaust = true, description = ModEntry.Instance.Localizations.Localize(["card", "Prototype", "description"]) },
-			a: () => new() { cost = 0, exhaust = true },
-			b: () => new() { cost = 0, exhaust = true }
+			a: () => new() { cost = 0, exhaust = true, art = StableSpr.cards_Prepare },
+			b: () => new() { cost = 0, exhaust = true, art = StableSpr.cards_Prepare }
 		);
 
 	public override List<CardAction> GetActions(State s, Combat c)
