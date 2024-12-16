@@ -196,7 +196,7 @@ internal sealed class AnalyzeManager : IRegisterable
 				Title = ModEntry.Instance.Localizations.Localize(["action", "SelfAnalyze", "name"]),
 				Description = ModEntry.Instance.Localizations.Localize(["action", "SelfAnalyze", "description"]),
 			},
-			.. (AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? []),
+			.. AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? [],
 		];
 
 	public static List<Tooltip> GetAnalyzeOrSelfAnalyzeTooltips(State state)
@@ -208,7 +208,7 @@ internal sealed class AnalyzeManager : IRegisterable
 				Title = ModEntry.Instance.Localizations.Localize(["action", "AnalyzeOrSelfAnalyze", "name"]),
 				Description = ModEntry.Instance.Localizations.Localize(["action", "AnalyzeOrSelfAnalyze", "description"]),
 			},
-			.. (AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? []),
+			.. AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? [],
 		];
 	
 	public static void OnCardsAnalyzed(State state, Combat combat, IReadOnlyList<Card> cards)
