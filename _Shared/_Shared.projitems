@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ExternalTypesExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HarmonyExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HookManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IDirectoryInfoExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IModHelperExt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputPhaseHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IProxyProvider.cs" />
