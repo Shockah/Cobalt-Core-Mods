@@ -294,14 +294,15 @@ internal sealed class AnalyzeManager : IRegisterable
 
 		if (action is SelfAnalyzeCostAction selfAnalyzeCostAction)
 		{
+			var renderAsDisabled = action.disabled || (state.route is Combat combat && state.FindCard(selfAnalyzeCostAction.CardId) is { } card && !card.IsAnalyzable(state, combat));
 			var oldActionDisabled = selfAnalyzeCostAction.Action.disabled;
-			selfAnalyzeCostAction.Action.disabled = selfAnalyzeCostAction.disabled;
+			selfAnalyzeCostAction.Action.disabled = renderAsDisabled;
 
 			var position = g.Push(rect: new()).rect.xy;
 			var initialX = (int)position.x;
 
 			if (!dontDraw)
-				Draw.Sprite(SelfAnalyzeIcon.Sprite, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
+				Draw.Sprite(SelfAnalyzeIcon.Sprite, position.x, position.y, color: renderAsDisabled ? Colors.disabledIconTint : Colors.white);
 			position.x += 10;
 
 			g.Push(rect: new(position.x - initialX));
