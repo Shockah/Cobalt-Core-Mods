@@ -19,7 +19,7 @@ public sealed class PrototypingCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Prototyping.png"), StableSpr.cards_dizzy).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Prototyping.png"), StableSpr.cards_Terminal).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Prototyping", "name"]).Localize,
 		});
 	}
