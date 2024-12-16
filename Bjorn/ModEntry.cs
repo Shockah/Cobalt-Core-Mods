@@ -154,6 +154,25 @@ public sealed class ModEntry : SimpleMod
 			},
 			//ExeCardType = typeof(BlochExeCard),
 		});
+		
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
+		{
+			CharacterType = BjornDeck.UniqueName,
+			LoopTag = "gameover",
+			Frames = package.PackageRoot.GetRelativeDirectory("assets/Character/GameOver")
+				.GetSequentialFiles(i => $"{i}.png")
+				.Select(f => helper.Content.Sprites.RegisterSprite(f).Sprite)
+				.ToList()
+		});
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
+		{
+			CharacterType = BjornDeck.UniqueName,
+			LoopTag = "squint",
+			Frames = package.PackageRoot.GetRelativeDirectory("assets/Character/Squint")
+				.GetSequentialFiles(i => $"{i}.png")
+				.Select(f => helper.Content.Sprites.RegisterSprite(f).Sprite)
+				.ToList()
+		});
 	}
 
 	public override object GetApi(IModManifest requestingMod)
