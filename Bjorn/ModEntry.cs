@@ -117,7 +117,8 @@ public sealed class ModEntry : SimpleMod
 			Definition = new() { color = new("23EEB6"), titleColor = Colors.black },
 			DefaultCardArt = StableSpr.cards_colorless,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
-			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize
+			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize,
+			ShineColorOverride = _ => DB.decks[BjornDeck!.Deck].color.normalize().gain(2.5),
 		});
 
 		foreach (var type in RegisterableTypes)
