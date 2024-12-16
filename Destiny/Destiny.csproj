@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <RootNamespace>Shockah.Destiny</RootNamespace>
+        <Version>0.1.0</Version>
+    </PropertyGroup>
+    <ItemGroup>
+        <ModFiles Include="i18n/**" />
+        <ModFiles Include="assets/**" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="assets\" />
+    </ItemGroup>
+    <Import Project="..\Configuration.Mod.props" />
+</Project>
