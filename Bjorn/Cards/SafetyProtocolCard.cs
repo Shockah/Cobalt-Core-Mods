@@ -65,9 +65,14 @@ public sealed class SafetyProtocolCard : Card, IRegisterable, IHasCustomCardTrai
 		=> new() { cost = 0, floppable = true };
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> upgrade.Switch<List<CardAction>>(
+	{
+		return upgrade.Switch<List<CardAction>>(
 			none: () => [
-				new AnalyzeCostAction { Action = new SmartShieldAction { Amount = 1 }, disabled = flipped },
+				new AnalyzeCostAction
+				{
+					Action = new SmartShieldAction { Amount = 1 },
+					disabled = flipped,
+				},
 				new ADummyAction(),
 				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
 					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.EnergyResource, 1),
@@ -75,7 +80,11 @@ public sealed class SafetyProtocolCard : Card, IRegisterable, IHasCustomCardTrai
 				).AsCardAction.Disabled(!flipped),
 			],
 			a: () => [
-				new AnalyzeCostAction { Action = new SmartShieldAction { Amount = 2 }, disabled = flipped },
+				new AnalyzeCostAction
+				{
+					Action = new SmartShieldAction { Amount = 2 },
+					disabled = flipped,
+				},
 				new ADummyAction(),
 				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
 					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.EnergyResource, 1),
@@ -83,7 +92,11 @@ public sealed class SafetyProtocolCard : Card, IRegisterable, IHasCustomCardTrai
 				).AsCardAction.Disabled(!flipped),
 			],
 			b: () => [
-				new AnalyzeCostAction { Action = ModEntry.Instance.KokoroApi.ContinueStop.MakeTriggerAction(IKokoroApi.IV2.IContinueStopApi.ActionType.Continue, out var analyzeContinueId).AsCardAction, disabled = flipped },
+				new AnalyzeCostAction
+				{
+					Action = ModEntry.Instance.KokoroApi.ContinueStop.MakeTriggerAction(IKokoroApi.IV2.IContinueStopApi.ActionType.Continue, out var analyzeContinueId).AsCardAction,
+					disabled = flipped,
+				},
 				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
 					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.EnergyResource, 1),
 					ModEntry.Instance.KokoroApi.ContinueStop.MakeTriggerAction(IKokoroApi.IV2.IContinueStopApi.ActionType.Continue, out var energyContinueId).AsCardAction
@@ -99,4 +112,5 @@ public sealed class SafetyProtocolCard : Card, IRegisterable, IHasCustomCardTrai
 				).Select(a => a.AsCardAction),
 			]
 		);
+	}
 }
