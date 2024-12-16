@@ -147,12 +147,29 @@ internal sealed class AnalyzeManager : IRegisterable
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
 
-		// TODO: make this a Nickel API
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Mod).Assembly.GetType("Nickel.CardTraitManager"), "SetCardTraitOverride"),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardTraitManager_SetCardTraitOverride_Prefix)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardTraitManager_SetCardTraitOverride_Postfix))
-		);
+		ModEntry.Instance.Helper.Content.Cards.OnSetCardTraitOverride += (_, e) =>
+		{
+			if (e.CardTrait != AnalyzedTrait)
+				return;
+			if (e.State.route is not Combat combat)
+				return;
+			
+			var meta = e.Card.GetMeta();
+			if (MG.inst.g.state.CharacterIsMissing(meta.deck))
+				return;
+
+			combat.QueueImmediate(
+				e.Card.GetActionsOverridden(MG.inst.g.state, combat)
+					.Where(action => !action.disabled)
+					.OfType<OnAnalyzeAction>()
+					.Select(triggerAction => triggerAction.Action)
+					.Select(action =>
+					{
+						action.whoDidThis = meta.deck;
+						return action;
+					})
+			);
+		};
 		
 		ModEntry.Instance.HookManager.Register(NonAnalyzedNonTempCardsAnalyzeHook.Instance, 0);
 		ModEntry.Instance.HookManager.Register(ReevaluatedAnalyzeHook.Instance, 0);
@@ -340,45 +357,6 @@ internal sealed class AnalyzeManager : IRegisterable
 		}
 
 		return true;
-	}
-
-	private static void CardTraitManager_SetCardTraitOverride_Prefix(Card card, ICardTraitEntry trait, bool? overrideValue, ref bool __state)
-	{
-		if (trait != AnalyzedTrait)
-			return;
-		if (overrideValue == false)
-			return;
-		__state = ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(MG.inst.g.state, card, trait);
-	}
-
-	private static void CardTraitManager_SetCardTraitOverride_Postfix(Card card, ICardTraitEntry trait, bool? overrideValue, ref bool __state)
-	{
-		if (trait != AnalyzedTrait)
-			return;
-		if (overrideValue == false)
-			return;
-		if (__state)
-			return;
-		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(MG.inst.g.state, card, trait))
-			return;
-		if (MG.inst.g.state.route is not Combat combat)
-			return;
-
-		var meta = card.GetMeta();
-		if (MG.inst.g.state.CharacterIsMissing(meta.deck))
-			return;
-
-		combat.QueueImmediate(
-			card.GetActionsOverridden(MG.inst.g.state, combat)
-				.Where(action => !action.disabled)
-				.OfType<OnAnalyzeAction>()
-				.Select(triggerAction => triggerAction.Action)
-				.Select(action =>
-				{
-					action.whoDidThis = meta.deck;
-					return action;
-				})
-		);
 	}
 }
 
