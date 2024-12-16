@@ -62,10 +62,8 @@ internal sealed class SpoofedActionManager : IWrappedActionHook
 	{
 		if (action is not ASpoofed spoofedAction)
 			return true;
-		if ((spoofedAction.RenderAction ?? spoofedAction.RealAction) is not { } actionToRender)
-			return true;
 
-		__result = Card.RenderAction(g, state, actionToRender, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+		__result = Card.RenderAction(g, state, spoofedAction.RenderAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
 		return false;
 	}
 }
@@ -89,21 +87,23 @@ public sealed class ASpoofed : CardAction, IKokoroApi.IV2.ISpoofedActionsApi.ISp
 	}
 
 	public override Icon? GetIcon(State s)
-		=> RenderAction?.GetIcon(s);
+		=> RenderAction.GetIcon(s);
 
 	public override List<Tooltip> GetTooltips(State s)
-		=> RenderAction?.omitFromTooltips == true ? [] : (RenderAction?.GetTooltips(s) ?? []);
+		=> RenderAction.omitFromTooltips ? [] : RenderAction.GetTooltips(s);
 
 	public override bool CanSkipTimerIfLastEvent()
-		=> RealAction?.CanSkipTimerIfLastEvent() ?? base.CanSkipTimerIfLastEvent();
+		=> RealAction.CanSkipTimerIfLastEvent();
 	
 	public IKokoroApi.IV2.ISpoofedActionsApi.ISpoofedAction SetRenderAction(CardAction value)
 	{
-		throw new System.NotImplementedException();
+		RenderAction = value;
+		return this;
 	}
 
 	public IKokoroApi.IV2.ISpoofedActionsApi.ISpoofedAction SetRealAction(CardAction value)
 	{
-		throw new System.NotImplementedException();
+		RealAction = value;
+		return this;
 	}
 }
