@@ -292,9 +292,10 @@ internal sealed class AnalyzeManager : IRegisterable
 				Draw.Sprite((analyzeCostAction.CardId is null ? AnalyzeIcon : AnalyzeOrSelfAnalyzeIcon).Sprite, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
 			position.x += 9;
 
+			var count = analyzeCostAction.Count;
 			if (!dontDraw)
-				BigNumbers.Render(analyzeCostAction.Count, position.x, position.y, action.disabled ? Colors.disabledText : Colors.textMain);
-			position.x += analyzeCostAction.Count.ToString().Length * 6;
+				BigNumbers.Render(count, position.x, position.y, action.disabled ? Colors.disabledText : Colors.textMain);
+			position.x += count.ToString().Length * 6;
 
 			position.x += 2;
 

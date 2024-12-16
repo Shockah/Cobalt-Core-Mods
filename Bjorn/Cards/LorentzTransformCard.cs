@@ -19,7 +19,7 @@ public sealed class LorentzTransformCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/LorentzTransform.png"), StableSpr.cards_Inverter).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/LorentzTransform.png"), StableSpr.cards_DesperateMeasures).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "LorentzTransform", "name"]).Localize,
 		});
 	}
