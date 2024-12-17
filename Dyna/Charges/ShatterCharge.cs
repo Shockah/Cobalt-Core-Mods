@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Dyna;
 
-public sealed class ShatterCharge : BaseDynaCharge, IRegisterable
+public sealed class ShatterCharge() : BaseDynaCharge($"{ModEntry.Instance.Package.Manifest.UniqueName}::ShatterCharge"), IRegisterable
 {
 	private static ISpriteEntry Sprite = null!;
 	private static ISpriteEntry LightsSprite = null!;
@@ -14,10 +14,6 @@ public sealed class ShatterCharge : BaseDynaCharge, IRegisterable
 	{
 		Sprite = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Charges/Shatter.png"));
 		LightsSprite = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Charges/ShatterLight.png"));
-	}
-
-	public ShatterCharge() : base($"{ModEntry.Instance.Package.Manifest.UniqueName}::ShatterCharge")
-	{
 	}
 
 	public override Spr GetIcon(State state)
@@ -49,10 +45,10 @@ public sealed class ShatterCharge : BaseDynaCharge, IRegisterable
 			return;
 		var worldX = ship.x + partIndex;
 
-		combat.QueueImmediate(new ABrittle
+		combat.QueueImmediate(new Action
 		{
-			targetPlayer = ship.isPlayerShip,
-			worldX = worldX
+			TargetPlayer = ship.isPlayerShip,
+			TargetKey = part.key ?? "<null>",
 		});
 
 		var damageDone = new DamageDone { hitHull = true };
@@ -62,5 +58,26 @@ public sealed class ShatterCharge : BaseDynaCharge, IRegisterable
 			worldX = worldX
 		};
 		EffectSpawnerExt.HitEffect(MG.inst.g, ship.isPlayerShip, raycastResult, damageDone);
+	}
+	
+	private sealed class Action : CardAction
+	{
+		public required bool TargetPlayer;
+		public required string TargetKey;
+
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+			timer *= 0.5;
+
+			var targetShip = TargetPlayer ? s.ship : c.otherShip;
+			if (targetShip.GetPart(TargetKey) is not { } part || part.type == PType.empty)
+			{
+				timer = 0;
+				return;
+			}
+
+			part.damageModifier = PDamMod.brittle;
+		}
 	}
 }

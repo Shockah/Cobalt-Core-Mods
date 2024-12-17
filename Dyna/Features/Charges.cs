@@ -1,15 +1,10 @@
-﻿using FSPRO;
-using HarmonyLib;
-using Microsoft.Extensions.Logging;
-using Nanoray.Shrike.Harmony;
-using Nanoray.Shrike;
-using Nickel;
-using Shockah.Shared;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
+using FSPRO;
+using HarmonyLib;
+using Nickel;
+using Shockah.Shared;
 
 namespace Shockah.Dyna;
 
@@ -25,7 +20,12 @@ internal static class ChargeExt
 		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<IDynaCharge>(part, "StickedCharge");
 
 	public static void SetStickedCharge(this Part part, IDynaCharge? charge)
-		=> ModEntry.Instance.Helper.ModData.SetOptionalModData(part, "StickedCharge", charge);
+	{
+		if (string.IsNullOrEmpty(part.key))
+			part.key = Guid.NewGuid().ToString();
+		
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(part, "StickedCharge", charge);
+	}
 }
 
 internal sealed class ChargeManager
@@ -34,7 +34,6 @@ internal sealed class ChargeManager
 	internal static ISpriteEntry FireChargeLeftIcon { get; private set; } = null!;
 	internal static ISpriteEntry FireChargeRightIcon { get; private set; } = null!;
 
-	private static AAttack? AttackContext;
 	private static StuffBase? BonkContext;
 
 	public ChargeManager()
@@ -65,15 +64,8 @@ internal sealed class ChargeManager
 		);
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
-			prefix: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Prefix)),
-			finalizer: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Finalizer)),
-			transpiler: new HarmonyMethod(GetType(), nameof(AAttack_Begin_Transpiler))
-		);
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
-			postfix: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Postfix))
+			prefix: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Prefix))
 		);
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
@@ -95,9 +87,14 @@ internal sealed class ChargeManager
 		var targetShip = targetPlayer ? state.ship : combat.otherShip;
 		var worldX = targetShip.x + targetShip.parts.IndexOf(part);
 		part.SetStickedCharge(null);
+		
+		if (string.IsNullOrEmpty(part.key))
+			part.key = Guid.NewGuid().ToString();
+		
 		foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 			hook.OnChargeTrigger(state, combat, targetShip, worldX);
 		charge.OnTrigger(state, combat, targetShip, part);
+		
 		return true;
 	}
 
@@ -217,61 +214,8 @@ internal sealed class ChargeManager
 		return false;
 	}
 
-	private static IEnumerable<CodeInstruction> AAttack_Begin_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	private static void Ship_NormalDamage_Prefix(Ship __instance, State s, Combat c, int? maybeWorldGridX)
 	{
-		// ReSharper disable PossibleMultipleEnumeration
-		try
-		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
-					ILMatches.Ldloc<RaycastResult>(originalMethod).CreateLdlocInstruction(out var ldlocRaycastResult),
-					ILMatches.Ldfld("hitShip"),
-					ILMatches.Brfalse.GetBranchTarget(out var branchTarget)
-				)
-				.PointerMatcher(branchTarget)
-				.ExtractLabels(out var labels)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
-					new CodeInstruction(OpCodes.Ldarg_2),
-					new CodeInstruction(OpCodes.Ldarg_3),
-					ldlocRaycastResult,
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Transpiler_TriggerChargeIfAny)))
-				)
-				.AllElements();
-		}
-		catch (Exception ex)
-		{
-			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.GetDisplayName(@long: false), ex);
-			return instructions;
-		}
-		// ReSharper restore PossibleMultipleEnumeration
-	}
-
-	private static void AAttack_Begin_Transpiler_TriggerChargeIfAny(AAttack attack, State state, Combat combat, RaycastResult raycastResult)
-	{
-		if (raycastResult.hitDrone || !raycastResult.hitShip)
-			return;
-		if (attack.isBeam)
-			return;
-
-		var targetShip = attack.targetPlayer ? state.ship : combat.otherShip;
-		if (targetShip.GetPartAtWorldX(raycastResult.worldX) is not { } part || part.type == PType.empty)
-			return;
-
-		TriggerChargeIfAny(state, combat, part, attack.targetPlayer);
-	}
-
-	private static void AAttack_Begin_Prefix(AAttack __instance)
-		=> AttackContext = __instance;
-
-	private static void AAttack_Begin_Finalizer()
-		=> AttackContext = null;
-
-	private static void Ship_NormalDamage_Postfix(Ship __instance, State s, Combat c, int? maybeWorldGridX)
-	{
-		if (AttackContext is not null)
-			return;
 		if (maybeWorldGridX is not { } worldGridX)
 			return;
 		if (__instance.GetPartAtWorldX(worldGridX) is not { } part || part.type == PType.empty)
@@ -465,6 +409,7 @@ public sealed class FireChargeAction : CardAction
 			{
 				Audio.Play(Event.Hits_DroneCollision);
 				part.SetStickedCharge(null);
+				
 				// reversed order - charges are expected to QueueImmediate their actions, which reverses their order
 				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
 					hook.OnChargeTrigger(s, c, targetShip, worldX);

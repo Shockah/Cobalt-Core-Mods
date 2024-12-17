@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Dyna;
 
-public sealed class FluxCharge : BaseDynaCharge, IRegisterable
+public sealed class FluxCharge() : BaseDynaCharge($"{ModEntry.Instance.Package.Manifest.UniqueName}::FluxCharge"), IRegisterable
 {
 	private static ISpriteEntry Sprite = null!;
 	private static ISpriteEntry LightsSprite = null!;
@@ -14,10 +14,6 @@ public sealed class FluxCharge : BaseDynaCharge, IRegisterable
 	{
 		Sprite = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Charges/Flux.png"));
 		LightsSprite = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Charges/FluxLight.png"));
-	}
-
-	public FluxCharge() : base($"{ModEntry.Instance.Package.Manifest.UniqueName}::FluxCharge")
-	{
 	}
 
 	public override Spr GetIcon(State state)
@@ -55,7 +51,7 @@ public sealed class FluxCharge : BaseDynaCharge, IRegisterable
 		combat.QueueImmediate(new Action
 		{
 			TargetPlayer = ship.isPlayerShip,
-			WorldX = worldX
+			TargetKey = part.key ?? "<null>",
 		});
 
 		var damageDone = new DamageDone { hitHull = true };
@@ -69,8 +65,8 @@ public sealed class FluxCharge : BaseDynaCharge, IRegisterable
 
 	private sealed class Action : CardAction
 	{
-		public bool TargetPlayer;
-		public required int WorldX;
+		public required bool TargetPlayer;
+		public required string TargetKey;
 
 		public override void Begin(G g, State s, Combat c)
 		{
@@ -78,7 +74,7 @@ public sealed class FluxCharge : BaseDynaCharge, IRegisterable
 			timer *= 0.5;
 
 			var targetShip = TargetPlayer ? s.ship : c.otherShip;
-			if (targetShip.GetPartAtWorldX(WorldX) is not { } part || part.type == PType.empty)
+			if (targetShip.GetPart(TargetKey) is not { } part || part.type == PType.empty)
 			{
 				timer = 0;
 				return;

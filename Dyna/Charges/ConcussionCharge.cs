@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Dyna;
 
-public sealed class ConcussionCharge : BaseDynaCharge, IRegisterable
+public sealed class ConcussionCharge() : BaseDynaCharge($"{ModEntry.Instance.Package.Manifest.UniqueName}::ConcussionCharge"), IRegisterable
 {
 	private static ISpriteEntry Sprite = null!;
 	private static ISpriteEntry LightsSprite = null!;
@@ -14,10 +14,6 @@ public sealed class ConcussionCharge : BaseDynaCharge, IRegisterable
 	{
 		Sprite = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Charges/Concussion.png"));
 		LightsSprite = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Charges/ConcussionLight.png"));
-	}
-
-	public ConcussionCharge() : base($"{ModEntry.Instance.Package.Manifest.UniqueName}::ConcussionCharge")
-	{
 	}
 
 	public override Spr GetIcon(State state)
@@ -52,7 +48,7 @@ public sealed class ConcussionCharge : BaseDynaCharge, IRegisterable
 		combat.QueueImmediate(new Action
 		{
 			TargetPlayer = ship.isPlayerShip,
-			WorldX = worldX
+			TargetKey = part.key ?? "<null>",
 		});
 
 		var damageDone = new DamageDone { hitHull = true };
@@ -66,8 +62,8 @@ public sealed class ConcussionCharge : BaseDynaCharge, IRegisterable
 
 	private sealed class Action : CardAction
 	{
-		public bool TargetPlayer;
-		public required int WorldX;
+		public required bool TargetPlayer;
+		public required string TargetKey;
 
 		public override void Begin(G g, State s, Combat c)
 		{
@@ -75,7 +71,7 @@ public sealed class ConcussionCharge : BaseDynaCharge, IRegisterable
 			timer *= 0.5;
 
 			var targetShip = TargetPlayer ? s.ship : c.otherShip;
-			if (targetShip.GetPartAtWorldX(WorldX) is not { } part || part.type == PType.empty)
+			if (targetShip.GetPart(TargetKey) is not { } part || part.type == PType.empty)
 			{
 				timer = 0;
 				return;

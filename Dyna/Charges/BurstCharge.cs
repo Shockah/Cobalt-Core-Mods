@@ -1,11 +1,11 @@
-﻿using Nanoray.PluginManager;
+﻿using System.Collections.Generic;
+using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
-using System.Collections.Generic;
 
 namespace Shockah.Dyna;
 
-public sealed class BurstCharge : BaseDynaCharge, IRegisterable
+public sealed class BurstCharge() : BaseDynaCharge($"{ModEntry.Instance.Package.Manifest.UniqueName}::BurstCharge"), IRegisterable
 {
 	private static ISpriteEntry Sprite = null!;
 	private static ISpriteEntry LightsSprite = null!;
@@ -14,10 +14,6 @@ public sealed class BurstCharge : BaseDynaCharge, IRegisterable
 	{
 		Sprite = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Charges/Burst.png"));
 		LightsSprite = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Charges/BurstLight.png"));
-	}
-
-	public BurstCharge() : base($"{ModEntry.Instance.Package.Manifest.UniqueName}::BurstCharge")
-	{
 	}
 
 	public override int BonkDamage
@@ -50,34 +46,40 @@ public sealed class BurstCharge : BaseDynaCharge, IRegisterable
 		if (partIndex < 0)
 			return;
 
-		var worldX = ship.x + partIndex;
 		combat.QueueImmediate(new Action
 		{
 			TargetPlayer = ship.isPlayerShip,
-			WorldX = worldX
+			TargetKey = part.key ?? "<null>",
 		});
 	}
 
 	private sealed class Action : CardAction
 	{
-		public bool TargetPlayer;
-		public required int WorldX;
+		public required bool TargetPlayer;
+		public required string TargetKey;
 
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
 
 			var targetShip = TargetPlayer ? s.ship : c.otherShip;
-			var damageDone = targetShip.NormalDamage(s, c, 3, WorldX);
+			if (targetShip.GetPart(TargetKey) is not { } part || part.type == PType.empty)
+			{
+				timer = 0;
+				return;
+			}
+			
+			var worldX = targetShip.x + targetShip.parts.IndexOf(part);
+			var damageDone = targetShip.NormalDamage(s, c, 3, worldX);
 			var raycastResult = new RaycastResult
 			{
 				hitShip = true,
-				worldX = WorldX
+				worldX = worldX
 			};
 			EffectSpawnerExt.HitEffect(MG.inst.g, TargetPlayer, raycastResult, damageDone);
 
-			if (targetShip.GetPartAtWorldX(WorldX) is { } part && part.type != PType.empty && part.stunModifier == PStunMod.stunnable)
-				c.QueueImmediate(new AStunPart { worldX = WorldX });
+			if (part.stunModifier == PStunMod.stunnable)
+				c.QueueImmediate(new AStunPart { worldX = worldX });
 		}
 	}
 }

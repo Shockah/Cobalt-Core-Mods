@@ -65,7 +65,7 @@ internal sealed class BlastwaveManager
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
-			prefix: new HarmonyMethod(GetType(), nameof(Ship_NormalDamage_Prefix))
+			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(GetType(), nameof(Ship_NormalDamage_Prefix)), priority: Priority.Low)
 		);
 		ModEntry.Instance.Harmony.TryPatch(
 			logger: ModEntry.Instance.Logger,
