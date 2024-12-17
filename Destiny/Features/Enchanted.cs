@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using FSPRO;
+using HarmonyLib;
 using Nickel;
 using Shockah.Kokoro;
 
@@ -45,6 +47,11 @@ internal sealed class EnchantedManager
 			if (GetMaxEnchantLevel(e.Card) > 0)
 				e.SetOverride(EnchantedTrait, true);
 		};
+		
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
+		);
 
 		Spr GetIcon(Card? card)
 		{
@@ -122,5 +129,57 @@ internal sealed class EnchantedManager
 		transaction.Pay(environment);
 		SetEnchantLevel(card, enchantLevel + 1);
 		return true;
+	}
+
+	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
+	{
+		if (action is EnchantedAction enchantedAction)
+		{
+			__result = Card.RenderAction(g, state, enchantedAction.Action, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+			return false;
+		}
+		
+		if (action is EnchantGateAction gateAction)
+		{
+			// TODO: implement proper gate rendering
+			return true;
+		}
+
+		return true;
+	}
+}
+
+internal sealed class EnchantGateAction : CardAction
+{
+	public required int CardId;
+	public required int Level;
+	public required IKokoroApi.IV2.IActionCostsApi.ICost Cost;
+	
+	public override void Begin(G g, State s, Combat c)
+	{
+		base.Begin(g, s, c);
+		timer = 0;
+	}
+}
+
+internal sealed class EnchantedAction : CardAction
+{
+	public required int CardId;
+	public required int Level;
+	public required CardAction Action;
+
+	public override List<Tooltip> GetTooltips(State s)
+		=> Action.GetTooltips(s);
+
+	public override void Begin(G g, State s, Combat c)
+	{
+		base.Begin(g, s, c);
+		timer = 0;
+
+		if (s.FindCard(CardId) is not { } card)
+			return;
+		if (EnchantedManager.GetEnchantLevel(card) < Level)
+			return;
+		c.QueueImmediate(Action);
 	}
 }
