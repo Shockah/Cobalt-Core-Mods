@@ -21,6 +21,7 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry DestinyDeck { get; }
 
 	private static readonly IReadOnlyList<Type> CommonCardTypes = [
+		typeof(GleamCard),
 		typeof(HoneCard),
 	];
 
@@ -60,6 +61,7 @@ public sealed class ModEntry : SimpleMod
 			.. DuoArtifacts,
 			typeof(EnchantedManager),
 			typeof(MagicFindManager),
+			typeof(PristineShieldManager),
 		];
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
@@ -114,6 +116,7 @@ public sealed class ModEntry : SimpleMod
 			{
 				cards = [
 					new HoneCard(),
+					new GleamCard(),
 				]
 			},
 			//ExeCardType = typeof(BlochExeCard),
