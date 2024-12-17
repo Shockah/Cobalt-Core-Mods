@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.1.0
+Released 17 December 2024.
 
 * `MultiCardBrowse` now preserves the order of selected cards.
 * Added an option to manually set the cards selected by `MultiCardBrowse`.
