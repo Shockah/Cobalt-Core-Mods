@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.1
+Released 17 December 2024.
 
 * Fixed Burst Charge being able to skip a phase of the Rail Cannon.
 * Fixed charges in general applying to wrong parts if the enemy is forced to move by the attack.
