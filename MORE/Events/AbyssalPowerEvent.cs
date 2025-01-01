@@ -165,7 +165,7 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 	[UsedImplicitly]
 	private static List<Choice> GetChoices(State state)
 		=> [
-			new Choice
+			new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "AbyssalPower", "Choice-Yes"]),
 				key = $"{EventName}::Yes",
@@ -181,7 +181,7 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 					}
 				]
 			},
-			new Choice
+			new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "AbyssalPower", "Choice-No"]),
 				key = $"{EventName}::No"

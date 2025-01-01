@@ -324,7 +324,7 @@ internal sealed class ShipSwapEvent : IRegisterable
 			s.ship.hull += hullMaxDifference;
 		}
 
-		public override string? GetUpgradeText(State s)
+		public override string GetUpgradeText(State s)
 			=> ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Action-UpgradeText"]);
 	}
 

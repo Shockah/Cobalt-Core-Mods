@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed mod settings not working after game restart or profile switch.
+
 ## 1.2.0
 Released 4 December 2024.
 

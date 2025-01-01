@@ -74,9 +74,9 @@ internal sealed class ModEntry : SimpleMod
 
 	internal static IEnumerable<Type> RegisterableTypes { get; }
 		= [
-			..StatusTypes,
-			..EnemyTypes,
-			..EventTypes,
+			.. StatusTypes,
+			.. EnemyTypes,
+			.. EventTypes,
 			typeof(EphemeralUpgrades),
 			typeof(ReleaseUpgrades),
 			typeof(CardSelectFilters),
@@ -102,7 +102,8 @@ internal sealed class ModEntry : SimpleMod
 
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
-		UpdateSettings();
+
+		helper.Events.OnSaveLoaded += (_, _) => UpdateSettings();
 
 		helper.ModRegistry.AwaitApi<IModSettingsApi>(
 			"Nickel.ModSettings",
@@ -120,7 +121,7 @@ internal sealed class ModEntry : SimpleMod
 						),
 						api.MakeList(
 							Enum.GetValues<MoreEvent>()
-								.Select(e => (IModSettingsApi.IModSetting)api.MakeCheckbox(
+								.Select(IModSettingsApi.IModSetting (e) => api.MakeCheckbox(
 									() => Localizations.Localize(["settings", "events", "values", e.ToString()]),
 									() => !Settings.ProfileBased.Current.DisabledEvents.Contains(e),
 									(_, _, value) =>
@@ -170,7 +171,7 @@ internal sealed class ModEntry : SimpleMod
 						api.MakeList(
 							ToothCards.AllToothCardKeys
 								.Where(key => DB.cards.ContainsKey(key))
-								.Select(key => (IModSettingsApi.IModSetting)api.MakeCheckbox(
+								.Select(IModSettingsApi.IModSetting (key) => api.MakeCheckbox(
 									() => Loc.T($"card.{key}.name"),
 									() => !Settings.ProfileBased.Current.DisabledToothCards.Contains(key),
 									(_, _, value) =>
@@ -209,6 +210,6 @@ internal sealed class ModEntry : SimpleMod
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.UpdateSettings))?.Invoke(null, [Package, Helper, Settings.ProfileBased.Current]);
 	}
 
-	public override object? GetApi(IModManifest requestingMod)
+	public override object GetApi(IModManifest requestingMod)
 		=> new ApiImplementation();
 }

@@ -301,7 +301,7 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 			};
 		}
 
-		public override string? GetCardSelectText(State s)
+		public override string GetCardSelectText(State s)
 			=> Title;
 	}
 
