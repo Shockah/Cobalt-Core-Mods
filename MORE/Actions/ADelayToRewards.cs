@@ -2,7 +2,7 @@
 
 namespace Shockah.MORE;
 
-public sealed class ADelayToRewards : CardAction
+internal sealed class ADelayToRewards : CardAction
 {
 	public required List<CardAction> Actions;
 

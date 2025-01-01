@@ -1,9 +1,9 @@
-﻿using HarmonyLib;
+﻿using System.Collections.Generic;
+using System.Reflection;
+using HarmonyLib;
 using JetBrains.Annotations;
 using Nanoray.PluginManager;
 using Nickel;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace Shockah.MORE;
 
@@ -184,7 +184,13 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 			new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "AbyssalPower", "Choice-No"]),
-				key = $"{EventName}::No"
+				key = $"{EventName}::No",
+				actions = [
+					new ATooltipAction
+					{
+						Tooltips = [new TTGlossary("action.startCombat")]
+					}
+				]
 			}
 		];
 
@@ -229,7 +235,12 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 				label = ModEntry.Instance.Localizations.Localize(["event", "AbyssalPower", "No-Choice-EnterCombat"]),
 				actions = [
 					new ADelayToRewards { Actions = rewardActions },
-					new AStartCombat { ai = new AsteroidBoss() }
+					new AStartCombat
+					{
+						ai = state.map is MapFirst
+							? new ModifiedEnemy { AI = new AsteroidBoss(), HullPercentage = 2.0 / 3.0, Statuses = { { Status.powerdrive, -1 } } }
+							: new AsteroidBoss()
+					},
 				]
 			}
 		];
