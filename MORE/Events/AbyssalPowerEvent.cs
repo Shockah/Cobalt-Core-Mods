@@ -194,6 +194,7 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 			}
 		];
 
+	[UsedImplicitly]
 	private static List<Choice> GetEnterCombatChoices(State state)
 	{
 		List<CardAction> rewardActions = [];

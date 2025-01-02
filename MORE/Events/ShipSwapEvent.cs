@@ -294,10 +294,8 @@ internal sealed class ShipSwapEvent : IRegisterable
 				default:
 				{
 					if (ModEntry.Instance.Helper.Content.Ships.LookupByUniqueName(shipKey)?.Configuration.ExclusiveArtifactTypes is { } exclusiveArtifactTypes)
-					{
 						foreach (var exclusiveArtifactType in exclusiveArtifactTypes)
 							yield return exclusiveArtifactType;
-					}
 					break;
 				}
 			}

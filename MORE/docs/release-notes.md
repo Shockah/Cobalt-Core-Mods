@@ -6,6 +6,7 @@
 
 * Fixed mod settings not working after game restart or profile switch.
 * Nerfed the Rogue Starnacle fight when fought via the Abyssal Power event in zone 1.
+* The Combat Data Calibration event now has a less punishing, but also less rewarding alternative option.
 
 ## 1.2.0
 Released 4 December 2024.

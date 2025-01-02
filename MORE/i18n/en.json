@@ -100,12 +100,22 @@
             "3-Bjorn": "After calibrating, the gadget will be of great help to your endeavours.",
             "4-Bjorn": "Oh, did I mention that it has some side-effects until then?",
             "Choice-Yes": "Sure...",
+            "Choice-Concerns": "We have concerns.",
             "Choice-No": "Side-effects? Yeah, no, thank you.",
             "Yes-1-Bjorn": "No need to return the gadget later, it will automatically transmit the data I need.",
             "No-1-Bjorn": "Ah, well. Nevertheless!",
+            "Concerns-1-Bjorn": "Ah, not willing to sacrifice yourself for science, are you.",
+            "Concerns-2-Bjorn": "I suppose I do have a less dangerous prototype available.",
+            "Concerns-Choice-Yes": "That sounds better.",
+            "Concerns-Choice-Science": "Nevermind. FOR SCIENCE.",
+            "Concerns-Choice-No": "Yeah, no, thank you.",
             "artifact": {
                 "name": "COMBAT ANALYZER GADGET",
                 "description": "<c=downside>Give 1 <c=status>POWERDRIVE</c> to your enemy each combat.</c> After beating a boss, pick 1 of 3 boss artifacts to transform it into."
+            },
+            "artifactWeak": {
+                "name": "COMBAT ANALYZER GADGET",
+                "description": "<c=downside>Give 1 <c=status>OVERDRIVE</c> to your enemy each combat.</c> After beating a boss, pick 1 of 3 common artifacts to transform it into."
             }
         },
         "DraculaDeckTrial": {
