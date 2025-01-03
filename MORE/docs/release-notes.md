@@ -8,6 +8,7 @@
 * Nerfed the Rogue Starnacle fight when fought via the Abyssal Power event in zone 1.
 * The Combat Data Calibration event now has a less punishing, but also less rewarding alternative option.
 * The Ship Swap event now has an alternative exciting option to pick from.
+* Made some small changes to the Abyssal Power event's dialogue.
 
 ## 1.2.0
 Released 4 December 2024.
