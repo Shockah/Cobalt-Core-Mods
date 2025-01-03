@@ -207,14 +207,52 @@
                 "Give us <c=textBold>{{ShipName}}</c>.",
                 "<c=textBold>{{ShipName}}</c> isn't half bad."
             ],
+            "Choice-Part": "Can you take *just* the part?",
             "Choice-No": "Please leave my ship alone.",
             "Yes-1-Selene": "Thanks a lot.",
             "No-1-Selene": "Fine! Whatever!",
+            "Part-1-Selene": "Uh sure! We can just rip the part out, if that's all good with you!!! Your ship *will* run worse though!!!",
+            "Part-Choice-Accept": "Do it!",
+            "Part-Choice-Decline": "Uhhh... maybe not.",
             "Action-Tooltip": [
                 "<c=action>SWAP SHIP</c>",
-                "Swap your ship to a different one. Lose all ship-specific artifacts for your current ship. Gain all starting and an equivalent amount of random ship-specific artifacts for the new ship. Optionally gain any starting cards for the new ship."
+                "Swap your ship to a different (fully repaired) one. Lose all ship-specific artifacts for your current ship. Gain all starting and an equivalent amount of random ship-specific artifacts for the new ship. Optionally gain any starting cards for the new ship."
             ],
-            "Action-UpgradeText": "Swap to a new ship"
+            "Action-UpgradeText": "Swap to a new ship",
+            "AltAction-Tooltip-Base": "<c=action>RIP PART OUT</c>",
+            "AltAction-Tooltip": {
+                "wing": {
+                    "single": "Remove the <c=parttrait>wing</c> from your ship.",
+                    "multiple": "Remove a random <c=parttrait>wing</c> from your ship."
+                },
+                "comms": {
+                    "single": "Remove <c=parttrait>comms</c> from your ship.",
+                    "multiple": "Remove random <c=parttrait>comms</c> from your ship."
+                },
+                "cockpit": {
+                    "single": "Remove the <c=parttrait>cockpit</c> from your ship.",
+                    "multiple": "Remove a random <c=parttrait>cockpit</c> from your ship."
+                },
+                "missiles": {
+                    "single": "Remove the <c=parttrait>missile bay</c> from your ship.",
+                    "multiple": "Remove a random <c=parttrait>missile bay</c> from your ship."
+                },
+                "cannon": {
+                    "single": "Remove the <c=parttrait>cannon</c> from your ship.",
+                    "multiple": "Remove a random <c=parttrait>cannon</c> from your ship."
+                }
+            },
+            "AltAction-UpgradeText": "Rip part out",
+            "artifact": {
+                "name": "RIPPED PART",
+                "description": {
+                    "wing": "Your <c=parttrait>wing</c> was ripped out. <c=downside>Lose 1 <c=status>evade</c> at the end of each turn.</c>",
+                    "comms": "Your <c=parttrait>comms</c> were ripped out. <c=downside>Draw 1 less card each turn.</c>",
+                    "cockpit": "Your <c=parttrait>cockpit</c> was ripped out. <c=downside>Start each turn with 1 less <c=energy>energy</c>.</c>",
+                    "missiles": "Your <c=parttrait>missile bay</c> was ripped out. <c=downside>That's pretty bad.</c>",
+                    "cannon": "Your <c=parttrait>cannon</c> was ripped out. <c=downside>That's pretty bad.</c>"
+                }
+            }
         },
 
         "ToothCardOffering": {

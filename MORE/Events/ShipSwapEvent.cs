@@ -11,6 +11,7 @@ namespace Shockah.MORE;
 internal sealed class ShipSwapEvent : IRegisterable
 {
 	private static string EventName = null!;
+	private static IArtifactEntry RippedPartArtifactEntry = null!;
 
 	internal static readonly HashSet<string> ArtifactsToReapply = [
 		nameof(ArmoredBay),
@@ -32,6 +33,8 @@ internal sealed class ShipSwapEvent : IRegisterable
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
+		RippedPartArtifact.RegisterArtifact(helper);
+		
 		EventName = $"{package.Manifest.UniqueName}::{MethodBase.GetCurrentMethod()!.DeclaringType!.Name}";
 
 		DB.story.all[EventName] = new()
@@ -76,7 +79,6 @@ internal sealed class ShipSwapEvent : IRegisterable
 		DB.story.all[$"{EventName}::Yes"] = new()
 		{
 			type = NodeType.@event,
-			oncePerRun = true,
 			bg = "BGSunshine",
 			lines = [
 				new CustomSay
@@ -88,10 +90,25 @@ internal sealed class ShipSwapEvent : IRegisterable
 				},
 			]
 		};
+		
+		DB.story.all[$"{EventName}::Part"] = new()
+		{
+			type = NodeType.@event,
+			bg = "BGSunshine",
+			lines = [
+				new CustomSay
+				{
+					who = "selene",
+					loopTag = "neutral",
+					flipped = true,
+					Text = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Part-1-Selene"])
+				},
+			],
+			choiceFunc = $"{EventName}::Part"
+		};
 		DB.story.all[$"{EventName}::No"] = new()
 		{
 			type = NodeType.@event,
-			oncePerRun = true,
 			bg = "BGSunshine",
 			lines = [
 				new CustomSay
@@ -105,6 +122,12 @@ internal sealed class ShipSwapEvent : IRegisterable
 		};
 
 		DB.eventChoiceFns[EventName] = AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(GetChoices));
+		DB.eventChoiceFns[$"{EventName}::Part"] = AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(GetPartChoices));
+		
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Artifact), nameof(Artifact.GetTooltips)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Artifact_GetTooltips_Postfix))
+		);
 	}
 
 	public static void UpdateSettings(IPluginPackage<IModManifest> package, IModHelper helper, ProfileSettings settings)
@@ -112,29 +135,80 @@ internal sealed class ShipSwapEvent : IRegisterable
 		var node = DB.story.all[EventName];
 		node.never = settings.DisabledEvents.Contains(MoreEvent.ShipSwap) ? true : null;
 		node.dontCountForProgression = settings.DisabledEvents.Contains(MoreEvent.ShipSwap);
+		RippedPartArtifactEntry.Configuration.Meta.pools = RippedPartArtifactEntry.Configuration.Meta.pools
+			.Where(p => p != ArtifactPool.Unreleased)
+			.Concat(settings.DisabledEvents.Contains(MoreEvent.ShipSwap) ? [ArtifactPool.Unreleased] : [])
+			.ToArray();
 	}
 
 	private static List<Choice> GetChoices(State state)
 	{
+		var rand = new Rand(state.rngCurrentEvent.seed);
 		var currentShipKey = state.ship.key;
 		var otherShips = StarterShip.ships.Keys
 			.Where(key => currentShipKey != key)
 			.ToList();
-		var newShipKeys = otherShips.Shuffle(state.rngCurrentEvent).Take(3).ToList();
+		var newShipKeys = otherShips.Shuffle(rand).Take(3).ToList();
 
-		return Enumerable.Range(0, newShipKeys.Count)
-			.Select(i => new Choice
-			{
-				label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-Yes", i.ToString()], new { ShipName = Loc.T($"ship.{newShipKeys[i]}.name") }),
-				key = $"{EventName}::Yes",
-				actions = [new ASwapShip { NewShipKey = newShipKeys[i] }]
-			})
-			.Append(new Choice
+		return [
+			.. Enumerable.Range(0, newShipKeys.Count)
+				.Select(i => new Choice
+				{
+					label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-Yes", i.ToString()], new { ShipName = Loc.T($"ship.{newShipKeys[i]}.name") }),
+					key = $"{EventName}::Yes",
+					actions = [new ASwapShip { NewShipKey = newShipKeys[i] }],
+				}),
+			.. GetPartTypeToRemove(state) is null ? Array.Empty<Choice>() : [
+				new()
+				{
+					label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-Part"]),
+					key = $"{EventName}::Part",
+				}
+			],
+			new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-No"]),
-				key = $"{EventName}::No"
-			})
-			.ToList();
+				key = $"{EventName}::No",
+			},
+		];
+	}
+
+	private static List<Choice> GetPartChoices(State state)
+	{
+		var declineChoice = new Choice
+		{
+			label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Part-Choice-Decline"]),
+			key = EventName,
+			actions = [new ASkipDialogue()]
+		};
+
+		if (GetPartTypeToRemove(state) is not { } partType)
+			return [declineChoice];
+		
+		var acceptChoice = new Choice
+		{
+			label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Part-Choice-Accept"]),
+			key = $"{EventName}::Yes",
+			actions = [
+				new AShipUpgrades
+				{
+					actions = [
+						new ARipPart { PartType = partType },
+						new AAddArtifact { artifact = new RippedPartArtifact { RippedPartType = partType } }
+					],
+				},
+			],
+		};
+
+		return [acceptChoice, declineChoice];
+	}
+
+	private static PType? GetPartTypeToRemove(State state)
+	{
+		return Check(PType.wing) ?? Check(PType.comms) ?? Check(PType.cockpit) ?? Check(PType.missiles) ?? Check(PType.cannon);
+
+		PType? Check(PType partType)
+			=> state.ship.parts.Any(p => p.type == PType.wing) ? partType : null;
 	}
 
 	private sealed class ASwapShip : CardAction
@@ -202,11 +276,12 @@ internal sealed class ShipSwapEvent : IRegisterable
 					}
 					return amount;
 				}
-
+				
+				var rand = new Rand(s.rngCurrentEvent.seed + 7498);
 				var exclusiveArtifacts = GetExclusiveArtifactTypes(NewShipKey)
 					.Select(t => (Artifact)Activator.CreateInstance(t)!)
 					.Where(a => !a.GetMeta().pools.Contains(ArtifactPool.Unreleased))
-					.Shuffle(s.rngCurrentEvent)
+					.Shuffle(rand)
 					.ToList();
 
 				if (commonArtifactKeysToRemove.Count != 0)
@@ -302,6 +377,23 @@ internal sealed class ShipSwapEvent : IRegisterable
 		}
 	}
 
+	private static void Artifact_GetTooltips_Postfix(Artifact __instance, ref List<Tooltip> __result)
+	{
+		if (__instance is not RippedPartArtifact artifact)
+			return;
+
+		var textTooltip = __result.OfType<TTText>().FirstOrDefault(t => t.text.StartsWith("<c=artifact>"));
+		if (textTooltip is null)
+			return;
+
+		if (MG.inst.g?.state is not { } state || state.IsOutsideRun())
+			return;
+		textTooltip.text = DB.Join(
+			"<c=artifact>{0}</c>\n".FF(__instance.GetLocName()),
+			ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "artifact", "description", artifact.RippedPartType.ToString()])
+		);
+	}
+
 	private sealed class AActuallySwapShipBody : CardAction
 	{
 		public required string NewShipKey;
@@ -360,6 +452,103 @@ internal sealed class ShipSwapEvent : IRegisterable
 				cards = cardsLeft,
 				canSkip = true
 			};
+		}
+	}
+
+	private sealed class ARipPart : CardAction
+	{
+		public required PType PartType;
+
+		public override List<Tooltip> GetTooltips(State s)
+		{
+			var hasMultiple = s.ship.parts.Where(p => p.type == PartType).Skip(1).Any();
+			return [new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::{nameof(ARipPart)}")
+			{
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "AltAction-Tooltip-Base"]),
+				Description = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "AltAction-Tooltip", PartType.ToString(), hasMultiple ? "multiple" : "single"]),
+			}];
+		}
+
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+
+			var parts = s.ship.parts
+				.Select((p, i) => (Part: p, Index: i))
+				.Where(e => e.Part.type == PartType)
+				.ToList();
+
+			if (parts.Count <= 0)
+			{
+				timer = 0;
+				return;
+			}
+
+			var rand = new Rand(s.rngCurrentEvent.seed + 86943);
+			var index = parts.Count == 1 ? parts[0].Index : parts[rand.NextInt() % parts.Count].Index;
+			s.ship.parts.RemoveAt(index);
+		}
+
+		public override string GetUpgradeText(State s)
+			=> ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "AltAction-UpgradeText"]);
+	}
+	
+	private sealed class RippedPartArtifact : Artifact
+	{
+		public PType RippedPartType = PType.wing;
+		
+		public static void RegisterArtifact(IModHelper helper)
+		{
+			RippedPartArtifactEntry = helper.Content.Artifacts.RegisterArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
+			{
+				ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
+				Meta = new()
+				{
+					owner = Deck.colorless,
+					pools = [ArtifactPool.EventOnly],
+					unremovable = true
+				},
+				Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifact/RippedPart.png")).Sprite,
+				Name = ModEntry.Instance.AnyLocalizations.Bind(["event", "ShipSwap", "artifact", "name"]).Localize,
+				Description = ModEntry.Instance.AnyLocalizations.Bind(["event", "CombatDataCalibration", "artifact", "description", nameof(PType.wing)]).Localize
+			});
+		}
+
+		public override List<Tooltip> GetExtraTooltips()
+			=> RippedPartType switch
+			{
+				PType.wing => StatusMeta.GetTooltips(Status.evade, 1),
+				_ => [],
+			};
+
+		public override void OnReceiveArtifact(State state)
+		{
+			base.OnReceiveArtifact(state);
+
+			switch (RippedPartType)
+			{
+				case PType.cockpit:
+					state.ship.baseEnergy--;
+					break;
+				case PType.comms:
+					state.ship.baseDraw--;
+					break;
+			}
+		}
+
+		public override void OnTurnEnd(State state, Combat combat)
+		{
+			base.OnTurnEnd(state, combat);
+			
+			if (RippedPartType == PType.wing)
+				combat.Queue(new AStatus
+				{
+					targetPlayer = true,
+					status = Status.evade,
+					statusAmount = -1,
+					artifactPulse = Key(),
+				});
 		}
 	}
 }

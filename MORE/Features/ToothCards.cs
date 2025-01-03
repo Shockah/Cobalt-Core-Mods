@@ -106,19 +106,7 @@ internal sealed class ToothCards : IRegisterable
 			timer = 0;
 
 			ModEntry.Instance.Helper.ModData.SetModData(s, "ToothChoicesPage", ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(s, "ToothChoicesPage") + 1);
-			s.GetCurrentQueue().Queue(new SkipDialogueAction());
-		}
-
-		private sealed class SkipDialogueAction : CardAction
-		{
-			public override void Begin(G g, State s, Combat c)
-			{
-				base.Begin(g, s, c);
-				timer = 0;
-
-				for (var i = 0; i < 100; i++)
-					s.GetDialogue()?.Advance(g);
-			}
+			s.GetCurrentQueue().Queue(new ASkipDialogue());
 		}
 	}
 

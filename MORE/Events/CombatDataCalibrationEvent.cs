@@ -12,6 +12,7 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 {
 	private static string EventName = null!;
 	private static IArtifactEntry ArtifactEntry = null!;
+	private static IArtifactEntry WeakArtifactEntry = null!;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -115,6 +116,10 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 		node.never = settings.DisabledEvents.Contains(MoreEvent.CombatDataCalibration) ? true : null;
 		node.dontCountForProgression = settings.DisabledEvents.Contains(MoreEvent.CombatDataCalibration);
 		ArtifactEntry.Configuration.Meta.pools = ArtifactEntry.Configuration.Meta.pools
+			.Where(p => p != ArtifactPool.Unreleased)
+			.Concat(settings.DisabledEvents.Contains(MoreEvent.CombatDataCalibration) ? [ArtifactPool.Unreleased] : [])
+			.ToArray();
+		WeakArtifactEntry.Configuration.Meta.pools = WeakArtifactEntry.Configuration.Meta.pools
 			.Where(p => p != ArtifactPool.Unreleased)
 			.Concat(settings.DisabledEvents.Contains(MoreEvent.CombatDataCalibration) ? [ArtifactPool.Unreleased] : [])
 			.ToArray();
@@ -222,7 +227,7 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 	{
 		public static void RegisterArtifact(IModHelper helper)
 		{
-			ArtifactEntry = helper.Content.Artifacts.RegisterArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
+			WeakArtifactEntry = helper.Content.Artifacts.RegisterArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 			{
 				ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 				Meta = new()
