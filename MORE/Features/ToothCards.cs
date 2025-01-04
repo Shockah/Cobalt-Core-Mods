@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 
 namespace Shockah.MORE;
 
@@ -110,6 +111,7 @@ internal sealed class ToothCards : IRegisterable
 		}
 	}
 
+	[UsedImplicitly]
 	private sealed class FiddleCard : Card
 	{
 		public static void RegisterCard(IModHelper helper)
@@ -167,7 +169,7 @@ internal sealed class ToothCards : IRegisterable
 		{
 			public int Times = 1;
 
-			public override string? GetCardSelectText(State s)
+			public override string GetCardSelectText(State s)
 				=> ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "card", "Fiddle", "drawACardInYourHand"]);
 
 			public override void Begin(G g, State s, Combat c)
@@ -190,7 +192,7 @@ internal sealed class ToothCards : IRegisterable
 
 		private sealed class DiscardAndDrawAction : CardAction
 		{
-			public override string? GetCardSelectText(State s)
+			public override string GetCardSelectText(State s)
 				=> ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "card", "Fiddle", "discardAndDrawACardInYourHand"]);
 
 			public override void Begin(G g, State s, Combat c)
@@ -228,6 +230,7 @@ internal sealed class ToothCards : IRegisterable
 		}
 	}
 
+	[UsedImplicitly]
 	private sealed class SlipCard : Card
 	{
 		public static void RegisterCard(IModHelper helper)
@@ -274,6 +277,7 @@ internal sealed class ToothCards : IRegisterable
 			};
 	}
 
+	[UsedImplicitly]
 	private sealed class FinalFormCard : Card
 	{
 		public static void RegisterCard(IModHelper helper)
@@ -323,6 +327,7 @@ internal sealed class ToothCards : IRegisterable
 			};
 	}
 
+	[UsedImplicitly]
 	private sealed class SkimCard : Card
 	{
 		public static void RegisterCard(IModHelper helper)
@@ -367,6 +372,7 @@ internal sealed class ToothCards : IRegisterable
 			};
 	}
 
+	[UsedImplicitly]
 	private sealed class SmashCard : Card
 	{
 		public static void RegisterCard(IModHelper helper)

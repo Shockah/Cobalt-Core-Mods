@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Shockah.Shared;
 
 namespace Shockah.MORE;
 
@@ -143,28 +144,21 @@ internal sealed class ShipSwapEvent : IRegisterable
 
 	private static List<Choice> GetChoices(State state)
 	{
-		var rand = new Rand(state.rngCurrentEvent.seed);
-		var currentShipKey = state.ship.key;
-		var otherShips = StarterShip.ships.Keys
-			.Where(key => currentShipKey != key)
-			.ToList();
-		var newShipKeys = otherShips.Shuffle(rand).Take(3).ToList();
+		var eventRngData = GetEventRngData(state);
 
 		return [
-			.. Enumerable.Range(0, newShipKeys.Count)
+			.. Enumerable.Range(0, eventRngData.NewShipKeys.Count)
 				.Select(i => new Choice
 				{
-					label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-Yes", i.ToString()], new { ShipName = Loc.T($"ship.{newShipKeys[i]}.name") }),
+					label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-Yes", i.ToString()], new { ShipName = Loc.T($"ship.{eventRngData.NewShipKeys[i]}.name") }),
 					key = $"{EventName}::Yes",
-					actions = [new ASwapShip { NewShipKey = newShipKeys[i] }],
+					actions = [new ASwapShip { NewShipKey = eventRngData.NewShipKeys[i] }],
 				}),
-			.. GetPartTypeToRemove(state) is null ? Array.Empty<Choice>() : [
-				new()
-				{
-					label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-Part"]),
-					key = $"{EventName}::Part",
-				}
-			],
+			.. eventRngData.PartToRipIndex is null ? Array.Empty<Choice>() : [new()
+			{
+				label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-Part"]),
+				key = $"{EventName}::Part",
+			}],
 			new()
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-No"]),
@@ -179,10 +173,11 @@ internal sealed class ShipSwapEvent : IRegisterable
 		{
 			label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Part-Choice-Decline"]),
 			key = EventName,
-			actions = [new ASkipDialogue()]
+			actions = [new ADelayedSkipDialogue()]
 		};
 
-		if (GetPartTypeToRemove(state) is not { } partType)
+		var eventRngData = GetEventRngData(state);
+		if (eventRngData.PartToRipIndex is not { } partToRipIndex)
 			return [declineChoice];
 		
 		var acceptChoice = new Choice
@@ -193,8 +188,8 @@ internal sealed class ShipSwapEvent : IRegisterable
 				new AShipUpgrades
 				{
 					actions = [
-						new ARipPart { PartType = partType },
-						new AAddArtifact { artifact = new RippedPartArtifact { RippedPartType = partType } }
+						new ARipPart { PartToRipIndex = partToRipIndex },
+						new AAddArtifact { artifact = new RippedPartArtifact { RippedPartType = state.ship.parts[partToRipIndex].type } }
 					],
 				},
 			],
@@ -203,12 +198,46 @@ internal sealed class ShipSwapEvent : IRegisterable
 		return [acceptChoice, declineChoice];
 	}
 
-	private static PType? GetPartTypeToRemove(State state)
+	private static EventRngData GetEventRngData(State state)
 	{
-		return Check(PType.wing) ?? Check(PType.comms) ?? Check(PType.cockpit) ?? Check(PType.missiles) ?? Check(PType.cannon);
+		var rand = new Rand(state.rngCurrentEvent.seed);
+		
+		var currentShipKey = state.ship.key;
+		var otherShips = StarterShip.ships.Keys
+			.Where(key => currentShipKey != key)
+			.ToList();
+		var newShipKeys = otherShips.Shuffle(rand).Take(3).ToList();
+		
+		if (!state.ship.parts.Where(p => p.type is PType.wing or PType.comms or PType.cockpit or PType.missiles or PType.cannon).Skip(1).Any())
+			return new(newShipKeys, null);
 
-		PType? Check(PType partType)
-			=> state.ship.parts.Any(p => p.type == PType.wing) ? partType : null;
+		var potentialPartTypesToRip = new WeightedRandom<PType>();
+		if (state.ship.parts.Any(p => p.type == PType.wing))
+			potentialPartTypesToRip.Add(new(1, PType.wing));
+		if (state.ship.parts.Any(p => p.type == PType.comms))
+			potentialPartTypesToRip.Add(new(1, PType.comms));
+		if (state.characters.All(c => c.deckType != Deck.hacker) && state.ship.parts.Any(p => p.type == PType.cockpit))
+			potentialPartTypesToRip.Add(new(0.5, PType.cockpit));
+		if (potentialPartTypesToRip.Items.Count == 0 && state.ship.parts.Any(p => p.type == PType.missiles))
+			potentialPartTypesToRip.Add(new(1, PType.missiles));
+		if (potentialPartTypesToRip.Items.Count == 0 && state.ship.parts.Any(p => p.type == PType.cannon))
+			potentialPartTypesToRip.Add(new(1, PType.cannon));
+
+		if (potentialPartTypesToRip.Items.Count == 0)
+			return new(newShipKeys, null);
+
+		var partTypeToRip = potentialPartTypesToRip.Next(rand);
+		var potentialPartsToRip = state.ship.parts
+			.Select((p, i) => (Part: p, Index: i))
+			.Where(e => e.Part.type == partTypeToRip)
+			.ToList();
+
+		return potentialPartsToRip.Count switch
+		{
+			0 => new(newShipKeys, null),
+			1 => new(newShipKeys, potentialPartsToRip[0].Index),
+			_ => new(newShipKeys, potentialPartsToRip[rand.NextInt() % potentialPartsToRip.Count].Index)
+		};
 	}
 
 	private sealed class ASwapShip : CardAction
@@ -457,37 +486,24 @@ internal sealed class ShipSwapEvent : IRegisterable
 
 	private sealed class ARipPart : CardAction
 	{
-		public required PType PartType;
+		public required int PartToRipIndex;
 
 		public override List<Tooltip> GetTooltips(State s)
 		{
-			var hasMultiple = s.ship.parts.Where(p => p.type == PartType).Skip(1).Any();
+			var partType = s.ship.parts[PartToRipIndex].type;
+			var hasMultiple = s.ship.parts.Where(p => p.type == partType).Skip(1).Any();
 			return [new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::{nameof(ARipPart)}")
 			{
 				TitleColor = Colors.action,
 				Title = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "AltAction-Tooltip-Base"]),
-				Description = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "AltAction-Tooltip", PartType.ToString(), hasMultiple ? "multiple" : "single"]),
+				Description = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "AltAction-Tooltip", partType.ToString(), hasMultiple ? "multiple" : "single"]),
 			}];
 		}
 
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
-
-			var parts = s.ship.parts
-				.Select((p, i) => (Part: p, Index: i))
-				.Where(e => e.Part.type == PartType)
-				.ToList();
-
-			if (parts.Count <= 0)
-			{
-				timer = 0;
-				return;
-			}
-
-			var rand = new Rand(s.rngCurrentEvent.seed + 86943);
-			var index = parts.Count == 1 ? parts[0].Index : parts[rand.NextInt() % parts.Count].Index;
-			s.ship.parts.RemoveAt(index);
+			s.ship.parts.RemoveAt(PartToRipIndex);
 		}
 
 		public override string GetUpgradeText(State s)
@@ -515,11 +531,11 @@ internal sealed class ShipSwapEvent : IRegisterable
 			});
 		}
 
-		public override List<Tooltip> GetExtraTooltips()
+		public override List<Tooltip>? GetExtraTooltips()
 			=> RippedPartType switch
 			{
 				PType.wing => StatusMeta.GetTooltips(Status.evade, 1),
-				_ => [],
+				_ => null,
 			};
 
 		public override void OnReceiveArtifact(State state)
@@ -551,4 +567,9 @@ internal sealed class ShipSwapEvent : IRegisterable
 				});
 		}
 	}
+
+	private record struct EventRngData(
+		List<string> NewShipKeys,
+		int? PartToRipIndex
+	);
 }
