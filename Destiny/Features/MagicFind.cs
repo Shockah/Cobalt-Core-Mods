@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
 
 namespace Shockah.Destiny;
 
-internal sealed class MagicFindManager : IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
+internal sealed class MagicFindManager : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static IStatusEntry MagicFindStatus { get; private set; } = null!;
 	
-	public MagicFindManager()
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		MagicFindStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("MagicFind", new()
 		{
@@ -23,8 +24,9 @@ internal sealed class MagicFindManager : IKokoroApi.IV2.IStatusLogicApi.IHook, I
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "MagicFind", "description"]).Localize
 		});
 
-		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(this);
-		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(this);
+		var instance = new MagicFindManager();
+		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(instance);
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(instance);
 	}
 
 	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
@@ -58,8 +60,8 @@ internal sealed class MagicFindManager : IKokoroApi.IV2.IStatusLogicApi.IHook, I
 	}
 
 	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
-		=> [
+		=> args.Status == MagicFindStatus.Status ? [
 			.. args.Tooltips,
 			.. StatusMeta.GetTooltips(Status.shard, 1),
-		];
+		] : args.Tooltips;
 }

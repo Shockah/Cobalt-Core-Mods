@@ -80,7 +80,7 @@ public sealed class ModEntry : SimpleMod
 
 		DestinyDeck = helper.Content.Decks.RegisterDeck("Destiny", new()
 		{
-			Definition = new() { color = new("23EEB6"), titleColor = Colors.black },
+			Definition = new() { color = new("CB9077"), titleColor = Colors.black },
 			DefaultCardArt = StableSpr.cards_colorless,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize,
@@ -122,24 +122,24 @@ public sealed class ModEntry : SimpleMod
 			//ExeCardType = typeof(BlochExeCard),
 		});
 		
-		// helper.Content.Characters.V2.RegisterCharacterAnimation(new()
-		// {
-		// 	CharacterType = DestinyDeck.UniqueName,
-		// 	LoopTag = "gameover",
-		// 	Frames = package.PackageRoot.GetRelativeDirectory("assets/Character/GameOver")
-		// 		.GetSequentialFiles(i => $"{i}.png")
-		// 		.Select(f => helper.Content.Sprites.RegisterSprite(f).Sprite)
-		// 		.ToList()
-		// });
-		// helper.Content.Characters.V2.RegisterCharacterAnimation(new()
-		// {
-		// 	CharacterType = DestinyDeck.UniqueName,
-		// 	LoopTag = "squint",
-		// 	Frames = package.PackageRoot.GetRelativeDirectory("assets/Character/Squint")
-		// 		.GetSequentialFiles(i => $"{i}.png")
-		// 		.Select(f => helper.Content.Sprites.RegisterSprite(f).Sprite)
-		// 		.ToList()
-		// });
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
+		{
+			CharacterType = DestinyDeck.UniqueName,
+			LoopTag = "gameover",
+			Frames = package.PackageRoot.GetRelativeDirectory("assets/Character/GameOver")
+				.GetSequentialFiles(i => $"{i}.png")
+				.Select(f => helper.Content.Sprites.RegisterSprite(f).Sprite)
+				.ToList()
+		});
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
+		{
+			CharacterType = DestinyDeck.UniqueName,
+			LoopTag = "squint",
+			Frames = package.PackageRoot.GetRelativeDirectory("assets/Character/Squint")
+				.GetSequentialFiles(i => $"{i}.png")
+				.Select(f => helper.Content.Sprites.RegisterSprite(f).Sprite)
+				.ToList()
+		});
 	}
 
 	internal static Rarity GetCardRarity(Type type)

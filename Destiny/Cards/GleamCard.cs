@@ -10,7 +10,7 @@ public sealed class GleamCard : Card, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		var entry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
+		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
@@ -22,18 +22,6 @@ public sealed class GleamCard : Card, IRegisterable
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Gleam.png"), StableSpr.cards_dizzy).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Gleam", "name"]).Localize,
 		});
-		
-		EnchantedManager.SetEnchantCosts(entry.UniqueName, Upgrade.None, [
-			ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard), 1),
-			ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard), 2),
-		]);
-		EnchantedManager.SetEnchantCosts(entry.UniqueName, Upgrade.None, [
-			ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard), 3),
-		]);
-		EnchantedManager.SetEnchantCosts(entry.UniqueName, Upgrade.None, [
-			ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard), 1),
-			ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard), 1),
-		]);
 	}
 
 	public override CardData GetData(State state)

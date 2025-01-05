@@ -1,3 +1,23 @@
 ﻿{
-	
+	"character": {
+		"name": "Destiny",
+		"description": [
+			"<c=CB9077>DESTINY</c>",
+			"An enchantress. Can spend <c=status>SHARD</c> to empower her cards, and uses a variety of different <c=keyword>shields</c> with different effects."
+		]
+	},
+	"status": {
+		"PristineShield": {
+			"name": "Pristine Shield",
+			"description": "This ship cannot take hull damage. <c=downside>Decreases by 1 at the start of every turn, and whenever it negates damage.</c>"
+		}
+	},
+	"card": {
+		"Gleam": {
+			"name": "Gleam"
+		},
+		"Hone": {
+			"name": "Hone"
+		}
+	}
 }

@@ -4,20 +4,36 @@ using System.Linq;
 using System.Reflection;
 using FSPRO;
 using HarmonyLib;
+using Microsoft.Xna.Framework.Graphics;
+using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
+using Shockah.Shared;
+using MGColor = Microsoft.Xna.Framework.Color;
 
 namespace Shockah.Destiny;
 
-internal sealed class EnchantedManager
+internal sealed class EnchantedManager : IRegisterable
 {
 	internal static ISpriteEntry[] EnchantedOf2Icons { get; private set; } = null!;
 	internal static ISpriteEntry[] EnchantedOf3Icons { get; private set; } = null!;
 	internal static ICardTraitEntry EnchantedTrait { get; private set; } = null!;
+
+	private static readonly Color PaidGateColor = new("122537");
+	private static readonly Color NextGateColor = new("51A7F8");
+	private static readonly Color FutureGateColor = new("0A1F53");
 	
-	private static readonly Dictionary<string, Dictionary<Upgrade, IKokoroApi.IV2.IActionCostsApi.ICost[]>> UpgradeCosts = [];
+	private static readonly (int X, int Y, int PerpendicularX1, int PerpendicularY1, int PerpendicularX2, int PerpendicularY2)[] VectorNeighbors = [
+		(1, 0, 0, -1, 0, 1),
+		(-1, 0, 0, -1, 0, 1),
+		(0, 1, -1, 0, 1, 0),
+		(0, -1, -1, 0, 1, 0),
+	];
+	private static readonly (int X, int Y)[] VectorCorners = [(1, 1), (1, -1), (-1, -1), (-1, 1)];
 	
-	public EnchantedManager()
+	private static readonly Dictionary<TransactionWholePaymentResultDictionaryKey, ISpriteEntry> CostOutlineSprites = [];
+
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		EnchantedOf2Icons = Enumerable.Range(0, 2)
 			.Select(i => ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Traits/Enchanted{i + 1}of2.png")))
@@ -52,23 +68,25 @@ internal sealed class EnchantedManager
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.OnMouseDownRight)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_OnMouseDownRight_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.OnInputPhase)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_OnInputPhase_Postfix))
+		);
 
 		Spr GetIcon(Card? card)
 		{
 			var maxEnchantLevel = card is null ? 2 : GetMaxEnchantLevel(card);
 			var enchantLevel = Math.Clamp(card is null ? 0 : GetEnchantLevel(card), 0, maxEnchantLevel);
-			return maxEnchantLevel == 2 ? EnchantedOf2Icons[enchantLevel].Sprite : EnchantedOf3Icons[enchantLevel].Sprite;
+			return maxEnchantLevel == 2 ? EnchantedOf3Icons[enchantLevel].Sprite : EnchantedOf2Icons[enchantLevel].Sprite;
 		}
 	}
 
 	internal static int GetMaxEnchantLevel(Card card)
-	{
-		if (!UpgradeCosts.TryGetValue(card.Key(), out var perUpgradeCosts))
-			return 0;
-		if (!perUpgradeCosts.TryGetValue(card.upgrade, out var costs))
-			return 0;
-		return costs.Length;
-	}
+		=> card.GetActions(DB.fakeState, DB.fakeCombat).OfType<EnchantGateAction>().Select(a => (int?)a.Level).Max() ?? 0;
 
 	internal static int GetEnchantLevel(Card card)
 		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(card, "EnchantLevel");
@@ -83,29 +101,17 @@ internal sealed class EnchantedManager
 
 	internal static IKokoroApi.IV2.IActionCostsApi.ICost? GetNextEnchantCost(Card card)
 	{
-		var maxEnchantLevel = GetMaxEnchantLevel(card);
+		var gates = card.GetActions(DB.fakeState, DB.fakeCombat).OfType<EnchantGateAction>().ToList();
+		var maxEnchantLevel = gates.Select(a => (int?)a.Level).Max() ?? 0;
 		var enchantLevel = Math.Clamp(GetEnchantLevel(card), 0, maxEnchantLevel);
 		if (enchantLevel >= maxEnchantLevel)
 			return null;
-		
-		if (!UpgradeCosts.TryGetValue(card.Key(), out var perUpgradeCosts))
-			return null;
-		if (!perUpgradeCosts.TryGetValue(card.upgrade, out var costs))
-			return null;
-		return costs[enchantLevel];
+
+		return gates.FirstOrDefault(a => a.Level == enchantLevel + 1)?.Cost
+		       ?? ModEntry.Instance.KokoroApi.ActionCosts.MakeCombinedCost([]);
 	}
 
-	internal static void SetEnchantCosts(string key, Upgrade upgrade, IEnumerable<IKokoroApi.IV2.IActionCostsApi.ICost> costs)
-	{
-		if (!UpgradeCosts.TryGetValue(key, out var perUpgradeCosts))
-		{
-			perUpgradeCosts = [];
-			UpgradeCosts[key] = perUpgradeCosts;
-		}
-		perUpgradeCosts[upgrade] = costs.ToArray();
-	}
-
-	internal static bool TryEnchant(State state, Card card)
+	internal static bool TryEnchant(State state, Card card, bool fromUserInteraction = true)
 	{
 		var maxEnchantLevel = GetMaxEnchantLevel(card);
 		var enchantLevel = Math.Clamp(GetEnchantLevel(card), 0, maxEnchantLevel);
@@ -121,14 +127,130 @@ internal sealed class EnchantedManager
 
 		if (transactionPaymentResult.UnpaidResources.Count != 0)
 		{
-			card.shakeNoAnim = 1.0;
-			Audio.Play(Event.ZeroEnergy);
+			if (fromUserInteraction)
+			{
+				card.shakeNoAnim = 1.0;
+				Audio.Play(Event.ZeroEnergy);
+			}
 			return false;
 		}
 
 		transaction.Pay(environment);
 		SetEnchantLevel(card, enchantLevel + 1);
+
+		if (fromUserInteraction)
+			card.flipAnim = 1;
+		
 		return true;
+	}
+
+	private static int RenderGate(G g, State state, EnchantGateAction action, bool dontDraw)
+	{
+		var card = state.FindCard(action.CardId) ?? g.state.FindCard(action.CardId);
+		var enchantLevel = card is null ? 0 : GetEnchantLevel(card);
+		var gateColor = (action.Level - enchantLevel) switch
+		{
+			1 => NextGateColor,
+			<= 0 => PaidGateColor,
+			_ => FutureGateColor,
+		};
+		
+		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, state.route as Combat ?? DB.fakeCombat);
+		var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(action.Cost, environment);
+		var transactionPaymentResult = transaction.TestPayment(environment);
+		var transactionPaymentResultKey = TransactionWholePaymentResultDictionaryKey.From(transactionPaymentResult);
+
+		const int iconLeftMargin = 2;
+		
+		var position = g.Push(rect: new(x: iconLeftMargin)).rect.xy;
+		var initialX = (int)position.x;
+
+		if (!dontDraw && CostOutlineSprites.TryGetValue(transactionPaymentResultKey, out var costOutlineSprite))
+		{
+			Draw.Rect(position.x - iconLeftMargin, position.y + 4, 53, 1, gateColor);
+			Draw.Sprite(costOutlineSprite.Sprite, position.x - 1, position.y - 1, color: gateColor);
+		}
+		
+		action.Cost.Render(g, ref position, enchantLevel >= action.Level, dontDraw, transactionPaymentResult);
+		var costWidth = (int)position.x - initialX;
+
+		if (!CostOutlineSprites.ContainsKey(transactionPaymentResultKey))
+		{
+			var baseTexture = TextureUtils.CreateTexture(costWidth, 10, () =>
+			{
+				var position = Vec.Zero;
+				action.Cost.Render(g, ref position, false, false, transactionPaymentResult);
+			});
+			var baseTextureData = new MGColor[baseTexture.Width * baseTexture.Height];
+			baseTexture.GetData(baseTextureData);
+			
+			var outlineTexture = new Texture2D(g.mg.GraphicsDevice, baseTexture.Width + 2, baseTexture.Height + 2);
+			var outlineTextureData = new MGColor[outlineTexture.Width * outlineTexture.Height];
+
+			for (var y = 0; y < outlineTexture.Height; y++)
+				for (var x = 0; x < outlineTexture.Width; x++)
+					outlineTextureData[x + y * outlineTexture.Width] = ShouldContainOutline(x, y) ? MGColor.White : MGColor.Transparent;
+			
+			outlineTexture.SetData(outlineTextureData);
+			CostOutlineSprites[transactionPaymentResultKey] = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(() => outlineTexture);
+			
+			bool ShouldContainOutline(int outlineX, int outlineY)
+			{
+				var baseX = outlineX - 1;
+				var baseY = outlineY - 1;
+				
+				if (IsNonZeroAlphaPixel(baseX, baseY))
+					return false;
+				
+				foreach (var neighbor in VectorNeighbors)
+					if (IsNonZeroAlphaPixel(baseX + neighbor.X, baseY + neighbor.Y))
+						return true;
+
+				foreach (var neighbor in VectorNeighbors)
+				{
+					if (IsNonZeroAlphaPixel(baseX + neighbor.X, baseY + neighbor.Y))
+						continue;
+					if (!IsNonZeroAlphaPixel(baseX + neighbor.X + neighbor.PerpendicularX1, baseY + neighbor.Y + neighbor.PerpendicularY1))
+						continue;
+					if (!IsNonZeroAlphaPixel(baseX + neighbor.X + neighbor.PerpendicularX2, baseY + neighbor.Y + neighbor.PerpendicularY2))
+						continue;
+					return true;
+				}
+
+				foreach (var corner in VectorCorners)
+				{
+					if (!IsNonZeroAlphaPixel(baseX + corner.X, baseY + corner.Y))
+						continue;
+					if (!IsNonZeroAlphaPixel(baseX + corner.X * 2, baseY + corner.Y))
+						continue;
+					if (!IsNonZeroAlphaPixel(baseX + corner.X, baseY + corner.Y * 2))
+						continue;
+					if (IsNonZeroAlphaPixel(baseX + corner.X * 2, baseY))
+						continue;
+					if (IsNonZeroAlphaPixel(baseX, baseY + corner.Y * 2))
+						continue;
+					return true;
+				}
+
+				return false;
+				
+				MGColor? GetBaseTextureColor(int baseX, int baseY)
+				{
+					if (baseX < 0 || baseY < 0 || baseX >= baseTexture.Width || baseY >= baseTexture.Height)
+						return null;
+					return baseTextureData[baseX + baseY * baseTexture.Width];
+				}
+
+				bool IsNonZeroAlphaColor(MGColor? color)
+					=> color is { A: > 0 };
+
+				bool IsNonZeroAlphaPixel(int baseX, int baseY)
+					=> IsNonZeroAlphaColor(GetBaseTextureColor(baseX, baseY));
+			}
+		}
+		
+		g.Pop();
+		return 53;
 	}
 
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
@@ -141,11 +263,76 @@ internal sealed class EnchantedManager
 		
 		if (action is EnchantGateAction gateAction)
 		{
-			// TODO: implement proper gate rendering
-			return true;
+			__result += RenderGate(g, state, gateAction, dontDraw);
+			return false;
 		}
 
 		return true;
+	}
+
+	private static void Combat_OnMouseDownRight_Postfix(Combat __instance, G g, Box b)
+	{
+		if (__instance.TryGetHandCardFromBox(b) is not { } card)
+			return;
+		
+		var maxEnchantLevel = GetMaxEnchantLevel(card);
+		var enchantLevel = Math.Clamp(GetEnchantLevel(card), 0, maxEnchantLevel);
+		if (enchantLevel >= maxEnchantLevel)
+			return;
+
+		TryEnchant(g.state, card);
+	}
+
+	private static void Combat_OnInputPhase_Postfix(Combat __instance, G g, Box b)
+	{
+		if (b.key != Input.currentGpKey)
+			return;
+		if (__instance.TryGetHandCardFromBox(b) is not { } card)
+			return;
+		if (!Input.GetGpDown(Btn.B))
+			return;
+		
+		var maxEnchantLevel = GetMaxEnchantLevel(card);
+		var enchantLevel = Math.Clamp(GetEnchantLevel(card), 0, maxEnchantLevel);
+		if (enchantLevel >= maxEnchantLevel)
+			return;
+
+		TryEnchant(g.state, card);
+	}
+
+	private sealed class TransactionWholePaymentResultDictionaryKey
+	{
+		public required List<TransactionPaymentResultDictionaryKey> Payments { get; init; }
+
+		public override bool Equals(object? obj)
+			=> obj is TransactionWholePaymentResultDictionaryKey key && Payments.SequenceEqual(key.Payments);
+
+		public override int GetHashCode()
+		{
+			var result = 0;
+			foreach (var payment in Payments)
+				result = result * 31 + payment.GetHashCode();
+			return result;
+		}
+	
+		public static TransactionWholePaymentResultDictionaryKey From(IKokoroApi.IV2.IActionCostsApi.IWholeTransactionPaymentResult result)
+			=> new() { Payments = result.Payments.Select(TransactionPaymentResultDictionaryKey.From).ToList() };
+	}
+
+	private sealed class TransactionPaymentResultDictionaryKey
+	{
+		public required string ResourceKey { get; init; }
+		public required int Paid { get; init; }
+		public required int Unpaid { get; init; }
+
+		public override bool Equals(object? obj)
+			=> obj is TransactionPaymentResultDictionaryKey key && Equals(ResourceKey, key.ResourceKey) && Paid == key.Paid && Unpaid == key.Unpaid;
+
+		public override int GetHashCode()
+			=> HashCode.Combine(ResourceKey, Paid, Unpaid);
+	
+		public static TransactionPaymentResultDictionaryKey From(IKokoroApi.IV2.IActionCostsApi.ITransactionPaymentResult result)
+			=> new() { ResourceKey = result.Payment.Resource.ResourceKey, Paid = result.Paid, Unpaid = result.Unpaid };
 	}
 }
 

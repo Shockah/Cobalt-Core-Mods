@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
+using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
 
 namespace Shockah.Destiny;
 
-internal sealed class PristineShieldManager : IKokoroApi.IV2.IStatusLogicApi.IHook
+internal sealed class PristineShieldManager : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 {
 	internal static IStatusEntry PristineShieldStatus { get; private set; } = null!;
-	
-	public PristineShieldManager()
+
+	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		PristineShieldStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("PristineShield", new()
 		{
@@ -23,7 +23,8 @@ internal sealed class PristineShieldManager : IKokoroApi.IV2.IStatusLogicApi.IHo
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "PristineShield", "description"]).Localize
 		});
 
-		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(this);
+		var instance = new PristineShieldManager();
+		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(instance);
 	}
 
 	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
