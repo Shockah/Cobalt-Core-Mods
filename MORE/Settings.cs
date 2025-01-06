@@ -46,6 +46,9 @@ internal sealed class ProfileSettings
 {
 	[JsonProperty]
 	public HashSet<MoreEvent> DisabledEvents = [];
+	
+	[JsonProperty]
+	public HashSet<string> DisabledArtifacts = [];
 
 	[JsonProperty]
 	public bool EnabledEphemeralUpgrades = true;

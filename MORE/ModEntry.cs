@@ -122,6 +122,29 @@ internal sealed class ModEntry : SimpleMod
 					Settings.ProfileBased
 				),
 				api.MakeButton(
+					() => Localizations.Localize(["settings", "artifacts", "name"]),
+					(g, route) => route.OpenSubroute(g, api.MakeModSettingsRoute(api.MakeList([
+						api.MakeHeader(
+							() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
+							() => Localizations.Localize(["settings", "artifacts", "name"])
+						),
+						api.MakeList([
+							api.MakeCheckbox(
+								() => Localizations.Localize(["settings", "artifacts", "values", "CAT", "PatchNotes"]),
+								() => !Settings.ProfileBased.Current.DisabledArtifacts.Contains(PatchNotesArtifact.ArtifactEntry.UniqueName),
+								(_, _, value) =>
+								{
+									if (value)
+										Settings.ProfileBased.Current.DisabledArtifacts.Remove(PatchNotesArtifact.ArtifactEntry.UniqueName);
+									else
+										Settings.ProfileBased.Current.DisabledArtifacts.Add(PatchNotesArtifact.ArtifactEntry.UniqueName);
+								}
+							).SetTooltips(() => new PatchNotesArtifact().GetTooltips())
+						]),
+						api.MakeBackButton()
+					]).SetSpacing(8)))
+				),
+				api.MakeButton(
 					() => Localizations.Localize(["settings", "events", "name"]),
 					(g, route) => route.OpenSubroute(g, api.MakeModSettingsRoute(api.MakeList([
 						api.MakeHeader(
