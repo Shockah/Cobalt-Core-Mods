@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.0
+Released 6 January 2025.
 
 * Added a new CAT "Patch Notes" artifact.
 * Nerfed the Rogue Starnacle fight when fought via the Abyssal Power event in zone 1.
