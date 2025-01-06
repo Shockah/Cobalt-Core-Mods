@@ -58,6 +58,14 @@
 			"description": "The cards that will be offered by <c=tooth>Tooth</c>."
 		}
 	},
+	"artifact": {
+		"CAT": {
+			"PatchNotes": {
+				"name": "PATCH NOTES",
+				"description": "EXE cards can produce pre-upgraded cards."
+			}
+		}
+	},
 	"event": {
 		"AbyssalPower": {
 			"1-Tentacle": "GLORP!!",
