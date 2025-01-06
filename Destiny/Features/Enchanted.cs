@@ -155,8 +155,13 @@ internal sealed class EnchantedManager : IRegisterable
 			_ => FutureGateColor,
 		};
 		
-		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, state.route as Combat ?? DB.fakeCombat);
+		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeMockPaymentEnvironment(ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, state.route as Combat ?? DB.fakeCombat));
 		var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(action.Cost, environment);
+
+		if (enchantLevel >= action.Level)
+			foreach (var (resource, amount) in transaction.Resources)
+				environment.SetAvailableResource(resource, amount);
+		
 		var transactionPaymentResult = transaction.TestPayment(environment);
 		var transactionPaymentResultKey = TransactionWholePaymentResultDictionaryKey.From(transactionPaymentResult);
 
