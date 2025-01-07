@@ -31,6 +31,7 @@ public sealed class ModEntry : SimpleMod
 
 	private static readonly IReadOnlyList<Type> UncommonCardTypes = [
 		typeof(BulwarkCard),
+		typeof(ExplosivoCard),
 		typeof(OmniscienceCard),
 		typeof(ReviseCard),
 		typeof(StackCard),
@@ -40,6 +41,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(DuplicateCard),
 		typeof(GoForBrokeCard),
 		typeof(ImmovableObjectCard),
+		typeof(UnstableMagicCard),
 	];
 
 	private static readonly IEnumerable<Type> AllCardTypes
@@ -71,6 +73,7 @@ public sealed class ModEntry : SimpleMod
 			.. AllArtifactTypes,
 			.. DuoArtifacts,
 			typeof(EnchantedManager),
+			typeof(ExplosiveManager),
 			typeof(MagicFindManager),
 			typeof(PristineShieldManager),
 		];
@@ -95,7 +98,6 @@ public sealed class ModEntry : SimpleMod
 			DefaultCardArt = StableSpr.cards_colorless,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize,
-			ShineColorOverride = _ => DB.decks[DestinyDeck!.Deck].color.normalize().gain(2.5),
 		});
 
 		foreach (var type in RegisterableTypes)

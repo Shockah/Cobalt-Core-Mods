@@ -23,6 +23,13 @@
 		"Duplicate": {
 			"name": "Duplicate"
 		},
+		"Explosivo": {
+			"name": "Explosivo",
+			"description": {
+				"stateful": "Becomes <c=cardtrait>explosive</c> every {{Period}} times drawn. <c=disabledText>({{TimesLeft}} left)</c>",
+				"stateless": "Becomes <c=cardtrait>explosive</c> every {{Period}} times drawn."
+			}
+		},
 		"Focus": {
 			"name": "Focus"
 		},
@@ -55,6 +62,14 @@
 		},
 		"Stack": {
 			"name": "Stack"
+		},
+		"UnstableMagic": {
+			"name": "Unstable Magic",
+			"description": {
+				"None": "Make a random card in your <c=keyword>deck</c> <c=cardtrait>explosive</c> for the rest of combat.",
+				"A": "Make a random card in your <c=keyword>deck</c> <c=cardtrait>explosive</c> for the rest of combat.",
+				"B": "Make a random card in your <c=keyword>hand</c> <c=cardtrait>explosive</c> for the rest of combat."
+			}
 		}
 	}
 }
