@@ -308,7 +308,12 @@ internal sealed class EnchantedManager : IRegisterable
 	{
 		if (action is EnchantedAction enchantedAction)
 		{
+			var oldDisabled = enchantedAction.Action.disabled;
+			var renderAsDisabled = enchantedAction.disabled || (state != DB.fakeState && state.FindCard(enchantedAction.CardId) is { } card && GetEnchantLevel(card) < enchantedAction.Level);
+			enchantedAction.Action.disabled = renderAsDisabled;
+			
 			__result = Card.RenderAction(g, state, enchantedAction.Action, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+			enchantedAction.Action.disabled = oldDisabled;
 			return false;
 		}
 		
