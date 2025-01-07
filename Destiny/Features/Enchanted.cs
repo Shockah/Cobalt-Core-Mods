@@ -15,8 +15,8 @@ namespace Shockah.Destiny;
 
 internal sealed class EnchantedManager : IRegisterable
 {
-	internal static ISpriteEntry[] EnchantedOf2Icons { get; private set; } = null!;
-	internal static ISpriteEntry[] EnchantedOf3Icons { get; private set; } = null!;
+	private static ISpriteEntry[] EnchantedOf2Icons { get; set; } = null!;
+	private static ISpriteEntry[] EnchantedOf3Icons { get; set; } = null!;
 	internal static ICardTraitEntry EnchantedTrait { get; private set; } = null!;
 
 	private static readonly Color PaidGateColor = new("122537");
@@ -32,6 +32,10 @@ internal sealed class EnchantedManager : IRegisterable
 	private static readonly (int X, int Y)[] VectorCorners = [(1, 1), (1, -1), (-1, -1), (-1, 1)];
 	
 	private static readonly Dictionary<TransactionWholePaymentResultDictionaryKey, ISpriteEntry> CostOutlineSprites = [];
+	private static readonly Dictionary<string, Dictionary<Upgrade, Dictionary<int, IKokoroApi.IV2.IActionCostsApi.ICost>>> EnchantLevelCosts = [];
+	private static readonly Dictionary<string, Dictionary<Upgrade, int>> MaxEnchantLevels = [];
+
+	private static Card? CardRendered;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -60,7 +64,7 @@ internal sealed class EnchantedManager : IRegisterable
 
 		ModEntry.Instance.Helper.Content.Cards.OnGetDynamicInnateCardTraitOverrides += (_, e) =>
 		{
-			if (GetMaxEnchantLevel(e.Card) > 0)
+			if (GetMaxEnchantLevel(e.Card.Key(), e.Card.upgrade) > 0)
 				e.SetOverride(EnchantedTrait, true);
 		};
 		
@@ -81,6 +85,11 @@ internal sealed class EnchantedManager : IRegisterable
 		});
 		
 		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.MakeAllActionIcons)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_MakeAllActionIcons_Prefix)),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_MakeAllActionIcons_Finalizer))
+		);
+		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
@@ -95,14 +104,44 @@ internal sealed class EnchantedManager : IRegisterable
 
 		Spr GetIcon(Card? card)
 		{
-			var maxEnchantLevel = card is null ? 2 : GetMaxEnchantLevel(card);
+			var maxEnchantLevel = card is null ? 2 : GetMaxEnchantLevel(card.Key(), card.upgrade);
 			var enchantLevel = Math.Clamp(card is null ? 0 : GetEnchantLevel(card), 0, maxEnchantLevel);
 			return maxEnchantLevel == 2 ? EnchantedOf3Icons[enchantLevel].Sprite : EnchantedOf2Icons[enchantLevel].Sprite;
 		}
 	}
 
-	internal static int GetMaxEnchantLevel(Card card)
-		=> card.GetActions(DB.fakeState, DB.fakeCombat).OfType<EnchantGateAction>().Select(a => (int?)a.Level).Max() ?? 0;
+	internal static int GetMaxEnchantLevel(string cardKey, Upgrade upgrade)
+	{
+		if (!MaxEnchantLevels.TryGetValue(cardKey, out var specificCardMaxEnchantLevels))
+			return 0;
+		return specificCardMaxEnchantLevels.GetValueOrDefault(upgrade);
+	}
+
+	private static void UpdateMaxEnchantLevel(string cardKey, Upgrade upgrade, int? maxLevel = null)
+	{
+		var actualMaxLevel = maxLevel ?? EnchantLevelCosts.GetValueOrDefault(cardKey)?.GetValueOrDefault(upgrade)?.Keys.Append(0).Max() ?? 0;
+
+		if (actualMaxLevel <= 0)
+		{
+			if (!MaxEnchantLevels.TryGetValue(cardKey, out var specificCardMaxEnchantLevels))
+				return;
+
+			specificCardMaxEnchantLevels.Remove(upgrade);
+			if (specificCardMaxEnchantLevels.Count != 0)
+				return;
+
+			MaxEnchantLevels.Remove(cardKey);
+		}
+		else
+		{
+			if (!MaxEnchantLevels.TryGetValue(cardKey, out var specificCardMaxEnchantLevels))
+			{
+				specificCardMaxEnchantLevels = [];
+				MaxEnchantLevels[cardKey] = specificCardMaxEnchantLevels;
+			}
+			specificCardMaxEnchantLevels[upgrade] = actualMaxLevel;
+		}
+	}
 
 	internal static int GetEnchantLevel(Card card)
 		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(card, "EnchantLevel");
@@ -113,6 +152,68 @@ internal sealed class EnchantedManager : IRegisterable
 			ModEntry.Instance.Helper.ModData.RemoveModData(card, "EnchantLevel");
 		else
 			ModEntry.Instance.Helper.ModData.SetModData(card, "EnchantLevel", level);
+	}
+
+	internal static IKokoroApi.IV2.IActionCostsApi.ICost? GetNextEnchantLevelCost(Card card)
+		=> GetEnchantLevelCost(card.Key(), card.upgrade, GetEnchantLevel(card) + 1);
+
+	internal static IKokoroApi.IV2.IActionCostsApi.ICost? GetEnchantLevelCost(string cardKey, Upgrade upgrade, int level)
+	{
+		if (!EnchantLevelCosts.TryGetValue(cardKey, out var specificCardEnchantLevelCosts))
+			return null;
+		if (!specificCardEnchantLevelCosts.TryGetValue(upgrade, out var specificUpgradeEnchantLevelCosts))
+			return null;
+		return specificUpgradeEnchantLevelCosts.GetValueOrDefault(level);
+	}
+
+	internal static void SetEnchantLevelCost(string cardKey, int level, IKokoroApi.IV2.IActionCostsApi.ICost? cost)
+	{
+		SetEnchantLevelCost(cardKey, Upgrade.None, level, cost);
+		SetEnchantLevelCost(cardKey, Upgrade.A, level, cost);
+		SetEnchantLevelCost(cardKey, Upgrade.B, level, cost);
+	}
+
+	internal static void SetEnchantLevelCost(string cardKey, Upgrade upgrade, int level, IKokoroApi.IV2.IActionCostsApi.ICost? cost)
+	{
+		if (cost is null)
+		{
+			try
+			{
+				if (!EnchantLevelCosts.TryGetValue(cardKey, out var specificCardEnchantLevelCosts))
+					return;
+				if (!specificCardEnchantLevelCosts.TryGetValue(upgrade, out var specificUpgradeEnchantLevelCosts))
+					return;
+
+				specificUpgradeEnchantLevelCosts.Remove(level);
+				if (specificUpgradeEnchantLevelCosts.Count != 0)
+					return;
+
+				specificCardEnchantLevelCosts.Remove(upgrade);
+				if (specificCardEnchantLevelCosts.Count != 0)
+					return;
+			
+				EnchantLevelCosts.Remove(cardKey);
+			}
+			finally
+			{
+				UpdateMaxEnchantLevel(cardKey, upgrade);
+			}
+		}
+		else
+		{
+			if (!EnchantLevelCosts.TryGetValue(cardKey, out var specificCardEnchantLevelCosts))
+			{
+				specificCardEnchantLevelCosts = [];
+				EnchantLevelCosts[cardKey] = specificCardEnchantLevelCosts;
+			}
+			if (!specificCardEnchantLevelCosts.TryGetValue(upgrade, out var specificUpgradeEnchantLevelCosts))
+			{
+				specificUpgradeEnchantLevelCosts = [];
+				specificCardEnchantLevelCosts[upgrade] = specificUpgradeEnchantLevelCosts;
+			}
+			specificUpgradeEnchantLevelCosts[level] = cost;
+			UpdateMaxEnchantLevel(cardKey, upgrade, Math.Max(GetMaxEnchantLevel(cardKey, upgrade), level));
+		}
 	}
 
 	internal static List<IKokoroApi.IV2.IActionCostsApi.ITransactionPaymentResult>? GetEnchantLevelPayment(Card card, int level)
@@ -128,7 +229,7 @@ internal sealed class EnchantedManager : IRegisterable
 	{
 		if (level < 0)
 			return;
-		if (level > GetMaxEnchantLevel(card))
+		if (level > GetMaxEnchantLevel(card.Key(), card.upgrade))
 			return;
 		
 		var enchantLevelPayments = ModEntry.Instance.Helper.ModData.ObtainModData<Dictionary<int, List<IKokoroApi.IV2.IActionCostsApi.ITransactionPaymentResult>>>(card, "EnchantLevelPayments");
@@ -138,26 +239,14 @@ internal sealed class EnchantedManager : IRegisterable
 	internal static void ClearEnchantLevelPayments(Card card)
 		=> ModEntry.Instance.Helper.ModData.RemoveModData(card, "EnchantLevelPayments");
 
-	internal static IKokoroApi.IV2.IActionCostsApi.ICost? GetNextEnchantCost(Card card)
-	{
-		var gates = card.GetActions(DB.fakeState, DB.fakeCombat).OfType<EnchantGateAction>().ToList();
-		var maxEnchantLevel = gates.Select(a => (int?)a.Level).Max() ?? 0;
-		var enchantLevel = Math.Clamp(GetEnchantLevel(card), 0, maxEnchantLevel);
-		if (enchantLevel >= maxEnchantLevel)
-			return null;
-
-		return gates.FirstOrDefault(a => a.Level == enchantLevel + 1)?.Cost
-		       ?? ModEntry.Instance.KokoroApi.ActionCosts.MakeCombinedCost([]);
-	}
-
 	internal static bool TryEnchant(State state, Card card, bool fromUserInteraction = true)
 	{
-		var maxEnchantLevel = GetMaxEnchantLevel(card);
+		var maxEnchantLevel = GetMaxEnchantLevel(card.Key(), card.upgrade);
 		var enchantLevel = Math.Clamp(GetEnchantLevel(card), 0, maxEnchantLevel);
 
 		if (enchantLevel >= maxEnchantLevel)
 			return false;
-		if (GetNextEnchantCost(card) is not { } cost)
+		if (GetNextEnchantLevelCost(card) is not { } cost)
 			return false;
 		
 		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, state.route as Combat ?? DB.fakeCombat);
@@ -179,15 +268,20 @@ internal sealed class EnchantedManager : IRegisterable
 		SetEnchantLevelPayment(card, enchantLevel + 1, transactionPaymentResult.Payments);
 
 		if (fromUserInteraction)
+		{
 			card.flipAnim = 1;
+			Audio.Play(Event.Status_PowerUp);
+		}
 		
 		return true;
 	}
 
-	private static int RenderGate(G g, State state, EnchantGateAction action, bool dontDraw)
+	private static int RenderGate(G g, State state, Card card, EnchantGateAction action, bool dontDraw)
 	{
-		var card = state.FindCard(action.CardId) ?? g.state.FindCard(action.CardId);
-		var enchantLevel = card is null ? 0 : GetEnchantLevel(card);
+		if (GetEnchantLevelCost(card.Key(), card.upgrade, action.Level) is not { } actionCost)
+			return 0;
+		
+		var enchantLevel = GetEnchantLevel(card);
 		var gateColor = (action.Level - enchantLevel) switch
 		{
 			1 => NextGateColor,
@@ -197,22 +291,21 @@ internal sealed class EnchantedManager : IRegisterable
 		
 		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeMockPaymentEnvironment(ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, state.route as Combat ?? DB.fakeCombat));
 
-		var gatesBefore = card
-			?.GetActions(state, state.route as Combat ?? DB.fakeCombat)
-			.OfType<EnchantGateAction>()
-			.Where(a => a.Level < action.Level && a.Level > enchantLevel);
+		var previousUnpaidEnchantLevelCosts = EnchantLevelCosts.GetValueOrDefault(card.Key())?.GetValueOrDefault(card.upgrade)
+			?.OrderBy(kvp => kvp.Key)
+			.Where(kvp => kvp.Key < action.Level && kvp.Key > enchantLevel) ?? [];
 
-		foreach (var gateBefore in gatesBefore ?? [])
+		foreach (var (_, previousUnpaidEnchantLevelCost) in previousUnpaidEnchantLevelCosts)
 		{
-			var transactionBefore = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(gateBefore.Cost, environment);
+			var transactionBefore = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(previousUnpaidEnchantLevelCost, environment);
 			transactionBefore.Pay(environment);
 		}
 		
-		var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(action.Cost, environment);
+		var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(actionCost, environment);
 
 		if (enchantLevel >= action.Level)
 		{
-			if (card is not null && GetEnchantLevelPayment(card, enchantLevel + 1) is { } payment)
+			if (GetEnchantLevelPayment(card, enchantLevel + 1) is { } payment)
 				foreach (var singlePayment in payment)
 					environment.SetAvailableResource(singlePayment.Payment.Resource, environment.GetAvailableResource(singlePayment.Payment.Resource) + singlePayment.Paid);
 			else
@@ -234,7 +327,7 @@ internal sealed class EnchantedManager : IRegisterable
 			Draw.Sprite(costOutlineSprite.Sprite, position.x - 1, position.y - 1, color: gateColor);
 		}
 		
-		action.Cost.Render(g, ref position, enchantLevel >= action.Level, dontDraw, transactionPaymentResult);
+		actionCost.Render(g, ref position, enchantLevel >= action.Level, dontDraw, transactionPaymentResult);
 		var costWidth = (int)position.x - initialX;
 
 		if (!CostOutlineSprites.ContainsKey(transactionPaymentResultKey))
@@ -242,7 +335,7 @@ internal sealed class EnchantedManager : IRegisterable
 			var baseTexture = TextureUtils.CreateTexture(costWidth, 10, () =>
 			{
 				var position = Vec.Zero;
-				action.Cost.Render(g, ref position, false, false, transactionPaymentResult);
+				actionCost.Render(g, ref position, false, false, transactionPaymentResult);
 			});
 			var baseTextureData = new MGColor[baseTexture.Width * baseTexture.Height];
 			baseTexture.GetData(baseTextureData);
@@ -316,6 +409,12 @@ internal sealed class EnchantedManager : IRegisterable
 		return 53;
 	}
 
+	private static void Card_MakeAllActionIcons_Prefix(Card __instance)
+		=> CardRendered = __instance;
+
+	private static void Card_MakeAllActionIcons_Finalizer()
+		=> CardRendered = null;
+
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
 	{
 		if (action is EnchantedAction enchantedAction)
@@ -331,7 +430,10 @@ internal sealed class EnchantedManager : IRegisterable
 		
 		if (action is EnchantGateAction gateAction)
 		{
-			__result += RenderGate(g, state, gateAction, dontDraw);
+			if (CardRendered is null)
+				return true;
+			
+			__result += RenderGate(g, state, CardRendered, gateAction, dontDraw);
 			return false;
 		}
 
@@ -343,7 +445,7 @@ internal sealed class EnchantedManager : IRegisterable
 		if (__instance.TryGetHandCardFromBox(b) is not { } card)
 			return;
 		
-		var maxEnchantLevel = GetMaxEnchantLevel(card);
+		var maxEnchantLevel = GetMaxEnchantLevel(card.Key(), card.upgrade);
 		var enchantLevel = Math.Clamp(GetEnchantLevel(card), 0, maxEnchantLevel);
 		if (enchantLevel >= maxEnchantLevel)
 			return;
@@ -360,7 +462,7 @@ internal sealed class EnchantedManager : IRegisterable
 		if (!Input.GetGpDown(Btn.B))
 			return;
 		
-		var maxEnchantLevel = GetMaxEnchantLevel(card);
+		var maxEnchantLevel = GetMaxEnchantLevel(card.Key(), card.upgrade);
 		var enchantLevel = Math.Clamp(GetEnchantLevel(card), 0, maxEnchantLevel);
 		if (enchantLevel >= maxEnchantLevel)
 			return;
@@ -406,9 +508,7 @@ internal sealed class EnchantedManager : IRegisterable
 
 internal sealed class EnchantGateAction : CardAction
 {
-	public required int CardId;
 	public required int Level;
-	public required IKokoroApi.IV2.IActionCostsApi.ICost Cost;
 	
 	public override void Begin(G g, State s, Combat c)
 	{

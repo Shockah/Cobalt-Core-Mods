@@ -26,7 +26,10 @@
 		"Explosivo": {
 			"name": "Explosivo",
 			"description": {
-				"stateful": "Becomes <c=cardtrait>explosive</c> every {{Period}} times drawn. <c=disabledText>({{TimesLeft}} left)</c>",
+				"stateful": [
+					"Becomes <c=cardtrait>explosive</c> every {{Period}} times drawn.",
+					"<c=disabledText>({{TimesLeft}} left)</c>"
+				],
 				"stateless": "Becomes <c=cardtrait>explosive</c> every {{Period}} times drawn."
 			}
 		},

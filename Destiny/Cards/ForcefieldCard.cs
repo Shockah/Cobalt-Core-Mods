@@ -10,7 +10,7 @@ public sealed class ForcefieldCard : Card, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
+		var entry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
@@ -22,6 +22,11 @@ public sealed class ForcefieldCard : Card, IRegisterable
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Forcefield.png"), StableSpr.cards_dizzy).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Forcefield", "name"]).Localize,
 		});
+		
+		var shardResource = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard);
+		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, Upgrade.None, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 3));
+		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, Upgrade.A, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 1));
+		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, Upgrade.B, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 3));
 	}
 
 	public override CardData GetData(State state)
@@ -32,32 +37,17 @@ public sealed class ForcefieldCard : Card, IRegisterable
 		{
 			Upgrade.A => [
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 },
-				new EnchantGateAction
-				{
-					CardId = uuid,
-					Level = 1,
-					Cost = ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard), 1),
-				},
+				new EnchantGateAction { Level = 1 },
 				new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = PristineShieldManager.PristineShieldStatus.Status, statusAmount = 1 } },
 			],
 			Upgrade.B => [
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 2 },
-				new EnchantGateAction
-				{
-					CardId = uuid,
-					Level = 1,
-					Cost = ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard), 3),
-				},
+				new EnchantGateAction { Level = 1 },
 				new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = PristineShieldManager.PristineShieldStatus.Status, statusAmount = 1 } },
 			],
 			_ => [
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 },
-				new EnchantGateAction
-				{
-					CardId = uuid,
-					Level = 1,
-					Cost = ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard), 3),
-				},
+				new EnchantGateAction { Level = 1 },
 				new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = PristineShieldManager.PristineShieldStatus.Status, statusAmount = 1 } },
 			],
 		};
