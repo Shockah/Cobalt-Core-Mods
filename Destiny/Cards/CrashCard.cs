@@ -24,11 +24,11 @@ public sealed class CrashCard : Card, IRegisterable, IHasCustomCardTraits
 		});
 		
 		var shardResource = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard);
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-		=> new HashSet<ICardTraitEntry> { ExplosiveManager.ExplosiveTrait };
+		=> new HashSet<ICardTraitEntry> { Explosive.ExplosiveTrait };
 
 	public override CardData GetData(State state)
 		=> upgrade switch

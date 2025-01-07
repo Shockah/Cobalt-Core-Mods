@@ -37,7 +37,7 @@ public sealed class ResearchCard : Card, IRegisterable
 			Upgrade.B => [
 				new ADrawCard { count = 4 },
 				new AStatus { targetPlayer = true, status = Status.shard, statusAmount = 3 },
-				new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 2 },
 			],
 			_ => [
 				new ADrawCard { count = 4 },

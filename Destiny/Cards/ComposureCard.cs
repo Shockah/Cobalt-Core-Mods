@@ -24,8 +24,8 @@ public sealed class ComposureCard : Card, IRegisterable
 		});
 		
 		var shardResource = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard);
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 1));
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, 2, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 1));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 1));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, 2, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 1));
 	}
 
 	public override CardData GetData(State state)

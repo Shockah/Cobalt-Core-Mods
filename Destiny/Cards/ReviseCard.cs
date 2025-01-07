@@ -38,7 +38,7 @@ public sealed class ReviseCard : Card, IRegisterable
 			Upgrade.A => [
 				new AVariableHint { status = Status.shard },
 				new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = s.ship.Get(Status.shard), xHint = 1 },
-				new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = s.ship.Get(Status.shard), xHint = 1 },
+				new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = s.ship.Get(Status.shard), xHint = 1 },
 				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = Status.shard, statusAmount = 0 },
 			],
 			Upgrade.B => [
@@ -48,7 +48,7 @@ public sealed class ReviseCard : Card, IRegisterable
 			_ => [
 				new AVariableHint { status = Status.shard },
 				new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = s.ship.Get(Status.shard), xHint = 1 },
-				new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = s.ship.Get(Status.shard), xHint = 1 },
+				new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = s.ship.Get(Status.shard), xHint = 1 },
 				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = Status.shard, statusAmount = 0 },
 			],
 		};

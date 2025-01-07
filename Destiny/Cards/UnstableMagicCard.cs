@@ -62,7 +62,7 @@ public sealed class UnstableMagicCard : Card, IRegisterable
 			if (InDiscardPile)
 				cardsEnumerable = cardsEnumerable.Concat(c.discard);
 
-			cardsEnumerable = cardsEnumerable.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, ExplosiveManager.ExplosiveTrait));
+			cardsEnumerable = cardsEnumerable.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, Explosive.ExplosiveTrait));
 
 			var cards = cardsEnumerable.ToList();
 			if (cards.Count == 0)
@@ -72,7 +72,7 @@ public sealed class UnstableMagicCard : Card, IRegisterable
 			}
 
 			var card = cards.Count == 1 ? cards[0] : cards[s.rngActions.NextInt() % cards.Count];
-			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, ExplosiveManager.ExplosiveTrait, true, permanent: false);
+			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, Explosive.ExplosiveTrait, true, permanent: false);
 		}
 	}
 }

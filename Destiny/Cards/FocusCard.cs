@@ -24,8 +24,8 @@ public sealed class FocusCard : Card, IRegisterable
 		});
 		
 		var shardResource = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard);
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 1));
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, 2, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 1));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 1));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, 2, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 1));
 	}
 
 	public override CardData GetData(State state)
@@ -37,23 +37,23 @@ public sealed class FocusCard : Card, IRegisterable
 			Upgrade.A => [
 				new AStatus { targetPlayer = true, status = Status.shard, statusAmount = 3 },
 				new EnchantGateAction { Level = 1 },
-				new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = 2 } },
+				new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 2 } },
 				new EnchantGateAction { Level = 2 },
-				new EnchantedAction { CardId = uuid, Level = 2, Action = new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = 2 } },
+				new EnchantedAction { CardId = uuid, Level = 2, Action = new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 2 } },
 			],
 			Upgrade.B => [
 				new AStatus { targetPlayer = true, status = Status.shard, statusAmount = 2 },
 				new EnchantGateAction { Level = 1 },
-				new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = 3 } },
+				new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 3 } },
 				new EnchantGateAction { Level = 2 },
-				new EnchantedAction { CardId = uuid, Level = 2, Action = new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = 3 } },
+				new EnchantedAction { CardId = uuid, Level = 2, Action = new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 3 } },
 			],
 			_ => [
 				new AStatus { targetPlayer = true, status = Status.shard, statusAmount = 2 },
 				new EnchantGateAction { Level = 1 },
-				new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = 2 } },
+				new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 2 } },
 				new EnchantGateAction { Level = 2 },
-				new EnchantedAction { CardId = uuid, Level = 2, Action = new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = 2 } },
+				new EnchantedAction { CardId = uuid, Level = 2, Action = new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 2 } },
 			],
 		};
 }

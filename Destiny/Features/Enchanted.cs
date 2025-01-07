@@ -11,7 +11,7 @@ using Shockah.Shared;
 
 namespace Shockah.Destiny;
 
-internal sealed class EnchantedManager : IRegisterable
+internal sealed class Enchanted : IRegisterable
 {
 	private static ISpriteEntry[] EnchantedOf2Icons { get; set; } = null!;
 	private static ISpriteEntry[] EnchantedOf3Icons { get; set; } = null!;
@@ -462,7 +462,7 @@ internal sealed class EnchantedAction : CardAction
 
 		if (s.FindCard(CardId) is not { } card)
 			return;
-		if (EnchantedManager.GetEnchantLevel(card) < Level)
+		if (Enchanted.GetEnchantLevel(card) < Level)
 			return;
 		c.QueueImmediate(Action);
 	}

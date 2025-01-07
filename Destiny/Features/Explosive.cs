@@ -3,7 +3,7 @@ using Nickel;
 
 namespace Shockah.Destiny;
 
-internal sealed class ExplosiveManager : IRegisterable
+internal sealed class Explosive : IRegisterable
 {
 	internal static ICardTraitEntry ExplosiveTrait { get; private set; } = null!;
 

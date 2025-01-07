@@ -32,14 +32,14 @@ public sealed class OmniscienceCard : Card, IRegisterable
 		{
 			Upgrade.A => [
 				new AStatus { targetPlayer = true, status = Status.maxShard, statusAmount = 1 },
-				new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = 5 },
+				new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 5 },
 			],
 			Upgrade.B => [
 				new AStatus { targetPlayer = true, status = Status.shard, statusAmount = 2 },
-				new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = 3 },
+				new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 3 },
 			],
 			_ => [
-				new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = 5 },
+				new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 5 },
 			],
 		};
 }

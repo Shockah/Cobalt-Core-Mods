@@ -7,7 +7,7 @@ using Nickel;
 
 namespace Shockah.Destiny;
 
-internal sealed class ImbueManager : IRegisterable
+internal sealed class Imbue : IRegisterable
 {
 	internal static ISpriteEntry Icon { get; private set; } = null!;
 
@@ -44,7 +44,7 @@ internal sealed class ImbueManager : IRegisterable
 		if (action is not IImbueAction anyImbueAction)
 			return true;
 		
-		var renderAsDisabled = state != DB.fakeState && (action.disabled || (CardRendered is not null && EnchantedManager.GetEnchantLevel(CardRendered) != anyImbueAction.Level - 1));
+		var renderAsDisabled = state != DB.fakeState && (action.disabled || (CardRendered is not null && Enchanted.GetEnchantLevel(CardRendered) != anyImbueAction.Level - 1));
 		
 		if (action is ImbueAction imbueAction)
 		{

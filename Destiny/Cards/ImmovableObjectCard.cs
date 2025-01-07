@@ -24,12 +24,12 @@ public sealed class ImmovableObjectCard : Card, IRegisterable
 		});
 		
 		var shardResource = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard);
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, Upgrade.None, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 3));
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, Upgrade.None, 2, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 3));
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, Upgrade.A, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 3));
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, Upgrade.A, 2, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 3));
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, Upgrade.B, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, Upgrade.B, 2, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, Upgrade.None, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 3));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, Upgrade.None, 2, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 3));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, Upgrade.A, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 3));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, Upgrade.A, 2, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 3));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, Upgrade.B, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, Upgrade.B, 2, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
 	}
 
 	public override CardData GetData(State state)

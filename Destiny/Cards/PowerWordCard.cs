@@ -24,14 +24,14 @@ public sealed class PowerWordCard : Card, IRegisterable, IHasCustomCardTraits
 		});
 		
 		var shardResource = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard);
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, Upgrade.None, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, Upgrade.A, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, Upgrade.B, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, Upgrade.B, 2, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, Upgrade.None, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, Upgrade.A, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, Upgrade.B, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, Upgrade.B, 2, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-		=> new HashSet<ICardTraitEntry> { ExplosiveManager.ExplosiveTrait };
+		=> new HashSet<ICardTraitEntry> { Explosive.ExplosiveTrait };
 
 	public override CardData GetData(State state)
 		=> new() { cost = 2 };
@@ -42,19 +42,19 @@ public sealed class PowerWordCard : Card, IRegisterable, IHasCustomCardTraits
 			Upgrade.A => [
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 3 },
 				new EnchantGateAction { Level = 1 },
-				new ImbueAction { Level = 1, Trait = ExplosiveManager.ExplosiveTrait },
+				new ImbueAction { Level = 1, Trait = Explosive.ExplosiveTrait },
 			],
 			Upgrade.B => [
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 2 },
 				new EnchantGateAction { Level = 1 },
-				new ImbueAction { Level = 1, Trait = ExplosiveManager.ExplosiveTrait },
+				new ImbueAction { Level = 1, Trait = Explosive.ExplosiveTrait },
 				new EnchantGateAction { Level = 2 },
-				new ImbueAction { Level = 2, Trait = ExplosiveManager.ExplosiveTrait },
+				new ImbueAction { Level = 2, Trait = Explosive.ExplosiveTrait },
 			],
 			_ => [
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 2 },
 				new EnchantGateAction { Level = 1 },
-				new ImbueAction { Level = 1, Trait = ExplosiveManager.ExplosiveTrait },
+				new ImbueAction { Level = 1, Trait = Explosive.ExplosiveTrait },
 			],
 		};
 }

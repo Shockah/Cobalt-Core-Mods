@@ -38,7 +38,7 @@ public sealed class HoneCard : Card, IRegisterable
 			Upgrade.A => [
 				new AStatus { targetPlayer = true, status = Status.maxShard, statusAmount = 1 },
 				new AStatus { targetPlayer = true, status = Status.shard, statusAmount = 1 },
-				new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 2 },
 			],
 			Upgrade.B => [
 				new AStatus { targetPlayer = true, status = Status.maxShard, statusAmount = 1 },

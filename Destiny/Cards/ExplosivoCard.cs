@@ -65,6 +65,6 @@ public sealed class ExplosivoCard : Card, IRegisterable
 			return;
 
 		Counter -= Period;
-		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, this, ExplosiveManager.ExplosiveTrait, true, permanent: false);
+		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, this, Explosive.ExplosiveTrait, true, permanent: false);
 	}
 }

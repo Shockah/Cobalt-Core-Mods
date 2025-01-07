@@ -24,7 +24,7 @@ public sealed class BulwarkCard : Card, IRegisterable
 		});
 
 		var shardResource = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard);
-		EnchantedManager.SetEnchantLevelCost(entry.UniqueName, Upgrade.A, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
+		Enchanted.SetEnchantLevelCost(entry.UniqueName, Upgrade.A, 1, ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(shardResource, 2));
 	}
 
 	public override CardData GetData(State state)
@@ -39,15 +39,15 @@ public sealed class BulwarkCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new AStatus { targetPlayer = true, status = PristineShieldManager.PristineShieldStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = PristineShield.PristineShieldStatus.Status, statusAmount = 2 },
 				new EnchantGateAction { Level = 1 },
-				new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = PristineShieldManager.PristineShieldStatus.Status, statusAmount = 1 } },
+				new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = PristineShield.PristineShieldStatus.Status, statusAmount = 1 } },
 			],
 			Upgrade.B => [
 				new AStatus { targetPlayer = true, status = Status.perfectShield, statusAmount = 1 },
 			],
 			_ => [
-				new AStatus { targetPlayer = true, status = PristineShieldManager.PristineShieldStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = PristineShield.PristineShieldStatus.Status, statusAmount = 2 },
 			],
 		};
 }

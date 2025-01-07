@@ -36,16 +36,16 @@ public sealed class MeditateCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new AStatus { targetPlayer = true, status = PristineShieldManager.PristineShieldStatus.Status, statusAmount = 2 },
-				new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = PristineShield.PristineShieldStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 2 },
 			],
 			Upgrade.B => [
-				new AStatus { targetPlayer = true, status = PristineShieldManager.PristineShieldStatus.Status, statusAmount = 3 },
-				new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = 3 },
+				new AStatus { targetPlayer = true, status = PristineShield.PristineShieldStatus.Status, statusAmount = 3 },
+				new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 3 },
 			],
 			_ => [
-				new AStatus { targetPlayer = true, status = PristineShieldManager.PristineShieldStatus.Status, statusAmount = 2 },
-				new AStatus { targetPlayer = true, status = MagicFindManager.MagicFindStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = PristineShield.PristineShieldStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 2 },
 			],
 		};
 }

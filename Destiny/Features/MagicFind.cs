@@ -6,7 +6,7 @@ using Shockah.Kokoro;
 
 namespace Shockah.Destiny;
 
-internal sealed class MagicFindManager : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
+internal sealed class MagicFind : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static IStatusEntry MagicFindStatus { get; private set; } = null!;
 	
@@ -24,7 +24,7 @@ internal sealed class MagicFindManager : IRegisterable, IKokoroApi.IV2.IStatusLo
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "MagicFind", "description"]).Localize
 		});
 
-		var instance = new MagicFindManager();
+		var instance = new MagicFind();
 		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(instance);
 		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(instance);
 	}

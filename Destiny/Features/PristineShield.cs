@@ -7,7 +7,7 @@ using Shockah.Kokoro;
 
 namespace Shockah.Destiny;
 
-internal sealed class PristineShieldManager : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
+internal sealed class PristineShield : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 {
 	internal static IStatusEntry PristineShieldStatus { get; private set; } = null!;
 
@@ -30,7 +30,7 @@ internal sealed class PristineShieldManager : IRegisterable, IKokoroApi.IV2.ISta
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_DirectHullDamage_Prefix))
 		);
 
-		var instance = new PristineShieldManager();
+		var instance = new PristineShield();
 		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(instance);
 	}
 

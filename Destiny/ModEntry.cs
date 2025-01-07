@@ -78,11 +78,12 @@ public sealed class ModEntry : SimpleMod
 			.. AllCardTypes,
 			.. AllArtifactTypes,
 			.. DuoArtifacts,
-			typeof(EnchantedManager),
-			typeof(ExplosiveManager),
-			typeof(ImbueManager),
-			typeof(MagicFindManager),
-			typeof(PristineShieldManager),
+			typeof(Enchanted),
+			typeof(Explosive),
+			typeof(Imbue),
+			typeof(MagicFind),
+			typeof(NegativeMaxShard),
+			typeof(PristineShield),
 		];
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
