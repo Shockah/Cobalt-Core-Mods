@@ -196,6 +196,18 @@ internal sealed class EnchantedManager : IRegisterable
 		};
 		
 		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeMockPaymentEnvironment(ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, state.route as Combat ?? DB.fakeCombat));
+
+		var gatesBefore = card
+			?.GetActions(state, state.route as Combat ?? DB.fakeCombat)
+			.OfType<EnchantGateAction>()
+			.Where(a => a.Level < action.Level && a.Level > enchantLevel);
+
+		foreach (var gateBefore in gatesBefore ?? [])
+		{
+			var transactionBefore = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(gateBefore.Cost, environment);
+			transactionBefore.Pay(environment);
+		}
+		
 		var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(action.Cost, environment);
 
 		if (enchantLevel >= action.Level)
