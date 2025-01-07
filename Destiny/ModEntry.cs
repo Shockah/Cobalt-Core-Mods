@@ -21,15 +21,20 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry DestinyDeck { get; }
 
 	private static readonly IReadOnlyList<Type> CommonCardTypes = [
+		typeof(ComposureCard),
+		typeof(CrashCard),
 		typeof(FocusCard),
 		typeof(ForcefieldCard),
 		typeof(GleamCard),
 		typeof(HoneCard),
 		typeof(MeditateCard),
+		typeof(PowerWordCard),
 		typeof(ResearchCard),
 	];
 
 	private static readonly IReadOnlyList<Type> UncommonCardTypes = [
+		typeof(BarrierCard),
+		typeof(BraceCard),
 		typeof(BulwarkCard),
 		typeof(ExplosivoCard),
 		typeof(OmniscienceCard),
@@ -42,6 +47,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(GoForBrokeCard),
 		typeof(ImmovableObjectCard),
 		typeof(UnstableMagicCard),
+		typeof(UnwaveringCard),
 	];
 
 	private static readonly IEnumerable<Type> AllCardTypes
@@ -74,6 +80,7 @@ public sealed class ModEntry : SimpleMod
 			.. DuoArtifacts,
 			typeof(EnchantedManager),
 			typeof(ExplosiveManager),
+			typeof(ImbueManager),
 			typeof(MagicFindManager),
 			typeof(PristineShieldManager),
 		];

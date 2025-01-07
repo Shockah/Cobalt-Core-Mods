@@ -17,8 +17,20 @@
 		}
 	},
 	"card": {
+		"Barrier": {
+			"name": "Barrier"
+		},
+		"Brace": {
+			"name": "Brace"
+		},
 		"Bulwark": {
 			"name": "Bulwark"
+		},
+		"Composure": {
+			"name": "Composure"
+		},
+		"Crash": {
+			"name": "Crash"
 		},
 		"Duplicate": {
 			"name": "Duplicate"
@@ -57,6 +69,9 @@
 		"Omniscience": {
 			"name": "Omniscience"
 		},
+		"PowerWord": {
+			"name": "Power Word"
+		},
 		"Research": {
 			"name": "Research"
 		},
@@ -73,6 +88,9 @@
 				"A": "Make a random card in your <c=keyword>deck</c> <c=cardtrait>explosive</c> for the rest of combat.",
 				"B": "Make a random card in your <c=keyword>hand</c> <c=cardtrait>explosive</c> for the rest of combat."
 			}
+		},
+		"Unwavering": {
+			"name": "Unwavering"
 		}
 	}
 }
