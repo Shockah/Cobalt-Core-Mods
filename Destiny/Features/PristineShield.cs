@@ -34,8 +34,12 @@ internal sealed class PristineShieldManager : IRegisterable, IKokoroApi.IV2.ISta
 		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(instance);
 	}
 
-	private static bool Ship_DirectHullDamage_Prefix(Ship __instance)
+	private static bool Ship_DirectHullDamage_Prefix(Ship __instance, int amt)
 	{
+		if (amt <= 0)
+			return true;
+		if (__instance.Get(Status.perfectShield) > 0)
+			return true;
 		if (__instance.Get(PristineShieldStatus.Status) <= 0)
 			return true;
 		

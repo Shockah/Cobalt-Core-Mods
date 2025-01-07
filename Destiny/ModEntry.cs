@@ -21,14 +21,25 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry DestinyDeck { get; }
 
 	private static readonly IReadOnlyList<Type> CommonCardTypes = [
+		typeof(FocusCard),
+		typeof(ForcefieldCard),
 		typeof(GleamCard),
 		typeof(HoneCard),
+		typeof(MeditateCard),
+		typeof(ResearchCard),
 	];
 
 	private static readonly IReadOnlyList<Type> UncommonCardTypes = [
+		typeof(BulwarkCard),
+		typeof(OmniscienceCard),
+		typeof(ReviseCard),
+		typeof(StackCard),
 	];
 
 	private static readonly IReadOnlyList<Type> RareCardTypes = [
+		typeof(DuplicateCard),
+		typeof(GoForBrokeCard),
+		typeof(ImmovableObjectCard),
 	];
 
 	private static readonly IEnumerable<Type> AllCardTypes

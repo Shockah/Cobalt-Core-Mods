@@ -17,11 +17,44 @@
 		}
 	},
 	"card": {
+		"Bulwark": {
+			"name": "Bulwark"
+		},
+		"Duplicate": {
+			"name": "Duplicate"
+		},
+		"Focus": {
+			"name": "Focus"
+		},
+		"Forcefield": {
+			"name": "Forcefield"
+		},
 		"Gleam": {
 			"name": "Gleam"
 		},
+		"GoForBroke": {
+			"name": "Go For Broke"
+		},
 		"Hone": {
 			"name": "Hone"
+		},
+		"ImmovableObject": {
+			"name": "Immovable Object"
+		},
+		"Meditate": {
+			"name": "Meditate"
+		},
+		"Omniscience": {
+			"name": "Omniscience"
+		},
+		"Research": {
+			"name": "Research"
+		},
+		"Revise": {
+			"name": "Revise"
+		},
+		"Stack": {
+			"name": "Stack"
 		}
 	}
 }
