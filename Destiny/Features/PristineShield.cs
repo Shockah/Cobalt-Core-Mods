@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reflection;
+using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
@@ -22,9 +24,23 @@ internal sealed class PristineShieldManager : IRegisterable, IKokoroApi.IV2.ISta
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "PristineShield", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "PristineShield", "description"]).Localize
 		});
+		
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.DirectHullDamage)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_DirectHullDamage_Prefix))
+		);
 
 		var instance = new PristineShieldManager();
 		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(instance);
+	}
+
+	private static bool Ship_DirectHullDamage_Prefix(Ship __instance)
+	{
+		if (__instance.Get(PristineShieldStatus.Status) <= 0)
+			return true;
+		
+		__instance.Add(PristineShieldStatus.Status, -1);
+		return false;
 	}
 
 	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
