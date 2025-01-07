@@ -64,6 +64,22 @@ internal sealed class EnchantedManager : IRegisterable
 				e.SetOverride(EnchantedTrait, true);
 		};
 		
+		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
+		{
+			IEnumerable<Card> cards = [
+				.. state.deck,
+				.. (state.route as Combat)?.hand ?? [],
+				.. (state.route as Combat)?.discard ?? [],
+				.. (state.route as Combat)?.exhausted ?? [],
+			];
+
+			foreach (var card in cards)
+			{
+				SetEnchantLevel(card, 0);
+				ClearEnchantLevelPayments(card);
+			}
+		});
+		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
@@ -98,6 +114,29 @@ internal sealed class EnchantedManager : IRegisterable
 		else
 			ModEntry.Instance.Helper.ModData.SetModData(card, "EnchantLevel", level);
 	}
+
+	internal static List<IKokoroApi.IV2.IActionCostsApi.ITransactionPaymentResult>? GetEnchantLevelPayment(Card card, int level)
+	{
+		if (level < 0)
+			return null;
+		if (!ModEntry.Instance.Helper.ModData.TryGetModData<Dictionary<int, List<IKokoroApi.IV2.IActionCostsApi.ITransactionPaymentResult>>>(card, "EnchantLevelPayments", out var enchantLevelPayments))
+			return null;
+		return enchantLevelPayments.GetValueOrDefault(level);
+	}
+
+	internal static void SetEnchantLevelPayment(Card card, int level, IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.ITransactionPaymentResult> payment)
+	{
+		if (level < 0)
+			return;
+		if (level > GetMaxEnchantLevel(card))
+			return;
+		
+		var enchantLevelPayments = ModEntry.Instance.Helper.ModData.ObtainModData<Dictionary<int, List<IKokoroApi.IV2.IActionCostsApi.ITransactionPaymentResult>>>(card, "EnchantLevelPayments");
+		enchantLevelPayments[level] = payment.ToList();
+	}
+
+	internal static void ClearEnchantLevelPayments(Card card)
+		=> ModEntry.Instance.Helper.ModData.RemoveModData(card, "EnchantLevelPayments");
 
 	internal static IKokoroApi.IV2.IActionCostsApi.ICost? GetNextEnchantCost(Card card)
 	{
@@ -135,8 +174,9 @@ internal sealed class EnchantedManager : IRegisterable
 			return false;
 		}
 
-		transaction.Pay(environment);
+		transactionPaymentResult = transaction.Pay(environment);
 		SetEnchantLevel(card, enchantLevel + 1);
+		SetEnchantLevelPayment(card, enchantLevel + 1, transactionPaymentResult.Payments);
 
 		if (fromUserInteraction)
 			card.flipAnim = 1;
@@ -159,8 +199,14 @@ internal sealed class EnchantedManager : IRegisterable
 		var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(action.Cost, environment);
 
 		if (enchantLevel >= action.Level)
-			foreach (var (resource, amount) in transaction.Resources)
-				environment.SetAvailableResource(resource, amount);
+		{
+			if (card is not null && GetEnchantLevelPayment(card, enchantLevel + 1) is { } payment)
+				foreach (var singlePayment in payment)
+					environment.SetAvailableResource(singlePayment.Payment.Resource, environment.GetAvailableResource(singlePayment.Payment.Resource) + singlePayment.Paid);
+			else
+				foreach (var (resource, amount) in transaction.Resources)
+					environment.SetAvailableResource(resource, amount);
+		}
 		
 		var transactionPaymentResult = transaction.TestPayment(environment);
 		var transactionPaymentResultKey = TransactionWholePaymentResultDictionaryKey.From(transactionPaymentResult);
