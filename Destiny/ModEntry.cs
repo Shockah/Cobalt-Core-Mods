@@ -184,6 +184,14 @@ public sealed class ModEntry : SimpleMod
 				}
 			)
 		);
+		
+		helper.ModRegistry.AwaitApi<IDraculaApi>(
+			"Shockah.Dracula",
+			api => api.RegisterBloodTapOptionProvider(MagicFind.MagicFindStatus.Status, (_, _, status) => [
+				new AHurt { targetPlayer = true, hurtAmount = 1 },
+				new AStatus { targetPlayer = true, status = status, statusAmount = 4 },
+			])
+		);
 	}
 
 	public override object GetApi(IModManifest requestingMod)
