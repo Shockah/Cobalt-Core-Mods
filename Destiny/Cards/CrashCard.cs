@@ -44,17 +44,17 @@ public sealed class CrashCard : Card, IRegisterable, IHasCustomCardTraits
 			Upgrade.A => [
 				new AAttack { damage = GetDmg(s, 0) },
 				new EnchantGateAction { Level = 1 },
-				new ImbueAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.ExhaustCardTrait },
+				new ImbueTraitAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.ExhaustCardTrait },
 			],
 			Upgrade.B => [
 				new AAttack { damage = GetDmg(s, 1) },
 				new EnchantGateAction { Level = 1 },
-				new ImbueAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.ExhaustCardTrait },
+				new ImbueTraitAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.ExhaustCardTrait },
 			],
 			_ => [
 				new AAttack { damage = GetDmg(s, 0) },
 				new EnchantGateAction { Level = 1 },
-				new ImbueAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.ExhaustCardTrait },
+				new ImbueTraitAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.ExhaustCardTrait },
 			],
 		};
 }

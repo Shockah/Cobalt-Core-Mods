@@ -40,6 +40,6 @@ public sealed class UnwaveringCard : Card, IRegisterable
 			new AStatus { targetPlayer = true, status = PristineShield.PristineShieldStatus.Status, statusAmount = 1 },
 			new EnchantGateAction { Level = 1 },
 			new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = Status.perfectShield, statusAmount = 1 } },
-			new ImbueAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.ExhaustCardTrait },
+			new ImbueTraitAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.ExhaustCardTrait },
 		];
 }

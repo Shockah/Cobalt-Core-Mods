@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
@@ -67,4 +68,7 @@ public sealed class ExplosivoCard : Card, IRegisterable
 		Counter -= Period;
 		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, this, Explosive.ExplosiveTrait, true, permanent: false);
 	}
+
+	public override List<CardAction> GetActions(State s, Combat c)
+		=> [new ATooltipAction { Tooltips = [.. Explosive.ExplosiveTrait.Configuration.Tooltips?.Invoke(s, this) ?? []] }];
 }

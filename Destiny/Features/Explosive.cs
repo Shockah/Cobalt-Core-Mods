@@ -14,14 +14,14 @@ internal sealed class Explosive : IRegisterable
 		ExplosiveTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Explosive", new()
 		{
 			Icon = (_, _) => icon.Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Explosive"]).Localize,
-			Tooltips = (_, _) => [
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Explosive", "name"]).Localize,
+			Tooltips = (state, card) => [
 				new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Explosive")
 				{
 					Icon = icon.Sprite,
-					TitleColor = Colors.action,
-					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Spontaneous", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Spontaneous", "description"]),
+					TitleColor = Colors.cardtrait,
+					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Explosive", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Explosive", "description"], new { Damage = Card.GetActualDamage(state, 5, card: card) }),
 				}
 			]
 		});

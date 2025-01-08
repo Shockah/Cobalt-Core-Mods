@@ -46,14 +46,14 @@ public sealed class BarrierCard : Card, IRegisterable
 			Upgrade.B => [
 				new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 6 },
 				new EnchantGateAction { Level = 1 },
-				new ImbueAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.RetainCardTrait },
+				new ImbueTraitAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.RetainCardTrait },
 				new EnchantGateAction { Level = 2 },
-				new ImbueAction { Level = 2, Trait = ModEntry.Instance.Helper.Content.Cards.RecycleCardTrait },
+				new ImbueTraitAction { Level = 2, Trait = ModEntry.Instance.Helper.Content.Cards.RecycleCardTrait },
 			],
 			_ => [
 				new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 6 },
 				new EnchantGateAction { Level = 1 },
-				new ImbueAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.RetainCardTrait },
+				new ImbueTraitAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.RetainCardTrait },
 			],
 		};
 }

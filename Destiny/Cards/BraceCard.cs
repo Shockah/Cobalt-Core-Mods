@@ -40,19 +40,19 @@ public sealed class BraceCard : Card, IRegisterable
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 },
 				new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 1 },
 				new EnchantGateAction { Level = 1 },
-				new ImbueAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.InfiniteCardTrait },
+				new ImbueTraitAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.InfiniteCardTrait },
 			],
 			Upgrade.B => [
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 },
 				new EnchantGateAction { Level = 1 },
 				new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 } },
 				new EnchantGateAction { Level = 2 },
-				new ImbueAction { Level = 2, Trait = ModEntry.Instance.Helper.Content.Cards.InfiniteCardTrait },
+				new ImbueTraitAction { Level = 2, Trait = ModEntry.Instance.Helper.Content.Cards.InfiniteCardTrait },
 			],
 			_ => [
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 },
 				new EnchantGateAction { Level = 1 },
-				new ImbueAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.InfiniteCardTrait },
+				new ImbueTraitAction { Level = 1, Trait = ModEntry.Instance.Helper.Content.Cards.InfiniteCardTrait },
 			],
 		};
 }

@@ -42,19 +42,19 @@ public sealed class PowerWordCard : Card, IRegisterable, IHasCustomCardTraits
 			Upgrade.A => [
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 3 },
 				new EnchantGateAction { Level = 1 },
-				new ImbueAction { Level = 1, Trait = Explosive.ExplosiveTrait },
+				new ImbueTraitAction { Level = 1, Trait = Explosive.ExplosiveTrait },
 			],
 			Upgrade.B => [
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 2 },
 				new EnchantGateAction { Level = 1 },
-				new ImbueAction { Level = 1, Trait = Explosive.ExplosiveTrait },
+				new ImbueTraitAction { Level = 1, Trait = Explosive.ExplosiveTrait },
 				new EnchantGateAction { Level = 2 },
-				new ImbueAction { Level = 2, Trait = Explosive.ExplosiveTrait },
+				new ImbueTraitAction { Level = 2, Trait = Explosive.ExplosiveTrait },
 			],
 			_ => [
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 2 },
 				new EnchantGateAction { Level = 1 },
-				new ImbueAction { Level = 1, Trait = Explosive.ExplosiveTrait },
+				new ImbueTraitAction { Level = 1, Trait = Explosive.ExplosiveTrait },
 			],
 		};
 }

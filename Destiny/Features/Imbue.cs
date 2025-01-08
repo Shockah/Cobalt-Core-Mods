@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using Nanoray.PluginManager;
@@ -46,7 +47,7 @@ internal sealed class Imbue : IRegisterable
 		
 		var renderAsDisabled = state != DB.fakeState && (action.disabled || (CardRendered is not null && Enchanted.GetEnchantLevel(CardRendered) != anyImbueAction.Level - 1));
 		
-		if (action is ImbueAction imbueAction)
+		if (action is ImbueTraitAction imbueAction)
 		{
 			var position = g.Push(rect: new()).rect.xy;
 			var initialX = (int)position.x;
@@ -57,11 +58,11 @@ internal sealed class Imbue : IRegisterable
 
 			if (imbueAction.Trait?.Configuration.Icon?.Invoke(state, null) is { } traitIcon)
 			{
-				position.x += 2;
+				position.x += 1;
 
 				if (!TraitOutlineSprites.TryGetValue(imbueAction.Trait.UniqueName, out var traitOutlineSprite))
 				{
-					traitOutlineSprite = TextureOutlines.CreateOutlineSprite(traitIcon, true, true, false);
+					traitOutlineSprite = TextureOutlines.CreateOutlineSprite(traitIcon, true, false, false);
 					TraitOutlineSprites[imbueAction.Trait.UniqueName] = traitOutlineSprite;
 				}
 
@@ -88,9 +89,9 @@ internal sealed class Imbue : IRegisterable
 				Draw.Sprite(Icon.Sprite, position.x, position.y, color: renderAsDisabled ? Colors.disabledIconTint : Colors.white);
 			position.x += 14;
 
-			position.x += 2;
+			position.x += 1;
 
-			DiscountOutlineSprite ??= TextureOutlines.CreateOutlineSprite(StableSpr.icons_discount, true, true, false);
+			DiscountOutlineSprite ??= TextureOutlines.CreateOutlineSprite(StableSpr.icons_discount, true, false, false);
 			
 			if (!dontDraw)
 			{
@@ -116,7 +117,7 @@ internal interface IImbueAction
 	void ImbueCard(State state, Card card);
 }
 
-internal sealed class ImbueAction : CardAction, IImbueAction
+internal sealed class ImbueTraitAction : CardAction, IImbueAction
 {
 	public required int Level { get; set; }
 	
@@ -129,6 +130,18 @@ internal sealed class ImbueAction : CardAction, IImbueAction
 
 	[JsonProperty]
 	private string? TraitUniqueName;
+
+	public override List<Tooltip> GetTooltips(State s)
+		=> Trait is { } trait && trait.Configuration.Name?.Invoke(DB.currentLocale.locale) is { } traitName ? [
+			new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::Imbue")
+			{
+				Icon = Imbue.Icon.Sprite,
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["action", "Imbue", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["action", "Imbue", "description"], new { Trait = traitName }),
+			},
+			.. trait.Configuration.Tooltips?.Invoke(s, null) ?? [],
+		] : [];
 
 	public override void Begin(G g, State s, Combat c)
 	{
@@ -149,6 +162,18 @@ internal sealed class ImbueDiscountAction : CardAction, IImbueAction
 	public required int Level { get; set; }
 	
 	public int Discount = -1;
+
+	public override List<Tooltip> GetTooltips(State s)
+		=> [
+			new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::Imbue")
+			{
+				Icon = Imbue.Icon.Sprite,
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["action", "Imbue", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["action", "Imbue", "description"], new { Trait = Loc.T("cardtrait.discount.name") }),
+			},
+			new TTGlossary(Discount > 0 ? "cardtrait.expensive" : "cardtrait.discount", Math.Abs(Discount)),
+		];
 
 	public override void Begin(G g, State s, Combat c)
 	{

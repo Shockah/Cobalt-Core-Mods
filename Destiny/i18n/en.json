@@ -6,6 +6,19 @@
 			"An enchantress. Can spend <c=status>SHARD</c> to empower her cards, and uses a variety of different <c=keyword>shields</c> with different effects."
 		]
 	},
+	"cardTrait": {
+		"Enchanted": {
+			"name": "enchanted",
+			"description": {
+				"m&k": "In combat, <c=keyword>right click or ctrl-click</c> this card to spend <c=status>SHARD</c> and unlock a new set of actions for the rest of combat.",
+				"controller": "In combat, press {{Button}} on this card to spend <c=status>SHARD</c> and unlock a new set of actions for the rest of combat."
+			}
+		},
+		"Explosive": {
+			"name": "explosive",
+			"description": "When this card is played, attack for {{Damage}} damage, then remove this trait for the rest of combat."
+		}
+	},
 	"status": {
 		"MagicFind": {
 			"name": "Magic Find",
@@ -14,6 +27,12 @@
 		"PristineShield": {
 			"name": "Pristine Shield",
 			"description": "This ship cannot take hull damage. <c=downside>Decreases by 1 at the start of every turn, and whenever it negates damage.</c>"
+		}
+	},
+	"action": {
+		"Imbue": {
+			"name": "  Imbue",
+			"description": "When unlocked, applies <c=cardtrait>{{Trait}}</c> to this card."
 		}
 	},
 	"card": {

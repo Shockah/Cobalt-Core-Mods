@@ -50,6 +50,9 @@ public sealed class UnstableMagicCard : Card, IRegisterable
 		public required bool InDrawPile;
 		public required bool InDiscardPile;
 
+		public override List<Tooltip> GetTooltips(State s)
+			=> [.. Explosive.ExplosiveTrait.Configuration.Tooltips?.Invoke(s, null) ?? []];
+
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);

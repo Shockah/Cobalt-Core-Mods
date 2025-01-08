@@ -40,15 +40,27 @@ internal sealed class Enchanted : IRegisterable
 		EnchantedTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Enchanted", new()
 		{
 			Icon = (_, card) => GetIcon(card),
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Enchanted"]).Localize,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Enchanted", "name"]).Localize,
 			Tooltips = (_, card) => [
 				new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Enchanted")
 				{
 					Icon = GetIcon(card),
-					TitleColor = Colors.action,
-					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Spontaneous", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Spontaneous", "description"]),
-				}
+					TitleColor = Colors.cardtrait,
+					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Enchanted", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(
+						["cardTrait", "Enchanted", "description", PlatformIcons.GetPlatform() == Platform.MouseKeyboard ? "m&k" : "controller"], 
+						new
+						{
+							Button = PlatformIcons.GetPlatform() switch
+							{
+								Platform.NX => Loc.T("controller.nx.b"),
+								Platform.PS => Loc.T("controller.ps.circle"),
+								_ => Loc.T("controller.xbox.b"),
+							},
+						}
+					),
+				},
+				.. StatusMeta.GetTooltips(Status.shard, 1),
 			]
 		});
 
