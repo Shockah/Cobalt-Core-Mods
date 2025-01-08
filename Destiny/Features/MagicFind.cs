@@ -18,7 +18,7 @@ internal sealed class MagicFind : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.
 			Definition = new()
 			{
 				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Statuses/MagicFind.png")).Sprite,
-				color = new Color("FF6FEC"),
+				color = new Color("7FFFF2"),
 				isGood = true,
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "MagicFind", "name"]).Localize,
@@ -67,6 +67,6 @@ internal sealed class MagicFind : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.
 	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 		=> args.Status == MagicFindStatus.Status ? [
 			.. args.Tooltips,
-			.. StatusMeta.GetTooltips(Status.shard, 1),
+			.. StatusMeta.GetTooltips(Status.shard, (args.Ship ?? MG.inst.g.state?.ship ?? DB.fakeState.ship).GetMaxShard()),
 		] : args.Tooltips;
 }

@@ -54,7 +54,7 @@ internal sealed class Enchanted : IRegisterable
 		{
 			Icon = (_, card) => GetIcon(card),
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Enchanted", "name"]).Localize,
-			Tooltips = (_, card) => [
+			Tooltips = (state, card) => [
 				new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Enchanted")
 				{
 					Icon = GetIcon(card),
@@ -73,7 +73,7 @@ internal sealed class Enchanted : IRegisterable
 						}
 					),
 				},
-				.. StatusMeta.GetTooltips(Status.shard, 1),
+				.. StatusMeta.GetTooltips(Status.shard, state.ship.GetMaxShard()),
 			]
 		});
 

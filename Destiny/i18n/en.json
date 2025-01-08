@@ -40,6 +40,10 @@
 			"name": "CHAIN REACTION",
 			"description": "Whenever you play an <c=cardtrait>explosive</c> card, increase the damage dealt by <c=cardtrait>explosive</c> by 1 for the rest of combat."
 		},
+		"Sanctuary": {
+			"name": "SANCTUARY",
+			"description": "If you end your turn without having moved, gain 1 <c=status>ENERGY NEXT TURN</c>."
+		},
 		"ShardBank": {
 			"name": "SHARD BANK",
 			"description": "If your <c=status>SHARD</c> is at its maximum, <c=status>MAGIC FIND</c> does not deplete."

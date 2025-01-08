@@ -25,7 +25,7 @@ internal sealed class ShardBankArtifact : Artifact, IRegisterable
 
 	public override List<Tooltip> GetExtraTooltips()
 		=> [
-			.. StatusMeta.GetTooltips(Status.shard, 1),
+			.. StatusMeta.GetTooltips(Status.shard, (MG.inst.g.state?.ship ?? DB.fakeState.ship).GetMaxShard()),
 			.. StatusMeta.GetTooltips(MagicFind.MagicFindStatus.Status, 1),
 		];
 }

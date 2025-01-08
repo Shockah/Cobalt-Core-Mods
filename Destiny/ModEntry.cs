@@ -67,6 +67,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	private static readonly IReadOnlyList<Type> BossArtifacts = [
+		typeof(SanctuaryArtifact),
 	];
 
 	private static readonly IReadOnlyList<Type> DuoArtifacts = [

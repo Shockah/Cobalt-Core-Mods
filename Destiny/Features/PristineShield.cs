@@ -23,7 +23,7 @@ internal sealed class PristineShield : IRegisterable, IKokoroApi.IV2.IStatusLogi
 			Definition = new()
 			{
 				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Statuses/PristineShield.png")).Sprite,
-				color = new Color("FF6FEC"),
+				color = new Color("7FFFF2"),
 				isGood = true,
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "PristineShield", "name"]).Localize,
