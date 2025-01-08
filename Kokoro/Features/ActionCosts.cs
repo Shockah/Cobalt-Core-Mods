@@ -161,19 +161,37 @@ partial class ApiImplementation
 			{
 				var potentialResources = V1.PotentialResources.Select(MakeResourceFromLegacyData).ToList();
 				var newContext = new List<IKokoroApi.IV2.IActionCostsApi.ICost>(context) { this };
-				return GetPossibleTransactions(baseTransaction, V1.ResourceAmount);
+				return GetInternalPossibleTransactions(baseTransaction, potentialResources, V1.ResourceAmount);
 
-				IEnumerable<IKokoroApi.IV2.IActionCostsApi.ITransaction> GetPossibleTransactions(IKokoroApi.IV2.IActionCostsApi.ITransaction currentTransaction, int amountLeft)
+				IEnumerable<IKokoroApi.IV2.IActionCostsApi.ITransaction> GetInternalPossibleTransactions(IKokoroApi.IV2.IActionCostsApi.ITransaction currentTransaction, List<IKokoroApi.IV2.IActionCostsApi.IResource> potentialResources, int amountLeft)
 				{
-					if (amountLeft <= 0 || potentialResources.Count == 0)
+					if (amountLeft < 0)
+						yield break;
+
+					if (amountLeft == 0)
+					{
 						yield return currentTransaction;
-					
+						yield break;
+					}
+
+					if (potentialResources.Count == 0)
+						yield break;
+
 					if (potentialResources.Count == 1)
+					{
 						yield return currentTransaction.AddPayment(newContext, potentialResources[0], amountLeft);
+						yield break;
+					}
 
 					foreach (var resource in potentialResources)
-						foreach (var transaction in GetPossibleTransactions(currentTransaction.AddPayment(newContext, resource, 1), amountLeft - 1))
-							yield return transaction;
+					{
+						var newPotentialResources = new List<IKokoroApi.IV2.IActionCostsApi.IResource>(potentialResources);
+						newPotentialResources.Remove(resource);
+						
+						for (var resourceAmount = amountLeft; resourceAmount > 0; resourceAmount--)
+							foreach (var transaction in GetInternalPossibleTransactions(currentTransaction.AddPayment(newContext, resource, resourceAmount), newPotentialResources, amountLeft - resourceAmount))
+								yield return transaction;
+					}
 				}
 			}
 
@@ -574,7 +592,7 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 				attack.stunEnemy = shouldStun;
 		}
 
-		g.Push(rect: new(position.x - initialX, 0));
+		g.Push(rect: new(position.x - initialX));
 		position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
 		g.Pop();
 
@@ -694,7 +712,12 @@ internal sealed class ActionCostTransaction : IKokoroApi.IV2.IActionCostsApi.ITr
 	}
 
 	public IKokoroApi.IV2.IActionCostsApi.ITransaction AddPayment(IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.ICost> context, IKokoroApi.IV2.IActionCostsApi.IResource resource, int amount)
-		=> new ActionCostTransaction { Payments = new List<IKokoroApi.IV2.IActionCostsApi.ITransactionPayment>(Payments) { new ActionCostTransactionPayment(context, resource, amount) } };
+	{
+		var newPayments = new List<IKokoroApi.IV2.IActionCostsApi.ITransactionPayment>(Payments.Count + 1);
+		newPayments.AddRange(Payments);
+		newPayments.Add(new ActionCostTransactionPayment(context, resource, amount));
+		return new ActionCostTransaction { Payments = newPayments };
+	}
 }
 
 internal record ActionCostTransactionPayment(
@@ -843,21 +866,39 @@ internal sealed class ResourceActionCost : IKokoroApi.IV2.IActionCostsApi.IResou
 	
 	public IEnumerable<IKokoroApi.IV2.IActionCostsApi.ITransaction> GetPossibleTransactions(IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.ICost> context, IKokoroApi.IV2.IActionCostsApi.ITransaction baseTransaction)
 	{
+		var potentialResources = PotentialResources as List<IKokoroApi.IV2.IActionCostsApi.IResource> ?? [.. PotentialResources];
 		var newContext = new List<IKokoroApi.IV2.IActionCostsApi.ICost>(context) { this };
-		return GetPossibleTransactions(baseTransaction, Amount);
+		return GetInternalPossibleTransactions(baseTransaction, potentialResources, Amount);
 
-		IEnumerable<IKokoroApi.IV2.IActionCostsApi.ITransaction> GetPossibleTransactions(IKokoroApi.IV2.IActionCostsApi.ITransaction currentTransaction, int amountLeft)
+		IEnumerable<IKokoroApi.IV2.IActionCostsApi.ITransaction> GetInternalPossibleTransactions(IKokoroApi.IV2.IActionCostsApi.ITransaction currentTransaction, List<IKokoroApi.IV2.IActionCostsApi.IResource> potentialResources, int amountLeft)
 		{
 			if (amountLeft < 0)
 				yield break;
-			if (amountLeft == 0 || PotentialResources.Count == 0)
+			
+			if (amountLeft == 0)
+			{
 				yield return currentTransaction;
-			if (PotentialResources.Count == 1)
-				yield return currentTransaction.AddPayment(newContext, PotentialResources[0], amountLeft);
-
-			foreach (var resource in PotentialResources)
-				foreach (var transaction in GetPossibleTransactions(currentTransaction.AddPayment(newContext, resource, 1), amountLeft - 1))
-					yield return transaction;
+				yield break;
+			}
+			
+			if (potentialResources.Count == 0)
+				yield break;
+			
+			if (potentialResources.Count == 1)
+			{
+				yield return currentTransaction.AddPayment(newContext, potentialResources[0], amountLeft);
+				yield break;
+			}
+			
+			foreach (var resource in potentialResources)
+			{
+				var newPotentialResources = new List<IKokoroApi.IV2.IActionCostsApi.IResource>(potentialResources);
+				newPotentialResources.Remove(resource);
+						
+				for (var resourceAmount = amountLeft; resourceAmount > 0; resourceAmount--)
+					foreach (var transaction in GetInternalPossibleTransactions(currentTransaction.AddPayment(newContext, resource, resourceAmount), newPotentialResources, amountLeft - resourceAmount))
+						yield return transaction;
+			}
 		}
 	}
 
