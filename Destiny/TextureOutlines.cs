@@ -6,6 +6,8 @@ namespace Shockah.Destiny;
 
 internal static class TextureOutlines
 {
+	// private static MGColor[]? AtlasTextureData;
+	
 	private static readonly (int X, int Y, int PerpendicularX1, int PerpendicularY1, int PerpendicularX2, int PerpendicularY2)[] VectorNeighbors = [
 		(1, 0, 0, -1, 0, 1),
 		(-1, 0, 0, -1, 0, 1),
@@ -24,7 +26,9 @@ internal static class TextureOutlines
 				outlineTextureData[x + y * outlineTexture.Width] = ShouldContainOutline(x, y) ? MGColor.White : MGColor.Transparent;
 		
 		outlineTexture.SetData(outlineTextureData);
-		return ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(() => outlineTexture);
+		if (name is null)
+			return ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(() => outlineTexture);
+		return ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(name, () => outlineTexture);
 		
 		bool ShouldContainOutline(int outlineX, int outlineY)
 		{
@@ -97,29 +101,35 @@ internal static class TextureOutlines
 	
 	public static ISpriteEntry CreateOutlineSprite(Spr spr, bool neighbors, bool neighborInsets, bool diagonalCorners, string? name = null)
 	{
+		// ReSharper disable JoinDeclarationAndInitializer
 		int baseTextureWidth, baseTextureHeight;
 		MGColor[] baseTextureData;
+		// ReSharper restore JoinDeclarationAndInitializer
 
-		if (DB.atlas is not null && DB.atlas.TryGetValue(spr, out var atlasItem) && SpriteLoader.Get(StableSpr.atlas, okIfMissing: true) is { } atlasTexture)
-		{
-			var atlasTextureData = new MGColor[atlasTexture.Width * atlasTexture.Height];
-			atlasTexture.GetData(atlasTextureData);
-
-			baseTextureWidth = (int)atlasItem.bounds.w;
-			baseTextureHeight = (int)atlasItem.bounds.h;
-			baseTextureData = new MGColor[baseTextureWidth * baseTextureHeight];
-			for (var y = 0; y < baseTextureHeight; y++)
-				for (var x = 0; x < baseTextureWidth; x++)
-					baseTextureData[x + y * baseTextureWidth] = atlasTextureData[(x + (int)atlasItem.bounds.x) + (y + (int)atlasItem.bounds.y) * atlasTexture.Width];
-		}
-		else
-		{
-			var baseTexture = SpriteLoader.Get(spr)!;
-			baseTextureWidth = baseTexture.Width;
-			baseTextureHeight = baseTexture.Height;
-			baseTextureData = new MGColor[baseTexture.Width * baseTexture.Height];
-			baseTexture.GetData(baseTextureData);
-		}
+		// if (DB.atlas is not null && DB.atlas.TryGetValue(spr, out var atlasItem) && SpriteLoader.Get(StableSpr.atlas, okIfMissing: true) is { } atlasTexture)
+		// {
+		// 	var atlasTextureData = AtlasTextureData;
+		// 	if (atlasTextureData is null)
+		// 	{
+		// 		atlasTextureData = new MGColor[atlasTexture.Width * atlasTexture.Height];
+		// 		atlasTexture.GetData(atlasTextureData);
+		// 		AtlasTextureData = atlasTextureData;
+		// 	}
+		//
+		// 	baseTextureWidth = (int)atlasItem.bounds.w;
+		// 	baseTextureHeight = (int)atlasItem.bounds.h;
+		// 	baseTextureData = new MGColor[baseTextureWidth * baseTextureHeight];
+		// 	for (var y = 0; y < baseTextureHeight; y++)
+		// 		for (var x = 0; x < baseTextureWidth; x++)
+		// 			baseTextureData[x + y * baseTextureWidth] = atlasTextureData[(x + (int)atlasItem.bounds.x) + (y + (int)atlasItem.bounds.y) * atlasTexture.Width];
+		// }
+		// else
+		
+		var baseTexture = SpriteLoader.Get(spr)!;
+		baseTextureWidth = baseTexture.Width;
+		baseTextureHeight = baseTexture.Height;
+		baseTextureData = new MGColor[baseTexture.Width * baseTexture.Height];
+		baseTexture.GetData(baseTextureData);
 
 		return CreateOutlineSprite(baseTextureData, baseTextureWidth, baseTextureHeight, neighbors, neighborInsets, diagonalCorners, name);
 	}
