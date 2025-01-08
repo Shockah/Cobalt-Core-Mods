@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.1.1
+Released 8 January 2025.
 
 * Improved performance of the Action Costs system.
 
