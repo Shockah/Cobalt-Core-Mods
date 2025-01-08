@@ -23,7 +23,10 @@ internal sealed class Explosive : IRegisterable
 					Icon = icon.Sprite,
 					TitleColor = Colors.cardtrait,
 					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Explosive", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Explosive", "description"], new { Damage = Card.GetActualDamage(state, 5, card: card) }),
+					Description = ModEntry.Instance.Localizations.Localize(
+						["cardTrait", "Explosive", "description"], 
+						new { Damage = Card.GetActualDamage(state, GetExplosiveDamage(state, state.route as Combat ?? DB.fakeCombat, card), card: card) }
+					),
 				}
 			]
 		});
@@ -32,24 +35,24 @@ internal sealed class Explosive : IRegisterable
 		{
 			if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, ExplosiveTrait))
 				return;
-
-			ModifyExplosiveDamageArgsPool.Do(args =>
-			{
-				args.State = state;
-				args.Combat = combat;
-				args.Card = card;
-				args.BaseDamage = 5;
-				args.CurrentDamage = 5;
-				
-				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-					hook.ModifyExplosiveDamage(args);
-				
-				combat.Queue(new AAttack { damage = card.GetDmg(state, args.CurrentDamage) });
-			});
-			
-			combat.Queue(new AAttack { damage = card.GetDmg(state, 5) });
+			combat.Queue(new AAttack { damage = card.GetDmg(state, GetExplosiveDamage(state, combat, card)) });
+			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, ExplosiveTrait, false, permanent: false);
 		});
 	}
+
+	private static int GetExplosiveDamage(State state, Combat combat, Card? card)
+		=> ModifyExplosiveDamageArgsPool.Do(args =>
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Card = card;
+			args.BaseDamage = 5;
+			args.CurrentDamage = 5;
+				
+			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				hook.ModifyExplosiveDamage(args);
+			return args.CurrentDamage;
+		});
 
 	private sealed class ModifyExplosiveDamageArgs : IDestinyApi.IHook.IModifyExplosiveDamageArgs
 	{
