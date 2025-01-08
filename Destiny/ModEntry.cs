@@ -6,6 +6,7 @@ using System;
 using HarmonyLib;
 using Shockah.Kokoro;
 using System.Linq;
+using Nickel.Common;
 using Shockah.Shared;
 
 namespace Shockah.Destiny;
@@ -168,6 +169,21 @@ public sealed class ModEntry : SimpleMod
 				.Select(f => helper.Content.Sprites.RegisterSprite(f).Sprite)
 				.ToList()
 		});
+		
+		helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>(
+			"TheJazMaster.MoreDifficulties",
+			new SemanticVersion(1, 3, 0),
+			api => api.RegisterAltStarters(
+				deck: DestinyDeck.Deck,
+				starterDeck: new StarterDeck
+				{
+					cards = [
+						new PowerWordCard(),
+						new MeditateCard()
+					]
+				}
+			)
+		);
 	}
 
 	public override object GetApi(IModManifest requestingMod)
