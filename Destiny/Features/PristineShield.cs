@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using HarmonyLib;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
+using Nanoray.Shrike;
+using Nanoray.Shrike.Harmony;
 using Nickel;
 using Shockah.Kokoro;
 
@@ -27,23 +32,52 @@ internal sealed class PristineShield : IRegisterable, IKokoroApi.IV2.IStatusLogi
 		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.DirectHullDamage)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_DirectHullDamage_Prefix))
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_DirectHullDamage_Transpiler))
 		);
 
 		var instance = new PristineShield();
 		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(instance);
 	}
-
-	private static bool Ship_DirectHullDamage_Prefix(Ship __instance, int amt)
+	
+	private static IEnumerable<CodeInstruction> Ship_DirectHullDamage_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
-		if (amt <= 0)
+		// ReSharper disable PossibleMultipleEnumeration
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find([
+					ILMatches.Ldarg(0),
+					ILMatches.LdcI4((int)Status.perfectShield),
+					ILMatches.Call("Get"),
+					ILMatches.LdcI4(0),
+					ILMatches.Ble.GetBranchTarget(out var branchTarget),
+					ILMatches.Instruction(OpCodes.Ret),
+				])
+				.PointerMatcher(branchTarget)
+				.ExtractLabels(out var labels)
+				.CreateLabel(il, out var successLabel)
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_DirectHullDamage_Transpiler_HandlePristineShield))),
+					new CodeInstruction(OpCodes.Brtrue, successLabel),
+					new CodeInstruction(OpCodes.Ret),
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.GetDisplayName(@long: false), ex);
+			return instructions;
+		}
+		// ReSharper restore PossibleMultipleEnumeration
+	}
+
+	private static bool Ship_DirectHullDamage_Transpiler_HandlePristineShield(Ship ship)
+	{
+		if (ship.Get(PristineShieldStatus.Status) <= 0)
 			return true;
-		if (__instance.Get(Status.perfectShield) > 0)
-			return true;
-		if (__instance.Get(PristineShieldStatus.Status) <= 0)
-			return true;
-		
-		__instance.Add(PristineShieldStatus.Status, -1);
+
+		ship.Add(PristineShieldStatus.Status, -1);
 		return false;
 	}
 
