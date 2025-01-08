@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
@@ -37,6 +38,8 @@ internal sealed class MagicFind : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.
 			return false;
 		if (args.Amount == 0)
 			return false;
+		if (args.Ship.isPlayerShip && args.Ship.Get(Status.shard) >= args.Ship.GetMaxShard() && args.State.EnumerateAllArtifacts().Any(a => a is ShardBankArtifact))
+			return false;
 
 		args.Amount = Math.Max(args.Amount - 1, 0);
 		return false;
@@ -49,6 +52,8 @@ internal sealed class MagicFind : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.
 		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 			return;
 		if (args.OldAmount == 0)
+			return;
+		if (args.Ship.isPlayerShip && args.Ship.Get(Status.shard) >= args.Ship.GetMaxShard() && args.State.EnumerateAllArtifacts().Any(a => a is ShardBankArtifact))
 			return;
 
 		args.Combat.QueueImmediate(new AStatus

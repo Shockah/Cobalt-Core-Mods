@@ -14,6 +14,7 @@ public sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly IHarmony Harmony;
+	internal readonly HookManager<IDestinyApi.IHook> HookManager;
 	internal readonly IKokoroApi.IV2 KokoroApi;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
@@ -59,6 +60,10 @@ public sealed class ModEntry : SimpleMod
 		];
 
 	private static readonly IReadOnlyList<Type> CommonArtifacts = [
+		typeof(ChainReactionArtifact),
+		typeof(ShardBankArtifact),
+		typeof(ShieldProficiencyArtifact),
+		typeof(WellReadArtifact),
 	];
 
 	private static readonly IReadOnlyList<Type> BossArtifacts = [
@@ -90,6 +95,7 @@ public sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
+		HookManager = new(package.Manifest.UniqueName);
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
@@ -162,6 +168,9 @@ public sealed class ModEntry : SimpleMod
 				.ToList()
 		});
 	}
+
+	public override object GetApi(IModManifest requestingMod)
+		=> new ApiImplementation();
 
 	internal static Rarity GetCardRarity(Type type)
 	{

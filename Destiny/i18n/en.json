@@ -35,6 +35,24 @@
 			"description": "When unlocked, applies <c=cardtrait>{{Trait}}</c> to this card."
 		}
 	},
+	"artifact": {
+		"ChainReaction": {
+			"name": "CHAIN REACTION",
+			"description": "Whenever you play an <c=cardtrait>explosive</c> card, increase the damage dealt by <c=cardtrait>explosive</c> by 1 for the rest of combat."
+		},
+		"ShardBank": {
+			"name": "SHARD BANK",
+			"description": "If your <c=status>SHARD</c> is at its maximum, <c=status>MAGIC FIND</c> does not deplete."
+		},
+		"ShieldProficiency": {
+			"name": "SHIELD PROFICIENCY",
+			"description": "<c=status>PRISTINE SHIELD</c> and <c=status>PERFECT SHIELD</c> prevent damage to your shields."
+		},
+		"WellRead": {
+			"name": "WELL-READ",
+			"description": "On your first turn, gain 3 <c=status>MAGIC FIND</c>."
+		}
+	},
 	"card": {
 		"Barrier": {
 			"name": "Barrier"
