@@ -30,12 +30,19 @@ public sealed class BarrierCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> upgrade switch
+	{
+		var data = new CardData
 		{
-			Upgrade.A => new() { cost = 3, retain = true },
-			Upgrade.B => new() { cost = 3 },
-			_ => new() { cost = 3 },
+			art = Enchanted.GetCardArt(this),
+			artTint = "ffffff",
 		};
+		return upgrade switch
+		{
+			Upgrade.A => data with { cost = 3, retain = true },
+			Upgrade.B => data with { cost = 3 },
+			_ => data with { cost = 3 },
+		};
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch

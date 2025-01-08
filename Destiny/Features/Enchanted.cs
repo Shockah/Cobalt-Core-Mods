@@ -15,6 +15,12 @@ internal sealed class Enchanted : IRegisterable
 {
 	private static ISpriteEntry[] EnchantedOf2Icons { get; set; } = null!;
 	private static ISpriteEntry[] EnchantedOf3Icons { get; set; } = null!;
+	private static ISpriteEntry Enchanted1of2CardArt = null!;
+	private static ISpriteEntry Enchanted1of3CardArt = null!;
+	private static ISpriteEntry Enchanted2of3CardArt = null!;
+	private static ISpriteEntry Enchanted1of2Split1to2CardArt = null!;
+	private static ISpriteEntry Enchanted1of2Split2to1CardArt = null!;
+	private static ISpriteEntry EnchantedFullCardArt = null!;
 	internal static ICardTraitEntry EnchantedTrait { get; private set; } = null!;
 
 	private static readonly Color PaidGateColor = new("122537");
@@ -36,6 +42,13 @@ internal sealed class Enchanted : IRegisterable
 		EnchantedOf3Icons = Enumerable.Range(0, 3)
 			.Select(i => ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Traits/Enchanted{i + 1}of3.png")))
 			.ToArray();
+
+		Enchanted1of2CardArt = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Cards/Enchanted1of2.png"));
+		Enchanted1of3CardArt = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Cards/Enchanted1of3.png"));
+		Enchanted2of3CardArt = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Cards/Enchanted2of3.png"));
+		Enchanted1of2Split1to2CardArt = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Cards/Enchanted1of2Split1to2.png"));
+		Enchanted1of2Split2to1CardArt = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Cards/Enchanted1of2Split2to1.png"));
+		EnchantedFullCardArt = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Cards/EnchantedFull.png"));
 		
 		EnchantedTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Enchanted", new()
 		{
@@ -110,6 +123,34 @@ internal sealed class Enchanted : IRegisterable
 			var enchantLevel = Math.Clamp(card is null ? 0 : GetEnchantLevel(card), 0, maxEnchantLevel);
 			return maxEnchantLevel == 2 ? EnchantedOf3Icons[enchantLevel].Sprite : EnchantedOf2Icons[enchantLevel].Sprite;
 		}
+	}
+
+	internal static Spr? GetCardArt(Card? card, Spr? defaultArt = null, int[]? split = null)
+	{
+		var maxEnchantLevel = card is null ? 0 : GetMaxEnchantLevel(card.Key(), card.upgrade);
+		if (maxEnchantLevel is <= 0 or > 2)
+			return defaultArt;
+		
+		var enchantLevel = Math.Clamp(card is null ? 0 : GetEnchantLevel(card), 0, maxEnchantLevel);
+		if (enchantLevel >= maxEnchantLevel)
+			return EnchantedFullCardArt.Sprite;
+		
+		if (split is [1, 2] && enchantLevel == 0)
+			return Enchanted1of2Split1to2CardArt.Sprite;
+		if (split is [2, 1] && enchantLevel == 0)
+			return Enchanted1of2Split2to1CardArt.Sprite;
+
+		return maxEnchantLevel switch
+		{
+			1 => Enchanted1of2CardArt.Sprite,
+			2 => enchantLevel switch
+			{
+				0 => Enchanted1of3CardArt.Sprite,
+				1 => Enchanted2of3CardArt.Sprite,
+				_ => throw new ArgumentOutOfRangeException(),
+			},
+			_ => throw new ArgumentOutOfRangeException(),
+		};
 	}
 
 	internal static int GetMaxEnchantLevel(string cardKey, Upgrade upgrade)

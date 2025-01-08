@@ -28,12 +28,19 @@ public sealed class UnwaveringCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> upgrade switch
+	{
+		var data = new CardData
 		{
-			Upgrade.A => new() { cost = 0 },
-			Upgrade.B => new() { cost = 1, retain = true },
-			_ => new() { cost = 1 },
+			art = Enchanted.GetCardArt(this, split: [1, 2]),
+			artTint = "ffffff",
 		};
+		return upgrade switch
+		{
+			Upgrade.A => data with { cost = 0 },
+			Upgrade.B => data with { cost = 1, retain = true },
+			_ => data with { cost = 1 },
+		};
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [

@@ -25,12 +25,19 @@ public sealed class HoneCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> upgrade switch
+	{
+		var data = new CardData
 		{
-			Upgrade.A => new() { cost = 1, exhaust = true, buoyant = true },
-			Upgrade.B => new() { cost = 1, exhaust = true },
-			_ => new() { cost = 1, exhaust = true, buoyant = true },
+			art = Enchanted.GetCardArt(this),
+			artTint = "ffffff",
 		};
+		return upgrade switch
+		{
+			Upgrade.A => data with { cost = 1, exhaust = true, buoyant = true },
+			Upgrade.B => data with { cost = 1, exhaust = true },
+			_ => data with { cost = 1, exhaust = true, buoyant = true },
+		};
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch

@@ -31,7 +31,15 @@ public sealed class BraceCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> new() { cost = 1 };
+	{
+		var data = new CardData { cost = 1, artTint = "ffffff" };
+		return upgrade switch
+		{
+			Upgrade.A => data with { art = Enchanted.GetCardArt(this, split: [2, 1]) },
+			Upgrade.B => data with { art = Enchanted.GetCardArt(this) },
+			_ => data with { art = Enchanted.GetCardArt(this) },
+		};
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch

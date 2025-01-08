@@ -27,12 +27,17 @@ public sealed class UnstableMagicCard : Card, IRegisterable
 
 	public override CardData GetData(State state)
 	{
-		var description = ModEntry.Instance.Localizations.Localize(["card", "UnstableMagic", "description", upgrade.ToString()]);
+		var data = new CardData
+		{
+			art = Enchanted.GetCardArt(this),
+			artTint = "ffffff",
+			description = ModEntry.Instance.Localizations.Localize(["card", "UnstableMagic", "description", upgrade.ToString()]),
+		};
 		return upgrade switch
 		{
-			Upgrade.A => new() { cost = 0, description = description },
-			Upgrade.B => new() { cost = 1, description = description },
-			_ => new() { cost = 1, description = description },
+			Upgrade.A => data with { cost = 0 },
+			Upgrade.B => data with { cost = 1 },
+			_ => data with { cost = 1 },
 		};
 	}
 

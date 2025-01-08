@@ -30,7 +30,7 @@ public sealed class ForcefieldCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> new() { cost = 1 };
+		=> new() { cost = 1, art = Enchanted.GetCardArt(this), artTint = "ffffff" };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch

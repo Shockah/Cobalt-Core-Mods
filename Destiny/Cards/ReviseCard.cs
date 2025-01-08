@@ -25,12 +25,19 @@ public sealed class ReviseCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> upgrade switch
+	{
+		var data = new CardData
 		{
-			Upgrade.A => new() { cost = 0 },
-			Upgrade.B => new() { cost = 1 },
-			_ => new() { cost = 1 },
+			art = Enchanted.GetCardArt(this),
+			artTint = "ffffff",
 		};
+		return upgrade switch
+		{
+			Upgrade.A => data with { cost = 0 },
+			Upgrade.B => data with { cost = 1 },
+			_ => data with { cost = 1 },
+		};
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch

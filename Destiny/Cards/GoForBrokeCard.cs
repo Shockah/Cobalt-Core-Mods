@@ -25,12 +25,19 @@ public sealed class GoForBrokeCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> upgrade switch
+	{
+		var data = new CardData
 		{
-			Upgrade.A => new() { cost = 1, retain = true },
-			Upgrade.B => new() { cost = 0, exhaust = true, retain = true },
-			_ => new() { cost = 2, retain = true },
+			art = Enchanted.GetCardArt(this),
+			artTint = "ffffff",
 		};
+		return upgrade switch
+		{
+			Upgrade.A => data with { cost = 1, retain = true },
+			Upgrade.B => data with { cost = 0, exhaust = true, retain = true },
+			_ => data with { cost = 2, retain = true },
+		};
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch

@@ -29,7 +29,7 @@ public sealed class FocusCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> new() { cost = 0, exhaust = true };
+		=> new() { cost = 0, exhaust = true, art = Enchanted.GetCardArt(this), artTint = "ffffff" };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch

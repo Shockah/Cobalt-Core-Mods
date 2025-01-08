@@ -34,7 +34,7 @@ public sealed class PowerWordCard : Card, IRegisterable, IHasCustomCardTraits
 		=> new HashSet<ICardTraitEntry> { Explosive.ExplosiveTrait };
 
 	public override CardData GetData(State state)
-		=> new() { cost = 2 };
+		=> new() { cost = 2, art = Enchanted.GetCardArt(this), artTint = "ffffff" };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch

@@ -28,12 +28,19 @@ public sealed class BulwarkCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> upgrade switch
+	{
+		var data = new CardData
 		{
-			Upgrade.A => new() { cost = 2 },
-			Upgrade.B => new() { cost = 2, exhaust = true },
-			_ => new() { cost = 2 },
+			art = Enchanted.GetCardArt(this),
+			artTint = "ffffff",
 		};
+		return upgrade switch
+		{
+			Upgrade.A => data with { cost = 2 },
+			Upgrade.B => data with { cost = 2, exhaust = true },
+			_ => data with { cost = 2 },
+		};
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch

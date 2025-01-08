@@ -33,12 +33,19 @@ public sealed class ImmovableObjectCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> upgrade switch
+	{
+		var data = new CardData
 		{
-			Upgrade.A => new() { cost = 3, exhaust = true, retain = true },
-			Upgrade.B => new() { cost = 3, exhaust = true },
-			_ => new() { cost = 3, exhaust = true },
+			art = Enchanted.GetCardArt(this),
+			artTint = "ffffff",
 		};
+		return upgrade switch
+		{
+			Upgrade.A => data with { cost = 3, exhaust = true, retain = true },
+			Upgrade.B => data with { cost = 3, exhaust = true },
+			_ => data with { cost = 3, exhaust = true },
+		};
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
