@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* The Aegis Transmuter (Books-Dizzy duo) artifact now uses Kokoro action cost functionality, making it work with more mechanics and cards.
+
 ## 1.2.0
 Released 4 December 2024.
 
