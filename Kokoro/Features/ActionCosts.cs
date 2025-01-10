@@ -424,10 +424,6 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 	internal static void Setup(IHarmony harmony)
 	{
 		harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetActionsOverridden_Postfix))
-		);
-		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Prefix))
 		);
@@ -560,16 +556,6 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 		return [wrappedAction];
 	}
 
-	private static void Card_GetActionsOverridden_Postfix(Card __instance, ref List<CardAction> __result)
-	{
-		foreach (var action in __result.SelectMany(a => WrappedActionManager.Instance.GetWrappedCardActionsRecursively(a, includingWrapperActions: true)))
-		{
-			if (action is not AResourceCost resourceCostAction)
-				continue;
-			resourceCostAction.CardId = __instance.uuid;
-		}
-	}
-
 	private static void Card_Render_Prefix()
 		=> CurrentDrawingEnvironment = null;
 	
@@ -643,6 +629,7 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 				resourceCostAction.Cost = ModEntry.Instance.Api.V2.ActionCosts.MakeCombinedCost([cost, resourceCostAction.Cost]);
 			else
 				resourceCostAction = new AResourceCost { Cost = cost, Action = action };
+			ModEntry.Instance.Api.V2.ActionSource.SetSourceCardId(resourceCostAction, ModEntry.Instance.Api.V2.ActionSource.GetSourceCardId(action));
 			
 			RenderResourceCostAction(resourceCostAction, ref __result);
 			action.shardcost = oldShardcost;
@@ -741,6 +728,7 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 			resourceCostAction.Cost = ModEntry.Instance.Api.V2.ActionCosts.MakeCombinedCost([cost, resourceCostAction.Cost]);
 		else
 			resourceCostAction = new AResourceCost { Cost = cost, Action = action };
+		ModEntry.Instance.Api.V2.ActionSource.SetSourceCardId(resourceCostAction, ModEntry.Instance.Api.V2.ActionSource.GetSourceCardId(combat.currentCardAction));
 		combat.currentCardAction = resourceCostAction;
 	}
 }
@@ -969,7 +957,6 @@ internal sealed class AResourceCost : CardAction, IKokoroApi.IV2.IActionCostsApi
 	public required IKokoroApi.IV2.IActionCostsApi.ICost Cost { get; set; }
 	public required CardAction Action { get; set; }
 	public IDictionary<IKokoroApi.IV2.IActionCostsApi.IResource, int> ResourceAmountDisplayOverrides { get; set; } = new Dictionary<IKokoroApi.IV2.IActionCostsApi.IResource, int>();
-	public int? CardId { get; internal set; }
 	
 	[JsonIgnore]
 	public CardAction AsCardAction
@@ -980,7 +967,7 @@ internal sealed class AResourceCost : CardAction, IKokoroApi.IV2.IActionCostsApi
 		base.Begin(g, s, c);
 		timer = 0;
 
-		var card = CardId is { } cardId ? s.FindCard(cardId) : null;
+		var card = ModEntry.Instance.Api.V2.ActionSource.GetSourceCard(s, this);
 		var environment = ModEntry.Instance.Api.V2.ActionCosts.MakeStatePaymentEnvironment(s, c, card);
 		var baseTransaction = ModEntry.Instance.Api.V2.ActionCosts.MakeTransaction();
 		if (ChooseBestTransaction() is not { } transaction)
