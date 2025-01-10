@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming release
+
+* Kokoro now replaces all `shardcost` actions on the fly with its own action costs.
+* Extended the action costs system, allowing hooks to modify costs on the fly and add additional resource providers.
+
 ## 2.1.1
 Released 8 January 2025.
 

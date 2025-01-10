@@ -219,22 +219,22 @@ partial class ApiImplementation
 				=> V1.GetTooltips(state, combat);
 		}
 
-		internal sealed class V1ToV2ResourceWrapper(IKokoroApi.IActionCostApi.IResource v1) : IKokoroApi.IV2.IActionCostsApi.IResource
+		internal sealed class V1ToV2ResourceWrapper(IKokoroApi.IActionCostApi.IResource v1) : BaseActionCostResource
 		{
 			[JsonProperty]
 			private readonly IKokoroApi.IActionCostApi.IResource V1 = v1;
 			
 			[JsonIgnore]
-			public string ResourceKey
+			public override string ResourceKey
 				=> V1.ResourceKey;
 			
-			public int GetCurrentResourceAmount(State state, Combat combat)
+			public override int GetCurrentResourceAmount(State state, Combat combat)
 				=> V1.GetCurrentResourceAmount(state, combat);
 
-			public void Pay(State state, Combat combat, int amount)
+			public override void Pay(State state, Combat combat, int amount)
 				=> V1.PayResource(state, combat, amount);
 
-			public IReadOnlyList<Tooltip> GetTooltips(State state, Combat combat, int amount)
+			public override IReadOnlyList<Tooltip> GetTooltips(State state, Combat combat, int amount)
 				=> V1.GetTooltips(state, combat, amount);
 		}
 
@@ -285,6 +285,9 @@ partial class ApiImplementation
 		
 		public sealed class ActionCostsApi : IKokoroApi.IV2.IActionCostsApi
 		{
+			public IKokoroApi.IV2.IActionCostsApi.ICost ModifyActionCost(IKokoroApi.IV2.IActionCostsApi.ICost cost, State state, Combat combat, Card? card, CardAction? action)
+				=> ActionCostsManager.Instance.ModifyActionCost(state, combat, card, action, cost);
+
 			public void RegisterHook(IKokoroApi.IV2.IActionCostsApi.IHook hook, double priority = 0)
 				=> ActionCostsManager.Instance.Register(hook, priority);
 
@@ -347,11 +350,23 @@ partial class ApiImplementation
 			public IKokoroApi.IV2.IActionCostsApi.ICombinedCost MakeCombinedCost(IEnumerable<IKokoroApi.IV2.IActionCostsApi.ICost> costs)
 				=> new CombinedResourceActionCost { Costs = costs.ToList() };
 
+			public IKokoroApi.IV2.IActionCostsApi.IResourceProvider StateResourceProvider
+				=> ActionCostStateResourceProvider.Instance;
+			
+			public void RegisterResourceProvider(IKokoroApi.IV2.IActionCostsApi.IResourceProvider resourceProvider, double priority = 0)
+				=> ActionCostsManager.Instance.ResourceProviders.Add(resourceProvider, priority);
+
+			public void UnregisterResourceProvider(IKokoroApi.IV2.IActionCostsApi.IResourceProvider resourceProvider)
+				=> ActionCostsManager.Instance.ResourceProviders.Remove(resourceProvider);
+
 			public IKokoroApi.IV2.IActionCostsApi.IMockPaymentEnvironment MakeMockPaymentEnvironment(IKokoroApi.IV2.IActionCostsApi.IPaymentEnvironment? @default = null)
 				=> new ActionCostMockPaymentEnvironment(@default);
 
 			public IKokoroApi.IV2.IActionCostsApi.IPaymentEnvironment MakeStatePaymentEnvironment(State state, Combat combat)
-				=> new ActionCostStatePaymentEnvironment { State = state, Combat = combat };
+				=> new ActionCostStatePaymentEnvironment { State = state, Combat = combat, Card = null };
+
+			public IKokoroApi.IV2.IActionCostsApi.IPaymentEnvironment MakeStatePaymentEnvironment(State state, Combat combat, Card? card)
+				=> new ActionCostStatePaymentEnvironment { State = state, Combat = combat, Card = card };
 
 			public IKokoroApi.IV2.IActionCostsApi.ITransaction MakeTransaction()
 				=> new ActionCostTransaction { Payments = [] };
@@ -359,7 +374,7 @@ partial class ApiImplementation
 			public IKokoroApi.IV2.IActionCostsApi.ITransaction GetBestTransaction(IKokoroApi.IV2.IActionCostsApi.ICost cost, IKokoroApi.IV2.IActionCostsApi.IPaymentEnvironment environment)
 			{
 				var baseTransaction = MakeTransaction();
-				var allTransactions = cost.GetPossibleTransactions([], baseTransaction).Cached();
+				var allTransactions = cost.GetPossibleTransactions([], baseTransaction).ToList();
 				if (allTransactions.FirstOrDefault(t => t.TestPayment(environment).UnpaidResources.Count == 0) is { } successfulTransaction)
 					return successfulTransaction;
 				if (!allTransactions.Any())
@@ -367,12 +382,20 @@ partial class ApiImplementation
 				return allTransactions.MinBy(t => t.TestPayment(environment).TotalUnpaid)!;
 			}
 			
+			internal sealed class ModifyActionCostArgs : IKokoroApi.IV2.IActionCostsApi.IHook.IModifyActionCostArgs
+			{
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public Card? Card { get; internal set; }
+				public CardAction? Action { get; internal set; }
+				public IKokoroApi.IV2.IActionCostsApi.ICost Cost { get; set; } = null!;
+			}
+			
 			internal sealed class OnActionCostsTransactionFinishedArgs : IKokoroApi.IV2.IActionCostsApi.IHook.IOnActionCostsTransactionFinishedArgs
 			{
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public Card? Card { get; internal set; }
-				public int Direction { get; internal set; }
 				public IKokoroApi.IV2.IActionCostsApi.IWholeTransactionPaymentResult TransactionPaymentResult { get; internal set; } = null!;
 			}
 		}
@@ -383,14 +406,19 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 {
 	internal static readonly ActionCostsManager Instance = new();
 
+	internal readonly OrderedList<IKokoroApi.IV2.IActionCostsApi.IResourceProvider, double> ResourceProviders = new(ascending: false);
 	internal readonly Dictionary<string, OrderedList<(int Amount, Spr SatisfiedIcon, Spr UnsatisfiedIcon), int>> ResourceCostIcons = [];
+	internal readonly Pool<ActionCostContext> ActionCostContextPool = new(() => new());
+	
 	private readonly HashSet<string> LoggedMissingResourceCostIconWarnings = [];
 	private readonly HashSet<string> LoggedImpossibleResourceCostIconWarnings = [];
 
 	private static IKokoroApi.IV2.IActionCostsApi.IMockPaymentEnvironment? CurrentDrawingEnvironment;
+	private static Card? RenderedCard;
 
 	private ActionCostsManager() : base(ModEntry.Instance.Package.Manifest.UniqueName)
 	{
+		ResourceProviders.Add(ActionCostStateResourceProvider.Instance, 0);
 	}
 	
 	internal static void Setup(IHarmony harmony)
@@ -415,6 +443,10 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(State), nameof(State.Render)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(State_Render_Postfix))
+		);
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Transpiler))
 		);
 	}
 
@@ -475,6 +507,28 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 			}
 
 			return null;
+		}
+	}
+
+	internal IKokoroApi.IV2.IActionCostsApi.ICost ModifyActionCost(State state, Combat combat, Card? card, CardAction? action, IKokoroApi.IV2.IActionCostsApi.ICost cost)
+	{
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.ActionCostsApi.ModifyActionCostArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Card = card;
+			args.Action = action;
+			args.Cost = cost;
+		
+			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				if (hook.ModifyActionCost(args))
+					return args.Cost;
+			return args.Cost;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
 		}
 	}
 	
@@ -543,15 +597,26 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 
 	private static List<CardAction> Card_MakeAllActionIcons_Transpiler_ModifyActions(List<CardAction> actions, Card card, State state)
 	{
-		var energyResource = actions
+		RenderedCard = card;
+
+		var allActions = actions
 			.SelectMany(a => WrappedActionManager.Instance.GetWrappedCardActionsRecursively(a, includingWrapperActions: true))
+			.Cached();
+
+		if (!allActions.Any(a => a is AResourceCost || a.shardcost > 0))
+		{
+			CurrentDrawingEnvironment = null;
+			return actions;
+		}
+		
+		var energyResource = allActions
 			.OfType<AResourceCost>()
 			.Select(a => a.Cost)
 			.SelectMany(c => c.MonitoredResources)
 			.OfType<IKokoroApi.IV2.IActionCostsApi.IEnergyResource>()
 			.FirstOrDefault();
 
-		var stateEnvironment = ModEntry.Instance.Api.V2.ActionCosts.MakeStatePaymentEnvironment(state, state.route as Combat ?? DB.fakeCombat);
+		var stateEnvironment = ModEntry.Instance.Api.V2.ActionCosts.MakeStatePaymentEnvironment(state, state.route as Combat ?? DB.fakeCombat, card);
 		var drawingEnvironment = ModEntry.Instance.Api.V2.ActionCosts.MakeMockPaymentEnvironment(stateEnvironment);
 		if (energyResource is not null)
 			drawingEnvironment.SetAvailableResource(energyResource, drawingEnvironment.GetAvailableResource(energyResource) - card.GetDataWithOverrides(state).cost);
@@ -559,52 +624,125 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 		CurrentDrawingEnvironment = drawingEnvironment;
 		return actions;
 	}
-	
+
 	private static void Card_MakeAllActionIcons_Finalizer()
-		=> CurrentDrawingEnvironment = null;
+	{
+		RenderedCard = null;
+		CurrentDrawingEnvironment = null;
+	}
 	
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
 	{
-		if (action is not AResourceCost resourceCostAction)
-			return true;
-		if (resourceCostAction.Action is not { } wrappedAction)
-			return false;
-		
-		var environment = CurrentDrawingEnvironment ?? ModEntry.Instance.Api.V2.ActionCosts.MakeMockPaymentEnvironment();
-		if (dontDraw)
-			environment = ModEntry.Instance.Api.V2.ActionCosts.MakeMockPaymentEnvironment(environment);
-
-		var oldActionDisabled = wrappedAction.disabled;
-		wrappedAction.disabled = action.disabled;
-
-		var position = g.Push(rect: new()).rect.xy;
-		var initialX = (int)position.x;
-
-		var transaction = ModEntry.Instance.Api.V2.ActionCosts.GetBestTransaction(resourceCostAction.Cost, environment);
-		var transactionPaymentResult = transaction.Pay(environment);
-		resourceCostAction.Cost.Render(g, ref position, action.disabled, dontDraw, transactionPaymentResult);
-
-		position.x += 2;
-		if (wrappedAction is AAttack attack)
+		if (action.shardcost > 0)
 		{
-			var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
-			if (shouldStun)
-				attack.stunEnemy = shouldStun;
+			var oldShardcost = action.shardcost.Value;
+			IKokoroApi.IV2.IActionCostsApi.ICost cost = ModEntry.Instance.Api.V2.ActionCosts.MakeResourceCost(ModEntry.Instance.Api.V2.ActionCosts.MakeStatusResource(Status.shard), oldShardcost);
+			action.shardcost = null;
+			
+			if (action is AResourceCost resourceCostAction)
+				resourceCostAction.Cost = ModEntry.Instance.Api.V2.ActionCosts.MakeCombinedCost([cost, resourceCostAction.Cost]);
+			else
+				resourceCostAction = new AResourceCost { Cost = cost, Action = action };
+			
+			RenderResourceCostAction(resourceCostAction, ref __result);
+			action.shardcost = oldShardcost;
+			return false;
+		}
+		else if (action is AResourceCost resourceCostAction)
+		{
+			RenderResourceCostAction(resourceCostAction, ref __result);
+			return false;
 		}
 
-		g.Push(rect: new(position.x - initialX));
-		position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
-		g.Pop();
+		return true;
 
-		__result = (int)position.x - initialX;
-		g.Pop();
-		wrappedAction.disabled = oldActionDisabled;
+		void RenderResourceCostAction(AResourceCost resourceCostAction, ref int width)
+		{
+			if (resourceCostAction.Action is not { } wrappedAction)
+				return;
+		
+			var environment = CurrentDrawingEnvironment ?? ModEntry.Instance.Api.V2.ActionCosts.MakeMockPaymentEnvironment();
+			if (dontDraw)
+				environment = ModEntry.Instance.Api.V2.ActionCosts.MakeMockPaymentEnvironment(environment);
 
-		return false;
+			var oldActionDisabled = wrappedAction.disabled;
+			wrappedAction.disabled = action.disabled;
+
+			var position = g.Push(rect: new()).rect.xy;
+			var initialX = (int)position.x;
+
+			var cost = Instance.ModifyActionCost(state, state.route as Combat ?? DB.fakeCombat, RenderedCard, resourceCostAction.Action, resourceCostAction.Cost);
+			var transaction = ModEntry.Instance.Api.V2.ActionCosts.GetBestTransaction(cost, environment);
+			var transactionPaymentResult = transaction.Pay(environment);
+			cost.Render(g, ref position, action.disabled, dontDraw, transactionPaymentResult);
+
+			position.x += 2;
+			if (wrappedAction is AAttack attack)
+			{
+				var shouldStun = state.EnumerateAllArtifacts().Any(a => a.ModifyAttacksToStun(state, state.route as Combat) == true);
+				if (shouldStun)
+					attack.stunEnemy = shouldStun;
+			}
+
+			g.Push(rect: new(position.x - initialX));
+			position.x += Card.RenderAction(g, state, wrappedAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+			g.Pop();
+
+			width = (int)position.x - initialX;
+			g.Pop();
+			wrappedAction.disabled = oldActionDisabled;
+		}
 	}
 	
 	private static void State_Render_Postfix()
 		=> CurrentDrawingEnvironment = null;
+	
+	private static IEnumerable<CodeInstruction> Combat_DrainCardActions_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
+	{
+		// ReSharper disable PossibleMultipleEnumeration
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find([
+					ILMatches.Ldarg(0),
+					ILMatches.Ldfld("currentCardAction"),
+					ILMatches.Ldflda("shardcost"),
+					ILMatches.Call("get_HasValue"),
+					ILMatches.Brtrue.GetBranchTarget(out var hasShardcostLabel),
+				])
+				.PointerMatcher(SequenceMatcherRelativeElement.AfterLast)
+				.CreateLabel(il, out var noShardcostLabel)
+				.PointerMatcher(hasShardcostLabel)
+				.ExtractLabels(out var hasShardcostLabels)
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(hasShardcostLabels),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Transpiler_ReplaceShardcostWithActionCost))),
+					new CodeInstruction(OpCodes.Br, noShardcostLabel),
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Name, ex);
+			return instructions;
+		}
+		// ReSharper restore PossibleMultipleEnumeration
+	}
+
+	private static void Combat_DrainCardActions_Transpiler_ReplaceShardcostWithActionCost(Combat combat)
+	{
+		if (combat.currentCardAction is not { shardcost: { } shardAmount and > 0 } action)
+			return;
+		
+		IKokoroApi.IV2.IActionCostsApi.ICost cost = ModEntry.Instance.Api.V2.ActionCosts.MakeResourceCost(ModEntry.Instance.Api.V2.ActionCosts.MakeStatusResource(Status.shard), shardAmount);
+		action.shardcost = 0;
+			
+		if (action is AResourceCost resourceCostAction)
+			resourceCostAction.Cost = ModEntry.Instance.Api.V2.ActionCosts.MakeCombinedCost([cost, resourceCostAction.Cost]);
+		else
+			resourceCostAction = new AResourceCost { Cost = cost, Action = action };
+		combat.currentCardAction = resourceCostAction;
+	}
 }
 
 internal record ResourceCostIcon(
@@ -612,6 +750,24 @@ internal record ResourceCostIcon(
 	Spr CostSatisfiedIcon,
 	Spr CostUnsatisfiedIcon
 ) : IKokoroApi.IV2.IActionCostsApi.IResourceCostIcon;
+
+internal sealed class ActionCostContext : IKokoroApi.IV2.IActionCostsApi.IActionCostContext
+{
+	public State State { get; internal set; } = null!;
+	public Combat Combat { get; internal set; } = null!;
+	public Card? Card { get; internal set; }
+}
+
+internal sealed class ActionCostStateResourceProvider : IKokoroApi.IV2.IActionCostsApi.IResourceProvider
+{
+	internal static readonly ActionCostStateResourceProvider Instance = new();
+	
+	public int GetCurrentResourceAmount(IKokoroApi.IV2.IActionCostsApi.IActionCostContext context, IKokoroApi.IV2.IActionCostsApi.IResource resource)
+		=> resource.GetCurrentResourceAmount(context.State, context.Combat);
+
+	public void Pay(IKokoroApi.IV2.IActionCostsApi.IActionCostContext context, IKokoroApi.IV2.IActionCostsApi.IResource resource, int amount)
+		=> resource.Pay(context.State, context.Combat, amount);
+}
 
 internal sealed class ActionCostMockPaymentEnvironment(IKokoroApi.IV2.IActionCostsApi.IPaymentEnvironment? @default) : IKokoroApi.IV2.IActionCostsApi.IMockPaymentEnvironment
 {
@@ -645,18 +801,49 @@ internal sealed class ActionCostStatePaymentEnvironment : IKokoroApi.IV2.IAction
 {
 	public required State State { get; init; }
 	public required Combat Combat { get; init; }
+	public Card? Card { get; init; }
 
 	public int GetAvailableResource(IKokoroApi.IV2.IActionCostsApi.IResource resource)
-		=> resource.GetCurrentResourceAmount(State, Combat);
+		=> ActionCostsManager.Instance.ActionCostContextPool.Do(context =>
+		{
+			context.State = State;
+			context.Combat = Combat;
+			context.Card = Card;
+			return ActionCostsManager.Instance.ResourceProviders.Sum(provider => provider.GetCurrentResourceAmount(context, resource));
+		});
 
 	public bool TryPayResource(IKokoroApi.IV2.IActionCostsApi.IResource resource, int amount)
-	{
-		if (Combat == DB.fakeCombat)
-			return false;
-		
-		resource.Pay(State, Combat, amount);
-		return true;
-	}
+		=> ActionCostsManager.Instance.ActionCostContextPool.Do(context =>
+		{
+			context.State = State;
+			context.Combat = Combat;
+			context.Card = Card;
+			
+			if (Combat == DB.fakeCombat)
+				return false;
+			
+			var providers = ActionCostsManager.Instance.ResourceProviders.ToList();
+			var providerIndex = 0;
+			while (amount > 0)
+			{
+				if (providerIndex >= providers.Count)
+					break;
+				var provider = providers[providerIndex];
+
+				var providerAmount = provider.GetCurrentResourceAmount(context, resource);
+				if (providerAmount <= 0)
+				{
+					providerIndex++;
+					continue;
+				}
+				
+				var maxToPay = Math.Min(amount, providerAmount);
+				provider.Pay(context, resource, maxToPay);
+				amount -= maxToPay;
+			}
+			
+			return amount <= 0;
+		});
 }
 
 internal sealed class ActionCostTransaction : IKokoroApi.IV2.IActionCostsApi.ITransaction
@@ -691,7 +878,7 @@ internal sealed class ActionCostTransaction : IKokoroApi.IV2.IActionCostsApi.ITr
 
 	public IKokoroApi.IV2.IActionCostsApi.IWholeTransactionPaymentResult Pay(IKokoroApi.IV2.IActionCostsApi.IPaymentEnvironment environment)
 	{
-		var paymentResults = new List<IKokoroApi.IV2.IActionCostsApi.ITransactionPaymentResult>();
+		var paymentResults = new List<IKokoroApi.IV2.IActionCostsApi.ITransactionPaymentResult>(Payments.Count);
 
 		foreach (var payment in Payments)
 		{
@@ -793,7 +980,8 @@ internal sealed class AResourceCost : CardAction, IKokoroApi.IV2.IActionCostsApi
 		base.Begin(g, s, c);
 		timer = 0;
 
-		var environment = ModEntry.Instance.Api.V2.ActionCosts.MakeStatePaymentEnvironment(s, c);
+		var card = CardId is { } cardId ? s.FindCard(cardId) : null;
+		var environment = ModEntry.Instance.Api.V2.ActionCosts.MakeStatePaymentEnvironment(s, c, card);
 		var baseTransaction = ModEntry.Instance.Api.V2.ActionCosts.MakeTransaction();
 		if (ChooseBestTransaction() is not { } transaction)
 			return;
@@ -807,11 +995,11 @@ internal sealed class AResourceCost : CardAction, IKokoroApi.IV2.IActionCostsApi
 		
 		c.QueueImmediate(Action);
 
-		var card = CardId is { } cardId ? s.FindCard(cardId) : null;
 		ActionCostsManager.Instance.OnActionCostsTransactionFinished(s, c, card, paymentResult);
 
 		IKokoroApi.IV2.IActionCostsApi.ITransaction? ChooseBestTransaction()
-			=> Cost.GetPossibleTransactions([], baseTransaction)
+			=> ActionCostsManager.Instance.ModifyActionCost(s, c, card, Action, Cost)
+				.GetPossibleTransactions([], baseTransaction)
 				.FirstOrDefault(t => t.TestPayment(environment).UnpaidResources.Count == 0);
 	}
 
@@ -922,46 +1110,42 @@ internal sealed class ResourceActionCost : IKokoroApi.IV2.IActionCostsApi.IResou
 			case IKokoroApi.IV2.IActionCostsApi.ResourceCostDisplayStyle.RepeatedIcon:
 			{
 				var isFirst = true;
-				foreach (var payment in relatedPayments)
+				foreach (var icon in relatedPayments.SelectMany(p => GetIcons(p, true)).Concat(relatedPayments.SelectMany(p => GetIcons(p, false))))
 				{
-					foreach (var icon in GetIcons())
-					{
-						if (!isFirst)
-							position.x += Spacing;
+					if (!isFirst)
+						position.x += Spacing;
 					
-						if (!dontRender)
-							Draw.Sprite(icon, position.x, position.y, color: isDisabled ? Colors.disabledIconTint : Colors.white);
+					if (!dontRender)
+						Draw.Sprite(icon, position.x, position.y, color: isDisabled ? Colors.disabledIconTint : Colors.white);
 					
-						var texture = SpriteLoader.Get(icon)!;
-						position.x += texture.Width;
-						isFirst = false;
-					}
-					
-					IReadOnlyList<Spr> GetIcons()
-					{
-						var iconsResult = new List<Spr>();
-
-						if (payment.Paid != 0)
-						{
-							if (CostSatisfiedIconOverride is { } icons)
-								iconsResult.AddRange(icons);
-							else
-								iconsResult.AddRange(ActionCostsManager.Instance.GetResourceCostIcons(payment.Payment.Resource.ResourceKey, payment.Paid).Select(i => i.CostSatisfiedIcon));
-						}
-						
-						if (payment.Unpaid != 0)
-						{
-							if (CostUnsatisfiedIconOverride is { } icons)
-								iconsResult.AddRange(icons);
-							else
-								iconsResult.AddRange(ActionCostsManager.Instance.GetResourceCostIcons(payment.Payment.Resource.ResourceKey, payment.Unpaid).Select(i => i.CostUnsatisfiedIcon));
-						}
-
-						return iconsResult;
-					}
+					var texture = SpriteLoader.Get(icon)!;
+					position.x += texture.Width;
+					isFirst = false;
 				}
-				
 				break;
+				
+				IReadOnlyList<Spr> GetIcons(IKokoroApi.IV2.IActionCostsApi.ITransactionPaymentResult payment, bool paid)
+				{
+					var iconsResult = new List<Spr>();
+
+					if (paid && payment.Paid != 0)
+					{
+						if (CostSatisfiedIconOverride is { } icons)
+							iconsResult.AddRange(icons);
+						else
+							iconsResult.AddRange(ActionCostsManager.Instance.GetResourceCostIcons(payment.Payment.Resource.ResourceKey, payment.Paid).Select(i => i.CostSatisfiedIcon));
+					}
+						
+					if (!paid && payment.Unpaid != 0)
+					{
+						if (CostUnsatisfiedIconOverride is { } icons)
+							iconsResult.AddRange(icons);
+						else
+							iconsResult.AddRange(ActionCostsManager.Instance.GetResourceCostIcons(payment.Payment.Resource.ResourceKey, payment.Unpaid).Select(i => i.CostUnsatisfiedIcon));
+					}
+
+					return iconsResult;
+				}
 			}
 			case IKokoroApi.IV2.IActionCostsApi.ResourceCostDisplayStyle.IconAndNumber:
 			{
@@ -1124,6 +1308,9 @@ internal abstract class BaseActionCostResource : IKokoroApi.IV2.IActionCostsApi.
 	public abstract int GetCurrentResourceAmount(State state, Combat combat);
 	public abstract void Pay(State state, Combat combat, int amount);
 	public abstract IReadOnlyList<Tooltip> GetTooltips(State state, Combat combat, int amount);
+
+	public override string ToString()
+		=> ResourceKey;
 	
 	public override bool Equals(object? obj)
 		=> obj is BaseActionCostResource resource && resource.ResourceKey == ResourceKey;
@@ -1139,7 +1326,14 @@ internal sealed class ActionCostStatusResource : BaseActionCostResource, IKokoro
 
 	[JsonIgnore]
 	public override string ResourceKey
-		=> $"actioncost.resource.status.{Status.Key()}.{(TargetPlayer ? "player" : "enemy")}";
+		=> LazyResourceKey.Value;
+
+	private readonly Lazy<string> LazyResourceKey;
+
+	public ActionCostStatusResource()
+	{
+		this.LazyResourceKey = new(() => $"actioncost.resource.status.{Status.Key()}.{(TargetPlayer ? "player" : "enemy")}");
+	}
 
 	public override int GetCurrentResourceAmount(State state, Combat combat)
 	{
