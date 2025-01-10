@@ -13,6 +13,8 @@ namespace Shockah.Destiny;
 
 internal sealed class Enchanted : IRegisterable
 {
+	internal static ICardTraitEntry EnchantedTrait { get; private set; } = null!;
+	
 	private static ISpriteEntry[] EnchantedOf2Icons { get; set; } = null!;
 	private static ISpriteEntry[] EnchantedOf3Icons { get; set; } = null!;
 	private static ISpriteEntry Enchanted1of2CardArt = null!;
@@ -21,9 +23,8 @@ internal sealed class Enchanted : IRegisterable
 	private static ISpriteEntry Enchanted1of2Split1to2CardArt = null!;
 	private static ISpriteEntry Enchanted1of2Split2to1CardArt = null!;
 	private static ISpriteEntry EnchantedFullCardArt = null!;
-	internal static ICardTraitEntry EnchantedTrait { get; private set; } = null!;
 
-	private static readonly Color PaidGateColor = new("122537");
+	private static readonly Color PaidGateColor = new("000000");
 	private static readonly Color NextGateColor = new("51A7F8");
 	private static readonly Color FutureGateColor = new("0A1F53");
 	
@@ -292,7 +293,7 @@ internal sealed class Enchanted : IRegisterable
 		if (GetNextEnchantLevelCost(card) is not { } cost)
 			return false;
 		
-		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, state.route as Combat ?? DB.fakeCombat);
+		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, state.route as Combat ?? DB.fakeCombat, card);
 		var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(cost, environment);
 		var transactionPaymentResult = transaction.TestPayment(environment);
 
@@ -327,6 +328,7 @@ internal sealed class Enchanted : IRegisterable
 	{
 		if (GetEnchantLevelCost(card.Key(), card.upgrade, action.Level) is not { } actionCost)
 			return 0;
+		actionCost = ModEntry.Instance.KokoroApi.ActionCosts.ModifyActionCost(Mutil.DeepCopy(actionCost), state, state.route as Combat ?? DB.fakeCombat, card, action);
 		
 		var enchantLevel = GetEnchantLevel(card);
 		var gateColor = (action.Level - enchantLevel) switch
@@ -335,8 +337,16 @@ internal sealed class Enchanted : IRegisterable
 			<= 0 => PaidGateColor,
 			_ => FutureGateColor,
 		};
+
+		const int iconLeftMargin = 2;
 		
-		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeMockPaymentEnvironment(ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, state.route as Combat ?? DB.fakeCombat));
+		var position = g.Push(rect: new(x: iconLeftMargin)).rect.xy;
+		var initialX = (int)position.x;
+		
+		if (!dontDraw)
+			Draw.Rect(position.x - iconLeftMargin, position.y + 4, 53, 1, gateColor);
+		
+		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeMockPaymentEnvironment(ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, state.route as Combat ?? DB.fakeCombat, card));
 
 		var previousUnpaidEnchantLevelCosts = EnchantLevelCosts.GetValueOrDefault(card.Key())?.GetValueOrDefault(card.upgrade)
 			?.OrderBy(kvp => kvp.Key)
@@ -344,47 +354,32 @@ internal sealed class Enchanted : IRegisterable
 
 		foreach (var (_, previousUnpaidEnchantLevelCost) in previousUnpaidEnchantLevelCosts)
 		{
-			var transactionBefore = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(previousUnpaidEnchantLevelCost, environment);
+			var modifiedCost = ModEntry.Instance.KokoroApi.ActionCosts.ModifyActionCost(Mutil.DeepCopy(previousUnpaidEnchantLevelCost), state, state.route as Combat ?? DB.fakeCombat, card, action);
+			var transactionBefore = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(modifiedCost, environment);
 			transactionBefore.Pay(environment);
 		}
-		
-		var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(actionCost, environment);
 
-		if (enchantLevel >= action.Level)
+		if (enchantLevel < action.Level)
 		{
-			if (GetEnchantLevelPayment(card, enchantLevel + 1) is { } payment)
-				foreach (var singlePayment in payment)
-					environment.SetAvailableResource(singlePayment.Payment.Resource, environment.GetAvailableResource(singlePayment.Payment.Resource) + singlePayment.Paid);
-			else
-				foreach (var (resource, amount) in transaction.Resources)
-					environment.SetAvailableResource(resource, amount);
-		}
-		
-		var transactionPaymentResult = transaction.TestPayment(environment);
-		var transactionPaymentResultKey = TransactionWholePaymentResultDictionaryKey.From(transactionPaymentResult);
+			var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(actionCost, environment);
+			var transactionPaymentResult = transaction.TestPayment(environment);
+			var transactionPaymentResultKey = TransactionWholePaymentResultDictionaryKey.From(transactionPaymentResult);
+			
+			if (!dontDraw && CostOutlineSprites.TryGetValue(transactionPaymentResultKey, out var costOutlineSprite))
+				Draw.Sprite(costOutlineSprite.Sprite, position.x - 1, position.y - 1, color: gateColor);
+			
+			actionCost.Render(g, ref position, false, dontDraw, transactionPaymentResult);
+			var costWidth = (int)position.x - initialX;
 
-		const int iconLeftMargin = 2;
-		
-		var position = g.Push(rect: new(x: iconLeftMargin)).rect.xy;
-		var initialX = (int)position.x;
-
-		if (!dontDraw && CostOutlineSprites.TryGetValue(transactionPaymentResultKey, out var costOutlineSprite))
-		{
-			Draw.Rect(position.x - iconLeftMargin, position.y + 4, 53, 1, gateColor);
-			Draw.Sprite(costOutlineSprite.Sprite, position.x - 1, position.y - 1, color: gateColor);
-		}
-		
-		actionCost.Render(g, ref position, enchantLevel >= action.Level, dontDraw, transactionPaymentResult);
-		var costWidth = (int)position.x - initialX;
-
-		if (!CostOutlineSprites.ContainsKey(transactionPaymentResultKey))
-		{
-			var baseTexture = TextureUtils.CreateTexture(costWidth, 10, () =>
+			if (!CostOutlineSprites.ContainsKey(transactionPaymentResultKey))
 			{
-				var position = Vec.Zero;
-				actionCost.Render(g, ref position, false, false, transactionPaymentResult);
-			});
-			CostOutlineSprites[transactionPaymentResultKey] = TextureOutlines.CreateOutlineSprite(baseTexture, true, true, true);
+				var baseTexture = TextureUtils.CreateTexture(costWidth, 10, () =>
+				{
+					var position = Vec.Zero;
+					actionCost.Render(g, ref position, false, false, transactionPaymentResult);
+				});
+				CostOutlineSprites[transactionPaymentResultKey] = TextureOutlines.CreateOutlineSprite(baseTexture, true, true, true);
+			}
 		}
 		
 		g.Pop();
