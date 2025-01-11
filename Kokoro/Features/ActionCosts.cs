@@ -638,7 +638,8 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 		if (action.shardcost > 0)
 		{
 			var oldShardcost = action.shardcost.Value;
-			IKokoroApi.IV2.IActionCostsApi.ICost cost = ModEntry.Instance.Api.V2.ActionCosts.MakeResourceCost(ModEntry.Instance.Api.V2.ActionCosts.MakeStatusResource(Status.shard), oldShardcost);
+			IKokoroApi.IV2.IActionCostsApi.ICost cost = ModEntry.Instance.Api.V2.ActionCosts.MakeResourceCost(ModEntry.Instance.Api.V2.ActionCosts.MakeStatusResource(Status.shard), oldShardcost)
+				.SetDisplayStyle(IKokoroApi.IV2.IActionCostsApi.ResourceCostDisplayStyle.RepeatedIcon);
 			action.shardcost = null;
 			
 			if (action is AResourceCost resourceCostAction)
