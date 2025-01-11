@@ -43,7 +43,7 @@ internal sealed class ChainReactionArtifact : Artifact, IRegisterable, IDestinyA
 		base.OnPlayerPlayCard(energyCost, deck, card, state, combat, handPosition, handCount);
 		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Explosive.ExplosiveTrait))
 			return;
-		combat.Queue(new BoostExplosiveAction());
+		combat.Queue(new BoostExplosiveAction { artifactPulse = Key() });
 	}
 
 	public void ModifyExplosiveDamage(IDestinyApi.IHook.IModifyExplosiveDamageArgs args)
