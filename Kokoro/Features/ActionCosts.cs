@@ -374,7 +374,7 @@ partial class ApiImplementation
 			public IKokoroApi.IV2.IActionCostsApi.ITransaction GetBestTransaction(IKokoroApi.IV2.IActionCostsApi.ICost cost, IKokoroApi.IV2.IActionCostsApi.IPaymentEnvironment environment)
 			{
 				var baseTransaction = MakeTransaction();
-				var allTransactions = cost.GetPossibleTransactions([], baseTransaction).ToList();
+				var allTransactions = cost.GetPossibleTransactions([], baseTransaction).Cached();
 				if (allTransactions.FirstOrDefault(t => t.TestPayment(environment).UnpaidResources.Count == 0) is { } successfulTransaction)
 					return successfulTransaction;
 				if (!allTransactions.Any())
@@ -398,6 +398,23 @@ partial class ApiImplementation
 				public Card? Card { get; internal set; }
 				public IKokoroApi.IV2.IActionCostsApi.IWholeTransactionPaymentResult TransactionPaymentResult { get; internal set; } = null!;
 			}
+			
+			internal sealed class ResourceProviderGetCurrentResourceAmountArgs : IKokoroApi.IV2.IActionCostsApi.IResourceProvider.IGetCurrentResourceAmountArgs
+			{
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public Card? Card { get; internal set; }
+				public IKokoroApi.IV2.IActionCostsApi.IResource Resource { get; internal set; } = null!;
+			}
+			
+			internal sealed class ResourceProviderPayResourceArgs : IKokoroApi.IV2.IActionCostsApi.IResourceProvider.IPayResourceArgs
+			{
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public Card? Card { get; internal set; }
+				public IKokoroApi.IV2.IActionCostsApi.IResource Resource { get; internal set; } = null!;
+				public int Amount { get; internal set; }
+			}
 		}
 	}
 }
@@ -408,7 +425,6 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 
 	internal readonly OrderedList<IKokoroApi.IV2.IActionCostsApi.IResourceProvider, double> ResourceProviders = new(ascending: false);
 	internal readonly Dictionary<string, OrderedList<(int Amount, Spr SatisfiedIcon, Spr UnsatisfiedIcon), int>> ResourceCostIcons = [];
-	internal readonly Pool<ActionCostContext> ActionCostContextPool = new(() => new());
 	
 	private readonly HashSet<string> LoggedMissingResourceCostIconWarnings = [];
 	private readonly HashSet<string> LoggedImpossibleResourceCostIconWarnings = [];
@@ -629,7 +645,7 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 				resourceCostAction.Cost = ModEntry.Instance.Api.V2.ActionCosts.MakeCombinedCost([cost, resourceCostAction.Cost]);
 			else
 				resourceCostAction = new AResourceCost { Cost = cost, Action = action };
-			ModEntry.Instance.Api.V2.ActionSource.SetSourceCardId(resourceCostAction, ModEntry.Instance.Api.V2.ActionSource.GetSourceCardId(action));
+			ModEntry.Instance.Api.V2.ActionInfo.SetSourceCardId(resourceCostAction, ModEntry.Instance.Api.V2.ActionInfo.GetSourceCardId(action));
 			
 			RenderResourceCostAction(resourceCostAction, ref __result);
 			action.shardcost = oldShardcost;
@@ -728,7 +744,7 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 			resourceCostAction.Cost = ModEntry.Instance.Api.V2.ActionCosts.MakeCombinedCost([cost, resourceCostAction.Cost]);
 		else
 			resourceCostAction = new AResourceCost { Cost = cost, Action = action };
-		ModEntry.Instance.Api.V2.ActionSource.SetSourceCardId(resourceCostAction, ModEntry.Instance.Api.V2.ActionSource.GetSourceCardId(combat.currentCardAction));
+		ModEntry.Instance.Api.V2.ActionInfo.SetSourceCardId(resourceCostAction, ModEntry.Instance.Api.V2.ActionInfo.GetSourceCardId(combat.currentCardAction));
 		combat.currentCardAction = resourceCostAction;
 	}
 }
@@ -739,22 +755,15 @@ internal record ResourceCostIcon(
 	Spr CostUnsatisfiedIcon
 ) : IKokoroApi.IV2.IActionCostsApi.IResourceCostIcon;
 
-internal sealed class ActionCostContext : IKokoroApi.IV2.IActionCostsApi.IActionCostContext
-{
-	public State State { get; internal set; } = null!;
-	public Combat Combat { get; internal set; } = null!;
-	public Card? Card { get; internal set; }
-}
-
 internal sealed class ActionCostStateResourceProvider : IKokoroApi.IV2.IActionCostsApi.IResourceProvider
 {
 	internal static readonly ActionCostStateResourceProvider Instance = new();
-	
-	public int GetCurrentResourceAmount(IKokoroApi.IV2.IActionCostsApi.IActionCostContext context, IKokoroApi.IV2.IActionCostsApi.IResource resource)
-		=> resource.GetCurrentResourceAmount(context.State, context.Combat);
 
-	public void Pay(IKokoroApi.IV2.IActionCostsApi.IActionCostContext context, IKokoroApi.IV2.IActionCostsApi.IResource resource, int amount)
-		=> resource.Pay(context.State, context.Combat, amount);
+	public int GetCurrentResourceAmount(IKokoroApi.IV2.IActionCostsApi.IResourceProvider.IGetCurrentResourceAmountArgs args)
+		=> args.Resource.GetCurrentResourceAmount(args.State, args.Combat);
+
+	public void PayResource(IKokoroApi.IV2.IActionCostsApi.IResourceProvider.IPayResourceArgs args)
+		=> args.Resource.Pay(args.State, args.Combat, args.Amount);
 }
 
 internal sealed class ActionCostMockPaymentEnvironment(IKokoroApi.IV2.IActionCostsApi.IPaymentEnvironment? @default) : IKokoroApi.IV2.IActionCostsApi.IMockPaymentEnvironment
@@ -792,24 +801,34 @@ internal sealed class ActionCostStatePaymentEnvironment : IKokoroApi.IV2.IAction
 	public Card? Card { get; init; }
 
 	public int GetAvailableResource(IKokoroApi.IV2.IActionCostsApi.IResource resource)
-		=> ActionCostsManager.Instance.ActionCostContextPool.Do(context =>
+		=> ModEntry.Instance.ArgsPool.Do<ApiImplementation.V2Api.ActionCostsApi.ResourceProviderGetCurrentResourceAmountArgs, int>(args =>
 		{
-			context.State = State;
-			context.Combat = Combat;
-			context.Card = Card;
-			return ActionCostsManager.Instance.ResourceProviders.Sum(provider => provider.GetCurrentResourceAmount(context, resource));
+			args.State = State;
+			args.Combat = Combat;
+			args.Card = Card;
+			args.Resource = resource;
+			return ActionCostsManager.Instance.ResourceProviders.Sum(provider => provider.GetCurrentResourceAmount(args));
 		});
 
 	public bool TryPayResource(IKokoroApi.IV2.IActionCostsApi.IResource resource, int amount)
-		=> ActionCostsManager.Instance.ActionCostContextPool.Do(context =>
+	{
+		if (Combat == DB.fakeCombat)
+			return false;
+		
+		var getCurrentResourceAmountArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.ActionCostsApi.ResourceProviderGetCurrentResourceAmountArgs>();
+		getCurrentResourceAmountArgs.State = State;
+		getCurrentResourceAmountArgs.Combat = Combat;
+		getCurrentResourceAmountArgs.Card = Card;
+		getCurrentResourceAmountArgs.Resource = resource;
+		
+		var payResourceArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.ActionCostsApi.ResourceProviderPayResourceArgs>();
+		payResourceArgs.State = State;
+		payResourceArgs.Combat = Combat;
+		payResourceArgs.Card = Card;
+		payResourceArgs.Resource = resource;
+
+		try
 		{
-			context.State = State;
-			context.Combat = Combat;
-			context.Card = Card;
-			
-			if (Combat == DB.fakeCombat)
-				return false;
-			
 			var providers = ActionCostsManager.Instance.ResourceProviders.ToList();
 			var providerIndex = 0;
 			while (amount > 0)
@@ -817,21 +836,28 @@ internal sealed class ActionCostStatePaymentEnvironment : IKokoroApi.IV2.IAction
 				if (providerIndex >= providers.Count)
 					break;
 				var provider = providers[providerIndex];
-
-				var providerAmount = provider.GetCurrentResourceAmount(context, resource);
+	
+				var providerAmount = provider.GetCurrentResourceAmount(getCurrentResourceAmountArgs);
 				if (providerAmount <= 0)
 				{
 					providerIndex++;
 					continue;
 				}
-				
+			
 				var maxToPay = Math.Min(amount, providerAmount);
-				provider.Pay(context, resource, maxToPay);
+				payResourceArgs.Amount = maxToPay;
+				provider.PayResource(payResourceArgs);
 				amount -= maxToPay;
 			}
-			
+		
 			return amount <= 0;
-		});
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(getCurrentResourceAmountArgs);
+			ModEntry.Instance.ArgsPool.Return(payResourceArgs);
+		}
+	}
 }
 
 internal sealed class ActionCostTransaction : IKokoroApi.IV2.IActionCostsApi.ITransaction
@@ -967,7 +993,7 @@ internal sealed class AResourceCost : CardAction, IKokoroApi.IV2.IActionCostsApi
 		base.Begin(g, s, c);
 		timer = 0;
 
-		var card = ModEntry.Instance.Api.V2.ActionSource.GetSourceCard(s, this);
+		var card = ModEntry.Instance.Api.V2.ActionInfo.GetSourceCard(s, this);
 		var environment = ModEntry.Instance.Api.V2.ActionCosts.MakeStatePaymentEnvironment(s, c, card);
 		var baseTransaction = ModEntry.Instance.Api.V2.ActionCosts.MakeTransaction();
 		if (ChooseBestTransaction() is not { } transaction)

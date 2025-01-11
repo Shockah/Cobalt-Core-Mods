@@ -58,7 +58,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		);
 
 		ActionCostsManager.Setup(Harmony);
-		ActionSourceManager.Setup(Harmony);
+		ActionInfoManager.Setup(Harmony);
 		CardDestinationManager.Setup(Harmony);
 		CardRenderManager.Setup(Harmony);
 		ConditionalActionManager.Setup(Harmony);
