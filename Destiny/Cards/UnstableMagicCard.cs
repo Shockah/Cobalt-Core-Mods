@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FSPRO;
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
@@ -80,7 +81,22 @@ public sealed class UnstableMagicCard : Card, IRegisterable
 			}
 
 			var card = cards.Count == 1 ? cards[0] : cards[s.rngActions.NextInt() % cards.Count];
-			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, Explosive.ExplosiveTrait, true, permanent: false);
+			c.QueueImmediate(ModEntry.Instance.KokoroApi.PlayCardsFromAnywhere.MakeModifyAction(card.uuid, new ActuallyModifyAction()).AsCardAction);
+		}
+	}
+
+	private sealed class ActuallyModifyAction : CardAction
+	{
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+			timer = 0;
+
+			if (selectedCard is null)
+				return;
+			
+			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, Explosive.ExplosiveTrait, true, permanent: false);
+			Audio.Play(Event.Status_PowerUp);
 		}
 	}
 }
