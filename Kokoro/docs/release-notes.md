@@ -6,7 +6,8 @@
 
 * Kokoro now replaces all `shardcost` actions on the fly with its own action costs.
 * Extended the action costs system, allowing hooks to modify costs on the fly and add additional resource providers.
-* Added a new action source API.
+* Added a new action info API.
+* Added a new API to visually display card modifications mid-combat.
 
 ## 2.1.1
 Released 8 January 2025.
