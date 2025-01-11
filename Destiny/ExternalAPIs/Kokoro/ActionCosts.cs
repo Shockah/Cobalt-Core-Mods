@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
 
@@ -260,27 +260,6 @@ public partial interface IKokoroApi
 			}
 
 			/// <summary>
-			/// Describes a context for a set of action costs.
-			/// </summary>
-			public interface IActionCostContext
-			{
-				/// <summary>
-				/// The game state.
-				/// </summary>
-				State State { get; }
-				
-				/// <summary>
-				/// The current combat.
-				/// </summary>
-				Combat Combat { get; }
-				
-				/// <summary>
-				/// The card this context is for, if any.
-				/// </summary>
-				Card? Card { get; }
-			}
-
-			/// <summary>
 			/// Describes a type that can provide the resources for action costs.
 			/// </summary>
 			public interface IResourceProvider
@@ -288,18 +267,72 @@ public partial interface IKokoroApi
 				/// <summary>
 				/// Returns the current amount of the given resource in the provided game state.
 				/// </summary>
-				/// <param name="context">The context for the set of action costs.</param>
-				/// <param name="resource">The resource.</param>
+				/// <param name="args">The arguments for the method.</param>
 				/// <returns>The current amount of the resource.</returns>
-				int GetCurrentResourceAmount(IActionCostContext context, IResource resource);
+				int GetCurrentResourceAmount(IGetCurrentResourceAmountArgs args);
 				
 				/// <summary>
 				/// Decreases the given resource in the provided game state by the given amount.
 				/// </summary>
-				/// <param name="context">The context for the set of action costs.</param>
-				/// <param name="resource">The resource.</param>
-				/// <param name="amount">The amount of the resource to remove.</param>
-				void Pay(IActionCostContext context, IResource resource, int amount);
+				/// <param name="args">The arguments for the method.</param>
+				void PayResource(IPayResourceArgs args);
+
+				/// <summary>
+				/// The arguments for the <see cref="GetCurrentResourceAmount"/> method.
+				/// </summary>
+				public interface IGetCurrentResourceAmountArgs
+				{
+					/// <summary>
+					/// The game state.
+					/// </summary>
+					State State { get; }
+				
+					/// <summary>
+					/// The current combat.
+					/// </summary>
+					Combat Combat { get; }
+				
+					/// <summary>
+					/// The card this context is for, if any.
+					/// </summary>
+					Card? Card { get; }
+					
+					/// <summary>
+					/// The resource.
+					/// </summary>
+					IResource Resource { get; }
+				}
+				
+				/// <summary>
+				/// The arguments for the <see cref="PayResource"/> method.
+				/// </summary>
+				public interface IPayResourceArgs
+				{
+					/// <summary>
+					/// The game state.
+					/// </summary>
+					State State { get; }
+				
+					/// <summary>
+					/// The current combat.
+					/// </summary>
+					Combat Combat { get; }
+				
+					/// <summary>
+					/// The card this context is for, if any.
+					/// </summary>
+					Card? Card { get; }
+					
+					/// <summary>
+					/// The resource.
+					/// </summary>
+					IResource Resource { get; }
+					
+					/// <summary>
+					/// The amount of the resource to remove.
+					/// </summary>
+					int Amount { get; }
+				}
 			}
 			
 			/// <summary>
