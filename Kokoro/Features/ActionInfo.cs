@@ -46,6 +46,8 @@ partial class ApiImplementation
 internal sealed class ActionInfoManager : HookManager<IKokoroApi.IV2.IActionInfoApi.IHook>
 {
 	internal static readonly ActionInfoManager Instance = new();
+
+	private static Card? CardBeingRendered;
 	
 	private ActionInfoManager() : base(ModEntry.Instance.Package.Manifest.UniqueName)
 	{
@@ -56,6 +58,11 @@ internal sealed class ActionInfoManager : HookManager<IKokoroApi.IV2.IActionInfo
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
 			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetActionsOverridden_Postfix_Last)), priority: Priority.Last)
+		);
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Prefix)),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Finalizer))
 		);
 	}
 
@@ -83,6 +90,9 @@ internal sealed class ActionInfoManager : HookManager<IKokoroApi.IV2.IActionInfo
 	
 	private static void Card_GetActionsOverridden_Postfix_Last(Card __instance, ref List<CardAction> __result)
 	{
+		if (CardBeingRendered is not null)
+			return;
+		
 		var interactionEndedAction = new InteractionEndedAction();
 		var hiddenAction = new AHidden { Action = interactionEndedAction };
 		__result.Add(hiddenAction);
@@ -94,6 +104,12 @@ internal sealed class ActionInfoManager : HookManager<IKokoroApi.IV2.IActionInfo
 			SetInteractionId(action, guid);
 		}
 	}
+
+	private static void Card_Render_Prefix(Card __instance)
+		=> CardBeingRendered = __instance;
+
+	private static void Card_Render_Finalizer()
+		=> CardBeingRendered = null;
 
 	private sealed class InteractionEndedAction : CardAction
 	{
