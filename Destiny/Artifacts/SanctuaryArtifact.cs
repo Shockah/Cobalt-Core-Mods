@@ -70,6 +70,9 @@ internal sealed class SanctuaryArtifact : Artifact, IRegisterable
 
 	private static void AMove_Begin_Postfix(AMove __instance, State s, Combat c, in int __state)
 	{
+		if (!__instance.targetPlayer)
+			return;
+		
 		var ship = __instance.targetPlayer ? s.ship : c.otherShip;
 		if (ship.x == __state)
 			return;
