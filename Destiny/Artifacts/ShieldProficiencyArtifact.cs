@@ -78,6 +78,8 @@ internal sealed class ShieldProficiencyArtifact : Artifact, IRegisterable
 	{
 		if (postArmorDamage <= 0)
 			return;
+		if (!ship.isPlayerShip)
+			return;
 		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is ShieldProficiencyArtifact) is not { } artifact)
 			return;
 
