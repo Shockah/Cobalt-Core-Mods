@@ -39,16 +39,26 @@ internal sealed class ShieldProficiencyArtifact : Artifact, IRegisterable
 		=> [
 			.. StatusMeta.GetTooltips(PristineShield.PristineShieldStatus.Status, 1),
 			.. StatusMeta.GetTooltips(Status.perfectShield, 1),
+			new TTGlossary("status.shieldAlt"),
 		];
 
-	private static IEnumerable<CodeInstruction> Ship_NormalDamage_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	private static IEnumerable<CodeInstruction> Ship_NormalDamage_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
 		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
+			var oldShakeLocal = il.DeclareLocal(typeof(double));
+			
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(typeof(Ship), nameof(Ship.shake))),
+					new CodeInstruction(OpCodes.Stloc, oldShakeLocal),
+				])
 				.Find([
-					ILMatches.Ldloc<int>(originalMethod).CreateLdlocaInstruction(out var ldlocaPostArmorDamage).ExtractLabels(out var labels),
+					ILMatches.Ldloc<int>(originalMethod).CreateLdlocaInstruction(out var ldlocaRemainingDamage),
+					ILMatches.Stloc<int>(originalMethod),
+					ILMatches.Ldloc<int>(originalMethod).CreateLdlocaInstruction(out var ldlocaPostArmorDamage),
 					ILMatches.LdcI4(0),
 					ILMatches.Ble,
 					ILMatches.Ldarg(0),
@@ -58,10 +68,25 @@ internal sealed class ShieldProficiencyArtifact : Artifact, IRegisterable
 					ILMatches.Instruction(OpCodes.Add),
 					ILMatches.Stfld("shake"),
 				])
+				.Find([
+					ILMatches.Ldarg(0),
+					ILMatches.LdcI4((int)Status.tempShield),
+					ILMatches.Ldloc<int>(originalMethod),
+					ILMatches.Call("Set"),
+					ILMatches.Ldloc<int>(originalMethod),
+					ILMatches.Ldloc<int>(originalMethod).CreateLdlocInstruction(out var ldlocTempShieldDamage),
+					ILMatches.Instruction(OpCodes.Sub),
+					ILMatches.Stloc<int>(originalMethod),
+				])
+				.PointerMatcher(SequenceMatcherRelativeElement.AfterLast)
+				.ExtractLabels(out var labels)
 				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
 					new CodeInstruction(OpCodes.Ldarg_1),
 					ldlocaPostArmorDamage,
+					ldlocaRemainingDamage,
+					ldlocTempShieldDamage,
+					new CodeInstruction(OpCodes.Ldloc, oldShakeLocal),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_NormalDamage_Transpiler_HandleShields))),
 				])
 				.AllElements();
@@ -74,27 +99,38 @@ internal sealed class ShieldProficiencyArtifact : Artifact, IRegisterable
 		// ReSharper restore PossibleMultipleEnumeration
 	}
 
-	private static void Ship_NormalDamage_Transpiler_HandleShields(Ship ship, State state, ref int postArmorDamage)
+	private static void Ship_NormalDamage_Transpiler_HandleShields(Ship ship, State state, ref int postArmorDamage, ref int remainingDamage, int tempShieldDamage, double oldShake)
 	{
-		if (postArmorDamage <= 0)
+		if (remainingDamage <= 0)
 			return;
 		if (!ship.isPlayerShip)
 			return;
 		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is ShieldProficiencyArtifact) is not { } artifact)
 			return;
 
+		bool shouldClearDamage;
+
 		if (ship.Get(Status.perfectShield) > 0)
 		{
-			postArmorDamage = 0;
-			artifact.Pulse();
-			return;
+			shouldClearDamage = true;
+		}
+		else if (ship.Get(PristineShield.PristineShieldStatus.Status) > 0)
+		{
+			shouldClearDamage = true;
+			ship.Add(PristineShield.PristineShieldStatus.Status, -1);
+		}
+		else
+		{
+			shouldClearDamage = false;
 		}
 
-		if (ship.Get(PristineShield.PristineShieldStatus.Status) > 0)
-		{
-			postArmorDamage = 0;
-			ship.Add(PristineShield.PristineShieldStatus.Status, -1);
-			artifact.Pulse();
-		}
+		if (!shouldClearDamage)
+			return;
+
+		postArmorDamage = tempShieldDamage;
+		remainingDamage = 0;
+		if (tempShieldDamage <= 0)
+			ship.shake = oldShake;
+		artifact.Pulse();
 	}
 }

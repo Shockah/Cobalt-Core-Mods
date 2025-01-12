@@ -50,7 +50,7 @@
 		},
 		"ShieldProficiency": {
 			"name": "SHIELD PROFICIENCY",
-			"description": "<c=status>PRISTINE SHIELD</c> and <c=status>PERFECT SHIELD</c> prevent damage to your shields."
+			"description": "<c=status>PRISTINE SHIELD</c> and <c=status>PERFECT SHIELD</c> prevent damage to your <c=status>SHIELD</c>."
 		},
 		"WellRead": {
 			"name": "WELL-READ",
