@@ -469,8 +469,8 @@ internal sealed class V1ToV2CardRenderingHookWrapper(ICardRenderHook v1) : IKoko
 		=> v1.ModifyTextCardScale(args.G, args.Card);
 		
 	public Matrix ModifyNonTextCardRenderMatrix(IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyNonTextCardRenderMatrixArgs args)
-		=> v1.ModifyNonTextCardRenderMatrix(args.G, args.Card, args.Actions.ToList());
+		=> v1.ModifyNonTextCardRenderMatrix(args.G, args.Card, args.Actions as List<CardAction> ?? args.Actions.ToList());
 
 	public Matrix ModifyCardActionRenderMatrix(IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyCardActionRenderMatrixArgs args)
-		=> v1.ModifyCardActionRenderMatrix(args.G, args.Card, args.Actions.ToList(), args.Action, args.ActionWidth);
+		=> v1.ModifyCardActionRenderMatrix(args.G, args.Card, args.Actions as List<CardAction> ?? args.Actions.ToList(), args.Action, args.ActionWidth);
 }

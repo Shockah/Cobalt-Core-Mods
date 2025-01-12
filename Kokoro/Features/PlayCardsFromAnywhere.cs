@@ -396,9 +396,20 @@ public sealed class AModifyCardAnywhere : CardAction, IKokoroApi.IV2.IPlayCardsF
 			return;
 		}
 
+		if (Math.Abs((card.targetPos - card.pos).len()) <= 1)
+		{
+			if (s.deck.Contains(card))
+				card.pos = Combat.deckPos + new Vec(2);
+			else if (c.discard.Contains(card))
+				card.pos = Combat.discardPos;
+			else if (c.exhausted.Contains(card))
+				card.pos = Combat.exhaustPos;
+		}
+
 		OriginalCardTargetPosition = card.targetPos;
 		OriginalCardDrawAnimation = card.drawAnim;
 		LastCardDrawAnimation = card.drawAnim;
+		
 		SwitchToNextPhase(g, s, c, card);
 		PlaySpecificCardFromAnywhereManager.CardBeingModified = card;
 	}

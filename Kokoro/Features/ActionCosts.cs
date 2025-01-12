@@ -866,24 +866,25 @@ internal sealed class ActionCostTransaction : IKokoroApi.IV2.IActionCostsApi.ITr
 	public required IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.ITransactionPayment> Payments { get; init; }
 
 	public IReadOnlyDictionary<IKokoroApi.IV2.IActionCostsApi.IResource, int> Resources
-		=> LazyResources.Value;
-	
-	private readonly Lazy<IReadOnlyDictionary<IKokoroApi.IV2.IActionCostsApi.IResource, int>> LazyResources;
-
-	public ActionCostTransaction()
 	{
-		this.LazyResources = new(() =>
+		get
 		{
+			if (ResourcesStorage is { } existing)
+				return existing;
+			
 			var result = new Dictionary<IKokoroApi.IV2.IActionCostsApi.IResource, int>();
-			foreach (var payment in Payments!)
+			foreach (var payment in Payments)
 			{
 				if (payment.Amount <= 0)
 					continue;
 				result[payment.Resource] = result.GetValueOrDefault(payment.Resource) + payment.Amount;
 			}
+			ResourcesStorage = result;
 			return result;
-		});
+		}
 	}
+
+	private Dictionary<IKokoroApi.IV2.IActionCostsApi.IResource, int>? ResourcesStorage;
 	
 	public IKokoroApi.IV2.IActionCostsApi.IWholeTransactionPaymentResult TestPayment(IKokoroApi.IV2.IActionCostsApi.IPaymentEnvironment environment)
 	{
@@ -940,43 +941,65 @@ internal sealed class ActionCostWholeTransactionPaymentResult : IKokoroApi.IV2.I
 	public required IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.ITransactionPaymentResult> Payments { get; init; }
 
 	public IReadOnlyDictionary<IKokoroApi.IV2.IActionCostsApi.IResource, int> PaidResources
-		=> LazyPaidResources.Value;
-
-	public IReadOnlyDictionary<IKokoroApi.IV2.IActionCostsApi.IResource, int> UnpaidResources
-		=> LazyUnpaidResources.Value;
-	
-	public int TotalPaid
-		=> LazyTotalPaid.Value;
-	
-	public int TotalUnpaid
-		=> LazyTotalUnpaid.Value;
-
-	private readonly Lazy<IReadOnlyDictionary<IKokoroApi.IV2.IActionCostsApi.IResource, int>> LazyPaidResources;
-	private readonly Lazy<IReadOnlyDictionary<IKokoroApi.IV2.IActionCostsApi.IResource, int>> LazyUnpaidResources;
-	private readonly Lazy<int> LazyTotalPaid;
-	private readonly Lazy<int> LazyTotalUnpaid;
-
-	public ActionCostWholeTransactionPaymentResult()
 	{
-		this.LazyPaidResources = new(() =>
+		get
 		{
+			if (PaidResourcesStorage is { } existing)
+				return existing;
+			
 			var result = new Dictionary<IKokoroApi.IV2.IActionCostsApi.IResource, int>();
-			foreach (var payment in Payments!)
+			foreach (var payment in Payments)
 				if (payment.Paid > 0)
 					result[payment.Payment.Resource] = result.GetValueOrDefault(payment.Payment.Resource) + payment.Paid;
+			PaidResourcesStorage = result;
 			return result;
-		});
-		this.LazyUnpaidResources = new(() =>
+		}
+	}
+
+	public IReadOnlyDictionary<IKokoroApi.IV2.IActionCostsApi.IResource, int> UnpaidResources
+	{
+		get
 		{
+			if (UnpaidResourcesStorage is { } existing)
+				return existing;
+			
 			var result = new Dictionary<IKokoroApi.IV2.IActionCostsApi.IResource, int>();
-			foreach (var payment in Payments!)
+			foreach (var payment in Payments)
 				if (payment.Unpaid > 0)
 					result[payment.Payment.Resource] = result.GetValueOrDefault(payment.Payment.Resource) + payment.Unpaid;
+			UnpaidResourcesStorage = result;
 			return result;
-		});
-		this.LazyTotalPaid = new(() => PaidResources.Values.Sum());
-		this.LazyTotalUnpaid = new(() => UnpaidResources.Values.Sum());
+		}
 	}
+
+	public int TotalPaid
+	{
+		get
+		{
+			if (TotalPaidStorage is { } result) 
+				return result;
+			result = PaidResources.Values.Sum();
+			TotalPaidStorage = result;
+			return result;
+		}
+	}
+	
+	public int TotalUnpaid
+	{
+		get
+		{
+			if (TotalUnpaidStorage is { } result) 
+				return result;
+			result = UnpaidResources.Values.Sum();
+			TotalUnpaidStorage = result;
+			return result;
+		}
+	}
+
+	private Dictionary<IKokoroApi.IV2.IActionCostsApi.IResource, int>? PaidResourcesStorage;
+	private Dictionary<IKokoroApi.IV2.IActionCostsApi.IResource, int>? UnpaidResourcesStorage;
+	private int? TotalPaidStorage;
+	private int? TotalUnpaidStorage;
 }
 
 internal sealed class AResourceCost : CardAction, IKokoroApi.IV2.IActionCostsApi.ICostAction
@@ -1340,14 +1363,15 @@ internal sealed class ActionCostStatusResource : BaseActionCostResource, IKokoro
 
 	[JsonIgnore]
 	public override string ResourceKey
-		=> LazyResourceKey.Value;
-
-	private readonly Lazy<string> LazyResourceKey;
-
-	public ActionCostStatusResource()
 	{
-		this.LazyResourceKey = new(() => $"actioncost.resource.status.{Status.Key()}.{(TargetPlayer ? "player" : "enemy")}");
+		get
+		{
+			ResourceKeyStorage ??= $"actioncost.resource.status.{Status.Key()}.{(TargetPlayer ? "player" : "enemy")}";
+			return ResourceKeyStorage;
+		}
 	}
+
+	private string? ResourceKeyStorage;
 
 	public override int GetCurrentResourceAmount(State state, Combat combat)
 	{
