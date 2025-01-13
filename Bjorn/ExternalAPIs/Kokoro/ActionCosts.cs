@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
 
@@ -125,6 +125,24 @@ public partial interface IKokoroApi
 			/// <param name="costs">The costs that need to be paid.</param>
 			/// <returns>A new combined action cost.</returns>
 			ICombinedCost MakeCombinedCost(IEnumerable<ICost> costs);
+			
+			/// <summary>
+			/// A resource provider which uses actual resources from the game's state by calling <see cref="IResource.GetCurrentResourceAmount"/> and <see cref="IResource.Pay"/>.
+			/// </summary>
+			IResourceProvider StateResourceProvider { get; }
+			
+			/// <summary>
+			/// Registers a resource provider, which can be used before/after resources from the game's state are spent.
+			/// </summary>
+			/// <param name="resourceProvider">The resource provider.</param>
+			/// <param name="priority">The priority for the provider. Higher priority hooks are called before lower priority ones. Defaults to <c>0</c>.</param>
+			void RegisterResourceProvider(IResourceProvider resourceProvider, double priority = 0);
+			
+			/// <summary>
+			/// Unregisters a resource provider.
+			/// </summary>
+			/// <param name="resourceProvider">The resource provider.</param>
+			void UnregisterResourceProvider(IResourceProvider resourceProvider);
 
 			/// <summary>
 			/// Creates a new mock payment environment.
@@ -142,6 +160,15 @@ public partial interface IKokoroApi
 			IPaymentEnvironment MakeStatePaymentEnvironment(State state, Combat combat);
 			
 			/// <summary>
+			/// Creates a new payment environment, basing on the actual game state.
+			/// </summary>
+			/// <param name="state">The game state.</param>
+			/// <param name="combat">The current combat.</param>
+			/// <param name="card">The card this context is for, if any.</param>
+			/// <returns>A new payment environment, basing on the actual game state.</returns>
+			IPaymentEnvironment MakeStatePaymentEnvironment(State state, Combat combat, Card? card);
+			
+			/// <summary>
 			/// Creates a new payment transaction.
 			/// </summary>
 			/// <returns>The new payment transaction.</returns>
@@ -154,6 +181,17 @@ public partial interface IKokoroApi
 			/// <param name="environment">The payment environment.</param>
 			/// <returns>The payment transaction.</returns>
 			ITransaction GetBestTransaction(ICost cost, IPaymentEnvironment environment);
+
+			/// <summary>
+			/// Asks all hooks for a modified action cost.
+			/// </summary>
+			/// <param name="cost">The action cost to modify.</param>
+			/// <param name="state">The game state.</param>
+			/// <param name="combat">The current combat.</param>
+			/// <param name="card">The card the action cost came from, if any.</param>
+			/// <param name="action">The action the cost is for, if any.</param>
+			/// <returns>The modified action cost.</returns>
+			ICost ModifyActionCost(ICost cost, State state, Combat combat, Card? card, CardAction? action);
 			
 			/// <summary>
 			/// Registers a new hook related to action costs.
@@ -219,6 +257,82 @@ public partial interface IKokoroApi
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
 				ICostAction SetResourceAmountDisplayOverrides(IDictionary<IResource, int> value);
+			}
+
+			/// <summary>
+			/// Describes a type that can provide the resources for action costs.
+			/// </summary>
+			public interface IResourceProvider
+			{
+				/// <summary>
+				/// Returns the current amount of the given resource in the provided game state.
+				/// </summary>
+				/// <param name="args">The arguments for the method.</param>
+				/// <returns>The current amount of the resource.</returns>
+				int GetCurrentResourceAmount(IGetCurrentResourceAmountArgs args);
+				
+				/// <summary>
+				/// Decreases the given resource in the provided game state by the given amount.
+				/// </summary>
+				/// <param name="args">The arguments for the method.</param>
+				void PayResource(IPayResourceArgs args);
+
+				/// <summary>
+				/// The arguments for the <see cref="GetCurrentResourceAmount"/> method.
+				/// </summary>
+				public interface IGetCurrentResourceAmountArgs
+				{
+					/// <summary>
+					/// The game state.
+					/// </summary>
+					State State { get; }
+				
+					/// <summary>
+					/// The current combat.
+					/// </summary>
+					Combat Combat { get; }
+				
+					/// <summary>
+					/// The card this context is for, if any.
+					/// </summary>
+					Card? Card { get; }
+					
+					/// <summary>
+					/// The resource.
+					/// </summary>
+					IResource Resource { get; }
+				}
+				
+				/// <summary>
+				/// The arguments for the <see cref="PayResource"/> method.
+				/// </summary>
+				public interface IPayResourceArgs
+				{
+					/// <summary>
+					/// The game state.
+					/// </summary>
+					State State { get; }
+				
+					/// <summary>
+					/// The current combat.
+					/// </summary>
+					Combat Combat { get; }
+				
+					/// <summary>
+					/// The card this context is for, if any.
+					/// </summary>
+					Card? Card { get; }
+					
+					/// <summary>
+					/// The resource.
+					/// </summary>
+					IResource Resource { get; }
+					
+					/// <summary>
+					/// The amount of the resource to remove.
+					/// </summary>
+					int Amount { get; }
+				}
 			}
 			
 			/// <summary>
@@ -631,10 +745,48 @@ public partial interface IKokoroApi
 			public interface IHook : IKokoroV2ApiHook
 			{
 				/// <summary>
+				/// Allows modifying the action cost before rendering or paying for it.
+				/// </summary>
+				/// <param name="args">The arguments for the hook method.</param>
+				/// <returns><c>true</c> if the event is considered handled and no further hooks should be called; <c>false</c> otherwise.</returns>
+				bool ModifyActionCost(IModifyActionCostArgs args) => false;
+
+				/// <summary>
 				/// An event called whenever any action costs are paid.
 				/// </summary>
 				/// <param name="args">The arguments for the hook method.</param>
 				void OnActionCostsTransactionFinished(IOnActionCostsTransactionFinishedArgs args) { }
+
+				/// <summary>
+				/// The arguments for the <see cref="ModifyActionCost"/> hook method.
+				/// </summary>
+				public interface IModifyActionCostArgs
+				{
+					/// <summary>
+					/// The game state.
+					/// </summary>
+					State State { get; }
+					
+					/// <summary>
+					/// The current combat.
+					/// </summary>
+					Combat Combat { get; }
+					
+					/// <summary>
+					/// The card the action cost came from, if any.
+					/// </summary>
+					Card? Card { get; }
+					
+					/// <summary>
+					/// The action the cost is for, if any.
+					/// </summary>
+					CardAction? Action { get; }
+					
+					/// <summary>
+					/// The action cost to modify, or the modified cost.
+					/// </summary>
+					ICost Cost { get; set; }
+				}
 
 				/// <summary>
 				/// The arguments for the <see cref="OnActionCostsTransactionFinished"/> hook method.
