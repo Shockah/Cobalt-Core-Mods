@@ -5,6 +5,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ModFiles Include="i18n/**" />
+        <ModFiles Include="assets/**" />
     </ItemGroup>
     <Import Project="..\Configuration.Mod.props" />
 </Project>

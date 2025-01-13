@@ -15,6 +15,7 @@ public sealed class ModEntry : SimpleMod
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 	
 	internal static readonly IEnumerable<Type> RegisterableTypes = [
+		typeof(AnchorCardPileOverlay),
 		typeof(BrowseCardPilesDuringPeek),
 	];
 	
