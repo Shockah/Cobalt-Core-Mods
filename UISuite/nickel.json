@@ -1,0 +1,13 @@
+﻿{
+	"UniqueName": "Shockah.UISuite",
+	"Version": "{{ModVersion}}",
+	"RequiredApiVersion": "1.10.0",
+	"EntryPointAssembly": "UISuite.dll",
+	"LoadPhase": "AfterGameAssembly",
+	"Dependencies": [
+		{
+			"UniqueName": "Shockah.Kokoro",
+			"Version": "2.0.0"
+		}
+	]
+}

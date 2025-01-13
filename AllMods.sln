@@ -44,6 +44,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kokoro.Media", "Kokoro.Medi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_MediaCommon", "_MediaCommon\_MediaCommon.csproj", "{8AA3B346-EE1E-4ADC-A3E4-6ABA4A7BFE22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UISuite", "UISuite\UISuite.csproj", "{7EAD752D-B556-439D-BDCB-96B0608CD13C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,6 +112,10 @@ Global
 		{8AA3B346-EE1E-4ADC-A3E4-6ABA4A7BFE22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AA3B346-EE1E-4ADC-A3E4-6ABA4A7BFE22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AA3B346-EE1E-4ADC-A3E4-6ABA4A7BFE22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EAD752D-B556-439D-BDCB-96B0608CD13C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EAD752D-B556-439D-BDCB-96B0608CD13C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EAD752D-B556-439D-BDCB-96B0608CD13C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EAD752D-B556-439D-BDCB-96B0608CD13C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
