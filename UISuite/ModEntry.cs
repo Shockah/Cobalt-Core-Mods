@@ -17,6 +17,7 @@ public sealed class ModEntry : SimpleMod
 	internal static readonly IEnumerable<Type> RegisterableTypes = [
 		typeof(AnchorCardPileOverlay),
 		typeof(BrowseCardPilesDuringPeek),
+		typeof(LaneDisplay),
 	];
 	
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
