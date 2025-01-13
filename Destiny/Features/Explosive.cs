@@ -46,8 +46,8 @@ internal sealed class Explosive : IRegisterable
 			args.State = state;
 			args.Combat = combat;
 			args.Card = card;
-			args.BaseDamage = 5;
-			args.CurrentDamage = 5;
+			args.BaseDamage = 4;
+			args.CurrentDamage = 4;
 				
 			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 				hook.ModifyExplosiveDamage(args);
