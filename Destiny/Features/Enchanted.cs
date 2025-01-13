@@ -22,7 +22,7 @@ internal sealed class Enchanted : IRegisterable
 	private static ISpriteEntry[] EnchantedOf2Split1to2Art { get; set; } = null!;
 	private static ISpriteEntry[] EnchantedOf2Split2to1Art { get; set; } = null!;
 
-	private static readonly Color PaidGateColor = new("000000");
+	private static readonly Color PaidGateColor = new("51A7F8");
 	private static readonly Color NextGateColor = new("51A7F8");
 	private static readonly Color FutureGateColor = new("0A1F53");
 	
