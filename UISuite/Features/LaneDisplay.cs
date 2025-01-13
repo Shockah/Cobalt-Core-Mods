@@ -69,7 +69,7 @@ internal sealed class LaneDisplay : IRegisterable
 		IsActiveHover = false;
 	}
 
-	private static void Card_Render_Postfix(Card __instance, G g)
+	private static void Card_Render_Postfix(Card __instance, G g, int? renderAutopilot)
 	{
 		if (IsActiveHover)
 			return;
@@ -81,6 +81,13 @@ internal sealed class LaneDisplay : IRegisterable
 			return;
 		if (!box.IsHover())
 			return;
+
+		if (renderAutopilot.HasValue && renderAutopilot.Value != 0)
+		{
+			IsActiveHover = true;
+			return;
+		}
+			
 		if (!__instance.GetActionsOverridden(g.state, g.state.route as Combat ?? DB.fakeCombat).Any(IsActiveLaneDisplayAction))
 			return;
 		
