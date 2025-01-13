@@ -30,9 +30,11 @@ internal sealed class AnchorCardPileOverlay : IRegisterable
 		
 		var texture = SpriteLoader.Get(StableSpr.cards_Anchor_Overlay)!;
 		Draw.Sprite(texture, box.rect.x2 - texture.Width + 2, box.rect.y - 2);
-		
-		if (box.IsHover())
-			g.tooltips.Add(new Vec(g.tooltips.pos.x, g.tooltips.pos.y - 24), new TTText(ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "tooltip"])));
+
+		if (!box.IsHover())
+			return;
+
+		g.tooltips.Add(g.tooltips.pos, new TTText(ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "tooltip"])));
 	}
 
 	private static void Combat_RenderDeck_Postfix(G g, bool __runOriginal)
