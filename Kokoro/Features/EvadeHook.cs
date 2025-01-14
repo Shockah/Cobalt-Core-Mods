@@ -123,7 +123,10 @@ partial class ApiImplementation
 				=> new EvadePostconditionResult(isAllowed);
 
 			public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? GetNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
-				=> EvadeManager.Instance.GetNextAction(state, combat, direction);
+				=> EvadeManager.Instance.GetNextAction(state, combat, direction, true);
+
+			public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? GetNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction, bool forRendering)
+				=> EvadeManager.Instance.GetNextAction(state, combat, direction, forRendering);
 
 			public void DidHoverButton(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
 				=> EvadeManager.Instance.DidHoverButton(state, combat, direction);
@@ -375,6 +378,7 @@ partial class ApiImplementation
 				public Combat Combat { get; internal set; } = null!;
 				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
+				public bool ForRendering { get; internal set; }
 			}
 			
 			internal sealed class HookIsEvadePaymentOptionEnabledArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePaymentOptionEnabledArgs
@@ -384,6 +388,7 @@ partial class ApiImplementation
 				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption PaymentOption { get; internal set; } = null!;
+				public bool ForRendering { get; internal set; }
 			}
 			
 			internal sealed class HookIsEvadePreconditionEnabledArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePreconditionEnabledArgs
@@ -393,6 +398,7 @@ partial class ApiImplementation
 				public IKokoroApi.IV2.IEvadeHookApi.Direction Direction { get; internal set; } = IKokoroApi.IV2.IEvadeHookApi.Direction.Right;
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition Precondition { get; internal set; } = null!;
+				public bool ForRendering { get; internal set; }
 			}
 			
 			internal sealed class HookIsEvadePostconditionEnabledArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IIsEvadePostconditionEnabledArgs
@@ -403,6 +409,7 @@ partial class ApiImplementation
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry Entry { get; internal set; } = null!;
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption PaymentOption { get; internal set; } = null!;
 				public IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition Postcondition { get; internal set; } = null!;
+				public bool ForRendering { get; internal set; }
 			}
 			
 			internal sealed class HookEvadePreconditionFailedArgs : IKokoroApi.IV2.IEvadeHookApi.IHook.IEvadePreconditionFailedArgs
@@ -492,6 +499,7 @@ internal sealed class EvadeManager
 		State state,
 		Combat combat,
 		IKokoroApi.IV2.IEvadeHookApi.Direction direction,
+		bool forRendering,
 		IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry> enumerable
 	)
 	{
@@ -501,6 +509,7 @@ internal sealed class EvadeManager
 			args.State = state;
 			args.Combat = combat;
 			args.Direction = direction;
+			args.ForRendering = forRendering;
 
 			var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
 			return enumerable.Where(e =>
@@ -520,6 +529,7 @@ internal sealed class EvadeManager
 		Combat combat,
 		IKokoroApi.IV2.IEvadeHookApi.Direction direction,
 		IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry entry,
+		bool forRendering,
 		IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption> enumerable
 	)
 	{
@@ -530,6 +540,7 @@ internal sealed class EvadeManager
 			args.Combat = combat;
 			args.Direction = direction;
 			args.Entry = entry;
+			args.ForRendering = forRendering;
 
 			var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
 			return enumerable.Where(paymentOption =>
@@ -549,6 +560,7 @@ internal sealed class EvadeManager
 		Combat combat,
 		IKokoroApi.IV2.IEvadeHookApi.Direction direction,
 		IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry entry,
+		bool forRendering,
 		IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePrecondition> enumerable
 	)
 	{
@@ -559,6 +571,7 @@ internal sealed class EvadeManager
 			args.Combat = combat;
 			args.Direction = direction;
 			args.Entry = entry;
+			args.ForRendering = forRendering;
 
 			var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
 			return enumerable.Where(precondition =>
@@ -579,6 +592,7 @@ internal sealed class EvadeManager
 		IKokoroApi.IV2.IEvadeHookApi.Direction direction,
 		IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry entry,
 		IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption paymentOption,
+		bool forRendering,
 		IEnumerable<IKokoroApi.IV2.IEvadeHookApi.IEvadePostcondition> enumerable
 	)
 	{
@@ -590,6 +604,7 @@ internal sealed class EvadeManager
 			args.Direction = direction;
 			args.Entry = entry;
 			args.PaymentOption = paymentOption;
+			args.ForRendering = forRendering;
 
 			var hooks = Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
 			return enumerable.Where(postcondition =>
@@ -604,7 +619,7 @@ internal sealed class EvadeManager
 		}
 	}
 
-	public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? GetNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
+	public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? GetNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction, bool forRendering)
 	{
 		var canDoEvadeArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.EvadeHookApi.ActionCanDoEvadeArgs>();
 		var paymentOptionCanPayForEvadeArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.EvadeHookApi.PaymentOptionCanPayForEvadeArgs>();
@@ -616,7 +631,7 @@ internal sealed class EvadeManager
 			canDoEvadeArgs.Combat = combat;
 			canDoEvadeArgs.Direction = direction;
 
-			return FilterEnabled(state, combat, direction, Instance.ActionEntries).FirstOrDefault(entry =>
+			return FilterEnabled(state, combat, direction, forRendering, Instance.ActionEntries).FirstOrDefault(entry =>
 			{
 				if (!entry.Action.CanDoEvadeAction(canDoEvadeArgs))
 					return false;
@@ -626,7 +641,7 @@ internal sealed class EvadeManager
 				paymentOptionCanPayForEvadeArgs.Direction = direction;
 				paymentOptionCanPayForEvadeArgs.Entry = entry;
 
-				if (!FilterEnabled(state, combat, direction, entry, entry.PaymentOptions).Any(paymentOption => paymentOption.CanPayForEvade(paymentOptionCanPayForEvadeArgs)))
+				if (!FilterEnabled(state, combat, direction, entry, forRendering, entry.PaymentOptions).Any(paymentOption => paymentOption.CanPayForEvade(paymentOptionCanPayForEvadeArgs)))
 					return false;
 
 				preconditionIsEvadeAllowedArgs.State = state;
@@ -635,7 +650,7 @@ internal sealed class EvadeManager
 				preconditionIsEvadeAllowedArgs.Entry = entry;
 				preconditionIsEvadeAllowedArgs.ForRendering = true;
 
-				if (FilterEnabled(state, combat, direction, entry, entry.Preconditions).Any(precondition => !precondition.IsEvadeAllowed(preconditionIsEvadeAllowedArgs).IsAllowed))
+				if (FilterEnabled(state, combat, direction, entry, forRendering, entry.Preconditions).Any(precondition => !precondition.IsEvadeAllowed(preconditionIsEvadeAllowedArgs).IsAllowed))
 					return false;
 
 				return true;
@@ -666,7 +681,7 @@ internal sealed class EvadeManager
 			canDoEvadeArgs.Combat = combat;
 			canDoEvadeArgs.Direction = direction;
 
-			foreach (var entry in FilterEnabled(state, combat, direction, Instance.ActionEntries))
+			foreach (var entry in FilterEnabled(state, combat, direction, true, Instance.ActionEntries))
 			{
 				if (!entry.Action.CanDoEvadeAction(canDoEvadeArgs))
 					continue;
@@ -681,7 +696,7 @@ internal sealed class EvadeManager
 				paymentOptionCanPayForEvadeArgs.Direction = direction;
 				paymentOptionCanPayForEvadeArgs.Entry = entry;
 
-				foreach (var paymentOption in FilterEnabled(state, combat, direction, entry, entry.PaymentOptions))
+				foreach (var paymentOption in FilterEnabled(state, combat, direction, entry, true, entry.PaymentOptions))
 				{
 					if (!paymentOption.CanPayForEvade(paymentOptionCanPayForEvadeArgs))
 						continue;
@@ -699,7 +714,7 @@ internal sealed class EvadeManager
 					preconditionIsEvadeAllowedArgs.PaymentOption = paymentOption;
 					preconditionIsEvadeAllowedArgs.ForRendering = true;
 
-					foreach (var precondition in FilterEnabled(state, combat, direction, entry, entry.Preconditions))
+					foreach (var precondition in FilterEnabled(state, combat, direction, entry, true, entry.Preconditions))
 					{
 						var result = precondition.IsEvadeAllowed(preconditionIsEvadeAllowedArgs);
 
@@ -722,7 +737,7 @@ internal sealed class EvadeManager
 					postconditionIsEvadeAllowedArgs.PaymentOption = paymentOption;
 					postconditionIsEvadeAllowedArgs.ForRendering = true;
 
-					foreach (var postcondition in FilterEnabled(state, combat, direction, entry, paymentOption, entry.Postconditions))
+					foreach (var postcondition in FilterEnabled(state, combat, direction, entry, paymentOption, true, entry.Postconditions))
 					{
 						var result = postcondition.IsEvadeAllowed(postconditionIsEvadeAllowedArgs);
 
@@ -781,7 +796,7 @@ internal sealed class EvadeManager
 			if (!combat.PlayerCanAct(state))
 				return result;
 
-			foreach (var entry in FilterEnabled(state, combat, direction, Instance.ActionEntries))
+			foreach (var entry in FilterEnabled(state, combat, direction, false, Instance.ActionEntries))
 			{
 				canDoEvadeArgs.State = state;
 				canDoEvadeArgs.Combat = combat;
@@ -790,7 +805,7 @@ internal sealed class EvadeManager
 				if (!entry.Action.CanDoEvadeAction(canDoEvadeArgs))
 					continue;
 
-				foreach (var paymentOption in FilterEnabled(state, combat, direction, entry, entry.PaymentOptions))
+				foreach (var paymentOption in FilterEnabled(state, combat, direction, entry, false, entry.PaymentOptions))
 				{
 					paymentOptionCanPayForEvadeArgs.State = state;
 					paymentOptionCanPayForEvadeArgs.Combat = combat;
@@ -809,7 +824,7 @@ internal sealed class EvadeManager
 					preconditionIsEvadeAllowedArgs.Entry = entry;
 					preconditionIsEvadeAllowedArgs.ForRendering = false;
 
-					foreach (var precondition in FilterEnabled(state, combat, direction, entry, entry.Preconditions))
+					foreach (var precondition in FilterEnabled(state, combat, direction, entry, false, entry.Preconditions))
 					{
 						var preconditionResult = precondition.IsEvadeAllowed(preconditionIsEvadeAllowedArgs);
 						if (!preconditionResult.IsAllowed)
@@ -851,7 +866,7 @@ internal sealed class EvadeManager
 					postconditionIsEvadeAllowedArgs.PaymentOption = paymentOption;
 					postconditionIsEvadeAllowedArgs.ForRendering = false;
 
-					foreach (var postcondition in FilterEnabled(state, combat, direction, entry, paymentOption, entry.Postconditions))
+					foreach (var postcondition in FilterEnabled(state, combat, direction, entry, paymentOption, false, entry.Postconditions))
 					{
 						var postconditionResult = postcondition.IsEvadeAllowed(postconditionIsEvadeAllowedArgs);
 						if (!postconditionResult.IsAllowed)
@@ -1039,7 +1054,7 @@ internal sealed class EvadeManager
 					return false;
 			}
 
-			return Instance.GetNextAction(g.state, combat, (IKokoroApi.IV2.IEvadeHookApi.Direction)direction) is not null;
+			return Instance.GetNextAction(g.state, combat, (IKokoroApi.IV2.IEvadeHookApi.Direction)direction, true) is not null;
 		}
 		finally
 		{

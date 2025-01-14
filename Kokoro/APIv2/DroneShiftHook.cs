@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
 
@@ -61,13 +62,27 @@ public partial interface IKokoroApi
 			/// <param name="combat">The current combat.</param>
 			/// <param name="direction">The direction of movement.</param>
 			/// <returns>The action entry that would be ran.</returns>
+			[Obsolete("Use the `(State state, Combat combat, Direction direction, bool forRendering)` overload instead.")]
 			IDroneShiftActionEntry? GetNextAction(State state, Combat combat, Direction direction);
+
+			/// <summary>
+			/// Returns the next action entry that would be ran if the given droneshift action was requested.
+			/// </summary>
+			/// <remarks>
+			/// This method (along with <see cref="IHook.ShouldShowDroneShiftButton"/>, <see cref="DidHoverButton"/> and <see cref="RunNextAction"/>) can be used to implement custom droneshift buttons.
+			/// </remarks>
+			/// <param name="state">The game state.</param>
+			/// <param name="combat">The current combat.</param>
+			/// <param name="direction">The direction of movement.</param>
+			/// <param name="forRendering">Whether this method was called for rendering purposes, or actual action purposes otherwise.</param>
+			/// <returns>The action entry that would be ran.</returns>
+			IDroneShiftActionEntry? GetNextAction(State state, Combat combat, Direction direction, bool forRendering);
 			
 			/// <summary>
 			/// Raises the events related to hovering over a droneshift button.
 			/// </summary>
 			/// <remarks>
-			/// This method (along with <see cref="IHook.ShouldShowDroneShiftButton"/>, <see cref="GetNextAction"/> and <see cref="RunNextAction"/>) can be used to implement custom droneshift buttons.
+			/// This method (along with <see cref="IHook.ShouldShowDroneShiftButton"/>, <see cref="GetNextAction(State,Combat,Shockah.Kokoro.IKokoroApi.IV2.IDroneShiftHookApi.Direction,bool)"/> and <see cref="RunNextAction"/>) can be used to implement custom droneshift buttons.
 			/// </remarks>
 			/// <seealso cref="IDroneShiftAction.DroneShiftButtonHovered">IDroneShiftAction.DroneShiftButtonHovered</seealso>
 			/// <seealso cref="IDroneShiftPaymentOption.DroneShiftButtonHovered">IDroneShiftPaymentOption.DroneShiftButtonHovered</seealso>
@@ -82,7 +97,7 @@ public partial interface IKokoroApi
 			/// Runs the next action entry for the given direction.
 			/// </summary>
 			/// <remarks>
-			/// This method (along with <see cref="IHook.ShouldShowDroneShiftButton"/>, <see cref="GetNextAction"/> and <see cref="DidHoverButton"/>) can be used to implement custom droneshift buttons.
+			/// This method (along with <see cref="IHook.ShouldShowDroneShiftButton"/>, <see cref="GetNextAction(State,Combat,Shockah.Kokoro.IKokoroApi.IV2.IDroneShiftHookApi.Direction,bool)"/> and <see cref="DidHoverButton"/>) can be used to implement custom droneshift buttons.
 			/// </remarks>
 			/// <param name="state">The game state.</param>
 			/// <param name="combat">The current combat.</param>
@@ -807,6 +822,12 @@ public partial interface IKokoroApi
 					/// The action entry being checked for.
 					/// </summary>
 					IDroneShiftActionEntry Entry { get; }
+
+					/// <summary>
+					/// Whether this method was called for rendering purposes, or actual action purposes otherwise.
+					/// </summary>
+					bool ForRendering
+						=> throw new InvalidProgramException("Should never be called directly; real implementation in Kokoro");
 				}
 
 				/// <summary>
@@ -838,6 +859,12 @@ public partial interface IKokoroApi
 					/// The payment option being checked for.
 					/// </summary>
 					IDroneShiftPaymentOption PaymentOption { get; }
+					
+					/// <summary>
+					/// Whether this method was called for rendering purposes, or actual action purposes otherwise.
+					/// </summary>
+					bool ForRendering
+						=> throw new InvalidProgramException("Should never be called directly; real implementation in Kokoro");
 				}
 
 				/// <summary>
@@ -869,6 +896,12 @@ public partial interface IKokoroApi
 					/// The precondition being checked for.
 					/// </summary>
 					IDroneShiftPrecondition Precondition { get; }
+					
+					/// <summary>
+					/// Whether this method was called for rendering purposes, or actual action purposes otherwise.
+					/// </summary>
+					bool ForRendering
+						=> throw new InvalidProgramException("Should never be called directly; real implementation in Kokoro");
 				}
 
 				/// <summary>
@@ -905,6 +938,12 @@ public partial interface IKokoroApi
 					/// The precondition being checked for.
 					/// </summary>
 					IDroneShiftPostcondition Postcondition { get; }
+					
+					/// <summary>
+					/// Whether this method was called for rendering purposes, or actual action purposes otherwise.
+					/// </summary>
+					bool ForRendering
+						=> throw new InvalidProgramException("Should never be called directly; real implementation in Kokoro");
 				}
 
 				/// <summary>

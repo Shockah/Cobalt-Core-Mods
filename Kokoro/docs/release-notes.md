@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* `EvadeHook`/`DroneShiftHook` APIs now allow disabling other elements just for the rendering or actual action parts.
+
 ## 2.2.0
 Released 12 January 2025.
 

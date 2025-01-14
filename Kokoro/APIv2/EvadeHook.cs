@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
 
@@ -76,13 +77,27 @@ public partial interface IKokoroApi
 			/// <param name="combat">The current combat.</param>
 			/// <param name="direction">The direction of movement.</param>
 			/// <returns>The action entry that would be ran.</returns>
+			[Obsolete("Use the `(State state, Combat combat, Direction direction, bool forRendering)` overload instead.")]
 			IEvadeActionEntry? GetNextAction(State state, Combat combat, Direction direction);
+
+			/// <summary>
+			/// Returns the next action entry that would be ran if the given evade action was requested.
+			/// </summary>
+			/// <remarks>
+			/// This method (along with <see cref="IHook.ShouldShowEvadeButton"/>, <see cref="DidHoverButton"/> and <see cref="RunNextAction"/>) can be used to implement custom evade buttons.
+			/// </remarks>
+			/// <param name="state">The game state.</param>
+			/// <param name="combat">The current combat.</param>
+			/// <param name="direction">The direction of movement.</param>
+			/// <param name="forRendering">Whether this method was called for rendering purposes, or actual action purposes otherwise.</param>
+			/// <returns>The action entry that would be ran.</returns>
+			IEvadeActionEntry? GetNextAction(State state, Combat combat, Direction direction, bool forRendering);
 			
 			/// <summary>
 			/// Raises the events related to hovering over an evade button.
 			/// </summary>
 			/// <remarks>
-			/// This method (along with <see cref="IHook.ShouldShowEvadeButton"/>, <see cref="GetNextAction"/> and <see cref="RunNextAction"/>) can be used to implement custom evade buttons.
+			/// This method (along with <see cref="IHook.ShouldShowEvadeButton"/>, <see cref="GetNextAction(State,Combat,Shockah.Kokoro.IKokoroApi.IV2.IEvadeHookApi.Direction,bool)"/> and <see cref="RunNextAction"/>) can be used to implement custom evade buttons.
 			/// </remarks>
 			/// <seealso cref="IEvadeAction.EvadeButtonHovered">IEvadeAction.EvadeButtonHovered</seealso>
 			/// <seealso cref="IEvadePaymentOption.EvadeButtonHovered">IEvadePaymentOption.EvadeButtonHovered</seealso>
@@ -97,7 +112,7 @@ public partial interface IKokoroApi
 			/// Runs the next action entry for the given direction.
 			/// </summary>
 			/// <remarks>
-			/// This method (along with <see cref="IHook.ShouldShowEvadeButton"/>, <see cref="GetNextAction"/> and <see cref="DidHoverButton"/>) can be used to implement custom evade buttons.
+			/// This method (along with <see cref="IHook.ShouldShowEvadeButton"/>, <see cref="GetNextAction(State,Combat,Shockah.Kokoro.IKokoroApi.IV2.IEvadeHookApi.Direction,bool)"/> and <see cref="DidHoverButton"/>) can be used to implement custom evade buttons.
 			/// </remarks>
 			/// <param name="state">The game state.</param>
 			/// <param name="combat">The current combat.</param>
@@ -822,6 +837,12 @@ public partial interface IKokoroApi
 					/// The action entry being checked for.
 					/// </summary>
 					IEvadeActionEntry Entry { get; }
+
+					/// <summary>
+					/// Whether this method was called for rendering purposes, or actual action purposes otherwise.
+					/// </summary>
+					bool ForRendering
+						=> throw new InvalidProgramException("Should never be called directly; real implementation in Kokoro");
 				}
 
 				/// <summary>
@@ -853,6 +874,12 @@ public partial interface IKokoroApi
 					/// The payment option being checked for.
 					/// </summary>
 					IEvadePaymentOption PaymentOption { get; }
+					
+					/// <summary>
+					/// Whether this method was called for rendering purposes, or actual action purposes otherwise.
+					/// </summary>
+					bool ForRendering
+						=> throw new InvalidProgramException("Should never be called directly; real implementation in Kokoro");
 				}
 
 				/// <summary>
@@ -884,6 +911,12 @@ public partial interface IKokoroApi
 					/// The precondition being checked for.
 					/// </summary>
 					IEvadePrecondition Precondition { get; }
+					
+					/// <summary>
+					/// Whether this method was called for rendering purposes, or actual action purposes otherwise.
+					/// </summary>
+					bool ForRendering
+						=> throw new InvalidProgramException("Should never be called directly; real implementation in Kokoro");
 				}
 
 				/// <summary>
@@ -895,31 +928,37 @@ public partial interface IKokoroApi
 					/// The game state.
 					/// </summary>
 					State State { get; }
-					
+
 					/// <summary>
 					/// The current combat.
 					/// </summary>
 					Combat Combat { get; }
-					
+
 					/// <summary>
 					/// The direction of movement.
 					/// </summary>
 					Direction Direction { get; }
-					
+
 					/// <summary>
 					/// The action entry being checked for.
 					/// </summary>
 					IEvadeActionEntry Entry { get; }
-					
+
 					/// <summary>
 					/// The payment option that would used to pay for the action.
 					/// </summary>
 					IEvadePaymentOption PaymentOption { get; }
-					
+
 					/// <summary>
 					/// The precondition being checked for.
 					/// </summary>
 					IEvadePostcondition Postcondition { get; }
+
+					/// <summary>
+					/// Whether this method was called for rendering purposes, or actual action purposes otherwise.
+					/// </summary>
+					bool ForRendering
+						=> throw new InvalidProgramException("Should never be called directly; real implementation in Kokoro");
 				}
 
 				/// <summary>
