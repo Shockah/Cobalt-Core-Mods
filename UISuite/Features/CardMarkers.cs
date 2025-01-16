@@ -25,6 +25,12 @@ file static class CardBrowseExt
 	
 	public static void SetSelectedColorIndex(this CardBrowse route, int colorIndex)
 		=> ModEntry.Instance.Helper.ModData.SetModData(route, "SelectedColorIndex", colorIndex);
+
+	public static bool IsClearMarkersSelected(this CardBrowse route)
+		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(route, "IsClearMarkersSelected");
+
+	public static void ToggleClearMarkersSelected(this CardBrowse route)
+		=> ModEntry.Instance.Helper.ModData.SetModData(route, "IsClearMarkersSelected", !route.IsClearMarkersSelected());
 }
 
 file static class CardExt
@@ -52,6 +58,9 @@ file static class CardExt
 			ModEntry.Instance.Helper.ModData.SetOptionalModData<List<CardMarkers.Marker>>(card, "Markers", [marker]);
 		}
 	}
+
+	public static void ClearMarkers(this Card card)
+		=> ModEntry.Instance.Helper.ModData.RemoveModData(card, "Markers");
 }
 
 internal sealed class CardMarkers : IRegisterable
@@ -75,9 +84,11 @@ internal sealed class CardMarkers : IRegisterable
 	internal const int MaxMarkers = 3;
 	private static readonly UK CardMarkerTypeUk = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
 	private static readonly UK CardMarkerColorUk = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
+	private static readonly UK ClearCardMarkersUk = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
 	
 	private static readonly Color[] MarkerColors = [
 		new("FFFFFF"),
+		new("3F3F3F"),
 		new("FF0000"),
 		new("FF7F00"),
 		new("FFFF00"),
@@ -114,6 +125,10 @@ internal sealed class CardMarkers : IRegisterable
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderDiscard)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDiscard_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderExhaust)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderExhaust_Postfix))
 		);
 	}
 
@@ -168,19 +183,30 @@ internal sealed class CardMarkers : IRegisterable
 
 		var selectedColorIndex = __instance.GetSelectedColorIndex();
 		var selectedMarkerType = __instance.GetSelectedMarkerType();
-
-		var selectedColor = Colors.white;
+		var selectedColor = selectedColorIndex < MarkerColors.Length ? MarkerColors[selectedColorIndex] : DB.decks[g.state.characters[selectedColorIndex - MarkerColors.Length].deckType ?? Deck.colorless].color;
+		var maxY = 0.0;
 
 		var totalColors = MarkerColors.Length + (g.state.IsOutsideRun() ? 0 : g.state.characters.Count);
 		for (var i = 0; i < totalColors; i++)
 		{
 			var markerColor = i < MarkerColors.Length ? MarkerColors[i] : DB.decks[g.state.characters[i - MarkerColors.Length].deckType ?? Deck.colorless].color;
 			var isSelected = selectedColorIndex == i;
-			if (isSelected)
-				selectedColor = markerColor;
 			
 			var colorBox = g.Push(new UIKey(CardMarkerColorUk, i), new Rect(87, 54 + i * 9, 8, 8), onMouseDown: __instance);
+			
 			Draw.Rect(colorBox.rect.x, colorBox.rect.y, colorBox.rect.w, colorBox.rect.h, markerColor.fadeAlpha(isSelected ? 1 : 0.5));
+
+			if (colorBox.IsHover())
+				g.tooltips.Add(new Vec(colorBox.rect.x2 + 4, colorBox.rect.y), new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::{MethodBase.GetCurrentMethod()!.DeclaringType!.Name}")
+				{
+					Icon = MarkerIcons[selectedMarkerType ?? MarkerType.Cross].Sprite,
+					IconColor = markerColor,
+					TitleColor = Colors.white,
+					Title = ModEntry.Instance.Localizations.Localize(["CardMarkers", "tooltip", "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["CardMarkers", "tooltip", "description"]),
+				});
+
+			maxY = Math.Max(maxY, colorBox.rect.y2);
 			g.Pop();
 		}
 
@@ -189,9 +215,36 @@ internal sealed class CardMarkers : IRegisterable
 			var isSelected = selectedMarkerType == markerType;
 			
 			var markerBox = g.Push(new UIKey(CardMarkerTypeUk, (int)markerType), new Rect(96, 54 + index * 11, 9, 9), onMouseDown: __instance);
+			
 			Draw.Sprite(MarkerIcons[markerType].Sprite, markerBox.rect.x, markerBox.rect.y, color: selectedColor.fadeAlpha(isSelected ? 1 : 0.5));
+			
+			if (markerBox.IsHover())
+				g.tooltips.Add(new Vec(markerBox.rect.x2 + 4, markerBox.rect.y), new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::{MethodBase.GetCurrentMethod()!.DeclaringType!.Name}")
+				{
+					Icon = MarkerIcons[markerType].Sprite,
+					IconColor = selectedColor,
+					TitleColor = Colors.white,
+					Title = ModEntry.Instance.Localizations.Localize(["CardMarkers", "tooltip", "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["CardMarkers", "tooltip", "description"]),
+				});
+			
+			maxY = Math.Max(maxY, markerBox.rect.y2);
 			g.Pop();
 		}
+
+		var clearBox = g.Push(ClearCardMarkersUk, new Rect(91, maxY + 4, 10, 10), onMouseDown: __instance);
+		
+		Draw.Sprite(StableSpr.icons_x_white, clearBox.rect.x, clearBox.rect.y, color: Colors.white.fadeAlpha(__instance.IsClearMarkersSelected() ? 1 : 0.5));
+		
+		if (clearBox.IsHover())
+			g.tooltips.Add(new Vec(clearBox.rect.x2 + 4, clearBox.rect.y), new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::{MethodBase.GetCurrentMethod()!.DeclaringType!.Name}")
+			{
+				TitleColor = Colors.white,
+				Title = ModEntry.Instance.Localizations.Localize(["CardMarkers", "clearTooltip", "title"]),
+				Description = ModEntry.Instance.Localizations.Localize(["CardMarkers", "clearTooltip", "description"]),
+			});
+		
+		g.Pop();
 	}
 
 	private static bool CardBrowse_OnMouseDown_Prefix(CardBrowse __instance, G g, Box b)
@@ -205,15 +258,26 @@ internal sealed class CardMarkers : IRegisterable
 		if (b.key is not { } key)
 			return true;
 
+		if (key.k == ClearCardMarkersUk)
+		{
+			__instance.ToggleClearMarkersSelected();
+			__instance.SetSelectedMarkerType(null);
+			Audio.Play(Event.Click);
+			return false;
+		}
+
 		if (key.k == CardMarkerColorUk)
 		{
-			__instance.SetSelectedColorIndex(__instance.GetSelectedColorIndex() == key.v ? 0 : key.v);
+			__instance.SetSelectedColorIndex(key.v);
 			Audio.Play(Event.Click);
 			return false;
 		}
 		
 		if (key.k == CardMarkerTypeUk)
 		{
+			if (__instance.IsClearMarkersSelected())
+				__instance.ToggleClearMarkersSelected();
+			
 			var values = Enum.GetValues<MarkerType>();
 			var markerType = values[Math.Clamp(key.v, 0, values.Length - 1 + (g.state.IsOutsideRun() ? 0 : g.state.characters.Count))];
 			
@@ -226,13 +290,22 @@ internal sealed class CardMarkers : IRegisterable
 			return false;
 		}
 
-		if (key.k == StableUK.card && !Input.shift && !Input.ctrl && !Input.alt && __instance.GetSelectedMarkerType() is { } selectedMarkerType)
+		if (key.k == StableUK.card && !Input.shift && !Input.ctrl && !Input.alt)
 		{
-			var selectedColorIndex = __instance.GetSelectedColorIndex();
-			var markerColor = selectedColorIndex < MarkerColors.Length ? MarkerColors[selectedColorIndex] : DB.decks[g.state.characters[selectedColorIndex - MarkerColors.Length].deckType ?? Deck.colorless].color;
-			__instance.GetCardList(g).FirstOrDefault(card => card.uuid == key.v)?.ToggleMarker(selectedMarkerType, markerColor);
-			Audio.Play(Event.Click);
-			return false;
+			if (__instance.IsClearMarkersSelected())
+			{
+				__instance.GetCardList(g).FirstOrDefault(card => card.uuid == key.v)?.ClearMarkers();
+				Audio.Play(Event.Click);
+				return false;
+			}
+			if (__instance.GetSelectedMarkerType() is { } selectedMarkerType)
+			{
+				var selectedColorIndex = __instance.GetSelectedColorIndex();
+				var markerColor = selectedColorIndex < MarkerColors.Length ? MarkerColors[selectedColorIndex] : DB.decks[g.state.characters[selectedColorIndex - MarkerColors.Length].deckType ?? Deck.colorless].color;
+				__instance.GetCardList(g).FirstOrDefault(card => card.uuid == key.v)?.ToggleMarker(selectedMarkerType, markerColor);
+				Audio.Play(Event.Click);
+				return false;
+			}
 		}
 
 		return true;
@@ -266,5 +339,12 @@ internal sealed class CardMarkers : IRegisterable
 		if (!__runOriginal)
 			return;
 		RenderMarkerOverlayIfNeeded(g, StableUK.combat_discard, __instance.discard);
+	}
+
+	private static void Combat_RenderExhaust_Postfix(Combat __instance, G g, bool __runOriginal)
+	{
+		if (!__runOriginal)
+			return;
+		RenderMarkerOverlayIfNeeded(g, StableUK.combat_exhaust, __instance.exhausted);
 	}
 }

@@ -1,5 +1,15 @@
 ﻿{
 	"AnchorCardPileOverlay": {
 		"tooltip": "Currently contains an <c=card>Anchor</c>."
+	},
+	"CardMarkers": {
+		"tooltip": {
+			"title": "Card Marking",
+			"description": "Choose a color and a symbol, then click on a card to mark it. The mark will also appear on the pile the card is in."
+		},
+		"clearTooltip": {
+			"title": "Clear Marks",
+			"description": "When selected, clicking on a card will clear all of its marks."
+		}
 	}
 }
