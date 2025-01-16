@@ -62,7 +62,8 @@ internal sealed class LaneDisplay : IRegisterable
 
 		while (currentLaneX < g.mg.PIX_W)
 		{
-			Draw.Rect(currentLaneX - 3, 0, 1, g.mg.PIX_H, Colors.black.fadeAlpha(IsActiveHover ? 0.2 : 0.05));
+			Draw.Rect(currentLaneX - 3, 0, 1, g.mg.PIX_H, Colors.black.fadeAlpha(IsActiveHover ? 0.1 : 0.025));
+			Draw.Rect(currentLaneX - 3, 0, 1, g.mg.PIX_H, Colors.white.fadeAlpha(IsActiveHover ? 0.1 : 0.025));
 			currentLaneX += laneSpacing;
 		}
 
