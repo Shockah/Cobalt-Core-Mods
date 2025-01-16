@@ -9,6 +9,15 @@
 			}
 		}
 	},
+	"BrowseCardPilesDuringPeek": {
+		"settings": {
+			"header": "Browse card piles during peek",
+			"enabled": {
+				"title": "Enabled",
+				"description": "When enabled, makes it possible to look at the card piles when peeking the game state during other actions."
+			}
+		}
+	},
 	"CardMarkers": {
 		"tooltip": {
 			"title": "Card Marking",

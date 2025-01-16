@@ -3,9 +3,17 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using HarmonyLib;
 using Nanoray.PluginManager;
+using Newtonsoft.Json;
 using Nickel;
+using Nickel.ModSettings;
 
 namespace Shockah.UISuite;
+
+internal sealed partial class ProfileSettings
+{
+	[JsonProperty]
+	public bool BrowseCardPilesDuringPeek = true;
+}
 
 internal sealed class BrowseCardPilesDuringPeek : IRegisterable
 {
@@ -42,10 +50,35 @@ internal sealed class BrowseCardPilesDuringPeek : IRegisterable
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardBrowse_CanBePeeked_Postfix))
 		);
 	}
+
+	public static IModSettingsApi.IModSetting MakeSettings(IPluginPackage<IModManifest> package, IModSettingsApi api)
+		=> api.MakeList([
+			api.MakePadding(
+				api.MakeText(
+					() => ModEntry.Instance.Localizations.Localize(["BrowseCardPilesDuringPeek", "settings", "header"])
+				).SetFont(DB.thicket),
+				8,
+				4
+			),
+			api.MakeCheckbox(
+				() => ModEntry.Instance.Localizations.Localize(["BrowseCardPilesDuringPeek", "settings", "enabled", "title"]),
+				() => ModEntry.Instance.Settings.ProfileBased.Current.BrowseCardPilesDuringPeek,
+				(_, _, value) => ModEntry.Instance.Settings.ProfileBased.Current.BrowseCardPilesDuringPeek = value
+			).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.BrowseCardPilesDuringPeek)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = ModEntry.Instance.Localizations.Localize(["BrowseCardPilesDuringPeek", "settings", "enabled", "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["BrowseCardPilesDuringPeek", "settings", "enabled", "description"]),
+				},
+			]),
+		]);
 	
 	private static bool ShouldHideOriginalAndDisplayCustomCardPileButton(Combat combat)
 	{
 		// hide original card pile button if we have a subroute - we'll draw one on top of the subroute later
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.BrowseCardPilesDuringPeek)
+			return false;
 		if (combat.routeOverride is not { } routeOverride)
 			return false;
 		if (!routeOverride.CanBePeeked())
