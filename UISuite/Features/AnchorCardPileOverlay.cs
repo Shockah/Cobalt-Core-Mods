@@ -3,9 +3,17 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using Nanoray.PluginManager;
+using Newtonsoft.Json;
 using Nickel;
+using Nickel.ModSettings;
 
 namespace Shockah.UISuite;
+
+internal sealed partial class ProfileSettings
+{
+	[JsonProperty]
+	public bool AnchorCardPileOverlay = true;
+}
 
 internal sealed class AnchorCardPileOverlay : IRegisterable
 {
@@ -21,8 +29,34 @@ internal sealed class AnchorCardPileOverlay : IRegisterable
 		);
 	}
 
+	public static IModSettingsApi.IModSetting MakeSettings(IPluginPackage<IModManifest> package, IModSettingsApi api)
+		=> api.MakeList([
+			api.MakePadding(
+				api.MakeText(
+					() => ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "settings", "header"])
+				).SetFont(DB.thicket),
+				8,
+				4
+			),
+			api.MakeCheckbox(
+				() => ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "settings", "enabled", "title"]),
+				() => ModEntry.Instance.Settings.ProfileBased.Current.AnchorCardPileOverlay,
+				(_, _, value) => ModEntry.Instance.Settings.ProfileBased.Current.AnchorCardPileOverlay = value
+			).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.AnchorCardPileOverlay)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "settings", "enabled", "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "settings", "enabled", "description"]),
+				},
+				new TTCard { card = new TrashAnchor() },
+			]),
+		]);
+
 	private static void RenderAnchorOverlayIfNeeded(G g, UIKey uiKey, List<Card> cards)
 	{
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.AnchorCardPileOverlay)
+			return;
 		if (!cards.Any(card => card is TrashAnchor))
 			return;
 		if (g.boxes.FirstOrDefault(b => b.key == uiKey) is not { } box)

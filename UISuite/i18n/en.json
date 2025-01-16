@@ -1,6 +1,13 @@
 ﻿{
 	"AnchorCardPileOverlay": {
-		"tooltip": "Currently contains an <c=card>Anchor</c>."
+		"tooltip": "Currently contains an <c=card>Anchor</c>.",
+		"settings": {
+			"header": "Anchor indicator",
+			"enabled": {
+				"title": "Enabled",
+				"description": "Whether to display an anchor indicator on top of the card pile the <c=card>Anchor</c> is currently in."
+			}
+		}
 	},
 	"CardMarkers": {
 		"tooltip": {
