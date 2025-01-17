@@ -51,11 +51,11 @@ file static class CardBrowseExt
 
 file static class CardExt
 {
-	public static List<CardMarkers.Marker>? GetMarkers(this Card card)
+	public static List<CardMarkers.Marker>? GetMarkers(this Card card, bool withAutoMarkers)
 	{
 		var markers = ModEntry.Instance.Helper.ModData.GetOptionalModData<List<CardMarkers.Marker>>(card, "Markers");
 		
-		if (ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.AutoMarkCharacterCards)
+		if (withAutoMarkers && ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.AutoMarkCharacterCards)
 		{
 			var cardDeck = card.GetMeta().deck;
 			var index = MG.inst.g.state.characters.FindIndex(character => character.deckType == cardDeck);
@@ -227,7 +227,7 @@ internal sealed class CardMarkers : IRegisterable
 			return;
 
 		var allMarkers = cards
-			.SelectMany(card => card.GetMarkers() ?? [])
+			.SelectMany(card => card.GetMarkers(false) ?? [])
 			.Distinct()
 			.Select(m => (Marker: m, Color: new Color(m.ColorHex)))
 			.OrderBy(e => e.Marker.Type)
@@ -398,7 +398,7 @@ internal sealed class CardMarkers : IRegisterable
 	{
 		if (!ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.IsEnabled && !ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.AutoMarkCharacterCards)
 			return;
-		if (__instance.GetMarkers() is not { } markers)
+		if (__instance.GetMarkers(true) is not { } markers)
 			return;
 
 		var box = g.Push();
