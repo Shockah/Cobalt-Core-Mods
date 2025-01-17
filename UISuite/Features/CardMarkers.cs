@@ -85,11 +85,11 @@ internal sealed class CardMarkers : IRegisterable
 	internal enum MarkerType
 	{
 		[UsedImplicitly] Cross,
+		[UsedImplicitly] Star,
+		[UsedImplicitly] Triangle,
 		[UsedImplicitly] Rhombus,
 		[UsedImplicitly] RotatedSquare,
 		[UsedImplicitly] Square,
-		[UsedImplicitly] Star,
-		[UsedImplicitly] Triangle
 	}
 
 	internal record Marker(
