@@ -55,21 +55,21 @@ internal sealed class BrowseCardPilesDuringPeek : IRegisterable
 		=> api.MakeList([
 			api.MakePadding(
 				api.MakeText(
-					() => ModEntry.Instance.Localizations.Localize(["BrowseCardPilesDuringPeek", "settings", "header"])
+					() => ModEntry.Instance.Localizations.Localize(["BrowseCardPilesDuringPeek", "Settings", "Header"])
 				).SetFont(DB.thicket),
 				8,
 				4
 			),
 			api.MakeCheckbox(
-				() => ModEntry.Instance.Localizations.Localize(["BrowseCardPilesDuringPeek", "settings", "enabled", "title"]),
+				() => ModEntry.Instance.Localizations.Localize(["BrowseCardPilesDuringPeek", "Settings", "IsEnabled", "Title"]),
 				() => ModEntry.Instance.Settings.ProfileBased.Current.BrowseCardPilesDuringPeek,
 				(_, _, value) => ModEntry.Instance.Settings.ProfileBased.Current.BrowseCardPilesDuringPeek = value
 			).SetTooltips(() => [
 				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.BrowseCardPilesDuringPeek)}")
 				{
 					TitleColor = Colors.textBold,
-					Title = ModEntry.Instance.Localizations.Localize(["BrowseCardPilesDuringPeek", "settings", "enabled", "title"]),
-					Description = ModEntry.Instance.Localizations.Localize(["BrowseCardPilesDuringPeek", "settings", "enabled", "description"]),
+					Title = ModEntry.Instance.Localizations.Localize(["BrowseCardPilesDuringPeek", "Settings", "IsEnabled", "Title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["BrowseCardPilesDuringPeek", "Settings", "IsEnabled", "Description"]),
 				},
 			]),
 		]);

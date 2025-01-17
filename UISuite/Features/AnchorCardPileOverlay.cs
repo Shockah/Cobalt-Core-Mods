@@ -33,21 +33,21 @@ internal sealed class AnchorCardPileOverlay : IRegisterable
 		=> api.MakeList([
 			api.MakePadding(
 				api.MakeText(
-					() => ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "settings", "header"])
+					() => ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "Settings", "Header"])
 				).SetFont(DB.thicket),
 				8,
 				4
 			),
 			api.MakeCheckbox(
-				() => ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "settings", "enabled", "title"]),
+				() => ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "Settings", "IsEnabled", "Title"]),
 				() => ModEntry.Instance.Settings.ProfileBased.Current.AnchorCardPileOverlay,
 				(_, _, value) => ModEntry.Instance.Settings.ProfileBased.Current.AnchorCardPileOverlay = value
 			).SetTooltips(() => [
 				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.AnchorCardPileOverlay)}")
 				{
 					TitleColor = Colors.textBold,
-					Title = ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "settings", "enabled", "title"]),
-					Description = ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "settings", "enabled", "description"]),
+					Title = ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "Settings", "IsEnabled", "Title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "Settings", "IsEnabled", "Description"]),
 				},
 				new TTCard { card = new TrashAnchor() },
 			]),
@@ -68,7 +68,7 @@ internal sealed class AnchorCardPileOverlay : IRegisterable
 		if (!box.IsHover())
 			return;
 
-		g.tooltips.Add(g.tooltips.pos, new TTText(ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "tooltip"])));
+		g.tooltips.Add(g.tooltips.pos, new TTText(ModEntry.Instance.Localizations.Localize(["AnchorCardPileOverlay", "Tooltip"])));
 	}
 
 	private static void Combat_RenderDeck_Postfix(G g, bool __runOriginal)

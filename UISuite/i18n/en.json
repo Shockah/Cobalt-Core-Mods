@@ -1,31 +1,56 @@
 ﻿{
 	"AnchorCardPileOverlay": {
-		"tooltip": "Currently contains an <c=card>Anchor</c>.",
-		"settings": {
-			"header": "Anchor indicator",
-			"enabled": {
-				"title": "Enabled",
-				"description": "Whether to display an anchor indicator on top of the card pile the <c=card>Anchor</c> is currently in."
+		"Tooltip": "Currently contains an <c=card>Anchor</c>.",
+		"Settings": {
+			"Header": "<c=white>Anchor indicator</c>",
+			"IsEnabled": {
+				"Title": "Enabled",
+				"Description": "Whether to display an anchor indicator on top of the card pile the <c=card>Anchor</c> is currently in."
 			}
 		}
 	},
 	"BrowseCardPilesDuringPeek": {
-		"settings": {
-			"header": "Browse card piles during peek",
-			"enabled": {
-				"title": "Enabled",
-				"description": "When enabled, makes it possible to look at the card piles when peeking the game state during other actions."
+		"Settings": {
+			"Header": "<c=white>Browse card piles during peek</c>",
+			"IsEnabled": {
+				"Title": "Enabled",
+				"Description": "When enabled, makes it possible to look at the card piles when peeking the game state during other actions."
 			}
 		}
 	},
 	"CardMarkers": {
-		"tooltip": {
-			"title": "Card Marking",
-			"description": "Choose a color and a symbol, then click on a card to mark it. The mark will also appear on the pile the card is in."
+		"Tooltip": {
+			"Title": "Card Marking",
+			"Description": "Choose a color and a symbol, then click on a card to mark it. The mark will also appear on the pile the card is in."
 		},
-		"clearTooltip": {
-			"title": "Clear Marks",
-			"description": "When selected, clicking on a card will clear all of its marks."
+		"ClearTooltip": {
+			"Title": "Clear Marks",
+			"Description": "When selected, clicking on a card will clear all of its marks."
+		}
+	},
+	"LaneDisplay": {
+		"Settings": {
+			"Header": "<c=white>Lane dividers</c>",
+			"IsEnabled": {
+				"Title": "Enabled",
+				"Description": "Whether to display dividers between the lanes in combat."
+			},
+			"ActiveAlpha": {
+				"Title": "Active alpha",
+				"Description": "The opacity of the lane divider when hovering over any kind of movement or offset action."
+			},
+			"InactiveAlpha": {
+				"Title": "Inactive alpha",
+				"Description": "The opacity of the lane divider when not hovering over any kind of movement or offset action."
+			},
+			"ActiveSpeed": {
+				"Title": "Active speed",
+				"Description": "The speed at which the lane divider moves vertically when hovering over any kind of movement or offset action."
+			},
+			"InactiveSpeed": {
+				"Title": "Inactive speed",
+				"Description": "The speed at which the lane divider moves vertically when not hovering over any kind of movement or offset action."
+			}
 		}
 	}
 }

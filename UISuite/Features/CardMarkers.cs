@@ -202,8 +202,8 @@ internal sealed class CardMarkers : IRegisterable
 					Icon = MarkerIcons[selectedMarkerType ?? MarkerType.Cross].Sprite,
 					IconColor = markerColor,
 					TitleColor = Colors.white,
-					Title = ModEntry.Instance.Localizations.Localize(["CardMarkers", "tooltip", "title"]),
-					Description = ModEntry.Instance.Localizations.Localize(["CardMarkers", "tooltip", "description"]),
+					Title = ModEntry.Instance.Localizations.Localize(["CardMarkers", "Tooltip", "Title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["CardMarkers", "Tooltip", "Description"]),
 				});
 
 			maxY = Math.Max(maxY, colorBox.rect.y2);
@@ -224,8 +224,8 @@ internal sealed class CardMarkers : IRegisterable
 					Icon = MarkerIcons[markerType].Sprite,
 					IconColor = selectedColor,
 					TitleColor = Colors.white,
-					Title = ModEntry.Instance.Localizations.Localize(["CardMarkers", "tooltip", "title"]),
-					Description = ModEntry.Instance.Localizations.Localize(["CardMarkers", "tooltip", "description"]),
+					Title = ModEntry.Instance.Localizations.Localize(["CardMarkers", "Tooltip", "Title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["CardMarkers", "Tooltip", "Description"]),
 				});
 			
 			maxY = Math.Max(maxY, markerBox.rect.y2);
@@ -240,8 +240,8 @@ internal sealed class CardMarkers : IRegisterable
 			g.tooltips.Add(new Vec(clearBox.rect.x2 + 4, clearBox.rect.y), new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::{MethodBase.GetCurrentMethod()!.DeclaringType!.Name}")
 			{
 				TitleColor = Colors.white,
-				Title = ModEntry.Instance.Localizations.Localize(["CardMarkers", "clearTooltip", "title"]),
-				Description = ModEntry.Instance.Localizations.Localize(["CardMarkers", "clearTooltip", "description"]),
+				Title = ModEntry.Instance.Localizations.Localize(["CardMarkers", "ClearTooltip", "Title"]),
+				Description = ModEntry.Instance.Localizations.Localize(["CardMarkers", "ClearTooltip", "Description"]),
 			});
 		
 		g.Pop();
