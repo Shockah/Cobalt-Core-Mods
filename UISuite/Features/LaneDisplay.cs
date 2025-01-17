@@ -2,17 +2,24 @@
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
+using Microsoft.Xna.Framework.Graphics;
 using Nanoray.PluginManager;
 using Nickel;
+using MGColor = Microsoft.Xna.Framework.Color;
 
 namespace Shockah.UISuite;
 
 internal sealed class LaneDisplay : IRegisterable
 {
+	private static ISpriteEntry LaneDividerSprite = null!;
+	
 	private static bool IsActiveHover;
+	private static Texture2D? LaneDividerTexture;
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
+		LaneDividerSprite = helper.Content.Sprites.RegisterDynamicSprite("LaneDivider", ObtainLaneDividerTexture);
+		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderShipsOver)),
 			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderShipsOver_Postfix_Low)), priority: Priority.Low)
@@ -25,6 +32,22 @@ internal sealed class LaneDisplay : IRegisterable
 			original: AccessTools.DeclaredMethod(typeof(G), nameof(G.BubbleEvents)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(G_BubbleEvents_Postfix))
 		);
+	}
+
+	private static Texture2D ObtainLaneDividerTexture()
+	{
+		if (LaneDividerTexture is { } texture)
+			return texture;
+
+		texture = new Texture2D(MG.inst.graphics.GraphicsDevice, 1, MG.inst.PIX_H);
+		LaneDividerTexture = texture;
+
+		var data = new MGColor[texture.Width * texture.Height];
+		for (var y = 0; y < texture.Height; y++)
+			data[y] = (y / 6) % 2 == 0 ? MGColor.White : MGColor.Black;
+		
+		texture.SetData(data);
+		return texture;
 	}
 
 	private static bool IsActiveLaneDisplayAction(CardAction action)
@@ -62,8 +85,7 @@ internal sealed class LaneDisplay : IRegisterable
 
 		while (currentLaneX < g.mg.PIX_W)
 		{
-			Draw.Rect(currentLaneX - 3, 0, 1, g.mg.PIX_H, Colors.black.fadeAlpha(IsActiveHover ? 0.1 : 0.025));
-			Draw.Rect(currentLaneX - 3, 0, 1, g.mg.PIX_H, Colors.white.fadeAlpha(IsActiveHover ? 0.1 : 0.025));
+			Draw.Sprite(LaneDividerSprite.Sprite, currentLaneX - 3, 0, color: Colors.white.fadeAlpha(IsActiveHover ? 0.15 : 0.05));
 			currentLaneX += laneSpacing;
 		}
 
