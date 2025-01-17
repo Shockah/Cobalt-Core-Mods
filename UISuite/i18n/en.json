@@ -26,6 +26,13 @@
 		"ClearTooltip": {
 			"Title": "Clear Marks",
 			"Description": "When selected, clicking on a card will clear all of its marks."
+		},
+		"Settings": {
+			"Header": "<c=white>Card markers</c>",
+			"IsEnabled": {
+				"Title": "Enabled",
+				"Description": "When enabled, allows applying markers to cards, which get shown on the cards themselves, but also the piles the card are in."
+			}
 		}
 	},
 	"LaneDisplay": {

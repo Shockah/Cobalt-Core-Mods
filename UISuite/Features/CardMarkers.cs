@@ -9,8 +9,21 @@ using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Nickel;
+using Nickel.ModSettings;
 
 namespace Shockah.UISuite;
+
+internal sealed partial class ProfileSettings
+{
+	[JsonProperty]
+	public CardMarkerSettings CardMarkers = new();
+
+	internal sealed class CardMarkerSettings
+	{
+		[JsonProperty]
+		public bool IsEnabled = true;
+	}
+}
 
 file static class CardBrowseExt
 {
@@ -131,6 +144,33 @@ internal sealed class CardMarkers : IRegisterable
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderExhaust_Postfix))
 		);
 	}
+	
+	public static IModSettingsApi.IModSetting MakeSettings(IPluginPackage<IModManifest> package, IModSettingsApi api)
+		=> api.MakeList([
+			api.MakePadding(
+				api.MakeText(
+					() => ModEntry.Instance.Localizations.Localize(["CardMarkers", "Settings", "Header"])
+				).SetFont(DB.thicket),
+				8,
+				4
+			),
+			api.MakeCheckbox(
+				() => ModEntry.Instance.Localizations.Localize(["CardMarkers", "Settings", "IsEnabled", "Title"]),
+				() => ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.IsEnabled,
+				(_, _, value) => ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.IsEnabled = value
+			).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.CardMarkers)}::{nameof(ProfileSettings.CardMarkers.IsEnabled)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = ModEntry.Instance.Localizations.Localize(["CardMarkers", "Settings", "IsEnabled", "Title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["CardMarkers", "Settings", "IsEnabled", "Description"]),
+				},
+			]),
+			api.MakeConditional(
+				api.MakeList([]),
+				() => ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.IsEnabled
+			),
+		]);
 
 	private static void RenderMarkers(List<Marker> markers, Vec position, Vec spacing)
 	{
@@ -144,6 +184,8 @@ internal sealed class CardMarkers : IRegisterable
 
 	private static void RenderMarkerOverlayIfNeeded(G g, UIKey uiKey, List<Card> cards)
 	{
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.IsEnabled)
+			return;
 		if (g.boxes.FirstOrDefault(b => b.key == uiKey) is not { } box)
 			return;
 
@@ -179,6 +221,8 @@ internal sealed class CardMarkers : IRegisterable
 		if (__instance.browseAction is not null)
 			return;
 		if (__instance.browseSource == CardBrowse.Source.Codex)
+			return;
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.IsEnabled)
 			return;
 
 		var selectedColorIndex = __instance.GetSelectedColorIndex();
@@ -255,6 +299,8 @@ internal sealed class CardMarkers : IRegisterable
 			return true;
 		if (__instance.browseSource == CardBrowse.Source.Codex)
 			return true;
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.IsEnabled)
+			return true;
 		if (b.key is not { } key)
 			return true;
 
@@ -313,6 +359,8 @@ internal sealed class CardMarkers : IRegisterable
 
 	private static void Card_Render_Postfix(Card __instance, G g, Vec? posOverride)
 	{
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.IsEnabled)
+			return;
 		if (__instance.GetMarkers() is not { } markers)
 			return;
 
