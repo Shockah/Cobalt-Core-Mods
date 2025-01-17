@@ -35,21 +35,21 @@ public sealed class FocusCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new AStatus { targetPlayer = true, status = Status.shard, statusAmount = 3 },
+				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 3 },
 				new EnchantGateAction { Level = 1 },
 				new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 2 } },
 				new EnchantGateAction { Level = 2 },
 				new EnchantedAction { CardId = uuid, Level = 2, Action = new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 2 } },
 			],
 			Upgrade.B => [
-				new AStatus { targetPlayer = true, status = Status.shard, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 2 },
 				new EnchantGateAction { Level = 1 },
 				new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 3 } },
 				new EnchantGateAction { Level = 2 },
 				new EnchantedAction { CardId = uuid, Level = 2, Action = new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 3 } },
 			],
 			_ => [
-				new AStatus { targetPlayer = true, status = Status.shard, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 2 },
 				new EnchantGateAction { Level = 1 },
 				new EnchantedAction { CardId = uuid, Level = 1, Action = new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 2 } },
 				new EnchantGateAction { Level = 2 },
