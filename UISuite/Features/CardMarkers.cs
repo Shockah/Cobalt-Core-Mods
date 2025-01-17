@@ -22,6 +22,9 @@ internal sealed partial class ProfileSettings
 	{
 		[JsonProperty]
 		public bool IsEnabled = true;
+		
+		[JsonProperty]
+		public bool AutoMarkCharacterCards;
 	}
 }
 
@@ -143,6 +146,10 @@ internal sealed class CardMarkers : IRegisterable
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderExhaust)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderExhaust_Postfix))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Character), nameof(Character.Render)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Character_Render_Postfix))
+		);
 	}
 	
 	public static IModSettingsApi.IModSetting MakeSettings(IPluginPackage<IModManifest> package, IModSettingsApi api)
@@ -170,16 +177,30 @@ internal sealed class CardMarkers : IRegisterable
 				api.MakeList([]),
 				() => ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.IsEnabled
 			),
+			api.MakeCheckbox(
+				() => ModEntry.Instance.Localizations.Localize(["CardMarkers", "Settings", "AutoMarkCharacterCards", "Title"]),
+				() => ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.AutoMarkCharacterCards,
+				(_, _, value) => ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.AutoMarkCharacterCards = value
+			).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.CardMarkers)}::{nameof(ProfileSettings.CardMarkers.AutoMarkCharacterCards)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = ModEntry.Instance.Localizations.Localize(["CardMarkers", "Settings", "AutoMarkCharacterCards", "Title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["CardMarkers", "Settings", "AutoMarkCharacterCards", "Description"]),
+				},
+			]),
 		]);
+
+	private static void RenderMarker(Marker marker, Vec position)
+	{
+		var color = new Color(marker.ColorHex);
+		Draw.Sprite(MarkerIcons[marker.Type].Sprite, position.x, position.y, color: color);
+	}
 
 	private static void RenderMarkers(List<Marker> markers, Vec position, Vec spacing)
 	{
 		for (var i = 0; i < markers.Count; i++)
-		{
-			var marker = markers[i];
-			var color = new Color(marker.ColorHex);
-			Draw.Sprite(MarkerIcons[marker.Type].Sprite, position.x + i * spacing.x, position.y + i * spacing.y, color: color);
-		}
+			RenderMarker(markers[i], new Vec(position.x + i * spacing.x, position.y + i * spacing.y));
 	}
 
 	private static void RenderMarkerOverlayIfNeeded(G g, UIKey uiKey, List<Card> cards)
@@ -359,8 +380,20 @@ internal sealed class CardMarkers : IRegisterable
 
 	private static void Card_Render_Postfix(Card __instance, G g, Vec? posOverride)
 	{
-		if (!ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.IsEnabled)
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.IsEnabled && !ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.AutoMarkCharacterCards)
 			return;
+		
+		if (ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.AutoMarkCharacterCards && !ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(__instance, "AutoMarkedForCharacter"))
+		{
+			var cardDeck = __instance.GetMeta().deck;
+			var index = g.state.characters.FindIndex(character => character.deckType == cardDeck);
+			if (index != -1)
+			{
+				ModEntry.Instance.Helper.ModData.SetModData(__instance, "AutoMarkedForCharacter", true);
+				__instance.ToggleMarker(Enum.GetValues<MarkerType>()[index], DB.decks[cardDeck].color);
+			}
+		}
+		
 		if (__instance.GetMarkers() is not { } markers)
 			return;
 
@@ -394,5 +427,26 @@ internal sealed class CardMarkers : IRegisterable
 		if (!__runOriginal)
 			return;
 		RenderMarkerOverlayIfNeeded(g, StableUK.combat_exhaust, __instance.exhausted);
+	}
+
+	private static void Character_Render_Postfix(Character __instance, G g, bool mini, UIKey? overrideKey)
+	{
+		if (g.state.IsOutsideRun())
+			return;
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.AutoMarkCharacterCards)
+			return;
+		if (__instance.deckType is not { } deckType)
+			return;
+
+		var index = g.state.characters.IndexOf(__instance);
+		if (index == -1)
+			return;
+		
+		var uiKey = overrideKey ?? new UIKey(mini ? StableUK.char_mini : StableUK.character, (int)__instance.deckType.GetValueOrDefault(), __instance.type);
+		if (g.boxes.FirstOrDefault(b => b.key == uiKey) is not { } box)
+			return;
+
+		var marker = new Marker(Enum.GetValues<MarkerType>()[index], DB.decks[deckType].color.ToString());
+		RenderMarker(marker, new Vec(box.rect.x + (mini ? 4 : 6), box.rect.y2 - 2 - 9));
 	}
 }

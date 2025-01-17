@@ -32,6 +32,10 @@
 			"IsEnabled": {
 				"Title": "Enabled",
 				"Description": "When enabled, allows applying markers to cards, which get shown on the cards themselves, but also the piles the card are in."
+			},
+			"AutoMarkCharacterCards": {
+				"Title": "Auto-mark character cards",
+				"Description": "Automatically apply a unique symbol in the character's color to their cards. Display that same symbol on the character's frame."
 			}
 		}
 	},
