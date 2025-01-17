@@ -52,7 +52,23 @@ file static class CardBrowseExt
 file static class CardExt
 {
 	public static List<CardMarkers.Marker>? GetMarkers(this Card card)
-		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<List<CardMarkers.Marker>>(card, "Markers");
+	{
+		var markers = ModEntry.Instance.Helper.ModData.GetOptionalModData<List<CardMarkers.Marker>>(card, "Markers");
+		
+		if (ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.AutoMarkCharacterCards)
+		{
+			var cardDeck = card.GetMeta().deck;
+			var index = MG.inst.g.state.characters.FindIndex(character => character.deckType == cardDeck);
+			if (index != -1)
+			{
+				var marker = new CardMarkers.Marker(Enum.GetValues<CardMarkers.MarkerType>()[index], DB.decks[cardDeck].color.ToString());
+				if (markers is null || !markers.Contains(marker))
+					markers = [.. markers ?? [], marker];
+			}
+		}
+
+		return markers;
+	}
 
 	public static void ToggleMarker(this Card card, CardMarkers.MarkerType markerType, Color color)
 	{
@@ -382,18 +398,6 @@ internal sealed class CardMarkers : IRegisterable
 	{
 		if (!ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.IsEnabled && !ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.AutoMarkCharacterCards)
 			return;
-		
-		if (ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.AutoMarkCharacterCards && !ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(__instance, "AutoMarkedForCharacter"))
-		{
-			var cardDeck = __instance.GetMeta().deck;
-			var index = g.state.characters.FindIndex(character => character.deckType == cardDeck);
-			if (index != -1)
-			{
-				ModEntry.Instance.Helper.ModData.SetModData(__instance, "AutoMarkedForCharacter", true);
-				__instance.ToggleMarker(Enum.GetValues<MarkerType>()[index], DB.decks[cardDeck].color);
-			}
-		}
-		
 		if (__instance.GetMarkers() is not { } markers)
 			return;
 
