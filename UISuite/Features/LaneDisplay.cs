@@ -37,7 +37,12 @@ internal sealed partial class ProfileSettings
 
 internal sealed class LaneDisplay : IRegisterable
 {
-	private const int LaneDividerStripLength = 6;
+	private static readonly MGColor[] LaneDividerStripe = [
+		MGColor.White, MGColor.White, MGColor.White, MGColor.White, MGColor.White, MGColor.White,
+		MGColor.LightGray, MGColor.Gray, MGColor.DarkGray,
+		MGColor.Black, MGColor.Black, MGColor.Black, MGColor.Black, MGColor.Black, MGColor.Black,
+		MGColor.DarkGray, MGColor.Gray, MGColor.LightGray,
+	];
 	
 	private static ISpriteEntry LaneDividerSprite = null!;
 	
@@ -156,12 +161,12 @@ internal sealed class LaneDisplay : IRegisterable
 		if (LaneDividerTexture is { } texture)
 			return texture;
 
-		texture = new Texture2D(MG.inst.graphics.GraphicsDevice, 1, MG.inst.PIX_H + LaneDividerStripLength);
+		texture = new Texture2D(MG.inst.graphics.GraphicsDevice, 1, MG.inst.PIX_H + LaneDividerStripe.Length);
 		LaneDividerTexture = texture;
 
 		var data = new MGColor[texture.Width * texture.Height];
 		for (var y = 0; y < texture.Height; y++)
-			data[y] = (y / LaneDividerStripLength) % 2 == 0 ? MGColor.White : MGColor.Black;
+			data[y] = LaneDividerStripe[y % LaneDividerStripe.Length];
 		
 		texture.SetData(data);
 		return texture;
@@ -200,8 +205,8 @@ internal sealed class LaneDisplay : IRegisterable
 		var speed = IsActiveHover
 			? ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveSpeed
 			: ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveSpeed;
-		LaneDividerYOffset += speed * LaneDividerStripLength * 2 * g.dt;
-		LaneDividerYOffset = Math.Abs(LaneDividerYOffset) % (LaneDividerStripLength * 2) * Math.Sign(LaneDividerYOffset);
+		LaneDividerYOffset += speed * LaneDividerStripe.Length * g.dt;
+		LaneDividerYOffset = Math.Abs(LaneDividerYOffset) % LaneDividerStripe.Length * Math.Sign(LaneDividerYOffset);
 		
 		const int laneSpacing = 16;
 
@@ -218,7 +223,7 @@ internal sealed class LaneDisplay : IRegisterable
 
 		while (currentLaneX < g.mg.PIX_W)
 		{
-			Draw.Sprite(LaneDividerSprite.Sprite, currentLaneX - 3, LaneDividerYOffset - LaneDividerStripLength * 2, color: Colors.white.fadeAlpha(alpha));
+			Draw.Sprite(LaneDividerSprite.Sprite, currentLaneX - 3, LaneDividerYOffset - LaneDividerStripe.Length, color: Colors.white.fadeAlpha(alpha));
 			currentLaneX += laneSpacing;
 		}
 
