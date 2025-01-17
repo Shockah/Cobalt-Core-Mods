@@ -24,6 +24,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(BrowseCardsInOrder),
 		typeof(CardMarkers),
 		typeof(CardPileIndicatorWhenBrowsing),
+		typeof(ExtraArtifactCodexCategories),
 		typeof(LaneDisplay),
 	];
 	

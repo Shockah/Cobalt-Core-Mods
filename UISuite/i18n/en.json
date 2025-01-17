@@ -75,6 +75,23 @@
 			}
 		}
 	},
+	"ExtraArtifactCodexCategories": {
+		"Category": {
+			"Ship": "Ship",
+			"Event": "Event"
+		},
+		"Settings": {
+			"Header": "<c=white>Extra artifact codex categories</c>",
+			"ShipCategory": {
+				"Title": "Enable \"Ship\" category",
+				"Description": "Whether ship-specific artifacts should be moved to their own category in the codex."
+			},
+			"EventCategory": {
+				"Title": "Enable \"Event\" category",
+				"Description": "Whether event artifacts should be moved to their own category in the codex."
+			}
+		}
+	},
 	"LaneDisplay": {
 		"Settings": {
 			"Header": "<c=white>Lane dividers</c>",
