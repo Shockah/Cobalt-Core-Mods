@@ -22,6 +22,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(AnchorCardPileOverlay),
 		typeof(BrowseCardPilesDuringPeek),
 		typeof(CardMarkers),
+		typeof(CardPileIndicatorWhenBrowsing),
 		typeof(LaneDisplay),
 	];
 	

@@ -39,6 +39,39 @@
 			}
 		}
 	},
+	"CardPileIndicatorWhenBrowsing": {
+		"Pile": {
+			"Draw": {
+				"Title": " In Draw Pile",
+				"Description": "The card is in the draw pile."
+			},
+			"Hand": {
+				"Title": "In Hand",
+				"Description": "The card is in your hand."
+			},
+			"Discard": {
+				"Title": " In Discard Pile",
+				"Description": "The card is in the discard pile."
+			},
+			"Exhaust": {
+				"Title": " In Exhaust Pile",
+				"Description": "The card has been exhausted."
+			}
+		},
+		"Settings": {
+			"Header": "<c=white>Card pile indicator when browsing</c>",
+			"Display": {
+				"Title": "Show card pile",
+				"Description": "Whether to show the pile each card is currently in when choosing a card for an action.",
+				"Value": {
+					"Off": "Off",
+					"Tooltip": "Tooltip",
+					"Icon": "Icon",
+					"Both": "Both"
+				}
+			}
+		}
+	},
 	"LaneDisplay": {
 		"Settings": {
 			"Header": "<c=white>Lane dividers</c>",

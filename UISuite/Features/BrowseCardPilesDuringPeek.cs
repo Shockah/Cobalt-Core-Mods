@@ -17,8 +17,6 @@ internal sealed partial class ProfileSettings
 
 internal sealed class BrowseCardPilesDuringPeek : IRegisterable
 {
-	// private static readonly UK FakeCombatRootBoxUk = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
-	
 	private static bool ShouldRenderCardPileButtonAnyway;
 	private static readonly ConditionalWeakTable<Combat, InputHandler> InputHandlers = [];
 	
