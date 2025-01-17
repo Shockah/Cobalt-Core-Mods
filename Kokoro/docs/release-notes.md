@@ -2,9 +2,10 @@
 
 # Release notes
 
-## Upcoming release
+## 2.3.0
+Released 17 January 2025.
 
-* `EvadeHook`/`DroneShiftHook` APIs now allow disabling other elements just for the rendering or actual action parts.
+* `EvadeHook`/`DroneShiftHook` APIs now allow disabling other elements just for the rendering or just for the actual action parts.
 * Fixed several features sorting hooks in reverse order, causing various issues, like Timestop not working.
 
 ## 2.2.0
