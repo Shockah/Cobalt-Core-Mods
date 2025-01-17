@@ -49,7 +49,7 @@ internal class VariedApiVersionHookManager<TV2Hook, TV1Hook> : IEnumerable<TV2Ho
 	}
 
 	public void Register(TV2Hook hook, double priority)
-		=> Hooks.Add(hook, -priority);
+		=> Hooks.Add(hook, priority);
 
 	public void Unregister(TV2Hook hook)
 		=> Hooks.Remove(hook);
