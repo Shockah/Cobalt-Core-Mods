@@ -18,9 +18,10 @@ public sealed class ModEntry : SimpleMod
 
 	internal Settings Settings { get; private set; }
 	
-	internal static readonly IEnumerable<Type> RegisterableTypes = [
+	private static readonly IEnumerable<Type> RegisterableTypes = [
 		typeof(AnchorCardPileOverlay),
 		typeof(BrowseCardPilesDuringPeek),
+		typeof(BrowseCardsInOrder),
 		typeof(CardMarkers),
 		typeof(CardPileIndicatorWhenBrowsing),
 		typeof(LaneDisplay),
@@ -71,6 +72,9 @@ public sealed class ModEntry : SimpleMod
 			}));
 		};
 	}
+
+	public override object GetApi(IModManifest requestingMod)
+		=> new ApiImplementation();
 
 	private void UpdateSettings()
 	{

@@ -18,6 +18,9 @@
 			}
 		}
 	},
+	"BrowseCardsInOrder": {
+		"SortModeTitle": "Order"
+	},
 	"CardMarkers": {
 		"Tooltip": {
 			"Title": "Card Marking",
