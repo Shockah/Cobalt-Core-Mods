@@ -15,31 +15,7 @@ var background = SKImage.FromEncodedData(Path.Combine(GetRootPath(), "assets", "
 canvas.Clear(SKColors.Empty);
 canvas.DrawImage(background, 0, 0);
 
-using (var paint = new SKPaint())
-{
-	paint.Typeface = font;
-	paint.TextSize = 144;
-	paint.TextAlign = SKTextAlign.Right;
-	paint.IsAntialias = true;
-	paint.Color = SKColors.White;
-	canvas.DrawOutlinedText("Kokoro", imageInfo.Width - 24, imageInfo.Height - 110, paint, [
-		(SKColors.Black.WithAlpha(127), 8),
-		(SKColors.Black, 4),
-	]);
-}
-
-using (var paint = new SKPaint())
-{
-	paint.Typeface = font;
-	paint.TextSize = 72;
-	paint.TextAlign = SKTextAlign.Right;
-	paint.IsAntialias = true;
-	paint.Color = SKColors.White;
-	canvas.DrawOutlinedText("by Shockah", imageInfo.Width - 24, imageInfo.Height - 30, paint, [
-		(SKColors.Black.WithAlpha(127), 8),
-		(SKColors.Black, 4),
-	]);
-}
+canvas.DrawModHeader(font, "Kokoro", "by Shockah", SKTextAlign.Right);
 
 using var image = surface.Snapshot();
 using var data = image.Encode(SKEncodedImageFormat.Png, 100);
