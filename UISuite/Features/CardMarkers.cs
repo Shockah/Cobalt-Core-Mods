@@ -255,6 +255,8 @@ internal sealed class CardMarkers : IRegisterable
 	{
 		if (__instance.subRoute is not null)
 			return;
+		if (__instance.mode != CardBrowse.Mode.Browse)
+			return;
 		if (__instance.browseAction is not null)
 			return;
 		if (__instance.browseSource == CardBrowse.Source.Codex)
@@ -331,6 +333,8 @@ internal sealed class CardMarkers : IRegisterable
 	private static bool CardBrowse_OnMouseDown_Prefix(CardBrowse __instance, G g, Box b)
 	{
 		if (__instance.subRoute is not null)
+			return true;
+		if (__instance.mode != CardBrowse.Mode.Browse)
 			return true;
 		if (__instance.browseAction is not null)
 			return true;
