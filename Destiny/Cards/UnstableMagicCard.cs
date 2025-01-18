@@ -8,7 +8,7 @@ using Shockah.Shared;
 
 namespace Shockah.Destiny;
 
-public sealed class UnstableMagicCard : Card, IRegisterable
+public sealed class UnstableMagicCard : Card, IRegisterable, IHasCustomCardTraits
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -26,21 +26,22 @@ public sealed class UnstableMagicCard : Card, IRegisterable
 		});
 	}
 
+	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
+		=> upgrade switch
+		{
+			Upgrade.A => new HashSet<ICardTraitEntry> { Explosive.ExplosiveTrait },
+			Upgrade.B => [],
+			_ => [],
+		};
+
 	public override CardData GetData(State state)
-	{
-		var data = new CardData
+		=> new()
 		{
 			art = Enchanted.GetCardArt(this),
 			artTint = "ffffff",
 			description = ModEntry.Instance.Localizations.Localize(["card", "UnstableMagic", "description", upgrade.ToString()]),
+			cost = 1,
 		};
-		return upgrade switch
-		{
-			Upgrade.A => data with { cost = 0 },
-			Upgrade.B => data with { cost = 1 },
-			_ => data with { cost = 1 },
-		};
-	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
