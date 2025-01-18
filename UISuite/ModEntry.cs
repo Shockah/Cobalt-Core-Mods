@@ -18,6 +18,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal Settings Settings { get; private set; }
 	
+	// different order - trying to work around inlining `Combat.IsVisible`/`Combat.Render`
 	private static readonly IEnumerable<Type> RegisterableTypes = [
 		typeof(LessIntrusiveHandCardBrowse),
 		typeof(AnchorCardPileOverlay),

@@ -220,6 +220,11 @@ internal sealed class LessIntrusiveHandCardBrowse : IRegisterable
 			RevertAnimation();
 			return true;
 		}
+		if (!combat.hand.Contains(__instance))
+		{
+			RevertAnimation();
+			return true;
+		}
 		
 		if (route.GetCardList(g).Contains(__instance))
 			return false;
