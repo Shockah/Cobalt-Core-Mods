@@ -148,11 +148,11 @@ internal sealed class LaneDisplay : IRegisterable
 					api.MakeNumericStepper(
 						() => ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "ActiveAlpha", "Title"]),
 						() => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveAlpha,
-						value => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveAlpha = value,
+						value => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveAlpha = Math.Round(value, 2),
 						minValue: 0,
 						maxValue: 1,
 						step: 0.01
-					).SetTooltips(() => [
+					).SetValueFormatter(value => value.ToString("F2")).SetTooltips(() => [
 						new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.LaneDisplay)}::{nameof(ProfileSettings.LaneDisplay.ActiveAlpha)}")
 						{
 							TitleColor = Colors.textBold,
@@ -163,11 +163,11 @@ internal sealed class LaneDisplay : IRegisterable
 					api.MakeNumericStepper(
 						() => ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "InactiveAlpha", "Title"]),
 						() => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveAlpha,
-						value => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveAlpha = value,
+						value => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveAlpha = Math.Round(value, 2),
 						minValue: 0,
 						maxValue: 1,
 						step: 0.01
-					).SetTooltips(() => [
+					).SetValueFormatter(value => value.ToString("F2")).SetTooltips(() => [
 						new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.LaneDisplay)}::{nameof(ProfileSettings.LaneDisplay.InactiveAlpha)}")
 						{
 							TitleColor = Colors.textBold,
@@ -179,11 +179,11 @@ internal sealed class LaneDisplay : IRegisterable
 						api.MakeNumericStepper(
 							() => ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "ActiveSpeed", "Title"]),
 							() => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveSpeed,
-							value => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveSpeed = value,
+							value => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveSpeed = Math.Round(value, 2),
 							minValue: -10,
 							maxValue: 10,
 							step: 0.25
-						).SetTooltips(() => [
+						).SetValueFormatter(value => value.ToString("F2")).SetTooltips(() => [
 							new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.LaneDisplay)}::{nameof(ProfileSettings.LaneDisplay.ActiveSpeed)}")
 							{
 								TitleColor = Colors.textBold,
@@ -197,11 +197,11 @@ internal sealed class LaneDisplay : IRegisterable
 						api.MakeNumericStepper(
 							() => ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "InactiveSpeed", "Title"]),
 							() => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveSpeed,
-							value => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveSpeed = value,
+							value => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveSpeed = Math.Round(value, 2),
 							minValue: -10,
 							maxValue: 10,
 							step: 0.25
-						).SetTooltips(() => [
+						).SetValueFormatter(value => value.ToString("F2")).SetTooltips(() => [
 							new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.LaneDisplay)}::{nameof(ProfileSettings.LaneDisplay.InactiveSpeed)}")
 							{
 								TitleColor = Colors.textBold,
