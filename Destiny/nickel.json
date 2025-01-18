@@ -4,13 +4,13 @@
 	"DisplayName": "Destiny",
 	"Description": "TBD",
 	"Author": "Soggoru Waffle, Shockah",
-	"RequiredApiVersion": "1.9.0",
+	"RequiredApiVersion": "1.10.0",
 	"EntryPointAssembly": "Destiny.dll",
 	"LoadPhase": "AfterDbInit",
 	"Dependencies": [
 		{
 			"UniqueName": "Shockah.Kokoro",
-			"Version": "2.2.0"
+			"Version": "2.3.0"
 		}
 	]
 }
