@@ -25,18 +25,25 @@ public sealed class OmniscienceCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> new() { cost = 1, exhaust = true, art = Enchanted.GetCardArt(this), artTint = "ffffff" };
+	{
+		var data = new CardData { exhaust = true, art = Enchanted.GetCardArt(this), artTint = "ffffff" };
+		return upgrade switch
+		{
+			Upgrade.A => data with { cost = 0 },
+			Upgrade.B => data with { cost = 1 },
+			_ => data with { cost = 1 },
+		};
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new AStatus { targetPlayer = true, status = Status.maxShard, statusAmount = 1 },
 				new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 5 },
 			],
 			Upgrade.B => [
-				new AStatus { targetPlayer = true, status = Status.shard, statusAmount = 2 },
-				new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 3 },
+				new AStatus { targetPlayer = true, status = Status.maxShard, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 5 },
 			],
 			_ => [
 				new AStatus { targetPlayer = true, status = MagicFind.MagicFindStatus.Status, statusAmount = 5 },
