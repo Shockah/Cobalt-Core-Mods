@@ -8,7 +8,7 @@ using Shockah.Shared;
 
 namespace Shockah.Destiny;
 
-public sealed class UnstableMagicCard : Card, IRegisterable, IHasCustomCardTraits
+public sealed class UnstableMagicCard : Card, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -26,36 +26,33 @@ public sealed class UnstableMagicCard : Card, IRegisterable, IHasCustomCardTrait
 		});
 	}
 
-	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-		=> upgrade switch
-		{
-			Upgrade.A => new HashSet<ICardTraitEntry> { Explosive.ExplosiveTrait },
-			Upgrade.B => [],
-			_ => [],
-		};
-
 	public override CardData GetData(State state)
-		=> new()
+	{
+		var data = new CardData
 		{
-			art = Enchanted.GetCardArt(this),
 			artTint = "ffffff",
 			description = ModEntry.Instance.Localizations.Localize(["card", "UnstableMagic", "description", upgrade.ToString()]),
 			cost = 1,
 		};
+		return upgrade switch
+		{
+			Upgrade.A => data with { exhaust = true },
+			Upgrade.B => data,
+			_ => data with { exhaust = true },
+		};
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.A => [new Action { InHand = true, InDrawPile = true, InDiscardPile = true }],
-			Upgrade.B => [new Action { InHand = true, InDrawPile = false, InDiscardPile = false }],
-			_ => [new Action { InHand = true, InDrawPile = true, InDiscardPile = true }],
+			Upgrade.A => [new Action { Amount = 3 }],
+			Upgrade.B => [new Action { Amount = 1 }],
+			_ => [new Action { Amount = 2 }],
 		};
 
 	private sealed class Action : CardAction
 	{
-		public required bool InHand;
-		public required bool InDrawPile;
-		public required bool InDiscardPile;
+		public required int Amount;
 
 		public override List<Tooltip> GetTooltips(State s)
 			=> [.. Explosive.ExplosiveTrait.Configuration.Tooltips?.Invoke(s, null) ?? []];
@@ -64,25 +61,28 @@ public sealed class UnstableMagicCard : Card, IRegisterable, IHasCustomCardTrait
 		{
 			base.Begin(g, s, c);
 
-			IEnumerable<Card> cardsEnumerable = [];
-			if (InHand)
-				cardsEnumerable = cardsEnumerable.Concat(c.hand);
-			if (InDrawPile)
-				cardsEnumerable = cardsEnumerable.Concat(s.deck);
-			if (InDiscardPile)
-				cardsEnumerable = cardsEnumerable.Concat(c.discard);
+			var cards = c.hand
+				.Concat(s.deck)
+				.Concat(c.discard)
+				.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, Explosive.ExplosiveTrait))
+				.ToList();
 
-			cardsEnumerable = cardsEnumerable.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, Explosive.ExplosiveTrait));
-
-			var cards = cardsEnumerable.ToList();
 			if (cards.Count == 0)
 			{
 				timer = 0;
 				return;
 			}
 
-			var card = cards.Count == 1 ? cards[0] : cards[s.rngActions.NextInt() % cards.Count];
-			c.QueueImmediate(ModEntry.Instance.KokoroApi.PlayCardsFromAnywhere.MakeModifyAction(card.uuid, new ActuallyModifyAction()).AsCardAction);
+			for (var i = 0; i < Amount; i++)
+			{
+				if (cards.Count == 0)
+					break;
+
+				var index = cards.Count == 1 ? 0 : s.rngActions.NextInt() % cards.Count;
+				var card = cards[index];
+				cards.RemoveAt(index);
+				c.QueueImmediate(ModEntry.Instance.KokoroApi.PlayCardsFromAnywhere.MakeModifyAction(card.uuid, new ActuallyModifyAction()).AsCardAction);
+			}
 		}
 	}
 

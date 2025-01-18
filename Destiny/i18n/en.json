@@ -125,9 +125,9 @@
 		"UnstableMagic": {
 			"name": "Unstable Magic",
 			"description": {
-				"None": "Make a random card in your <c=keyword>deck</c> <c=cardtrait>explosive</c> for the rest of combat.",
-				"A": "Make a random card in your <c=keyword>deck</c> <c=cardtrait>explosive</c> for the rest of combat.",
-				"B": "Make a random card in your <c=keyword>hand</c> <c=cardtrait>explosive</c> for the rest of combat."
+				"None": "2 random cards in your <c=keyword>deck</c> gain <c=cardtrait>explosive</c> for the rest of combat.",
+				"A": "3 random cards in your <c=keyword>deck</c> gain <c=cardtrait>explosive</c> for the rest of combat.",
+				"B": "A random card in your <c=keyword>deck</c> gains <c=cardtrait>explosive</c> for the rest of combat."
 			}
 		},
 		"Unwavering": {
