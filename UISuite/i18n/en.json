@@ -116,5 +116,14 @@
 				"Description": "The speed at which the lane divider moves vertically when not hovering over any kind of movement or offset action."
 			}
 		}
+	},
+	"LessIntrusiveHandCardBrowse": {
+		"Settings": {
+			"Header": "<c=white>Less intrusive hand card browse</c>",
+			"IsEnabled": {
+				"Title": "Enabled",
+				"Description": "Whether to replace the usual hand card browse screen with a less intrusive version of it."
+			}
+		}
 	}
 }

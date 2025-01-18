@@ -79,11 +79,12 @@ internal sealed class BrowseCardPilesDuringPeek : IRegisterable
 			return false;
 		if (combat.routeOverride is not { } routeOverride)
 			return false;
-		if (!routeOverride.CanBePeeked())
-			return false;
-		if (!combat.eyeballPeek)
-			return false;
-		return true;
+
+		if (routeOverride is CardBrowse cardBrowse && LessIntrusiveHandCardBrowse.CanUseLessIntrusiveUI(cardBrowse, MG.inst.g))
+			return true;
+		if (routeOverride.CanBePeeked() && combat.eyeballPeek)
+			return true;
+		return false;
 	}
 
 	private static bool Combat_RenderDeck_Prefix_First(Combat __instance)
@@ -147,7 +148,7 @@ internal sealed class BrowseCardPilesDuringPeek : IRegisterable
 			return;
 
 		__instance.routeOverride = originalRouteOverride;
-		__instance.eyeballPeek = true;
+		__instance.eyeballPeek = ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(r, "OriginalRouteOverrideEyeballPeek");
 	}
 
 	private static void CardBrowse_CanBePeeked_Postfix(CardBrowse __instance, ref bool __result)
@@ -174,8 +175,9 @@ internal sealed class BrowseCardPilesDuringPeek : IRegisterable
 			if (combat.routeOverride is not { } newRouteOverride || newRouteOverride == routeOverride)
 				return;
 			
-			combat.eyeballPeek = false;
 			ModEntry.Instance.Helper.ModData.SetModData(newRouteOverride, "OriginalRouteOverride", routeOverride);
+			ModEntry.Instance.Helper.ModData.SetModData(newRouteOverride, "OriginalRouteOverrideEyeballPeek", combat.eyeballPeek);
+			combat.eyeballPeek = false;
 		}
 	}
 }

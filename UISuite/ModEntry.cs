@@ -19,6 +19,7 @@ public sealed class ModEntry : SimpleMod
 	internal Settings Settings { get; private set; }
 	
 	private static readonly IEnumerable<Type> RegisterableTypes = [
+		typeof(LessIntrusiveHandCardBrowse),
 		typeof(AnchorCardPileOverlay),
 		typeof(BrowseCardPilesDuringPeek),
 		typeof(BrowseCardsInOrder),
@@ -26,6 +27,17 @@ public sealed class ModEntry : SimpleMod
 		typeof(CardPileIndicatorWhenBrowsing),
 		typeof(ExtraArtifactCodexCategories),
 		typeof(LaneDisplay),
+	];
+	
+	private static readonly IEnumerable<Type> SortedRegisterableTypes = [
+		typeof(AnchorCardPileOverlay),
+		typeof(BrowseCardPilesDuringPeek),
+		typeof(BrowseCardsInOrder),
+		typeof(CardMarkers),
+		typeof(CardPileIndicatorWhenBrowsing),
+		typeof(ExtraArtifactCodexCategories),
+		typeof(LaneDisplay),
+		typeof(LessIntrusiveHandCardBrowse),
 	];
 	
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
@@ -60,7 +72,7 @@ public sealed class ModEntry : SimpleMod
 					() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
 					Settings.ProfileBased
 				),
-				.. RegisterableTypes
+				.. SortedRegisterableTypes
 					.SelectMany(
 						type => AccessTools.DeclaredMethod(type, nameof(IRegisterable.MakeSettings))?.Invoke(null, [package, api]) is IModSettingsApi.IModSetting setting
 							? new List<IModSettingsApi.IModSetting> { setting }
