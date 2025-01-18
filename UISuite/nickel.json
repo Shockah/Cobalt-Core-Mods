@@ -1,7 +1,15 @@
 ﻿{
 	"UniqueName": "Shockah.UISuite",
 	"Version": "{{ModVersion}}",
-	"RequiredApiVersion": "1.10.0",
+	"DisplayName": "UI Suite",
+	"Description": "All-around improvements and extra tools for the game's UI.",
+	"Author": "Shockah",
+	"RequiredApiVersion": "1.11.0",
 	"EntryPointAssembly": "UISuite.dll",
-	"LoadPhase": "AfterGameAssembly"
+	"LoadPhase": "AfterGameAssembly",
+	"UpdateChecks": {
+		"NexusMods": {
+			"ID": 45
+		}
+	}
 }
