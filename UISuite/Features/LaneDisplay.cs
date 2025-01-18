@@ -5,6 +5,7 @@ using HarmonyLib;
 using Microsoft.Xna.Framework.Graphics;
 using Nanoray.PluginManager;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Nickel;
 using Nickel.ModSettings;
 using MGColor = Microsoft.Xna.Framework.Color;
@@ -22,6 +23,12 @@ internal sealed partial class ProfileSettings
 		public bool IsEnabled = true;
 		
 		[JsonProperty]
+		public LaneDisplayStyle InactiveDisplayStyle = LaneDisplayStyle.SoftStriped;
+		
+		[JsonProperty]
+		public LaneDisplayStyle ActiveDisplayStyle = LaneDisplayStyle.SoftStriped;
+		
+		[JsonProperty]
 		public double InactiveAlpha = 0.05;
 		
 		[JsonProperty]
@@ -32,27 +39,42 @@ internal sealed partial class ProfileSettings
 		
 		[JsonProperty]
 		public double ActiveSpeed = 3;
+
+		[JsonConverter(typeof(StringEnumConverter))]
+		public enum LaneDisplayStyle
+		{
+			SoftStriped, HardStriped, SolidGray, SolidWhite
+		}
 	}
 }
 
 internal sealed class LaneDisplay : IRegisterable
 {
-	private static readonly MGColor[] LaneDividerStripe = [
+	private static readonly MGColor[] LaneDividerSoftStripe = [
 		MGColor.White, MGColor.White, MGColor.White, MGColor.White, MGColor.White, MGColor.White,
 		MGColor.LightGray, MGColor.Gray, MGColor.DarkGray,
 		MGColor.Black, MGColor.Black, MGColor.Black, MGColor.Black, MGColor.Black, MGColor.Black,
 		MGColor.DarkGray, MGColor.Gray, MGColor.LightGray,
 	];
+	private static readonly MGColor[] LaneDividerHardStripe = [
+		MGColor.White, MGColor.White, MGColor.White, MGColor.White, MGColor.White, MGColor.White,
+		MGColor.Black, MGColor.Black, MGColor.Black, MGColor.Black, MGColor.Black, MGColor.Black,
+	];
+	private static readonly MGColor[] LaneDividerSolidGray = [MGColor.Gray];
+	private static readonly MGColor[] LaneDividerSolidWhite = [MGColor.White];
 	
-	private static ISpriteEntry LaneDividerSprite = null!;
+	private static ISpriteEntry LaneDividerInactiveSprite = null!;
+	private static ISpriteEntry LaneDividerActiveSprite = null!;
 	
 	private static bool IsActiveHover;
 	private static double LaneDividerYOffset;
-	private static Texture2D? LaneDividerTexture;
+	private static Texture2D? LaneDividerInactiveTexture;
+	private static Texture2D? LaneDividerActiveTexture;
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		LaneDividerSprite = helper.Content.Sprites.RegisterDynamicSprite("LaneDivider", ObtainLaneDividerTexture);
+		LaneDividerInactiveSprite = helper.Content.Sprites.RegisterDynamicSprite("LaneDividerInactive", () => ObtainLaneDividerTexture(false));
+		LaneDividerActiveSprite = helper.Content.Sprites.RegisterDynamicSprite("LaneDividerActive", () => ObtainLaneDividerTexture(true));
 		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderShipsOver)),
@@ -91,6 +113,38 @@ internal sealed class LaneDisplay : IRegisterable
 			]),
 			api.MakeConditional(
 				api.MakeList([
+					api.MakeEnumStepper(
+						title: () => ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "ActiveDisplayStyle", "Title"]),
+						getter: () => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveDisplayStyle,
+						setter: value => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveDisplayStyle = value
+					).SetValueFormatter(
+						value => ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "ActiveDisplayStyle", "Value", value.ToString()])
+					).SetValueWidth(
+						_ => 90
+					).SetTooltips(() => [
+						new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.LaneDisplay)}::{nameof(ProfileSettings.LaneDisplay.ActiveDisplayStyle)}")
+						{
+							TitleColor = Colors.textBold,
+							Title = ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "ActiveDisplayStyle", "Title"]),
+							Description = ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "ActiveDisplayStyle", "Description"])
+						}
+					]),
+					api.MakeEnumStepper(
+						title: () => ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "InactiveDisplayStyle", "Title"]),
+						getter: () => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveDisplayStyle,
+						setter: value => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveDisplayStyle = value
+					).SetValueFormatter(
+						value => ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "InactiveDisplayStyle", "Value", value.ToString()])
+					).SetValueWidth(
+						_ => 90
+					).SetTooltips(() => [
+						new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.LaneDisplay)}::{nameof(ProfileSettings.LaneDisplay.InactiveDisplayStyle)}")
+						{
+							TitleColor = Colors.textBold,
+							Title = ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "InactiveDisplayStyle", "Title"]),
+							Description = ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "InactiveDisplayStyle", "Description"])
+						}
+					]),
 					api.MakeNumericStepper(
 						() => ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "ActiveAlpha", "Title"]),
 						() => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveAlpha,
@@ -121,52 +175,71 @@ internal sealed class LaneDisplay : IRegisterable
 							Description = ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "InactiveAlpha", "Description"]),
 						},
 					]),
-					api.MakeNumericStepper(
-						() => ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "ActiveSpeed", "Title"]),
-						() => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveSpeed,
-						value => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveSpeed = value,
-						minValue: -10,
-						maxValue: 10,
-						step: 0.25
-					).SetTooltips(() => [
-						new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.LaneDisplay)}::{nameof(ProfileSettings.LaneDisplay.ActiveSpeed)}")
-						{
-							TitleColor = Colors.textBold,
-							Title = ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "ActiveSpeed", "Title"]),
-							Description = ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "ActiveSpeed", "Description"]),
-						},
-					]),
-					api.MakeNumericStepper(
-						() => ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "InactiveSpeed", "Title"]),
-						() => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveSpeed,
-						value => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveSpeed = value,
-						minValue: -10,
-						maxValue: 10,
-						step: 0.25
-					).SetTooltips(() => [
-						new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.LaneDisplay)}::{nameof(ProfileSettings.LaneDisplay.InactiveSpeed)}")
-						{
-							TitleColor = Colors.textBold,
-							Title = ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "InactiveSpeed", "Title"]),
-							Description = ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "InactiveSpeed", "Description"]),
-						},
-					])
+					api.MakeConditional(
+						api.MakeNumericStepper(
+							() => ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "ActiveSpeed", "Title"]),
+							() => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveSpeed,
+							value => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveSpeed = value,
+							minValue: -10,
+							maxValue: 10,
+							step: 0.25
+						).SetTooltips(() => [
+							new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.LaneDisplay)}::{nameof(ProfileSettings.LaneDisplay.ActiveSpeed)}")
+							{
+								TitleColor = Colors.textBold,
+								Title = ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "ActiveSpeed", "Title"]),
+								Description = ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "ActiveSpeed", "Description"]),
+							},
+						]),
+						() => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveDisplayStyle is ProfileSettings.LaneDisplaySettings.LaneDisplayStyle.SoftStriped or ProfileSettings.LaneDisplaySettings.LaneDisplayStyle.HardStriped
+					),
+					api.MakeConditional(
+						api.MakeNumericStepper(
+							() => ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "InactiveSpeed", "Title"]),
+							() => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveSpeed,
+							value => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveSpeed = value,
+							minValue: -10,
+							maxValue: 10,
+							step: 0.25
+						).SetTooltips(() => [
+							new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.LaneDisplay)}::{nameof(ProfileSettings.LaneDisplay.InactiveSpeed)}")
+							{
+								TitleColor = Colors.textBold,
+								Title = ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "InactiveSpeed", "Title"]),
+								Description = ModEntry.Instance.Localizations.Localize(["LaneDisplay", "Settings", "InactiveSpeed", "Description"]),
+							},
+						]),
+						() => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveDisplayStyle is ProfileSettings.LaneDisplaySettings.LaneDisplayStyle.SoftStriped or ProfileSettings.LaneDisplaySettings.LaneDisplayStyle.HardStriped
+					)
 				]),
 				() => ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.IsEnabled
 			),
 		]);
 
-	private static Texture2D ObtainLaneDividerTexture()
+	public static void UpdateSettings(IPluginPackage<IModManifest> package, IModHelper helper, ProfileSettings settings)
 	{
-		if (LaneDividerTexture is { } texture)
+		LaneDividerActiveTexture?.Dispose();
+		LaneDividerActiveTexture = null;
+		LaneDividerInactiveTexture?.Dispose();
+		LaneDividerInactiveTexture = null;
+	}
+
+	private static Texture2D ObtainLaneDividerTexture(bool active)
+	{
+		if ((active ? LaneDividerActiveTexture : LaneDividerInactiveTexture) is { } texture)
 			return texture;
 
-		texture = new Texture2D(MG.inst.graphics.GraphicsDevice, 1, MG.inst.PIX_H + LaneDividerStripe.Length);
-		LaneDividerTexture = texture;
+		var stripe = GetLaneDividerStripe(active);
+		texture = new Texture2D(MG.inst.graphics.GraphicsDevice, 1, MG.inst.PIX_H + stripe.Length);
+		
+		if (active)
+			LaneDividerActiveTexture = texture;
+		else
+			LaneDividerInactiveTexture = texture;
 
 		var data = new MGColor[texture.Width * texture.Height];
 		for (var y = 0; y < texture.Height; y++)
-			data[y] = LaneDividerStripe[y % LaneDividerStripe.Length];
+			data[y] = stripe[y % stripe.Length];
 		
 		texture.SetData(data);
 		return texture;
@@ -194,6 +267,16 @@ internal sealed class LaneDisplay : IRegisterable
 		return false;
 	}
 
+	private static MGColor[] GetLaneDividerStripe(bool active)
+		=> (active ? ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveDisplayStyle : ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveDisplayStyle) switch
+		{
+			ProfileSettings.LaneDisplaySettings.LaneDisplayStyle.SoftStriped => LaneDividerSoftStripe,
+			ProfileSettings.LaneDisplaySettings.LaneDisplayStyle.HardStriped => LaneDividerHardStripe,
+			ProfileSettings.LaneDisplaySettings.LaneDisplayStyle.SolidGray => LaneDividerSolidGray,
+			ProfileSettings.LaneDisplaySettings.LaneDisplayStyle.SolidWhite => LaneDividerSolidWhite,
+			_ => throw new ArgumentOutOfRangeException()
+		};
+
 	private static void Combat_RenderShipsOver_Postfix_Low(Combat __instance, G g)
 	{
 		if (!ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.IsEnabled)
@@ -202,11 +285,17 @@ internal sealed class LaneDisplay : IRegisterable
 			return;
 		}
 
-		var speed = IsActiveHover
-			? ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveSpeed
-			: ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveSpeed;
-		LaneDividerYOffset += speed * LaneDividerStripe.Length * g.dt;
-		LaneDividerYOffset = Math.Abs(LaneDividerYOffset) % LaneDividerStripe.Length * Math.Sign(LaneDividerYOffset);
+		var stripe = ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveDisplayStyle == ProfileSettings.LaneDisplaySettings.LaneDisplayStyle.HardStriped ? LaneDividerHardStripe : LaneDividerSoftStripe;
+		var sprite = IsActiveHover ? LaneDividerActiveSprite : LaneDividerInactiveSprite;
+
+		if (stripe.Length > 1)
+		{
+			var speed = IsActiveHover
+				? ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.ActiveSpeed
+				: ModEntry.Instance.Settings.ProfileBased.Current.LaneDisplay.InactiveSpeed;
+			LaneDividerYOffset += speed * stripe.Length * g.dt;
+			LaneDividerYOffset = Math.Abs(LaneDividerYOffset) % stripe.Length * Math.Sign(LaneDividerYOffset);
+		}
 		
 		const int laneSpacing = 16;
 
@@ -223,7 +312,7 @@ internal sealed class LaneDisplay : IRegisterable
 
 		while (currentLaneX < g.mg.PIX_W)
 		{
-			Draw.Sprite(LaneDividerSprite.Sprite, currentLaneX - 3, LaneDividerYOffset - LaneDividerStripe.Length, color: Colors.white.fadeAlpha(alpha));
+			Draw.Sprite(sprite.Sprite, currentLaneX - 3, LaneDividerYOffset - stripe.Length, color: Colors.white.fadeAlpha(alpha));
 			currentLaneX += laneSpacing;
 		}
 

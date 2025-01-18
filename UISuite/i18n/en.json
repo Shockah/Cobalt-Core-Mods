@@ -99,6 +99,26 @@
 				"Title": "Enabled",
 				"Description": "Whether to display dividers between the lanes in combat."
 			},
+			"ActiveDisplayStyle": {
+				"Title": "Active display style",
+				"Description": "The style to use for the lane divider when hovering over any kind of movement or offset action.",
+				"Value": {
+					"SoftStriped": "Soft Striped",
+					"HardStriped": "Hard Striped",
+					"SolidGray": "Solid Gray",
+					"SolidWhite": "Solid White"
+				}
+			},
+			"InactiveDisplayStyle": {
+				"Title": "Inactive display style",
+				"Description": "The style to use for the lane divider when not hovering over any kind of movement or offset action.",
+				"Value": {
+					"SoftStriped": "Soft Striped",
+					"HardStriped": "Hard Striped",
+					"SolidGray": "Solid Gray",
+					"SolidWhite": "Solid White"
+				}
+			},
 			"ActiveAlpha": {
 				"Title": "Active alpha",
 				"Description": "The opacity of the lane divider when hovering over any kind of movement or offset action."
