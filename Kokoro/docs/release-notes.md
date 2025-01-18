@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Redraw buttons sometimes appearing when another screen is currently on.
+
 ## 2.3.0
 Released 17 January 2025.
 

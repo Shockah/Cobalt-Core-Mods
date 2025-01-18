@@ -282,10 +282,15 @@ internal sealed class RedrawStatusManager
 		}
 	}
 	
-	private static void Card_Render_Postfix(Card __instance, G g, Vec? posOverride, State? fakeState, double? overrideWidth)
+	private static void Card_Render_Postfix(Card __instance, G g, Vec? posOverride, State? fakeState, double? overrideWidth, bool __runOriginal)
 	{
+		if (!__runOriginal)
+			return;
+		
 		var state = fakeState ?? g.state;
 		if (state.route is not Combat combat)
+			return;
+		if (combat.routeOverride is not null)
 			return;
 		if (!Instance.IsRedrawPossible(state, combat, __instance))
 			return;
