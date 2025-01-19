@@ -65,6 +65,7 @@ public sealed class UnstableMagicCard : Card, IRegisterable
 				.Concat(s.deck)
 				.Concat(c.discard)
 				.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, Explosive.ExplosiveTrait))
+				.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, ModEntry.Instance.Helper.Content.Cards.UnplayableCardTrait))
 				.ToList();
 
 			if (cards.Count == 0)
