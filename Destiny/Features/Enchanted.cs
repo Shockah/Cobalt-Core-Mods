@@ -293,6 +293,8 @@ internal sealed class Enchanted : IRegisterable
 			return false;
 		if (GetNextEnchantLevelCost(card) is not { } cost)
 			return false;
+		if (fromUserInteraction && state.CharacterIsMissing(card.GetMeta().deck))
+			return false;
 		
 		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, state.route as Combat ?? DB.fakeCombat, card);
 		var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(cost, environment);
