@@ -2,8 +2,8 @@
 	"UniqueName": "Shockah.Destiny",
 	"Version": "{{ModVersion}}",
 	"DisplayName": "Destiny",
-	"Description": "TBD",
-	"Author": "Soggoru Waffle, Shockah",
+	"Description": "Destiny: An enchantress. Can spend shards to empower her cards, and uses a variety of different shields with different effects.",
+	"Author": "Shockah, Soggoru Waffle",
 	"RequiredApiVersion": "1.10.0",
 	"EntryPointAssembly": "Destiny.dll",
 	"LoadPhase": "AfterDbInit",
@@ -12,5 +12,10 @@
 			"UniqueName": "Shockah.Kokoro",
 			"Version": "2.3.0"
 		}
-	]
+	],
+	"UpdateChecks": {
+		"NexusMods": {
+			"ID": 46
+		}
+	}
 }
