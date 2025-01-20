@@ -6,6 +6,8 @@
 
 * Added an API to customize status info rendering.
 * Deprecated `OverrideStatusRenderingAsBars`.
+* Limited 1 now only applies Exhaust while in combat.
+* Finite 2+ now only applies Infinite while in combat.
 
 ## 2.3.1
 Released 18 January 2025.

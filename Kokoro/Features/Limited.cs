@@ -201,6 +201,8 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 	[EventPriority(double.MaxValue)]
 	private static void OnGetFinalDynamicCardTraitOverrides(object? sender, GetFinalDynamicCardTraitOverridesEventArgs args)
 	{
+		if (args.State.route is not Combat)
+			return;
 		if (!args.TraitStates[Trait].IsActive)
 			return;
 		if (GetLimitedUses(args.State, args.Card) > 1)
