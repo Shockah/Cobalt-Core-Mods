@@ -6,11 +6,11 @@ using System.Reflection;
 
 namespace Shockah.Bjorn;
 
-public sealed class NeglectSafetyCard : Card, IRegisterable
+public sealed class NeglectSafetyCard : Card, IRegisterable, IHasCustomCardTraits
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
+		var entry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
@@ -22,7 +22,17 @@ public sealed class NeglectSafetyCard : Card, IRegisterable
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/NeglectSafety.png"), StableSpr.cards_eunice).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "NeglectSafety", "name"]).Localize,
 		});
+		
+		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, Upgrade.None, 2);
+		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, Upgrade.A, 2);
 	}
+
+	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
+		=> upgrade.Switch<HashSet<ICardTraitEntry>>(
+			() => [ModEntry.Instance.KokoroApi.Finite.Trait],
+			() => [ModEntry.Instance.KokoroApi.Finite.Trait],
+			() => []
+		);
 
 	public override CardData GetData(State state)
 	{
