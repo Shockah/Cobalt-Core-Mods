@@ -207,6 +207,8 @@ internal sealed class FiniteManager : HookManager<IKokoroApi.IV2.IFiniteApi.IHoo
 	[EventPriority(double.MaxValue)]
 	private static void OnGetFinalDynamicCardTraitOverrides(object? sender, GetFinalDynamicCardTraitOverridesEventArgs args)
 	{
+		if (args.State.route is not Combat)
+			return;
 		if (!args.TraitStates[Trait].IsActive)
 			return;
 		if (GetFiniteUses(args.State, args.Card) <= 1)
