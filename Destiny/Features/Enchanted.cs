@@ -122,7 +122,7 @@ internal sealed class Enchanted : IRegisterable
 		);
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.OnInputPhase)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_OnInputPhase_Postfix))
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_OnInputPhase_Prefix))
 		);
 
 		Spr GetIcon(Card? card)
@@ -433,18 +433,19 @@ internal sealed class Enchanted : IRegisterable
 		TryEnchant(g.state, card);
 	}
 
-	private static void Combat_OnInputPhase_Postfix(Combat __instance, G g, Box b)
+	private static void Combat_OnInputPhase_Prefix(Combat __instance, G g, Box b)
 	{
 		if (b.key != Input.currentGpKey)
 			return;
 		if (__instance.TryGetHandCardFromBox(b) is not { } card)
 			return;
-		if (!Input.GetGpDown(Btn.B))
-			return;
 		
 		var maxEnchantLevel = GetMaxEnchantLevel(card.Key(), card.upgrade);
 		var enchantLevel = Math.Clamp(GetEnchantLevel(card), 0, maxEnchantLevel);
 		if (enchantLevel >= maxEnchantLevel)
+			return;
+		
+		if (!Input.GetGpDown(Btn.B))
 			return;
 
 		TryEnchant(g.state, card);
