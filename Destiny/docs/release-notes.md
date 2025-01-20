@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.1
+Released 20 January 2025.
 
 * Fixed controller support for Enchanted cards.
 
