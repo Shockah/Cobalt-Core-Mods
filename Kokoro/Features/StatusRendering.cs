@@ -46,6 +46,33 @@ partial class ApiImplementation
 
 			public Color DefaultInactiveStatusBarColor
 				=> DefaultActiveStatusBarColor.fadeAlpha(0.3);
+
+			public IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer EmptyStatusInfoRenderer
+				=> Kokoro.EmptyStatusInfoRenderer.Instance;
+			
+			public IKokoroApi.IV2.IStatusRenderingApi.ITextStatusInfoRenderer MakeTextStatusInfoRenderer(string text)
+				=> new TextStatusInfoRenderer { Text = text };
+
+			public IKokoroApi.IV2.IStatusRenderingApi.ITextStatusInfoRenderer? AsTextStatusInfoRenderer(IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer renderer)
+				=> renderer as IKokoroApi.IV2.IStatusRenderingApi.ITextStatusInfoRenderer;
+
+			public IKokoroApi.IV2.IStatusRenderingApi.IBarStatusInfoRenderer MakeBarStatusInfoRenderer()
+				=> new BarStatusInfoRenderer();
+
+			public IKokoroApi.IV2.IStatusRenderingApi.IBarStatusInfoRenderer? AsBarStatusInfoRenderer(IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer renderer)
+				=> renderer as IKokoroApi.IV2.IStatusRenderingApi.IBarStatusInfoRenderer;
+
+			internal sealed class StatusInfoRendererRenderArgs : IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer.IRenderArgs
+			{
+				public G G { get; internal set; } = null!;
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public Ship Ship { get; internal set; } = null!;
+				public Status Status { get; internal set; }
+				public int Amount { get; internal set; }
+				public bool DontRender { get; internal set; }
+				public Vec Position { get; internal set; }
+			}
 			
 			internal sealed class GetExtraStatusesToShowArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IGetExtraStatusesToShowArgs
 			{
@@ -72,6 +99,15 @@ partial class ApiImplementation
 				public int Amount { get; internal set; }
 			}
 			
+			internal sealed class OverrideStatusInfoRendererArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusInfoRendererArgs
+			{
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public Ship Ship { get; internal set; } = null!;
+				public Status Status { get; internal set; }
+				public int Amount { get; internal set; }
+			}
+			
 			internal sealed class OverrideStatusTooltipsArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs
 			{
 				public Status Status { get; internal set; }
@@ -88,7 +124,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 	internal static readonly StatusRenderManager Instance = new();
 
 	private Ship? RenderingStatusForShip;
-	private static readonly Dictionary<Status, (IReadOnlyList<Color> Colors, int? BarTickWidth)> StatusBarRenderingOverrides = [];
+	private static readonly Dictionary<Status, IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer> StatusInfoRenderers = [];
 
 	private StatusRenderManager() : base(ModEntry.Instance.Package.Manifest.UniqueName, new HookMapper<IKokoroApi.IV2.IStatusRenderingApi.IHook, IStatusRenderHook>(hook => new V1ToV2StatusRenderingHookWrapper(hook)))
 	{
@@ -138,25 +174,46 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 		}
 	}
 
-	public (IReadOnlyList<Color> Colors, int? BarTickWidth)? GetStatusRenderingBarOverride(State state, Combat combat, Ship ship, Status status, int amount)
+	public IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer? GetStatusInfoRenderer(State state, Combat combat, Ship ship, Status status, int amount)
 	{
-		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusRenderingAsBarsArgs>();
+		var overrideStatusInfoRendererArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusInfoRendererArgs>();
+		var overrideStatusRenderingAsBarsArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusRenderingApi.OverrideStatusRenderingAsBarsArgs>();
+		
 		try
 		{
-			args.State = state;
-			args.Combat = combat;
-			args.Ship = ship;
-			args.Status = status;
-			args.Amount = amount;
+			overrideStatusInfoRendererArgs.State = state;
+			overrideStatusInfoRendererArgs.Combat = combat;
+			overrideStatusInfoRendererArgs.Ship = ship;
+			overrideStatusInfoRendererArgs.Status = status;
+			overrideStatusInfoRendererArgs.Amount = amount;
+			
+			overrideStatusRenderingAsBarsArgs.State = state;
+			overrideStatusRenderingAsBarsArgs.Combat = combat;
+			overrideStatusRenderingAsBarsArgs.Ship = ship;
+			overrideStatusRenderingAsBarsArgs.Status = status;
+			overrideStatusRenderingAsBarsArgs.Amount = amount;
 
 			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-				if (hook.OverrideStatusRenderingAsBars(args) is { } @override)
-					return @override;
+			{
+				if (hook.OverrideStatusInfoRenderer(overrideStatusInfoRendererArgs) is { } renderer)
+					return renderer;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+				if (hook.OverrideStatusRenderingAsBars(overrideStatusRenderingAsBarsArgs) is { } @override)
+				{
+					if (@override.Colors.Count == 0)
+						return ModEntry.Instance.Api.V2.StatusRendering.EmptyStatusInfoRenderer;
+					return ModEntry.Instance.Api.V2.StatusRendering.MakeBarStatusInfoRenderer().SetSegments(@override.Colors);
+				}
+#pragma warning restore CS0618 // Type or member is obsolete
+			}
+
 			return null;
 		}
 		finally
 		{
-			ModEntry.Instance.ArgsPool.Return(args);
+			ModEntry.Instance.ArgsPool.Return(overrideStatusInfoRendererArgs);
+			ModEntry.Instance.ArgsPool.Return(overrideStatusRenderingAsBarsArgs);
 		}
 	}
 
@@ -185,23 +242,35 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 	
 	private static void Ship_GetStatusSize_Postfix(Ship __instance, Status status, int amount, ref Ship.StatusPlan __result)
 	{
-		if (MG.inst.g.state is not { } state)
+		if (MG.inst.g is not { } g)
+			return;
+		if (g.state is not { } state)
 			return;
 		if (state.route is not Combat combat)
 			return;
-		if (Instance.GetStatusRenderingBarOverride(state, combat, __instance, status, amount) is not { } @override)
+		if (Instance.GetStatusInfoRenderer(state, combat, __instance, status, amount) is not { } renderer)
 			return;
 		
-		StatusBarRenderingOverrides[status] = @override;
+		StatusInfoRenderers[status] = renderer;
 
-		var barTickWidth = @override.BarTickWidth ?? __result.barTickWidth;
-		if (@override.BarTickWidth != 0)
-			__result.barTickWidth = barTickWidth;
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusRenderingApi.StatusInfoRendererRenderArgs>();
+		try
+		{
+			args.G = g;
+			args.State = state;
+			args.Combat = combat;
+			args.Ship = __instance;
+			args.Status = status;
+			args.Amount = amount;
+			args.DontRender = true;
+			args.Position = default;
 
-		__result.asText = false;
-		__result.asBars = true;
-		__result.barMax = @override.Colors.Count;
-		__result.boxWidth = 17 + @override.Colors.Count * (barTickWidth + 1);
+			__result.boxWidth = 16 + renderer.Render(args);
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 
 	private static void Ship_RenderStatuses_Prefix(Ship __instance)
@@ -269,7 +338,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 		}
 	}
 
-	private static IEnumerable<CodeInstruction> Ship_RenderStatusRow_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	private static IEnumerable<CodeInstruction> Ship_RenderStatusRow_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
 		// ReSharper disable PossibleMultipleEnumeration
 		try
@@ -280,24 +349,25 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 					ILMatches.Call("get_Value"),
 					ILMatches.Call("GetStatusSize"),
 				])
-				.Find(SequenceBlockMatcherFindOccurence.Last, SequenceMatcherRelativeBounds.WholeSequence, [
-					ILMatches.Ldloc<int>(originalMethod).CreateLdlocInstruction(out var ldlocBarIndex),
-					ILMatches.Ldloc<Ship.StatusPlan>(originalMethod),
-					ILMatches.Ldfld("barMax"),
-					ILMatches.Blt,
+				.PointerMatcher(SequenceMatcherRelativeElement.FirstInWholeSequence)
+				.Find([
+					ILMatches.Ldloc<Ship.StatusPlan>(originalMethod).CreateLdlocaInstruction(out var ldlocaStatusPlan).ExtractLabels(out var labels).Anchor(out var renderingStartAnchor),
+					ILMatches.Ldfld("asText"),
+					ILMatches.Brfalse,
 				])
-				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.WholeSequence, [
-					ILMatches.Ldloca<Color>(originalMethod),
-					ILMatches.Instruction(OpCodes.Ldc_R8),
-					ILMatches.Call("fadeAlpha"),
-					ILMatches.Br.GetBranchTarget(out var branchTarget),
+				.Find([
+					ILMatches.Ldarg(0).CreateLabel(il, out var renderingEndLabel),
+					ILMatches.Ldfld("pendingOneShotStatusAnimations"),
 				])
-				.PointerMatcher(branchTarget)
-				.ExtractLabels(out var labels)
+				.Anchors().PointerMatcher(renderingStartAnchor)
 				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
-					ldlocBarIndex.Value.WithLabels(labels),
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldarg_1),
+					new CodeInstruction(OpCodes.Ldarg_2),
 					ldlocKvp,
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_RenderStatusRow_Transpiler_ModifyColor))),
+					ldlocaStatusPlan,
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_RenderStatusRow_Transpiler_HandleCustomRenderers))).WithLabels(labels),
+					new CodeInstruction(OpCodes.Brtrue, renderingEndLabel),
 				])
 				.AllElements();
 		}
@@ -309,11 +379,178 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 		// ReSharper restore PossibleMultipleEnumeration
 	}
 
-	private static Color Ship_RenderStatusRow_Transpiler_ModifyColor(Color color, int barIndex, KeyValuePair<Status, int> kvp)
+	private static bool Ship_RenderStatusRow_Transpiler_HandleCustomRenderers(Ship ship, G g, string keyPrefix, KeyValuePair<Status, int> kvp, ref Ship.StatusPlan statusPlan)
 	{
-		if (!StatusBarRenderingOverrides.TryGetValue(kvp.Key, out var @override))
-			return color;
-		return @override.Colors[barIndex];
+		if (g.state is not { } state)
+			return false;
+		if (state.route is not Combat combat)
+			return false;
+		if (!StatusInfoRenderers.Remove(kvp.Key, out var renderer))
+			return false;
+		if (g.boxes.FirstOrDefault(b => b.key == new UIKey(StableUK.status, (int)kvp.Key, keyPrefix)) is not { } box)
+			return false;
+
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusRenderingApi.StatusInfoRendererRenderArgs>();
+		try
+		{
+			args.G = g;
+			args.State = state;
+			args.Combat = combat;
+			args.Ship = ship;
+			args.Status = kvp.Key;
+			args.Amount = kvp.Value;
+			args.DontRender = false;
+			args.Position = new Vec(box.rect.x + 12, box.rect.y + 4);
+
+			renderer.Render(args);
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
+		return true;
+	}
+}
+
+internal sealed class EmptyStatusInfoRenderer : IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer
+{
+	public static readonly EmptyStatusInfoRenderer Instance = new();
+	
+	public int Render(IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer.IRenderArgs args)
+		=> -1;
+}
+
+internal sealed class TextStatusInfoRenderer : IKokoroApi.IV2.IStatusRenderingApi.ITextStatusInfoRenderer
+{
+	public required string Text { get; set; }
+	public Color Color { get; set; } = Colors.white;
+
+	public int Render(IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer.IRenderArgs args)
+		=> (int)Draw.Text(Text, args.Position.x + 1, args.Position.y, color: this.Color, dontDraw: args.DontRender, outline: Colors.black, dontSubstituteLocFont: true).w;
+
+	public IKokoroApi.IV2.IStatusRenderingApi.ITextStatusInfoRenderer SetText(string value)
+	{
+		this.Text = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IStatusRenderingApi.ITextStatusInfoRenderer SetColor(Color value)
+	{
+		this.Color = value;
+		return this;
+	}
+}
+
+internal sealed class BarStatusInfoRenderer : IKokoroApi.IV2.IStatusRenderingApi.IBarStatusInfoRenderer
+{
+	public IList<Color> Segments { get; set; } = new List<Color>();
+
+	public int Rows
+	{
+		get => this.RowsStorage;
+		set
+		{
+			if (value is not (1 or 2 or 3 or 5))
+				throw new ArgumentException("Only 1, 2, 3 or 5 rows are supported");
+			this.RowsStorage = value;
+		}
+	}
+
+	public int SegmentWidth { get; set; } = 2;
+	public int HorizontalSpacing { get; set; } = 1;
+
+	private int RowsStorage = 1;
+
+	public int Render(IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer.IRenderArgs args)
+	{
+		if (this.Segments.Count == 0)
+			return -1;
+		
+		const int xOffset = 2;
+		
+		var columns = (this.Segments.Count + this.Rows - 1) / this.Rows;
+
+		for (var i = 0; i < this.Segments.Count; i++)
+		{
+			var column = i / this.Rows;
+			var row = i % this.Rows;
+			var (yOffset, height) = GetLayoutParameters();
+			
+			if (!args.DontRender)
+				Draw.Rect(args.Position.x + xOffset + (this.SegmentWidth + this.HorizontalSpacing) * column, args.Position.y + yOffset, this.SegmentWidth, height, this.Segments[i]);
+
+			(int YOffset, int Height) GetLayoutParameters()
+			{
+				// 1-row columns are always full
+				if (this.Rows == 1)
+					return (0, 5);
+
+				var normalHeight = this.Rows switch
+				{
+					2 => 2,
+					3 or 5 => 1,
+					_ => throw new ArgumentOutOfRangeException()
+				};
+				var verticalSpacing = this.Rows switch
+				{
+					2 or 3 => 1,
+					5 => 0,
+					_ => throw new ArgumentOutOfRangeException()
+				};
+				
+				// ignore full columns
+				var segmentsInColumn = Math.Min(this.Segments.Count - column * this.Rows, this.Rows);
+				if (segmentsInColumn == this.Rows)
+					return ((normalHeight + verticalSpacing) * row, normalHeight);
+
+				// there's only one way a 2-row column is not full
+				if (this.Rows == 2)
+					return (1, normalHeight + 1);
+
+				if (this.Rows == 3)
+				{
+					if (segmentsInColumn == 1)
+						return (2, normalHeight);
+					if (segmentsInColumn == 2)
+						return (1 + (normalHeight + verticalSpacing) * row, normalHeight);
+					throw new ArgumentOutOfRangeException();
+				}
+
+				if (this.Rows == 5)
+				{
+					var unfullColumnYOffset = (this.Rows - segmentsInColumn) / 2;
+					return (unfullColumnYOffset + row, normalHeight);
+				}
+				
+				throw new ArgumentOutOfRangeException();
+			}
+		}
+		
+		return xOffset + columns * this.SegmentWidth + (columns - 1) * this.HorizontalSpacing;
+	}
+	
+	public IKokoroApi.IV2.IStatusRenderingApi.IBarStatusInfoRenderer SetSegments(IEnumerable<Color> value)
+	{
+		this.Segments = value as IList<Color> ?? value.ToList();
+		return this;
+	}
+
+	public IKokoroApi.IV2.IStatusRenderingApi.IBarStatusInfoRenderer SetSegmentWidth(int value)
+	{
+		this.SegmentWidth = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IStatusRenderingApi.IBarStatusInfoRenderer SetHorizontalSpacing(int value)
+	{
+		this.HorizontalSpacing = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IStatusRenderingApi.IBarStatusInfoRenderer SetRows(int value)
+	{
+		this.Rows = value;
+		return this;
 	}
 }
 
