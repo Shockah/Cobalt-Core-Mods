@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Shockah.Kokoro;
 
@@ -38,6 +39,185 @@ public partial interface IKokoroApi
 			Color DefaultInactiveStatusBarColor { get; }
 			
 			/// <summary>
+			/// A blank status info renderer. Only the border and the status icon will be rendered.
+			/// </summary>
+			IStatusInfoRenderer EmptyStatusInfoRenderer { get; }
+
+			/// <summary>
+			/// Creates a new text status info renderer.
+			/// </summary>
+			/// <param name="text">The text to display.</param>
+			/// <returns>The new renderer.</returns>
+			ITextStatusInfoRenderer MakeTextStatusInfoRenderer(string text);
+
+			/// <summary>
+			/// Casts the renderer to <see cref="ITextStatusInfoRenderer"/>, if it is one.
+			/// </summary>
+			/// <param name="renderer">The renderer.</param>
+			/// <returns>The <see cref="ITextStatusInfoRenderer"/>, if the given renderer is one, or <c>null</c> otherwise.</returns>
+			ITextStatusInfoRenderer? AsTextStatusInfoRenderer(IStatusInfoRenderer renderer);
+
+			/// <summary>
+			/// Creates a new bar status info renderer.
+			/// The renderer needs to be configured before it displays anything.
+			/// </summary>
+			/// <returns>The new renderer.</returns>
+			IBarStatusInfoRenderer MakeBarStatusInfoRenderer();
+
+			/// <summary>
+			/// Casts the renderer to <see cref="IBarStatusInfoRenderer"/>, if it is one.
+			/// </summary>
+			/// <param name="renderer">The renderer.</param>
+			/// <returns>The <see cref="IBarStatusInfoRenderer"/>, if the given renderer is one, or <c>null</c> otherwise.</returns>
+			IBarStatusInfoRenderer? AsBarStatusInfoRenderer(IStatusInfoRenderer renderer);
+
+			/// <summary>
+			/// Represents a type which renders info for a given status (shown on top of the ships in combat).
+			/// </summary>
+			public interface IStatusInfoRenderer
+			{
+				/// <summary>
+				/// Render info for the given status.
+				/// </summary>
+				/// <param name="args">The arguments for this method.</param>
+				/// <returns>The width of the info.</returns>
+				int Render(IRenderArgs args);
+
+				/// <summary>
+				/// The arguments for the <see cref="Render"/> method.
+				/// </summary>
+				public interface IRenderArgs
+				{
+					/// <summary>
+					/// The game instance.
+					/// </summary>
+					G G { get; }
+					
+					/// <summary>
+					/// The game state.
+					/// </summary>
+					State State { get; }
+					
+					/// <summary>
+					/// The current combat.
+					/// </summary>
+					Combat Combat { get; }
+
+					/// <summary>
+					/// The ship to show the status for.
+					/// </summary>
+					Ship Ship { get; }
+					
+					/// <summary>
+					/// The status.
+					/// </summary>
+					Status Status { get; }
+					
+					/// <summary>
+					/// The current amount of the status.
+					/// </summary>
+					int Amount { get; }
+					
+					/// <summary>
+					/// When <c>true</c>, no rendering should be done, only size calculations.
+					/// </summary>
+					bool DontRender { get; }
+					
+					/// <summary>
+					/// The position at which to start rendering the info.
+					/// </summary>
+					Vec Position { get; }
+				}
+			}
+			
+			/// <summary>
+			/// A status info renderer that displays text.
+			/// </summary>
+			public interface ITextStatusInfoRenderer : IStatusInfoRenderer
+			{
+				/// <summary>
+				/// The text to display.
+				/// </summary>
+				string Text { get; set; }
+				
+				/// <summary>
+				/// The color of the text.
+				/// </summary>
+				Color Color { get; set; }
+
+				/// <summary>
+				/// Sets <see cref="Text"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				ITextStatusInfoRenderer SetText(string value);
+
+				/// <summary>
+				/// Sets <see cref="Color"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				ITextStatusInfoRenderer SetColor(Color value);
+			}
+			
+			/// <summary>
+			/// A status info renderer that displays a segmented bar, optionally in multiple rows.
+			/// </summary>
+			public interface IBarStatusInfoRenderer : IStatusInfoRenderer
+			{
+				/// <summary>
+				/// The colors of the segments to display.
+				/// </summary>
+				IList<Color> Segments { get; set; }
+				
+				/// <summary>
+				/// The width of a single segment.
+				/// </summary>
+				int SegmentWidth { get; set; }
+				
+				/// <summary>
+				/// The spacing between segments, or columns of segments.
+				/// </summary>
+				int HorizontalSpacing { get; set; }
+				
+				/// <summary>
+				/// The amount of rows the segments should be split into.
+				/// </summary>
+				/// <remarks>
+				/// The allowed values are <c>1</c>, <c>2</c>, <c>3</c> and <c>5</c>.
+				/// </remarks>
+				int Rows { get; set; }
+				
+				/// <summary>
+				/// Sets <see cref="Segments"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				IBarStatusInfoRenderer SetSegments(IEnumerable<Color> value);
+				
+				/// <summary>
+				/// Sets <see cref="SegmentWidth"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				IBarStatusInfoRenderer SetSegmentWidth(int value);
+				
+				/// <summary>
+				/// Sets <see cref="HorizontalSpacing"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				IBarStatusInfoRenderer SetHorizontalSpacing(int value);
+				
+				/// <summary>
+				/// Sets <see cref="Rows"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				IBarStatusInfoRenderer SetRows(int value);
+			}
+			
+			/// <summary>
 			/// A hook related to status rendering.
 			/// </summary>
 			public interface IHook : IKokoroV2ApiHook
@@ -65,7 +245,15 @@ public partial interface IKokoroApi
 				/// If the whole thing is <c>null</c>, the status will be displayed as a number.
 				/// Defaults to <c>null</c>.
 				/// </returns>
+				[Obsolete("Use `OverrideStatusInfoRenderer` instead.")]
 				(IReadOnlyList<Color> Colors, int? BarSegmentWidth)? OverrideStatusRenderingAsBars(IOverrideStatusRenderingAsBarsArgs args) => null;
+				
+				/// <summary>
+				/// Controls how status info (shown on top of the ships in combat) should be rendered.
+				/// </summary>
+				/// <param name="args">The arguments for the hook method.</param>
+				/// <returns>The renderer to render the status info with, or <c>null</c> if this hook does not care.</returns>
+				IStatusInfoRenderer? OverrideStatusInfoRenderer(IOverrideStatusInfoRendererArgs args) => null;
 				
 				/// <summary>
 				/// Allows changing the tooltips for a status.
@@ -130,6 +318,37 @@ public partial interface IKokoroApi
 				/// The arguments for the <see cref="OverrideStatusRenderingAsBars"/> hook method.
 				/// </summary>
 				public interface IOverrideStatusRenderingAsBarsArgs
+				{
+					/// <summary>
+					/// The game state.
+					/// </summary>
+					State State { get; }
+					
+					/// <summary>
+					/// The current combat.
+					/// </summary>
+					Combat Combat { get; }
+
+					/// <summary>
+					/// The ship to show the status for.
+					/// </summary>
+					Ship Ship { get; }
+					
+					/// <summary>
+					/// The status.
+					/// </summary>
+					Status Status { get; }
+					
+					/// <summary>
+					/// The current amount of the status.
+					/// </summary>
+					int Amount { get; }
+				}
+				
+				/// <summary>
+				/// The arguments for the <see cref="OverrideStatusInfoRenderer"/> hook method.
+				/// </summary>
+				public interface IOverrideStatusInfoRendererArgs
 				{
 					/// <summary>
 					/// The game state.
