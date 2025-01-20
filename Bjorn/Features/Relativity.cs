@@ -123,16 +123,16 @@ internal sealed class RelativityManager : IRegisterable, IKokoroApi.IV2.IStatusR
 
 	private sealed class StatusRenderHook : IKokoroApi.IV2.IStatusRenderingApi.IHook
 	{
-		public (IReadOnlyList<Color> Colors, int? BarSegmentWidth)? OverrideStatusRenderingAsBars(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingAsBarsArgs args)
+		public IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer? OverrideStatusInfoRenderer(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusInfoRendererArgs args)
 		{
 			if (args.Status != RelativityStatus.Status)
 				return null;
-
+			
 			var colors = new Color[GetRelativityLimit(args.State, args.Combat)];
 			for (var i = 0; i < colors.Length; i++)
 				colors[i] = args.Amount > i ? ModEntry.Instance.KokoroApi.StatusRendering.DefaultActiveStatusBarColor : ModEntry.Instance.KokoroApi.StatusRendering.DefaultInactiveStatusBarColor;
-
-			return (Colors: colors, BarSegmentWidth: null);
+			
+			return ModEntry.Instance.KokoroApi.StatusRendering.MakeBarStatusInfoRenderer().SetSegments(colors);
 		}
 
 		public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)

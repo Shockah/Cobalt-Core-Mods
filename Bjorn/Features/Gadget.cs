@@ -7,6 +7,8 @@ namespace Shockah.Bjorn;
 
 internal sealed class GadgetManager : IRegisterable
 {
+	private const int MaxStacks = 15;
+	
 	internal static IStatusEntry GadgetStatus { get; private set; } = null!;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
@@ -26,14 +28,31 @@ internal sealed class GadgetManager : IRegisterable
 		
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
-			if (state.ship.Get(GadgetStatus.Status) <= 0)
-				return;
+			var stacks = state.ship.Get(GadgetStatus.Status);
 			
-			state.rewardsQueue.QueueImmediate(new AArtifactOffering
+			if (stacks >= MaxStacks)
 			{
-				amount = 2,
-				limitPools = [ArtifactPool.Common],
-			});
+				state.rewardsQueue.QueueImmediate(new AArtifactOffering
+				{
+					amount = 2,
+					limitPools = [ArtifactPool.Common],
+				});
+				
+				ModEntry.Instance.Helper.ModData.RemoveModData(state, "GadgetProgress");
+			}
+			else if (stacks > 0)
+			{
+				ModEntry.Instance.Helper.ModData.SetModData(state, "GadgetProgress", stacks);
+			}
+			else
+			{
+				ModEntry.Instance.Helper.ModData.RemoveModData(state, "GadgetProgress");
+			}
+		});
+
+		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnCombatStart), (State state) =>
+		{
+			state.ship.Set(GadgetStatus.Status, ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(state, "GadgetProgress"));
 		});
 		
 		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(new StatusRenderingHook());
@@ -41,11 +60,16 @@ internal sealed class GadgetManager : IRegisterable
 
 	private sealed class StatusRenderingHook : IKokoroApi.IV2.IStatusRenderingApi.IHook
 	{
-		public (IReadOnlyList<Color> Colors, int? BarSegmentWidth)? OverrideStatusRenderingAsBars(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusRenderingAsBarsArgs args)
+		public IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer? OverrideStatusInfoRenderer(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusInfoRendererArgs args)
 		{
 			if (args.Status != GadgetStatus.Status)
 				return null;
-			return ([new(0, 0, 0, 0)], -3);
+			
+			var colors = new Color[MaxStacks];
+			for (var i = 0; i < colors.Length; i++)
+				colors[i] = args.Amount > i ? ModEntry.Instance.KokoroApi.StatusRendering.DefaultActiveStatusBarColor : ModEntry.Instance.KokoroApi.StatusRendering.DefaultInactiveStatusBarColor;
+
+			return ModEntry.Instance.KokoroApi.StatusRendering.MakeBarStatusInfoRenderer().SetSegments(colors).SetRows(3);
 		}
 	}
 }
