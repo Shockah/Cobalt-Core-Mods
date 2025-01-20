@@ -281,8 +281,6 @@ public partial interface IKokoroApi
 				[Obsolete("Use `OverrideStatusInfoRenderer` instead.")]
 				(IReadOnlyList<Color> Colors, int? BarSegmentWidth)? OverrideStatusRenderingAsBars(IOverrideStatusRenderingAsBarsArgs args) => null;
 				
-				IStatusInfoRenderer? OverrideStatusInfoRenderer(IOverrideStatusInfoRendererArgs args) => null;
-				
 				/// <summary>
 				/// Controls how status info (shown on top of the ships in combat) should be rendered.
 				/// </summary>
