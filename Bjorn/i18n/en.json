@@ -71,8 +71,8 @@
 			"description": "Whenever this ship moves, the opposing ship moves the same distance in the other direction. <c=downside>Decreases by 1 each turn.</c>"
 		},
 		"Gadget": {
-			"name": "Gadget",
-			"description": "After combat ends, gain 1 of 2 common artifacts. Does not stack."
+			"name": "Gadget Progress",
+			"description": "After combat ends, if you have 15 or more of it, <c=downside>lose all of it</c> and gain 1 of 2 common artifacts. <c=textBold>Persists between combats.</c>"
 		},
 		"Relativity": {
 			"name": "Relativity",
@@ -234,21 +234,7 @@
 			"name": "Taser"
 		},
 		"WaterfallModel": {
-			"name": "Waterfall Model",
-			"description": {
-				"None": {
-					"stateless": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. Every 5 times, gain 1 <c=status>gadget</c>.",
-					"stateful": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. In {{Times}} times, gain 1 <c=status>gadget</c>."
-				},
-				"A": {
-					"stateless": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. Every 4 times, gain 1 <c=status>gadget</c>.",
-					"stateful": "When <c=action>analyzed</c>, <c=downside>gain 1 <c=status>engine lock</c> and end turn</c>. In {{Times}} times, gain 1 <c=status>gadget</c>."
-				},
-				"B": {
-					"stateless": "When <c=action>analyzed</c>, <c=downside>gain 2 <c=status>engine lock</c> and end turn</c>. Every 3 times, gain 1 <c=status>gadget</c>.",
-					"stateful": "When <c=action>analyzed</c>, <c=downside>gain 2 <c=status>engine lock</c> and end turn</c>. In {{Times}} times, gain 1 <c=status>gadget</c>."
-				}
-			}
+			"name": "Waterfall Model"
 		}
 	}
 }
