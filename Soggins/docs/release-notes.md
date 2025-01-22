@@ -10,6 +10,7 @@
 * Smug is no longer frozen during Double Time.
 * The Smug gauge now displays the current Smug even during Double Time.
 * Doubling/botching dialogue no longer overrides existing dialogue.
+* Internally simplified and optimized Frogproof, at the cost of potential API breaking changes.
 
 ## 1.4.0
 Released 4 December 2024.

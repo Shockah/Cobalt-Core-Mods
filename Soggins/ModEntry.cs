@@ -51,10 +51,10 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	internal ICardTraitEntry FrogproofTrait { get; private set; } = null!;
 
 	internal ExternalSprite MiniPortraitSprite { get; private set; } = null!;
-	internal Dictionary<int, List<ExternalSprite>> SmugPortraitSprites { get; private init; } = [];
-	internal List<ExternalSprite> OversmugPortraitSprites { get; private init; } = [];
-	internal List<ExternalSprite> SquintPortraitSprites { get; private init; } = [];
-	internal List<ExternalSprite> MadPortraitSprites { get; private init; } = [];
+	internal Dictionary<int, List<ExternalSprite>> SmugPortraitSprites { get; } = [];
+	internal List<ExternalSprite> OversmugPortraitSprites { get; } = [];
+	internal List<ExternalSprite> SquintPortraitSprites { get; } = [];
+	internal List<ExternalSprite> MadPortraitSprites { get; } = [];
 
 	internal ExternalSprite SmugStatusSprite { get; private set; } = null!;
 	internal ExternalSprite FrogproofSprite { get; private set; } = null!;
@@ -181,16 +181,18 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 
 		helper.Content.Cards.OnGetDynamicInnateCardTraitOverrides += (_, e) =>
 		{
-			switch (FrogproofManager.GetFrogproofType(e.State, e.State.route as Combat, e.Card, FrogproofHookContext.Rendering))
-			{
-				case FrogproofType.Innate:
-					e.SetOverride(FrogproofTrait, true);
-					break;
-				case FrogproofType.InnateHiddenIfNotNeeded:
-					if (!(MG.inst.g.state ?? e.State).IsOutsideRun() && Instance.Api.IsRunWithSmug(MG.inst.g.state ?? e.State))
-						e.SetOverride(FrogproofTrait, true);
-					break;
-			}
+			if (e.InnateTraits.Contains(FrogproofTrait))
+				return;
+			if (!Api.IsRunWithSmug(e.State))
+				return;
+			
+			var meta = e.Card.GetMeta();
+			if (NewRunOptions.allChars.Contains(meta.deck))
+				return;
+			if (meta.deck is Deck.colorless or Deck.catartifact or Deck.soggins or Deck.dracula or Deck.tooth or Deck.ephemeral)
+				return;
+			
+			e.SetOverride(FrogproofTrait, true);
 		};
 
 		helper.Events.OnModLoadPhaseFinished += (_, phase) =>

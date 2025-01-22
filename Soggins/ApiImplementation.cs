@@ -1,4 +1,5 @@
 ﻿using CobaltCoreModding.Definitions.ExternalItems;
+using Microsoft.Extensions.Logging;
 using Nickel;
 
 namespace Shockah.Soggins;
@@ -103,15 +104,17 @@ public sealed class ApiImplementation : ISogginsApi
 	public void UnregisterSmugHook(ISmugHook hook)
 		=> Instance.SmugStatusManager.Unregister(hook);
 
-	public bool IsFrogproof(Card card)
-		=> card is ChipShot;
-
 	public bool IsFrogproof(State state, Combat? combat, Card card, FrogproofHookContext context)
-		=> Instance.FrogproofManager.IsFrogproof(state, combat, card, context);
+		=> Instance.FrogproofManager.IsFrogproof(state, card);
 
 	public void RegisterFrogproofHook(IFrogproofHook hook, double priority)
-		=> Instance.FrogproofManager.Register(hook, priority);
+	{
+		var originalHook = Instance.Helper.Utilities.Unproxy(hook);
+		var modAssemblyName = originalHook.GetType().Assembly.GetName().Name;
+		Instance.Logger!.LogWarning("Mod {Mod} attempted to use `RegisterFrogproofHook`, but this method is no longer supported.", modAssemblyName);
+	}
 
 	public void UnregisterFrogproofHook(IFrogproofHook hook)
-		=> Instance.FrogproofManager.Unregister(hook);
+	{
+	}
 }
