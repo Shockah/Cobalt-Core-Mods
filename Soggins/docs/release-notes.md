@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.5.0
+Released 22 January 2025.
 
 * Changed the Blast from the Past base and A card.
 * Reduced the Humiliating Attack card's cost from 2 to 1.
