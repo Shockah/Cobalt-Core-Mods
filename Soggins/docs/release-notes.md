@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Changed the Blast from the Past base and A card.
+* Doubling launch actions now takes into account launch offsets and shifts midrow accordingly to fit.
 
 ## 1.4.0
 Released 4 December 2024.

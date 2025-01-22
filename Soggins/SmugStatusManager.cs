@@ -300,9 +300,9 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			case SmugResult.Double:
 				var toAdd = card.GetActionsOverridden(state, combat);
 
-				var isSpawnAction = actions.SelectMany(Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively).Any(a => a is ASpawn);
-				if (isSpawnAction)
-					toAdd.Add(new ADroneMove { dir = 1 });
+				var spawnActions = actions.SelectMany(Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively).OfType<ASpawn>().ToList();
+				if (spawnActions.Count != 0)
+					toAdd.Add(new ADroneMove { dir = spawnActions.Max(a => a.offset) - spawnActions.Min(a => a.offset) + 1 });
 
 				var hasDoubleTime = state.ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0;
 				toAdd.Insert(0, new AShakeShip
@@ -322,7 +322,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 					hook.OnCardDoubledBySmug(state, combat, card);
 				Instance.NarrativeManager.DidDoubleCard = true;
-				Instance.NarrativeManager.DidDoubleLaunchAction = isSpawnAction;
+				Instance.NarrativeManager.DidDoubleLaunchAction = spawnActions.Count != 0;
 				break;
 		}
 		return actions;
