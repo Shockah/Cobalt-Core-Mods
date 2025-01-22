@@ -28,20 +28,26 @@ internal sealed class StatusRenderManager : IKokoroApi.IV2.IStatusRenderingApi.I
 		if (args.Status == (Status)Instance.DoubleTimeStatus.Id!.Value)
 			return ([new(0, 0, 0, 0)], -3);
 
+		var badColor = Colors.downside;
+		var goodColor = Colors.cheevoGold;
+		var neutralColor = Colors.white;
+
 		var barCount = Instance.Api.GetMaxSmug(args.Ship) - Instance.Api.GetMinSmug(args.Ship) + 1;
 		var colors = new Color[barCount];
 
-		if (args.Ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0)
-		{
-			Array.Fill(colors, Colors.cheevoGold);
-			return (colors, null);
-		}
+		var hasDoubleTime = args.Ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0;
 
-		var goodColor = Colors.cheevoGold;
+		if (hasDoubleTime)
+		{
+			badColor = goodColor;
+			neutralColor = goodColor;
+		}
 		if (Instance.Api.IsOversmug(args.State, args.Ship))
 		{
 			var f = Math.Sin(MG.inst.g.time * Math.PI * 2) * 0.5 + 0.5;
-			goodColor = Color.Lerp(Colors.downside, Colors.white, f);
+			goodColor = Color.Lerp(hasDoubleTime ? goodColor : badColor, Colors.white, f);
+			if (hasDoubleTime)
+				neutralColor = goodColor;
 		}
 
 		for (var barIndex = 0; barIndex < colors.Length; barIndex++)
@@ -49,13 +55,13 @@ internal sealed class StatusRenderManager : IKokoroApi.IV2.IStatusRenderingApi.I
 			var smugIndex = barIndex + Instance.Api.GetMinSmug(args.Ship);
 			if (smugIndex == 0)
 			{
-				colors[barIndex] = Colors.white;
+				colors[barIndex] = neutralColor;
 				continue;
 			}
 
 			var smug = Instance.Api.GetSmug(args.State, args.Ship) ?? 0;
 			if (smug < 0 && smugIndex >= smug && smugIndex < 0)
-				colors[barIndex] = Colors.downside;
+				colors[barIndex] = badColor;
 			else if (smug > 0 && smugIndex <= smug && smugIndex > 0)
 				colors[barIndex] = goodColor;
 			else
