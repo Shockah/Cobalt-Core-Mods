@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Soggins;
 
-[CardMeta(rarity = Rarity.common, upgradesTo = [Upgrade.A])]
+[CardMeta(rarity = Rarity.common, upgradesTo = [Upgrade.A, Upgrade.B])]
 public sealed class ShieldApologyCard : ApologyCard, IRegisterableCard
 {
 	public void RegisterCard(ICardRegistry registry)
@@ -20,5 +20,17 @@ public sealed class ShieldApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [new AStatus { targetPlayer = true, status = Status.shield, statusAmount = upgrade == Upgrade.A ? 2 : 1 }];
+		=> upgrade switch
+		{
+			Upgrade.B => [
+				new AStatus { targetPlayer = true, status = Status.maxShield, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 },
+			],
+			Upgrade.A => [
+				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 2 },
+			],
+			_ => [
+				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 },
+			],
+		};
 }

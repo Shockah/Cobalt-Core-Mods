@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Soggins;
 
-[CardMeta(rarity = Rarity.rare, upgradesTo = [Upgrade.A])]
+[CardMeta(rarity = Rarity.rare, upgradesTo = [Upgrade.A, Upgrade.B])]
 public sealed class HealApologyCard : ApologyCard, IRegisterableCard
 {
 	public void RegisterCard(ICardRegistry registry)
@@ -30,5 +30,17 @@ public sealed class HealApologyCard : ApologyCard, IRegisterableCard
 		=> timesGiven > 0 ? 0 : base.GetApologyWeight(state, combat, timesGiven) * 0.5;
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [new AHeal { targetPlayer = true, healAmount = upgrade == Upgrade.A ? 2 : 1 }];
+		=> upgrade switch
+		{
+			Upgrade.B => [
+				new AHullMax { targetPlayer = true, amount = 1 },
+				new AHeal { targetPlayer = true, healAmount = 1 },
+			],
+			Upgrade.A => [
+				new AHeal { targetPlayer = true, healAmount = 2 },
+			],
+			_ => [
+				new AHeal { targetPlayer = true, healAmount = 1 },
+			]
+		};
 }
