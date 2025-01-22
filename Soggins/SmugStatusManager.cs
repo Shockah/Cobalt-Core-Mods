@@ -39,16 +39,6 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		}
 	}
 
-	private sealed class DoubleTimeSmugFreezeStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
-	{
-		public int ModifyStatusChange(IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusChangeArgs args)
-		{
-			if (args.Status != (Status)Instance.SmugStatus.Id!.Value)
-				return args.NewAmount;
-			return args.Ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0 ? args.OldAmount : args.NewAmount;
-		}
-	}
-
 	private static ModEntry Instance => ModEntry.Instance;
 
 	internal SmugStatusManager() : base(Instance.Package.Manifest.UniqueName)
@@ -56,7 +46,6 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		Register(new ExtraApologiesSmugHook(), 0);
 		Register(new DoublersLuckSmugHook(), -100);
 		Instance.KokoroApi.StatusLogic.RegisterHook(new SmugClampStatusLogicHook(), double.MinValue);
-		Instance.KokoroApi.StatusLogic.RegisterHook(new DoubleTimeSmugFreezeStatusLogicHook(), -1000);
 	}
 
 	internal static void ApplyPatches(Harmony harmony)

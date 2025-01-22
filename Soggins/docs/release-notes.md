@@ -7,6 +7,7 @@
 * Changed the Blast from the Past base and A card.
 * Reduced the Humiliating Attack card's cost from 2 to 1.
 * Doubling launch actions now takes into account launch offsets and shifts midrow accordingly to fit.
+* Smug is no longer frozen during Double Time.
 * The Smug gauge now displays the current Smug even during Double Time.
 
 ## 1.4.0
