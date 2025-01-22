@@ -57,7 +57,7 @@ public sealed class HandheldDuplitronCard : Card, IRegisterable
 		public override List<Tooltip> GetTooltips(State s)
 			=> [
 				.. AnalyzeManager.GetAnalyzeTooltips(s),
-				.. (Reevaluated ? (AnalyzeManager.ReevaluatedTrait.Configuration.Tooltips?.Invoke(s, null) ?? []) : []),
+				// TODO: replace Reevaluated
 				new TTGlossary("cardtrait.temporary"),
 			];
 
@@ -98,7 +98,7 @@ public sealed class HandheldDuplitronCard : Card, IRegisterable
 				if (Reevaluated)
 				{
 					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.AnalyzedTrait, false, permanent: false);
-					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.ReevaluatedTrait, true, permanent: false);
+					// TODO: replace Reevaluated
 				}
 
 				c.QueueImmediate(new AAddCard
