@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Soggins;
 
+[CardMeta(rarity = Rarity.common, upgradesTo = [Upgrade.A])]
 public sealed class MoveApologyCard : ApologyCard, IRegisterableCard
 {
 	public void RegisterCard(ICardRegistry registry)
@@ -26,11 +27,5 @@ public sealed class MoveApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new AMove
-			{
-				targetPlayer = true,
-				dir = 1
-			}
-		];
+		=> [new AMove { targetPlayer = true, dir = upgrade == Upgrade.A ? 2 : 1 }];
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Soggins;
 
+[CardMeta(rarity = Rarity.common, upgradesTo = [Upgrade.A])]
 public sealed class TempShieldApologyCard : ApologyCard, IRegisterableCard
 {
 	public void RegisterCard(ICardRegistry registry)
@@ -19,12 +20,5 @@ public sealed class TempShieldApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new AStatus
-			{
-				status = Status.tempShield,
-				statusAmount = 1,
-				targetPlayer = true
-			}
-		];
+		=> [new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = upgrade == Upgrade.A ? 2 : 1 }];
 }

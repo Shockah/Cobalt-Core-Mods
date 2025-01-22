@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Soggins;
 
+[CardMeta(rarity = Rarity.common, upgradesTo = [Upgrade.A])]
 public sealed class RedrawApologyCard : ApologyCard, IRegisterableCard
 {
 	public void RegisterCard(ICardRegistry registry)
@@ -19,12 +20,5 @@ public sealed class RedrawApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new AStatus
-			{
-				status = ModEntry.Instance.KokoroApi.RedrawStatus.Status,
-				statusAmount = 1,
-				targetPlayer = true
-			}
-		];
+		=> [new AStatus { targetPlayer = true, status = ModEntry.Instance.KokoroApi.RedrawStatus.Status, statusAmount = upgrade == Upgrade.A ? 2 : 1 }];
 }

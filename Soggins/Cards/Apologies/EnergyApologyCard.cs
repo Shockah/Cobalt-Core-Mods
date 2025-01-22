@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Soggins;
 
+[CardMeta(rarity = Rarity.rare, upgradesTo = [Upgrade.A])]
 public sealed class EnergyApologyCard : ApologyCard, IRegisterableCard
 {
 	public void RegisterCard(ICardRegistry registry)
@@ -22,10 +23,5 @@ public sealed class EnergyApologyCard : ApologyCard, IRegisterableCard
 		=> base.GetApologyWeight(state, combat, timesGiven) * 0.5;
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new AEnergy
-			{
-				changeAmount = 1
-			}
-		];
+		=> [new AEnergy { changeAmount = upgrade == Upgrade.A ? 2 : 1 }];
 }

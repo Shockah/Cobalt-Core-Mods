@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Shockah.Soggins;
 
-[CardMeta(dontOffer = true, rarity = Rarity.common, unreleased = true)]
+[CardMeta(dontOffer = true, rarity = Rarity.uncommon, upgradesTo = [Upgrade.A], unreleased = true)]
 public sealed class DualApologyCard : ApologyCard, IRegisterableCard
 {
 	private static ModEntry Instance => ModEntry.Instance;
@@ -63,6 +63,11 @@ public sealed class DualApologyCard : ApologyCard, IRegisterableCard
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
+		if (FirstCard is not null)
+			FirstCard.upgrade = upgrade;
+		if (SecondCard is not null)
+			SecondCard.upgrade = upgrade;
+		
 		var firstActions = FirstCard?.GetActions(s, c).Select(a => { a.disabled = CustomFlopped; return a; }).ToList() ?? [];
 		var secondActions = SecondCard?.GetActions(s, c).Select(a => { a.disabled = !CustomFlopped; return a; }).ToList() ?? [];
 		var perSide = Math.Max(firstActions.Count, secondActions.Count);

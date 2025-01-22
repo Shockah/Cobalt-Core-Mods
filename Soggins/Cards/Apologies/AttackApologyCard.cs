@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Soggins;
 
+[CardMeta(rarity = Rarity.common, upgradesTo = [Upgrade.A])]
 public sealed class AttackApologyCard : ApologyCard, IRegisterableCard
 {
 	public void RegisterCard(ICardRegistry registry)
@@ -19,10 +20,5 @@ public sealed class AttackApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new AAttack
-			{
-				damage = GetDmg(s, 1)
-			}
-		];
+		=> [new AAttack { damage = GetDmg(s, upgrade == Upgrade.A ? 2 : 1) }];
 }

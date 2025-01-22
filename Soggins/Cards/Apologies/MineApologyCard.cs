@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Soggins;
 
+[CardMeta(rarity = Rarity.common, upgradesTo = [Upgrade.A])]
 public sealed class MineApologyCard : ApologyCard, IRegisterableCard
 {
 	public void RegisterCard(ICardRegistry registry)
@@ -19,13 +20,5 @@ public sealed class MineApologyCard : ApologyCard, IRegisterableCard
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new ASpawn
-			{
-				thing = new SpaceMine
-				{
-					yAnimation = 0.0
-				}
-			}
-		];
+		=> [new ASpawn { thing = new SpaceMine { yAnimation = 0.0, bigMine = upgrade == Upgrade.A } }];
 }
