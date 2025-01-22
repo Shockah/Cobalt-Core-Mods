@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Changed the Blast from the Past base and A card.
+* Reduced the Humiliating Attack card's cost from 2 to 1.
 * Doubling launch actions now takes into account launch offsets and shifts midrow accordingly to fit.
 
 ## 1.4.0

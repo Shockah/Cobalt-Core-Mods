@@ -37,7 +37,7 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.cost = 2;
+		data.cost = 1;
 		data.retain = upgrade == Upgrade.B;
 		return data;
 	}
