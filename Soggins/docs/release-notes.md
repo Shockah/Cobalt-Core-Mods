@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Changed the Blast from the Past base and A card.
+
 ## 1.4.0
 Released 4 December 2024.
 
