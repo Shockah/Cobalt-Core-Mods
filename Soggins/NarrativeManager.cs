@@ -74,6 +74,9 @@ internal sealed class NarrativeManager
 
 	private static bool Narrative_PickWhenActionsAreDone_Transpiler_OverrideNarrative(G g, Combat combat)
 	{
+		if (combat.lowPriorityCooldown > 0)
+			return false;
+		
 		var manager = Instance.NarrativeManager;
 		var deck = g.state.storyVars.whoDidThat ?? Deck.colorless;
 		var deckKey = deck == Deck.colorless ? "comp" : deck.Key();

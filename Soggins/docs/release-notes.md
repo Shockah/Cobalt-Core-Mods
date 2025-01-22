@@ -9,6 +9,7 @@
 * Doubling launch actions now takes into account launch offsets and shifts midrow accordingly to fit.
 * Smug is no longer frozen during Double Time.
 * The Smug gauge now displays the current Smug even during Double Time.
+* Doubling/botching dialogue no longer overrides existing dialogue.
 
 ## 1.4.0
 Released 4 December 2024.
