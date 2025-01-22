@@ -23,7 +23,7 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry BjornDeck { get; }
 
 	private static readonly IReadOnlyList<Type> CommonCardTypes = [
-		typeof(DrawConclusionsCard),
+		typeof(ThesisCard),
 		typeof(ElectronGunCard),
 		typeof(EntangleCard),
 		typeof(FractalStructureCard),
@@ -36,10 +36,10 @@ public sealed class ModEntry : SimpleMod
 
 	private static readonly IReadOnlyList<Type> UncommonCardTypes = [
 		typeof(AssimilateCard),
+		typeof(ConclusionsCard),
 		typeof(FieldTestCard),
 		typeof(HandheldDuplitronCard),
 		typeof(InsuranceCard),
-		typeof(ReevaluationCard),
 		typeof(RelativityCard),
 		typeof(RepulsiveForceCard),
 	];

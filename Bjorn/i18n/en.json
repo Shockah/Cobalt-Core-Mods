@@ -11,10 +11,6 @@
 			"name": "Analyzed",
 			"description": "This card cannot be chosen for any further <c=action>analysis</c>."
 		},
-		"Reevaluated": {
-			"name": "Re-evaluated",
-			"description": "This card cannot be chosen for <c=card>Re-evaluation</c>, but can be chosen for <c=action>analysis</c>."
-		},
 		"Accelerated": {
 			"name": "Accelerated",
 			"description": "This card costs 1 less <c=energy>energy</c>."
@@ -51,6 +47,10 @@
 		"Analyzable": {
 			"stateful": "<c=action>X</c> = All other analyzable cards in hand (<c=boldPink>{{Count}}</c>).",
 			"stateless": "<c=action>X</c> = All other analyzable cards in hand."
+		},
+		"AnalyzedInHand": {
+			"stateful": "<c=action>X</c> = All other analyzed cards in hand (<c=boldPink>{{Count}}</c>).",
+			"stateless": "<c=action>X</c> = All other analyzed cards in hand."
 		}
 	},
 	"condition": {
@@ -114,6 +114,23 @@
 		"Assimilate": {
 			"name": "Assimilate"
 		},
+		"Conclusions": {
+			"name": "Conclusions",
+			"description": {
+				"None": {
+					"stateful": "<c=action>X</c> = all other analyzed hand cards. Gain X (<c=boldPink>{{Amount}}</c>) <c=status>Gadget Progress</c>.",
+					"stateless": "<c=action>X</c> = all other analyzed hand cards. Gain X <c=status>Gadget Progress</c>."
+				},
+				"A": {
+					"stateful": "<c=action>X</c> = all other analyzed hand cards. Gain X (<c=boldPink>{{Amount}}</c>) <c=status>Gadget Progress</c>.",
+					"stateless": "<c=action>X</c> = all other analyzed hand cards. Gain X <c=status>Gadget Progress</c>."
+				},
+				"B": {
+					"stateful": "Gain 1 <c=status>Gadget Progress</c>. <c=action>X</c> = times played this combat. <c=downside>Receive 2X (<c=boldPink>{{Damage}}</c>) damage.</c>",
+					"stateless": "Gain 1 <c=status>Gadget Progress</c>. <c=action>X</c> = times played this combat. <c=downside>Receive 2X damage.</c>"
+				}
+			}
+		},
 		"CrystalKnowledge": {
 			"name": "Crystal Knowledge",
 			"chooseTooltip": {
@@ -125,14 +142,6 @@
 					"normal": "Choose between multiple possible rewards for each tier. The choice is final for the rest of the run. Then actually play these actions.",
 					"upgraded": "Choose between multiple possible <c=heal>upgraded</c> rewards for each tier. The choice is final for the rest of the run. Then actually play these actions."
 				}
-			}
-		},
-		"DrawConclusions": {
-			"name": "Conclusions",
-			"description": {
-				"None": "<c=action>Analyze</c> a card. Draw cards equal to its cost, +1.",
-				"A": "<c=action>Analyze</c> a card. Draw cards equal to its cost, +2.",
-				"B": "<c=action>Analyze</c> a random card. Draw cards equal to its cost, +1."
 			}
 		},
 		"ElectronGun": {
@@ -209,14 +218,6 @@
 				"B": "Add 2 <c=card>Prototype</c>s to your hand."
 			}
 		},
-		"Reevaluation": {
-			"name": "Re-evaluation",
-			"description": {
-				"None": "Choose a card. Give it <c=cardtrait>Re-evaluated</c> and remove <c=cardtrait>Analyzed</c> until end of combat.",
-				"A": "Choose a card. Give it <c=cardtrait>Re-evaluated</c> and remove <c=cardtrait>Analyzed</c> until end of combat.",
-				"B": "Choose an <c=cardtrait>Analyzed</c> card. It loses <c=cardtrait>Analyzed</c>. <c=downside>Downgrade.</c>"
-			}
-		},
 		"Relativity": {
 			"name": "Relativity",
 			"description": "Move <c=midrow>midrow</c> and both ships by different amounts each in 0-2. Gain 2 <c=status>relativity</c>."
@@ -232,6 +233,14 @@
 		},
 		"Taser": {
 			"name": "Taser"
+		},
+		"Thesis": {
+			"name": "Thesis",
+			"description": {
+				"None": "<c=action>Analyze</c> a card. Draw cards equal to its cost, +1.",
+				"A": "<c=action>Analyze</c> a card. Draw cards equal to its cost, +2.",
+				"B": "<c=action>Analyze</c> a random card. Draw cards equal to its cost, +1."
+			}
 		},
 		"WaterfallModel": {
 			"name": "Waterfall Model"

@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Shockah.Bjorn;
 
-public sealed class DrawConclusionsCard : Card, IRegisterable
+public sealed class ThesisCard : Card, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -20,14 +20,14 @@ public sealed class DrawConclusionsCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/DrawConclusions.png"), StableSpr.cards_BackupStick).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "DrawConclusions", "name"]).Localize,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Thesis.png"), StableSpr.cards_BackupStick).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Thesis", "name"]).Localize,
 		});
 	}
 
 	public override CardData GetData(State state)
 	{
-		var description = ModEntry.Instance.Localizations.Localize(["card", "DrawConclusions", "description", upgrade.ToString()]);
+		var description = ModEntry.Instance.Localizations.Localize(["card", "Thesis", "description", upgrade.ToString()]);
 		return upgrade.Switch<CardData>(
 			none: () => new() { cost = 1, description = description },
 			a: () => new() { cost = 1, description = description },

@@ -34,18 +34,6 @@ internal static class AnalyzeCardSelectFiltersExt
 		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "FilterAnalyzed", value);
 		return self;
 	}
-	
-	public static ACardSelect SetFilterReevaluated(this ACardSelect self, bool? value)
-	{
-		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "FilterReevaluated", value);
-		return self;
-	}
-	
-	public static CardBrowse SetFilterReevaluated(this CardBrowse self, bool? value)
-	{
-		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "FilterReevaluated", value);
-		return self;
-	}
 
 	public static ACardSelect SetForceInclude(this ACardSelect self, int? cardId)
 	{
@@ -90,10 +78,8 @@ internal sealed class AnalyzeManager : IRegisterable
 	internal static ISpriteEntry AnalyzeOrSelfAnalyzeIcon { get; private set; } = null!;
 	internal static ISpriteEntry OnAnalyzeIcon { get; private set; } = null!;
 	internal static ISpriteEntry AnalyzedIcon { get; private set; } = null!;
-	internal static ISpriteEntry ReevaluatedIcon { get; private set; } = null!;
 
 	internal static ICardTraitEntry AnalyzedTrait { get; private set; } = null!;
-	internal static ICardTraitEntry ReevaluatedTrait { get; private set; } = null!;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -102,7 +88,6 @@ internal sealed class AnalyzeManager : IRegisterable
 		AnalyzeOrSelfAnalyzeIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/AnalyzeOrAnalyzeSelf.png"));
 		OnAnalyzeIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/OnAnalyze.png"));
 		AnalyzedIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/Analyzed.png"));
-		ReevaluatedIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/Reevaluated.png"));
 
 		AnalyzedTrait = helper.Content.Cards.RegisterTrait("Analyzed", new()
 		{
@@ -115,21 +100,6 @@ internal sealed class AnalyzeManager : IRegisterable
 					TitleColor = Colors.cardtrait,
 					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Analyzed", "name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Analyzed", "description"]),
-				}
-			]
-		});
-
-		ReevaluatedTrait = helper.Content.Cards.RegisterTrait("Reevaluated", new()
-		{
-			Icon = (_, _) => ReevaluatedIcon.Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Reevaluated", "name"]).Localize,
-			Tooltips = (_, _) => [
-				new GlossaryTooltip($"cardtrait.{package.Manifest.UniqueName}::Reevaluated")
-				{
-					Icon = ReevaluatedIcon.Sprite,
-					TitleColor = Colors.cardtrait,
-					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Reevaluated", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Reevaluated", "description"]),
 				}
 			]
 		});
@@ -172,7 +142,6 @@ internal sealed class AnalyzeManager : IRegisterable
 		};
 		
 		ModEntry.Instance.HookManager.Register(NonAnalyzedNonTempCardsAnalyzeHook.Instance, 0);
-		ModEntry.Instance.HookManager.Register(ReevaluatedAnalyzeHook.Instance, 0);
 	}
 
 	public static List<Tooltip> GetAnalyzeTooltips(State state)
@@ -253,16 +222,6 @@ internal sealed class AnalyzeManager : IRegisterable
 			for (var i = __result.Count - 1; i >= 0; i--)
 			{
 				if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(g.state, __result[i], AnalyzedTrait) == filterAnalyzed)
-					continue;
-				__result.RemoveAt(i);
-			}
-		}
-		
-		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "FitlerReevaluated") is { } filterReevaluated)
-		{
-			for (var i = __result.Count - 1; i >= 0; i--)
-			{
-				if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(g.state, __result[i], ReevaluatedTrait) == filterReevaluated)
 					continue;
 				__result.RemoveAt(i);
 			}
@@ -512,6 +471,28 @@ internal sealed class OnAnalyzeAction : CardAction
 	}
 }
 
+internal sealed class AnalyzedInHandVariableHint : AVariableHint
+{
+	public int? IgnoreCardId;
+
+	public AnalyzedInHandVariableHint()
+	{
+		this.hand = true;
+	}
+
+	public override List<Tooltip> GetTooltips(State s)
+		=> [
+			new GlossaryTooltip($"action::{ModEntry.Instance.Package.Manifest.UniqueName}::AnalyzedInHandVariableHint.desc")
+			{
+				Description = ModEntry.Instance.Localizations.Localize(
+					["x", "AnalyzedInHand", s.route is Combat ? "stateful" : "stateless"],
+					new { Count = s.route is Combat combat ? combat.hand.Count(card => card.uuid != IgnoreCardId && ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, AnalyzeManager.AnalyzedTrait)) : 0 }
+				)
+			},
+			.. AnalyzeManager.GetAnalyzeTooltips(s),
+		];
+}
+
 internal sealed class AnalyzableVariableHint : AVariableHint
 {
 	public required int CardId;
@@ -577,12 +558,4 @@ internal sealed class NonAnalyzedNonTempCardsAnalyzeHook : IBjornApi.IHook
 	
 	public bool CanAnalyze(IBjornApi.IHook.ICanAnalyzeArgs args)
 		=> !args.Card.GetDataWithOverrides(args.State).temporary && !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(args.State, args.Card, AnalyzeManager.AnalyzedTrait);
-}
-
-internal sealed class ReevaluatedAnalyzeHook : IBjornApi.IHook
-{
-	public static readonly ReevaluatedAnalyzeHook Instance = new();
-	
-	public bool CanAnalyze(IBjornApi.IHook.ICanAnalyzeArgs args)
-		=> ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(args.State, args.Card, AnalyzeManager.ReevaluatedTrait) && !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(args.State, args.Card, AnalyzeManager.AnalyzedTrait);
 }
