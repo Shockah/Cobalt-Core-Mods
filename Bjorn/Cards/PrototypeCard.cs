@@ -33,7 +33,7 @@ public sealed class PrototypeCard : Card, IRegisterable
 
 	public override CardData GetData(State state)
 		=> upgrade.Switch<CardData>(
-			none: () => new() { cost = 0, exhaust = true, description = ModEntry.Instance.Localizations.Localize(["card", "Prototype", "description"]) },
+			none: () => new() { cost = 2, exhaust = true, description = ModEntry.Instance.Localizations.Localize(["card", "Prototype", "description"]) },
 			a: () => new() { cost = 0, exhaust = true, art = StableSpr.cards_Prepare },
 			b: () => new() { cost = 0, exhaust = true, art = StableSpr.cards_Prepare }
 		);
@@ -43,6 +43,7 @@ public sealed class PrototypeCard : Card, IRegisterable
 			none: () => [
 				new OnAnalyzeAction { Action = new UpgradeAction { CardId = uuid } },
 				new OnAnalyzeAction { Action = new ExhaustCardAction { CardId = uuid } },
+				new UpgradeAction { CardId = uuid },
 			],
 			a: () => [
 				new SmartShieldAction { Amount = 2 },
