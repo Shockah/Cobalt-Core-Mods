@@ -43,7 +43,7 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 		var description = ModEntry.Instance.Localizations.Localize(["card", "LilHadronCollider", "description", upgrade.ToString(), state.route is Combat ? "stateful" : "stateless"], new { Damage = GetDamage(state) });
 		return upgrade.Switch<CardData>(
 			none: () => new() { cost = 2, exhaust = true, description = description },
-			a: () => new() { cost = 2, exhaust = true, buoyant = true, description = description },
+			a: () => new() { cost = 2, exhaust = true, retain = true, buoyant = true, description = description },
 			b: () => new() { cost = 2, description = description }
 		);
 	}

@@ -13,7 +13,7 @@
 		},
 		"Accelerated": {
 			"name": "Accelerated",
-			"description": "This card costs 1 less <c=energy>energy</c>."
+			"description": "This card costs 1 less <c=energy>energy</c>, to a minimum of 1."
 		}
 	},
 	"action": {
@@ -106,9 +106,9 @@
 		"Accelerate": {
 			"name": "Accelerate",
 			"description": {
-				"None": "<c=action>Analyze</c> a 2+ cost card. It gains <c=cardtrait>Accelerated</c> for rest of combat.",
-				"A": "<c=action>Analyze</c> a 2+ cost card. It gains <c=cardtrait>Accelerated</c> for rest of combat.",
-				"B": "Permanently <c=action>analyze</c> a 2+ cost card. It gains <c=cardtrait>Accelerated</c>."
+				"None": "<c=action>Analyze</c> a card. It gains <c=cardtrait>Accelerated</c> for the rest of combat.",
+				"A": "<c=action>Analyze</c> a card. It gains <c=cardtrait>Accelerated</c> for the rest of combat.",
+				"B": "Permanently <c=action>analyze</c> a card. It gains <c=cardtrait>Accelerated</c>."
 			}
 		},
 		"Assimilate": {
@@ -126,8 +126,8 @@
 					"stateless": "<c=action>X</c> = all other analyzed hand cards. Gain X <c=status>Gadget Progress</c>."
 				},
 				"B": {
-					"stateful": "Gain 1 <c=status>Gadget Progress</c>. <c=action>X</c> = times played this combat. <c=downside>Receive 2X (<c=boldPink>{{Damage}}</c>) damage.</c>",
-					"stateless": "Gain 1 <c=status>Gadget Progress</c>. <c=action>X</c> = times played this combat. <c=downside>Receive 2X damage.</c>"
+					"stateful": "Gain 2 <c=status>Gadget Progress</c>. <c=action>X</c> = times played this combat. <c=downside>Receive 2X (<c=boldPink>{{Damage}}</c>) damage.</c>",
+					"stateless": "Gain 2 <c=status>Gadget Progress</c>. <c=action>X</c> = times played this combat. <c=downside>Receive 2X damage.</c>"
 				}
 			}
 		},
@@ -164,9 +164,9 @@
 		"HandheldDuplitron": {
 			"name": "Handheld Duplitron",
 			"description": {
-				"None": "<c=action>Analyze</c> a card. Create a <c=cardtrait>temp</c> copy of it.",
-				"A": "<c=action>Analyze</c> a card. Create a <c=cardtrait>re-evaluated temp</c> copy of it.",
-				"B": "<c=action>Analyze</c> a card. Create 4 <c=cardtrait>temp</c> copies of it. <c=downside>Lose 1 hull.</c>"
+				"None": "<c=action>Analyze</c> a card. Make a <c=cardtrait>temp</c> copy of it.",
+				"A": "Choose an <c=cardtrait>analyzable</c> card in hand. Make a <c=cardtrait>temp</c> copy of it.",
+				"B": "<c=action>Analyze</c> a card. Make 4 <c=cardtrait>temp</c> copies of it. <c=downside>Lose 1 hull.</c>"
 			}
 		},
 		"Insurance": {
@@ -208,7 +208,7 @@
 		},
 		"Prototype": {
 			"name": "Prototype",
-			"description": "When <c=action>analyzed</c>, <c=action>upgrade</c>, then <c=cardtrait>exhaust</c>."
+			"description": "When played or <c=action>analyzed</c>, <c=action>upgrade</c>, then <c=cardtrait>exhaust</c>."
 		},
 		"Prototyping": {
 			"name": "Prototyping",

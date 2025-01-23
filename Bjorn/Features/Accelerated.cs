@@ -65,7 +65,10 @@ internal sealed class AcceleratedManager : IRegisterable
 	{
 		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, __instance, Trait))
 			return;
-		__result = Math.Max(__result - 1, 0);
+		if (__result <= 1)
+			return;
+		
+		__result--;
 	}
 	
 	private static void ACardSelect_BeginWithRoute_Postfix(ACardSelect __instance, ref Route? __result)
