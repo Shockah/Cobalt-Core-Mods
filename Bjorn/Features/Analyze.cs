@@ -156,6 +156,18 @@ internal sealed class AnalyzeManager : IRegisterable
 			.. (AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? []),
 		];
 
+	public static List<Tooltip> GetDeanalyzeTooltips(State state)
+		=> [
+			new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::Deanalyze")
+			{
+				Icon = AnalyzeIcon.Sprite,
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["action", "Deanalyze", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["action", "Deanalyze", "description"]),
+			},
+			.. (AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? []),
+		];
+
 	public static List<Tooltip> GetSelfAnalyzeTooltips(State state)
 		=> [
 			new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::SelfAnalyze")
@@ -329,6 +341,7 @@ internal sealed class AnalyzeCostAction : CardAction
 	public int MaxCount = 1;
 	public int? CardId;
 	public bool Permanent;
+	public bool Deanalyze;
 	public bool? FilterAccelerated;
 	public bool? FilterExhaust;
 	public int? FilterMinCost;
@@ -346,7 +359,7 @@ internal sealed class AnalyzeCostAction : CardAction
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
-			.. CardId is null ? AnalyzeManager.GetAnalyzeTooltips(s) : AnalyzeManager.GetAnalyzeOrSelfAnalyzeTooltips(s),
+			.. Deanalyze ? AnalyzeManager.GetDeanalyzeTooltips(s) : (CardId is null ? AnalyzeManager.GetAnalyzeTooltips(s) : AnalyzeManager.GetAnalyzeOrSelfAnalyzeTooltips(s)),
 			.. Action.GetTooltips(s),
 		];
 
@@ -359,12 +372,13 @@ internal sealed class AnalyzeCostAction : CardAction
 				Action = Action,
 				RequiredCount = MinCount,
 				Permanent = Permanent,
+				Deanalyze = Deanalyze,
 			},
 			browseSource = CardBrowse.Source.Hand,
 			filterExhaust = FilterExhaust,
 			filterMinCost = FilterMinCost,
 			allowCancel = true,
-		}.SetFilterAnalyzable(true).SetFilterAccelerated(FilterAccelerated).SetForceInclude(CardId is { } cardId && s.FindCard(cardId) is { } card && card.IsAnalyzable(s, c) ? CardId : null);
+		}.SetFilterAnalyzable(Deanalyze ? null : true).SetFilterAnalyzed(Deanalyze).SetFilterAccelerated(FilterAccelerated).SetForceInclude(!Deanalyze && CardId is { } cardId && s.FindCard(cardId) is { } card && card.IsAnalyzable(s, c) ? CardId : null);
 		
 		if (Count == 1)
 			return baseRoute;
@@ -381,9 +395,10 @@ internal sealed class AnalyzeCostAction : CardAction
 		public required CardAction Action;
 		public required int RequiredCount;
 		public bool Permanent;
+		public bool Deanalyze;
 
 		public override string GetCardSelectText(State s)
-			=> ModEntry.Instance.Localizations.Localize(["action", "Analyze", "uiTitle"]);
+			=> ModEntry.Instance.Localizations.Localize(["action", Deanalyze ? "Deanalyze" : "Analyze", "uiTitle"]);
 
 		public override void Begin(G g, State s, Combat c)
 		{
@@ -396,24 +411,26 @@ internal sealed class AnalyzeCostAction : CardAction
 					return;
 				
 				foreach (var card in selectedCards)
-					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, true, permanent: Permanent);
+					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, !Deanalyze, permanent: Permanent);
 				if (selectedCards.Count == 0)
 					Action.selectedCard = selectedCards[0];
 				ModEntry.Instance.KokoroApi.MultiCardBrowse.SetSelectedCards(Action, selectedCards);
 				
 				c.QueueImmediate(Action);
-				AnalyzeManager.OnCardsAnalyzed(s, c, selectedCards);
+				if (!Deanalyze)
+					AnalyzeManager.OnCardsAnalyzed(s, c, selectedCards);
 			}
 			else if (selectedCard is not null)
 			{
 				if (RequiredCount > 1)
 					return;
 				
-				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.AnalyzedTrait, true, permanent: Permanent);
+				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.AnalyzedTrait, !Deanalyze, permanent: Permanent);
 				Action.selectedCard = selectedCard;
 				
 				c.QueueImmediate(Action);
-				AnalyzeManager.OnCardsAnalyzed(s, c, [selectedCard]);
+				if (!Deanalyze)
+					AnalyzeManager.OnCardsAnalyzed(s, c, [selectedCard]);
 			}
 		}
 	}

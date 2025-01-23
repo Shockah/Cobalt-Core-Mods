@@ -46,7 +46,7 @@ public sealed class ModEntry : SimpleMod
 
 	private static readonly IReadOnlyList<Type> RareCardTypes = [
 		typeof(AccelerateCard),
-		typeof(CrystalKnowledgeCard),
+		typeof(AdjustCard),
 		typeof(LilHadronColliderCard),
 		typeof(NeglectSafetyCard),
 		typeof(WaterfallModelCard),
@@ -88,7 +88,6 @@ public sealed class ModEntry : SimpleMod
 			.. DuoArtifacts,
 			typeof(AcceleratedManager),
 			typeof(AnalyzeManager),
-			typeof(CrystalKnowledgeManager),
 			typeof(EntanglementManager),
 			typeof(GadgetManager),
 			typeof(RelativityManager),

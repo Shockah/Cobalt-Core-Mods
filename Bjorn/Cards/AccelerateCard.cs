@@ -36,9 +36,9 @@ public sealed class AccelerateCard : Card, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade.Switch<List<CardAction>>(
-			none: () => [new AnalyzeCostAction { FilterAccelerated = false, FilterMinCost = 2, FilterExhaust = false, Action = new Action { Permanent = false } }],
-			a: () => [new AnalyzeCostAction { FilterAccelerated = false, FilterMinCost = 2, FilterExhaust = false, Action = new Action { Permanent = false } }],
-			b: () => [new AnalyzeCostAction { Permanent = true, FilterAccelerated = false, FilterMinCost = 2, FilterExhaust = false, Action = new Action { Permanent = true } }]
+			none: () => [new AnalyzeCostAction { FilterAccelerated = false, Action = new Action { Permanent = false } }],
+			a: () => [new AnalyzeCostAction { FilterAccelerated = false, Action = new Action { Permanent = false } }],
+			b: () => [new AnalyzeCostAction { Permanent = true, FilterAccelerated = false, Action = new Action { Permanent = true } }]
 		);
 
 	private sealed class Action : CardAction
