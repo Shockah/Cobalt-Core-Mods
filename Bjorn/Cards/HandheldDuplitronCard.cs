@@ -37,13 +37,14 @@ public sealed class HandheldDuplitronCard : Card, IRegisterable
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade.Switch<List<CardAction>>(
 			none: () => [
-				new DuplicateAction(),
+				new AnalyzeCostAction { Action = new DuplicateAction() },
 			],
 			a: () => [
-				new DuplicateAction { Reevaluated = true },
+				new ACardSelect { browseSource = CardBrowse.Source.Hand, browseAction = new DuplicateAction() }.SetFilterAnalyzable(true),
+				new TooltipAction { Tooltips = new DuplicateAction().GetTooltips(s) },
 			],
 			b: () => [
-				new DuplicateAction { Amount = 4 },
+				new AnalyzeCostAction { Action = new DuplicateAction { Amount = 4 } },
 				new AHurt { targetPlayer = true, hurtAmount = 1 },
 			]
 		);
@@ -52,62 +53,30 @@ public sealed class HandheldDuplitronCard : Card, IRegisterable
 	internal sealed class DuplicateAction : CardAction
 	{
 		public int Amount = 1;
-		public bool Reevaluated;
 
 		public override List<Tooltip> GetTooltips(State s)
-			=> [
-				.. AnalyzeManager.GetAnalyzeTooltips(s),
-				// TODO: replace Reevaluated
-				new TTGlossary("cardtrait.temporary"),
-			];
+			=> [new TTGlossary("cardtrait.temporary")];
+
+		public override string GetCardSelectText(State s)
+			=> ModEntry.Instance.Localizations.Localize(["action", "Analyze", "uiTitle"]);
 
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
 			timer = 0;
 
-			if (Amount <= 0)
+			if (selectedCard is null)
 				return;
 
-			c.QueueImmediate(new ACardSelect
+			var copy = selectedCard.CopyWithNewId();
+			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, copy, ModEntry.Instance.Helper.Content.Cards.TemporaryCardTrait, true, permanent: true);
+
+			c.QueueImmediate(new AAddCard
 			{
-				browseAction = new BrowseAction { Amount = Amount, Reevaluated = Reevaluated },
-				browseSource = CardBrowse.Source.Hand,
-			}.SetFilterAnalyzable(true));
-		}
-
-		private sealed class BrowseAction : CardAction
-		{
-			public required int Amount;
-			public required bool Reevaluated;
-
-			public override string GetCardSelectText(State s)
-				=> ModEntry.Instance.Localizations.Localize(["action", "Analyze", "uiTitle"]);
-
-			public override void Begin(G g, State s, Combat c)
-			{
-				base.Begin(g, s, c);
-				timer = 0;
-
-				if (selectedCard is null)
-					return;
-				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.AnalyzedTrait, true, permanent: false);
-
-				var copy = selectedCard.CopyWithNewId();
-				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, copy, ModEntry.Instance.Helper.Content.Cards.TemporaryCardTrait, true, permanent: true);
-				if (Reevaluated)
-				{
-					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.AnalyzedTrait, false, permanent: false);
-					// TODO: replace Reevaluated
-				}
-
-				c.QueueImmediate(new AAddCard
-				{
-					card = copy,
-					destination = CardDestination.Hand,
-					amount = Amount,
-				});
-			}
+				card = copy,
+				destination = CardDestination.Hand,
+				amount = Amount,
+			});
 		}
 	}
 }

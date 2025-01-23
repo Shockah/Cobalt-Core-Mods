@@ -1,7 +1,8 @@
-﻿using Nanoray.PluginManager;
+﻿using System.Reflection;
+using HarmonyLib;
+using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
-using System.Collections.Generic;
 
 namespace Shockah.Bjorn;
 
@@ -55,8 +56,16 @@ internal sealed class GadgetManager : IRegisterable
 			state.ship.Set(GadgetStatus.Status, ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(state, "GadgetProgress"));
 		});
 		
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(State), nameof(State.PopulateRun)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(State_PopulateRun_Postfix))
+		);
+		
 		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(new StatusRenderingHook());
 	}
+
+	private static void State_PopulateRun_Postfix(State __instance)
+		=> ModEntry.Instance.Helper.ModData.RemoveModData(__instance, "GadgetProgress");
 
 	private sealed class StatusRenderingHook : IKokoroApi.IV2.IStatusRenderingApi.IHook
 	{

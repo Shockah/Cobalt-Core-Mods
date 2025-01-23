@@ -397,6 +397,8 @@ internal sealed class AnalyzeCostAction : CardAction
 				
 				foreach (var card in selectedCards)
 					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, true, permanent: Permanent);
+				if (selectedCards.Count == 0)
+					Action.selectedCard = selectedCards[0];
 				ModEntry.Instance.KokoroApi.MultiCardBrowse.SetSelectedCards(Action, selectedCards);
 				
 				c.QueueImmediate(Action);
