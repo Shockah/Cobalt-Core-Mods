@@ -26,6 +26,11 @@
 			"description": "Choose a non-<c=cardtrait>analyzed</c>, non-<c=cardtrait>temp</c> card in hand. It gains <c=cardtrait>Analyzed</c> until end of combat.",
 			"uiTitle": "Select a card to <c=action>Analyze</c>."
 		},
+		"Deanalyze": {
+			"name": "De-analyze",
+			"description": "Choose an <c=cardtrait>analyzed</c> card in hand. It loses <c=cardtrait>Analyzed</c> until end of combat.",
+			"uiTitle": "Select a card to <c=action>De-analyze</c>."
+		},
 		"SelfAnalyze": {
 			"name": "Self-Analyze",
 			"description": "This card gains <c=cardtrait>Analyzed</c> until end of combat."
@@ -111,6 +116,17 @@
 				"B": "Permanently <c=action>analyze</c> a card. It gains <c=cardtrait>Accelerated</c>."
 			}
 		},
+		"Adjust": {
+			"name": "Adjust",
+			"description": {
+				"None": "<c=action>Analyze</c> a card. <c=cardtrait>Discount</c> it.",
+				"A": "<c=action>Analyze</c> a card. <c=cardtrait>Discount</c> it.",
+				"B": {
+					"normal": "<c=action>Analyze</c> a card. <c=cardtrait>Discount</c> it.<c=5f5f5f> / Un-analyze a card and make it expensive.</c>",
+					"flipped": "<c=5f5f5f>Analyze a card. Discount it. / </c><c=action>Un-analyze</c> a card and make it <c=cardtrait>expensive</c>."
+				}
+			}
+		},
 		"Assimilate": {
 			"name": "Assimilate"
 		},
@@ -128,19 +144,6 @@
 				"B": {
 					"stateful": "Gain 2 <c=status>Gadget Progress</c>. <c=action>X</c> = times played this combat. <c=downside>Receive 2X (<c=boldPink>{{Damage}}</c>) damage.</c>",
 					"stateless": "Gain 2 <c=status>Gadget Progress</c>. <c=action>X</c> = times played this combat. <c=downside>Receive 2X damage.</c>"
-				}
-			}
-		},
-		"CrystalKnowledge": {
-			"name": "Crystal Knowledge",
-			"chooseTooltip": {
-				"title": {
-					"normal": "Choose Reward",
-					"upgraded": "Choose Upgraded Reward"
-				},
-				"description": {
-					"normal": "Choose between multiple possible rewards for each tier. The choice is final for the rest of the run. Then actually play these actions.",
-					"upgraded": "Choose between multiple possible <c=heal>upgraded</c> rewards for each tier. The choice is final for the rest of the run. Then actually play these actions."
 				}
 			}
 		},
@@ -196,13 +199,13 @@
 			"name": "Neglect Safety",
 			"description": {
 				"None": {
-					"normal": "Remove <c=cardtrait>Analyzed</c> from this<c=5f5f5f> / Draw a card</c>. <c=downside>Receive 1 damage.</c>",
-					"flipped": "<c=5f5f5f>Remove Analyzed from this / </c>Draw a card. <c=downside>Receive 1 damage.</c>"
+					"normal": "<c=action>Un-analyze</c> this<c=5f5f5f> / Draw a card</c>. <c=downside>Receive 1 damage.</c>",
+					"flipped": "<c=5f5f5f>Un-analyze this / </c>Draw a card. <c=downside>Receive 1 damage.</c>"
 				},
-				"A": "Remove <c=cardtrait>Analyzed</c> from this. Draw a card. <c=downside>Receive 1 damage.</c>",
+				"A": "<c=action>Un-analyze</c> this. Draw a card. <c=downside>Receive 1 damage.</c>",
 				"B": {
-					"normal": "Remove <c=cardtrait>Analyzed</c> from this<c=5f5f5f> / Draw a card</c>. <c=downside>Receive 1 damage.</c>",
-					"flipped": "<c=5f5f5f>Remove Analyzed from this / </c>Draw a card. <c=downside>Receive 1 damage.</c>"
+					"normal": "<c=action>Un-analyze</c> this<c=5f5f5f> / Draw a card</c>. <c=downside>Receive 1 damage.</c>",
+					"flipped": "<c=5f5f5f>Un-analyze this / </c>Draw a card. <c=downside>Receive 1 damage.</c>"
 				}
 			}
 		},
