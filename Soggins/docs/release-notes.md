@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Reduced Mysterious Ammo card's cost from 1 to 0.
+
 ## 1.5.0
 Released 22 January 2025.
 

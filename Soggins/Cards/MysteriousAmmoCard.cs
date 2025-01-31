@@ -36,43 +36,23 @@ public sealed class MysteriousAmmoCard : Card, IRegisterableCard
 	private StuffBase GetPayload()
 		=> upgrade switch
 		{
-			Upgrade.A => new Missile
-			{
-				yAnimation = 0.0,
-				missileType = MissileType.heavy
-			},
-			Upgrade.B => new Missile
-			{
-				yAnimation = 0.0,
-				missileType = MissileType.seeker
-			},
-			_ => new Missile
-			{
-				yAnimation = 0.0,
-				missileType = MissileType.normal
-			},
+			Upgrade.A => new Missile { yAnimation = 0.0, missileType = MissileType.heavy },
+			Upgrade.B => new Missile { yAnimation = 0.0, missileType = MissileType.seeker },
+			_ => new Missile { yAnimation = 0.0, missileType = MissileType.normal },
 		};
 
 	public override CardData GetData(State state)
 	{
 		var data = base.GetData(state);
-		data.cost = 1;
+		data.cost = 0;
 		return data;
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new ASpawn
-			{
-				thing = GetPayload()
-			},
-			new AStatus
-			{
-				status = Status.backwardsMissiles,
-				statusAmount = 2,
-				targetPlayer = true
-			},
+			new ASpawn { thing = GetPayload() },
+			new AStatus { targetPlayer = true, status = Status.backwardsMissiles, statusAmount = 2 },
 			new ADummyAction(),
-			new ADummyAction()
+			new ADummyAction(),
 		];
 }
