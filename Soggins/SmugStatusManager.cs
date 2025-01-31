@@ -57,7 +57,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(Ship), "CanBeNegative"),
+			original: () => AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.CanBeNegative)),
 			postfix: new HarmonyMethod(typeof(SmugStatusManager), nameof(Ship_CanBeNegative_Postfix))
 		);
 		harmony.TryPatch(
@@ -231,7 +231,7 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		if (playNoMatterWhatForFree)
 			return actions;
 
-		var frogproofType = Instance.FrogproofManager.GetFrogproofType(state, card);
+		var frogproofType = FrogproofManager.GetFrogproofType(state, card);
 		if (frogproofType is FrogproofType.Innate or FrogproofType.InnateHiddenIfNotNeeded)
 			return actions;
 

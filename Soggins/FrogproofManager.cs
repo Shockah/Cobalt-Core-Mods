@@ -16,15 +16,15 @@ internal sealed class FrogproofManager
 		);
 		harmony.TryPatch(
 			logger: Instance.Logger!,
-			original: () => AccessTools.DeclaredMethod(typeof(State), nameof(State.EndRun)),
-			postfix: new HarmonyMethod(typeof(FrogproofManager), nameof(State_EndRun_Postfix))
+			original: () => AccessTools.DeclaredMethod(typeof(State), nameof(State.PopulateRun)),
+			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(typeof(FrogproofManager), nameof(State_PopulateRun_Postfix_First)), priority: Priority.First)
 		);
 	}
 
-	public bool IsFrogproof(State state, Card card)
+	public static bool IsFrogproof(State state, Card card)
 		=> GetFrogproofType(state, card) != FrogproofType.None;
 
-	public FrogproofType GetFrogproofType(State state, Card card)
+	public static FrogproofType GetFrogproofType(State state, Card card)
 	{
 		if (Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Instance.FrogproofTrait))
 			return FrogproofType.Innate;
@@ -44,6 +44,6 @@ internal sealed class FrogproofManager
 		Instance.Api.SetSmugEnabled(state, __instance);
 	}
 
-	private static void State_EndRun_Postfix(State __instance)
+	private static void State_PopulateRun_Postfix_First(State __instance)
 		=> Instance.Helper.ModData.RemoveModData(__instance, ApiImplementation.IsRunWithSmugKey);
 }

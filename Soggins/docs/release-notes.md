@@ -7,6 +7,7 @@
 * Reduced Mysterious Ammo card's cost from 1 to 0.
 * Reduced the amount of Missile Malfunction given by the Repeated Mistakes artifact from 3 to 2.
 * Soggins' boss artifacts can no longer be stolen.
+* Fixed the Frogproof trait not disappearing properly from cards after a winning Soggins run.
 
 ## 1.5.0
 Released 22 January 2025.

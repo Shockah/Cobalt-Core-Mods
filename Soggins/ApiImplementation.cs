@@ -105,7 +105,7 @@ public sealed class ApiImplementation : ISogginsApi
 		=> Instance.SmugStatusManager.Unregister(hook);
 
 	public bool IsFrogproof(State state, Combat? combat, Card card, FrogproofHookContext context)
-		=> Instance.FrogproofManager.IsFrogproof(state, card);
+		=> FrogproofManager.IsFrogproof(state, card);
 
 	public void RegisterFrogproofHook(IFrogproofHook hook, double priority)
 	{
