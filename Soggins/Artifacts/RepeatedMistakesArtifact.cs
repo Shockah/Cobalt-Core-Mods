@@ -43,22 +43,22 @@ public sealed class RepeatedMistakesArtifact : Artifact, IRegisterableArtifact
 			allPresent = [Instance.SogginsDeck.GlobalName],
 			hasArtifacts = [Key()],
 			lines = [
-				new CustomSay()
+				new CustomSay
 				{
 					who = Instance.SogginsDeck.GlobalName,
 					Text = "Oh no! I made another mistake",
 					loopTag = Instance.SmugPortraitAnimations[-2].Tag
 				},
-				new SaySwitch()
+				new SaySwitch
 				{
 					lines = [
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.hacker.Key(),
 							Text = "...",
 							loopTag = "mad"
 						},
-						new CustomSay()
+						new CustomSay
 						{
 							who = Deck.goat.Key(),
 							Text = "How will I launch drones now?",
@@ -76,7 +76,7 @@ public sealed class RepeatedMistakesArtifact : Artifact, IRegisterableArtifact
 		combat.Queue(new AStatus
 		{
 			status = Status.backwardsMissiles,
-			statusAmount = 3,
+			statusAmount = 2,
 			targetPlayer = true,
 			artifactPulse = Key(),
 			dialogueSelector = $".{Key()}Trigger"
@@ -91,21 +91,15 @@ public sealed class RepeatedMistakesArtifact : Artifact, IRegisterableArtifact
 
 		combat.QueueImmediate(new ASpawn
 		{
-			thing = new Missile
-			{
-				yAnimation = 0.0,
-				missileType = MissileType.seeker
-			},
-			artifactPulse = Key()
+			thing = new Missile { yAnimation = 0.0, missileType = MissileType.seeker },
+			artifactPulse = Key(),
 		});
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
-	{
-		var tooltips = base.GetExtraTooltips() ?? [];
-		tooltips.Add(new TTGlossary("status.backwardsMissiles"));
-		tooltips.Add(new TTGlossary("action.spawn"));
-		tooltips.Add(new TTGlossary("midrow.missile_seeker", 2));
-		return tooltips;
-	}
+	public override List<Tooltip> GetExtraTooltips()
+		=> [
+			new TTGlossary("status.backwardsMissiles"),
+			new TTGlossary("action.spawn"),
+			new TTGlossary("midrow.missile_seeker", 2),
+		];
 }

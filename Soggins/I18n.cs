@@ -21,7 +21,7 @@ internal static class I18n
 	public static string HijinksArtifactName => "Hijinks";
 	public static string HijinksArtifactDescription => "Gain 1 extra <c=energy>ENERGY</c> every turn. <c=downside>Your chance to botch card effects through <c=status>SMUG</c> is doubled.</c>";
 	public static string RepeatedMistakesArtifactName => "Repeated Mistakes";
-	public static string RepeatedMistakesArtifactDescription => "Start each combat with 3 <c=status>MISSILE MALFUNCTION</c>. At the start of each turn, <c=action>LAUNCH</c> a <c=midrow>SEEKER</c>.";
+	public static string RepeatedMistakesArtifactDescription => "Start each combat with 2 <c=status>MISSILE MALFUNCTION</c>. At the start of each turn, <c=action>LAUNCH</c> a <c=midrow>SEEKER</c>.";
 
 	public static string DizzyDuoArtifactName => "Cowardly Confidence";
 	public static string DizzyDuoArtifactDescription => "Gain 3% <c=downside>botch</c> chance for each missing <c=status>SHIELD</c>.\nGain 3% <c=cheevoGold>double</c> chance for each <c=status>SHIELD</c>.";
