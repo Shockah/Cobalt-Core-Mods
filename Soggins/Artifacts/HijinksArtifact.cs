@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Shockah.Soggins;
 
-[ArtifactMeta(pools = [ArtifactPool.Boss])]
+[ArtifactMeta(pools = [ArtifactPool.Boss], unremovable = true)]
 public sealed class HijinksArtifact : Artifact, IRegisterableArtifact, ISmugHook, IHookPriority
 {
 	private static ModEntry Instance => ModEntry.Instance;
