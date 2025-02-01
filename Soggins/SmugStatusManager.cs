@@ -46,6 +46,16 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		Register(new ExtraApologiesSmugHook(), 0);
 		Register(new DoublersLuckSmugHook(), -100);
 		Instance.KokoroApi.StatusLogic.RegisterHook(new SmugClampStatusLogicHook(), double.MinValue);
+		
+		// bump Limited stacks up after botching a card
+		Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (Card card, State state) =>
+		{
+			if (!Instance.Helper.ModData.TryGetModData<int>(card, "LimitedUsesToRestoreAfterBotching", out var limitedUsesToRestoreAfterBotching))
+				return;
+			
+			Instance.Helper.ModData.RemoveModData(card, "LimitedUsesToRestoreAfterBotching");
+			Instance.KokoroApi.Limited.SetLimitedUses(state, card, limitedUsesToRestoreAfterBotching);
+		});
 	}
 
 	internal static void ApplyPatches(Harmony harmony)
@@ -252,6 +262,9 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 				actuallyInfinite = false;
 				data.singleUse = false;
 				data.recycle = false;
+
+				if (Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Instance.KokoroApi.Limited.Trait))
+					Instance.Helper.ModData.SetModData(card, "LimitedUsesToRestoreAfterBotching", Instance.KokoroApi.Limited.GetLimitedUses(state, card));
 
 				actions.Clear();
 				actions.Add(new AStatus
