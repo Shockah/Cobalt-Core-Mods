@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.6.0
+Released 1 February 2025.
 
 * Reduced Mysterious Ammo card's cost from 1 to 0.
 * Reduced the amount of Missile Malfunction given by the Repeated Mistakes artifact from 3 to 2.
