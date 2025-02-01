@@ -50,11 +50,17 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 		// bump Limited stacks up after botching a card
 		Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (Card card, State state) =>
 		{
-			if (!Instance.Helper.ModData.TryGetModData<int>(card, "LimitedUsesToRestoreAfterBotching", out var limitedUsesToRestoreAfterBotching))
-				return;
+			if (Instance.Helper.ModData.TryGetModData<int>(card, "LimitedUsesToRestoreAfterBotching", out var limitedUsesToRestoreAfterBotching))
+			{
+				Instance.Helper.ModData.RemoveModData(card, "LimitedUsesToRestoreAfterBotching");
+				Instance.KokoroApi.Limited.SetLimitedUses(state, card, limitedUsesToRestoreAfterBotching);
+			}
 			
-			Instance.Helper.ModData.RemoveModData(card, "LimitedUsesToRestoreAfterBotching");
-			Instance.KokoroApi.Limited.SetLimitedUses(state, card, limitedUsesToRestoreAfterBotching);
+			if (Instance.Helper.ModData.TryGetModData<int>(card, "FiniteUsesToRestoreAfterBotching", out var finiteUsesToRestoreAfterBotching))
+			{
+				Instance.Helper.ModData.RemoveModData(card, "FiniteUsesToRestoreAfterBotching");
+				Instance.KokoroApi.Finite.SetFiniteUses(state, card, finiteUsesToRestoreAfterBotching);
+			}
 		});
 	}
 
@@ -265,6 +271,8 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 
 				if (Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Instance.KokoroApi.Limited.Trait))
 					Instance.Helper.ModData.SetModData(card, "LimitedUsesToRestoreAfterBotching", Instance.KokoroApi.Limited.GetLimitedUses(state, card));
+				if (Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Instance.KokoroApi.Finite.Trait))
+					Instance.Helper.ModData.SetModData(card, "FiniteUsesToRestoreAfterBotching", Instance.KokoroApi.Finite.GetFiniteUses(state, card));
 
 				actions.Clear();
 				actions.Add(new AStatus

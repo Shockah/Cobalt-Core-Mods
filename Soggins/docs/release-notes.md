@@ -8,7 +8,7 @@
 * Reduced the amount of Missile Malfunction given by the Repeated Mistakes artifact from 3 to 2.
 * Soggins' boss artifacts can no longer be stolen.
 * Fixed the Frogproof trait not disappearing properly from cards after a winning Soggins run.
-* Botching cards no longer decreases their Limited card trait uses.
+* Botching cards no longer decreases their Limited or Finite card trait uses.
 
 ## 1.5.0
 Released 22 January 2025.
