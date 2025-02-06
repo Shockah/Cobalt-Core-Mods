@@ -21,7 +21,13 @@ public sealed class ApiImplementation : ISogginsApi
 		=> Instance.FrogproofTrait;
 
 	public Tooltip FrogproofCardTraitTooltip
-		=> new CustomTTGlossary(CustomTTGlossary.GlossaryType.cardtrait, () => (Spr)Instance.FrogproofSprite.Id!.Value, () => I18n.FrogproofCardTraitName, () => I18n.FrogproofCardTraitText);
+		=> new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Frogproof")
+		{
+			Icon = (Spr)Instance.FrogproofSprite.Id!.Value,
+			TitleColor = Colors.cardtrait,
+			Title = I18n.FrogproofCardTraitName,
+			Description = I18n.FrogproofCardTraitText,
+		};
 
 	public ExternalStatus FrogproofingStatus
 		=> Instance.FrogproofingStatus;

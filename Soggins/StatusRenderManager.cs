@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nickel;
 
 namespace Shockah.Soggins;
 
@@ -78,12 +79,14 @@ internal sealed class StatusRenderManager : IKokoroApi.IV2.IStatusRenderingApi.I
 		{
 			if (args.Ship is not null)
 			{
-				if (newTooltips.FirstOrDefault() is TTGlossary)
-					newTooltips[0] = new CustomTTGlossary(
-						CustomTTGlossary.GlossaryType.status,
-						() => I18n.SmugStatusName,
-						() => I18n.SmugStatusLongDescription
-					);
+				if (newTooltips.FirstOrDefault() is TTGlossary glossary)
+					newTooltips[0] = new GlossaryTooltip(glossary.key)
+					{
+						Icon = (Spr)ModEntry.Instance.SmugStatusSprite.Id!.Value,
+						TitleColor = Colors.status,
+						Title = I18n.SmugStatusName,
+						Description = I18n.SmugStatusLongDescription,
+					};
 
 				if (MG.inst.g.state is { } state)
 				{

@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Frogproof tooltips being able to appear twice.
+* Fixed some Soggins-related tooltips not being scrollable.
+
 ## 1.6.0
 Released 1 February 2025.
 

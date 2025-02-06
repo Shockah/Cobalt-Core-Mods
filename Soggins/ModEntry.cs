@@ -24,7 +24,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; }
 	private Harmony Harmony { get; set; } = null!;
 
-	public string Name { get; init; } = typeof(ModEntry).Namespace!;
+	public string Name { get; } = typeof(ModEntry).Namespace!;
 	public IEnumerable<DependencyEntry> Dependencies => [
 		new DependencyEntry<CobaltCoreModding.Definitions.ModManifests.IModManifest>("Shockah.Kokoro", ignoreIfMissing: false),
 		new DependencyEntry<CobaltCoreModding.Definitions.ModManifests.IModManifest>("Shockah.DuoArtifacts", ignoreIfMissing: true)
@@ -280,7 +280,6 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 		FrogproofManager.ApplyPatches(Harmony);
 		SmugStatusManager.ApplyPatches(Harmony);
 		NarrativeManager.ApplyPatches(Harmony);
-		CustomTTGlossary.ApplyPatches(Harmony);
 		CombatPatches.Apply(Harmony);
 		MGPatches.Apply(Harmony);
 		ShipPatches.Apply(Harmony);
