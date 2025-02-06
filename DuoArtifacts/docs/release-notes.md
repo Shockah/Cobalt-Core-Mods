@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Internal changes to tooltips.
+
 ## 1.2.1
 Released 12 January 2025.
 
