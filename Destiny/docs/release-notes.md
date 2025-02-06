@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added a Destiny.EXE card.
 * Pristine Shield is now affected by Timestop.
 
 ## 1.0.1

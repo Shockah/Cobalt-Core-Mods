@@ -57,7 +57,7 @@ public sealed class ModEntry : SimpleMod
 			.. CommonCardTypes,
 			.. UncommonCardTypes,
 			.. RareCardTypes,
-			//typeof(BlochExeCard),
+			typeof(DestinyExeCard),
 		];
 
 	private static readonly IReadOnlyList<Type> CommonArtifacts = [
@@ -149,7 +149,7 @@ public sealed class ModEntry : SimpleMod
 					new GleamCard(),
 				]
 			},
-			//ExeCardType = typeof(BlochExeCard),
+			ExeCardType = typeof(DestinyExeCard),
 		});
 		
 		helper.Content.Characters.V2.RegisterCharacterAnimation(new()

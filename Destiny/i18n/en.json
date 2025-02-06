@@ -73,6 +73,10 @@
 		"Crash": {
 			"name": "Crash"
 		},
+		"DestinyExe": {
+			"name": "Destiny.EXE",
+			"description": "Get {{Shard}} <c=status>shard</c>. Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=CB9077>Destiny</c> cards to your hand."
+		},
 		"Duplicate": {
 			"name": "Duplicate"
 		},
