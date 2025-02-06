@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Pristine Shield is now affected by Timestop.
+
 ## 1.0.1
 Released 20 January 2025.
 
