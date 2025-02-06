@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.0
+Released 6 February 2025.
 
 * Added a Destiny.EXE card.
 * Pristine Shield is now affected by Timestop.
