@@ -58,7 +58,7 @@ internal static class I18n
 	public static string BidingTimeStatusName => "Biding Time";
 	public static string BidingTimeStatusDescription => "Gain <c=status>DOUBLE TIME</c> at the start of your turn and <c=downside>decrease this by 1.</c>";
 	public static string DoubleTimeStatusName => "Double Time";
-	public static string DoubleTimeStatusDescription => "All your card effects this turn are <c=cheevoGold>doubled</c> and ignore <c=status>SMUG</c>. <c=downside>Lose this at the end of your turn.</c>";
+	public static string DoubleTimeStatusDescription => "Your <c=downside>botch</c> chance is 0%. Your <c=cheevoGold>double</c> chance is 100% and <c=cheevoGold>doubling</c> won't affect your <c=status>SMUG</c>. <c=downside>Lose this at the end of your turn.</c>";
 	public static string DoublersLuckStatusName => "Doubler's Luck";
 	public static string DoublersLuckStatusDescription => "Your chance to <c=cheevoGold>double</c> card effects through <c=status>SMUG</c> is {0}x higher.";
 

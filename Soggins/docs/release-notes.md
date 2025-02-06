@@ -4,6 +4,8 @@
 
 ## Upcoming release
 
+* Improved the tooltip of the Double Time status.
+* Added missing Smug tooltips to the Double Time and Doubler's Luck tooltips.
 * Fixed Frogproof tooltips being able to appear twice.
 * Fixed some Soggins-related tooltips not being scrollable.
 

@@ -98,12 +98,17 @@ internal sealed class StatusRenderManager : IKokoroApi.IV2.IStatusRenderingApi.I
 		}
 		else if (args.Status == (Status)Instance.BidingTimeStatus.Id!.Value)
 		{
-			newTooltips.Add(new TTGlossary($"status.{Instance.DoubleTimeStatus.Id!.Value}", args.Amount));
+			newTooltips.AddRange(StatusMeta.GetTooltips((Status)ModEntry.Instance.DoubleTimeStatus.Id!.Value, 1));
+		}
+		else if (args.Status == (Status)Instance.DoubleTimeStatus.Id!.Value)
+		{
+			newTooltips.Add(ModEntry.Instance.Api.GetSmugTooltip());
 		}
 		else if (args.Status == (Status)Instance.DoublersLuckStatus.Id!.Value)
 		{
 			newTooltips.Clear();
 			newTooltips.Add(new TTGlossary($"status.{Instance.DoublersLuckStatus.Id!.Value}", args.Amount + 1));
+			newTooltips.Add(ModEntry.Instance.Api.GetSmugTooltip());
 		}
 		return newTooltips;
 	}
