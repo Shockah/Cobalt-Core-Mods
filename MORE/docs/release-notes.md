@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.1
+Released 6 February 2025.
 
 * Fixed Books' Release card not being flippable.
 
