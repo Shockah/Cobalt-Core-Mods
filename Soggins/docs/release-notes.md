@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.6.1
+Released 6 February 2025.
 
 * Improved the tooltip of the Double Time status.
 * Added missing Smug tooltips to the Double Time and Doubler's Luck tooltips.
