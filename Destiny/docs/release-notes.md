@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Stack card's upgrade paths energy costs (A 1 -> 0, B 0 -> 1).
+
 ## 1.1.0
 Released 6 February 2025.
 

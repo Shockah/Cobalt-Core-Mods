@@ -34,8 +34,8 @@ public sealed class StackCard : Card, IRegisterable
 		};
 		return upgrade switch
 		{
-			Upgrade.A => data with { cost = 1 },
-			Upgrade.B => data with { cost = 0 },
+			Upgrade.A => data with { cost = 0 },
+			Upgrade.B => data with { cost = 1 },
 			_ => data with { cost = 1 },
 		};
 	}
