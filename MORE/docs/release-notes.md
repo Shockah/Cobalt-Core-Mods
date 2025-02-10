@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed a game crash whenever you encounter the Patch Notes artifact.
+
 ## 1.3.1
 Released 6 February 2025.
 
