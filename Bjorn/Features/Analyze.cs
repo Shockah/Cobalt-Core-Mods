@@ -34,18 +34,6 @@ internal static class AnalyzeCardSelectFiltersExt
 		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "FilterAnalyzed", value);
 		return self;
 	}
-
-	public static ACardSelect SetForceInclude(this ACardSelect self, int? cardId)
-	{
-		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "ForceInclude", cardId);
-		return self;
-	}
-
-	public static CardBrowse SetForceInclude(this CardBrowse self, int? cardId)
-	{
-		ModEntry.Instance.Helper.ModData.SetOptionalModData(self, "ForceInclude", cardId);
-		return self;
-	}
 }
 
 internal static class AnalyzeCardExt
@@ -190,6 +178,7 @@ internal sealed class AnalyzeManager : IRegisterable
 				Description = ModEntry.Instance.Localizations.Localize(["action", "AnalyzeOrSelfAnalyze", "description"]),
 			},
 			.. AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? [],
+			.. GetAnalyzeTooltips(state),
 		];
 	
 	public static void OnCardsAnalyzed(State state, Combat combat, IReadOnlyList<Card> cards)
@@ -237,15 +226,6 @@ internal sealed class AnalyzeManager : IRegisterable
 					continue;
 				__result.RemoveAt(i);
 			}
-		}
-
-		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<int>(__instance, "ForceInclude") is { } forceIncludeCardId)
-		{
-			var index = __instance._listCache.FindIndex(card => card.uuid == forceIncludeCardId);
-			if (index != -1)
-				__instance._listCache.RemoveAt(index);
-			if (g.state.FindCard(forceIncludeCardId) is { } card)
-				__instance._listCache.Insert(0, card);
 		}
 	}
 
@@ -344,7 +324,6 @@ internal sealed class AnalyzeCostAction : CardAction
 	public bool Deanalyze;
 	public bool? FilterAccelerated;
 	public bool? FilterExhaust;
-	public int? FilterMinCost;
 
 	[JsonIgnore]
 	public int Count
@@ -363,8 +342,27 @@ internal sealed class AnalyzeCostAction : CardAction
 			.. Action.GetTooltips(s),
 		];
 
-	public override Route BeginWithRoute(G g, State s, Combat c)
+	public override Route? BeginWithRoute(G g, State s, Combat c)
 	{
+		var card = CardId is { } cardId ? s.FindCard(cardId) : null;
+		var cardCanPay = card is not null && (Deanalyze ? ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, AnalyzeManager.AnalyzedTrait) : card.IsAnalyzable(s, c));
+		var cardIsEnough = cardCanPay && MaxCount >= 1;
+
+		if (card is not null && cardIsEnough)
+		{
+			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, !Deanalyze, permanent: false);
+			if (Permanent)
+				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, !Deanalyze, permanent: true);
+			
+			Action.selectedCard = card;
+			c.QueueImmediate(Action);
+			
+			if (!Deanalyze)
+				AnalyzeManager.OnCardsAnalyzed(s, c, [card]);
+
+			return null;
+		}
+		
 		var baseRoute = new CardBrowse
 		{
 			browseAction = new AnalyzeCostBrowseAction
@@ -373,14 +371,15 @@ internal sealed class AnalyzeCostAction : CardAction
 				RequiredCount = MinCount,
 				Permanent = Permanent,
 				Deanalyze = Deanalyze,
+				CardIdToIncludeAsCost = cardCanPay ? CardId : null,
 			},
 			browseSource = CardBrowse.Source.Hand,
 			filterExhaust = FilterExhaust,
-			filterMinCost = FilterMinCost,
 			allowCancel = true,
-		}.SetFilterAnalyzable(Deanalyze ? null : true).SetFilterAnalyzed(Deanalyze).SetFilterAccelerated(FilterAccelerated).SetForceInclude(!Deanalyze && CardId is { } cardId && s.FindCard(cardId) is { } card && card.IsAnalyzable(s, c) ? CardId : null);
+			filterUUID = CardId,
+		}.SetFilterAnalyzable(Deanalyze ? null : true).SetFilterAnalyzed(Deanalyze).SetFilterAccelerated(FilterAccelerated);
 		
-		if (Count == 1)
+		if (MaxCount <= (cardCanPay ? 2 : 1))
 			return baseRoute;
 
 		baseRoute.allowCancel = false;
@@ -396,6 +395,7 @@ internal sealed class AnalyzeCostAction : CardAction
 		public required int RequiredCount;
 		public bool Permanent;
 		public bool Deanalyze;
+		public int? CardIdToIncludeAsCost;
 
 		public override string GetCardSelectText(State s)
 			=> ModEntry.Instance.Localizations.Localize(["action", Deanalyze ? "Deanalyze" : "Analyze", "uiTitle"]);
@@ -404,34 +404,30 @@ internal sealed class AnalyzeCostAction : CardAction
 		{
 			base.Begin(g, s, c);
 			timer = 0;
+			
+			var selectedCards = ModEntry.Instance.KokoroApi.MultiCardBrowse.GetSelectedCards(this)?.ToList() ?? (selectedCard is null ? [] : [selectedCard]);
+			if (CardIdToIncludeAsCost is { } cardIdToIncludeAsCost && s.FindCard(cardIdToIncludeAsCost) is { } cardToIncludeAsCost)
+				selectedCards.Insert(0, cardToIncludeAsCost);
 
-			if (ModEntry.Instance.KokoroApi.MultiCardBrowse.GetSelectedCards(this) is { } selectedCards)
+			if (selectedCards.Count < RequiredCount)
+				return;
+			
+			foreach (var card in selectedCards)
+				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, !Deanalyze, permanent: Permanent);
+			
+			switch (selectedCards.Count)
 			{
-				if (selectedCards.Count < RequiredCount)
-					return;
-				
-				foreach (var card in selectedCards)
-					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, !Deanalyze, permanent: Permanent);
-				if (selectedCards.Count == 0)
+				case 1:
 					Action.selectedCard = selectedCards[0];
-				ModEntry.Instance.KokoroApi.MultiCardBrowse.SetSelectedCards(Action, selectedCards);
-				
-				c.QueueImmediate(Action);
-				if (!Deanalyze)
-					AnalyzeManager.OnCardsAnalyzed(s, c, selectedCards);
+					break;
+				case >= 2:
+					ModEntry.Instance.KokoroApi.MultiCardBrowse.SetSelectedCards(Action, selectedCards);
+					break;
 			}
-			else if (selectedCard is not null)
-			{
-				if (RequiredCount > 1)
-					return;
 				
-				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, selectedCard, AnalyzeManager.AnalyzedTrait, !Deanalyze, permanent: Permanent);
-				Action.selectedCard = selectedCard;
-				
-				c.QueueImmediate(Action);
-				if (!Deanalyze)
-					AnalyzeManager.OnCardsAnalyzed(s, c, [selectedCard]);
-			}
+			c.QueueImmediate(Action);
+			if (!Deanalyze)
+				AnalyzeManager.OnCardsAnalyzed(s, c, selectedCards);
 		}
 	}
 }

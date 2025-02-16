@@ -37,7 +37,7 @@
 		},
 		"AnalyzeOrSelfAnalyze": {
 			"name": "(Self-)Analyze",
-			"description": "Choose a non-<c=cardtrait>analyzed</c>, non-<c=cardtrait>temp</c> card in hand. It gains <c=cardtrait>Analyzed</c> until end of combat."
+			"description": "This card gains <c=cardtrait>Analyzed</c> until end of combat. If it was already <c=cardtrait>Analyzed</c>, <c=action>Analyze</c> a different card."
 		},
 		"OnAnalyze": {
 			"name": "On Analyze",
