@@ -154,7 +154,7 @@ internal sealed class AnalyzeManager : IRegisterable
 				Title = ModEntry.Instance.Localizations.Localize(["action", "Deanalyze", "name"]),
 				Description = ModEntry.Instance.Localizations.Localize(["action", "Deanalyze", "description"]),
 			},
-			.. (AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? []),
+			.. AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? [],
 		];
 
 	public static List<Tooltip> GetSelfAnalyzeTooltips(State state)
