@@ -505,7 +505,7 @@ internal sealed class AnalyzedInHandVariableHint : AVariableHint
 			{
 				Description = ModEntry.Instance.Localizations.Localize(
 					["x", "AnalyzedInHand", s.route is Combat ? "stateful" : "stateless"],
-					new { Count = s.route is Combat combat ? combat.hand.Count(card => card.uuid != IgnoreCardId && ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, AnalyzeManager.AnalyzedTrait)) : 0 }
+					new { Count = (s.route as Combat)?.hand.Count(card => card.uuid != IgnoreCardId && ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, AnalyzeManager.AnalyzedTrait)) ?? 0 }
 				)
 			},
 			.. AnalyzeManager.GetAnalyzeTooltips(s),
