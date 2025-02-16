@@ -4,6 +4,7 @@ using Nickel;
 using Shockah.Kokoro;
 using System;
 using System.Reflection;
+using Shockah.Dracula;
 
 namespace Shockah.Bjorn;
 
@@ -31,6 +32,15 @@ internal sealed class EntanglementManager : IRegisterable
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(AMove), nameof(AMove.Begin)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMove_Begin_Postfix))
+		);
+		
+		helper.ModRegistry.AwaitApi<IDraculaApi>(
+			"Shockah.Dracula",
+			api => api.RegisterBloodTapOptionProvider(EntanglementStatus.Status, (_, _, status) => [
+				new AHurt { targetPlayer = true, hurtAmount = 1 },
+				new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = 2 },
+			])
 		);
 	}
 

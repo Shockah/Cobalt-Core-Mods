@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Shockah.Dracula;
 
 namespace Shockah.Bjorn;
 
@@ -40,6 +41,14 @@ internal sealed class RelativityManager : IRegisterable, IKokoroApi.IV2.IStatusR
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderMoveButtons)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderMoveButtons_Postfix))
+		);
+		
+		helper.ModRegistry.AwaitApi<IDraculaApi>(
+			"Shockah.Dracula",
+			api => api.RegisterBloodTapOptionProvider(RelativityStatus.Status, (_, _, status) => [
+				new AHurt { targetPlayer = true, hurtAmount = 1 },
+				new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+			])
 		);
 	}
 

@@ -2,6 +2,7 @@
 using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Dracula;
 using Shockah.Kokoro;
 
 namespace Shockah.Bjorn;
@@ -62,6 +63,14 @@ internal sealed class GadgetManager : IRegisterable
 		);
 		
 		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(new StatusRenderingHook());
+		
+		helper.ModRegistry.AwaitApi<IDraculaApi>(
+			"Shockah.Dracula",
+			api => api.RegisterBloodTapOptionProvider(GadgetStatus.Status, (_, _, status) => [
+				new AHurt { targetPlayer = true, hurtAmount = 1 },
+				new AStatus { targetPlayer = true, status = status, statusAmount = 2 },
+			])
+		);
 	}
 
 	private static void State_PopulateRun_Postfix(State __instance)
