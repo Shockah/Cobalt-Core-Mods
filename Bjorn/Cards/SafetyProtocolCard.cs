@@ -70,6 +70,7 @@ public sealed class SafetyProtocolCard : Card, IRegisterable, IHasCustomCardTrai
 			none: () => [
 				new AnalyzeCostAction
 				{
+					CardId = uuid,
 					Action = new SmartShieldAction { Amount = 1 },
 					disabled = flipped,
 				},
@@ -82,6 +83,7 @@ public sealed class SafetyProtocolCard : Card, IRegisterable, IHasCustomCardTrai
 			a: () => [
 				new AnalyzeCostAction
 				{
+					CardId = uuid,
 					Action = new SmartShieldAction { Amount = 2 },
 					disabled = flipped,
 				},
@@ -94,6 +96,7 @@ public sealed class SafetyProtocolCard : Card, IRegisterable, IHasCustomCardTrai
 			b: () => [
 				new AnalyzeCostAction
 				{
+					CardId = uuid,
 					Action = ModEntry.Instance.KokoroApi.ContinueStop.MakeTriggerAction(IKokoroApi.IV2.IContinueStopApi.ActionType.Continue, out var analyzeContinueId).AsCardAction,
 					disabled = flipped,
 				},
