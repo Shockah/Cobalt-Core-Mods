@@ -30,5 +30,14 @@ internal sealed class OutsideTheBoxArtifact : Artifact, IRegisterable, IBjornApi
 		];
 
 	public bool CanAnalyze(IBjornApi.IHook.ICanAnalyzeArgs args)
-		=> args.Card.GetDataWithOverrides(args.State).temporary && !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(args.State, args.Card, AnalyzeManager.AnalyzedTrait);
+	{
+		var traitStates = ModEntry.Instance.Helper.Content.Cards.GetAllCardTraits(args.State, args.Card);
+
+		if (!traitStates.TryGetValue(ModEntry.Instance.Helper.Content.Cards.TemporaryCardTrait, out var temporaryState) || !temporaryState.IsActive)
+			return false;
+		if (traitStates.TryGetValue(AnalyzeManager.AnalyzedTrait, out var analyzedState) && analyzedState.IsActive)
+			return false;
+		
+		return true;
+	}
 }
