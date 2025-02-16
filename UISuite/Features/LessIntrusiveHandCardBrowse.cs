@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using daisyowl.text;
 using HarmonyLib;
 using Nanoray.PluginManager;
@@ -18,6 +20,7 @@ internal sealed partial class ProfileSettings
 internal sealed class LessIntrusiveHandCardBrowse : IRegisterable
 {
 	private static bool ShouldRenderCardAnyway;
+	private static readonly ConditionalWeakTable<CardBrowse, List<Card>> CardBrowseCardListCache = [];
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -74,7 +77,14 @@ internal sealed class LessIntrusiveHandCardBrowse : IRegisterable
 			return false;
 		if (g.state.route is not Combat combat)
 			return false;
-		if (route.GetCardList(g).Any(card => !combat.hand.Contains(card)))
+
+		if (!CardBrowseCardListCache.TryGetValue(route, out var cardList))
+		{
+			cardList = route.GetCardList(g);
+			CardBrowseCardListCache.AddOrUpdate(route, cardList);
+		}
+		
+		if (cardList.Any(card => !combat.hand.Contains(card)))
 			return false;
 		return true;
 	}
