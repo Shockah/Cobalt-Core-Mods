@@ -37,7 +37,7 @@ public sealed class ConclusionsCard : Card, IRegisterable
 				cost = 2, exhaust = true,
 				description = ModEntry.Instance.Localizations.Localize(
 					["card", "Conclusions", "description", upgrade.ToString(), state.route is Combat ? "stateful" : "stateless"], 
-					new { Amount = (state.route as Combat)?.hand.Count(card => card != this && card.IsAnalyzable(state, (Combat)state.route)) }
+					new { Amount = (state.route as Combat)?.hand.Count(card => card != this && ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, AnalyzeManager.AnalyzedTrait)) ?? 0 }
 				),
 			},
 			() => new()
@@ -45,7 +45,7 @@ public sealed class ConclusionsCard : Card, IRegisterable
 				cost = 2, exhaust = true, retain = true,
 				description = ModEntry.Instance.Localizations.Localize(
 					["card", "Conclusions", "description", upgrade.ToString(), state.route is Combat ? "stateful" : "stateless"], 
-					new { Amount = (state.route as Combat)?.hand.Count(card => card != this && card.IsAnalyzable(state, (Combat)state.route)) }
+					new { Amount = (state.route as Combat)?.hand.Count(card => card != this && ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, AnalyzeManager.AnalyzedTrait)) ?? 0 }
 				),
 			},
 			() => new()
