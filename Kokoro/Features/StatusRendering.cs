@@ -201,7 +201,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 #pragma warning disable CS0618 // Type or member is obsolete
 				if (hook.OverrideStatusRenderingAsBars(overrideStatusRenderingAsBarsArgs) is { } @override)
 				{
-					if (@override.Colors.Count == 0)
+					if (@override.Colors.Count == 0 || @override.BarSegmentWidth < 0)
 						return ModEntry.Instance.Api.V2.StatusRendering.EmptyStatusInfoRenderer;
 					return ModEntry.Instance.Api.V2.StatusRendering.MakeBarStatusInfoRenderer().SetSegments(@override.Colors);
 				}
