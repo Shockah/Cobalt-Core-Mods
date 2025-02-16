@@ -199,13 +199,13 @@
 			"name": "Neglect Safety",
 			"description": {
 				"None": {
-					"normal": "<c=action>Un-analyze</c> this<c=5f5f5f> / Draw a card</c>. <c=downside>Receive 1 damage.</c>",
-					"flipped": "<c=5f5f5f>Un-analyze this / </c>Draw a card. <c=downside>Receive 1 damage.</c>"
+					"normal": "<c=action>De-analyze</c> this<c=5f5f5f> / Draw a card</c>. <c=downside>Receive 1 damage.</c>",
+					"flipped": "<c=5f5f5f>De-analyze this / </c>Draw a card. <c=downside>Receive 1 damage.</c>"
 				},
-				"A": "<c=action>Un-analyze</c> this. Draw a card. <c=downside>Receive 1 damage.</c>",
+				"A": "<c=action>De-analyze</c> this. Draw a card. <c=downside>Receive 1 damage.</c>",
 				"B": {
-					"normal": "<c=action>Un-analyze</c> this<c=5f5f5f> / Draw a card</c>. <c=downside>Receive 1 damage.</c>",
-					"flipped": "<c=5f5f5f>Un-analyze this / </c>Draw a card. <c=downside>Receive 1 damage.</c>"
+					"normal": "<c=action>De-analyze</c> this<c=5f5f5f> / Draw a card</c>. <c=downside>Receive 1 damage.</c>",
+					"flipped": "<c=5f5f5f>De-analyze this / </c>Draw a card. <c=downside>Receive 1 damage.</c>"
 				}
 			}
 		},
