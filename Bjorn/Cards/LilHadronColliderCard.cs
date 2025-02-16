@@ -4,12 +4,13 @@ using Shockah.Shared;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using HarmonyLib;
 
 namespace Shockah.Bjorn;
 
 public sealed class LilHadronColliderCard : Card, IRegisterable
 {
-	private int GetDamageRecursionDepth;
+	private static readonly Stack<Card> CardGetDataWithOverridesStack = [];
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -25,29 +26,29 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/LilHadronCollider.png"), StableSpr.cards_HandCannon).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "LilHadronCollider", "name"]).Localize,
 		});
+		
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(GetDataWithOverrides)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetDataWithOverrides_Prefix)),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetDataWithOverrides_Finalizer))
+		);
 	}
 
 	private int GetDamage(State state)
 	{
-		if (GetDamageRecursionDepth != 0)
+		if (ModEntry.Instance.Helper.Content.Cards.IsCurrentlyCreatingCardTraitStates(state, this))
+			return 0;
+		if (CardGetDataWithOverridesStack.Count > 1 || (CardGetDataWithOverridesStack.TryPeek(out var stackCard) && stackCard != this))
 			return 0;
 		if (state.route is not Combat combat)
 			return 0;
 
-		try
-		{
-			GetDamageRecursionDepth++;
-			var analyzableCount = combat.hand.Count(card => card != this && card.IsAnalyzable(state, combat));
-			return GetDmg(state, upgrade.Switch(
-				none: () => analyzableCount * 2,
-				a: () => analyzableCount * 2,
-				b: () => analyzableCount * 3
-			));
-		}
-		finally
-		{
-			GetDamageRecursionDepth--;
-		}
+		var analyzableCount = combat.hand.Count(card => card != this && card.IsAnalyzable(state, combat));
+		return GetDmg(state, upgrade.Switch(
+			none: () => analyzableCount * 2,
+			a: () => analyzableCount * 2,
+			b: () => analyzableCount * 3
+		));
 	}
 
 	public override CardData GetData(State state)
@@ -78,6 +79,12 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 				new AAttack { damage = GetDamage(s), xHint = 3 }
 			]
 		);
+
+	private static void Card_GetDataWithOverrides_Prefix(Card __instance)
+		=> CardGetDataWithOverridesStack.Push(__instance);
+
+	private static void Card_GetDataWithOverrides_Finalizer()
+		=> CardGetDataWithOverridesStack.TryPop(out _);
 
 	private sealed class AnalyzeHandAction : CardAction
 	{
