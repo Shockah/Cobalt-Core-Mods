@@ -79,6 +79,10 @@
 			"name": "Gadget Progress",
 			"description": "After combat ends, if you have 15 or more of it, <c=downside>lose all of it</c> and gain 1 of 2 common artifacts. <c=textBold>Persists between combats.</c>"
 		},
+		"GadgetTermination": {
+			"name": "Termination",
+			"description": "At the end of your turn, gain 1 <c=status>smart shield</c> <c=downside>and decrease this by 1.</c>"
+		},
 		"Relativity": {
 			"name": "Relativity",
 			"description": "Lets you move left or right with <c=boldPink>{{MoveLeft}}</c> / <c=boldPink>{{MoveRight}}</c>, or move all <c=midrow>midrow objects</c> left or right with <c=boldPink>{{ShiftLeft}}</c> / <c=boldPink>{{ShiftRight}}</c>, or move the enemy left or right. Costs 1 relativity per move. Maximum 3."
