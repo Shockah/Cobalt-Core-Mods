@@ -63,13 +63,13 @@ public sealed class ConclusionsCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AStatus { targetPlayer = true, status = GadgetManager.GadgetStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = GadgetManager.GetCorrectStatus(s), statusAmount = 2 },
 				ModEntry.Instance.KokoroApi.TimesPlayed.MakeVariableHintAction(uuid, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat).AsCardAction,
 				new AHurt { targetPlayer = true, hurtShieldsFirst = true, hurtAmount = (ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat) + 1) * 2, xHint = 2, omitFromTooltips = true },
 			],
 			_ => [
 				new AnalyzedInHandVariableHint { IgnoreCardId = uuid },
-				new AStatus { targetPlayer = true, status = GadgetManager.GadgetStatus.Status, statusAmount = c.hand.Count(card => card != this && ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, AnalyzeManager.AnalyzedTrait)), xHint = 1 },
+				new AStatus { targetPlayer = true, status = GadgetManager.GetCorrectStatus(s), statusAmount = c.hand.Count(card => card != this && ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, AnalyzeManager.AnalyzedTrait)), xHint = 1 },
 			]
 		};
 
