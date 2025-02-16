@@ -6,6 +6,7 @@ using Shockah.Kokoro;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FSPRO;
 
 namespace Shockah.Bjorn;
 
@@ -313,7 +314,6 @@ internal sealed class AnalyzeManager : IRegisterable
 }
 
 // TODO: register wrapped action
-// TODO: pre-check if there are enough cards
 internal sealed class AnalyzeCostAction : CardAction
 {
 	public required CardAction Action;
@@ -350,6 +350,8 @@ internal sealed class AnalyzeCostAction : CardAction
 
 		if (card is not null && cardIsEnough)
 		{
+			Audio.Play(Event.CardHandling);
+			
 			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, !Deanalyze, permanent: false);
 			if (Permanent)
 				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, !Deanalyze, permanent: true);
@@ -382,6 +384,12 @@ internal sealed class AnalyzeCostAction : CardAction
 		if (MaxCount <= (cardCanPay ? 2 : 1))
 			return baseRoute;
 
+		if (baseRoute.GetCardList(g).Count < MinCount)
+		{
+			timer = 0;
+			return null;
+		}
+
 		baseRoute.allowCancel = false;
 		return ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeRoute(baseRoute)
 			.SetMinSelected(0)
@@ -411,6 +419,8 @@ internal sealed class AnalyzeCostAction : CardAction
 
 			if (selectedCards.Count < RequiredCount)
 				return;
+			
+			Audio.Play(Event.CardHandling);
 			
 			foreach (var card in selectedCards)
 				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, !Deanalyze, permanent: Permanent);
