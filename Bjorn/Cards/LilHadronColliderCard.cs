@@ -9,6 +9,8 @@ namespace Shockah.Bjorn;
 
 public sealed class LilHadronColliderCard : Card, IRegisterable
 {
+	private int GetDamageRecursionDepth;
+	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
@@ -27,15 +29,25 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 
 	private int GetDamage(State state)
 	{
+		if (GetDamageRecursionDepth != 0)
+			return 0;
 		if (state.route is not Combat combat)
 			return 0;
-		
-		var analyzableCount = combat.hand.Count(card => card != this && card.IsAnalyzable(state, combat));
-		return GetDmg(state, upgrade.Switch(
-			none: () => analyzableCount * 2,
-			a: () => analyzableCount * 2,
-			b: () => analyzableCount * 3
-		));
+
+		try
+		{
+			GetDamageRecursionDepth++;
+			var analyzableCount = combat.hand.Count(card => card != this && card.IsAnalyzable(state, combat));
+			return GetDmg(state, upgrade.Switch(
+				none: () => analyzableCount * 2,
+				a: () => analyzableCount * 2,
+				b: () => analyzableCount * 3
+			));
+		}
+		finally
+		{
+			GetDamageRecursionDepth--;
+		}
 	}
 
 	public override CardData GetData(State state)
