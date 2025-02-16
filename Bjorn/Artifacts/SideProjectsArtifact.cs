@@ -56,7 +56,7 @@ internal sealed class SideProjectsArtifact : Artifact, IRegisterable, IBjornApi.
 			args.Combat.QueueImmediate(new AStatus
 			{
 				targetPlayer = true,
-				status = GadgetManager.GadgetStatus.Status,
+				status = GadgetManager.GetCorrectStatus(args.State),
 				statusAmount = newProgressGained - oldProgressGained,
 				artifactPulse = Key(),
 			});
