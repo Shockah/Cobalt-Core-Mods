@@ -38,17 +38,16 @@ public sealed class ThesisCard : Card, IRegisterable
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade.Switch<List<CardAction>>(
 			none: () => [
-				new DrawAction { Extra = 1 },
+				new DrawAction { Extra = 2 },
 			],
 			a: () => [
-				new DrawAction { Extra = 2 },
+				new DrawAction { Extra = 3 },
 			],
 			b: () => [
 				new DrawAction { Extra = 1, Random = true },
 			]
 		);
 
-	// TODO: pre-check if there are enough cards
 	internal sealed class DrawAction : CardAction
 	{
 		public int Extra;
@@ -61,16 +60,13 @@ public sealed class ThesisCard : Card, IRegisterable
 		{
 			base.Begin(g, s, c);
 			timer = 0;
+			
+			var analyzableCards = c.hand.Where(card => card.IsAnalyzable(s, c)).ToList();
+			if (analyzableCards.Count == 0)
+				return;
 
 			if (Random)
 			{
-				var analyzableCards = c.hand.Where(card => card.IsAnalyzable(s, c)).ToList();
-				if (analyzableCards.Count == 0)
-				{
-					timer = 0;
-					return;
-				}
-
 				var card = analyzableCards[s.rngActions.NextInt() % analyzableCards.Count];
 				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, true, permanent: false);
 				c.QueueImmediate(new ADrawCard { count = card.GetCurrentCost(s) + Extra });

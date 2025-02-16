@@ -240,8 +240,8 @@
 		"Thesis": {
 			"name": "Thesis",
 			"description": {
-				"None": "<c=action>Analyze</c> a card. Draw cards equal to its cost, +1.",
-				"A": "<c=action>Analyze</c> a card. Draw cards equal to its cost, +2.",
+				"None": "<c=action>Analyze</c> a card. Draw cards equal to its cost, +2.",
+				"A": "<c=action>Analyze</c> a card. Draw cards equal to its cost, +3.",
 				"B": "<c=action>Analyze</c> a random card. Draw cards equal to its cost, +1."
 			}
 		},
