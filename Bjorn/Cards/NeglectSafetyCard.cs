@@ -39,7 +39,7 @@ public sealed class NeglectSafetyCard : Card, IRegisterable, IHasCustomCardTrait
 		return upgrade.Switch<CardData>(
 			() => new() { cost = 0, floppable = true, description = ModEntry.Instance.Localizations.Localize(["card", "NeglectSafety", "description", upgrade.ToString(), flipped ? "flipped" : "normal"]) },
 			() => new() { cost = 0, description = ModEntry.Instance.Localizations.Localize(["card", "NeglectSafety", "description", upgrade.ToString()]) },
-			() => new() { cost = 0, floppable = true, infinite = true, description = ModEntry.Instance.Localizations.Localize(["card", "NeglectSafety", "description", upgrade.ToString(), flipped ? "flipped" : "normal"]) }
+			() => new() { cost = 0, floppable = true, retain = true, infinite = true, description = ModEntry.Instance.Localizations.Localize(["card", "NeglectSafety", "description", upgrade.ToString(), flipped ? "flipped" : "normal"]) }
 		);
 	}
 
