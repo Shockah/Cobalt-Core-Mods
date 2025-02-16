@@ -3,7 +3,7 @@
     "Version": "{{ModVersion}}",
     "DisplayName": "Bjorn",
     "Description": "TBD",
-    "Author": "Arin, Shockah",
+    "Author": "Shockah, Soggoru Waffle",
     "RequiredApiVersion": "1.4.0",
     "EntryPointAssembly": "Bjorn.dll",
     "LoadPhase": "AfterDbInit",
