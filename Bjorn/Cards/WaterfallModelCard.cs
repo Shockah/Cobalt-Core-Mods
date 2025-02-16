@@ -29,7 +29,7 @@ public sealed class WaterfallModelCard : Card, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new OnAnalyzeAction { Action = new AStatus { targetPlayer = true, status = GadgetManager.GadgetStatus.Status, statusAmount = upgrade.Switch(3, 4, 5) } },
+			new OnAnalyzeAction { Action = new AStatus { targetPlayer = true, status = GadgetManager.GetCorrectStatus(s), statusAmount = upgrade.Switch(3, 4, 5) } },
 			new OnAnalyzeAction { Action = new AStatus { targetPlayer = true, status = Status.lockdown, statusAmount = upgrade.Switch(2, 2, 3) } },
 			new OnAnalyzeAction { Action = new ExhaustCardAction { CardId = uuid } },
 		];
