@@ -88,7 +88,7 @@
 	"artifact": {
 		"FourDChess": {
 			"name": "4D CHESS",
-			"description": "Start each combat with 1 <c=status>relativity</c>."
+			"description": "Start each combat with 1 <c=status>RELATIVITY</c>."
 		},
 		"OutsideTheBox": {
 			"name": "OUTSIDE THE BOX",
@@ -96,15 +96,19 @@
 		},
         "RelativityTheory": {
             "name": "RELATIVITY THEORY",
-            "description": "On your first turn, convert all <c=status>evade</c> and <c=status>droneshift</c> into <c=status>relativity</c>."
+            "description": "On your first turn, convert all <c=status>EVADE</c> and <c=status>DRONESHIFT</c> into <c=status>RELATIVITY</c>."
         },
 		"ScientificMethod": {
 			"name": "SCIENTIFIC METHOD",
-			"description": "<c=action>Analyzing</c> a card gives you 1 <c=status>smart shield</c>."
+			"description": "<c=action>Analyzing</c> a card gives you 1 <c=status>SMART SHIELD</c>."
+		},
+		"SideProjects": {
+			"name": "SIDE PROJECTS",
+			"description": "Every 5 non-<c=cardtrait>temp</c> cards you <c=action>analyze</c>, gain 1 <c=status>GADGET PROGRESS</c>, up to a maximum of 5 per combat."
 		},
 		"SpecialRelativity": {
 			"name": "SPECIAL RELATIVITY",
-			"description": "You may store 1 extra <c=status>relativity</c>."
+			"description": "You may store 1 extra <c=status>RELATIVITY</c>."
 		}
 	},
 	"card": {
