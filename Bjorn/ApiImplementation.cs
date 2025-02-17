@@ -30,6 +30,7 @@ public sealed class ApiImplementation : IBjornApi
 		public State State { get; internal set; } = null!;
 		public Combat Combat { get; internal set; } = null!;
 		public IReadOnlyList<Card> Cards { get; internal set; } = null!;
+		public bool Permanent { get; internal set; }
 	}
 	
 	internal sealed class ModifyRelativityLimitArgs : IBjornApi.IHook.IModifyRelativityLimitArgs

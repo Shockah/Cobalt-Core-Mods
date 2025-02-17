@@ -142,7 +142,7 @@ internal sealed class AnalyzeManager : IRegisterable
 				Title = ModEntry.Instance.Localizations.Localize(["action", "Analyze", "name"]),
 				Description = ModEntry.Instance.Localizations.Localize(["action", "Analyze", "description"]),
 			},
-			.. (AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? []),
+			.. AnalyzedTrait.Configuration.Tooltips?.Invoke(state, null) ?? [],
 		];
 
 	public static List<Tooltip> GetDeanalyzeTooltips(State state)
@@ -182,7 +182,7 @@ internal sealed class AnalyzeManager : IRegisterable
 			.. GetAnalyzeTooltips(state),
 		];
 	
-	public static void OnCardsAnalyzed(State state, Combat combat, IReadOnlyList<Card> cards)
+	public static void OnCardsAnalyzed(State state, Combat combat, IReadOnlyList<Card> cards, bool permanent)
 	{
 		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.OnCardsAnalyzedArgs>();
 		try
@@ -190,6 +190,7 @@ internal sealed class AnalyzeManager : IRegisterable
 			args.State = state;
 			args.Combat = combat;
 			args.Cards = cards;
+			args.Permanent = permanent;
 
 			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 				hook.OnCardsAnalyzed(args);
@@ -234,22 +235,36 @@ internal sealed class AnalyzeManager : IRegisterable
 	{
 		if (action is AnalyzeCostAction analyzeCostAction)
 		{
+			var renderAsDisabled = action.disabled; // TODO: proper impl
 			var oldActionDisabled = analyzeCostAction.Action.disabled;
-			analyzeCostAction.Action.disabled = analyzeCostAction.disabled;
+			analyzeCostAction.Action.disabled = renderAsDisabled;
 
 			var position = g.Push(rect: new()).rect.xy;
 			var initialX = (int)position.x;
-
-			if (!dontDraw)
-				Draw.Sprite((analyzeCostAction.CardId is null ? AnalyzeIcon : AnalyzeOrSelfAnalyzeIcon).Sprite, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
-			position.x += 9;
-
+			
 			var count = analyzeCostAction.Count;
-			if (!dontDraw)
-				BigNumbers.Render(count, position.x, position.y, action.disabled ? Colors.disabledText : Colors.textMain);
-			position.x += count.ToString().Length * 6;
 
-			position.x += 2;
+			if (analyzeCostAction.RequireSelf)
+			{
+				if (!dontDraw)
+					Draw.Sprite(SelfAnalyzeIcon.Sprite, position.x, position.y, color: renderAsDisabled ? Colors.disabledIconTint : Colors.white);
+				position.x += 9;
+				count--;
+			}
+
+			if (count > 0)
+			{
+				if (!dontDraw)
+					Draw.Sprite((analyzeCostAction.CardId is null || analyzeCostAction.RequireSelf ? AnalyzeIcon : AnalyzeOrSelfAnalyzeIcon).Sprite, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
+				position.x += 9;
+
+				if (!dontDraw)
+					BigNumbers.Render(count, position.x, position.y, action.disabled ? Colors.disabledText : Colors.textMain);
+				position.x += count.ToString().Length * 6;
+			}
+			
+			if (analyzeCostAction.RequireSelf || count > 0)
+				position.x += 1;
 
 			g.Push(rect: new(position.x - initialX));
 			position.x += Card.RenderAction(g, state, analyzeCostAction.Action, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
@@ -258,30 +273,6 @@ internal sealed class AnalyzeManager : IRegisterable
 			__result = (int)position.x - initialX;
 			g.Pop();
 			analyzeCostAction.Action.disabled = oldActionDisabled;
-
-			return false;
-		}
-
-		if (action is SelfAnalyzeCostAction selfAnalyzeCostAction)
-		{
-			var renderAsDisabled = action.disabled || (state.route is Combat combat && state.FindCard(selfAnalyzeCostAction.CardId) is { } card && !card.IsAnalyzable(state, combat));
-			var oldActionDisabled = selfAnalyzeCostAction.Action.disabled;
-			selfAnalyzeCostAction.Action.disabled = renderAsDisabled;
-
-			var position = g.Push(rect: new()).rect.xy;
-			var initialX = (int)position.x;
-
-			if (!dontDraw)
-				Draw.Sprite(SelfAnalyzeIcon.Sprite, position.x, position.y, color: renderAsDisabled ? Colors.disabledIconTint : Colors.white);
-			position.x += 10;
-
-			g.Push(rect: new(position.x - initialX));
-			position.x += Card.RenderAction(g, state, selfAnalyzeCostAction.Action, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
-			g.Pop();
-
-			__result = (int)position.x - initialX;
-			g.Pop();
-			selfAnalyzeCostAction.Action.disabled = oldActionDisabled;
 
 			return false;
 		}
@@ -324,6 +315,7 @@ internal sealed class AnalyzeCostAction : CardAction
 	public bool Deanalyze;
 	public bool? FilterAccelerated;
 	public bool? FilterExhaust;
+	public bool RequireSelf;
 
 	[JsonIgnore]
 	public int Count
@@ -338,7 +330,10 @@ internal sealed class AnalyzeCostAction : CardAction
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
-			.. Deanalyze ? AnalyzeManager.GetDeanalyzeTooltips(s) : (CardId is null ? AnalyzeManager.GetAnalyzeTooltips(s) : AnalyzeManager.GetAnalyzeOrSelfAnalyzeTooltips(s)),
+			.. Deanalyze ? AnalyzeManager.GetDeanalyzeTooltips(s) : [],
+			.. !Deanalyze && RequireSelf ? AnalyzeManager.GetSelfAnalyzeTooltips(s) : [],
+			.. !Deanalyze && (CardId is null || (RequireSelf && MaxCount > 1)) ? AnalyzeManager.GetAnalyzeTooltips(s) : [],
+			.. !Deanalyze && CardId is not null && !RequireSelf ? AnalyzeManager.GetAnalyzeOrSelfAnalyzeTooltips(s) : [],
 			.. Action.GetTooltips(s),
 		];
 
@@ -360,8 +355,14 @@ internal sealed class AnalyzeCostAction : CardAction
 			c.QueueImmediate(Action);
 			
 			if (!Deanalyze)
-				AnalyzeManager.OnCardsAnalyzed(s, c, [card]);
+				AnalyzeManager.OnCardsAnalyzed(s, c, [card], Permanent);
 
+			return null;
+		}
+
+		if (RequireSelf && !cardCanPay)
+		{
+			timer = 0;
 			return null;
 		}
 		
@@ -437,35 +438,8 @@ internal sealed class AnalyzeCostAction : CardAction
 				
 			c.QueueImmediate(Action);
 			if (!Deanalyze)
-				AnalyzeManager.OnCardsAnalyzed(s, c, selectedCards);
+				AnalyzeManager.OnCardsAnalyzed(s, c, selectedCards, Permanent);
 		}
-	}
-}
-
-// TODO: register wrapped action
-internal sealed class SelfAnalyzeCostAction : CardAction
-{
-	public required int CardId;
-	public required CardAction Action;
-
-	public override List<Tooltip> GetTooltips(State s)
-		=> [
-			.. AnalyzeManager.GetSelfAnalyzeTooltips(s),
-			.. Action.GetTooltips(s),
-		];
-
-	public override void Begin(G g, State s, Combat c)
-	{
-		base.Begin(g, s, c);
-		if (s.FindCard(CardId) is not { } card || ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, AnalyzeManager.AnalyzedTrait))
-		{
-			timer = 0;
-			return;
-		}
-
-		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, true, permanent: false);
-		c.QueueImmediate(Action);
-		AnalyzeManager.OnCardsAnalyzed(s, c, [card]);
 	}
 }
 
