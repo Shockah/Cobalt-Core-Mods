@@ -34,6 +34,7 @@ public interface IBjornApi
 			State State { get; }
 			Combat Combat { get; }
 			IReadOnlyList<Card> Cards { get; }
+			bool Permanent { get; }
 		}
 
 		public interface IModifyRelativityLimitArgs

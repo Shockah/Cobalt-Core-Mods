@@ -22,19 +22,4 @@ internal sealed class FourDChessArtifact : Artifact, IRegisterable
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "FourDChess", "description"]).Localize
 		});
 	}
-
-	public override List<Tooltip> GetExtraTooltips()
-		=> StatusMeta.GetTooltips(RelativityManager.RelativityStatus.Status, 1);
-
-	public override void OnCombatStart(State state, Combat combat)
-	{
-		base.OnCombatStart(state, combat);
-		combat.QueueImmediate(new AStatus
-		{
-			targetPlayer = true,
-			status = RelativityManager.RelativityStatus.Status,
-			statusAmount = 1,
-			artifactPulse = Key(),
-		});
-	}
 }
