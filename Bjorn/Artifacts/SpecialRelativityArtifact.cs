@@ -28,4 +28,16 @@ internal sealed class SpecialRelativityArtifact : Artifact, IRegisterable, IBjor
 
 	public void ModifyRelativityLimit(IBjornApi.IHook.IModifyRelativityLimitArgs args)
 		=> args.Limit++;
+
+	public override void OnCombatStart(State state, Combat combat)
+	{
+		base.OnCombatStart(state, combat);
+		combat.QueueImmediate(new AStatus
+		{
+			targetPlayer = true,
+			status = RelativityManager.RelativityStatus.Status,
+			statusAmount = 1,
+			artifactPulse = Key(),
+		});
+	}
 }
