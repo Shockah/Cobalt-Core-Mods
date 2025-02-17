@@ -35,15 +35,15 @@ public sealed class AssimilateCard : Card, IRegisterable
 		=> upgrade.Switch<List<CardAction>>(
 			none: () => [
 				new SmartShieldAction { Amount = 1 },
-				new SelfAnalyzeCostAction { CardId = uuid, Action = new AHeal { targetPlayer = true, healAmount = 1, canRunAfterKill = true } },
+				new AnalyzeCostAction { CardId = uuid, RequireSelf = true, Action = new AHeal { targetPlayer = true, healAmount = 1, canRunAfterKill = true } },
 			],
 			a: () => [
 				new SmartShieldAction { Amount = 2 },
-				new SelfAnalyzeCostAction { CardId = uuid, Action = new AHeal { targetPlayer = true, healAmount = 1, canRunAfterKill = true } },
+				new AnalyzeCostAction { CardId = uuid, RequireSelf = true, Action = new AHeal { targetPlayer = true, healAmount = 1, canRunAfterKill = true } },
 			],
 			b: () => [
 				new SmartShieldAction { Amount = 2 },
-				new SelfAnalyzeCostAction { CardId = uuid, Action = new AnalyzeCostAction { Action = new AHeal { targetPlayer = true, healAmount = 2, canRunAfterKill = true } } },
+				new AnalyzeCostAction { CardId = uuid, RequireSelf = true, Count = 2, Action = new AHeal { targetPlayer = true, healAmount = 2, canRunAfterKill = true } },
 			]
 		);
 }
