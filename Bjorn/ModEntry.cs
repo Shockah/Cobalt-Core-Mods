@@ -64,7 +64,7 @@ public sealed class ModEntry : SimpleMod
 		];
 
 	private static readonly IReadOnlyList<Type> CommonArtifacts = [
-		typeof(RelativityTheoryArtifact),
+		typeof(OvertimeArtifact),
 		typeof(SideProjectsArtifact),
 		typeof(SpecialRelativityArtifact),
 		typeof(SynchrotronArtifact),

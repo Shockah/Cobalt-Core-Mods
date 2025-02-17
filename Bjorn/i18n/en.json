@@ -94,9 +94,9 @@
 			"name": "OUTSIDE THE BOX",
 			"description": "You can <c=action>analyze</c> <c=cardtrait>temp</c> cards."
 		},
-        "RelativityTheory": {
-            "name": "RELATIVITY THEORY",
-            "description": "On your first turn, convert all <c=status>EVADE</c> and <c=status>DRONESHIFT</c> into <c=status>RELATIVITY</c>."
+        "Overtime": {
+            "name": "OVERTIME",
+            "description": "<c=action>De-analyze</c> every 5th card you <c=action>analyze</c>."
         },
 		"ScientificMethod": {
 			"name": "SCIENTIFIC METHOD",
