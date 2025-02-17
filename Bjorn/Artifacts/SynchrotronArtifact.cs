@@ -25,7 +25,7 @@ internal sealed class SynchrotronArtifact : Artifact, IRegisterable
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> AcceleratedManager.Trait.Configuration.Tooltips?.Invoke(MG.inst.g.state ?? DB.fakeState, null)?.ToList();
+		=> AcceleratedManager.Trait.Configuration.Tooltips?.Invoke(MG.inst.g?.state ?? DB.fakeState, null)?.ToList();
 
 	public override void OnCombatStart(State state, Combat combat)
 	{
@@ -36,10 +36,10 @@ internal sealed class SynchrotronArtifact : Artifact, IRegisterable
 			.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, AcceleratedManager.Trait))
 			.ToList();
 
-		if (cards.Count == 0)
+		if (cards.Count < 3)
 			return;
 
-		var card = cards.Count == 1 ? cards[0] : cards[state.rngActions.NextInt() % cards.Count];
+		var card = cards[state.rngActions.NextInt() % cards.Count];
 		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, AcceleratedManager.Trait, true, false);
 		Pulse();
 	}
