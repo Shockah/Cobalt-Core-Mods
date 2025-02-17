@@ -90,10 +90,6 @@
 		
 	},
 	"artifact": {
-		"FourDChess": {
-			"name": "4D CHESS",
-			"description": "Does nothing right now!"
-		},
 		"OutsideTheBox": {
 			"name": "OUTSIDE THE BOX",
 			"description": "You can <c=action>analyze</c> <c=cardtrait>temp</c> cards."
@@ -113,6 +109,10 @@
 		"SpecialRelativity": {
 			"name": "SPECIAL RELATIVITY",
 			"description": "You may store 1 extra <c=status>RELATIVITY</c>. Start each combat with 1 <c=status>RELATIVITY</c>."
+		},
+		"Synchrotron": {
+			"name": "SYNCHROTRON",
+			"description": "Each combat, a random 2+ cost card gains <c=cardtrait>ACCELERATED</c> until end of combat."
 		}
 	},
 	"card": {
