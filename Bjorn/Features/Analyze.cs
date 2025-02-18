@@ -236,8 +236,9 @@ internal sealed class AnalyzeManager : IRegisterable
 		if (action is AnalyzeCostAction analyzeCostAction)
 		{
 			var renderAsDisabled = action.disabled; // TODO: proper impl
-			var oldActionDisabled = analyzeCostAction.Action.disabled;
-			analyzeCostAction.Action.disabled = renderAsDisabled;
+			var oldActionDisabled = analyzeCostAction.Action?.disabled ?? false;
+			if (analyzeCostAction.Action is not null)
+				analyzeCostAction.Action.disabled = renderAsDisabled;
 
 			var position = g.Push(rect: new()).rect.xy;
 			var initialX = (int)position.x;
@@ -262,17 +263,21 @@ internal sealed class AnalyzeManager : IRegisterable
 					BigNumbers.Render(count, position.x, position.y, action.disabled ? Colors.disabledText : Colors.textMain);
 				position.x += count.ToString().Length * 6;
 			}
+
+			if (analyzeCostAction.Action is not null)
+			{
+				if (analyzeCostAction.RequireSelf || count > 0)
+					position.x += 1;
+
+				g.Push(rect: new(position.x - initialX));
+				position.x += Card.RenderAction(g, state, analyzeCostAction.Action, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+				g.Pop();
+
+				analyzeCostAction.Action.disabled = oldActionDisabled;
+			}
 			
-			if (analyzeCostAction.RequireSelf || count > 0)
-				position.x += 1;
-
-			g.Push(rect: new(position.x - initialX));
-			position.x += Card.RenderAction(g, state, analyzeCostAction.Action, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
 			g.Pop();
-
 			__result = (int)position.x - initialX;
-			g.Pop();
-			analyzeCostAction.Action.disabled = oldActionDisabled;
 
 			return false;
 		}
@@ -307,7 +312,7 @@ internal sealed class AnalyzeManager : IRegisterable
 // TODO: register wrapped action
 internal sealed class AnalyzeCostAction : CardAction
 {
-	public required CardAction Action;
+	public required CardAction? Action;
 	public int MinCount = 1;
 	public int MaxCount = 1;
 	public int? CardId;
@@ -334,7 +339,7 @@ internal sealed class AnalyzeCostAction : CardAction
 			.. !Deanalyze && RequireSelf ? AnalyzeManager.GetSelfAnalyzeTooltips(s) : [],
 			.. !Deanalyze && (CardId is null || (RequireSelf && MaxCount > 1)) ? AnalyzeManager.GetAnalyzeTooltips(s) : [],
 			.. !Deanalyze && CardId is not null && !RequireSelf ? AnalyzeManager.GetAnalyzeOrSelfAnalyzeTooltips(s) : [],
-			.. Action.GetTooltips(s),
+			.. Action?.GetTooltips(s) ?? [],
 		];
 
 	public override Route? BeginWithRoute(G g, State s, Combat c)
@@ -350,9 +355,12 @@ internal sealed class AnalyzeCostAction : CardAction
 			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, !Deanalyze, permanent: false);
 			if (Permanent)
 				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, !Deanalyze, permanent: true);
-			
-			Action.selectedCard = card;
-			c.QueueImmediate(Action);
+
+			if (Action is not null)
+			{
+				Action.selectedCard = card;
+				c.QueueImmediate(Action);
+			}
 			
 			if (!Deanalyze)
 				AnalyzeManager.OnCardsAnalyzed(s, c, [card], Permanent);
@@ -400,7 +408,7 @@ internal sealed class AnalyzeCostAction : CardAction
 
 	private sealed class AnalyzeCostBrowseAction : CardAction
 	{
-		public required CardAction Action;
+		public required CardAction? Action;
 		public required int RequiredCount;
 		public bool Permanent;
 		public bool Deanalyze;
@@ -425,18 +433,22 @@ internal sealed class AnalyzeCostAction : CardAction
 			
 			foreach (var card in selectedCards)
 				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, !Deanalyze, permanent: Permanent);
-			
-			switch (selectedCards.Count)
+
+			if (Action is not null)
 			{
-				case 1:
-					Action.selectedCard = selectedCards[0];
-					break;
-				case >= 2:
-					ModEntry.Instance.KokoroApi.MultiCardBrowse.SetSelectedCards(Action, selectedCards);
-					break;
-			}
+				switch (selectedCards.Count)
+				{
+					case 1:
+						Action.selectedCard = selectedCards[0];
+						break;
+					case >= 2:
+						ModEntry.Instance.KokoroApi.MultiCardBrowse.SetSelectedCards(Action, selectedCards);
+						break;
+				}
 				
-			c.QueueImmediate(Action);
+				c.QueueImmediate(Action);
+			}
+			
 			if (!Deanalyze)
 				AnalyzeManager.OnCardsAnalyzed(s, c, selectedCards, Permanent);
 		}

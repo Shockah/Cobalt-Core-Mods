@@ -254,7 +254,8 @@
 			}
 		},
 		"WaterfallModel": {
-			"name": "Waterfall Model"
+			"name": "Waterfall Model",
+			"description": "Gain {{Progress}} <c=status>gadget progress</c> <c=downside>and {{Lock}} <c=status>engine lock</c></c>. <c=action>On analyze:</c> play this."
 		}
 	}
 }
