@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
@@ -25,12 +26,24 @@ public sealed class WaterfallModelCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> new() { cost = 0, unplayable = true };
+		=> new() { cost = 3, exhaust = true, description = ModEntry.Instance.Localizations.Localize(["card", "WaterfallModel", "description"], new { Progress = GadgetProgressAmount, Lock = EngineLockAmount }) };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new OnAnalyzeAction { Action = new AStatus { targetPlayer = true, status = GadgetManager.GetCorrectStatus(s), statusAmount = upgrade.Switch(3, 4, 5) } },
-			new OnAnalyzeAction { Action = new AStatus { targetPlayer = true, status = Status.lockdown, statusAmount = upgrade.Switch(2, 2, 3) } },
-			new OnAnalyzeAction { Action = new ExhaustCardAction { CardId = uuid } },
+			new AStatus { targetPlayer = true, status = GadgetManager.GetCorrectStatus(s), statusAmount = GadgetProgressAmount },
+			new AStatus { targetPlayer = true, status = Status.lockdown, statusAmount = EngineLockAmount },
+			new OnAnalyzeAction { Action = ModEntry.Instance.KokoroApi.PlayCardsFromAnywhere.MakeAction(this).AsCardAction },
 		];
+
+	private int GadgetProgressAmount
+	{
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		get => upgrade.Switch(3, 4, 5);
+	}
+
+	private int EngineLockAmount
+	{
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		get => upgrade.Switch(2, 2, 3);
+	}
 }
