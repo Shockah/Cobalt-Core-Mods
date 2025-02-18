@@ -28,9 +28,9 @@ public sealed class HandheldDuplitronCard : Card, IRegisterable
 	{
 		var description = ModEntry.Instance.Localizations.Localize(["card", "HandheldDuplitron", "description", upgrade.ToString()]);
 		return upgrade.Switch<CardData>(
-			none: () => new() { cost = 1, description = description },
-			a: () => new() { cost = 1, description = description },
-			b: () => new() { cost = 1, exhaust = true, description = description }
+			none: () => new() { cost = 2, description = description },
+			a: () => new() { cost = 2, description = description },
+			b: () => new() { cost = 2, exhaust = true, description = description }
 		);
 	}
 
