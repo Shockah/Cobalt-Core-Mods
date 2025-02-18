@@ -9,11 +9,11 @@ using Shockah.Kokoro;
 
 namespace Shockah.Bjorn;
 
-public sealed class AdjustCard : Card, IRegisterable, IHasCustomCardTraits
+public sealed class AdjustCard : Card, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		var entry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
+		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
@@ -25,20 +25,15 @@ public sealed class AdjustCard : Card, IRegisterable, IHasCustomCardTraits
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Adjust.png"), StableSpr.cards_dizzy).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Adjust", "name"]).Localize,
 		});
-		
-		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, 3);
 
 		ModEntry.Instance.KokoroApi.CardRendering.RegisterHook(new Hook());
 	}
 
-	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-		=> new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Finite.Trait };
-
 	public override CardData GetData(State state)
 		=> upgrade.Switch<CardData>(
-			() => new() { cost = 0, description = ModEntry.Instance.Localizations.Localize(["card", "Adjust", "description", upgrade.ToString()]) },
 			() => new() { cost = 0, retain = true, description = ModEntry.Instance.Localizations.Localize(["card", "Adjust", "description", upgrade.ToString()]) },
-			() => new() { cost = 0, floppable = true, description = ModEntry.Instance.Localizations.Localize(["card", "Adjust", "description", upgrade.ToString(), flipped ? "flipped" : "normal"]) }
+			() => new() { cost = 0, retain = true, recycle = true, description = ModEntry.Instance.Localizations.Localize(["card", "Adjust", "description", upgrade.ToString()]) },
+			() => new() { cost = 0, retain = true, floppable = true, description = ModEntry.Instance.Localizations.Localize(["card", "Adjust", "description", upgrade.ToString(), flipped ? "flipped" : "normal"]) }
 		);
 
 	public override List<CardAction> GetActions(State s, Combat c)
