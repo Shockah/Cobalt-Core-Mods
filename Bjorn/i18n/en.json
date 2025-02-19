@@ -219,15 +219,51 @@
 		},
 		"Prototype": {
 			"name": "Prototype",
-			"description": "When played or <c=action>analyzed</c>, <c=action>upgrade</c>, then <c=cardtrait>exhaust</c>."
+			"tinker": {
+				"Attack": {
+					"name": "Prototype: Weapon",
+					"description": {
+						"apply": "Playing the <c=card>Prototype</c> fires a 1 damage attack.",
+						"upgrade": "Improve <c=card>Prototype</c>'s damage to {{Damage}}."
+					},
+					"cardNameSuffix": "W"
+				},
+				"Discount": {
+					"name": "Prototype: Quick",
+					"description": "The <c=card>Prototype</c> costs 1 less.",
+					"cardNameSuffix": "Q"
+				},
+				"Relativity": {
+					"name": "Prototype: Relativity",
+					"description": {
+						"apply": "Playing the <c=card>Prototype</c> gives you 1 <c=status>relativity</c> every other play.",
+						"upgrade": "Improve <c=card>Prototype</c>'s <c=status>relativity</c> gain."
+					},
+					"cardNameSuffix": "R"
+				},
+				"SmartShield": {
+					"name": "Prototype: Shield",
+					"description": {
+						"apply": "Playing the <c=card>Prototype</c> gives you 1 <c=status>smart shield</c>.",
+						"upgrade": "Improve <c=card>Prototype</c>'s <c=status>smart shield</c> gain to {{Gain}}."
+					},
+					"cardNameSuffix": "S"
+				}
+			}
 		},
 		"Prototyping": {
 			"name": "Prototyping",
 			"description": {
-				"None": "Add <c=card>Prototype</c> to your hand.",
-				"A": "Add <c=card>Prototype</c> to your hand.",
-				"B": "Add 2 <c=card>Prototype</c>s to your hand."
-			}
+				"normal": [
+					"Add <c=card>Prototype</c> to your hand.",
+					"<c=5f5f5f>Tinker with a Prototype in your hand.</c>"
+				],
+				"flipped": [
+					"<c=5f5f5f>Add Prototype to your hand.</c>",
+					"Tinker with a <c=card>Prototype</c> in your hand.</c>"
+				]
+			},
+			"browsePrototypeTitle": "Choose a <c=card>Prototype</c> to tinker with."
 		},
 		"Relativity": {
 			"name": "Relativity",

@@ -1,16 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Reflection;
+using daisyowl.text;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 
 namespace Shockah.Bjorn;
 
-public sealed class PrototypingCard : Card, IRegisterable
+public sealed class PrototypingCard : Card, IRegisterable, IHasCustomCardTraits
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
+		var entry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
@@ -22,28 +25,42 @@ public sealed class PrototypingCard : Card, IRegisterable
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Prototyping.png"), StableSpr.cards_Terminal).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Prototyping", "name"]).Localize,
 		});
+		
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 2);
+
+		ModEntry.Instance.KokoroApi.CardRendering.RegisterHook(new Hook());
 	}
 
 	public override CardData GetData(State state)
 	{
-		var description = ModEntry.Instance.Localizations.Localize(["card", "Prototyping", "description", upgrade.ToString()]);
+		var description = ModEntry.Instance.Localizations.Localize(["card", "Prototyping", "description", flipped ? "flipped" : "normal"]);
 		return upgrade.Switch<CardData>(
-			none: () => new() { cost = 2, exhaust = true, description = description },
-			a: () => new() { cost = 1, exhaust = true, description = description },
-			b: () => new() { cost = 3, exhaust = true, description = description }
+			none: () => new() { cost = 0, exhaust = true, floppable = true, description = description },
+			a: () => new() { cost = 0, infinite = true, floppable = true, description = description },
+			b: () => new() { cost = 1, floppable = true, description = description }
 		);
 	}
 
-	public override List<CardAction> GetActions(State s, Combat c)
-		=> upgrade.Switch<List<CardAction>>(
-			none: () => [
-				new AAddCard { card = new PrototypeCard(), destination = CardDestination.Hand }
-			],
-			a: () => [
-				new AAddCard { card = new PrototypeCard(), destination = CardDestination.Hand }
-			],
-			b: () => [
-				new AAddCard { card = new PrototypeCard(), destination = CardDestination.Hand, amount = 2 }
-			]
+	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
+		=> upgrade.Switch<IReadOnlySet<ICardTraitEntry>>(
+			none: () => ImmutableHashSet<ICardTraitEntry>.Empty,
+			a: () => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Limited.Trait },
+			b: () => ImmutableHashSet<ICardTraitEntry>.Empty
 		);
+
+	public override List<CardAction> GetActions(State s, Combat c)
+		=> [
+			new AAddCard { destination = CardDestination.Hand, card = new PrototypeCard(), disabled = flipped },
+			new TinkerAnyAction { disabled = !flipped },
+		];
+
+	private sealed class Hook : IKokoroApi.IV2.ICardRenderingApi.IHook
+	{
+		public Font? ReplaceTextCardFont(IKokoroApi.IV2.ICardRenderingApi.IHook.IReplaceTextCardFontArgs args)
+		{
+			if (args.Card is not PrototypingCard)
+				return null;
+			return ModEntry.Instance.KokoroApi.Assets.PinchCompactFont;
+		}
+	}
 }
