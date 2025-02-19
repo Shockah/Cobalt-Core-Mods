@@ -25,19 +25,19 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry BjornDeck { get; }
 
 	private static readonly IReadOnlyList<Type> CommonCardTypes = [
-		typeof(ThesisCard),
+		typeof(AssimilateCard),
 		typeof(ElectronGunCard),
 		typeof(EntangleCard),
 		typeof(FractalStructureCard),
 		typeof(LorentzTransformCard),
-		typeof(PrototypingCard),
 		typeof(SafetyProtocolCard),
 		typeof(SmartShieldDroneCard),
 		typeof(TaserCard),
+		typeof(ThesisCard),
 	];
 
 	private static readonly IReadOnlyList<Type> UncommonCardTypes = [
-		typeof(AssimilateCard),
+		typeof(AdjustCard),
 		typeof(ConclusionsCard),
 		typeof(FieldTestCard),
 		typeof(HandheldDuplitronCard),
@@ -48,10 +48,17 @@ public sealed class ModEntry : SimpleMod
 
 	private static readonly IReadOnlyList<Type> RareCardTypes = [
 		typeof(AccelerateCard),
-		typeof(AdjustCard),
 		typeof(LilHadronColliderCard),
 		typeof(NeglectSafetyCard),
+		typeof(PrototypingCard),
 		typeof(WaterfallModelCard),
+	];
+
+	private static readonly IReadOnlyList<Type> PrototypeTinkerCardTypes = [
+		typeof(AttackPrototypeTinkerCard),
+		typeof(RelativityPrototypeTinkerCard),
+		typeof(SmartShieldPrototypeTinkerCard),
+		typeof(DiscountPrototypeTinkerCard),
 	];
 
 	private static readonly IEnumerable<Type> AllCardTypes
@@ -60,6 +67,7 @@ public sealed class ModEntry : SimpleMod
 			.. UncommonCardTypes,
 			.. RareCardTypes,
 			typeof(PrototypeCard),
+			.. PrototypeTinkerCardTypes,
 			//typeof(BlochExeCard),
 		];
 
@@ -93,6 +101,7 @@ public sealed class ModEntry : SimpleMod
 			typeof(AnalyzeManager),
 			typeof(EntanglementManager),
 			typeof(GadgetManager),
+			typeof(PrototypeTinkerManager),
 			typeof(RelativityManager),
 			typeof(SmartShieldManager),
 			typeof(SmartShieldDrone),
