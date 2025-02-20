@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.2.2
+Released 20 February 2025.
 
 * Fixed the Emergency Box (Dizzy-Riggs duo) granting evade when the enemy loses any shield (and the player is at 0 shield).
 * Fixed tooltips potentially not being scrollable.
