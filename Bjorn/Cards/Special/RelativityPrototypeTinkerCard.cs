@@ -74,18 +74,18 @@ public sealed class RelativityPrototypeTinker : ITinker
 		if (level == 1)
 			return [
 				ModEntry.Instance.KokoroApi.Sequence.MakeAction(
-					card.uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 1, 2,
+					card.uuid, IKokoroApi.IV2.ISequenceApi.Interval.Run, 1, 2,
 					new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = 1 }
 				).AsCardAction
 			];
 		
 		return [
 			ModEntry.Instance.KokoroApi.Sequence.MakeAction(
-				card.uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 1, 2,
+				card.uuid, IKokoroApi.IV2.ISequenceApi.Interval.Run, 1, 2,
 				new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = level / 2 + 1 }
 			).AsCardAction,
 			ModEntry.Instance.KokoroApi.Sequence.MakeAction(
-				card.uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 2, 2,
+				card.uuid, IKokoroApi.IV2.ISequenceApi.Interval.Run, 2, 2,
 				new AStatus { targetPlayer = true, status = RelativityManager.RelativityStatus.Status, statusAmount = level / 2 }
 			).AsCardAction
 		];
