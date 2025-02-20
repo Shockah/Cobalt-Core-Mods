@@ -233,6 +233,10 @@
 					"description": "The <c=card>Prototype</c> costs 1 less.",
 					"cardNameSuffix": "Q"
 				},
+				"DrawNow": {
+					"name": "Plan B",
+					"description": "Draw 1 card <c=cheevoGold>now</c>."
+				},
 				"Relativity": {
 					"name": "Prototype: Relativity",
 					"description": {
