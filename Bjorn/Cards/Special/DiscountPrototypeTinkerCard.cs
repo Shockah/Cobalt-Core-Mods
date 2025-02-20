@@ -21,7 +21,7 @@ public sealed class DiscountPrototypeTinkerCard : Card, IRegisterable
 		{
 			TinkerType = typeof(DiscountPrototypeTinker),
 			CardFactory = prototype => new DiscountPrototypeTinkerCard { CardId = prototype.uuid },
-		});
+		}, -10);
 		
 		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 		{
