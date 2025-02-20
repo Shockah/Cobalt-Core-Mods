@@ -4,7 +4,8 @@
 
 ## Upcoming release
 
-* Internal changes to tooltips.
+* Fixed the Emergency Box (Dizzy-Riggs duo) granting evade when the enemy loses any shield (and the player is at 0 shield).
+* Fixed tooltips potentially not being scrollable.
 
 ## 1.2.1
 Released 12 January 2025.

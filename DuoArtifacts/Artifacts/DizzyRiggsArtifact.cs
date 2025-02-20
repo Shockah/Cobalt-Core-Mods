@@ -39,6 +39,8 @@ internal sealed class DizzyRiggsArtifact : DuoArtifact
 
 	private static void Ship_Set_Postfix(Ship __instance, Status status, ref int __state)
 	{
+		if (!__instance.isPlayerShip)
+			return;
 		if (status != Status.shield)
 			return;
 		var change = __instance.Get(Status.shield) - __state;
@@ -53,17 +55,15 @@ internal sealed class DizzyRiggsArtifact : DuoArtifact
 
 		if (g.state.ship.Get(Status.shield) > 0)
 			return;
-
-		var artifact = g.state.EnumerateAllArtifacts().FirstOrDefault(a => a is DizzyRiggsArtifact);
-		if (artifact is null)
+		if (g.state.EnumerateAllArtifacts().FirstOrDefault(a => a is DizzyRiggsArtifact) is not { } artifact)
 			return;
 
-		artifact.Pulse();
 		(g.state.route as Combat)?.Queue(new AStatus
 		{
 			status = Status.evade,
 			statusAmount = 1,
-			targetPlayer = true
+			targetPlayer = true,
+			artifactPulse = artifact.Key(),
 		});
 	}
 }
