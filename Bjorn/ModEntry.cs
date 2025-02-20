@@ -54,21 +54,12 @@ public sealed class ModEntry : SimpleMod
 		typeof(WaterfallModelCard),
 	];
 
-	private static readonly IReadOnlyList<Type> PrototypeTinkerCardTypes = [
-		typeof(AttackPrototypeTinkerCard),
-		typeof(RelativityPrototypeTinkerCard),
-		typeof(SmartShieldPrototypeTinkerCard),
-		typeof(DiscountPrototypeTinkerCard),
-		typeof(DrawNowPrototypeTinkerCard),
-	];
-
 	private static readonly IEnumerable<Type> AllCardTypes
 		= [
 			.. CommonCardTypes,
 			.. UncommonCardTypes,
 			.. RareCardTypes,
 			typeof(PrototypeCard),
-			.. PrototypeTinkerCardTypes,
 			//typeof(BlochExeCard),
 		];
 
@@ -102,7 +93,6 @@ public sealed class ModEntry : SimpleMod
 			typeof(AnalyzeManager),
 			typeof(EntanglementManager),
 			typeof(GadgetManager),
-			typeof(PrototypeTinkerManager),
 			typeof(RelativityManager),
 			typeof(SmartShieldManager),
 			typeof(SmartShieldDrone),

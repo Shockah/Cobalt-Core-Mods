@@ -218,53 +218,34 @@
 			}
 		},
 		"Prototype": {
-			"name": "Prototype",
-			"tinker": {
-				"Attack": {
-					"name": "Prototype: Weapon",
-					"description": {
-						"apply": "Playing the <c=card>Prototype</c> fires a 1 damage attack.",
-						"upgrade": "Improve <c=card>Prototype</c>'s damage to {{Damage}}."
-					},
-					"cardNameSuffix": "W"
-				},
-				"Discount": {
-					"name": "Prototype: Quick",
-					"description": "The <c=card>Prototype</c> costs 1 less.",
-					"cardNameSuffix": "Q"
-				},
-				"DrawNow": {
-					"name": "Plan B",
-					"description": "Draw 1 card <c=cheevoGold>now</c>."
-				},
-				"Relativity": {
-					"name": "Prototype: Relativity",
-					"description": {
-						"apply": "Playing the <c=card>Prototype</c> gives you 1 <c=status>relativity</c> every other play.",
-						"upgrade": "Improve <c=card>Prototype</c>'s <c=status>relativity</c> gain."
-					},
-					"cardNameSuffix": "R"
-				},
-				"SmartShield": {
-					"name": "Prototype: Shield",
-					"description": {
-						"apply": "Playing the <c=card>Prototype</c> gives you 1 <c=status>smart shield</c>.",
-						"upgrade": "Improve <c=card>Prototype</c>'s <c=status>smart shield</c> gain to {{Gain}}."
-					},
-					"cardNameSuffix": "S"
-				}
-			}
+			"name": "Prototype"
 		},
 		"Prototyping": {
 			"name": "Prototyping",
 			"description": {
-				"normal": [
-					"Add <c=card>Prototype</c> to your hand.",
-					"<c=5f5f5f>Tinker with a Prototype in your hand.</c>"
-				],
-				"flipped": [
-					"<c=5f5f5f>Add Prototype to your hand.</c>",
-					"Tinker with a <c=card>Prototype</c> in your hand.</c>"
+				"None": {
+					"normal": [
+						"Add <c=card>Prototype</c> to your hand.",
+						"<c=5f5f5f>Upgrade a Prototype in hand.</c>"
+					],
+					"flipped": [
+						"<c=5f5f5f>Add Prototype to your hand.</c>",
+						"<c=action>Upgrade</c> a <c=card>Prototype</c> in hand.</c>"
+					]
+				},
+				"A": {
+					"normal": [
+						"Add <c=card>Prototype</c> to your hand.",
+						"<c=5f5f5f>Upgrade a Prototype in hand.</c>"
+					],
+					"flipped": [
+						"<c=5f5f5f>Add Prototype to your hand.</c>",
+						"<c=action>Upgrade</c> a <c=card>Prototype</c> in hand.</c>"
+					]
+				},
+				"B": [
+					"<c=action>Upgrade</c> a <c=card>Prototype</c> in hand.</c>",
+					"Add <c=card>Prototype</c> to your hand."
 				]
 			},
 			"browsePrototypeTitle": "Choose a <c=card>Prototype</c> to tinker with."
