@@ -389,9 +389,32 @@ internal sealed class AnalyzeCostAction : CardAction
 			allowCancel = true,
 			filterUUID = CardId,
 		}.SetFilterAnalyzable(Deanalyze ? null : true).SetFilterAnalyzed(Deanalyze).SetFilterAccelerated(FilterAccelerated);
-		
+
 		if (MaxCount <= (cardCanPay ? 2 : 1))
+		{
+			var cards = baseRoute.GetCardList(g);
+			if (cards.Count == MinCount && MinCount == MaxCount)
+			{
+				if (Action is not null)
+				{
+					switch (MinCount)
+					{
+						case 1:
+							Action.selectedCard = cards[0];
+							break;
+						case >= 2:
+							ModEntry.Instance.KokoroApi.MultiCardBrowse.SetSelectedCards(Action, cards);
+							break;
+					}
+					c.QueueImmediate(Action);
+				}
+
+				timer = 0;
+				return null;
+			}
+			
 			return baseRoute;
+		}
 
 		if (baseRoute.GetCardList(g).Count < MinCount)
 		{
