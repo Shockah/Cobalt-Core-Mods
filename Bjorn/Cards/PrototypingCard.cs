@@ -49,10 +49,14 @@ public sealed class PrototypingCard : Card, IRegisterable, IHasCustomCardTraits
 		);
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new AAddCard { destination = CardDestination.Hand, card = new PrototypeCard(), disabled = flipped },
+	{
+		var card = new PrototypeCard();
+		return [
+			new AAddCard { destination = CardDestination.Hand, card = card, disabled = flipped },
+			new TinkerAction { CardId = card.uuid, disabled = flipped },
 			new TinkerAnyAction { disabled = !flipped },
 		];
+	}
 
 	private sealed class Hook : IKokoroApi.IV2.ICardRenderingApi.IHook
 	{
