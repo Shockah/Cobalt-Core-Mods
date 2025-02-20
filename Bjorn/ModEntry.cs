@@ -59,6 +59,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(RelativityPrototypeTinkerCard),
 		typeof(SmartShieldPrototypeTinkerCard),
 		typeof(DiscountPrototypeTinkerCard),
+		typeof(DrawNowPrototypeTinkerCard),
 	];
 
 	private static readonly IEnumerable<Type> AllCardTypes
@@ -207,6 +208,8 @@ public sealed class ModEntry : SimpleMod
 
 	internal static Rarity GetCardRarity(Type type)
 	{
+		if (type == typeof(PrototypeCard))
+			return Rarity.uncommon;
 		if (RareCardTypes.Contains(type))
 			return Rarity.rare;
 		if (UncommonCardTypes.Contains(type))
