@@ -1,5 +1,6 @@
 ﻿using Shockah.Kokoro;
 using System;
+using System.Collections.Generic;
 
 namespace Shockah.DuoArtifacts;
 
@@ -9,23 +10,30 @@ public sealed class DizzyPeriArtifact : DuoArtifact, IKokoroApi.IV2.IStatusLogic
 	{
 		base.OnTurnStart(state, combat);
 
-		var toSubtract = Math.Clamp(state.ship.Get(Status.overdrive), 0, state.ship.Get(Status.shield));
-		if (toSubtract > 0)
-			combat.QueueImmediate(new AStatus
-			{
-				status = Status.shield,
-				statusAmount = -toSubtract,
-				targetPlayer = true
-			});
+		var actions = new List<CardAction>();
 
-		toSubtract = Math.Clamp(state.ship.Get(Status.perfectShield), 0, state.ship.Get(Status.overdrive));
-		if (toSubtract > 0)
-			combat.QueueImmediate(new AStatus
-			{
-				status = Status.overdrive,
-				statusAmount = -toSubtract,
-				targetPlayer = true
-			});
+		{
+			var toSubtract = Math.Clamp(state.ship.Get(Status.overdrive), 0, state.ship.Get(Status.shield));
+			if (toSubtract > 0)
+				actions.Add(new AStatus
+				{
+					status = Status.shield,
+					statusAmount = -toSubtract,
+					targetPlayer = true
+				});
+		}
+		{
+			var toSubtract = Math.Clamp(state.ship.Get(Status.perfectShield), 0, state.ship.Get(Status.overdrive));
+			if (toSubtract > 0)
+				actions.Add(new AStatus
+				{
+					status = Status.overdrive,
+					statusAmount = -toSubtract,
+					targetPlayer = true
+				});
+		}
+		
+		combat.QueueImmediate(actions);
 	}
 
 	public double HookPriority
