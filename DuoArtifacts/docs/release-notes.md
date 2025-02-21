@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Energy Condenser (Dizzy-Peri duo) triggering when enemies gain shield.
+
 ## 1.2.2
 Released 20 February 2025.
 

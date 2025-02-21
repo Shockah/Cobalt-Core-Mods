@@ -33,6 +33,8 @@ public sealed class DizzyPeriArtifact : DuoArtifact, IKokoroApi.IV2.IStatusLogic
 
 	public int ModifyStatusChange(IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusChangeArgs args)
 	{
+		if (!args.Ship.isPlayerShip)
+			return args.NewAmount;
 		if (args.Status != Status.shield)
 			return args.NewAmount;
 
