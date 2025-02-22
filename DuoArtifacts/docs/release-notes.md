@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.0
+Released 22 February 2025.
 
 * Replaced the Trojan Drive (Drake-Max duo) artifact with CO2 Fire Extinguisher.
 * The Gashapon.EXE (Max-CAT duo) artifact can now give you any positive status from any card in the game (instead of a predefined list of vanilla statuses).
