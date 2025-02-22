@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* The Gashapon.EXE (Max-CAT duo) artifact can now give you any positive status from any card in the game (instead of a predefined list of vanilla statuses).
 * Fixed the Energy Condenser (Dizzy-Peri duo) triggering when enemies gain shield.
 * Improved Energy Condenser (Dizzy-Peri duo) wording.
 
