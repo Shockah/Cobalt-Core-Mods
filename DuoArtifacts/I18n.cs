@@ -140,7 +140,7 @@ internal static class I18n
 	public static readonly string DrakeIsaacArtifactTooltip = "Your <c=midrow>Attack and Shield Drones</c> trigger twice. <c=downside>Each turn, gain <c=status>HEAT</c> equal to the number of these drones, -1.</c>";
 
 	public static readonly string DrakeMaxArtifactName = "CO2 Fire Extinguisher";
-	public static readonly string DrakeMaxArtifactTooltip = "Whenever you <c=cardtrait>exhaust</c> a card while you are about to <c=action>overheat</c>, reduce your <c=status>HEAT</c> to right below the <c=action>overheat</c> threshold.";
+	public static readonly string DrakeMaxArtifactTooltip = "After you <c=cardtrait>exhaust</c> a card while you are about to <c=action>overheat</c>, reduce your <c=status>HEAT</c> to right below the <c=action>overheat</c> threshold.";
 
 	public static readonly string DrakePeriArtifactName = "Critical Mass";
 	public static readonly string DrakePeriArtifactTooltip = "Whenever you <c=action>OVERHEAT</c>, convert your <c=status>OVERDRIVE</c> into <c=status>POWERDRIVE</c>.";
