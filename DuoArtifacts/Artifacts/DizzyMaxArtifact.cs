@@ -67,7 +67,7 @@ internal sealed class DizzyMaxArtifactCard : Card
 			{
 				status = status,
 				statusAmount = -toTake,
-				targetPlayer = true
+				targetPlayer = true,
 			});
 
 			if (booksDizzyArtifact is not null && status == Status.shard)
@@ -77,7 +77,7 @@ internal sealed class DizzyMaxArtifactCard : Card
 		{
 			status = Status.boost,
 			statusAmount = 1,
-			targetPlayer = true
+			targetPlayer = true,
 		});
 
 		return actions;

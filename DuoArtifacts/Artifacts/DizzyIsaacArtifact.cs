@@ -48,17 +48,15 @@ internal sealed class DizzyIsaacArtifact : DuoArtifact
 	{
 		if (DestroyingShip is null)
 			return;
-
-		var artifact = MG.inst.g.state?.EnumerateAllArtifacts().FirstOrDefault(a => a is DizzyIsaacArtifact);
-		if (artifact is null)
+		if (MG.inst.g.state?.EnumerateAllArtifacts().FirstOrDefault(a => a is DizzyIsaacArtifact) is not { } artifact)
 			return;
 
-		artifact.Pulse();
 		(MG.inst.g.state?.route as Combat)?.Queue(new AStatus
 		{
 			status = Instance.KokoroApi.OxidationStatus.Status,
 			statusAmount = 1,
-			targetPlayer = DestroyingShip.isPlayerShip
+			targetPlayer = DestroyingShip.isPlayerShip,
+			artifactPulse = artifact.Key(),
 		});
 	}
 }

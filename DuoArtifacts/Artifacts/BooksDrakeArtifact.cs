@@ -56,19 +56,17 @@ internal sealed class BooksDrakeArtifact : DuoArtifact
 	{
 		if (attack.targetPlayer || attack.fromDroneX is not null)
 			return;
-		var artifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksDrakeArtifact);
-		if (artifact is null)
+		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksDrakeArtifact) is not { } artifact)
 			return;
-
 		if (state.ship.Get(Status.shard) < ShardCost)
 			return;
 
-		artifact.Pulse();
 		combat.QueueImmediate(new AStatus
 		{
 			status = Status.shard,
 			statusAmount = -2,
-			targetPlayer = true
+			targetPlayer = true,
+			artifactPulse = artifact.Key(),
 		});
 
 		if (!attack.piercing)

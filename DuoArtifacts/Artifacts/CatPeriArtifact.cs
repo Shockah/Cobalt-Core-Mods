@@ -1,5 +1,5 @@
-﻿using Shockah.Kokoro;
-using System.Linq;
+﻿using System.Linq;
+using Shockah.Kokoro;
 
 namespace Shockah.DuoArtifacts;
 
@@ -8,8 +8,7 @@ internal sealed class CatPeriArtifact : DuoArtifact, IKokoroApi.IV2.IStatusLogic
 	public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
 	{
 		base.OnPlayerPlayCard(energyCost, deck, card, state, combat, handPosition, handCount);
-		var data = card.GetDataWithOverrides(state);
-		if (!data.temporary)
+		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, ModEntry.Instance.Helper.Content.Cards.TemporaryCardTrait))
 			return;
 		if (!card.GetActions(state, combat).Any(a => a is AAttack))
 			return;
@@ -18,9 +17,9 @@ internal sealed class CatPeriArtifact : DuoArtifact, IKokoroApi.IV2.IStatusLogic
 		{
 			status = Status.overdrive,
 			statusAmount = 1,
-			targetPlayer = true
+			targetPlayer = true,
+			artifactPulse = Key(),
 		});
-		Pulse();
 	}
 
 	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)

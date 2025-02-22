@@ -60,9 +60,9 @@ internal sealed class DrakeMaxArtifact : DuoArtifact
 		registry.RegisterCard(card);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 	{
-		var tooltips = base.GetExtraTooltips() ?? new();
+		var tooltips = base.GetExtraTooltips() ?? [];
 		tooltips.Add(new TTCard { card = new DrakeMaxArtifactCard() });
 		return tooltips;
 	}
@@ -70,17 +70,19 @@ internal sealed class DrakeMaxArtifact : DuoArtifact
 	public override void OnCombatStart(State state, Combat combat)
 	{
 		base.OnCombatStart(state, combat);
-		Pulse();
-		combat.Queue(new AAddCard
-		{
-			card = new DrakeMaxArtifactCard(),
-			destination = CardDestination.Deck
-		});
-		combat.Queue(new AAddCard
-		{
-			card = new WormFood { temporaryOverride = true },
-			destination = CardDestination.Deck
-		});
+		combat.Queue([
+			new AAddCard
+			{
+				card = new DrakeMaxArtifactCard(),
+				destination = CardDestination.Deck,
+				artifactPulse = Key(),
+			},
+			new AAddCard
+			{
+				card = new WormFood { temporaryOverride = true },
+				destination = CardDestination.Deck,
+			},
+		]);
 	}
 
 	private sealed class Hook : IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
@@ -136,7 +138,7 @@ internal sealed class DrakeMaxArtifactCard : Card
 			temporary = true,
 			retain = true,
 			exhaust = true,
-			description = I18n.DrakeMaxArtifactCardDescription
+			description = I18n.DrakeMaxArtifactCardDescription,
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
@@ -153,7 +155,7 @@ internal sealed class DrakeMaxArtifactCard : Card
 			{
 				status = (Status)DrakeMaxArtifact.Status.Id!.Value,
 				statusAmount = cards.Count,
-				targetPlayer = false
+				targetPlayer = false,
 			}
 		];
 	}

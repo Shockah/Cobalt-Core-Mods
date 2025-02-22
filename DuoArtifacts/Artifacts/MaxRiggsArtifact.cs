@@ -15,19 +15,21 @@ internal sealed class MaxRiggsArtifact : DuoArtifact
 		base.OnTurnStart(state, combat);
 		if (combat.turn == 0)
 			return;
-
-		Pulse();
-		combat.Queue(new AStatus
-		{
-			status = Status.engineStall,
-			statusAmount = 1,
-			targetPlayer = true
-		});
-		combat.Queue(new AStatus
-		{
-			status = Status.autopilot,
-			statusAmount = 1,
-			targetPlayer = true
-		});
+		
+		combat.Queue([
+			new AStatus
+			{
+				status = Status.engineStall,
+				statusAmount = 1,
+				targetPlayer = true,
+				artifactPulse = Key(),
+			},
+			new AStatus
+			{
+				status = Status.autopilot,
+				statusAmount = 1,
+				targetPlayer = true,
+			},
+		]);
 	}
 }

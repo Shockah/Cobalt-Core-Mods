@@ -19,7 +19,8 @@ public sealed class DizzyPeriArtifact : DuoArtifact, IKokoroApi.IV2.IStatusLogic
 				{
 					status = Status.shield,
 					statusAmount = -toSubtract,
-					targetPlayer = true
+					targetPlayer = true,
+					artifactPulse = Key(),
 				});
 		}
 		{
@@ -29,7 +30,8 @@ public sealed class DizzyPeriArtifact : DuoArtifact, IKokoroApi.IV2.IStatusLogic
 				{
 					status = Status.overdrive,
 					statusAmount = -toSubtract,
-					targetPlayer = true
+					targetPlayer = true,
+					artifactPulse = Key(),
 				});
 		}
 		
@@ -56,9 +58,9 @@ public sealed class DizzyPeriArtifact : DuoArtifact, IKokoroApi.IV2.IStatusLogic
 		{
 			status = Status.overdrive,
 			statusAmount = overshield,
-			targetPlayer = true
+			targetPlayer = true,
+			artifactPulse = Key(),
 		});
-		Pulse();
 		return newAmount;
 	}
 }

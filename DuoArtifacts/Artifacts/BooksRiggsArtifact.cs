@@ -12,12 +12,12 @@ internal sealed class BooksRiggsArtifact : DuoArtifact
 		if (toAdd <= 0)
 			return;
 
-		Pulse();
 		combat.QueueImmediate(new AStatus
 		{
 			status = Status.hermes,
 			statusAmount = toAdd,
-			targetPlayer = true
+			targetPlayer = true,
+			artifactPulse = Key(),
 		});
 	}
 }

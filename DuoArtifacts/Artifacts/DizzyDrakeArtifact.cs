@@ -44,8 +44,7 @@ internal sealed class DizzyDrakeArtifact : DuoArtifact
 
 	private static void AOverheat_Begin_Transpiler_Damage(Ship ship, State state, Combat combat, int damage)
 	{
-		var artifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is DizzyDrakeArtifact);
-		if (artifact is null || ship != state.ship)
+		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is DizzyDrakeArtifact) is not { } artifact || ship != state.ship)
 		{
 			ship.DirectHullDamage(state, combat, damage);
 			return;
@@ -61,7 +60,7 @@ internal sealed class DizzyDrakeArtifact : DuoArtifact
 			return;
 		}
 
-		artifact?.Pulse();
+		artifact.Pulse();
 		ship.NormalDamage(state, combat, damage + ExtraShieldDamage, maybeWorldGridX: null);
 	}
 }

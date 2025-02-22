@@ -21,21 +21,29 @@ internal sealed class DrakePeriArtifact : DuoArtifact
 	public override void AfterPlayerOverheat(State state, Combat combat)
 	{
 		base.AfterPlayerOverheat(state, combat);
-		var artifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is DrakePeriArtifact);
-		if (artifact is null)
+		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is DrakePeriArtifact) is not { } artifact)
 			return;
 
 		var toConvert = LastOverdrive ?? state.ship.Get(Status.overdrive);
 		if (toConvert <= 0)
 			return;
 
-		artifact.Pulse();
-		combat.QueueImmediate(new AStatus
-		{
-			status = Status.powerdrive,
-			statusAmount = toConvert,
-			targetPlayer = true
-		});
-		state.ship.Set(Status.overdrive, 0);
+		combat.QueueImmediate([
+			new AStatus
+			{
+				status = Status.overdrive,
+				mode = AStatusMode.Set,
+				statusAmount = 0,
+				targetPlayer = true,
+				artifactPulse = artifact.Key(),
+				timer = 0,
+			},
+			new AStatus
+			{
+				status = Status.powerdrive,
+				statusAmount = toConvert,
+				targetPlayer = true,
+			}
+		]);
 	}
 }

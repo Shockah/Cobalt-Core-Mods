@@ -39,22 +39,19 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 
 	private static void QueueAction(State state, Combat combat)
 	{
-		var artifact = state.EnumerateAllArtifacts().OfType<IsaacMaxArtifact>().FirstOrDefault();
-		if (artifact is null || artifact.WaitingForActionDrain || !combat.isPlayerTurn)
+		if (state.EnumerateAllArtifacts().OfType<IsaacMaxArtifact>().FirstOrDefault() is not { } artifact)
+			return;
+		if (artifact.WaitingForActionDrain || !combat.isPlayerTurn)
 			return;
 
 		if (combat.cardActions.Count == 0)
-			DoAction(state, combat);
+			DoAction(state, combat, artifact);
 		else
 			artifact.WaitingForActionDrain = true;
 	}
 
-	private static void DoAction(State state, Combat combat)
+	private static void DoAction(State state, Combat combat, IsaacMaxArtifact artifact)
 	{
-		var artifact = state.EnumerateAllArtifacts().OfType<IsaacMaxArtifact>().FirstOrDefault();
-		if (artifact is null || artifact.WaitingForActionDrain || !combat.isPlayerTurn)
-			return;
-
 		var shipMinX = state.ship.x;
 		var shipMaxX = state.ship.x + state.ship.parts.Count - 1;
 		var midrowObjects = combat.stuff
@@ -68,16 +65,10 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 			.Where(x => midrowObjects.All(o => o.x != x))
 			.ToList();
 
-		var didSomething = false;
-
 		if (unbubbledMidrowObjects.Count != 0)
 		{
 			var midrowObject = unbubbledMidrowObjects[state.rngActions.NextInt() % unbubbledMidrowObjects.Count];
-			combat.QueueImmediate(new ABubble
-			{
-				worldX = midrowObject.x
-			});
-			didSomething = true;
+			combat.QueueImmediate(new ABubble { worldX = midrowObject.x, artifactPulse = artifact.Key() });
 		}
 		else if (emptyMidrowSlots.Count != 0)
 		{
@@ -88,19 +79,14 @@ internal sealed class IsaacMaxArtifact : DuoArtifact
 				var offset = slot - (shipMinX + missilePartX);
 				combat.QueueImmediate(new ASpawn
 				{
-					thing = new Asteroid
-					{
-						yAnimation = 0.0
-					},
-					offset = offset
+					thing = new Asteroid { yAnimation = 0.0 },
+					offset = offset,
+					artifactPulse = artifact.Key(),
 				});
-				didSomething = true;
 			}
 		}
 
 		artifact.WaitingForActionDrain = false;
-		if (didSomething)
-			artifact.Pulse();
 	}
 
 	private static void Combat_SendCardToDiscard_Postfix(Combat __instance, State s)

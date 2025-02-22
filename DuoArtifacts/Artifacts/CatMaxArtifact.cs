@@ -68,7 +68,8 @@ internal sealed class CatMaxArtifact : DuoArtifact
 		{
 			status = PossibleStatuses.Value[state.rngActions.NextInt() % PossibleStatuses.Value.Count],
 			statusAmount = 1,
-			targetPlayer = true
+			targetPlayer = true,
+			artifactPulse = Key(),
 		});
 	}
 }

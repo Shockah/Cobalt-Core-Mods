@@ -47,8 +47,7 @@ internal sealed class CatDrakeArtifact : DuoArtifact
 		var serenityChange = SerenityChange;
 		var timeStopChange = TimeStopChange;
 
-		var artifact = g.state.EnumerateAllArtifacts().FirstOrDefault(a => a is CatDrakeArtifact);
-		if (artifact is null)
+		if (g.state.EnumerateAllArtifacts().FirstOrDefault(a => a is CatDrakeArtifact) is not { } artifact)
 		{
 			SerenityChange = 0;
 			TimeStopChange = 0;

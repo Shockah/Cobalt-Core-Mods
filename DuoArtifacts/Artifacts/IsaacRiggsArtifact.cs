@@ -17,14 +17,16 @@ internal sealed class IsaacRiggsArtifact : DuoArtifact
 	public override void OnTurnStart(State state, Combat combat)
 	{
 		base.OnTurnStart(state, combat);
-		if (combat.turn == 1)
-			combat.QueueImmediate(new AStatus
-			{
-				status = Status.evade,
-				statusAmount = 1,
-				targetPlayer = true,
-				artifactPulse = Key()
-			});
+		if (combat.turn != 1)
+			return;
+		
+		combat.QueueImmediate(new AStatus
+		{
+			status = Status.evade,
+			statusAmount = 1,
+			targetPlayer = true,
+			artifactPulse = Key(),
+		});
 	}
 
 	private sealed class PaymentOption : IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption, IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftPaymentOption

@@ -51,12 +51,13 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 
 		if (heatToGain <= 0)
 			return;
-		Pulse();
+		
 		combat.Queue(new AStatus
 		{
 			status = Status.heat,
 			statusAmount = heatToGain,
-			targetPlayer = true
+			targetPlayer = true,
+			artifactPulse = Key(),
 		});
 	}
 
@@ -68,15 +69,18 @@ internal sealed class DrakeIsaacArtifact : DuoArtifact
 			return;
 		if (__result is null || __result.Count == 0)
 			return;
-
-		var artifact = s.EnumerateAllArtifacts().FirstOrDefault(a => a is DrakeIsaacArtifact);
-		if (artifact is null)
+		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is DrakeIsaacArtifact) is not { } artifact)
 			return;
 
-		if (__result.Count == 0)
-			return;
-
-		artifact.Pulse();
-		__result = [..__result, ..__result];
+		__result = [
+			.. __result,
+			.. __result.Select((a, i) =>
+			{
+				var copy = Mutil.DeepCopy(a);
+				if (i == 0)
+					copy.artifactPulse ??= artifact.Key();
+				return copy;
+			})
+		];
 	}
 }

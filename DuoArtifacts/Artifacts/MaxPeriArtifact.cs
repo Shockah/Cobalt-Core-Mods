@@ -44,7 +44,6 @@ internal sealed class MaxPeriArtifact : DuoArtifact
 
 		if (!attacks.Contains(card) || attacks.Count == 1)
 			return base.ModifyBaseDamage(baseDamage, card, state, combat, fromPlayer);
-
 		if (attacks.Last() != card)
 			return base.ModifyBaseDamage(baseDamage, card, state, combat, fromPlayer);
 
@@ -55,15 +54,12 @@ internal sealed class MaxPeriArtifact : DuoArtifact
 	{
 		if (!__result.Any(a => a is AAttack))
 			return;
-
-		var artifact = s.EnumerateAllArtifacts().FirstOrDefault(a => a is MaxPeriArtifact);
-		if (artifact is null)
+		if (!s.EnumerateAllArtifacts().Any(a => a is MaxPeriArtifact))
 			return;
 
 		var attacks = c.hand.Where(card => card == __instance || card.GetActions(s, c).SelectMany(a => ModEntry.Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively(a)).Any(a => a is AAttack)).ToList();
 		if (!attacks.Contains(__instance) || attacks.Count == 1)
 			return;
-
 		if (attacks.First() != __instance)
 			return;
 

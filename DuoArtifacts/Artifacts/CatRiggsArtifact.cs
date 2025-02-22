@@ -71,10 +71,8 @@ internal sealed class CatRiggsArtifact : DuoArtifact
 
 	private static void Combat_SendCardToHand_Transpiler_DidDrawCard(State state, Card card)
 	{
-		var artifact = state.EnumerateAllArtifacts().OfType<CatRiggsArtifact>().FirstOrDefault();
-		if (artifact is null)
+		if (state.EnumerateAllArtifacts().OfType<CatRiggsArtifact>().FirstOrDefault() is not { } artifact)
 			return;
-
 		if (artifact.DoingInitialDraw)
 			return;
 		if (!artifact.WaitingForFirstExtraDraw)

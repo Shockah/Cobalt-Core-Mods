@@ -86,7 +86,7 @@ internal sealed class BooksPeriArtifact : DuoArtifact
 				{
 					status = Status.shard,
 					statusAmount = -shardsToPay,
-					targetPlayer = true
+					targetPlayer = true,
 				});
 				leftToPay -= shardsToPay;
 			}
@@ -99,7 +99,7 @@ internal sealed class BooksPeriArtifact : DuoArtifact
 				{
 					status = Status.shard,
 					statusAmount = -shieldToPay,
-					targetPlayer = true
+					targetPlayer = true,
 				});
 				leftToPay -= shieldToPay;
 			}
@@ -113,8 +113,7 @@ internal sealed class BooksPeriArtifact : DuoArtifact
 
 	private static void Combat_DrainCardActions_Postfix(Combat __instance, G g)
 	{
-		var artifact = g.state.EnumerateAllArtifacts().OfType<BooksPeriArtifact>().FirstOrDefault();
-		if (artifact is null)
+		if (!g.state.EnumerateAllArtifacts().Any(a => a is BooksPeriArtifact))
 			return;
 
 		if (__instance.cardActions.Count == 0)

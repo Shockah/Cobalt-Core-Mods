@@ -17,7 +17,7 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class CatDizzyArtifact : DuoArtifact
 {
-	internal static ExternalSprite InactiveSprite { get; private set; } = null!;
+	private static ExternalSprite InactiveSprite { get; set; } = null!;
 
 	public bool TriggeredThisCombat;
 
@@ -54,8 +54,9 @@ internal sealed class CatDizzyArtifact : DuoArtifact
 
 	private static void Trigger(State state)
 	{
-		var artifact = state.EnumerateAllArtifacts().OfType<CatDizzyArtifact>().FirstOrDefault();
-		if (artifact is null || artifact.TriggeredThisCombat)
+		if (state.EnumerateAllArtifacts().OfType<CatDizzyArtifact>().FirstOrDefault() is not { } artifact)
+			return;
+		if (artifact.TriggeredThisCombat)
 			return;
 
 		artifact.Pulse();

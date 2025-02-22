@@ -64,7 +64,7 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 			{
 				status = Status.shard,
 				statusAmount = -shardsToPay,
-				targetPlayer = true
+				targetPlayer = true,
 			});
 			leftToPay -= shardsToPay;
 		}
@@ -77,7 +77,7 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 			{
 				status = Status.shard,
 				statusAmount = -shieldToPay,
-				targetPlayer = true
+				targetPlayer = true,
 			});
 			leftToPay -= shieldToPay;
 		}

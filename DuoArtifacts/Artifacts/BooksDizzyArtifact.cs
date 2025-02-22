@@ -238,7 +238,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact, IKokoroApi.IV2.IActionCo
 			status = Status.shard,
 			statusAmount = 0,
 			mode = AStatusMode.Set,
-			targetPlayer = true
+			targetPlayer = true,
 		}).AsCardAction);
 	}
 
@@ -258,7 +258,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact, IKokoroApi.IV2.IActionCo
 			status = Status.shard,
 			statusAmount = 0,
 			mode = AStatusMode.Set,
-			targetPlayer = true
+			targetPlayer = true,
 		}).AsCardAction);
 	}
 
@@ -278,7 +278,7 @@ internal sealed class BooksDizzyArtifact : DuoArtifact, IKokoroApi.IV2.IActionCo
 			status = Status.shield,
 			statusAmount = 0,
 			mode = AStatusMode.Set,
-			targetPlayer = true
+			targetPlayer = true,
 		}).AsCardAction);
 	}
 	

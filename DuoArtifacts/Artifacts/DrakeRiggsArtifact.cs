@@ -11,7 +11,7 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class DrakeRiggsArtifact : DuoArtifact
 {
-	internal static ExternalSprite InactiveSprite { get; private set; } = null!;
+	private static ExternalSprite InactiveSprite { get; set; } = null!;
 
 	public bool UsedThisTurn;
 	
@@ -33,9 +33,7 @@ internal sealed class DrakeRiggsArtifact : DuoArtifact
 		=> UsedThisTurn ? (Spr)InactiveSprite.Id!.Value : base.GetSprite();
 
 	public override void OnTurnStart(State state, Combat combat)
-	{
-		UsedThisTurn = false;
-	}
+		=> UsedThisTurn = false;
 
 	private sealed class EvadePaymentOption : IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption
 	{
@@ -54,13 +52,15 @@ internal sealed class DrakeRiggsArtifact : DuoArtifact
 				return [];
 			
 			artifact.UsedThisTurn = true;
-			return [new AStatus
-			{
-				status = Status.heat,
-				statusAmount = 1,
-				targetPlayer = true,
-				artifactPulse = artifact.Key(),
-			}];
+			return [
+				new AStatus
+				{
+					status = Status.heat,
+					statusAmount = 1,
+					targetPlayer = true,
+					artifactPulse = artifact.Key(),
+				}
+			];
 		}
 
 		public void EvadeButtonHovered(IKokoroApi.IV2.IEvadeHookApi.IEvadePaymentOption.IEvadeButtonHoveredArgs args)

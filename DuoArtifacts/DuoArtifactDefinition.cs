@@ -78,7 +78,7 @@ public sealed class DuoArtifactDefinition
 		public static DefinitionTooltip Shard
 			=> new(() =>
 			{
-				var maxAmount = (MG.inst.g.state ?? DB.fakeState).ship.Get(Status.maxShard);
+				var maxAmount = (MG.inst.g?.state ?? DB.fakeState).ship.Get(Status.maxShard);
 				if (maxAmount == 0)
 					maxAmount = 3;
 				return new TTGlossary($"status.{Status.shard.Key()}", maxAmount);

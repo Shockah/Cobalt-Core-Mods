@@ -77,9 +77,7 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 			return damage;
 		if (drone.targetPlayer)
 			return damage;
-
-		var artifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is IsaacPeriArtifact);
-		if (artifact is null)
+		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is IsaacPeriArtifact) is not { } artifact)
 			return damage;
 
 		if (state == ActionState)
@@ -126,11 +124,8 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 	{
 		if (libraFlag)
 			return true;
-
-		var artifact = state.EnumerateAllArtifacts().FirstOrDefault(a => a is IsaacPeriArtifact);
-		if (artifact is null)
+		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is IsaacPeriArtifact) is not { } artifact)
 			return false;
-
 		if (attack.targetPlayer)
 			return false;
 		if ((LastLibra ?? state.ship.Get(Status.libra)) <= 0)
