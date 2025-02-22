@@ -1,7 +1,15 @@
-﻿namespace Shockah.DuoArtifacts;
+﻿using System.Collections.Generic;
+
+namespace Shockah.DuoArtifacts;
 
 internal sealed class MaxRiggsArtifact : DuoArtifact
 {
+	public override List<Tooltip> GetExtraTooltips()
+		=> [
+			.. StatusMeta.GetTooltips(Status.autopilot, 1),
+			.. StatusMeta.GetTooltips(Status.engineStall, 1),
+		];
+
 	public override void OnTurnStart(State state, Combat combat)
 	{
 		base.OnTurnStart(state, combat);
