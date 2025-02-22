@@ -132,7 +132,7 @@ internal static class I18n
 	public static readonly string DizzyMaxArtifactName = "Dynamo";
 	public static readonly string DizzyMaxArtifactTooltip = "At the start of combat, gain a <c=card>Dynamo</c>.";
 	public static readonly string DizzyMaxArtifactCardName = "Dynamo";
-	public static readonly string DizzyMaxArtifactCardDescription = "Lose 3 <c=status>(TEMP) SHIELD</c>: gain 1 <c=status>BOOST</c>.";
+	public static readonly string DizzyMaxArtifactCardDescription = "Lose 3 <c=status>(temp) shield</c>: gain 1 <c=status>boost</c>.";
 
 	public static readonly string DizzyPeriArtifactName = "Energy Condenser";
 	public static readonly string DizzyPeriArtifactTooltip = "Any gained <c=status>SHIELD</c> over <c=status>max shield</c> is converted into <c=status>OVERDRIVE</c> instead.\n<c=downside>Lose <c=status>SHIELD</c> equal to <c=status>OVERDRIVE</c>, and lose <c=status>OVERDRIVE</c> equal to <c=status>PERFECT SHIELD</c> at the start of each turn.</c>";
