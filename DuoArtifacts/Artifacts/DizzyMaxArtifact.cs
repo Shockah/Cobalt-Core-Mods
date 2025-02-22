@@ -1,9 +1,9 @@
-﻿using CobaltCoreModding.Definitions.ExternalItems;
-using CobaltCoreModding.Definitions.ModContactPoints;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using CobaltCoreModding.Definitions.ExternalItems;
+using CobaltCoreModding.Definitions.ModContactPoints;
 
 namespace Shockah.DuoArtifacts;
 
@@ -22,21 +22,17 @@ internal sealed class DizzyMaxArtifact : DuoArtifact
 		registry.RegisterCard(card);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
-	{
-		var tooltips = base.GetExtraTooltips() ?? [];
-		tooltips.Insert(0, new TTCard { card = new DizzyMaxArtifactCard() });
-		return tooltips;
-	}
+	public override List<Tooltip> GetExtraTooltips()
+		=> [new TTCard { card = new DizzyMaxArtifactCard() }];
 
 	public override void OnCombatStart(State state, Combat combat)
 	{
 		base.OnCombatStart(state, combat);
-		Pulse();
 		combat.QueueImmediate(new AAddCard
 		{
 			card = new DizzyMaxArtifactCard(),
-			destination = CardDestination.Hand
+			destination = CardDestination.Hand,
+			artifactPulse = Key(),
 		});
 	}
 }
@@ -52,17 +48,15 @@ internal sealed class DizzyMaxArtifactCard : Card
 			temporary = true,
 			retain = true,
 			flippable = true,
-			description = I18n.DizzyMaxArtifactCardDescription
+			unplayable = state != DB.fakeState && !TryToPay(state.ship, GetPayingStatuses(state).ToList(), 3, out _),
+			description = I18n.DizzyMaxArtifactCardDescription,
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		List<CardAction> actions = [];
-
-		List<Status> statuses = [Status.tempShield, Status.shield];
+		var actions = new List<CardAction>();
+		var statuses = GetPayingStatuses(s).ToList();
 		var booksDizzyArtifact = s.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksDizzyArtifact);
-		if (booksDizzyArtifact is not null)
-			statuses.Add(Status.shard);
 
 		if (!TryToPay(s.ship, statuses, 3, out var toPay))
 			return actions;
@@ -104,6 +98,15 @@ internal sealed class DizzyMaxArtifactCard : Card
 			combat.hand.Add(this);
 		else
 			combat.hand.Insert(0, this);
+	}
+	
+	private static IEnumerable<Status> GetPayingStatuses(State state)
+	{
+		yield return Status.tempShield;
+		yield return Status.shield;
+
+		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksDizzyArtifact) is not null)
+			yield return Status.shard;
 	}
 
 	private static bool TryToPay(Ship ship, List<Status> statuses, int amount, [MaybeNullWhen(false)] out Dictionary<Status, int> toPay)
