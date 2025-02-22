@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Replaced the Trojan Drive (Drake-Max duo) artifact with CO2 Fire Extinguisher.
 * The Gashapon.EXE (Max-CAT duo) artifact can now give you any positive status from any card in the game (instead of a predefined list of vanilla statuses).
 * The Dynamo card from the Dynamo (Dizzy-Max duo) artifact can no longer be played if you can't afford its status cost.
 * Fixed the Energy Condenser (Dizzy-Peri duo) triggering when enemies gain shield.

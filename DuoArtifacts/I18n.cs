@@ -80,10 +80,6 @@ internal static class I18n
 		Description = MaxShieldLowerAltGlossaryDescription,
 	};
 
-	public static readonly string WormStatusName = "Worm";
-	public static readonly string WormStatusStatefulDescription = "Cancels {0} intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>";
-	public static readonly string WormStatusStatelessDescription = "Cancels intents at the start of the player's turn. <c=downside>Decreases by 1 at end of turn.</c>";
-
 	public static readonly string BooksCatArtifactName = "Shard Synthesizer";
 	public static readonly string BooksCatArtifactTooltip = "At the end of each turn, gain <c=status>SHARD</c> equal to unspent <c=energy>ENERGY</c>.";
 
@@ -143,10 +139,8 @@ internal static class I18n
 	public static readonly string DrakeIsaacArtifactName = "Drone Overclock";
 	public static readonly string DrakeIsaacArtifactTooltip = "Your <c=midrow>Attack and Shield Drones</c> trigger twice. <c=downside>Each turn, gain <c=status>HEAT</c> equal to the number of these drones, -1.</c>";
 
-	public static readonly string DrakeMaxArtifactName = "Trojan Drive";
-	public static readonly string DrakeMaxArtifactTooltip = "At the start of combat, shuffle a <c=card>Trojan Drive</c> and a <c=cardtrait>temporary</cardtrait> <c=card>Worm</c> into your deck.";
-	public static readonly string DrakeMaxArtifactCardName = "Trojan Drive";
-	public static readonly string DrakeMaxArtifactCardDescription = "<c=cardtrait>Exhaust</c> all <c=card>Worm</c>. Apply <c=status>WORM</c> to the enemy for each.";
+	public static readonly string DrakeMaxArtifactName = "CO2 Fire Extinguisher";
+	public static readonly string DrakeMaxArtifactTooltip = "Whenever you <c=cardtrait>exhaust</c> a card while you are about to <c=action>overheat</c>, reduce your <c=status>HEAT</c> to right below the <c=action>overheat</c> threshold.";
 
 	public static readonly string DrakePeriArtifactName = "Critical Mass";
 	public static readonly string DrakePeriArtifactTooltip = "Whenever you <c=action>OVERHEAT</c>, convert your <c=status>OVERDRIVE</c> into <c=status>POWERDRIVE</c>.";
