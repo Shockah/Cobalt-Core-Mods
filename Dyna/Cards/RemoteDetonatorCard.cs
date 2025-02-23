@@ -28,20 +28,15 @@ internal sealed class RemoteDetonatorCard : Card, IRegisterable
 		=> new()
 		{
 			cost = 1,
-			retain = upgrade == Upgrade.B,
-			description = ModEntry.Instance.Localizations.Localize(["card", "RemoteDetonator", "description"], new { Damage })
+			retain = upgrade == Upgrade.A,
+			description = ModEntry.Instance.Localizations.Localize(["card", "RemoteDetonator", "description"], new { Damage }),
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new DetonateAllAction
-			{
-				Damage = Damage
-			}
-		];
+		=> [new DetonateAllAction { Damage = Damage }];
 
 	private int Damage
-		=> upgrade == Upgrade.A ? 2 : 1;
+		=> upgrade == Upgrade.B ? 2 : 1;
 
 	private sealed class DetonateAllAction : CardAction
 	{
@@ -62,7 +57,7 @@ internal sealed class RemoteDetonatorCard : Card, IRegisterable
 			{
 				TargetPlayer = ship.isPlayerShip,
 				Damage = Damage,
-				WorldX = ship.x + i
+				WorldX = ship.x + i,
 			}));
 		}
 	}
