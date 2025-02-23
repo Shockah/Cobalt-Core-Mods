@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Buffed the Firecracker artifact - it now triggers every 3rd charge fired (down from 4).
+* Swapped the Flux Charge A and B upgrades around.
 * The Incoming card now flips its art when the card is flipped.
 
 ## 1.3.1

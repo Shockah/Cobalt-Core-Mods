@@ -24,31 +24,17 @@ internal sealed class FluxChargeCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> new()
-		{
-			cost = upgrade == Upgrade.B ? 0 : 1
-		};
+		=> new() { cost = upgrade == Upgrade.A ? 0 : 1 };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.A => [
-				new FireChargeAction
-				{
-					Charge = new FluxCharge()
-				},
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.tempShield,
-					statusAmount = 2
-				}
+			Upgrade.B => [
+				new FireChargeAction { Charge = new FluxCharge() },
+				new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 2 },
 			],
 			_ => [
-				new FireChargeAction
-				{
-					Charge = new FluxCharge()
-				}
+				new FireChargeAction { Charge = new FluxCharge() },
 			]
 		};
 }
