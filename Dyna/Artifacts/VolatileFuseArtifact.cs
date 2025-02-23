@@ -42,6 +42,8 @@ internal sealed class VolatileFuseArtifact : Artifact, IRegisterable, IDynaHook
 
 	private static void AAttack_Begin_Prefix_First(AAttack __instance, State s)
 	{
+		if (__instance.targetPlayer)
+			return;
 		if (__instance.IsBlastwave())
 			return;
 		if (s.EnumerateAllArtifacts().OfType<VolatileFuseArtifact>().FirstOrDefault() is not { } artifact)
