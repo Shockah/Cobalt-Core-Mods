@@ -122,6 +122,10 @@
             "name": "UNSTABLE COMPOUND",
             "description": "All <c=action>Blastwave</c> attacks are <c=action>Wide Blastwave</c>. <c=downside>Whenever you trigger <c=action>Blastwave</c>, take 1 damage.</c>"
         },
+        "VolatileFuse": {
+            "name": "VOLATILE FUSE",
+            "description": "Every 8th non-<c=action>Blastwave attack</c> has <c=action>Blastwave 1</c>."
+        },
         "Duo": {
             "DynaBooks": {
                 "name": "PHOENIX FEATHER",

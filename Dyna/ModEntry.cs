@@ -72,6 +72,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(FirecrackerArtifact),
 		typeof(GeligniteArtifact),
 		typeof(HardHatArtifact),
+		typeof(VolatileFuseArtifact),
 	];
 
 	internal static readonly IReadOnlyList<Type> BossArtifacts = [
@@ -92,15 +93,10 @@ public sealed class ModEntry : SimpleMod
 		typeof(DynaSogginsArtifact),
 	];
 
-	internal static readonly IReadOnlyList<Type> DisabledArtifacts = [
-		typeof(BlownFuseArtifact), // Boss
-	];
-
 	internal static readonly IEnumerable<Type> AllArtifactTypes
 		= [
 			.. CommonArtifacts,
 			.. BossArtifacts,
-			.. DisabledArtifacts,
 		];
 
 	internal static readonly IReadOnlyList<Type> ChargeTypes = [
@@ -237,7 +233,7 @@ public sealed class ModEntry : SimpleMod
 		};
 	}
 
-	public override object? GetApi(IModManifest requestingMod)
+	public override object GetApi(IModManifest requestingMod)
 		=> new ApiImplementation();
 
 	internal static Rarity GetCardRarity(Type type)
@@ -255,8 +251,6 @@ public sealed class ModEntry : SimpleMod
 			return [ArtifactPool.Boss];
 		if (CommonArtifacts.Contains(type))
 			return [ArtifactPool.Common];
-		if (DisabledArtifacts.Contains(type))
-			return [ArtifactPool.Unreleased];
 		return [];
 	}
 }
