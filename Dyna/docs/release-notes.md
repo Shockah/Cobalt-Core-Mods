@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Completely changed the Blast Powder artifact's effect.
 * Buffed the Firecracker artifact - it now triggers every 3rd charge fired (down from 4).
 * Buffed the Bunker B card - it now grants 2 shield (up from 1).
 * Swapped the Flux Charge A and B upgrades around.

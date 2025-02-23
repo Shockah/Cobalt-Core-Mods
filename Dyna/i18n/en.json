@@ -96,7 +96,7 @@
     "artifact": {
         "BlastPowder": {
             "name": "BLAST POWDER",
-            "description": "Non-<c=action>Blastwave attacks</c> deal +1 damage whenever they directly hit a <c=parttrait>charge</c>."
+            "description": "Whenever a <c=parttrait>charge</c> triggers, it deals 1 damage to the part it was on."
         },
         "BlownFuse": {
             "name": "BLOWN FUSE",
