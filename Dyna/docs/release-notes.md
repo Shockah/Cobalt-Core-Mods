@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.4.1
+Released 23 February 2025.
 
 * Fixed the Volatile Fuse artifact triggering on enemy attacks.
 
