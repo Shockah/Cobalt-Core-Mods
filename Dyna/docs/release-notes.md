@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* The Incoming card now flips its art when the card is flipped.
+
 ## 1.3.1
 Released 17 December 2024.
 

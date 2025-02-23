@@ -7,8 +7,14 @@ namespace Shockah.Dyna;
 
 internal sealed class IncomingCard : Card, IRegisterable
 {
+	private static ISpriteEntry NormalArt = null!;
+	private static ISpriteEntry FlippedArt = null!;
+	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
+		NormalArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Incoming.png"));
+		FlippedArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/IncomingFlipped.png"));
+		
 		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
@@ -18,7 +24,6 @@ internal sealed class IncomingCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Incoming.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Incoming", "name"]).Localize
 		});
 	}
@@ -27,16 +32,13 @@ internal sealed class IncomingCard : Card, IRegisterable
 		=> new()
 		{
 			cost = 2,
-			flippable = upgrade == Upgrade.A
+			flippable = upgrade == Upgrade.A,
+			art = (flipped ? FlippedArt : NormalArt).Sprite,
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new AMove
-			{
-				targetPlayer = true,
-				dir = -2
-			},
+			new AMove { targetPlayer = true, dir = -2 },
 			new AAttack
 			{
 				damage = GetDmg(s, 2)
