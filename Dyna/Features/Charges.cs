@@ -139,7 +139,7 @@ internal sealed class ChargeManager
 
 	private static void Combat_RenderDrones_Postfix(Combat __instance, G g)
 	{
-		if (__instance.GetInProgressFireChargeAction() is not { } inProgressFireChargeAction || inProgressFireChargeAction.VolleyX is not { } x)
+		if (__instance.GetInProgressFireChargeAction() is not { VolleyX: { } x } inProgressFireChargeAction)
 			return;
 
 		var targetShip = inProgressFireChargeAction.TargetPlayer ? g.state.ship : __instance.otherShip;
@@ -240,8 +240,9 @@ internal sealed class ChargeManager
 public sealed class FireChargeAction : CardAction
 {
 	internal const double ShipDistanceFromMidrow = 40;
-	private const double OuterSpaceDistanceFromMidrow = 200;
-	private const double DistancePerSecond = OuterSpaceDistanceFromMidrow;
+	private const double TopOuterSpaceDistanceFromMidrow = 100;
+	private const double BottomOuterSpaceDistanceFromMidrow = 180;
+	private const double DistancePerSecond = (ShipDistanceFromMidrow + TopOuterSpaceDistanceFromMidrow) / 0.75;
 
 	public required IDynaCharge Charge;
 	public int Offset;
@@ -348,7 +349,7 @@ public sealed class FireChargeAction : CardAction
 		else if (targetShip.GetPartAtWorldX(worldX) is { } targetPart && targetPart.type != PType.empty)
 			finalPosition = TargetPlayer ? ShipDistanceFromMidrow : -ShipDistanceFromMidrow;
 		else
-			finalPosition = TargetPlayer ? OuterSpaceDistanceFromMidrow : -OuterSpaceDistanceFromMidrow;
+			finalPosition = TargetPlayer ? BottomOuterSpaceDistanceFromMidrow : -TopOuterSpaceDistanceFromMidrow;
 
 		timer = Math.Abs(finalPosition - initialPosition) / DistancePerSecond;
 		Audio.Play(Event.Drones_MissileLaunch);
@@ -381,7 +382,7 @@ public sealed class FireChargeAction : CardAction
 		else if ((targetShip.GetPartAtWorldX(worldX)?.type ?? PType.empty) != PType.empty)
 			finalPosition = TargetPlayer ? ShipDistanceFromMidrow : -ShipDistanceFromMidrow;
 		else
-			finalPosition = TargetPlayer ? OuterSpaceDistanceFromMidrow : -OuterSpaceDistanceFromMidrow;
+			finalPosition = TargetPlayer ? BottomOuterSpaceDistanceFromMidrow : -TopOuterSpaceDistanceFromMidrow;
 
 		var duration = Math.Abs(finalPosition - initialPosition) / DistancePerSecond;
 		var progress = 1.0 - Math.Clamp(timer / duration, 0, 1);
