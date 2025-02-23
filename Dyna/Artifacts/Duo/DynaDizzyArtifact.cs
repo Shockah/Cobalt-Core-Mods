@@ -28,19 +28,11 @@ internal sealed class DynaDizzyArtifact : Artifact, IRegisterable
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.DynaDeck.Deck, Deck.dizzy]);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			.. StatusMeta.GetTooltips(Status.tempShield, 1),
 			.. StatusMeta.GetTooltips(Status.shield, 1),
-			new TTCard
-			{
-				card = new FluxChargeCard
-				{
-					upgrade = Upgrade.B,
-					temporaryOverride = true,
-					exhaustOverride = true
-				}
-			},
+			new TTCard { card = new FluxChargeCard { upgrade = Upgrade.A, temporaryOverride = true, exhaustOverride = true, } },
 		];
 
 	public override void OnCombatStart(State state, Combat combat)
@@ -50,12 +42,12 @@ internal sealed class DynaDizzyArtifact : Artifact, IRegisterable
 		{
 			card = new FluxChargeCard
 			{
-				upgrade = Upgrade.B,
+				upgrade = Upgrade.A,
 				temporaryOverride = true,
-				exhaustOverride = true
+				exhaustOverride = true,
 			},
 			destination = CardDestination.Hand,
-			artifactPulse = Key()
+			artifactPulse = Key(),
 		});
 	}
 }
