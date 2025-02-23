@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.4.0
+Released 23 February 2025.
 
 * Added Volatile Fuse - a new common artifact.
 * Completely changed the Blast Powder artifact's effect.
