@@ -104,7 +104,7 @@
         },
         "Firecracker": {
             "name": "FIRECRACKER",
-            "description": "Every 4th time you fire a <c=parttrait>charge</c>, gain 1 <c=status>TEMP NITRO</c>."
+            "description": "Every 3rd time you fire a <c=parttrait>charge</c>, gain 1 <c=status>TEMP NITRO</c>."
         },
         "Gelignite": {
             "name": "GELIGNITE",

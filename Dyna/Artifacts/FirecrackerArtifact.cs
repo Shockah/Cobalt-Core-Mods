@@ -1,15 +1,15 @@
-﻿using Nanoray.PluginManager;
-using Newtonsoft.Json;
-using Nickel;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
+using Nanoray.PluginManager;
+using Nickel;
 
 namespace Shockah.Dyna;
 
 internal sealed class FirecrackerArtifact : Artifact, IRegisterable, IDynaHook
 {
-	[JsonProperty]
-	public int Stacks { get; set; } = 0;
+	private const int Period = 3;
+
+	public int Stacks;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -19,18 +19,18 @@ internal sealed class FirecrackerArtifact : Artifact, IRegisterable, IDynaHook
 			Meta = new()
 			{
 				owner = ModEntry.Instance.DynaDeck.Deck,
-				pools = ModEntry.GetArtifactPools(MethodBase.GetCurrentMethod()!.DeclaringType!)
+				pools = ModEntry.GetArtifactPools(MethodBase.GetCurrentMethod()!.DeclaringType!),
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Firecracker.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Firecracker", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Firecracker", "description"]).Localize
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Firecracker", "description"]).Localize,
 		});
 	}
 
 	public override int? GetDisplayNumber(State s)
 		=> Stacks;
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> StatusMeta.GetTooltips(NitroManager.TempNitroStatus.Status, 1);
 
 	public void OnChargeFired(State state, Combat combat, Ship targetShip, int worldX)
@@ -39,10 +39,10 @@ internal sealed class FirecrackerArtifact : Artifact, IRegisterable, IDynaHook
 			return;
 
 		Stacks++;
-		if (Stacks < 4)
+		if (Stacks < Period)
 			return;
 
-		Stacks -= 4;
+		Stacks -= Period;
 		combat.QueueImmediate(new AStatus
 		{
 			targetPlayer = true,
