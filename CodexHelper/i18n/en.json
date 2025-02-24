@@ -1,0 +1,25 @@
+﻿{
+	"cardCodexProgress": {
+		"NotSeen": {
+			"title": "New Card!",
+			"description": "You have not seen this card before.",
+			"cardSubtitle": "NEW!"
+		},
+		"Seen": {
+			"title": "Seen Card",
+			"description": "You have seen but not taken this card before.",
+			"cardSubtitle": "seen"
+		},
+		"Taken": {
+			"title": "Taken Card",
+			"description": "You have taken this card before.",
+			"cardSubtitle": "taken"
+		}
+	},
+	"difficulty": {
+		"beaten": {
+			"anyCrew": "You've beaten this difficulty.",
+			"specificCrew": "You've beaten this difficulty with this crew."
+		}
+	}
+}
