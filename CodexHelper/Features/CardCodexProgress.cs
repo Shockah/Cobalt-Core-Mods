@@ -96,6 +96,10 @@ internal sealed class CardCodexProgress : IRegisterable
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.IsDiscovered)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_IsDiscovered_Postfix))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(LogBook), nameof(LogBook.Render)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(LogBook_Render_Transpiler))
+		);
 
 		if (ModEntry.Instance.Helper.ModRegistry.LoadedMods.ContainsKey("Nickel.Essentials"))
 			ModEntry.Instance.Harmony.Patch(
@@ -290,6 +294,84 @@ internal sealed class CardCodexProgress : IRegisterable
 			return;
 
 		__result = true;
+	}
+	
+	private static IEnumerable<CodeInstruction> LogBook_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		// ReSharper disable PossibleMultipleEnumeration
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find([
+					ILMatches.Ldfld("cardsOwned"),
+					ILMatches.Ldloca<KeyValuePair<string, CardMeta>>(originalMethod).CreateLdlocInstruction(out var ldlocKvp),
+					ILMatches.Call("get_Key"),
+					ILMatches.Call("Contains"),
+					ILMatches.Stloc<bool>(originalMethod).CreateLdlocaInstruction(out var ldlocaHasIt),
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_1),
+					ldlocKvp,
+					ldlocaHasIt,
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(LogBook_Render_Transpiler_ModifyHasIt))),
+				])
+				.Find([
+					ILMatches.Call("Push"),
+					ILMatches.Stloc<Box>(originalMethod).CreateLdlocInstruction(out var ldlocBox),
+				])
+				.Find([
+					ILMatches.Ldarg(1).ExtractLabels(out var labels),
+					ILMatches.Call("Pop"),
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(labels),
+					ldlocKvp,
+					ldlocBox,
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(LogBook_Render_Transpiler_RenderSeen))),
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.GetDisplayName(@long: false), ex);
+			return instructions;
+		}
+		// ReSharper restore PossibleMultipleEnumeration
+	}
+
+	private static void LogBook_Render_Transpiler_ModifyHasIt(G g, KeyValuePair<string, CardMeta> kvp, ref bool hasIt)
+	{
+		if (hasIt)
+			return;
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion)
+			return;
+		if (!g.state.persistentStoryVars.IsCardSeen(kvp.Key, null))
+			return;
+		hasIt = true;
+	}
+
+	private static void LogBook_Render_Transpiler_RenderSeen(G g, KeyValuePair<string, CardMeta> kvp, Box box)
+	{
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion)
+			return;
+
+		if (g.state.persistentStoryVars.cardsOwned.Contains(kvp.Key))
+			return;
+		if (!g.state.persistentStoryVars.IsCardSeen(kvp.Key, null))
+			return;
+		
+		Draw.Sprite(SeenDot.Sprite, box.rect.x + 1, box.rect.y + 1);
+			
+		if (!box.IsHover())
+			return;
+			
+		g.tooltips.tooltips.Add(new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::{nameof(CardCodexProgress)}")
+		{
+			Icon = SeenIcon.Sprite,
+			TitleColor = Colors.textChoice,
+			Title = ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "Seen", "title"]),
+			Description = ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "Seen", "description"]),
+		});
 	}
 
 	private static IEnumerable<CodeInstruction> Nickel_Essentials_LogbookReplacement_LogBook_Render_Prefix_RenderSeenCards_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
