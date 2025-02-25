@@ -112,6 +112,13 @@ internal sealed class CardCodexProgress : IRegisterable
 	
 	public static IModSettingsApi.IModSetting MakeSettings(IPluginPackage<IModManifest> package, IModSettingsApi api)
 		=> api.MakeList([
+			api.MakePadding(
+				api.MakeText(
+					() => $"<c=white>{ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", "header"])}</c>"
+				).SetFont(DB.thicket),
+				8,
+				4
+			),
 			api.MakeCheckbox(
 				() => ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", nameof(ProfileSettings.ShowNotSeenCardsWhilePicking), "title"]),
 				() => ModEntry.Instance.Settings.ProfileBased.Current.ShowNotSeenCardsWhilePicking,
@@ -143,7 +150,7 @@ internal sealed class CardCodexProgress : IRegisterable
 			).SetValueFormatter(
 				value => ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", nameof(ProfileSettings.CardHintsDisplayStyleWhilePicking), "value", value.ToString()])
 			).SetValueWidth(
-				_ => 50
+				_ => 44
 			).SetTooltips(() => [
 				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.CardHintsDisplayStyleWhilePicking)}")
 				{

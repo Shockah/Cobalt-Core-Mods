@@ -1,6 +1,7 @@
 ﻿{
 	"cardCodexProgress": {
 		"settings": {
+			"header": "Cards",
 			"ShowNotSeenCardsWhilePicking": {
 				"title": "Show new cards",
 				"description": "Displays hints about cards you have not seen before."
@@ -40,6 +41,30 @@
 		}
 	},
 	"artifactCodexProgress": {
+		"settings": {
+			"header": "Artifacts",
+			"ShowNotSeenArtifactsWhilePicking": {
+				"title": "Show new artifacts",
+				"description": "Displays hints about artifacts you have not seen before."
+			},
+			"ShowNotTakenArtifactsWhilePicking": {
+				"title": "Show not taken artifacts",
+				"description": "Display hints about artifacts you have seen but not have picked before."
+			},
+			"ArtifactHintsDisplayStyleWhilePicking": {
+				"title": "Artifact hints display style",
+				"description": "The style to use for displaying the new/seen hints.",
+				"value": {
+					"Text": "Text",
+					"Icon": "Icon",
+					"Both": "Both"
+				}
+			},
+			"ShowSeenButNotTakenArtifactsInCodex": {
+				"title": "Show seen artifacts in the Codex",
+				"description": "Show artifacts you have seen but not taken yet in the Codex."
+			}
+		},
 		"NotSeen": {
 			"title": "New Artifact!",
 			"description": "You have not seen this artifact before.",

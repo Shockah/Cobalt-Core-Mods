@@ -13,18 +13,20 @@ using Nanoray.Shrike.Harmony;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Nickel;
+using Nickel.ModSettings;
 using Shockah.Shared;
 
 namespace Shockah.CodexHelper;
 
 internal sealed partial class ProfileSettings
 {
-	[JsonProperty] public bool TrackArtifactTakenCompletion = true;
-	[JsonProperty] public bool TrackArtifactSeenCompletion = true;
-	[JsonProperty] public ArtifactProgressDisplayStyleWhilePickingEnum ArtifactProgressDisplayStyleWhilePicking = ArtifactProgressDisplayStyleWhilePickingEnum.Icon;
+	[JsonProperty] public bool ShowNotSeenArtifactsWhilePicking = true;
+	[JsonProperty] public bool ShowNotTakenArtifactsWhilePicking = true;
+	[JsonProperty] public ArtifactHintsDisplayStyleWhilePickingEnum ArtifactHintsDisplayStyleWhilePicking = ArtifactHintsDisplayStyleWhilePickingEnum.Icon;
+	[JsonProperty] public bool ShowSeenButNotTakenArtifactsInCodex = true;
 
 	[JsonConverter(typeof(StringEnumConverter))]
-	public enum ArtifactProgressDisplayStyleWhilePickingEnum
+	public enum ArtifactHintsDisplayStyleWhilePickingEnum
 	{
 		Text, Icon, Both
 	}
@@ -97,6 +99,69 @@ internal sealed class ArtifactCodexProgress : IRegisterable
 		);
 	}
 	
+	public static IModSettingsApi.IModSetting MakeSettings(IPluginPackage<IModManifest> package, IModSettingsApi api)
+		=> api.MakeList([
+			api.MakePadding(
+				api.MakeText(
+					() => $"<c=white>{ModEntry.Instance.Localizations.Localize(["artifactCodexProgress", "settings", "header"])}</c>"
+				).SetFont(DB.thicket),
+				8,
+				4
+			),
+			api.MakeCheckbox(
+				() => ModEntry.Instance.Localizations.Localize(["artifactCodexProgress", "settings", nameof(ProfileSettings.ShowNotSeenArtifactsWhilePicking), "title"]),
+				() => ModEntry.Instance.Settings.ProfileBased.Current.ShowNotSeenArtifactsWhilePicking,
+				(_, _, value) => ModEntry.Instance.Settings.ProfileBased.Current.ShowNotSeenArtifactsWhilePicking = value
+			).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.ShowNotSeenArtifactsWhilePicking)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = ModEntry.Instance.Localizations.Localize(["artifactCodexProgress", "settings", nameof(ProfileSettings.ShowNotSeenArtifactsWhilePicking), "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["artifactCodexProgress", "settings", nameof(ProfileSettings.ShowNotSeenArtifactsWhilePicking), "description"]),
+				}
+			]),
+			api.MakeCheckbox(
+				() => ModEntry.Instance.Localizations.Localize(["artifactCodexProgress", "settings", nameof(ProfileSettings.ShowNotTakenArtifactsWhilePicking), "title"]),
+				() => ModEntry.Instance.Settings.ProfileBased.Current.ShowNotTakenArtifactsWhilePicking,
+				(_, _, value) => ModEntry.Instance.Settings.ProfileBased.Current.ShowNotTakenArtifactsWhilePicking = value
+			).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.ShowNotTakenArtifactsWhilePicking)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = ModEntry.Instance.Localizations.Localize(["artifactCodexProgress", "settings", nameof(ProfileSettings.ShowNotTakenArtifactsWhilePicking), "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["artifactCodexProgress", "settings", nameof(ProfileSettings.ShowNotTakenArtifactsWhilePicking), "description"]),
+				}
+			]),
+			api.MakeEnumStepper(
+				title: () => ModEntry.Instance.Localizations.Localize(["artifactCodexProgress", "settings", nameof(ProfileSettings.ArtifactHintsDisplayStyleWhilePicking), "title"]),
+				getter: () => ModEntry.Instance.Settings.ProfileBased.Current.ArtifactHintsDisplayStyleWhilePicking,
+				setter: value => ModEntry.Instance.Settings.ProfileBased.Current.ArtifactHintsDisplayStyleWhilePicking = value
+			).SetValueFormatter(
+				value => ModEntry.Instance.Localizations.Localize(["artifactCodexProgress", "settings", nameof(ProfileSettings.ArtifactHintsDisplayStyleWhilePicking), "value", value.ToString()])
+			).SetValueWidth(
+				_ => 44
+			).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.ArtifactHintsDisplayStyleWhilePicking)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = ModEntry.Instance.Localizations.Localize(["artifactCodexProgress", "settings", nameof(ProfileSettings.ArtifactHintsDisplayStyleWhilePicking), "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["artifactCodexProgress", "settings", nameof(ProfileSettings.ArtifactHintsDisplayStyleWhilePicking), "description"]),
+				}
+			]),
+			api.MakeCheckbox(
+				() => ModEntry.Instance.Localizations.Localize(["artifactCodexProgress", "settings", nameof(ProfileSettings.ShowSeenButNotTakenArtifactsInCodex), "title"]),
+				() => ModEntry.Instance.Settings.ProfileBased.Current.ShowSeenButNotTakenArtifactsInCodex,
+				(_, _, value) => ModEntry.Instance.Settings.ProfileBased.Current.ShowSeenButNotTakenArtifactsInCodex = value
+			).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.ShowSeenButNotTakenArtifactsInCodex)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = ModEntry.Instance.Localizations.Localize(["artifactCodexProgress", "settings", nameof(ProfileSettings.ShowSeenButNotTakenArtifactsInCodex), "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["artifactCodexProgress", "settings", nameof(ProfileSettings.ShowSeenButNotTakenArtifactsInCodex), "description"]),
+				}
+			]),
+		]);
+	
 	private static void ArtifactReward_Render_Postfix_Last(ArtifactReward __instance, G g)
 	{
 		if (!ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(__instance, "MarkedArtifactsAsSeen"))
@@ -106,7 +171,7 @@ internal sealed class ArtifactCodexProgress : IRegisterable
 			ModEntry.Instance.Helper.ModData.SetModData(__instance, "MarkedArtifactsAsSeen", true);
 		}
 		
-		if (ModEntry.Instance.Settings.ProfileBased.Current.ArtifactProgressDisplayStyleWhilePicking == ProfileSettings.ArtifactProgressDisplayStyleWhilePickingEnum.Text)
+		if (ModEntry.Instance.Settings.ProfileBased.Current.ArtifactHintsDisplayStyleWhilePicking == ProfileSettings.ArtifactHintsDisplayStyleWhilePickingEnum.Text)
 			return;
 
 		for (var i = 0; i < __instance.artifacts.Count; i++)
@@ -116,15 +181,13 @@ internal sealed class ArtifactCodexProgress : IRegisterable
 			
 			switch (ModEntry.Instance.Api.GetArtifactProgress(g.state, __instance.artifacts[i].Key(), __instance))
 			{
-				case ICodexHelperApi.IArtifactProgress.NotSeen when ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactTakenCompletion || ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactSeenCompletion:
+				case ICodexHelperApi.IArtifactProgress.NotSeen when ModEntry.Instance.Settings.ProfileBased.Current.ShowNotTakenArtifactsWhilePicking || ModEntry.Instance.Settings.ProfileBased.Current.ShowNotSeenArtifactsWhilePicking:
 					RenderIcon(ICodexHelperApi.IArtifactProgress.NotSeen);
 					continue;
-				case ICodexHelperApi.IArtifactProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactSeenCompletion:
+				case ICodexHelperApi.IArtifactProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.ShowNotTakenArtifactsWhilePicking:
 					RenderIcon(ICodexHelperApi.IArtifactProgress.Seen);
 					continue;
-				case ICodexHelperApi.IArtifactProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactTakenCompletion:
-					RenderIcon(ICodexHelperApi.IArtifactProgress.Seen, NewIcon);
-					continue;
+				case ICodexHelperApi.IArtifactProgress.Seen:
 				case ICodexHelperApi.IArtifactProgress.Taken:
 				default:
 					break;
@@ -197,7 +260,7 @@ internal sealed class ArtifactCodexProgress : IRegisterable
 	{
 		if (isKnown)
 			return true;
-		if (!ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactSeenCompletion)
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.ShowSeenButNotTakenArtifactsInCodex)
 			return false;
 		if (!g.state.persistentStoryVars.IsArtifactSeen(kvp.Key, null))
 			return false;
@@ -243,15 +306,16 @@ internal sealed class ArtifactCodexProgress : IRegisterable
 	
 	private static string ArtifactReward_Render_Transpiler_ModifySubtitleIfNeeded(string subtitle, Artifact artifact, ArtifactReward route, G g)
 	{
-		if (ModEntry.Instance.Settings.ProfileBased.Current.ArtifactProgressDisplayStyleWhilePicking == ProfileSettings.ArtifactProgressDisplayStyleWhilePickingEnum.Icon)
+		if (ModEntry.Instance.Settings.ProfileBased.Current.ArtifactHintsDisplayStyleWhilePicking == ProfileSettings.ArtifactHintsDisplayStyleWhilePickingEnum.Icon)
 			return subtitle;
 		
 		switch (ModEntry.Instance.Api.GetArtifactProgress(g.state, artifact.Key(), route))
 		{
-			case ICodexHelperApi.IArtifactProgress.NotSeen when ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactTakenCompletion || ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactSeenCompletion:
+			case ICodexHelperApi.IArtifactProgress.NotSeen when ModEntry.Instance.Settings.ProfileBased.Current.ShowNotTakenArtifactsWhilePicking || ModEntry.Instance.Settings.ProfileBased.Current.ShowNotSeenArtifactsWhilePicking:
 				return GetModifiedText(ICodexHelperApi.ICardProgress.NotSeen);
-			case ICodexHelperApi.IArtifactProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactTakenCompletion || ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactSeenCompletion:
+			case ICodexHelperApi.IArtifactProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.ShowNotTakenArtifactsWhilePicking:
 				return GetModifiedText(ICodexHelperApi.ICardProgress.Seen);
+			case ICodexHelperApi.IArtifactProgress.Seen:
 			case ICodexHelperApi.IArtifactProgress.Taken:
 			default:
 				return subtitle;
@@ -284,7 +348,7 @@ internal sealed class ArtifactCodexProgress : IRegisterable
 			return;
 			
 		var progress = ModEntry.Instance.Api.GetArtifactProgress(g.state, __instance.Key());
-		if (progress == ICodexHelperApi.IArtifactProgress.Seen && ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactSeenCompletion)
+		if (progress == ICodexHelperApi.IArtifactProgress.Seen && ModEntry.Instance.Settings.ProfileBased.Current.ShowSeenButNotTakenArtifactsInCodex)
 			RenderIcon(ICodexHelperApi.IArtifactProgress.Seen);
 			
 		void RenderIcon(ICodexHelperApi.IArtifactProgress progress, ISpriteEntry? iconOverride = null)
