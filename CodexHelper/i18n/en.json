@@ -3,11 +3,11 @@
 		"settings": {
 			"header": "Cards",
 			"ShowNotSeenCardsWhilePicking": {
-				"title": "Show new cards",
+				"title": "Show new card hints",
 				"description": "Displays hints about cards you have not seen before."
 			},
 			"ShowNotTakenCardsWhilePicking": {
-				"title": "Show not taken cards",
+				"title": "Show seen card hints",
 				"description": "Display hints about cards you have seen but not have picked before."
 			},
 			"CardHintsDisplayStyleWhilePicking": {
@@ -44,11 +44,11 @@
 		"settings": {
 			"header": "Artifacts",
 			"ShowNotSeenArtifactsWhilePicking": {
-				"title": "Show new artifacts",
+				"title": "Show new artifact hints",
 				"description": "Displays hints about artifacts you have not seen before."
 			},
 			"ShowNotTakenArtifactsWhilePicking": {
-				"title": "Show not taken artifacts",
+				"title": "Show seen artifact hints",
 				"description": "Display hints about artifacts you have seen but not have picked before."
 			},
 			"ArtifactHintsDisplayStyleWhilePicking": {
