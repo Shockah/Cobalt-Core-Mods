@@ -65,6 +65,7 @@ internal sealed class CardCodexProgress : IRegisterable
 	private static ISpriteEntry NewIcon = null!;
 	private static ISpriteEntry SeenIcon = null!;
 	private static ISpriteEntry TakenIcon = null!;
+	private static ISpriteEntry SeenDot = null!;
 	
 	private static CardReward? RenderedCardReward;
 	private static CardBrowse? RenderedCardBrowse;
@@ -74,6 +75,7 @@ internal sealed class CardCodexProgress : IRegisterable
 		NewIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardNew.png"));
 		SeenIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardSeen.png"));
 		TakenIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardTaken.png"));
+		SeenDot = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardSeenDot.png"));
 		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(CardReward), nameof(CardReward.Render)),
@@ -94,6 +96,12 @@ internal sealed class CardCodexProgress : IRegisterable
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.IsDiscovered)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_IsDiscovered_Postfix))
 		);
+
+		if (ModEntry.Instance.Helper.ModRegistry.LoadedMods.ContainsKey("Nickel.Essentials"))
+			ModEntry.Instance.Harmony.Patch(
+				original: AccessTools.AllAssemblies().First(a => a.GetName().Name == "Nickel.Essentials").GetType("Nickel.Essentials.LogbookReplacement").InnerTypes().SelectMany(t => t.GetMethods(AccessTools.all)).First(m => m.Name.StartsWith("<LogBook_Render_Prefix>g__RenderSeenCards") && m.ReturnType == typeof(int)),
+				transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Nickel_Essentials_LogbookReplacement_LogBook_Render_Prefix_RenderSeenCards_Transpiler))
+			);
 	}
 
 	private static void CardReward_Render_Prefix(CardReward __instance, G g)
@@ -282,5 +290,124 @@ internal sealed class CardCodexProgress : IRegisterable
 			return;
 
 		__result = true;
+	}
+
+	private static IEnumerable<CodeInstruction> Nickel_Essentials_LogbookReplacement_LogBook_Render_Prefix_RenderSeenCards_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		// ReSharper disable PossibleMultipleEnumeration
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find([
+					ILMatches.Ldarg(0),
+					ILMatches.Ldfld("g").CreateLdfldInstruction(out var ldfldG),
+				])
+				.Find([
+					ILMatches.AnyLdloc.CreateLdlocInstruction(out var ldlocLocals),
+					ILMatches.Ldfld("card").CreateLdfldInstruction(out var ldfldCard),
+				])
+				.Find(ILMatches.Stfld("hasIt"))
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0),
+					ldfldG,
+					ldlocLocals,
+					ldfldCard,
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Nickel_Essentials_LogbookReplacement_LogBook_Render_Prefix_RenderSeenCards_Transpiler_ModifyHasIt))),
+				])
+				.Find([
+					ILMatches.Ldloc<Box>(originalMethod).CreateLdlocInstruction(out var ldlocBox),
+					ILMatches.Call("IsHover"),
+				])
+				.Find([
+					ILMatches.Ldarg(0).ExtractLabels(out var labels),
+					ILMatches.Ldfld("g"),
+					ILMatches.Call("Pop"),
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
+					ldfldG,
+					ldlocLocals,
+					ldfldCard,
+					ldlocBox,
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Nickel_Essentials_LogbookReplacement_LogBook_Render_Prefix_RenderSeenCards_Transpiler_RenderSeen))),
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.GetDisplayName(@long: false), ex);
+			return instructions;
+		}
+		// ReSharper restore PossibleMultipleEnumeration
+	}
+
+	private static bool Nickel_Essentials_LogbookReplacement_LogBook_Render_Prefix_RenderSeenCards_Transpiler_ModifyHasIt(bool hasIt, G g, Card card)
+	{
+		if (hasIt)
+			return true;
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion)
+			return false;
+		if (!g.state.persistentStoryVars.IsCardSeen(card.Key(), null))
+			return false;
+		return true;
+	}
+
+	private static void Nickel_Essentials_LogbookReplacement_LogBook_Render_Prefix_RenderSeenCards_Transpiler_RenderSeen(G g, Card card, Box box)
+	{
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion)
+			return;
+
+		var key = card.Key();
+
+		if (g.state.persistentStoryVars.cardsOwned.Contains(key))
+			return;
+		if (!g.state.persistentStoryVars.IsCardSeen(card.Key(), null))
+			return;
+		
+		Draw.Sprite(SeenDot.Sprite, box.rect.x + 1, box.rect.y + 1);
+			
+		if (!box.IsHover())
+			return;
+			
+		g.tooltips.tooltips.Insert(0, new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::{nameof(CardCodexProgress)}")
+		{
+			Icon = SeenIcon.Sprite,
+			TitleColor = Colors.textChoice,
+			Title = ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "Seen", "title"]),
+			Description = ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "Seen", "description"]),
+		});
+	}
+}
+
+// TODO: move to Shrike
+file static class ShrikeExt
+{
+	public static ElementMatch<CodeInstruction> CreateLdfldInstruction(this ElementMatch<CodeInstruction> self, out ObjectRef<CodeInstruction> instructionReference)
+	{
+		var reference = new ObjectRef<CodeInstruction>(null!);
+		instructionReference = reference;
+		return self.WithDelegate((matcher, index, _) =>
+		{
+			matcher.MakePointerMatcher(index).CreateLdfldInstruction(out var instruction);
+			reference.Value = instruction;
+			return matcher;
+		});
+	}
+
+	// ReSharper disable once UnusedMethodReturnValue.Local
+	private static SequencePointerMatcher<CodeInstruction> TryCreateLdfldInstruction(this SequencePointerMatcher<CodeInstruction> self, out CodeInstruction? instruction)
+	{
+		instruction = null;
+		if (self.Element().operand is FieldInfo field)
+			instruction = new CodeInstruction(OpCodes.Ldfld, field);
+		return self;
+	}
+
+	// ReSharper disable once UnusedMethodReturnValue.Local
+	private static SequencePointerMatcher<CodeInstruction> CreateLdfldInstruction(this SequencePointerMatcher<CodeInstruction> self, out CodeInstruction instruction)
+	{
+		self.TryCreateLdfldInstruction(out var tryInstruction);
+		instruction = tryInstruction ?? throw new SequenceMatcherException($"{self.Element()} is not a field instruction.");
+		return self;
 	}
 }

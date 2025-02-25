@@ -6,6 +6,13 @@
     "Author": "Shockah",
     "RequiredApiVersion": "1.6.0",
     "EntryPointAssembly": "CodexHelper.dll",
+    "Dependencies": [
+        {
+            "UniqueName": "Nickel.Essentials",
+            "Version": "1.13.0",
+            "IsRequired": false
+        }
+    ],
     "UpdateChecks": {
         "NexusMods": {
             "ID": 20
