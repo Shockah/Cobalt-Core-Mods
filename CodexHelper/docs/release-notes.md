@@ -2,6 +2,14 @@
 
 # Release notes
 
+## 2.0.0
+Released 25 February 2025.
+
+* Changed the visuals of new card/artifact hints.
+* The mod now tracks cards and artifacts you have seen but not taken yet, and displays hints for them when choosing rewards. *This is not something the game does by itself, so the mod cannot know of anything you have seen before installing/updating the mod.*
+* The mod now makes already seen but not taken yet cards/artifacts visible in the Codex.
+* Added mod settings.
+
 ## 1.1.3
 Released 25 May 2024.
 
