@@ -4,12 +4,13 @@ using HarmonyLib;
 using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
+using Nickel.ModSettings;
 
 namespace Shockah.CodexHelper;
 
 internal sealed partial class ProfileSettings
 {
-	[JsonProperty] public bool TrackComboCompletion = true;
+	[JsonProperty] public bool ShowBeatenDifficulties = true;
 }
 
 internal sealed class ComboCodexProgress : IRegisterable
@@ -26,9 +27,32 @@ internal sealed class ComboCodexProgress : IRegisterable
 		);
 	}
 	
-	private static void NewRunOptions_DifficultyOptions_Postfix_Last(ArtifactReward __instance, G g, RunConfig runConfig)
+	public static IModSettingsApi.IModSetting MakeSettings(IPluginPackage<IModManifest> package, IModSettingsApi api)
+		=> api.MakeList([
+			api.MakePadding(
+				api.MakeText(
+					() => $"<c=white>{ModEntry.Instance.Localizations.Localize(["comboCodexProgress", "settings", "header"])}</c>"
+				).SetFont(DB.thicket),
+				8,
+				4
+			),
+			api.MakeCheckbox(
+				() => ModEntry.Instance.Localizations.Localize(["comboCodexProgress", "settings", nameof(ProfileSettings.ShowBeatenDifficulties), "title"]),
+				() => ModEntry.Instance.Settings.ProfileBased.Current.ShowBeatenDifficulties,
+				(_, _, value) => ModEntry.Instance.Settings.ProfileBased.Current.ShowBeatenDifficulties = value
+			).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.ShowBeatenDifficulties)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = ModEntry.Instance.Localizations.Localize(["comboCodexProgress", "settings", nameof(ProfileSettings.ShowBeatenDifficulties), "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["comboCodexProgress", "settings", nameof(ProfileSettings.ShowBeatenDifficulties), "description"]),
+				}
+			]),
+		]);
+	
+	private static void NewRunOptions_DifficultyOptions_Postfix_Last(G g, RunConfig runConfig)
 	{
-		if (!ModEntry.Instance.Settings.ProfileBased.Current.TrackComboCompletion)
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.ShowBeatenDifficulties)
 			return;
 		
 		var selectedCharKeys = runConfig.selectedChars.Select(d => d.Key()).ToHashSet();

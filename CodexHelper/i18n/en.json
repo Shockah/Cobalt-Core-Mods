@@ -82,6 +82,13 @@
 		}
 	},
 	"comboCodexProgress": {
+		"settings": {
+			"header": "Difficulties",
+			"ShowBeatenDifficulties": {
+				"title": "Show beaten difficulties",
+				"description": "Displays hints about difficulties you have already beaten on the new run screen."
+			}
+		},
 		"Done": {
 			"title": "Beaten",
 			"description": {
