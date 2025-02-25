@@ -16,6 +16,23 @@
 			"cardSubtitle": "taken"
 		}
 	},
+	"artifactCodexProgress": {
+		"NotSeen": {
+			"title": "New Artifact!",
+			"description": "You have not seen this artifact before.",
+			"artifactSubtitle": "NEW!"
+		},
+		"Seen": {
+			"title": "Seen Artifact",
+			"description": "You have seen but not taken this artifact before.",
+			"artifactSubtitle": "Seen"
+		},
+		"Taken": {
+			"title": "Taken Artifact",
+			"description": "You have taken this artifact before.",
+			"artifactSubtitle": "Taken"
+		}
+	},
 	"difficulty": {
 		"beaten": {
 			"anyCrew": "You've beaten this difficulty.",

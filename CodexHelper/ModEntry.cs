@@ -20,6 +20,7 @@ public sealed class ModEntry : SimpleMod
 	internal Settings Settings { get; }
 	
 	private static readonly IEnumerable<Type> RegisterableTypes = [
+		typeof(ArtifactCodexProgress),
 		typeof(CardCodexProgress),
 	];
 	
@@ -66,7 +67,6 @@ public sealed class ModEntry : SimpleMod
 			}));
 		};
 		
-		ArtifactRewardPatches.Apply(Harmony);
 		NewRunOptionsPatches.Apply(Harmony);
 	}
 

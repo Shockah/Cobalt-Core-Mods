@@ -23,13 +23,13 @@ internal sealed partial class ProfileSettings
 	[JsonConverter(typeof(StringEnumConverter))]
 	public enum CardProgressDisplayStyleWhilePickingEnum
 	{
-		Text, Icon
+		Text, Icon, Both
 	}
 }
 
-internal static class StateVarsExt
+internal static class StateVarsCardExt
 {
-	public static bool IsSeen(this StoryVars storyVars, string key, CardReward? route, bool isTaken = false)
+	public static bool IsCardSeen(this StoryVars storyVars, string key, CardReward? route, bool isTaken = false)
 	{
 		if (isTaken)
 			return true;
@@ -42,7 +42,7 @@ internal static class StateVarsExt
 		return seenCards.Contains(key);
 	}
 
-	public static void SetSeen(this StoryVars storyVars, string key, CardReward? route, bool isSeen = true)
+	public static void SetCardSeen(this StoryVars storyVars, string key, CardReward? route, bool isSeen = true)
 	{
 		var newlySeenCards = route is null ? null : ModEntry.Instance.Helper.ModData.ObtainModData<HashSet<string>>(route, "NewlySeenCards");
 		var seenCards = ModEntry.Instance.Helper.ModData.ObtainModData<HashSet<string>>(storyVars, "SeenCards");
@@ -62,18 +62,18 @@ internal static class StateVarsExt
 
 internal sealed class CardCodexProgress : IRegisterable
 {
-	private static ISpriteEntry CardNewIcon = null!;
-	private static ISpriteEntry CardSeenIcon = null!;
-	private static ISpriteEntry CardTakenIcon = null!;
+	private static ISpriteEntry NewIcon = null!;
+	private static ISpriteEntry SeenIcon = null!;
+	private static ISpriteEntry TakenIcon = null!;
 	
 	private static CardReward? RenderedCardReward;
 	private static CardBrowse? RenderedCardBrowse;
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		CardNewIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardNew.png"));
-		CardSeenIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardSeen.png"));
-		CardTakenIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardTaken.png"));
+		NewIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardNew.png"));
+		SeenIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardSeen.png"));
+		TakenIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardTaken.png"));
 		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(CardReward), nameof(CardReward.Render)),
@@ -107,7 +107,7 @@ internal sealed class CardCodexProgress : IRegisterable
 			return;
 		
 		foreach (var card in __instance.cards)
-			g.state.storyVars.SetSeen(card.Key(), __instance);
+			g.state.storyVars.SetCardSeen(card.Key(), __instance);
 		ModEntry.Instance.Helper.ModData.SetModData(__instance, "MarkedCardsAsSeen", true);
 	}
 
@@ -128,7 +128,7 @@ internal sealed class CardCodexProgress : IRegisterable
 	{
 		if (RenderedCardReward is { } cardRewardRoute)
 		{
-			if (ModEntry.Instance.Settings.ProfileBased.Current.CardProgressDisplayStyleWhilePicking != ProfileSettings.CardProgressDisplayStyleWhilePickingEnum.Icon)
+			if (ModEntry.Instance.Settings.ProfileBased.Current.CardProgressDisplayStyleWhilePicking == ProfileSettings.CardProgressDisplayStyleWhilePickingEnum.Text)
 				return;
 			
 			switch (ModEntry.Instance.Api.GetCardProgress(g.state, __instance.Key(), cardRewardRoute))
@@ -140,7 +140,7 @@ internal sealed class CardCodexProgress : IRegisterable
 					RenderIcon(ICodexHelperApi.ICardProgress.Seen);
 					return;
 				case ICodexHelperApi.ICardProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.TrackCardTakenCompletion:
-					RenderIcon(ICodexHelperApi.ICardProgress.Seen, CardNewIcon);
+					RenderIcon(ICodexHelperApi.ICardProgress.Seen, NewIcon);
 					return;
 				case ICodexHelperApi.ICardProgress.Taken:
 				default:
@@ -158,9 +158,9 @@ internal sealed class CardCodexProgress : IRegisterable
 		{
 			var icon = iconOverride ?? progress switch
 			{
-				ICodexHelperApi.ICardProgress.NotSeen => CardNewIcon,
-				ICodexHelperApi.ICardProgress.Seen => CardSeenIcon,
-				ICodexHelperApi.ICardProgress.Taken => CardTakenIcon,
+				ICodexHelperApi.ICardProgress.NotSeen => NewIcon,
+				ICodexHelperApi.ICardProgress.Seen => SeenIcon,
+				ICodexHelperApi.ICardProgress.Taken => TakenIcon,
 				_ => throw new ArgumentOutOfRangeException(nameof(progress), progress, null)
 			};
 			var texture = SpriteLoader.Get(icon.Sprite)!;
@@ -243,7 +243,7 @@ internal sealed class CardCodexProgress : IRegisterable
 	{
 		if (RenderedCardReward is not { } cardRewardRoute)
 			return rarityText;
-		if (ModEntry.Instance.Settings.ProfileBased.Current.CardProgressDisplayStyleWhilePicking != ProfileSettings.CardProgressDisplayStyleWhilePickingEnum.Text)
+		if (ModEntry.Instance.Settings.ProfileBased.Current.CardProgressDisplayStyleWhilePicking == ProfileSettings.CardProgressDisplayStyleWhilePickingEnum.Icon)
 			return rarityText;
 		
 		switch (ModEntry.Instance.Api.GetCardProgress(g.state, card.Key(), cardRewardRoute))
@@ -278,7 +278,7 @@ internal sealed class CardCodexProgress : IRegisterable
 			return;
 		if (!ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion)
 			return;
-		if (!state.persistentStoryVars.IsSeen(__instance.Key(), null))
+		if (!state.persistentStoryVars.IsCardSeen(__instance.Key(), null))
 			return;
 
 		__result = true;
