@@ -1,5 +1,28 @@
 ﻿{
 	"cardCodexProgress": {
+		"settings": {
+			"ShowNotSeenCardsWhilePicking": {
+				"title": "Show new cards",
+				"description": "Displays hints about cards you have not seen before."
+			},
+			"ShowNotTakenCardsWhilePicking": {
+				"title": "Show not taken cards",
+				"description": "Display hints about cards you have seen but not have picked before."
+			},
+			"CardHintsDisplayStyleWhilePicking": {
+				"title": "Card hints display style",
+				"description": "The style to use for displaying the new/seen hints.",
+				"value": {
+					"Text": "Text",
+					"Icon": "Icon",
+					"Both": "Both"
+				}
+			},
+			"ShowSeenButNotTakenCardsInCodex": {
+				"title": "Show seen cards in the Codex",
+				"description": "Show cards you have seen but not taken yet in the Codex."
+			}
+		},
 		"NotSeen": {
 			"title": "New Card!",
 			"description": "You have not seen this card before.",

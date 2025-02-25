@@ -116,13 +116,13 @@ internal sealed class ArtifactCodexProgress : IRegisterable
 			
 			switch (ModEntry.Instance.Api.GetArtifactProgress(g.state, __instance.artifacts[i].Key(), __instance))
 			{
-				case ICodexHelperApi.IArtifactProgress.NotSeen when ModEntry.Instance.Settings.ProfileBased.Current.TrackCardTakenCompletion || ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion:
+				case ICodexHelperApi.IArtifactProgress.NotSeen when ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactTakenCompletion || ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactSeenCompletion:
 					RenderIcon(ICodexHelperApi.IArtifactProgress.NotSeen);
 					continue;
-				case ICodexHelperApi.IArtifactProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion:
+				case ICodexHelperApi.IArtifactProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactSeenCompletion:
 					RenderIcon(ICodexHelperApi.IArtifactProgress.Seen);
 					continue;
-				case ICodexHelperApi.IArtifactProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.TrackCardTakenCompletion:
+				case ICodexHelperApi.IArtifactProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactTakenCompletion:
 					RenderIcon(ICodexHelperApi.IArtifactProgress.Seen, NewIcon);
 					continue;
 				case ICodexHelperApi.IArtifactProgress.Taken:
@@ -248,9 +248,9 @@ internal sealed class ArtifactCodexProgress : IRegisterable
 		
 		switch (ModEntry.Instance.Api.GetArtifactProgress(g.state, artifact.Key(), route))
 		{
-			case ICodexHelperApi.IArtifactProgress.NotSeen when ModEntry.Instance.Settings.ProfileBased.Current.TrackCardTakenCompletion || ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion:
+			case ICodexHelperApi.IArtifactProgress.NotSeen when ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactTakenCompletion || ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactSeenCompletion:
 				return GetModifiedText(ICodexHelperApi.ICardProgress.NotSeen);
-			case ICodexHelperApi.IArtifactProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.TrackCardTakenCompletion || ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion:
+			case ICodexHelperApi.IArtifactProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactTakenCompletion || ModEntry.Instance.Settings.ProfileBased.Current.TrackArtifactSeenCompletion:
 				return GetModifiedText(ICodexHelperApi.ICardProgress.Seen);
 			case ICodexHelperApi.IArtifactProgress.Taken:
 			default:

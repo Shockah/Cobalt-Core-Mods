@@ -11,17 +11,19 @@ using Nanoray.Shrike.Harmony;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Nickel;
+using Nickel.ModSettings;
 
 namespace Shockah.CodexHelper;
 
 internal sealed partial class ProfileSettings
 {
-	[JsonProperty] public bool TrackCardTakenCompletion = true;
-	[JsonProperty] public bool TrackCardSeenCompletion = true;
-	[JsonProperty] public CardProgressDisplayStyleWhilePickingEnum CardProgressDisplayStyleWhilePicking = CardProgressDisplayStyleWhilePickingEnum.Icon;
+	[JsonProperty] public bool ShowNotSeenCardsWhilePicking = true;
+	[JsonProperty] public bool ShowNotTakenCardsWhilePicking = true;
+	[JsonProperty] public CardHintsDisplayStyleWhilePickingEnum CardHintsDisplayStyleWhilePicking = CardHintsDisplayStyleWhilePickingEnum.Icon;
+	[JsonProperty] public bool ShowSeenButNotTakenCardsInCodex = true;
 
 	[JsonConverter(typeof(StringEnumConverter))]
-	public enum CardProgressDisplayStyleWhilePickingEnum
+	public enum CardHintsDisplayStyleWhilePickingEnum
 	{
 		Text, Icon, Both
 	}
@@ -107,6 +109,62 @@ internal sealed class CardCodexProgress : IRegisterable
 				transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Nickel_Essentials_LogbookReplacement_LogBook_Render_Prefix_RenderSeenCards_Transpiler))
 			);
 	}
+	
+	public static IModSettingsApi.IModSetting MakeSettings(IPluginPackage<IModManifest> package, IModSettingsApi api)
+		=> api.MakeList([
+			api.MakeCheckbox(
+				() => ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", nameof(ProfileSettings.ShowNotSeenCardsWhilePicking), "title"]),
+				() => ModEntry.Instance.Settings.ProfileBased.Current.ShowNotSeenCardsWhilePicking,
+				(_, _, value) => ModEntry.Instance.Settings.ProfileBased.Current.ShowNotSeenCardsWhilePicking = value
+			).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.ShowNotSeenCardsWhilePicking)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", nameof(ProfileSettings.ShowNotSeenCardsWhilePicking), "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", nameof(ProfileSettings.ShowNotSeenCardsWhilePicking), "description"]),
+				}
+			]),
+			api.MakeCheckbox(
+				() => ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", nameof(ProfileSettings.ShowNotTakenCardsWhilePicking), "title"]),
+				() => ModEntry.Instance.Settings.ProfileBased.Current.ShowNotTakenCardsWhilePicking,
+				(_, _, value) => ModEntry.Instance.Settings.ProfileBased.Current.ShowNotTakenCardsWhilePicking = value
+			).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.ShowNotTakenCardsWhilePicking)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", nameof(ProfileSettings.ShowNotTakenCardsWhilePicking), "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", nameof(ProfileSettings.ShowNotTakenCardsWhilePicking), "description"]),
+				}
+			]),
+			api.MakeEnumStepper(
+				title: () => ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", nameof(ProfileSettings.CardHintsDisplayStyleWhilePicking), "title"]),
+				getter: () => ModEntry.Instance.Settings.ProfileBased.Current.CardHintsDisplayStyleWhilePicking,
+				setter: value => ModEntry.Instance.Settings.ProfileBased.Current.CardHintsDisplayStyleWhilePicking = value
+			).SetValueFormatter(
+				value => ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", nameof(ProfileSettings.CardHintsDisplayStyleWhilePicking), "value", value.ToString()])
+			).SetValueWidth(
+				_ => 50
+			).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.CardHintsDisplayStyleWhilePicking)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", nameof(ProfileSettings.CardHintsDisplayStyleWhilePicking), "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", nameof(ProfileSettings.CardHintsDisplayStyleWhilePicking), "description"]),
+				}
+			]),
+			api.MakeCheckbox(
+				() => ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", nameof(ProfileSettings.ShowSeenButNotTakenCardsInCodex), "title"]),
+				() => ModEntry.Instance.Settings.ProfileBased.Current.ShowSeenButNotTakenCardsInCodex,
+				(_, _, value) => ModEntry.Instance.Settings.ProfileBased.Current.ShowSeenButNotTakenCardsInCodex = value
+			).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.ShowSeenButNotTakenCardsInCodex)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", nameof(ProfileSettings.ShowSeenButNotTakenCardsInCodex), "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["cardCodexProgress", "settings", nameof(ProfileSettings.ShowSeenButNotTakenCardsInCodex), "description"]),
+				}
+			]),
+		]);
 
 	private static void CardReward_Render_Prefix(CardReward __instance, G g)
 	{
@@ -140,20 +198,18 @@ internal sealed class CardCodexProgress : IRegisterable
 	{
 		if (RenderedCardReward is { } cardRewardRoute)
 		{
-			if (ModEntry.Instance.Settings.ProfileBased.Current.CardProgressDisplayStyleWhilePicking == ProfileSettings.CardProgressDisplayStyleWhilePickingEnum.Text)
+			if (ModEntry.Instance.Settings.ProfileBased.Current.CardHintsDisplayStyleWhilePicking == ProfileSettings.CardHintsDisplayStyleWhilePickingEnum.Text)
 				return;
 			
 			switch (ModEntry.Instance.Api.GetCardProgress(g.state, __instance.Key(), cardRewardRoute))
 			{
-				case ICodexHelperApi.ICardProgress.NotSeen when ModEntry.Instance.Settings.ProfileBased.Current.TrackCardTakenCompletion || ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion:
+				case ICodexHelperApi.ICardProgress.NotSeen when ModEntry.Instance.Settings.ProfileBased.Current.ShowNotTakenCardsWhilePicking || ModEntry.Instance.Settings.ProfileBased.Current.ShowNotSeenCardsWhilePicking:
 					RenderIcon(ICodexHelperApi.ICardProgress.NotSeen);
 					return;
-				case ICodexHelperApi.ICardProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion:
+				case ICodexHelperApi.ICardProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.ShowNotTakenCardsWhilePicking:
 					RenderIcon(ICodexHelperApi.ICardProgress.Seen);
 					return;
-				case ICodexHelperApi.ICardProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.TrackCardTakenCompletion:
-					RenderIcon(ICodexHelperApi.ICardProgress.Seen, NewIcon);
-					return;
+				case ICodexHelperApi.ICardProgress.Seen:
 				case ICodexHelperApi.ICardProgress.Taken:
 				default:
 					break;
@@ -162,13 +218,13 @@ internal sealed class CardCodexProgress : IRegisterable
 		else if (RenderedCardBrowse is not null)
 		{
 			var progress = ModEntry.Instance.Api.GetCardProgress(g.state, __instance.Key());
-			if (progress == ICodexHelperApi.ICardProgress.Seen && ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion)
+			if (progress == ICodexHelperApi.ICardProgress.Seen && ModEntry.Instance.Settings.ProfileBased.Current.ShowSeenButNotTakenCardsInCodex)
 				RenderIcon(ICodexHelperApi.ICardProgress.Seen);
 		}
 
-		void RenderIcon(ICodexHelperApi.ICardProgress progress, ISpriteEntry? iconOverride = null)
+		void RenderIcon(ICodexHelperApi.ICardProgress progress)
 		{
-			var icon = iconOverride ?? progress switch
+			var icon = progress switch
 			{
 				ICodexHelperApi.ICardProgress.NotSeen => NewIcon,
 				ICodexHelperApi.ICardProgress.Seen => SeenIcon,
@@ -255,14 +311,14 @@ internal sealed class CardCodexProgress : IRegisterable
 	{
 		if (RenderedCardReward is not { } cardRewardRoute)
 			return rarityText;
-		if (ModEntry.Instance.Settings.ProfileBased.Current.CardProgressDisplayStyleWhilePicking == ProfileSettings.CardProgressDisplayStyleWhilePickingEnum.Icon)
+		if (ModEntry.Instance.Settings.ProfileBased.Current.CardHintsDisplayStyleWhilePicking == ProfileSettings.CardHintsDisplayStyleWhilePickingEnum.Icon)
 			return rarityText;
 		
 		switch (ModEntry.Instance.Api.GetCardProgress(g.state, card.Key(), cardRewardRoute))
 		{
-			case ICodexHelperApi.ICardProgress.NotSeen when ModEntry.Instance.Settings.ProfileBased.Current.TrackCardTakenCompletion || ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion:
+			case ICodexHelperApi.ICardProgress.NotSeen when ModEntry.Instance.Settings.ProfileBased.Current.ShowNotTakenCardsWhilePicking || ModEntry.Instance.Settings.ProfileBased.Current.ShowNotSeenCardsWhilePicking:
 				return GetModifiedText(ICodexHelperApi.ICardProgress.NotSeen);
-			case ICodexHelperApi.ICardProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.TrackCardTakenCompletion || ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion:
+			case ICodexHelperApi.ICardProgress.Seen when ModEntry.Instance.Settings.ProfileBased.Current.ShowNotTakenCardsWhilePicking:
 				return GetModifiedText(ICodexHelperApi.ICardProgress.Seen);
 			case ICodexHelperApi.ICardProgress.Taken:
 			default:
@@ -288,7 +344,7 @@ internal sealed class CardCodexProgress : IRegisterable
 			return;
 		if (RenderedCardBrowse is null)
 			return;
-		if (!ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion)
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.ShowSeenButNotTakenCardsInCodex)
 			return;
 		if (!state.persistentStoryVars.IsCardSeen(__instance.Key(), null))
 			return;
@@ -343,7 +399,7 @@ internal sealed class CardCodexProgress : IRegisterable
 	{
 		if (hasIt)
 			return;
-		if (!ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion)
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.ShowSeenButNotTakenCardsInCodex)
 			return;
 		if (!g.state.persistentStoryVars.IsCardSeen(kvp.Key, null))
 			return;
@@ -352,7 +408,7 @@ internal sealed class CardCodexProgress : IRegisterable
 
 	private static void LogBook_Render_Transpiler_RenderSeen(G g, KeyValuePair<string, CardMeta> kvp, Box box)
 	{
-		if (!ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion)
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.ShowSeenButNotTakenCardsInCodex)
 			return;
 
 		if (g.state.persistentStoryVars.cardsOwned.Contains(kvp.Key))
@@ -427,7 +483,7 @@ internal sealed class CardCodexProgress : IRegisterable
 	{
 		if (hasIt)
 			return true;
-		if (!ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion)
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.ShowSeenButNotTakenCardsInCodex)
 			return false;
 		if (!g.state.persistentStoryVars.IsCardSeen(card.Key(), null))
 			return false;
@@ -436,7 +492,7 @@ internal sealed class CardCodexProgress : IRegisterable
 
 	private static void Nickel_Essentials_LogbookReplacement_LogBook_Render_Prefix_RenderSeenCards_Transpiler_RenderSeen(G g, Card card, Box box)
 	{
-		if (!ModEntry.Instance.Settings.ProfileBased.Current.TrackCardSeenCompletion)
+		if (!ModEntry.Instance.Settings.ProfileBased.Current.ShowSeenButNotTakenCardsInCodex)
 			return;
 
 		var key = card.Key();
