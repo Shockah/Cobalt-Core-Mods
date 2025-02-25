@@ -33,10 +33,13 @@
 			"artifactSubtitle": "Taken"
 		}
 	},
-	"difficulty": {
-		"beaten": {
-			"anyCrew": "You've beaten this difficulty.",
-			"specificCrew": "You've beaten this difficulty with this crew."
+	"comboCodexProgress": {
+		"Done": {
+			"title": "Beaten",
+			"description": {
+				"anyCrew": "You've beaten this difficulty.",
+				"specificCrew": "You've beaten this difficulty with this crew."
+			}
 		}
 	}
 }

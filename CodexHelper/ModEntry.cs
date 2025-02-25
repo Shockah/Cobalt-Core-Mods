@@ -22,6 +22,7 @@ public sealed class ModEntry : SimpleMod
 	private static readonly IEnumerable<Type> RegisterableTypes = [
 		typeof(ArtifactCodexProgress),
 		typeof(CardCodexProgress),
+		typeof(ComboCodexProgress),
 	];
 	
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
@@ -66,8 +67,6 @@ public sealed class ModEntry : SimpleMod
 				helper.Storage.SaveJson(helper.Storage.GetMainStorageFile("json"), Settings);
 			}));
 		};
-		
-		NewRunOptionsPatches.Apply(Harmony);
 	}
 
 	public override object GetApi(IModManifest requestingMod)
