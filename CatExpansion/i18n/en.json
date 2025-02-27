@@ -1,4 +1,14 @@
 ﻿{
+	"settings": {
+		"TotalExeDistribution": {
+			"title": "Total EXE card distribution",
+			"description": "The higher the distribution, the more common EXE cards are. Does not include the <c=card>CAT.EXE</c> card. Has no effect if set to a higher value than you have installed EXE cards."
+		},
+		"EnforceExesFromCurrentCrew": {
+			"title": "Enforce EXEs from current crew",
+			"description": "EXE cards for the other crew members will always be included in the pool."
+		}
+	},
 	"artifact": {
 		"HotReload": {
 			"name": "HOT RELOAD",

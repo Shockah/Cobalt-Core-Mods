@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using Nickel.Essentials;
+using Nickel.ModSettings;
 
 namespace Shockah.CatExpansion;
 
@@ -86,6 +87,44 @@ public sealed class ModEntry : SimpleMod
 
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
+		
+		helper.ModRegistry.AwaitApi<IModSettingsApi>(
+			"Nickel.ModSettings",
+			api => api.RegisterModSettings(api.MakeList([
+				api.MakeProfileSelector(
+					() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
+					Settings.ProfileBased
+				),
+				api.MakeNumericStepper(
+					() => Localizations.Localize(["settings", nameof(ProfileSettings.TotalExeDistribution), "title"]),
+					() => Settings.ProfileBased.Current.TotalExeDistribution,
+					value => Settings.ProfileBased.Current.TotalExeDistribution = value,
+					minValue: 1
+				).SetTooltips(() => [
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.TotalExeDistribution)}")
+					{
+						TitleColor = Colors.textBold,
+						Title = Localizations.Localize(["settings", nameof(ProfileSettings.TotalExeDistribution), "title"]),
+						Description = Localizations.Localize(["settings", nameof(ProfileSettings.TotalExeDistribution), "description"])
+					}
+				]),
+				api.MakeCheckbox(
+					() => Localizations.Localize(["settings", nameof(ProfileSettings.EnforceExesFromCurrentCrew), "title"]),
+					() => Settings.ProfileBased.Current.EnforceExesFromCurrentCrew,
+					(_, _, value) => Settings.ProfileBased.Current.EnforceExesFromCurrentCrew = value
+				).SetTooltips(() => [
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.EnforceExesFromCurrentCrew)}")
+					{
+						TitleColor = Colors.textBold,
+						Title = Localizations.Localize(["settings", nameof(ProfileSettings.EnforceExesFromCurrentCrew), "title"]),
+						Description = Localizations.Localize(["settings", nameof(ProfileSettings.EnforceExesFromCurrentCrew), "description"])
+					}
+				]),
+			]).SubscribeToOnMenuClose(_ =>
+			{
+				helper.Storage.SaveJson(helper.Storage.GetMainStorageFile("json"), Settings);
+			}))
+		);
 	}
 
 	internal static Rarity GetCardRarity(Type type)

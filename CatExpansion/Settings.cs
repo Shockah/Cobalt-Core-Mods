@@ -1,8 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using Nickel;
-using System;
-using System.Collections.Generic;
-using Shockah.MORE;
+using Nickel.ModSettings;
 
 namespace Shockah.CatExpansion;
 
