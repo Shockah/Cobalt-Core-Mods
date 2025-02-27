@@ -16,6 +16,13 @@ public interface IEssentialsApi
 	Type? GetExeCardTypeForDeck(Deck deck);
 	
 	/// <summary>
+	/// Returns the <see cref="Deck"/> for the given EXE card type (see <a href="https://cobaltcore.wiki.gg/wiki/CAT">CAT</a>), if the type represents such a card.
+	/// </summary>
+	/// <param name="type">The EXE card type.</param>
+	/// <returns>The <see cref="Deck"/> for the given EXE card type, or <c>null</c> if the type does not represent such a card.</returns>
+	Deck? GetDeckForExeCardType(Type type);
+	
+	/// <summary>
 	/// Checks whether the given type represents an EXE card type (see <a href="https://cobaltcore.wiki.gg/wiki/CAT">CAT</a>).
 	/// </summary>
 	/// <param name="type">The type.</param>
