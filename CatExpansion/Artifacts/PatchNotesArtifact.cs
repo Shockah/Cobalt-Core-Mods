@@ -10,16 +10,15 @@ using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 
-namespace Shockah.MORE;
+namespace Shockah.CatExpansion;
 
 internal sealed class PatchNotesArtifact : Artifact, IRegisterable
 {
-	internal static IArtifactEntry ArtifactEntry = null!;
 	private static ACardOffering? CardOfferingActionContext;
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		ArtifactEntry = helper.Content.Artifacts.RegisterArtifact("PatchNotes", new()
+		helper.Content.Artifacts.RegisterArtifact("PatchNotes", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
@@ -27,9 +26,9 @@ internal sealed class PatchNotesArtifact : Artifact, IRegisterable
 				owner = Deck.catartifact,
 				pools = [ArtifactPool.Common],
 			},
-			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifact/CAT/PatchNotes.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "CAT", "PatchNotes", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "CAT", "PatchNotes", "description"]).Localize
+			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifact/PatchNotes.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "PatchNotes", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "PatchNotes", "description"]).Localize
 		});
 		
 		ModEntry.Instance.Harmony.Patch(
@@ -45,14 +44,6 @@ internal sealed class PatchNotesArtifact : Artifact, IRegisterable
 			original: AccessTools.DeclaredMethod(typeof(CardReward), nameof(CardReward.GetUpgrade)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardReward_GetUpgrade_Transpiler))
 		);
-	}
-
-	public static void UpdateSettings(IPluginPackage<IModManifest> package, IModHelper helper, ProfileSettings settings)
-	{
-		ArtifactEntry.Configuration.Meta.pools = ArtifactEntry.Configuration.Meta.pools
-			.Where(p => p != ArtifactPool.Unreleased)
-			.Concat(settings.DisabledArtifacts.Contains(ArtifactEntry.UniqueName) ? [ArtifactPool.Unreleased] : [])
-			.ToArray();
 	}
 
 	private static void Card_GetActionsOverridden_Postfix(Card __instance, State s, ref List<CardAction> __result)

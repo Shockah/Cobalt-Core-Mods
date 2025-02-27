@@ -4,6 +4,10 @@
 			"name": "HOT RELOAD",
 			"description": "Gain 1 extra <c=energy>ENERGY</c> every turn. <c=downside>On pickup, add 3 <c=card>Basic Shots</c> and a <c=card>Basic Block</c> to your deck.</c>"
 		},
+		"PatchNotes": {
+			"name": "PATCH NOTES",
+			"description": "EXE cards can produce pre-upgraded cards."
+		},
 		"PersonalData": {
 			"name": "PERSONAL DATA",
 			"description": "On pickup, choose 1 card from each crew member to upgrade.",

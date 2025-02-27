@@ -41,14 +41,6 @@
 				"ShipSwap": "Ship Swap"
 			}
 		},
-		"artifacts": {
-			"name": "Artifacts",
-			"values": {
-				"CAT": {
-					"PatchNotes": "CAT: Patch Notes"
-				}
-			}
-		},
 		"ephemeralUpgrades": {
 			"name": "Ephemeral upgrades",
 			"description": "Whether Ephemeral cards should be upgradable."
@@ -64,14 +56,6 @@
 		"toothCards": {
 			"name": "Enabled Tooth cards",
 			"description": "The cards that will be offered by <c=tooth>Tooth</c>."
-		}
-	},
-	"artifact": {
-		"CAT": {
-			"PatchNotes": {
-				"name": "PATCH NOTES",
-				"description": "EXE cards can produce pre-upgraded cards."
-			}
 		}
 	},
 	"event": {

@@ -1,12 +1,11 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Nickel.Essentials;
 
 namespace Shockah.MORE;
 
@@ -15,7 +14,6 @@ internal sealed class ModEntry : SimpleMod
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal Harmony Harmony { get; }
 	internal IKokoroApi.IV2 KokoroApi { get; }
-	internal IEssentialsApi EssentialsApi { get; }
 
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
@@ -74,17 +72,11 @@ internal sealed class ModEntry : SimpleMod
 		typeof(ShipSwapEvent),
 	];
 
-	internal static IReadOnlyList<Type> ArtifactTypes { get; } = [
-		// CAT
-		typeof(PatchNotesArtifact),
-	];
-
 	internal static IEnumerable<Type> RegisterableTypes { get; }
 		= [
 			.. StatusTypes,
 			.. EnemyTypes,
 			.. EventTypes,
-			.. ArtifactTypes,
 			typeof(EphemeralUpgrades),
 			typeof(ReleaseUpgrades),
 			typeof(CardSelectFilters),
@@ -97,7 +89,6 @@ internal sealed class ModEntry : SimpleMod
 		Instance = this;
 		Harmony = new(package.Manifest.UniqueName);
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
-		EssentialsApi = helper.ModRegistry.GetApi<IEssentialsApi>("Nickel.Essentials")!;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -120,29 +111,6 @@ internal sealed class ModEntry : SimpleMod
 				api.MakeProfileSelector(
 					() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
 					Settings.ProfileBased
-				),
-				api.MakeButton(
-					() => Localizations.Localize(["settings", "artifacts", "name"]),
-					(g, route) => route.OpenSubroute(g, api.MakeModSettingsRoute(api.MakeList([
-						api.MakeHeader(
-							() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
-							() => Localizations.Localize(["settings", "artifacts", "name"])
-						),
-						api.MakeList([
-							api.MakeCheckbox(
-								() => Localizations.Localize(["settings", "artifacts", "values", "CAT", "PatchNotes"]),
-								() => !Settings.ProfileBased.Current.DisabledArtifacts.Contains(PatchNotesArtifact.ArtifactEntry.UniqueName),
-								(_, _, value) =>
-								{
-									if (value)
-										Settings.ProfileBased.Current.DisabledArtifacts.Remove(PatchNotesArtifact.ArtifactEntry.UniqueName);
-									else
-										Settings.ProfileBased.Current.DisabledArtifacts.Add(PatchNotesArtifact.ArtifactEntry.UniqueName);
-								}
-							).SetTooltips(() => new PatchNotesArtifact().GetTooltips())
-						]),
-						api.MakeBackButton()
-					]).SetSpacing(8)))
 				),
 				api.MakeButton(
 					() => Localizations.Localize(["settings", "events", "name"]),
