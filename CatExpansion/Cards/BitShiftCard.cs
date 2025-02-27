@@ -36,16 +36,16 @@ public sealed class BitShiftCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new AMove { targetPlayer = false, dir = -1 },
+				new EnemyMoveAction { dir = -1 },
 				new AMove { targetPlayer = true, dir = 2 },
 			],
 			Upgrade.B => [
 				new AMove { targetPlayer = true, dir = -1 },
-				new AMove { targetPlayer = false, dir = -2 },
+				new EnemyMoveAction { dir = -2 },
 				new AMove { targetPlayer = true, dir = 4 },
 			],
 			_ => [
-				new AMove { targetPlayer = false, dir = -1 },
+				new EnemyMoveAction { dir = -1 },
 				new AMove { targetPlayer = true, dir = 2 },
 			],
 		};

@@ -9,6 +9,18 @@
 			"description": "EXE cards for the other crew members will always be included in the pool."
 		}
 	},
+	"action": {
+		"EnemyMove": {
+			"left": {
+				"name": "Enemy Move Left",
+				"description": "Instantly move the enemy {{Amount}} spaces to the <c=keyword>LEFT</c>."
+			},
+			"right": {
+				"name": "Enemy Move Right",
+				"description": "Instantly move the enemy {{Amount}} spaces to the <c=keyword>RIGHT</c>."
+			}
+		}
+	},
 	"artifact": {
 		"HotReload": {
 			"name": "HOT RELOAD",
