@@ -1,4 +1,10 @@
 ﻿{
+	"artifact": {
+		"SmallWormhole": {
+			"name": "SMALL WORMHOLE",
+			"description": "On pickup, gain 1 of 4 common artifacts from a character not in your current crew. Gain an EXE card for the owner of the chosen artifact."
+		}
+	},
 	"card": {
 		"BackToBasics": {
 			"name": "Back to Basics",

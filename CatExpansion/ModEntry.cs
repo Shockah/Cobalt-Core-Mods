@@ -5,6 +5,7 @@ using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
+using Nickel.Essentials;
 using Shockah.Kokoro;
 
 namespace Shockah.CatExpansion;
@@ -14,6 +15,7 @@ public sealed class ModEntry : SimpleMod
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly IHarmony Harmony;
 	internal readonly IKokoroApi.IV2 KokoroApi;
+	internal readonly IEssentialsApi EssentialsApi;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
@@ -44,6 +46,7 @@ public sealed class ModEntry : SimpleMod
 		];
 
 	private static readonly IReadOnlyList<Type> CommonArtifacts = [
+		typeof(SmallWormholeArtifact),
 	];
 
 	private static readonly IReadOnlyList<Type> BossArtifacts = [
@@ -66,6 +69,7 @@ public sealed class ModEntry : SimpleMod
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
+		EssentialsApi = helper.ModRegistry.GetApi<IEssentialsApi>("Nickel.Essentials")!;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
