@@ -50,6 +50,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	private static readonly IReadOnlyList<Type> BossArtifacts = [
+		typeof(HotReloadArtifact),
 	];
 
 	private static readonly IEnumerable<Type> AllArtifactTypes

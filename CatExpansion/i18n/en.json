@@ -1,5 +1,9 @@
 ﻿{
 	"artifact": {
+		"HotReload": {
+			"name": "HOT RELOAD",
+			"description": "Gain 1 extra <c=energy>ENERGY</c> every turn. <c=downside>On pickup, add 3 <c=card>Basic Shots</c> and a <c=card>Basic Block</c> to your deck.</c>"
+		},
 		"SmallWormhole": {
 			"name": "SMALL WORMHOLE",
 			"description": "On pickup, gain 1 of 4 common artifacts from a character not in your current crew. Gain an EXE card for the owner of the chosen artifact."
