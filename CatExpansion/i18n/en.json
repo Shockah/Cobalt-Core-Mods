@@ -1,0 +1,53 @@
+﻿{
+	"card": {
+		"BackToBasics": {
+			"name": "Back to Basics",
+			"description": {
+				"None": "Attack for 2. Add a <c=cardtrait>temp</c> <c=card>Basic Shot</c> to your hand.",
+				"A": "Attack for 2. Add a <c=cardtrait>temp</c> <c=card>Basic Shot</c> with <c=cardtrait>exhaust</c> to your hand.",
+				"B": "Attack for 2. Add a <c=cardtrait>temp</c> <c=card>Basic Shot B</c> to your hand."
+			}
+		},
+		"BitShift": {
+			"name": "Bit Shift"
+		},
+		"Callback": {
+			"name": "Callback",
+			"description": {
+				"None": "Choose a <c=cardtrait>temp</c> card in any pile. Make a copy of it.",
+				"A": "Choose a <c=cardtrait>temp</c> card in any pile. Make a copy of it.",
+				"B": "Choose a <c=cardtrait>temp</c> card in any pile. Make an upgraded copy of it."
+			},
+			"browseTitle": {
+				"copy": "Choose a <c=cardtrait>temp</c> card to make a copy of.",
+				"copyAndUpgrade": "Choose a <c=cardtrait>temp</c> card to make an upgraded copy of."
+			}
+		},
+		"DroneDuality": {
+			"name": "Drone Duality"
+		},
+		"PriorityQueue": {
+			"name": "Priority Queue"
+		},
+		"Recollection": {
+			"name": "Recollection",
+			"description": {
+				"None": "Draw a <c=cardtrait>temp</c> card. Draw 2 cards.",
+				"A": "Draw a <c=cardtrait>temp</c> card. Draw 4 cards.",
+				"B": "Draw 3 <c=cardtrait>temp</c> cards."
+			}
+		},
+		"SafetyFirst": {
+			"name": "Safety First"
+		},
+		"StaticShot": {
+			"name": "Static Shot"
+		},
+		"SwordAndShield": {
+			"name": "Sword and Shield"
+		},
+		"TripleThreat": {
+			"name": "Triple Threat"
+		}
+	}
+}

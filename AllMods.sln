@@ -50,6 +50,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_Media.UISuite", "_Media.UI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Destiny", "Destiny\Destiny.csproj", "{AB3A5963-B65C-4318-81AE-76313127DD03}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatExpansion", "CatExpansion\CatExpansion.csproj", "{835C726C-30F6-493A-9764-C3A0B3AB11CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -128,6 +130,10 @@ Global
 		{AB3A5963-B65C-4318-81AE-76313127DD03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB3A5963-B65C-4318-81AE-76313127DD03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB3A5963-B65C-4318-81AE-76313127DD03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{835C726C-30F6-493A-9764-C3A0B3AB11CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{835C726C-30F6-493A-9764-C3A0B3AB11CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{835C726C-30F6-493A-9764-C3A0B3AB11CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{835C726C-30F6-493A-9764-C3A0B3AB11CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

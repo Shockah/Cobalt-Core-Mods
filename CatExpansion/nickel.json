@@ -1,0 +1,16 @@
+﻿{
+	"UniqueName": "Shockah.CatExpansion",
+	"Version": "{{ModVersion}}",
+	"DisplayName": "//cat.exe Expansion",
+	"Description": "Expands upon CAT, fleshing out her characters to be more in line with others.",
+	"Author": "Arin, Shockah",
+	"RequiredApiVersion": "1.13.0",
+	"EntryPointAssembly": "CatExpansion.dll",
+	"LoadPhase": "AfterDbInit",
+	"Dependencies": [
+		{
+			"UniqueName": "Shockah.Kokoro",
+			"Version": "2.3.0"
+		}
+	]
+}
