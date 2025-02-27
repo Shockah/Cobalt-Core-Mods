@@ -28,4 +28,11 @@ public interface IEssentialsApi
 	/// <param name="type">The type.</param>
 	/// <returns>Whether the given type represents an EXE card type.</returns>
 	bool IsExeCardType(Type type);
+	
+	/// <summary>
+	/// Checks whether an EXE card for the given deck is currently blacklisted from being offered during a run.
+	/// </summary>
+	/// <param name="deck">The deck to check for.</param>
+	/// <returns>Whether an EXE card for the given deck is currently blacklisted.</returns>
+	bool IsBlacklistedExeOffering(Deck deck);
 }
