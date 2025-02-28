@@ -53,6 +53,12 @@
         "TraceProtectionLink": {
             "name": "TRACE PROTECTION LINK",
             "description": "Whenever you play a <c=cardtrait>limited</c> card, gain 1 <c=status>temp shield</c>."
+        },
+        "Duo": {
+            "NatashaDizzy": {
+                "name": "TBD",
+                "description": "Each combat, your enemy starts with 2 <c=status>MITOSIS</c>. The first time your enemy's <c=status>SHIELD</c> reduces to 0 each combat, they lose 2 <c=status>MITOSIS</c> and you gain 1."
+            }
         }
     },
     "card": {
