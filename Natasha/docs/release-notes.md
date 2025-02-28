@@ -9,6 +9,7 @@
 * Nerfed the If Else B card: changed from Limited 3 to Limited 2.
 * Nerfed the Remove Limiter card: added Recycle to the Limiter trash card it creates.
 * Changed the Hijack Engines card's upgrades.
+* Visually changed the Reprogram card.
 
 ## 1.3.1
 Released 8 December 2024.
