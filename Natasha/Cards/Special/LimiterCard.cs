@@ -29,7 +29,7 @@ internal sealed class LimiterCard : Card, IRegisterable, IHasCustomCardTraits
 		=> new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Limited.Trait };
 
 	public override CardData GetData(State state)
-		=> new() { cost = 0, temporary = true };
+		=> new() { cost = 0, temporary = true, recycle = true };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [];
