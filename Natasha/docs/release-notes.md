@@ -4,8 +4,9 @@
 
 ## Upcoming release
 
-* Nerfed the If Else B card by changing it from Limited 3 to Limited 2.
-* Nerfed the Remove Limiter card by adding Recycle to the Limiter trash card.
+* Buffed the Self-altering Code card: added Retain to base and A; changed B from Limited 2 to Limited 3.
+* Nerfed the If Else B card: changed from Limited 3 to Limited 2.
+* Nerfed the Remove Limiter card: added Recycle to the Limiter trash card it creates.
 
 ## 1.3.1
 Released 8 December 2024.

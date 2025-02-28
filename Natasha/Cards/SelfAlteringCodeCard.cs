@@ -24,7 +24,7 @@ internal sealed class SelfAlteringCodeCard : Card, IRegisterable, IHasCustomCard
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "SelfAlteringCode", "name"]).Localize
 		});
 
-		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 3);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
@@ -38,7 +38,7 @@ internal sealed class SelfAlteringCodeCard : Card, IRegisterable, IHasCustomCard
 		=> upgrade switch
 		{
 			Upgrade.B => new() { cost = 1, description = ModEntry.Instance.Localizations.Localize(["card", "SelfAlteringCode", "description", upgrade.ToString()]) },
-			_ => new() { cost = 1, exhaust = true, description = ModEntry.Instance.Localizations.Localize(["card", "SelfAlteringCode", "description", upgrade.ToString()]) },
+			_ => new() { cost = 1, exhaust = true, retain = true, description = ModEntry.Instance.Localizations.Localize(["card", "SelfAlteringCode", "description", upgrade.ToString()]) },
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
