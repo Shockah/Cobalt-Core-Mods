@@ -41,15 +41,11 @@ internal sealed class ReprogramCard : Card, IRegisterable, IHasCustomCardTraits
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new OneLinerAction
-			{
-				Spacing = 5,
-				Actions = [
-					new AStatus { targetPlayer = false, status = Reprogram.ReprogrammedStatus.Status, statusAmount = 1, disabled = flipped },
-					new ASpawn { thing = new RepairKit(), disabled = !flipped },
-				]
-			},
-			new SpecificUpgradeAddCardAction { Upgrade = upgrade, card = new DeprogramCard { upgrade = upgrade }, amount = 1, destination = CardDestination.Discard },
+			new AStatus { targetPlayer = false, status = Reprogram.ReprogrammedStatus.Status, statusAmount = 1, disabled = flipped },
+			new SpecificUpgradeAddCardAction { Upgrade = upgrade, card = new DeprogramCard { upgrade = upgrade }, amount = 1, destination = CardDestination.Discard, disabled = flipped },
+			new ADummyAction(),
+			new ASpawn { thing = new RepairKit(), disabled = !flipped },
+			new SpecificUpgradeAddCardAction { Upgrade = upgrade, card = new DeprogramCard { upgrade = upgrade }, amount = 1, destination = CardDestination.Discard, disabled = !flipped },
 		];
 
 	private sealed class SpecificUpgradeAddCardAction : AAddCard
