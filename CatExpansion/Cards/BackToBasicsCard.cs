@@ -19,7 +19,7 @@ public sealed class BackToBasicsCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/BackToBasics.png"), StableSpr.cards_peri).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Card/BackToBasics.png"), StableSpr.cards_peri).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BackToBasics", "name"]).Localize,
 		});
 	}

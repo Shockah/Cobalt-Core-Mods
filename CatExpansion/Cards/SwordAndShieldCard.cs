@@ -19,7 +19,7 @@ public sealed class SwordAndShieldCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/SwordAndShield.png"), StableSpr.cards_ShieldGun).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Card/SwordAndShield.png"), StableSpr.cards_ShieldGun).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "SwordAndShield", "name"]).Localize,
 		});
 	}

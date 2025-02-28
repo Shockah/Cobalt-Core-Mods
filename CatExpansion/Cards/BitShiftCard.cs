@@ -19,7 +19,7 @@ public sealed class BitShiftCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/BitShift.png"), StableSpr.cards_ShiftShot).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Card/BitShift.png"), StableSpr.cards_ShiftShot).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BitShift", "name"]).Localize,
 		});
 	}

@@ -19,7 +19,7 @@ public sealed class SafetyFirstCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/SafetyFirst.png"), StableSpr.cards_ShieldSurge).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Card/SafetyFirst.png"), StableSpr.cards_ShieldSurge).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "SafetyFirst", "name"]).Localize,
 		});
 	}

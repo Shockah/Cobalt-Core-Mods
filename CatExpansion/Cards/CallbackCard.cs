@@ -19,7 +19,7 @@ public sealed class CallbackCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Callback.png"), StableSpr.cards_riggs).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Card/Callback.png"), StableSpr.cards_riggs).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Callback", "name"]).Localize,
 		});
 	}

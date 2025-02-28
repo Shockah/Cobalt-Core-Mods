@@ -19,7 +19,7 @@ public sealed class DroneDualityCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/DroneDuality.png"), StableSpr.cards_GoatDrone).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Card/DroneDuality.png"), StableSpr.cards_GoatDrone).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "DroneDuality", "name"]).Localize,
 		});
 	}

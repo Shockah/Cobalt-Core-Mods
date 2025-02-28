@@ -19,7 +19,7 @@ public sealed class PriorityQueueCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/PriorityQueue.png"), StableSpr.cards_Overclock).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Card/PriorityQueue.png"), StableSpr.cards_Overclock).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "PriorityQueue", "name"]).Localize,
 		});
 	}

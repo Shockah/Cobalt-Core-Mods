@@ -19,7 +19,7 @@ public sealed class StaticShotCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/StaticShot.png"), StableSpr.cards_StunCharge).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Card/StaticShot.png"), StableSpr.cards_StunCharge).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "StaticShot", "name"]).Localize,
 		});
 	}
