@@ -8,6 +8,7 @@ using Shockah.Kokoro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Shockah.DuoArtifacts;
 
 namespace Shockah.Natasha;
 
@@ -16,6 +17,7 @@ public sealed class ModEntry : SimpleMod
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly IHarmony Harmony;
 	internal readonly IKokoroApi.IV2 KokoroApi;
+	internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; }
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
@@ -61,15 +63,14 @@ public sealed class ModEntry : SimpleMod
 		typeof(RebootCard)
 	];
 
-	internal static readonly IEnumerable<Type> AllCardTypes
-		= [
-			.. CommonCardTypes,
-			.. UncommonCardTypes,
-			.. RareCardTypes,
-			.. UncommonSpecialCardTypes,
-			typeof(LimiterCard),
-			typeof(NatashaExeCard)
-		];
+	internal static readonly IEnumerable<Type> AllCardTypes = [
+		.. CommonCardTypes,
+		.. UncommonCardTypes,
+		.. RareCardTypes,
+		.. UncommonSpecialCardTypes,
+		typeof(LimiterCard),
+		typeof(NatashaExeCard)
+	];
 
 	internal static readonly IReadOnlyList<Type> CommonArtifacts = [
 		typeof(BackdoorArtifact),
@@ -86,29 +87,28 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static readonly IReadOnlyList<Type> DuoArtifacts = [
+		typeof(NatashaDizzyArtifact),
 	];
 
-	internal static readonly IEnumerable<Type> AllArtifactTypes
-		= [
-			.. CommonArtifacts,
-			.. BossArtifacts,
-		];
+	internal static readonly IEnumerable<Type> AllArtifactTypes = [
+		.. CommonArtifacts,
+		.. BossArtifacts,
+	];
 
-	internal static readonly IEnumerable<Type> RegisterableTypes
-		= [
-			typeof(OneLiners),
-			typeof(Reprogram),
-			typeof(NegativeBoost),
-			.. AllCardTypes,
-			.. AllArtifactTypes,
-			.. DuoArtifacts,
-		];
+	internal static readonly IEnumerable<Type> RegisterableTypes = [
+		typeof(OneLiners),
+		typeof(Reprogram),
+		typeof(NegativeBoost),
+		.. AllCardTypes,
+		.. AllArtifactTypes,
+	];
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
+		DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -131,6 +131,13 @@ public sealed class ModEntry : SimpleMod
 
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
+		
+		helper.ModRegistry.AwaitApi<IDuoArtifactsApi>("Shockah.DuoArtifacts", api =>
+		{
+			DuoArtifactsApi = api;
+			foreach (var type in DuoArtifacts)
+				AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
+		});
 		
 		helper.Content.Characters.V2.RegisterPlayableCharacter("Natasha", new()
 		{
@@ -217,7 +224,7 @@ public sealed class ModEntry : SimpleMod
 		);
 	}
 
-	public override object? GetApi(IModManifest requestingMod)
+	public override object GetApi(IModManifest requestingMod)
 		=> new ApiImplementation();
 
 	internal static Rarity GetCardRarity(Type type)
