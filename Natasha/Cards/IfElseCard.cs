@@ -24,7 +24,7 @@ internal sealed class IfElseCard : Card, IRegisterable, IHasCustomCardTraits
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "IfElse", "name"]).Localize
 		});
 
-		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 3);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)

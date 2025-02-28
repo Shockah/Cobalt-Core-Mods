@@ -4,7 +4,8 @@
 
 ## Upcoming release
 
-* Made the Limiter trash card harder to deal with (and by extension nerfed the Remove Limiter card) by giving it Recycle.
+* Nerfed the If Else B card by changing it from Limited 3 to Limited 2.
+* Nerfed the Remove Limiter card by adding Recycle to the Limiter trash card.
 
 ## 1.3.1
 Released 8 December 2024.
