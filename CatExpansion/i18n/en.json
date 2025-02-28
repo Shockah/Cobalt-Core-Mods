@@ -44,9 +44,9 @@
 		"BackToBasics": {
 			"name": "Back to Basics",
 			"description": {
-				"None": "Attack for 2. Add a <c=cardtrait>temp</c> <c=card>Basic Shot</c> to your hand.",
-				"A": "Attack for 2. Add a <c=cardtrait>temp</c> <c=card>Basic Shot</c> with <c=cardtrait>exhaust</c> to your hand.",
-				"B": "Attack for 2. Add a <c=cardtrait>temp</c> <c=card>Basic Shot B</c> to your hand."
+				"None": "Attack for {{Damage}}. Add a <c=cardtrait>temp</c> <c=card>Basic Shot</c> to your hand.",
+				"A": "Attack for {{Damage}}. Add a <c=cardtrait>temp</c> <c=card>Basic Shot</c> with <c=cardtrait>exhaust</c> to your hand.",
+				"B": "Attack for {{Damage}}. Add a <c=cardtrait>temp</c> <c=card>Basic Shot B</c> to your hand."
 			}
 		},
 		"BitShift": {

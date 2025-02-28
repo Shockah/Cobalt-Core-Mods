@@ -25,7 +25,7 @@ public sealed class BackToBasicsCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> new() { cost = 0, description = ModEntry.Instance.Localizations.Localize(["card", "BackToBasics", "description", upgrade.ToString()]) };
+		=> new() { cost = 0, description = ModEntry.Instance.Localizations.Localize(["card", "BackToBasics", "description", upgrade.ToString()], new { Damage = GetDmg(state, 2) }) };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
