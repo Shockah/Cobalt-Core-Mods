@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Made the Limiter trash card harder to deal with (and by extension nerfed the Remove Limiter card) by giving it Recycle.
+
 ## 1.3.1
 Released 8 December 2024.
 
