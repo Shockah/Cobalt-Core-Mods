@@ -58,6 +58,10 @@
             "NatashaDizzy": {
                 "name": "TBD",
                 "description": "Each combat, your enemy starts with 2 <c=status>MITOSIS</c>. The first time your enemy's <c=status>SHIELD</c> reduces to 0 each combat, they lose 2 <c=status>MITOSIS</c> and you gain 1."
+            },
+            "NatashaRiggs": {
+                "name": "TBD",
+                "description": "Every time your discard pile is shuffled back into your draw pile, give a random <c=cardtrait>limited</c> card an extra use, preferring cards in your hand."
             }
         }
     },
