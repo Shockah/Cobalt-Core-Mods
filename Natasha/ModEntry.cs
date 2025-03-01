@@ -88,6 +88,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal static readonly IReadOnlyList<Type> DuoArtifacts = [
 		typeof(NatashaDizzyArtifact),
+		typeof(NatashaPeriArtifact),
 		typeof(NatashaRiggsArtifact),
 	];
 
