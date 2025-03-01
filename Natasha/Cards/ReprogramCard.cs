@@ -1,8 +1,7 @@
-﻿using Nanoray.PluginManager;
-using Nickel;
-using Shockah.Shared;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
+using Nanoray.PluginManager;
+using Nickel;
 
 namespace Shockah.Natasha;
 
@@ -19,7 +18,6 @@ internal sealed class ReprogramCard : Card, IRegisterable, IHasCustomCardTraits
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Reprogram.png"), StableSpr.cards_hacker).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Reprogram", "name"]).Localize
 		});
 	}
@@ -34,9 +32,9 @@ internal sealed class ReprogramCard : Card, IRegisterable, IHasCustomCardTraits
 	public override CardData GetData(State state)
 		=> upgrade switch
 		{
-			Upgrade.A => new() { cost = 1, floppable = true },
-			Upgrade.B => new() { cost = 1, exhaust = true, floppable = true },
-			_ => new() { cost = 1, exhaust = true, floppable = true },
+			Upgrade.A => new() { cost = 1, floppable = true, art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top },
+			Upgrade.B => new() { cost = 1, exhaust = true, floppable = true, art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top },
+			_ => new() { cost = 1, exhaust = true, floppable = true, art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top },
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)

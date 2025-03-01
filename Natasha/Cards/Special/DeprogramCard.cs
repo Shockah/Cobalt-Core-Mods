@@ -1,8 +1,7 @@
-﻿using Nanoray.PluginManager;
-using Nickel;
-using Shockah.Shared;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
+using Nanoray.PluginManager;
+using Nickel;
 
 namespace Shockah.Natasha;
 
@@ -20,7 +19,6 @@ internal sealed class DeprogramCard : Card, IRegisterable
 				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true,
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Deprogram.png"), StableSpr.cards_hacker).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Deprogram", "name"]).Localize
 		});
 	}
@@ -28,9 +26,9 @@ internal sealed class DeprogramCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> upgrade switch
 		{
-			Upgrade.A => new() { cost = 1, floppable = true, retain = true, temporary = true },
-			Upgrade.B => new() { cost = 1, floppable = true, exhaust = true, temporary = true },
-			_ => new() { cost = 1, floppable = true, temporary = true },
+			Upgrade.A => new() { cost = 1, floppable = true, retain = true, temporary = true, art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top },
+			Upgrade.B => new() { cost = 1, floppable = true, exhaust = true, temporary = true, art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top },
+			_ => new() { cost = 1, floppable = true, temporary = true, art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top },
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
