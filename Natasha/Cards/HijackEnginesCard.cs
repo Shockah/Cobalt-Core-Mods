@@ -35,8 +35,8 @@ internal sealed class HijackEnginesCard : Card, IRegisterable
 				new AAttack { damage = GetDmg(s, 0) },
 			],
 			Upgrade.B => [
-				new AStatus { targetPlayer = false, status = flipped ? Status.autododgeLeft : Status.autododgeRight, statusAmount = 2 },
 				new AStatus { targetPlayer = false, status = Status.timeStop, statusAmount = 1 },
+				new AStatus { targetPlayer = false, status = flipped ? Status.autododgeLeft : Status.autododgeRight, statusAmount = 2 },
 			],
 			_ => [
 				new AStatus { targetPlayer = false, status = flipped ? Status.autododgeLeft : Status.autododgeRight, statusAmount = 1 },
