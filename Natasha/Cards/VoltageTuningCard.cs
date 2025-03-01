@@ -19,7 +19,6 @@ internal sealed class VoltageTuningCard : Card, IRegisterable, IHasCustomCardTra
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_MiningDrill_Top,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "VoltageTuning", "name"]).Localize
 		});
 
