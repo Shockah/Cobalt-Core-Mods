@@ -1,10 +1,10 @@
 ﻿{
 	"UniqueName": "Shockah.CatExpansion",
 	"Version": "{{ModVersion}}",
-	"DisplayName": "//cat.exe Expansion",
-	"Description": "Expands upon CAT, fleshing out her characters to be more in line with others.",
-	"Author": "Arin, Shockah",
-	"RequiredApiVersion": "1.13.0",
+	"DisplayName": "CAT Expansion",
+	"Description": "Expands upon CAT, fleshing out her character to be more in line with other playable characters.",
+	"Author": "Arin, Kurio, Shockah",
+	"RequiredApiVersion": "1.14.0",
 	"EntryPointAssembly": "CatExpansion.dll",
 	"LoadPhase": "AfterDbInit",
 	"Dependencies": [
@@ -14,7 +14,7 @@
 		},
 		{
 			"UniqueName": "Nickel.Essentials",
-			"Version": "1.13.0"
+			"Version": "1.14.0"
 		}
 	]
 }

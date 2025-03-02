@@ -1,5 +1,13 @@
 ﻿{
 	"settings": {
+		"AdjustExeDistribution": {
+			"title": "Adjust EXE card distribution",
+			"description": [
+				"Whether EXE card distribution should be adjusted.",
+				"Normally, the more EXE cards you have installed, the higher the chance of getting \"any EXE\" offered.",
+				"If enabled, the mod will reduce the chance of any single EXE card of being offered, but keep the overall chance of EXE cards constant."
+			]
+		},
 		"TotalExeDistribution": {
 			"title": "Total EXE card distribution",
 			"description": "The higher the distribution, the more common EXE cards are. Does not include the <c=card>CAT.EXE</c> card. Has no effect if set to a higher value than you have installed EXE cards."

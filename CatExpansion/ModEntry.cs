@@ -95,31 +95,48 @@ public sealed class ModEntry : SimpleMod
 					() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
 					Settings.ProfileBased
 				),
-				api.MakeNumericStepper(
-					() => Localizations.Localize(["settings", nameof(ProfileSettings.TotalExeDistribution), "title"]),
-					() => Settings.ProfileBased.Current.TotalExeDistribution,
-					value => Settings.ProfileBased.Current.TotalExeDistribution = value,
-					minValue: 1
-				).SetTooltips(() => [
-					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.TotalExeDistribution)}")
-					{
-						TitleColor = Colors.textBold,
-						Title = Localizations.Localize(["settings", nameof(ProfileSettings.TotalExeDistribution), "title"]),
-						Description = Localizations.Localize(["settings", nameof(ProfileSettings.TotalExeDistribution), "description"])
-					}
-				]),
 				api.MakeCheckbox(
-					() => Localizations.Localize(["settings", nameof(ProfileSettings.EnforceExesFromCurrentCrew), "title"]),
-					() => Settings.ProfileBased.Current.EnforceExesFromCurrentCrew,
-					(_, _, value) => Settings.ProfileBased.Current.EnforceExesFromCurrentCrew = value
+					() => Localizations.Localize(["settings", nameof(ProfileSettings.AdjustExeDistribution), "title"]),
+					() => Settings.ProfileBased.Current.AdjustExeDistribution,
+					(_, _, value) => Settings.ProfileBased.Current.AdjustExeDistribution = value
 				).SetTooltips(() => [
-					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.EnforceExesFromCurrentCrew)}")
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.AdjustExeDistribution)}")
 					{
 						TitleColor = Colors.textBold,
-						Title = Localizations.Localize(["settings", nameof(ProfileSettings.EnforceExesFromCurrentCrew), "title"]),
-						Description = Localizations.Localize(["settings", nameof(ProfileSettings.EnforceExesFromCurrentCrew), "description"])
+						Title = Localizations.Localize(["settings", nameof(ProfileSettings.AdjustExeDistribution), "title"]),
+						Description = Localizations.Localize(["settings", nameof(ProfileSettings.AdjustExeDistribution), "description"])
 					}
 				]),
+				api.MakeConditional(
+					api.MakeList([
+						api.MakeNumericStepper(
+							() => Localizations.Localize(["settings", nameof(ProfileSettings.TotalExeDistribution), "title"]),
+							() => Settings.ProfileBased.Current.TotalExeDistribution,
+							value => Settings.ProfileBased.Current.TotalExeDistribution = value,
+							minValue: 1
+						).SetTooltips(() => [
+							new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.TotalExeDistribution)}")
+							{
+								TitleColor = Colors.textBold,
+								Title = Localizations.Localize(["settings", nameof(ProfileSettings.TotalExeDistribution), "title"]),
+								Description = Localizations.Localize(["settings", nameof(ProfileSettings.TotalExeDistribution), "description"])
+							}
+						]),
+						api.MakeCheckbox(
+							() => Localizations.Localize(["settings", nameof(ProfileSettings.EnforceExesFromCurrentCrew), "title"]),
+							() => Settings.ProfileBased.Current.EnforceExesFromCurrentCrew,
+							(_, _, value) => Settings.ProfileBased.Current.EnforceExesFromCurrentCrew = value
+						).SetTooltips(() => [
+							new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.EnforceExesFromCurrentCrew)}")
+							{
+								TitleColor = Colors.textBold,
+								Title = Localizations.Localize(["settings", nameof(ProfileSettings.EnforceExesFromCurrentCrew), "title"]),
+								Description = Localizations.Localize(["settings", nameof(ProfileSettings.EnforceExesFromCurrentCrew), "description"])
+							}
+						])
+					]),
+					() => Settings.ProfileBased.Current.AdjustExeDistribution
+				),
 			]).SubscribeToOnMenuClose(_ =>
 			{
 				helper.Storage.SaveJson(helper.Storage.GetMainStorageFile("json"), Settings);

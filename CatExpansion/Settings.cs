@@ -45,6 +45,9 @@ internal sealed class Settings
 internal sealed class ProfileSettings
 {
 	[JsonProperty]
+	public bool AdjustExeDistribution = true;
+	
+	[JsonProperty]
 	public int TotalExeDistribution = 7;
 	
 	[JsonProperty]
