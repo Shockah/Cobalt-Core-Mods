@@ -14,7 +14,8 @@ internal sealed class HotReloadArtifact : Artifact, IRegisterable
 			Meta = new()
 			{
 				owner = Deck.catartifact,
-				pools = ModEntry.GetArtifactPools(MethodBase.GetCurrentMethod()!.DeclaringType!)
+				pools = ModEntry.GetArtifactPools(MethodBase.GetCurrentMethod()!.DeclaringType!),
+				unremovable = true,
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifact/HotReload.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "HotReload", "name"]).Localize,

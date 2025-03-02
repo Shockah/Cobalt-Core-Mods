@@ -17,7 +17,8 @@ internal sealed class PersonalDataArtifact : Artifact, IRegisterable
 			Meta = new()
 			{
 				owner = Deck.catartifact,
-				pools = ModEntry.GetArtifactPools(MethodBase.GetCurrentMethod()!.DeclaringType!)
+				pools = ModEntry.GetArtifactPools(MethodBase.GetCurrentMethod()!.DeclaringType!),
+				unremovable = true,
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifact/PersonalData.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "PersonalData", "name"]).Localize,
