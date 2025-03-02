@@ -39,6 +39,8 @@ internal sealed class ExeOfferingDistribution : IRegisterable
 			return;
 		if (!ModEntry.Instance.EssentialsApi.IsExeCardType(c.GetType()))
 			return;
+		if (ModEntry.Instance.Settings.ProfileBased.Current.AdjustExeDistribution)
+			return;
 
 		if (CurrentProcessExeCardTypes is null)
 		{
