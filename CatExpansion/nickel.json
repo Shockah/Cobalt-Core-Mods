@@ -9,10 +9,6 @@
 	"LoadPhase": "AfterDbInit",
 	"Dependencies": [
 		{
-			"UniqueName": "Shockah.Kokoro",
-			"Version": "2.3.0"
-		},
-		{
 			"UniqueName": "Nickel.Essentials",
 			"Version": "1.14.0"
 		}
