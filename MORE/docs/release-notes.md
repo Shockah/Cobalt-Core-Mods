@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.4.0
+Released 2 March 2025.
 
 * Removed the Patch Notes CAT artifact (it was moved to the [CAT Expansion](https://www.nexusmods.com/cobaltcore/mods/48) mod).
 
