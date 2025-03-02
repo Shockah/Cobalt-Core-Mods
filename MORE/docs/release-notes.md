@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Removed the Patch Notes CAT artifact (it was moved to the [CAT Expansion](https://www.nexusmods.com/cobaltcore/mods/48) mod).
+
 ## 1.3.2
 Released 10 February 2025.
 
