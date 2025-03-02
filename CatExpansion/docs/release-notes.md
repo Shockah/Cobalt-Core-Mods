@@ -2,6 +2,7 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.0
+Released 2 March 2025.
 
 * Initial release.
