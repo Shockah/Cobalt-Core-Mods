@@ -21,6 +21,8 @@ internal sealed class MaxPeriArtifact : DuoArtifact
 	public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
 	{
 		base.OnPlayerPlayCard(energyCost, deck, card, state, combat, handPosition, handCount);
+		if (handPosition == -1)
+			return;
 
 		var oldHand = combat.hand.ToList();
 		oldHand.Insert(handPosition, card);

@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Combat Spreadsheets (Max-Peri duo) artifact crashing when playing cards from outside of your hand via various means.
+
 ## 1.3.0
 Released 22 February 2025.
 
