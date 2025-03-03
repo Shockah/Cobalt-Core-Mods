@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Blast Goggles (Dyna-Dizzy duo) artifact tooltip to mention the correct upgrade of the card.
+
 ## 1.4.1
 Released 23 February 2025.
 
