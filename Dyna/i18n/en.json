@@ -137,7 +137,7 @@
             },
             "DynaDizzy": {
                 "name": "BLAST GOGGLES",
-                "description": "At the start of combat, add a <c=cardtrait>temporary</c> <c=card>Flux Charge B</c> with <c=cardtrait>exhaust</c> to your hand. <c=status>TEMP SHIELD</c> gained from hitting a part with <c=parttrait>Flux</c> is converted into <c=status>SHIELD</c> if possible."
+                "description": "At the start of combat, add a <c=cardtrait>temporary</c> <c=card>Flux Charge A</c> with <c=cardtrait>exhaust</c> to your hand. <c=status>TEMP SHIELD</c> gained from hitting a part with <c=parttrait>Flux</c> is converted into <c=status>SHIELD</c> if possible."
             },
             "DynaDrake": {
                 "name": "ROMAN CANDLE",
