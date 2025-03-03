@@ -30,18 +30,17 @@ internal sealed class BooksDrakeArtifact : DuoArtifact
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
+				.Find([
 					ILMatches.Ldarg(0).ExtractLabels(out var labels),
 					ILMatches.Ldfld("stunEnemy"),
 					ILMatches.Brtrue
-				)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
 					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Ldarg_3),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(BooksDrakeArtifact), nameof(AAttack_Begin_Transpiler_Modify)))
-				)
+				])
 				.AllElements();
 		}
 		catch (Exception ex)

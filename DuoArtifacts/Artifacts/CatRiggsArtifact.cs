@@ -44,21 +44,20 @@ internal sealed class CatRiggsArtifact : DuoArtifact
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
+				.Find([
 					ILMatches.Ldarg(0),
 					ILMatches.Ldfld("hand"),
 					ILMatches.Call("get_Count"),
 					ILMatches.LdcI4(10)
-				)
+				])
 				.Find(ILMatches.Blt.GetBranchTarget(out var branchTarget))
 				.PointerMatcher(branchTarget)
 				.ExtractLabels(out var labels)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(labels),
 					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CatRiggsArtifact), nameof(Combat_SendCardToHand_Transpiler_DidDrawCard)))
-				)
+				])
 				.AllElements();
 		}
 		catch (Exception ex)

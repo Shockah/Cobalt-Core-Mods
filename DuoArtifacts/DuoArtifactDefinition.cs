@@ -100,7 +100,7 @@ public sealed class DuoArtifactDefinition
 		{
 			this.TooltipFactory = () =>
 			{
-				var amount = (MG.inst.g.state ?? DB.fakeState).ship.Get(status);
+				var amount = (MG.inst.g?.state ?? DB.fakeState).ship.Get(status);
 				if (amount == 0)
 					amount = @default;
 				return new TTGlossary($"status.{status.Key()}", amount);

@@ -160,7 +160,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 				file: new FileInfo(Path.Combine(ModRootFolder!.FullName, "assets", "Effects", $"TrioGlow{i}.png"))
 			);
 
-		string namePrefix = $"{typeof(ModEntry).Namespace}.Sprite";
+		var namePrefix = $"{typeof(ModEntry).Namespace}.Sprite";
 		foreach (var definition in DuoArtifactDefinition.Definitions)
 		{
 			DuoArtifactSprites[definition.CharacterKeys.Value] = registry.RegisterArtOrThrow(

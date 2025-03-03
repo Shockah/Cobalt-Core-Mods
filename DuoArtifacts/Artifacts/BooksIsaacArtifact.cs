@@ -90,7 +90,7 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 
 	private static int GetModifiedAttackDamage(int damage, AttackDrone drone)
 	{
-		if (MG.inst.g.state is not { } state)
+		if (MG.inst.g?.state is not { } state)
 			return damage;
 		if (drone.targetPlayer)
 			return damage;
@@ -111,11 +111,10 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(ILMatches.Call("AttackDamage"))
-				.Insert(
-					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(BooksIsaacArtifact), nameof(GetModifiedAttackDamage)))
-				)
+				])
 				.AllElements();
 		}
 		catch (Exception ex)

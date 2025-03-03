@@ -1,6 +1,7 @@
 ﻿using CobaltCoreModding.Definitions.ModContactPoints;
 using Nickel;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
@@ -25,15 +26,8 @@ public abstract class DuoArtifact : Artifact
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-	{
-		var tooltips = base.GetExtraTooltips();
-		var definition = DuoArtifactDefinition.GetDefinition(GetType());
-		if (definition is null || definition.ExtraTooltips.Count == 0)
-			return tooltips;
-
-		tooltips ??= [];
-		foreach (var tooltip in definition.ExtraTooltips)
-			tooltips.Add(tooltip.MakeTooltip());
-		return tooltips;
-	}
+		=> [
+			.. base.GetExtraTooltips() ?? [],
+			.. DuoArtifactDefinition.GetDefinition(GetType()) is { } definition ? definition.ExtraTooltips.Select(tooltip => tooltip.MakeTooltip()) : [],
+		];
 }

@@ -93,23 +93,22 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
+				.Find([
 					ILMatches.Ldloc<Ship>(originalMethod),
 					ILMatches.LdcI4((int)Status.libra),
 					ILMatches.Call("Get"),
 					ILMatches.LdcI4(0),
 					ILMatches.Ble.GetBranchTarget(out var branchTarget)
-				)
+				])
 				.PointerMatcher(branchTarget)
 				.Find(ILMatches.Stloc<bool>(originalMethod).CreateLdlocInstruction(out var ldlocLibraFlag).CreateStlocInstruction(out var stlocLibraFlag))
-				.Insert(
-					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Ldarg_2),
 					ldlocLibraFlag,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(IsaacPeriArtifact), nameof(AAttack_Begin_Transpiler_Modify))),
 					stlocLibraFlag
-				)
+				])
 				.AllElements();
 		}
 		catch (Exception ex)
@@ -141,16 +140,15 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
+				.Find([
 					ILMatches.Ldarg(2),
 					ILMatches.LdcI4((int)Status.libra),
 					ILMatches.Call("Get")
-				)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(IsaacPeriArtifact), nameof(AAttack_DoLibraEffect_Transpiler_Modify)))
-				)
+				])
 				.AllElements();
 		}
 		catch (Exception ex)
@@ -193,11 +191,10 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(ILMatches.Call("AttackDamage"))
-				.Insert(
-					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(IsaacPeriArtifact), nameof(GetModifiedAttackDamage)))
-				)
+				])
 				.AllElements();
 		}
 		catch (Exception ex)
@@ -216,9 +213,7 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.ForEach(
 					SequenceMatcherRelativeBounds.WholeSequence,
-					[
-						ILMatches.Call("AttackDamage")
-					],
+					[ILMatches.Call("AttackDamage")],
 					matcher => matcher
 						.Insert(
 							SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,

@@ -126,9 +126,7 @@ internal static class ArtifactRewardPatches
 				])
 				.ForEach(
 					SequenceMatcherRelativeBounds.WholeSequence,
-					[
-						ILMatches.Ldfld(AccessTools.DeclaredField(typeof(DeckDef), nameof(DeckDef.color)))
-					],
+					[ILMatches.Ldfld(AccessTools.DeclaredField(typeof(DeckDef), nameof(DeckDef.color)))],
 					matcher => matcher
 						.Insert(
 							SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,

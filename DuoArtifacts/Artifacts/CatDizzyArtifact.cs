@@ -72,21 +72,20 @@ internal sealed class CatDizzyArtifact : DuoArtifact
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
+				.Find([
 					ILMatches.Ldarg(3),
 					ILMatches.Stloc<int>(originalMethod).CreateLdlocInstruction(out var ldlocRemainingDamage)
-				)
-				.Find(
+				])
+				.Find([
 					ILMatches.Ldarg(5),
 					ILMatches.Brtrue
-				)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Ldarg_1),
 					ldlocRemainingDamage,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(CatDizzyArtifact), nameof(Ship_NormalDamage_Transpiler_ApplyPerfectShieldIfNeeded)))
-				)
+				])
 				.AllElements();
 		}
 		catch (Exception ex)

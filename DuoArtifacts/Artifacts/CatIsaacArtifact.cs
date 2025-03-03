@@ -54,13 +54,11 @@ internal sealed class CatIsaacArtifact : DuoArtifact
 		artifact.Charges--;
 		__instance.QueueImmediate(action);
 		for (var i = 0; i < Math.Abs(shoveValue); i++)
-		{
 			__instance.QueueImmediate(new AKickMiette
 			{
 				x = launchX + i * Math.Sign(shoveValue),
 				dir = Math.Sign(shoveValue)
 			});
-		}
 		return false;
 
 		bool CanLaunch(int x)
