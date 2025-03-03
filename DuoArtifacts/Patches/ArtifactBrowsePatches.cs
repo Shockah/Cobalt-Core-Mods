@@ -36,6 +36,7 @@ internal static class ArtifactBrowsePatches
 
 	private static IEnumerable<CodeInstruction> ArtifactBrowse_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -59,6 +60,7 @@ internal static class ArtifactBrowsePatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static List<(Deck, List<KeyValuePair<string, Type>>)> ArtifactBrowse_Render_Transpiler_ModifyArtifacts(List<(Deck, List<KeyValuePair<string, Type>>)> allArtifacts, ArtifactBrowse route)
@@ -103,7 +105,7 @@ internal static class ArtifactBrowsePatches
 			return;
 		if (FeatureFlags.Debug && Input.GetKeyHeld(Keys.F1))
 			return;
-		if ((g.metaRoute?.subRoute as Codex)?.subRoute is not ArtifactBrowse route)
+		if ((g.metaRoute?.subRoute as Codex)?.subRoute is not ArtifactBrowse)
 			return;
 		if (Instance.Database.GetDuoArtifactOwnership(__instance) is not { } owners)
 			return;
@@ -131,6 +133,7 @@ internal static class ArtifactBrowsePatches
 
 	private static IEnumerable<CodeInstruction> Artifact_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -149,6 +152,7 @@ internal static class ArtifactBrowsePatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static UIKey Artifact_Render_Transpiler_ModifyUIKey(UIKey baseKey, Artifact artifact, G g, Vec restingPosition)
@@ -157,7 +161,7 @@ internal static class ArtifactBrowsePatches
 			return baseKey;
 		if ((g.metaRoute?.subRoute as Codex)?.subRoute is not ArtifactBrowse route)
 			return baseKey;
-		if (Instance.Database.GetDuoArtifactOwnership(artifact) is not { } owners)
+		if (Instance.Database.GetDuoArtifactOwnership(artifact) is null)
 			return baseKey;
 
 		var parentBox = g.uiStack.Peek();
@@ -167,11 +171,8 @@ internal static class ArtifactBrowsePatches
 		var newKey = new UIKey(baseKey.k, baseKey.v, $"{baseKey.str}__{(int)baseX}__{(int)baseY}");
 
 		var artifactToScrollYCache = ArtifactToScrollYCacheGetter.Value(route);
-		if (artifactToScrollYCache.TryGetValue(baseKey, out var scrollYCache))
-		{
-			artifactToScrollYCache.Remove(baseKey);
+		if (artifactToScrollYCache.Remove(baseKey, out var scrollYCache))
 			artifactToScrollYCache[newKey] = scrollYCache;
-		}
 
 		return newKey;
 	}

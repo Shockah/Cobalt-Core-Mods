@@ -67,12 +67,19 @@ internal static class ArtifactRewardPatches
 			return;
 		}
 
+		var possibleSlots = GetPossibleSlotsToReplace().ToList();
+		if (possibleSlots.Count == 0)
+			return;
+
+		var slotToReplace = possibleSlots[random.NextInt() % possibleSlots.Count];
+		__result[slotToReplace] = possibleDuoArtifacts[duoToTake];
+
 		IEnumerable<int> GetPossibleSlotsToReplace()
 		{
-			bool yieldedAny = false;
+			var yieldedAny = false;
 
 			// try any colorless artifact
-			for (int i = 0; i < __result.Count; i++)
+			for (var i = 0; i < __result.Count; i++)
 			{
 				if (!DB.artifactMetas.TryGetValue(__result[i].Key(), out var meta))
 					continue;
@@ -87,33 +94,27 @@ internal static class ArtifactRewardPatches
 				yield break;
 
 			// no colorless artifacts; try any char-specific artifact
-			for (int i = 0; i < __result.Count; i++)
+			for (var i = 0; i < __result.Count; i++)
 			{
 				if (!DB.artifactMetas.TryGetValue(__result[i].Key(), out var meta))
 					continue;
 				if (!NewRunOptions.allChars.Contains(meta.owner))
 					continue;
 
-				yieldedAny = true;
+				// yieldedAny = true;
 				yield return i;
 			}
 
-			if (yieldedAny)
-				yield break;
+			// if (yieldedAny)
+			// 	yield break;
 
 			// no char-specific artifacts; did another mod replace rewards? nothing to return
 		}
-
-		var possibleSlots = GetPossibleSlotsToReplace().ToList();
-		if (possibleSlots.Count == 0)
-			return;
-
-		int slotToReplace = possibleSlots[random.NextInt() % possibleSlots.Count];
-		__result[slotToReplace] = possibleDuoArtifacts[duoToTake];
 	}
 
 	private static IEnumerable<CodeInstruction> ArtifactReward_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -125,19 +126,15 @@ internal static class ArtifactRewardPatches
 				)
 				.ForEach(
 					SequenceMatcherRelativeBounds.WholeSequence,
-					new ElementMatch<CodeInstruction>[]
-					{
+					[
 						ILMatches.Ldfld(AccessTools.DeclaredField(typeof(DeckDef), nameof(DeckDef.color)))
-					},
-					matcher =>
-					{
-						return matcher
-							.Insert(
-								SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-								ldlocArtifact,
-								new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(ArtifactRewardPatches), nameof(ArtifactReward_Render_Transpiler_ModifyDeckColor)))
-							);
-					},
+					],
+					matcher => matcher
+						.Insert(
+							SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+							ldlocArtifact,
+							new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(ArtifactRewardPatches), nameof(ArtifactReward_Render_Transpiler_ModifyDeckColor)))
+						),
 					minExpectedOccurences: 2,
 					maxExpectedOccurences: 2
 				)
@@ -148,6 +145,7 @@ internal static class ArtifactRewardPatches
 			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static Color ArtifactReward_Render_Transpiler_ModifyDeckColor(Color _, Artifact artifact)

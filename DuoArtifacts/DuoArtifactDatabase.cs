@@ -64,6 +64,13 @@ internal sealed class DuoArtifactDatabase
 		if (colors.Count == 1)
 			return colors[0];
 
+		var animationLength = colors.Count * SingleColorTransitionAnimationLengthSeconds;
+		var animationPosition = MG.inst.g.time % animationLength;
+		var totalFraction = animationPosition / animationLength;
+		var (fromColor, toColor, fraction) = GetLerpInfo(colors, totalFraction);
+		var lerpFraction = Math.Sin(fraction * Math.PI) * 0.5 + 0.5;
+		return Color.Lerp(fromColor, toColor, lerpFraction);
+
 		static (Color, Color, double) GetLerpInfo(List<Color> colors, double totalFraction)
 		{
 			var singleFraction = 1.0 / colors.Count;
@@ -73,13 +80,6 @@ internal sealed class DuoArtifactDatabase
 			var fraction = (totalFraction - fractionStart) / (fractionEnd - fractionStart);
 			return (colors[whichFraction], colors[(whichFraction + 1) % colors.Count], fraction);
 		}
-
-		var animationLength = colors.Count * SingleColorTransitionAnimationLengthSeconds;
-		var animationPosition = MG.inst.g.time % animationLength;
-		var totalFraction = animationPosition / animationLength;
-		var (fromColor, toColor, fraction) = GetLerpInfo(colors, totalFraction);
-		var lerpFraction = Math.Sin(fraction * Math.PI) * 0.5 + 0.5;
-		return Color.Lerp(fromColor, toColor, lerpFraction);
 	}
 
 	public void RegisterDuoArtifact(Type type, IEnumerable<Deck> combo)
