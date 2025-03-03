@@ -41,17 +41,15 @@ internal static class ArtifactBrowsePatches
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(ILMatches.Stloc<List<(Deck, List<KeyValuePair<string, Type>>)>>(originalMethod))
-				.Insert(
-					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(ArtifactBrowsePatches), nameof(ArtifactBrowse_Render_Transpiler_ModifyArtifacts)))
-				)
+				])
 
 				.Find(ILMatches.Stloc<(Deck, List<KeyValuePair<string, Type>>)>(originalMethod))
-				.Insert(
-					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(ArtifactBrowsePatches), nameof(ArtifactBrowse_Render_Transpiler_MarkLastArtifactSection)))
-				)
+				])
 
 				.AllElements();
 		}
@@ -138,13 +136,12 @@ internal static class ArtifactBrowsePatches
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find(ILMatches.Call(AccessTools.DeclaredMethod(typeof(Artifact), nameof(Artifact.UIKey))))
-				.Insert(
-					SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Ldarg_1),
 					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(ArtifactBrowsePatches), nameof(Artifact_Render_Transpiler_ModifyUIKey)))
-				)
+				])
 				.AllElements();
 		}
 		catch (Exception ex)

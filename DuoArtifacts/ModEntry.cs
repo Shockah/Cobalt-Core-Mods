@@ -15,11 +15,11 @@ using System.Linq;
 
 namespace Shockah.DuoArtifacts;
 
-public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IStatusManifest, IDeckManifest, IArtifactManifest, ICardManifest, INickelManifest
+public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModManifest, IPrelaunchManifest, IApiProviderManifest, ISpriteManifest, IDeckManifest, IArtifactManifest, ICardManifest, INickelManifest
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 
-	public string Name { get; init; } = typeof(ModEntry).Namespace!;
+	public string Name { get; } = typeof(ModEntry).Namespace!;
 	public IEnumerable<DependencyEntry> Dependencies => [new DependencyEntry<CobaltCoreModding.Definitions.ModManifests.IModManifest>("Shockah.Kokoro", ignoreIfMissing: false)];
 
 	public DirectoryInfo? GameRootFolder { get; set; }
@@ -30,8 +30,8 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 
 	internal IKokoroApi.IV2 KokoroApi { get; private set; } = null!;
 	internal readonly DuoArtifactDatabase Database = new();
-	internal ExternalSprite[] DuoGlowSprites { get; private set; } = new ExternalSprite[2];
-	internal ExternalSprite[] TrioGlowSprites { get; private set; } = new ExternalSprite[3];
+	internal ExternalSprite[] DuoGlowSprites { get; } = new ExternalSprite[2];
+	internal ExternalSprite[] TrioGlowSprites { get; } = new ExternalSprite[3];
 
 	private IHarmony Harmony { get; set; } = null!;
 	private readonly Dictionary<HashSet<string>, ExternalSprite> DuoArtifactSprites = new(HashSet<string>.CreateSetComparer());
@@ -171,13 +171,6 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 		}
 	}
 
-	public void LoadManifest(IStatusRegistry registry)
-	{
-		string namePrefix = $"{typeof(ModEntry).Namespace}.Status";
-		foreach (var definition in DuoArtifactDefinition.Definitions)
-			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.RegisterStatuses(registry, namePrefix, definition);
-	}
-
 	public void LoadManifest(IDeckRegistry registry)
 	{
 		Database.DuoArtifactDeck = new(
@@ -300,12 +293,12 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 				return CheckDetailedEligibity();
 		}
 
-		if (!Settings.ProfileBased.Current.ArtifactsCondition && !Settings.ProfileBased.Current.RareCardsCondition && !Settings.ProfileBased.Current.AnyCardsCondition)
+		if (Settings.ProfileBased.Current is { ArtifactsCondition: false, RareCardsCondition: false, AnyCardsCondition: false })
 			return CheckDetailedEligibity();
 
 		return DuoArtifactEligibity.RequirementsNotSatisfied;
 	}
 
-	internal static bool ArtifactDeckMatches(Deck characterDeck, Deck? otherDeck)
+	private static bool ArtifactDeckMatches(Deck characterDeck, Deck? otherDeck)
 		=> Equals(characterDeck, otherDeck == Deck.catartifact ? Deck.colorless : otherDeck);
 }

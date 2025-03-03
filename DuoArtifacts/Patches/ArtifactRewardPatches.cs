@@ -118,12 +118,12 @@ internal static class ArtifactRewardPatches
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
+				.Find([
 					ILMatches.Ldfld("artifacts"),
 					ILMatches.AnyLdloc,
 					ILMatches.Call("get_Item"),
 					ILMatches.Stloc<Artifact>(originalMethod).CreateLdlocInstruction(out var ldlocArtifact)
-				)
+				])
 				.ForEach(
 					SequenceMatcherRelativeBounds.WholeSequence,
 					[
