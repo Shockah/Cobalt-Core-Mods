@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Shockah.DuoArtifacts;
 
@@ -94,12 +95,10 @@ internal sealed class DuoArtifactDatabase
 			throw new ArgumentException("Tried to register a duo artifact for less than 2 characters.");
 		TypeToComboDictionary[type] = comboSet;
 
-		if (!ComboToTypeDictionary.TryGetValue(comboSet, out var types))
-		{
+		ref var types = ref CollectionsMarshal.GetValueRefOrAddDefault(ComboToTypeDictionary, comboSet, out var typesExists);
+		if (!typesExists)
 			types = [];
-			ComboToTypeDictionary[comboSet] = types;
-		}
-		types.Add(type);
+		types!.Add(type);
 	}
 
 	private static HashSet<Deck> FixCombo(HashSet<Deck> combo)
