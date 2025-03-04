@@ -41,7 +41,7 @@ internal sealed class CardRenderer
 			}
 			catch
 			{
-				ModEntry.Instance.Logger.LogError("There was an error exporting card {Card}.", card.Key());
+				ModEntry.Instance.Logger.LogError("There was an error exporting card {Card} {Upgrade}.", card.Key(), card.upgrade);
 			}
 			if (withScreenFilter)
 				Draw.Rect(0, 0, (int)(imageSize.x * g.mg.PIX_SCALE), (int)(imageSize.y * g.mg.PIX_SCALE), Colors.screenOverlay, new BlendState
@@ -49,8 +49,8 @@ internal sealed class CardRenderer
 					ColorBlendFunction = BlendFunction.Add,
 					ColorSourceBlend = Blend.One,
 					ColorDestinationBlend = Blend.InverseSourceColor,
-					AlphaSourceBlend = Blend.DestinationAlpha,
-					AlphaDestinationBlend = Blend.DestinationAlpha
+					AlphaSourceBlend = Blend.Zero,
+					AlphaDestinationBlend = Blend.One
 				});
 			Draw.EndAutoBatchFrame();
 
