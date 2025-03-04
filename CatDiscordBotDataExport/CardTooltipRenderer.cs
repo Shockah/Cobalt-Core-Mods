@@ -74,8 +74,8 @@ internal sealed class CardTooltipRenderer
 					ColorBlendFunction = BlendFunction.Add,
 					ColorSourceBlend = Blend.One,
 					ColorDestinationBlend = Blend.InverseSourceColor,
-					AlphaSourceBlend = Blend.DestinationAlpha,
-					AlphaDestinationBlend = Blend.DestinationAlpha
+					AlphaSourceBlend = Blend.Zero,
+					AlphaDestinationBlend = Blend.One
 				});
 			Draw.EndAutoBatchFrame();
 
