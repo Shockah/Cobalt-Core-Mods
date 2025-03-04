@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using FSPRO;
 using HarmonyLib;
 using Nanoray.PluginManager;
@@ -179,12 +180,10 @@ internal sealed class Enchanted : IRegisterable
 		}
 		else
 		{
-			if (!MaxEnchantLevels.TryGetValue(cardKey, out var specificCardMaxEnchantLevels))
-			{
+			ref var specificCardMaxEnchantLevels = ref CollectionsMarshal.GetValueRefOrAddDefault(MaxEnchantLevels, cardKey, out var specificCardMaxEnchantLevelsExists);
+			if (!specificCardMaxEnchantLevelsExists)
 				specificCardMaxEnchantLevels = [];
-				MaxEnchantLevels[cardKey] = specificCardMaxEnchantLevels;
-			}
-			specificCardMaxEnchantLevels[upgrade] = actualMaxLevel;
+			specificCardMaxEnchantLevels![upgrade] = actualMaxLevel;
 		}
 	}
 
@@ -246,17 +245,14 @@ internal sealed class Enchanted : IRegisterable
 		}
 		else
 		{
-			if (!EnchantLevelCosts.TryGetValue(cardKey, out var specificCardEnchantLevelCosts))
-			{
+			ref var specificCardEnchantLevelCosts = ref CollectionsMarshal.GetValueRefOrAddDefault(EnchantLevelCosts, cardKey, out var specificCardEnchantLevelCostsExists);
+			if (!specificCardEnchantLevelCostsExists)
 				specificCardEnchantLevelCosts = [];
-				EnchantLevelCosts[cardKey] = specificCardEnchantLevelCosts;
-			}
-			if (!specificCardEnchantLevelCosts.TryGetValue(upgrade, out var specificUpgradeEnchantLevelCosts))
-			{
+
+			ref var specificUpgradeEnchantLevelCosts = ref CollectionsMarshal.GetValueRefOrAddDefault(specificCardEnchantLevelCosts!, upgrade, out var specificUpgradeEnchantLevelCostsExists);
+			if (!specificUpgradeEnchantLevelCostsExists)
 				specificUpgradeEnchantLevelCosts = [];
-				specificCardEnchantLevelCosts[upgrade] = specificUpgradeEnchantLevelCosts;
-			}
-			specificUpgradeEnchantLevelCosts[level] = cost;
+			specificUpgradeEnchantLevelCosts![level] = cost;
 			UpdateMaxEnchantLevel(cardKey, upgrade, Math.Max(GetMaxEnchantLevel(cardKey, upgrade), level));
 		}
 	}
