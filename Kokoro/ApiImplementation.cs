@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Shockah.Kokoro;
 
@@ -49,12 +50,12 @@ public sealed partial class ApiImplementation : IKokoroApi
 			proxy = null;
 			return false;
 		}
-		if (!ProxyCache.TryGetValue(typeof(T), out var table))
-		{
+
+		ref var table = ref CollectionsMarshal.GetValueRefOrAddDefault(ProxyCache, typeof(T), out var tableExists);
+		if (!tableExists)
 			table = [];
-			ProxyCache[typeof(T)] = table;
-		}
-		if (table.TryGetValue(@object, out var rawProxy))
+		
+		if (table!.TryGetValue(@object, out var rawProxy))
 		{
 			proxy = (T)rawProxy!;
 			return rawProxy is not null;

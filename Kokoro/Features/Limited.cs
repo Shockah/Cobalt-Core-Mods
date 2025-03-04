@@ -5,6 +5,7 @@ using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Shockah.Kokoro;
 
@@ -254,12 +255,10 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 
 	public static void SetBaseLimitedUses(string key, Upgrade upgrade, int value)
 	{
-		if (!BaseLimitedUses.TryGetValue(key, out var perUpgrade))
-		{
+		ref var perUpgrade = ref CollectionsMarshal.GetValueRefOrAddDefault(BaseLimitedUses, key, out var perUpgradeExists);
+		if (!perUpgradeExists)
 			perUpgrade = [];
-			BaseLimitedUses[key] = perUpgrade;
-		}
-		perUpgrade[upgrade] = value;
+		perUpgrade![upgrade] = value;
 	}
 	
 	public static int GetLimitedUses(State state, Card card)

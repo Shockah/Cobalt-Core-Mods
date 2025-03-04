@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Shockah.Kokoro;
 
@@ -139,12 +140,11 @@ internal sealed class ExtensionDataManager : IReferenceCloneListener
 			allObjectData = new();
 			ExtensionDataStorage.AddOrUpdate(o, allObjectData);
 		}
-		if (!allObjectData.TryGetValue(manifest.Name, out var modObjectData))
-		{
-			modObjectData = new();
-			allObjectData[manifest.Name] = modObjectData;
-		}
-		modObjectData[key] = data;
+
+		ref var modObjectData = ref CollectionsMarshal.GetValueRefOrAddDefault(allObjectData, manifest.Name, out var modObjectDataExists);
+		if (!modObjectDataExists)
+			modObjectData = [];
+		modObjectData![key] = data;
 	}
 
 	public void RemoveExtensionData(IManifest manifest, object o, string key)
@@ -197,14 +197,12 @@ internal sealed class ExtensionDataManager : IReferenceCloneListener
 
 		foreach (var (modUniqueName, sourceModObjectData) in allSourceObjectData)
 		{
-			if (!allTargetObjectData.TryGetValue(modUniqueName, out var targetModObjectData))
-			{
+			ref var targetModObjectData = ref CollectionsMarshal.GetValueRefOrAddDefault(allTargetObjectData, modUniqueName, out var targetModObjectDataExists);
+			if (!targetModObjectDataExists)
 				targetModObjectData = [];
-				allTargetObjectData[modUniqueName] = targetModObjectData;
-			}
 			
 			foreach (var (key, value) in sourceModObjectData)
-				targetModObjectData[key] = DeepCopy(value);
+				targetModObjectData![key] = DeepCopy(value);
 		}
 		
 		static object? DeepCopy(object? o)

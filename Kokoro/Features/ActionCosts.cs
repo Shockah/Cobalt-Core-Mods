@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.InteropServices;
 
 namespace Shockah.Kokoro;
 
@@ -481,12 +482,13 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 	{
 		ArgumentOutOfRangeException.ThrowIfLessThan(amount, 1);
 
-		if (!ResourceCostIcons.TryGetValue(resourceKey, out var icons))
-			ResourceCostIcons[resourceKey] = icons = [];
+		ref var icons = ref CollectionsMarshal.GetValueRefOrAddDefault(ResourceCostIcons, resourceKey, out var iconsExists);
+		if (!iconsExists)
+			icons = [];
 
-		if (icons.FirstOrNull(e => e.Amount == amount) is { } existingIcon)
-			icons.Remove(existingIcon);
-		icons.Add((Amount: amount, SatisfiedIcon: costSatisfiedIcon, UnsatisfiedIcon: costUnsatisfiedIcon), amount);
+		if (icons!.FirstOrNull(e => e.Amount == amount) is { } existingIcon)
+			icons!.Remove(existingIcon);
+		icons!.Add((Amount: amount, SatisfiedIcon: costSatisfiedIcon, UnsatisfiedIcon: costUnsatisfiedIcon), amount);
 	}
 
 	internal IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.IResourceCostIcon> GetResourceCostIcons(string resourceKey, int amount)
@@ -773,8 +775,9 @@ internal sealed class ActionCostMockPaymentEnvironment(IKokoroApi.IV2.IActionCos
 
 	public int GetAvailableResource(IKokoroApi.IV2.IActionCostsApi.IResource resource)
 	{
-		if (!MockResourceAmounts.TryGetValue(resource.ResourceKey, out var amount))
-			MockResourceAmounts[resource.ResourceKey] = amount = @default?.GetAvailableResource(resource) ?? 0;
+		ref var amount = ref CollectionsMarshal.GetValueRefOrAddDefault(MockResourceAmounts, resource.ResourceKey, out var amountExists);
+		if (!amountExists)
+			amount = @default?.GetAvailableResource(resource) ?? 0;
 		return amount;
 	}
 

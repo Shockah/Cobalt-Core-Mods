@@ -5,6 +5,7 @@ using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Shockah.Kokoro;
 
@@ -255,12 +256,10 @@ internal sealed class FiniteManager : HookManager<IKokoroApi.IV2.IFiniteApi.IHoo
 
 	public static void SetBaseFiniteUses(string key, Upgrade upgrade, int value)
 	{
-		if (!BaseFiniteUses.TryGetValue(key, out var perUpgrade))
-		{
+		ref var perUpgrade = ref CollectionsMarshal.GetValueRefOrAddDefault(BaseFiniteUses, key, out var perUpgradeExists);
+		if (!perUpgradeExists)
 			perUpgrade = [];
-			BaseFiniteUses[key] = perUpgrade;
-		}
-		perUpgrade[upgrade] = value;
+		perUpgrade![upgrade] = value;
 	}
 	
 	public static int GetFiniteUses(State state, Card card)
