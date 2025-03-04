@@ -33,8 +33,8 @@ internal sealed class NatashaDizzyArtifact : Artifact, IRegisterable
 				pools = ModEntry.GetArtifactPools(MethodBase.GetCurrentMethod()!.DeclaringType!)
 			},
 			Sprite = ActiveSprite.Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "NatashaDizzy", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "NatashaDizzy", "description"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "Dizzy", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "Dizzy", "description"]).Localize
 		});
 
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.NatashaDeck.Deck, Deck.dizzy]);

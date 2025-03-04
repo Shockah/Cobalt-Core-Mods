@@ -22,8 +22,8 @@ internal sealed class NatashaRiggsArtifact : Artifact, IRegisterable
 				pools = ModEntry.GetArtifactPools(MethodBase.GetCurrentMethod()!.DeclaringType!)
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Duo/Riggs.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "NatashaRiggs", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "NatashaRiggs", "description"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "Riggs", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "Riggs", "description"]).Localize
 		});
 
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.NatashaDeck.Deck, Deck.riggs]);

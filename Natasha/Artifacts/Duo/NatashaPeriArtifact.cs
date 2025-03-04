@@ -33,8 +33,8 @@ internal sealed class NatashaPeriArtifact : Artifact, IRegisterable
 				pools = ModEntry.GetArtifactPools(MethodBase.GetCurrentMethod()!.DeclaringType!)
 			},
 			Sprite = ActiveSprite.Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "NatashaPeri", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "NatashaPeri", "description"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "Peri", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "Peri", "description"]).Localize
 		});
 
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.NatashaDeck.Deck, Deck.peri]);
