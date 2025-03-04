@@ -116,9 +116,17 @@ internal sealed class ModEntry : SimpleMod
 								Cost: data.cost,
 								Traits: traits.Select(t =>
 								{
-									if (t.Configuration.Name is not { } nameProvider || nameProvider("en") is not { } name || string.IsNullOrEmpty(name))
+									try
+									{
+										if (t.Configuration.Name is not { } nameProvider || nameProvider("en") is not { } name || string.IsNullOrEmpty(name))
+											return null;
+										return new ExportCardTraitData(Key: t.UniqueName, Name: name);
+									}
+									catch
+									{
+										Logger.LogError("There was an error exporting card trait data for card {Card} {Upgrade}.", cardAtUpgrade.Key(), cardAtUpgrade.upgrade);
 										return null;
-									return new ExportCardTraitData(Key: t.UniqueName, Name: name);
+									}
 								}).WhereNotNull().ToList(),
 								BaseImagePath: e.Meta.unreleased
 									? $"unreleased/{MakeFileSafe(e.Key)}-Base-{(upgrade == Upgrade.None ? "0" : upgrade.ToString())}.png"
@@ -205,7 +213,7 @@ internal sealed class ModEntry : SimpleMod
 			Mod: Enum.GetValues<Deck>().Contains(deck) ? null : GetModName(Helper.Content.Decks.LookupByDeck(deck)),
 			Artifacts: artifacts.Select(e =>
 			{
-				var card = (Artifact)Activator.CreateInstance(e.Type)!;
+				// var artifact = (Artifact)Activator.CreateInstance(e.Type)!;
 				return new ExportArtifactData(
 					Key: e.Key,
 					Name: Loc.T($"artifact.{e.Key}.name"),
