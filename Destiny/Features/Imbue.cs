@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using HarmonyLib;
 using Nanoray.PluginManager;
 using Newtonsoft.Json;
@@ -60,15 +61,13 @@ internal sealed class Imbue : IRegisterable
 			{
 				position.x += 1;
 
-				if (!TraitOutlineSprites.TryGetValue(imbueAction.Trait.UniqueName, out var traitOutlineSprite))
-				{
+				ref var traitOutlineSprite = ref CollectionsMarshal.GetValueRefOrAddDefault(TraitOutlineSprites, imbueAction.Trait.UniqueName, out var traitOutlineSpriteExists);
+				if (!traitOutlineSpriteExists)
 					traitOutlineSprite = TextureOutlines.CreateOutlineSprite(traitIcon, true, false, false);
-					TraitOutlineSprites[imbueAction.Trait.UniqueName] = traitOutlineSprite;
-				}
 
 				if (!dontDraw)
 				{
-					Draw.Sprite(traitOutlineSprite.Sprite, position.x, position.y - 1, color: renderAsDisabled ? Colors.disabledIconTint * OutlineColor : OutlineColor);
+					Draw.Sprite(traitOutlineSprite!.Sprite, position.x, position.y - 1, color: renderAsDisabled ? Colors.disabledIconTint * OutlineColor : OutlineColor);
 					Draw.Sprite(traitIcon, position.x + 1, position.y, color: renderAsDisabled ? Colors.disabledIconTint : Colors.white);
 				}
 				position.x += 11;
