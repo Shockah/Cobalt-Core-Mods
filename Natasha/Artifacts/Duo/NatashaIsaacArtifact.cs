@@ -29,21 +29,11 @@ internal sealed class NatashaIsaacArtifact : Artifact, IRegisterable
 	}
 
 	public override List<Tooltip> GetExtraTooltips()
-		=> [new TTCard { card = CreateCard(DB.fakeState) }];
+		=> StatusMeta.GetTooltips(Reprogram.ReprogrammedStatus.Status, 1);
 
 	public override void OnCombatStart(State state, Combat combat)
 	{
 		base.OnCombatStart(state, combat);
-		combat.QueueImmediate(new AAddCard { destination = CardDestination.Hand, card = CreateCard(state), artifactPulse = Key() });
-	}
-
-	private static Card CreateCard(State state)
-	{
-		var card = new AttackDroneCard();
-		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, ModEntry.Instance.Helper.Content.Cards.TemporaryCardTrait, true, false);
-		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, ModEntry.Instance.Helper.Content.Cards.RetainCardTrait, true, false);
-		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, ModEntry.Instance.KokoroApi.Limited.Trait, true, false);
-		ModEntry.Instance.KokoroApi.Limited.SetLimitedUses(state, card, 3);
-		return card;
+		combat.QueueImmediate(new AStatus { targetPlayer = true, status = Reprogram.ReprogrammedStatus.Status, statusAmount = 1, artifactPulse = Key() });
 	}
 }

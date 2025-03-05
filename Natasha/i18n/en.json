@@ -61,7 +61,7 @@
             },
             "Isaac": {
                 "name": "TBD",
-                "description": "At the start of combat, add a <c=cardtrait>temp</c> <c=card>Attack Drone</c> with <c=cardtrait>limited 3</c> and <c=cardtrait>retain</c> to your hand."
+                "description": "Start each combat with 1 <c=status>REPROGRAMMED</c>."
             },
             "Peri": {
                 "name": "TBD",
