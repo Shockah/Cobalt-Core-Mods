@@ -55,6 +55,10 @@
             "description": "Whenever you play a <c=cardtrait>limited</c> card, gain 1 <c=status>temp shield</c>."
         },
         "Duo": {
+            "Books": {
+                "name": "TBD",
+                "description": "Whenever you gain any amount of <c=status>SHARD</c>, gain 1 more. After you play a card that made you gain <c=status>SHARD</c> or <c=action>launch</c> a <c=midrow>Geode</c>, make it <c=cardtrait>limited 2</c> until end of combat."
+            },
             "Cat": {
                 "name": "TBD",
                 "description": "Your enemy gains 1 random negative status each turn."
