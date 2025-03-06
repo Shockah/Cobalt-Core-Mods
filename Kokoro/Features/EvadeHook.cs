@@ -771,7 +771,6 @@ internal sealed class EvadeManager
 
 	public static IKokoroApi.IV2.IEvadeHookApi.IRunActionResult RunNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
 	{
-		var interactionId = Guid.NewGuid();
 		var result = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.EvadeHookApi.RunActionResult>();
 		var canDoEvadeArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.EvadeHookApi.ActionCanDoEvadeArgs>();
 		var paymentOptionCanPayForEvadeArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.EvadeHookApi.PaymentOptionCanPayForEvadeArgs>();
@@ -836,8 +835,6 @@ internal sealed class EvadeManager
 								state.ship.shake += 1.0;
 							}
 
-							foreach (var action in preconditionResult.ActionsOnFail)
-								ActionInfoManager.SetInteractionId(action, interactionId);
 							combat.Queue(preconditionResult.ActionsOnFail);
 
 							hookEvadePreconditionFailedArgs.State = state;
@@ -881,8 +878,6 @@ internal sealed class EvadeManager
 							}
 
 							List<CardAction> queuedActions = [.. paymentActions, .. postconditionResult.ActionsOnFail];
-							foreach (var action in queuedActions)
-								ActionInfoManager.SetInteractionId(action, interactionId);
 							combat.Queue(queuedActions);
 
 							hookEvadePostconditionFailedArgs.State = state;
@@ -909,8 +904,6 @@ internal sealed class EvadeManager
 					var evadeActions = entry.Action.ProvideEvadeActions(actionProvideEvadeActionsArgs);
 
 					List<CardAction> allActions = [.. paymentActions, .. evadeActions];
-					foreach (var action in allActions)
-						ActionInfoManager.SetInteractionId(action, interactionId);
 					combat.Queue(allActions);
 
 					hookAfterEvadeArgs.State = state;

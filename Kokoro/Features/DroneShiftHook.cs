@@ -755,7 +755,6 @@ internal sealed class DroneShiftManager
 
 	public static IKokoroApi.IV2.IDroneShiftHookApi.IRunActionResult RunNextAction(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction)
 	{
-		var interactionId = Guid.NewGuid();
 		var result = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.RunActionResult>();
 		var canDoDroneShiftArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.ActionCanDoDroneShiftArgs>();
 		var paymentOptionCanPayForDroneShiftArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.PaymentOptionCanPayForDroneShiftArgs>();
@@ -820,8 +819,6 @@ internal sealed class DroneShiftManager
 								state.ship.shake += 1.0;
 							}
 
-							foreach (var action in preconditionResult.ActionsOnFail)
-								ActionInfoManager.SetInteractionId(action, interactionId);
 							combat.Queue(preconditionResult.ActionsOnFail);
 
 							hookDroneShiftPreconditionFailedArgs.State = state;
@@ -865,8 +862,6 @@ internal sealed class DroneShiftManager
 							}
 
 							List<CardAction> queuedActions = [.. paymentActions, .. postconditionResult.ActionsOnFail];
-							foreach (var action in queuedActions)
-								ActionInfoManager.SetInteractionId(action, interactionId);
 							combat.Queue(queuedActions);
 
 							hookDroneShiftPostconditionFailedArgs.State = state;
@@ -893,8 +888,6 @@ internal sealed class DroneShiftManager
 					var droneShiftActions = entry.Action.ProvideDroneShiftActions(actionProvideDroneShiftActionsArgs);
 
 					List<CardAction> allActions = [.. paymentActions, .. droneShiftActions];
-					foreach (var action in allActions)
-						ActionInfoManager.SetInteractionId(action, interactionId);
 					combat.Queue(allActions);
 
 					hookAfterDroneShiftArgs.State = state;

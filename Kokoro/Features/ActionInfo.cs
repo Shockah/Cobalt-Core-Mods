@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using Nickel;
-using Shockah.Shared;
 
 namespace Shockah.Kokoro;
 
@@ -27,29 +25,17 @@ partial class ApiImplementation
 
 			public void SetSourceCard(CardAction action, State state, Card? source)
 				=> ActionInfoManager.SetSourceCard(action, source);
-
-			public Guid? GetInteractionId(CardAction action)
-				=> ActionInfoManager.GetInteractionId(action);
-
-			public void SetInteractionId(CardAction action, Guid? interactionId)
-				=> ActionInfoManager.SetInteractionId(action, interactionId);
-
-			public void RegisterHook(IKokoroApi.IV2.IActionInfoApi.IHook hook, double priority = 0)
-				=> ActionInfoManager.Instance.Register(hook, priority);
-
-			public void UnregisterHook(IKokoroApi.IV2.IActionInfoApi.IHook hook)
-				=> ActionInfoManager.Instance.Unregister(hook);
 		}
 	}
 }
 
-internal sealed class ActionInfoManager : HookManager<IKokoroApi.IV2.IActionInfoApi.IHook>
+internal sealed class ActionInfoManager
 {
 	internal static readonly ActionInfoManager Instance = new();
 
 	private static Card? CardBeingRendered;
 	
-	private ActionInfoManager() : base(ModEntry.Instance.Package.Manifest.UniqueName)
+	private ActionInfoManager()
 	{
 	}
 	
@@ -82,27 +68,14 @@ internal sealed class ActionInfoManager : HookManager<IKokoroApi.IV2.IActionInfo
 	internal static void SetSourceCard(CardAction action, Card? sourceCard)
 		=> SetSourceCardId(action, sourceCard?.uuid);
 	
-	internal static Guid? GetInteractionId(CardAction action)
-		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<Guid>(action, "InteractionId");
-	
-	internal static void SetInteractionId(CardAction action, Guid? interactionId)
-		=> ModEntry.Instance.Helper.ModData.SetOptionalModData(action, "InteractionId", interactionId);
-	
 	private static void Card_GetActionsOverridden_Postfix_Last(Card __instance, ref List<CardAction> __result)
 	{
 		if (CardBeingRendered is not null)
 			return;
 		
-		var interactionEndedAction = new InteractionEndedAction();
-		var hiddenAction = new AHidden { Action = interactionEndedAction };
-		__result.Add(hiddenAction);
-		
-		var guid = Guid.NewGuid();
+		// TODO: switch to using a transpiler, to make it work with Soggins etc
 		foreach (var action in __result.SelectMany(a => WrappedActionManager.Instance.GetWrappedCardActionsRecursively(a, includingWrapperActions: true)))
-		{
 			SetSourceCard(action, __instance);
-			SetInteractionId(action, guid);
-		}
 	}
 
 	private static void Card_Render_Prefix(Card __instance)
@@ -110,13 +83,4 @@ internal sealed class ActionInfoManager : HookManager<IKokoroApi.IV2.IActionInfo
 
 	private static void Card_Render_Finalizer()
 		=> CardBeingRendered = null;
-
-	private sealed class InteractionEndedAction : CardAction
-	{
-		public override void Begin(G g, State s, Combat c)
-		{
-			base.Begin(g, s, c);
-			timer = 0;
-		}
-	}
 }
