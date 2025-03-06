@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.4.0
+Released 6 March 2025.
 
 * Added an API to customize status info rendering.
 * Deprecated `OverrideStatusRenderingAsBars`.
