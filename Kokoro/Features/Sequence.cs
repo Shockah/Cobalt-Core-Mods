@@ -177,6 +177,7 @@ internal sealed class SequenceAction : CardAction, IKokoroApi.IV2.ISequenceApi.I
 		if (sequenceStep != SequenceStep)
 			return;
 
+		Action.whoDidThis = whoDidThis;
 		c.QueueImmediate(Action);
 	}
 

@@ -1033,6 +1033,7 @@ internal sealed class AResourceCost : CardAction, IKokoroApi.IV2.IActionCostsApi
 			return;
 		}
 		
+		Action.whoDidThis = whoDidThis;
 		c.QueueImmediate(Action);
 
 		ActionCostsManager.Instance.OnActionCostsTransactionFinished(s, c, card, paymentResult);
