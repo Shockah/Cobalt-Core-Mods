@@ -44,7 +44,8 @@ internal sealed class NatashaBooksArtifact : Artifact, IRegisterable, IKokoroApi
 	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			.. StatusMeta.GetTooltips(Status.shard, (MG.inst.g?.state ?? DB.fakeState).ship.GetMaxShard()),
-			.. new ASpawn { thing = new Geode() }.GetTooltips(MG.inst.g?.state ?? DB.fakeState),
+			new TTGlossary("action.spawn"),
+			.. new Geode().GetTooltips(),
 			.. ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(MG.inst.g?.state ?? DB.fakeState, null) ?? [],
 		];
 
