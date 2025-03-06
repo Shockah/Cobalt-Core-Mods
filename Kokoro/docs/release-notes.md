@@ -6,11 +6,12 @@
 
 * Added an API to customize status info rendering.
 * Deprecated `OverrideStatusRenderingAsBars`.
+* Removed the action info interaction API.
 * Limited 1 now only applies Exhaust while in combat.
 * Finite 2+ now only applies Infinite while in combat.
 * Fixed action cost and sequence actions not setting their actual actions' `whoDidThis` property.
 * Fixed missing exhaust animations in some actions.
-* Removed the action info interaction API.
+* Fixed mid-combat card offerings not animating properly.
 
 ## 2.3.1
 Released 18 January 2025.

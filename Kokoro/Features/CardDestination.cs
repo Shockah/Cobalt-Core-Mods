@@ -1,9 +1,8 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Reflection;
+using HarmonyLib;
 using Newtonsoft.Json;
 using Nickel;
-using System;
-using System.Linq;
-using System.Reflection;
 
 namespace Shockah.Kokoro;
 
@@ -153,7 +152,6 @@ internal sealed class CardDestinationManager
 				combat.SendCardToDiscard(state, card);
 				break;
 			case CardDestination.Exhaust:
-				card.ExhaustFX();
 				combat.SendCardToExhaust(state, card);
 				break;
 			default:
@@ -172,27 +170,19 @@ internal sealed class CardDestinationManager
 	
 	private static bool CardReward_TakeCard_Prefix(CardReward __instance, G g, Card card)
 	{
-		if (g.state.route is Combat combat)
-		{
-			var destination = ModEntry.Instance.Helper.ModData.GetOptionalModData<CardDestination>(__instance, "destination") ?? CardDestination.Hand;
-			var insertRandomly = ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "destinationInsertRandomly");
-
-			SendCardToDestination(g.state, combat, card, destination, insertRandomly);
-			foreach (var artifact in g.state.EnumerateAllArtifacts())
-				artifact.OnPlayerRecieveCardMidCombat(g.state, combat, card);
-		}
-		else
-		{
-			Analytics.Log(g.state, "cardReward", new
-			{
-				card = card.Key(),
-				cards = __instance.cards.Select(c => c.Key())
-			});
-			g.state.SendCardToDeck(card, doAnimation: true, insertRandomly: true);
-		}
-
-		card.targetPos = new Vec(G.screenSize.x / 2, G.screenSize.y + 100);
+		if (g.state.route is not Combat combat)
+			return true;
+		
+		var destination = ModEntry.Instance.Helper.ModData.GetOptionalModData<CardDestination>(__instance, "destination") ?? CardDestination.Hand;
+		var insertRandomly = ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "destinationInsertRandomly");
+		
 		__instance.takeCardAnimation = 0;
+
+		card.targetPos.x = G.screenSize.x / 2.0;
+		SendCardToDestination(g.state, combat, card, destination, insertRandomly);
+		foreach (var artifact in g.state.EnumerateAllArtifacts())
+			artifact.OnPlayerRecieveCardMidCombat(g.state, combat, card);
+		card.targetPos.y = G.screenSize.y + 100;
 
 		return false;
 	}
