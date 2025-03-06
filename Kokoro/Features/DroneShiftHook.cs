@@ -114,16 +114,16 @@ partial class ApiImplementation
 				=> new DroneShiftPostconditionResult(isAllowed);
 
 			public IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftActionEntry? GetNextAction(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction)
-				=> DroneShiftManager.Instance.GetNextAction(state, combat, direction, true);
+				=> DroneShiftManager.GetNextAction(state, combat, direction, true);
 
 			public IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftActionEntry? GetNextAction(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction, bool forRendering)
-				=> DroneShiftManager.Instance.GetNextAction(state, combat, direction, forRendering);
+				=> DroneShiftManager.GetNextAction(state, combat, direction, forRendering);
 
 			public void DidHoverButton(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction)
-				=> DroneShiftManager.Instance.DidHoverButton(state, combat, direction);
+				=> DroneShiftManager.DidHoverButton(state, combat, direction);
 
 			public IKokoroApi.IV2.IDroneShiftHookApi.IRunActionResult RunNextAction(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction)
-				=> DroneShiftManager.Instance.RunNextAction(state, combat, direction);
+				=> DroneShiftManager.RunNextAction(state, combat, direction);
 
 			public void RegisterHook(IKokoroApi.IV2.IDroneShiftHookApi.IHook hook, double priority = 0)
 				=> DroneShiftManager.Instance.HookManager.Register(hook, priority);
@@ -603,7 +603,7 @@ internal sealed class DroneShiftManager
 		}
 	}
 	
-	public IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftActionEntry? GetNextAction(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction, bool forRendering)
+	public static IKokoroApi.IV2.IDroneShiftHookApi.IDroneShiftActionEntry? GetNextAction(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction, bool forRendering)
 	{
 		var canDoDroneShiftArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.ActionCanDoDroneShiftArgs>();
 		var paymentOptionCanPayForDroneShiftArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.PaymentOptionCanPayForDroneShiftArgs>();
@@ -648,7 +648,7 @@ internal sealed class DroneShiftManager
 		}
 	}
 
-	public void DidHoverButton(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction)
+	public static void DidHoverButton(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction)
 	{
 		var canDoDroneShiftArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.ActionCanDoDroneShiftArgs>();
 		var buttonHoveredArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.ActionDroneShiftButtonHoveredArgs>();
@@ -753,8 +753,9 @@ internal sealed class DroneShiftManager
 		}
 	}
 
-	public IKokoroApi.IV2.IDroneShiftHookApi.IRunActionResult RunNextAction(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction)
+	public static IKokoroApi.IV2.IDroneShiftHookApi.IRunActionResult RunNextAction(State state, Combat combat, IKokoroApi.IV2.IDroneShiftHookApi.Direction direction)
 	{
+		var interactionId = Guid.NewGuid();
 		var result = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.RunActionResult>();
 		var canDoDroneShiftArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.ActionCanDoDroneShiftArgs>();
 		var paymentOptionCanPayForDroneShiftArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.DroneShiftHookApi.PaymentOptionCanPayForDroneShiftArgs>();
@@ -819,6 +820,8 @@ internal sealed class DroneShiftManager
 								state.ship.shake += 1.0;
 							}
 
+							foreach (var action in preconditionResult.ActionsOnFail)
+								ActionInfoManager.SetInteractionId(action, interactionId);
 							combat.Queue(preconditionResult.ActionsOnFail);
 
 							hookDroneShiftPreconditionFailedArgs.State = state;
@@ -862,6 +865,8 @@ internal sealed class DroneShiftManager
 							}
 
 							List<CardAction> queuedActions = [.. paymentActions, .. postconditionResult.ActionsOnFail];
+							foreach (var action in queuedActions)
+								ActionInfoManager.SetInteractionId(action, interactionId);
 							combat.Queue(queuedActions);
 
 							hookDroneShiftPostconditionFailedArgs.State = state;
@@ -888,6 +893,8 @@ internal sealed class DroneShiftManager
 					var droneShiftActions = entry.Action.ProvideDroneShiftActions(actionProvideDroneShiftActionsArgs);
 
 					List<CardAction> allActions = [.. paymentActions, .. droneShiftActions];
+					foreach (var action in allActions)
+						ActionInfoManager.SetInteractionId(action, interactionId);
 					combat.Queue(allActions);
 
 					hookAfterDroneShiftArgs.State = state;
@@ -937,7 +944,7 @@ internal sealed class DroneShiftManager
 		else
 			return;
 			
-		Instance.DidHoverButton(g.state, __instance, typedDirection);
+		DidHoverButton(g.state, __instance, typedDirection);
 	}
 	
 	private static IEnumerable<CodeInstruction> Combat_RenderDroneShiftButtons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
@@ -1029,7 +1036,7 @@ internal sealed class DroneShiftManager
 					return false;
 			}
 
-			return Instance.GetNextAction(g.state, combat, (IKokoroApi.IV2.IDroneShiftHookApi.Direction)direction, true) is not null;
+			return GetNextAction(g.state, combat, (IKokoroApi.IV2.IDroneShiftHookApi.Direction)direction, true) is not null;
 		}
 		finally
 		{
@@ -1040,7 +1047,7 @@ internal sealed class DroneShiftManager
 	private static bool Combat_DoDroneShift_Prefix(Combat __instance, G g, int dir)
 	{
 		var typedDirection = (IKokoroApi.IV2.IDroneShiftHookApi.Direction)dir;
-		Instance.RunNextAction(g.state, __instance, typedDirection);
+		RunNextAction(g.state, __instance, typedDirection);
 		return false;
 	}
 }

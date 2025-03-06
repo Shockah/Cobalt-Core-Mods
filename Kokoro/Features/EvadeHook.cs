@@ -123,16 +123,16 @@ partial class ApiImplementation
 				=> new EvadePostconditionResult(isAllowed);
 
 			public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? GetNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
-				=> EvadeManager.Instance.GetNextAction(state, combat, direction, true);
+				=> EvadeManager.GetNextAction(state, combat, direction, true);
 
 			public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? GetNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction, bool forRendering)
-				=> EvadeManager.Instance.GetNextAction(state, combat, direction, forRendering);
+				=> EvadeManager.GetNextAction(state, combat, direction, forRendering);
 
 			public void DidHoverButton(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
-				=> EvadeManager.Instance.DidHoverButton(state, combat, direction);
+				=> EvadeManager.DidHoverButton(state, combat, direction);
 
 			public IKokoroApi.IV2.IEvadeHookApi.IRunActionResult RunNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
-				=> EvadeManager.Instance.RunNextAction(state, combat, direction);
+				=> EvadeManager.RunNextAction(state, combat, direction);
 
 			public void RegisterHook(IKokoroApi.IV2.IEvadeHookApi.IHook hook, double priority = 0)
 				=> EvadeManager.Instance.HookManager.Register(hook, priority);
@@ -619,7 +619,7 @@ internal sealed class EvadeManager
 		}
 	}
 
-	public IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? GetNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction, bool forRendering)
+	public static IKokoroApi.IV2.IEvadeHookApi.IEvadeActionEntry? GetNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction, bool forRendering)
 	{
 		var canDoEvadeArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.EvadeHookApi.ActionCanDoEvadeArgs>();
 		var paymentOptionCanPayForEvadeArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.EvadeHookApi.PaymentOptionCanPayForEvadeArgs>();
@@ -664,7 +664,7 @@ internal sealed class EvadeManager
 		}
 	}
 
-	public void DidHoverButton(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
+	public static void DidHoverButton(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
 	{
 		var canDoEvadeArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.EvadeHookApi.ActionCanDoEvadeArgs>();
 		var buttonHoveredArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.EvadeHookApi.ActionEvadeButtonHoveredArgs>();
@@ -769,8 +769,9 @@ internal sealed class EvadeManager
 		}
 	}
 
-	public IKokoroApi.IV2.IEvadeHookApi.IRunActionResult RunNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
+	public static IKokoroApi.IV2.IEvadeHookApi.IRunActionResult RunNextAction(State state, Combat combat, IKokoroApi.IV2.IEvadeHookApi.Direction direction)
 	{
+		var interactionId = Guid.NewGuid();
 		var result = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.EvadeHookApi.RunActionResult>();
 		var canDoEvadeArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.EvadeHookApi.ActionCanDoEvadeArgs>();
 		var paymentOptionCanPayForEvadeArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.EvadeHookApi.PaymentOptionCanPayForEvadeArgs>();
@@ -835,6 +836,8 @@ internal sealed class EvadeManager
 								state.ship.shake += 1.0;
 							}
 
+							foreach (var action in preconditionResult.ActionsOnFail)
+								ActionInfoManager.SetInteractionId(action, interactionId);
 							combat.Queue(preconditionResult.ActionsOnFail);
 
 							hookEvadePreconditionFailedArgs.State = state;
@@ -878,6 +881,8 @@ internal sealed class EvadeManager
 							}
 
 							List<CardAction> queuedActions = [.. paymentActions, .. postconditionResult.ActionsOnFail];
+							foreach (var action in queuedActions)
+								ActionInfoManager.SetInteractionId(action, interactionId);
 							combat.Queue(queuedActions);
 
 							hookEvadePostconditionFailedArgs.State = state;
@@ -904,6 +909,8 @@ internal sealed class EvadeManager
 					var evadeActions = entry.Action.ProvideEvadeActions(actionProvideEvadeActionsArgs);
 
 					List<CardAction> allActions = [.. paymentActions, .. evadeActions];
+					foreach (var action in allActions)
+						ActionInfoManager.SetInteractionId(action, interactionId);
 					combat.Queue(allActions);
 
 					hookAfterEvadeArgs.State = state;
@@ -953,7 +960,7 @@ internal sealed class EvadeManager
 		else
 			return;
 		
-		Instance.DidHoverButton(g.state, __instance, typedDirection);
+		DidHoverButton(g.state, __instance, typedDirection);
 	}
 	
 	private static IEnumerable<CodeInstruction> Combat_RenderMoveButtons_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
@@ -1054,7 +1061,7 @@ internal sealed class EvadeManager
 					return false;
 			}
 
-			return Instance.GetNextAction(g.state, combat, (IKokoroApi.IV2.IEvadeHookApi.Direction)direction, true) is not null;
+			return GetNextAction(g.state, combat, (IKokoroApi.IV2.IEvadeHookApi.Direction)direction, true) is not null;
 		}
 		finally
 		{
@@ -1065,7 +1072,7 @@ internal sealed class EvadeManager
 	private static bool Combat_DoEvade_Prefix(Combat __instance, G g, int dir)
 	{
 		var typedDirection = (IKokoroApi.IV2.IEvadeHookApi.Direction)dir;
-		Instance.RunNextAction(g.state, __instance, typedDirection);
+		RunNextAction(g.state, __instance, typedDirection);
 		return false;
 	}
 
