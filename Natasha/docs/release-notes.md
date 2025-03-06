@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.4.0
+Released 6 March 2025.
 
 * Buffed the Self-altering Code card: added Retain to base and A; changed B from Limited 2 to Limited 3.
 * Nerfed the If Else B card: changed from Limited 3 to Limited 2.
