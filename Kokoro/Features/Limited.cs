@@ -458,6 +458,7 @@ internal sealed class ChangeLimitedUsesAction : CardAction, IKokoroApi.IV2.ILimi
 		else if (!c.exhausted.Contains(card))
 		{
 			s.RemoveCardFromWhereverItIs(CardId);
+			card.ExhaustFX();
 			c.SendCardToExhaust(s, card);
 		}
 	}

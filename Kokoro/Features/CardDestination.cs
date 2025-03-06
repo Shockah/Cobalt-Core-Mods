@@ -153,6 +153,7 @@ internal sealed class CardDestinationManager
 				combat.SendCardToDiscard(state, card);
 				break;
 			case CardDestination.Exhaust:
+				card.ExhaustFX();
 				combat.SendCardToExhaust(state, card);
 				break;
 			default:
