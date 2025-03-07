@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
@@ -14,7 +12,6 @@ internal sealed class GadgetManager : IRegisterable
 	private const int MaxStacks = 15;
 	
 	internal static IStatusEntry GadgetStatus { get; private set; } = null!;
-	internal static IStatusEntry TerminationStatus { get; private set; } = null!;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -28,18 +25,6 @@ internal sealed class GadgetManager : IRegisterable
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Gadget", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Gadget", "description"]).Localize
-		});
-		
-		TerminationStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("GadgetTermination", new()
-		{
-			Definition = new()
-			{
-				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Statuses/GadgetTermination.png")).Sprite,
-				color = new("ED2424"),
-				isGood = true,
-			},
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "GadgetTermination", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "GadgetTermination", "description"]).Localize
 		});
 		
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
@@ -58,29 +43,61 @@ internal sealed class GadgetManager : IRegisterable
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnCombatStart), (State state) =>
 		{
-			state.ship.Set(GetCorrectStatus(state), ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(state, "GadgetProgress"));
+			state.ship.Set(GadgetStatus.Status, ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(state, "GadgetProgress"));
+		});
+
+		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnTurnStart), (State state, Combat combat) =>
+		{
+			if (combat.turn != 1)
+				return;
+			if (!IsAtLastCombatNode(state))
+				return;
+			if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(state, "GadgetProgress") <= 0)
+				return;
+			
+			ModEntry.Instance.Helper.ModData.SetModData(combat, "CreatedTerminate", true);
+			combat.Queue(new AAddCard { destination = CardDestination.Hand, card = new TerminateCard() });
 		});
 		
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.AfterPlayerStatusAction), (State state, Combat combat, Status status) =>
 		{
 			if (status != GadgetStatus.Status)
 				return;
+			Run();
 
-			var progressAtCombatStart = ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(state, "GadgetProgress");
-			var finishedGadgetThisCombat = ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(combat, "GadgetFinished");
-			var currentMaxStacks = finishedGadgetThisCombat ? (IsAtLastCombatNode(state) ? 0 : progressAtCombatStart) : (MaxStacks + progressAtCombatStart);
-			var gadgetProgress = state.ship.Get(GadgetStatus.Status);
-			
-			if (gadgetProgress > currentMaxStacks)
+			void Run()
 			{
-				state.ship.Add(TerminationStatus.Status, gadgetProgress - currentMaxStacks);
-				state.ship.Add(GadgetStatus.Status, -(gadgetProgress - currentMaxStacks));
-			}
-			if (!finishedGadgetThisCombat && gadgetProgress >= MaxStacks)
-			{
-				state.ship.Add(GadgetStatus.Status, -MaxStacks);
-				combat.QueueImmediate(new AArtifactOffering { amount = 2, limitPools = [ArtifactPool.Common] });
-				ModEntry.Instance.Helper.ModData.SetModData(combat, "GadgetFinished", true);
+				while (true)
+				{
+					var progressAtCombatStart = ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(state, "GadgetProgress");
+					var finishedGadgetThisCombat = ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(combat, "GadgetFinished");
+					var currentMaxStacks = finishedGadgetThisCombat ? (IsAtLastCombatNode(state) ? 0 : progressAtCombatStart) : (MaxStacks + progressAtCombatStart);
+					var gadgetProgress = state.ship.Get(GadgetStatus.Status);
+
+					if (gadgetProgress > currentMaxStacks)
+					{
+						state.ship.Add(GadgetStatus.Status, -(gadgetProgress - currentMaxStacks));
+						combat.QueueImmediate(new SmartShieldAction { TargetPlayer = true, Amount = gadgetProgress - currentMaxStacks });
+					}
+
+					if (!finishedGadgetThisCombat && gadgetProgress >= MaxStacks)
+					{
+						state.ship.Add(GadgetStatus.Status, -MaxStacks);
+						combat.QueueImmediate(new AArtifactOffering { amount = 2, limitPools = [ArtifactPool.Common] });
+						ModEntry.Instance.Helper.ModData.SetModData(combat, "GadgetFinished", true);
+
+						if (IsAtLastCombatNode(state))
+							continue;
+					}
+
+					if (gadgetProgress is > 0 and < MaxStacks && IsAtLastCombatNode(state) && !ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(combat, "CreatedTerminate"))
+					{
+						ModEntry.Instance.Helper.ModData.SetModData(combat, "CreatedTerminate", true);
+						combat.Queue(new AAddCard { destination = CardDestination.Hand, card = new TerminateCard() });
+					}
+
+					break;
+				}
 			}
 		});
 		
@@ -89,9 +106,7 @@ internal sealed class GadgetManager : IRegisterable
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(State_PopulateRun_Postfix))
 		);
 		
-		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(new TerminationStatusLogicHook());
 		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(new GadgetStatusRenderingHook());
-		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(new TerminationStatusRenderingHook());
 		
 		helper.ModRegistry.AwaitApi<IDraculaApi>(
 			"Shockah.Dracula",
@@ -101,43 +116,12 @@ internal sealed class GadgetManager : IRegisterable
 			])
 		);
 	}
-	
-	public static Status GetCorrectStatus(State state)
-		=> IsAtLastCombatNode(state) ? TerminationStatus.Status : GadgetStatus.Status;
 
 	private static bool IsAtLastCombatNode(State state)
 		=> !state.IsOutsideRun() && state.map.IsFinalZone() && state.map.GetCurrent().contents is MapBattle { battleType: BattleType.Boss };
 
 	private static void State_PopulateRun_Postfix(State __instance)
 		=> ModEntry.Instance.Helper.ModData.RemoveModData(__instance, "GadgetProgress");
-
-	private sealed class TerminationStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
-	{
-		public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
-		{
-			if (args.Status != TerminationStatus.Status)
-				return false;
-			if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
-				return false;
-			if (args.Amount == 0)
-				return false;
-			
-			args.Amount = Math.Max(args.Amount - 1, 0);
-			return false;
-		}
-
-		public void OnStatusTurnTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IOnStatusTurnTriggerArgs args)
-		{
-			if (args.Status != TerminationStatus.Status)
-				return;
-			if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
-				return;
-			if (args.OldAmount == 0)
-				return;
-			
-			args.Combat.QueueImmediate(new SmartShieldAction { TargetPlayer = args.Ship.isPlayerShip, Amount = 1 });
-		}
-	}
 
 	private sealed class GadgetStatusRenderingHook : IKokoroApi.IV2.IStatusRenderingApi.IHook
 	{
@@ -166,14 +150,5 @@ internal sealed class GadgetManager : IRegisterable
 				return ModEntry.Instance.KokoroApi.StatusRendering.DefaultActiveStatusBarColor;
 			}
 		}
-	}
-
-	private sealed class TerminationStatusRenderingHook : IKokoroApi.IV2.IStatusRenderingApi.IHook
-	{
-		public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
-			=> args.Status == TerminationStatus.Status ? [
-				.. args.Tooltips,
-				.. new SmartShieldAction { TargetPlayer = args.Ship?.isPlayerShip ?? true, Amount = 1 }.GetTooltips(DB.fakeState),
-			] : args.Tooltips;
 	}
 }

@@ -266,6 +266,9 @@
 		"Taser": {
 			"name": "Taser"
 		},
+		"Terminate": {
+			"name": "Terminate"
+		},
 		"Thesis": {
 			"name": "Thesis",
 			"description": {
