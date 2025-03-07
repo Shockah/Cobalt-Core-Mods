@@ -44,6 +44,10 @@ internal sealed class VolatileFuseArtifact : Artifact, IRegisterable, IDynaHook
 	{
 		if (__instance.targetPlayer)
 			return;
+		if (__instance.fromDroneX is not null)
+			return;
+		if (!__instance.multiCannonVolley && s.ship.GetPartTypeCount(PType.cannon) > 1)
+			return;
 		if (__instance.IsBlastwave())
 			return;
 		if (s.EnumerateAllArtifacts().OfType<VolatileFuseArtifact>().FirstOrDefault() is not { } artifact)

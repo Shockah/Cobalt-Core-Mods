@@ -4,6 +4,8 @@
 
 ## Upcoming release
 
+* Fixed the Volatile Fuse artifact triggering from drone attacks.
+* Fixed the Volatile Fuse artifact double-dipping on multi-cannon attacks.
 * Fixed the Blast Goggles (Dyna-Dizzy duo) artifact tooltip to mention the correct upgrade of the card.
 
 ## 1.4.1
