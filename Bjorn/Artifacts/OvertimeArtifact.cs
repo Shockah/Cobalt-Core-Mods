@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using Nanoray.PluginManager;
+using Newtonsoft.Json;
 using Nickel;
 
 namespace Shockah.Bjorn;
 
 internal sealed class OvertimeArtifact : Artifact, IRegisterable, IBjornApi.IHook
 {
-	public const int Threshold = 5;
+	private const int Threshold = 5;
 	
-	public int AnalyzedCards;
+	[JsonProperty]
+	private int AnalyzedCards;
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
