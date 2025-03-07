@@ -20,12 +20,12 @@ internal sealed class GeligniteArtifact : Artifact, IRegisterable
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Gelignite.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Gelignite", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Gelignite", "description"]).Localize
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Gelignite", "description"]).Localize,
 		});
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
-		=> new BurstCharge().GetTooltips(MG.inst.g.state ?? DB.fakeState);
+	public override List<Tooltip> GetExtraTooltips()
+		=> new BurstCharge().GetTooltips(MG.inst.g?.state ?? DB.fakeState);
 
 	public override void OnCombatStart(State state, Combat combat)
 	{

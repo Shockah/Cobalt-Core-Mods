@@ -28,7 +28,7 @@ internal sealed class DynaCatArtifact : Artifact, IRegisterable
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Duo/DynaCat.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaCat", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaCat", "description"]).Localize
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaCat", "description"]).Localize,
 		});
 
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.DynaDeck.Deck, Deck.colorless]);
@@ -40,7 +40,7 @@ internal sealed class DynaCatArtifact : Artifact, IRegisterable
 		);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> new BlastwaveManager.BlastwaveAction { Source = new(), Damage = 1, WorldX = 0 }.GetTooltips(DB.fakeState);
 
 	public override void OnReceiveArtifact(State state)

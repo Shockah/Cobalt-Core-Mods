@@ -22,7 +22,7 @@ internal sealed class UnstableCompoundArtifact : Artifact, IRegisterable, IDynaH
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/UnstableCompound.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "UnstableCompound", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "UnstableCompound", "description"]).Localize
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "UnstableCompound", "description"]).Localize,
 		});
 
 		ModEntry.Instance.Harmony.TryPatch(
@@ -32,7 +32,7 @@ internal sealed class UnstableCompoundArtifact : Artifact, IRegisterable, IDynaH
 		);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> new BlastwaveManager.BlastwaveAction { Source = new(), Damage = 1, Range = 1, WorldX = 0 }.GetTooltips(DB.fakeState)
 			.Concat(new BlastwaveManager.BlastwaveAction { Source = new(), Damage = 1, Range = 2, WorldX = 0 }.GetTooltips(DB.fakeState))
 			.ToList();

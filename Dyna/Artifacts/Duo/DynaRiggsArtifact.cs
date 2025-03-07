@@ -16,7 +16,7 @@ internal sealed class DynaRiggsArtifact : Artifact, IRegisterable
 	private static ISpriteEntry InactiveSprite = null!;
 
 	[JsonProperty]
-	public bool TriggeredThisCombat { get; set; } = false;
+	private bool TriggeredThisCombat;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -36,7 +36,7 @@ internal sealed class DynaRiggsArtifact : Artifact, IRegisterable
 			},
 			Sprite = ActiveSprite.Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaRiggs", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaRiggs", "description"]).Localize
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaRiggs", "description"]).Localize,
 		});
 
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.DynaDeck.Deck, Deck.riggs]);
@@ -51,9 +51,9 @@ internal sealed class DynaRiggsArtifact : Artifact, IRegisterable
 	public override Spr GetSprite()
 		=> (TriggeredThisCombat ? InactiveSprite : ActiveSprite).Sprite;
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> StatusMeta.GetTooltips(Status.energyLessNextTurn, Math.Max(MG.inst.g.state.ship.Get(Status.energyLessNextTurn), 1))
-			.Concat(new SwiftCharge().GetTooltips(MG.inst.g.state ?? DB.fakeState))
+			.Concat(new SwiftCharge().GetTooltips(MG.inst.g?.state ?? DB.fakeState))
 			.ToList();
 
 	public override void OnCombatStart(State state, Combat combat)

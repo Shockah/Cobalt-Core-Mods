@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using Nanoray.PluginManager;
+using Newtonsoft.Json;
 using Nickel;
 
 namespace Shockah.Dyna;
@@ -9,7 +10,8 @@ internal sealed class FirecrackerArtifact : Artifact, IRegisterable, IDynaHook
 {
 	private const int Period = 3;
 
-	public int Stacks;
+	[JsonProperty]
+	private int Stacks;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{

@@ -12,7 +12,7 @@ internal sealed class DynaSogginsArtifact : Artifact, IRegisterable, ISmugHook
 	private static ISpriteEntry InactiveSprite = null!;
 
 	[JsonProperty]
-	public bool TriggeredThisTurn { get; set; } = false;
+	private bool TriggeredThisTurn;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -34,7 +34,7 @@ internal sealed class DynaSogginsArtifact : Artifact, IRegisterable, ISmugHook
 			},
 			Sprite = ActiveSprite.Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaSoggins", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaSoggins", "description"]).Localize
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaSoggins", "description"]).Localize,
 		});
 
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.DynaDeck.Deck, sogginsApi.SogginsVanillaDeck]);
@@ -43,11 +43,11 @@ internal sealed class DynaSogginsArtifact : Artifact, IRegisterable, ISmugHook
 	public override Spr GetSprite()
 		=> (TriggeredThisTurn ? InactiveSprite : ActiveSprite).Sprite;
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			ModEntry.Instance.SogginsApi!.GetSmugTooltip(),
-			..new ConcussionCharge().GetTooltips(MG.inst.g.state ?? DB.fakeState),
-			..new ShatterCharge().GetTooltips(MG.inst.g.state ?? DB.fakeState),
+			.. new ConcussionCharge().GetTooltips(MG.inst.g?.state ?? DB.fakeState),
+			.. new ShatterCharge().GetTooltips(MG.inst.g?.state ?? DB.fakeState),
 		];
 
 	public override void OnTurnStart(State state, Combat combat)

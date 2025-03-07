@@ -24,13 +24,13 @@ internal sealed class DynaPeriArtifact : Artifact, IRegisterable, IDynaHook
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Duo/DynaPeri.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaPeri", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaPeri", "description"]).Localize
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaPeri", "description"]).Localize,
 		});
 
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.DynaDeck.Deck, Deck.peri]);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> StatusMeta.GetTooltips(Status.overdrive, Math.Max(MG.inst.g.state.ship.Get(Status.overdrive), 1))
 			.Concat(StatusMeta.GetTooltips(Status.powerdrive, Math.Max(MG.inst.g.state.ship.Get(Status.powerdrive), 1)))
 			.ToList();
@@ -41,20 +41,8 @@ internal sealed class DynaPeriArtifact : Artifact, IRegisterable, IDynaHook
 		var powerdrive = state.ship.Get(Status.powerdrive);
 
 		if (powerdrive > 0)
-			combat.QueueImmediate(new AHurt
-			{
-				targetPlayer = false,
-				hurtAmount = powerdrive,
-				artifactPulse = Key()
-			});
-
+			combat.QueueImmediate(new AHurt { targetPlayer = false, hurtAmount = powerdrive, artifactPulse = Key() });
 		if (overdrive > 0)
-			combat.QueueImmediate(new AHurt
-			{
-				targetPlayer = false,
-				hurtAmount = overdrive,
-				hurtShieldsFirst = true,
-				artifactPulse = Key()
-			});
+			combat.QueueImmediate(new AHurt { targetPlayer = false, hurtAmount = overdrive, hurtShieldsFirst = true, artifactPulse = Key() });
 	}
 }

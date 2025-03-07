@@ -16,7 +16,7 @@ internal sealed class DynaEddieArtifact : Artifact, IRegisterable
 	private static ISpriteEntry InactiveSprite = null!;
 
 	[JsonProperty]
-	public bool TriggeredThisCombat { get; set; } = false;
+	private bool TriggeredThisCombat;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -40,7 +40,7 @@ internal sealed class DynaEddieArtifact : Artifact, IRegisterable
 			},
 			Sprite = ActiveSprite.Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaEddie", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaEddie", "description"]).Localize
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaEddie", "description"]).Localize,
 		});
 
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.DynaDeck.Deck, helper.Content.Decks.LookupByUniqueName("TheJazMaster.Eddie::Eddie.EddieDeck")!.Deck]);
@@ -55,7 +55,7 @@ internal sealed class DynaEddieArtifact : Artifact, IRegisterable
 	public override Spr GetSprite()
 		=> (TriggeredThisCombat ? InactiveSprite : ActiveSprite).Sprite;
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			..StatusMeta.GetTooltips(Status.energyLessNextTurn, Math.Max(MG.inst.g.state.ship.Get(Status.energyLessNextTurn), 1)),
 			..StatusMeta.GetTooltips(Status.energyNextTurn, 1)
@@ -67,7 +67,7 @@ internal sealed class DynaEddieArtifact : Artifact, IRegisterable
 		TriggeredThisCombat = false;
 	}
 
-	private static void AStatus_Begin_Prefix(AStatus __instance, State s, Combat c)
+	private static void AStatus_Begin_Prefix(AStatus __instance, State s)
 	{
 		if (__instance.status != Status.energyLessNextTurn || !__instance.targetPlayer)
 			return;

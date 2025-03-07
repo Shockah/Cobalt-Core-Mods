@@ -11,7 +11,7 @@ internal sealed class PyromaniaArtifact : Artifact, IRegisterable, IDynaHook
 	private static ISpriteEntry InactiveSprite = null!;
 
 	[JsonProperty]
-	public bool TriggeredThisTurn { get; set; } = false;
+	private bool TriggeredThisTurn;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -28,7 +28,7 @@ internal sealed class PyromaniaArtifact : Artifact, IRegisterable, IDynaHook
 			},
 			Sprite = ActiveSprite.Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Pyromania", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Pyromania", "description"]).Localize
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Pyromania", "description"]).Localize,
 		});
 	}
 

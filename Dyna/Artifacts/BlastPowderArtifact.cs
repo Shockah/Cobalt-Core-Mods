@@ -18,7 +18,7 @@ internal sealed class BlastPowderArtifact : Artifact, IRegisterable, IDynaHook
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/BlastPowder.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "BlastPowder", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "BlastPowder", "description"]).Localize
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "BlastPowder", "description"]).Localize,
 		});
 	}
 

@@ -24,7 +24,7 @@ internal sealed class HardHatArtifact : Artifact, IRegisterable
 		});
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			.. StatusMeta.GetTooltips(Status.energyLessNextTurn, Math.Max(MG.inst.g.state.ship.Get(Status.energyLessNextTurn), 1)),
 			.. StatusMeta.GetTooltips(ModEntry.Instance.KokoroApi.StatusNextTurn.TempShield, 2),

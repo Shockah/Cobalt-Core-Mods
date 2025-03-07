@@ -60,12 +60,13 @@ public sealed class ModEntry : SimpleMod
 		typeof(CustomChargeCard),
 		typeof(DynaExeCard),
 	];
-
-	internal static IEnumerable<Type> AllCardTypes
-		=> CommonCardTypes
-			.Concat(UncommonCardTypes)
-			.Concat(RareCardTypes)
-			.Concat(SpecialCardTypes);
+	
+	internal static readonly IEnumerable<Type> AllCardTypes = [
+		.. CommonCardTypes,
+		.. UncommonCardTypes,
+		.. RareCardTypes,
+		.. SpecialCardTypes,
+	];
 
 	internal static readonly IReadOnlyList<Type> CommonArtifacts = [
 		typeof(BlastPowderArtifact),
@@ -93,11 +94,10 @@ public sealed class ModEntry : SimpleMod
 		typeof(DynaSogginsArtifact),
 	];
 
-	internal static readonly IEnumerable<Type> AllArtifactTypes
-		= [
-			.. CommonArtifacts,
-			.. BossArtifacts,
-		];
+	internal static readonly IEnumerable<Type> AllArtifactTypes = [
+		.. CommonArtifacts,
+		.. BossArtifacts,
+	];
 
 	internal static readonly IReadOnlyList<Type> ChargeTypes = [
 		typeof(BurstCharge),

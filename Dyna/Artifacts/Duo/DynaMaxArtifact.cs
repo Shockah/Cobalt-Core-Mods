@@ -12,7 +12,7 @@ namespace Shockah.Dyna;
 internal sealed class DynaMaxArtifact : Artifact, IRegisterable
 {
 	[JsonProperty]
-	private int Counter = 0;
+	private int Counter;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -29,7 +29,7 @@ internal sealed class DynaMaxArtifact : Artifact, IRegisterable
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Duo/DynaMax.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaMax", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaMax", "description"]).Localize
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Duo", "DynaMax", "description"]).Localize,
 		});
 
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.DynaDeck.Deck, Deck.hacker]);
@@ -44,7 +44,7 @@ internal sealed class DynaMaxArtifact : Artifact, IRegisterable
 	public override int? GetDisplayNumber(State s)
 		=> Counter;
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			new TTGlossary("cardtrait.exhaust"),
 			..new BlastwaveManager.BlastwaveAction { Source = new(), Damage = null, IsStunwave = true, WorldX = 0 }.GetTooltips(DB.fakeState)
@@ -59,20 +59,8 @@ internal sealed class DynaMaxArtifact : Artifact, IRegisterable
 			return;
 
 		combat.QueueImmediate([
-			new AStatus
-			{
-				targetPlayer = true,
-				status = Status.shard,
-				statusAmount = -3,
-				artifactPulse = Key()
-			},
-			new AStatus
-			{
-				targetPlayer = true,
-				status = NitroManager.NitroStatus.Status,
-				statusAmount = 1,
-				artifactPulse = Key()
-			}
+			new AStatus { targetPlayer = true, status = Status.shard, statusAmount = -3, artifactPulse = Key() },
+			new AStatus { targetPlayer = true, status = NitroManager.NitroStatus.Status, statusAmount = 1, artifactPulse = Key() },
 		]);
 	}
 
@@ -84,7 +72,7 @@ internal sealed class DynaMaxArtifact : Artifact, IRegisterable
 			return;
 
 		artifact.Counter -= 5;
-		__instance.QueueImmediate(new AAttack()
+		__instance.QueueImmediate(new AAttack
 		{
 			damage = Card.GetActualDamage(s, 0),
 			artifactPulse = artifact.Key(),

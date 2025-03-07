@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using Nanoray.PluginManager;
+using Newtonsoft.Json;
 using Nickel;
 
 namespace Shockah.Dyna;
@@ -11,7 +12,8 @@ internal sealed class VolatileFuseArtifact : Artifact, IRegisterable, IDynaHook
 {
 	private const int Threshold = 8;
 	
-	public int Counter;
+	[JsonProperty]
+	private int Counter;
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -25,7 +27,7 @@ internal sealed class VolatileFuseArtifact : Artifact, IRegisterable, IDynaHook
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/VolatileFuse.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "VolatileFuse", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "VolatileFuse", "description"]).Localize
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "VolatileFuse", "description"]).Localize,
 		});
 
 		ModEntry.Instance.Harmony.Patch(
