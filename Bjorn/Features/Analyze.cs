@@ -346,7 +346,7 @@ internal sealed class AnalyzeCostAction : CardAction
 	{
 		var card = CardId is { } cardId ? s.FindCard(cardId) : null;
 		var cardCanPay = card is not null && (Deanalyze ? ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, AnalyzeManager.AnalyzedTrait) : card.IsAnalyzable(s, c));
-		var cardIsEnough = cardCanPay && MaxCount >= 1;
+		var cardIsEnough = cardCanPay && MaxCount <= 1;
 
 		if (card is not null && cardIsEnough)
 		{
