@@ -47,7 +47,7 @@ internal sealed class SplitPersonalityManager : IKokoroApi.IV2.IStatusRenderingA
 		var ship = __instance.targetPlayer ? c.otherShip : s.ship;
 		if (ship.Get(SplitPersonalityStatus.Status) <= 0)
 			return;
-		if (ship.GetPartTypeCount(PType.cannon) > 1 && !__instance.multiCannonVolley)
+		if (!__instance.multiCannonVolley && ship.GetPartTypeCount(PType.cannon) > 1)
 			return;
 		if (__instance.GetFromX(s, c) is not { } fromX)
 			return;
