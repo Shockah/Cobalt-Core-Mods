@@ -9,6 +9,7 @@ using System.Linq;
 using Nickel.Common;
 using Shockah.Shared;
 using TheJazMaster.MoreDifficulties;
+using TheJazMaster.TyAndSasha;
 
 namespace Shockah.Bjorn;
 
@@ -19,6 +20,7 @@ public sealed class ModEntry : SimpleMod
 	internal readonly HookManager<IBjornApi.IHook> HookManager;
 	internal readonly MultiPool ArgsPool;
 	internal readonly IKokoroApi.IV2 KokoroApi;
+	internal ITyAndSashaApi? TyAndSashaApi { get; private set; }
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
@@ -60,6 +62,7 @@ public sealed class ModEntry : SimpleMod
 			.. UncommonCardTypes,
 			.. RareCardTypes,
 			typeof(PrototypeCard),
+			typeof(TerminateCard),
 			//typeof(BlochExeCard),
 		];
 
@@ -105,6 +108,7 @@ public sealed class ModEntry : SimpleMod
 		HookManager = new(package.Manifest.UniqueName);
 		ArgsPool = new();
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
+		helper.ModRegistry.AwaitApi<ITyAndSashaApi>("TheJazMaster.TyAndSasha", api => TyAndSashaApi = api);
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -200,6 +204,8 @@ public sealed class ModEntry : SimpleMod
 	{
 		if (type == typeof(PrototypeCard))
 			return Rarity.uncommon;
+		if (type == typeof(TerminateCard))
+			return Rarity.rare;
 		if (RareCardTypes.Contains(type))
 			return Rarity.rare;
 		if (UncommonCardTypes.Contains(type))

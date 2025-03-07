@@ -30,7 +30,7 @@ public sealed class WaterfallModelCard : Card, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new AStatus { targetPlayer = true, status = GadgetManager.GetCorrectStatus(s), statusAmount = GadgetProgressAmount },
+			new AStatus { targetPlayer = true, status = GadgetManager.GadgetStatus.Status, statusAmount = GadgetProgressAmount },
 			new AStatus { targetPlayer = true, status = Status.lockdown, statusAmount = EngineLockAmount },
 			new OnAnalyzeAction { Action = ModEntry.Instance.KokoroApi.PlayCardsFromAnywhere.MakeAction(this).AsCardAction },
 		];
