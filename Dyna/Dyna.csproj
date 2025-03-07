@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Shockah.Dyna</RootNamespace>
-		<Version>1.4.1</Version>
+		<Version>1.4.2</Version>
 	</PropertyGroup>
 	<ItemGroup>
 		<ModFiles Include="i18n/**" />

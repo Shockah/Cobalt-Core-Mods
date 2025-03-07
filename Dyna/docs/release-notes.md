@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.4.2
+Released 7 March 2025.
 
 * Fixed the Volatile Fuse artifact triggering from drone attacks.
 * Fixed the Volatile Fuse artifact double-dipping on multi-cannon attacks.
