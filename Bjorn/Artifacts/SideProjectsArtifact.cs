@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Nanoray.PluginManager;
+using Newtonsoft.Json;
 using Nickel;
 
 namespace Shockah.Bjorn;
 
 internal sealed class SideProjectsArtifact : Artifact, IRegisterable, IBjornApi.IHook
 {
-	public const int CardsToAnalyzePerProgress = 5;
-	public const int MaxProgressPerCombat = 5;
+	private const int CardsToAnalyzePerProgress = 5;
+	private const int MaxProgressPerCombat = 5;
 	
-	public int AnalyzedCards;
+	[JsonProperty]
+	private int AnalyzedCards;
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -56,7 +58,7 @@ internal sealed class SideProjectsArtifact : Artifact, IRegisterable, IBjornApi.
 			args.Combat.QueueImmediate(new AStatus
 			{
 				targetPlayer = true,
-				status = GadgetManager.GetCorrectStatus(args.State),
+				status = GadgetManager.GadgetStatus.Status,
 				statusAmount = newProgressGained - oldProgressGained,
 				artifactPulse = Key(),
 			});
