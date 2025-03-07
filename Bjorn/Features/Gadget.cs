@@ -45,18 +45,8 @@ internal sealed class GadgetManager : IRegisterable
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
 		{
 			var stacks = state.ship.Get(GadgetStatus.Status);
-
 			switch (stacks)
 			{
-				case >= MaxStacks:
-					state.rewardsQueue.QueueImmediate(new AArtifactOffering
-					{
-						amount = 2,
-						limitPools = [ArtifactPool.Common],
-					});
-				
-					ModEntry.Instance.Helper.ModData.RemoveModData(state, "GadgetProgress");
-					break;
 				case > 0:
 					ModEntry.Instance.Helper.ModData.SetModData(state, "GadgetProgress", stacks);
 					break;
@@ -71,13 +61,37 @@ internal sealed class GadgetManager : IRegisterable
 			state.ship.Set(GetCorrectStatus(state), ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(state, "GadgetProgress"));
 		});
 		
+		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.AfterPlayerStatusAction), (State state, Combat combat, Status status) =>
+		{
+			if (status != GadgetStatus.Status)
+				return;
+
+			var progressAtCombatStart = ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(state, "GadgetProgress");
+			var finishedGadgetThisCombat = ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(combat, "GadgetFinished");
+			var currentMaxStacks = finishedGadgetThisCombat ? (IsAtLastCombatNode(state) ? 0 : progressAtCombatStart) : (MaxStacks + progressAtCombatStart);
+			var gadgetProgress = state.ship.Get(GadgetStatus.Status);
+			
+			if (gadgetProgress > currentMaxStacks)
+			{
+				state.ship.Add(TerminationStatus.Status, gadgetProgress - currentMaxStacks);
+				state.ship.Add(GadgetStatus.Status, -(gadgetProgress - currentMaxStacks));
+			}
+			if (!finishedGadgetThisCombat && gadgetProgress >= MaxStacks)
+			{
+				state.ship.Add(GadgetStatus.Status, -MaxStacks);
+				combat.QueueImmediate(new AArtifactOffering { amount = 2, limitPools = [ArtifactPool.Common] });
+				ModEntry.Instance.Helper.ModData.SetModData(combat, "GadgetFinished", true);
+			}
+		});
+		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(State), nameof(State.PopulateRun)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(State_PopulateRun_Postfix))
 		);
 		
 		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(new TerminationStatusLogicHook());
-		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(new GadgetAndTerminationStatusRenderingHook());
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(new GadgetStatusRenderingHook());
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(new TerminationStatusRenderingHook());
 		
 		helper.ModRegistry.AwaitApi<IDraculaApi>(
 			"Shockah.Dracula",
@@ -125,20 +139,37 @@ internal sealed class GadgetManager : IRegisterable
 		}
 	}
 
-	private sealed class GadgetAndTerminationStatusRenderingHook : IKokoroApi.IV2.IStatusRenderingApi.IHook
+	private sealed class GadgetStatusRenderingHook : IKokoroApi.IV2.IStatusRenderingApi.IHook
 	{
 		public IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer? OverrideStatusInfoRenderer(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusInfoRendererArgs args)
 		{
-			if (args.Status != GadgetStatus.Status && args.Status != TerminationStatus.Status)
+			if (args.Status != GadgetStatus.Status)
 				return null;
+
+			var progressAtCombatStart = ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(args.State, "GadgetProgress");
+			var finishedGadgetThisCombat = ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(args.Combat, "GadgetFinished");
 			
 			var colors = new Color[MaxStacks];
 			for (var i = 0; i < colors.Length; i++)
-				colors[i] = args.Amount > i ? ModEntry.Instance.KokoroApi.StatusRendering.DefaultActiveStatusBarColor : ModEntry.Instance.KokoroApi.StatusRendering.DefaultInactiveStatusBarColor;
+				colors[i] = GetColor(i);
 
 			return ModEntry.Instance.KokoroApi.StatusRendering.MakeBarStatusInfoRenderer().SetSegments(colors).SetRows(3);
-		}
 
+			Color GetColor(int i)
+			{
+				if (finishedGadgetThisCombat && i >= progressAtCombatStart)
+					return Colors.downside;
+				if (i >= args.Amount)
+					return ModEntry.Instance.KokoroApi.StatusRendering.DefaultInactiveStatusBarColor;
+				if (!finishedGadgetThisCombat && i < progressAtCombatStart)
+					return Colors.cheevoGold;
+				return ModEntry.Instance.KokoroApi.StatusRendering.DefaultActiveStatusBarColor;
+			}
+		}
+	}
+
+	private sealed class TerminationStatusRenderingHook : IKokoroApi.IV2.IStatusRenderingApi.IHook
+	{
 		public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 			=> args.Status == TerminationStatus.Status ? [
 				.. args.Tooltips,
