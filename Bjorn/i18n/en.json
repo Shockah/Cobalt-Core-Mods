@@ -77,7 +77,7 @@
 		},
 		"Gadget": {
 			"name": "Gadget Progress",
-			"description": "After combat ends, if you have 15 or more of it, <c=downside>lose all of it</c> and gain 1 of 2 common artifacts. <c=textBold>Persists between combats.</c>"
+			"description": "After gaining 15 of it, <c=downside>lose that much</c> and gain 1 of 2 common artifacts. You can only gain 15 per combat. <c=textBold>Persists between combats.</c>"
 		},
 		"GadgetTermination": {
 			"name": "Termination",
