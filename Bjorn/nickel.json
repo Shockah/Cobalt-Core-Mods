@@ -4,7 +4,7 @@
     "DisplayName": "Bjorn",
     "Description": "TBD",
     "Author": "Shockah, Soggoru Waffle",
-    "RequiredApiVersion": "1.4.0",
+    "RequiredApiVersion": "1.14.0",
     "EntryPointAssembly": "Bjorn.dll",
     "LoadPhase": "AfterDbInit",
     "Dependencies": [
