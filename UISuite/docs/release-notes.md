@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.1
+Released 8 March 2025.
 
 * Improved performance of the less intrusive hand card browse feature.
 
