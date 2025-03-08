@@ -395,6 +395,15 @@ internal sealed class AnalyzeCostAction : CardAction
 			var cards = baseRoute.GetCardList(g);
 			if (cards.Count == MinCount && MinCount == MaxCount)
 			{
+				foreach (var analyzableCard in cards)
+				{
+					Audio.Play(Event.CardHandling);
+			
+					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, analyzableCard, AnalyzeManager.AnalyzedTrait, !Deanalyze, permanent: false);
+					if (Permanent)
+						ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, analyzableCard, AnalyzeManager.AnalyzedTrait, !Deanalyze, permanent: true);
+				}
+				
 				if (Action is not null)
 				{
 					switch (MinCount)
@@ -408,6 +417,9 @@ internal sealed class AnalyzeCostAction : CardAction
 					}
 					c.QueueImmediate(Action);
 				}
+			
+				if (!Deanalyze)
+					AnalyzeManager.OnCardsAnalyzed(s, c, cards, Permanent);
 
 				timer = 0;
 				return null;
