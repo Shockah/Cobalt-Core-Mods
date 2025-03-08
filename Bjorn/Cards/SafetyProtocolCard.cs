@@ -37,8 +37,8 @@ public sealed class SafetyProtocolCard : Card, IRegisterable, IHasCustomCardTrai
 			{
 				var unplayable = card.GetDataReentry == 1 && e.State.route is Combat { routeOverride: null } combat && (
 					card.flipped
-						? combat.energy < card.GetCurrentCost(MG.inst.g.state) + 1
-						: combat.hand.All(someCard => !someCard.IsAnalyzable(MG.inst.g.state, combat))
+						? combat.energy < card.GetCurrentCost(MG.inst.g?.state ?? DB.fakeState) + 1
+						: combat.hand.All(someCard => !someCard.IsAnalyzable(MG.inst.g?.state ?? DB.fakeState, combat))
 				);
 				
 				if (unplayable)
