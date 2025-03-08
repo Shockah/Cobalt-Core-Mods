@@ -61,22 +61,21 @@ internal sealed class SmartShieldDrone : ShieldDrone, IRegisterable
 
 	private static IEnumerable<CodeInstruction> AAttack_Begin_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(
+				.Find([
 					ILMatches.Ldarg(0).ExtractLabels(out var labels),
 					ILMatches.Ldflda("status"),
 					ILMatches.Call("get_HasValue"),
 					ILMatches.Brfalse
-				)
-				.Insert(
-					SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
-					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Ldarg_3),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Transpiler_GrantSmartShield)))
-				)
+				])
 				.AllElements();
 		}
 		catch (Exception ex)
@@ -84,9 +83,10 @@ internal sealed class SmartShieldDrone : ShieldDrone, IRegisterable
 			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.GetDisplayName(@long: false), ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
-	private static void AAttack_Begin_Transpiler_GrantSmartShield(AAttack attack, State state, Combat combat)
+	private static void AAttack_Begin_Transpiler_GrantSmartShield(AAttack attack, Combat combat)
 	{
 		var amount = ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(attack, "SmartShield");
 		if (amount <= 0)
