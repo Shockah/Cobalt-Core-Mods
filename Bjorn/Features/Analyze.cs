@@ -131,6 +131,8 @@ internal sealed class AnalyzeManager : IRegisterable
 		};
 		
 		ModEntry.Instance.HookManager.Register(NonAnalyzedNonTempCardsAnalyzeHook.Instance, 0);
+		
+		ModEntry.Instance.KokoroApi.WrappedActions.RegisterHook(new WrappedActionsHook());
 	}
 
 	public static List<Tooltip> GetAnalyzeTooltips(State state)
@@ -307,9 +309,20 @@ internal sealed class AnalyzeManager : IRegisterable
 
 		return true;
 	}
+
+	private sealed class WrappedActionsHook : IKokoroApi.IV2.IWrappedActionsApi.IHook
+	{
+		public IEnumerable<CardAction>? GetWrappedCardActions(IKokoroApi.IV2.IWrappedActionsApi.IHook.IGetWrappedCardActionsArgs args)
+		{
+			if (args.Action is AnalyzeCostAction analyzeCostAction)
+				return analyzeCostAction.Action is null ? [] : [analyzeCostAction.Action];
+			if (args.Action is OnAnalyzeAction onAnalyzeAction)
+				return [onAnalyzeAction.Action];
+			return null;
+		}
+	}
 }
 
-// TODO: register wrapped action
 internal sealed class AnalyzeCostAction : CardAction
 {
 	public required CardAction? Action;
