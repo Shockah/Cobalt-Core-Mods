@@ -34,7 +34,16 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 		);
 	}
 
-	private int GetDamage(State state)
+	// TODO: replace with an API, when that becomes available
+	private static int GetBonusXAmount(State state)
+	{
+		var amount = 0;
+		if (ModEntry.Instance.TyAndSashaApi is { } tyAndSashaApi)
+			amount += state.ship.Get(tyAndSashaApi.XFactorStatus) + state.ship.Get(tyAndSashaApi.ExtremeMeasuresStatus);
+		return amount;
+	}
+
+	private int GetDamage(State state, bool forText)
 	{
 		if (ModEntry.Instance.Helper.Content.Cards.IsCurrentlyCreatingCardTraitStates(state, this))
 			return 0;
@@ -43,7 +52,7 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 		if (state.route is not Combat combat)
 			return 0;
 
-		var analyzableCount = combat.hand.Count(card => card != this && card.IsAnalyzable(state, combat));
+		var analyzableCount = combat.hand.Count(card => card != this && card.IsAnalyzable(state, combat)) + (forText ? GetBonusXAmount(state) : 0);
 		return GetDmg(state, upgrade.Switch(
 			none: () => analyzableCount * 2,
 			a: () => analyzableCount * 2,
@@ -53,7 +62,7 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 
 	public override CardData GetData(State state)
 	{
-		var description = ModEntry.Instance.Localizations.Localize(["card", "LilHadronCollider", "description", upgrade.ToString(), state.route is Combat ? "stateful" : "stateless"], new { Damage = GetDamage(state) });
+		var description = ModEntry.Instance.Localizations.Localize(["card", "LilHadronCollider", "description", upgrade.ToString(), state.route is Combat ? "stateful" : "stateless"], new { Damage = GetDamage(state, true) });
 		return upgrade.Switch<CardData>(
 			none: () => new() { cost = 3, exhaust = true, description = description },
 			a: () => new() { cost = 3, exhaust = true, retain = true, description = description },
@@ -66,17 +75,17 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 			none: () => [
 				new AnalyzableVariableHint { CardId = uuid },
 				new AnalyzeHandAction { CardId = uuid },
-				new AAttack { damage = GetDamage(s), xHint = 2 }
+				new AAttack { damage = GetDamage(s, false), xHint = 2 }
 			],
 			a: () => [
 				new AnalyzableVariableHint { CardId = uuid },
 				new AnalyzeHandAction { CardId = uuid },
-				new AAttack { damage = GetDamage(s), xHint = 2 }
+				new AAttack { damage = GetDamage(s, false), xHint = 2 }
 			],
 			b: () => [
 				new AnalyzableVariableHint { CardId = uuid },
 				new AnalyzeHandAction { CardId = uuid },
-				new AAttack { damage = GetDamage(s), xHint = 3 }
+				new AAttack { damage = GetDamage(s, false), xHint = 3 }
 			]
 		);
 
