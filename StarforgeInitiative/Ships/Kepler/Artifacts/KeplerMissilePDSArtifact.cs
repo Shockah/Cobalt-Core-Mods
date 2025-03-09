@@ -33,7 +33,8 @@ internal sealed class KeplerMissilePDSArtifact : Artifact, IRegisterable, IKeple
 			return false;
 		if (part.active)
 			return false;
-		
+
+		Pulse();
 		@continue = false;
 		return false;
 	}

@@ -46,8 +46,10 @@ internal sealed class KeplerMissileTractorBeamArtifact : Artifact, IRegisterable
 
 		var thing = Mutil.DeepCopy(missile);
 		thing.targetPlayer = !thing.targetPlayer;
+		thing.yAnimation = 1;
 		combat.QueueImmediate(new AAddCard { destination = CardDestination.Hand, card = new KeplerRelaunchCard { Thing = thing } });
 		
+		Pulse();
 		@continue = false;
 		return false;
 	}
