@@ -31,10 +31,16 @@ internal sealed class KeplerRelaunchCard : Card, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		var thingBackwards = Mutil.DeepCopy(Thing);
+		var thing = Mutil.DeepCopy(Thing);
+		thing.isHitting = false;
+		thing.targetPlayer = false;
+		thing.fromPlayer = true;
+		thing.yAnimation = 0;
+		
+		var thingBackwards = Mutil.DeepCopy(thing);
 		thingBackwards.targetPlayer = !thingBackwards.targetPlayer;
 		return [
-			new ASpawn { thing = Thing, disabled = flipped },
+			new ASpawn { thing = thing, disabled = flipped },
 			new ASpawn { thing = thingBackwards, disabled = !flipped },
 		];
 	}
