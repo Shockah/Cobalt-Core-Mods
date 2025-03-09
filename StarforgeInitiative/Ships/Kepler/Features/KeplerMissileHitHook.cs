@@ -26,9 +26,15 @@ internal sealed class KeplerMissileHitHookManager : IRegisterable
 		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
-			var continueLabel = il.DefineLabel();
-			
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find([
+					ILMatches.Ldarg(3).CreateLabel(il, out var destroyLabel),
+					ILMatches.Ldfld("stuff"),
+					ILMatches.Ldarg(0),
+					ILMatches.Ldfld("worldX"),
+					ILMatches.Call("Remove"),
+				])
+				.BlockMatcher(SequenceMatcherRelativeBounds.WholeSequence)
 				.Find([
 					ILMatches.Isinst<Missile>(),
 					ILMatches.Stloc<Missile>(originalMethod).CreateLdlocInstruction(out var ldlocMissile),
@@ -45,18 +51,16 @@ internal sealed class KeplerMissileHitHookManager : IRegisterable
 					ILMatches.Stloc<int>(originalMethod),
 				])
 				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
-					new CodeInstruction(OpCodes.Ldarg_2).WithLabels(labels),
+					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(labels),
+					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Ldarg_3),
 					ldlocMissile,
 					new CodeInstruction(OpCodes.Ldarg_0),
 					ldlocRay,
 					ldlocaDamage,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMissileHit_Update_Transpiler_ModifyHit))),
-					new CodeInstruction(OpCodes.Brtrue, continueLabel),
-					new CodeInstruction(OpCodes.Ret),
+					new CodeInstruction(OpCodes.Brfalse, destroyLabel),
 				])
-				.PointerMatcher(SequenceMatcherRelativeElement.AfterLast)
-				.AddLabel(continueLabel)
 				.AllElements();
 		}
 		catch (Exception ex)
@@ -67,10 +71,11 @@ internal sealed class KeplerMissileHitHookManager : IRegisterable
 		// ReSharper restore PossibleMultipleEnumeration
 	}
 
-	private static bool AMissileHit_Update_Transpiler_ModifyHit(State state, Combat combat, Missile missile, AMissileHit action, RaycastResult ray, ref int damage)
+	private static bool AMissileHit_Update_Transpiler_ModifyHit(G g, State state, Combat combat, Missile missile, AMissileHit action, RaycastResult ray, ref int damage)
 	{
 		var ship = action.targetPlayer ? state.ship : combat.otherShip;
 		var @continue = true;
+		
 		foreach (var artifact in state.EnumerateAllArtifacts())
 		{
 			if (artifact is not IKeplerMissileHitHook hook)
@@ -78,6 +83,14 @@ internal sealed class KeplerMissileHitHookManager : IRegisterable
 			if (hook.OnMissileHit(state, combat, ship, missile, action, ray, ref @continue, ref damage))
 				break;
 		}
+
+		if (!@continue)
+		{
+			state.AddShake(1.0);
+			Input.Rumble(0.5);
+			EffectSpawner.NonCannonHit(g, action.targetPlayer, ray, new() { hitShield = true });
+		}
+		
 		return @continue;
 	}
 }
