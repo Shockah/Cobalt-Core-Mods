@@ -1,5 +1,21 @@
 ﻿{
 	"ship": {
+		"Breadnaught": {
+			"name": "The Breadnaught",
+			"description": "When diplomacy fails, Grandma fires up the oven... and the minigun.",
+			"artifact": {
+				"Minigun": {
+					"name": "GRANDMA'S MINIGUN",
+					"description": "After spending any <c=energy>ENERGY</c>, gain that much <c=status>BARREL SPIN</c>."
+				}
+			},
+			"status": {
+				"BarrelSpin": {
+					"name": "Barrel Spin",
+					"description": "Whenever you are about to attack, decrease the damage by {0}, to a minimum of 1. Before the original attack, attack that many times for 1 damage, retaining any effects. <c=downside>Goes away at start of next turn.</c>"
+				}
+			}
+		},
 		"Kepler": {
 			"name": "Kepler",
 			"description": "An old war ship with two missile bays and a missile defense system.",

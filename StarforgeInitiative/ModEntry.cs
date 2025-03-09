@@ -4,6 +4,7 @@ using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 
 namespace Shockah.StarforgeInitiative;
 
@@ -11,7 +12,7 @@ internal sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal IHarmony Harmony { get; }
-	// internal IKokoroApi.IV2 KokoroApi { get; }
+	internal IKokoroApi.IV2 KokoroApi { get; }
 
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
@@ -19,6 +20,7 @@ internal sealed class ModEntry : SimpleMod
 	// internal Settings Settings { get; private set; }
 
 	internal static readonly List<Type> ShipManagerTypes = [
+		typeof(BreadnaughtShip),
 		typeof(KeplerShip),
 	];
 
@@ -30,7 +32,7 @@ internal sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
-		// KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
+		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
