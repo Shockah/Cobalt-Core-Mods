@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <RootNamespace>Shockah.StarforgeInitiative</RootNamespace>
+        <Version>0.1.0</Version>
+    </PropertyGroup>
+    <ItemGroup>
+        <ModFiles Include="i18n/**" />
+        <ModFiles Include="assets/**" />
+    </ItemGroup>
+    <Import Project="..\Configuration.Mod.props" />
+</Project>
