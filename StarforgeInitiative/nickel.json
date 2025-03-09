@@ -6,5 +6,11 @@
 	"Author": "Shockah",
 	"RequiredApiVersion": "1.14.5",
 	"EntryPointAssembly": "StarforgeInitiative.dll",
-	"LoadPhase": "AfterGameAssembly"
+	"LoadPhase": "AfterGameAssembly",
+	"Dependencies": [
+		{
+			"UniqueName": "Shockah.Kokoro",
+			"Version": "2.4.0"
+		}
+	]
 }
