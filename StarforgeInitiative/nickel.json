@@ -1,0 +1,10 @@
+﻿{
+	"UniqueName": "Shockah.StarforgeInitiative",
+	"Version": "{{ModVersion}}",
+	"DisplayName": "Starforge Initiative",
+	"Description": "A program dedicated to crafting new vessels.",
+	"Author": "Shockah",
+	"RequiredApiVersion": "1.14.5",
+	"EntryPointAssembly": "StarforgeInitiative.dll",
+	"LoadPhase": "AfterGameAssembly"
+}

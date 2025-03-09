@@ -54,6 +54,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatExpansion", "CatExpansio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_Media.CatExpansion", "_Media.CatExpansion\_Media.CatExpansion.csproj", "{38290C79-8827-4057-8C47-6846C9BA864C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarforgeInitiative", "StarforgeInitiative\StarforgeInitiative.csproj", "{93245AC7-6B71-437E-AB0C-619038D6D7C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -140,6 +142,10 @@ Global
 		{38290C79-8827-4057-8C47-6846C9BA864C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38290C79-8827-4057-8C47-6846C9BA864C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38290C79-8827-4057-8C47-6846C9BA864C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93245AC7-6B71-437E-AB0C-619038D6D7C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93245AC7-6B71-437E-AB0C-619038D6D7C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93245AC7-6B71-437E-AB0C-619038D6D7C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93245AC7-6B71-437E-AB0C-619038D6D7C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
