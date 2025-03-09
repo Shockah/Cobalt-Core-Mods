@@ -10,7 +10,7 @@ namespace Shockah.Bjorn;
 
 internal sealed class SideProjectsArtifact : Artifact, IRegisterable, IBjornApi.IHook
 {
-	private const int CardsToAnalyzePerProgress = 5;
+	private const int CardsToAnalyzePerProgress = 3;
 	private const int MaxProgressPerCombat = 5;
 	
 	[JsonProperty]
