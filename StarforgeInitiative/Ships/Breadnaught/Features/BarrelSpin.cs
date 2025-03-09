@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FMOD;
 using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
@@ -24,15 +26,45 @@ internal sealed class BarrelSpinManager : IRegisterable
 				affectedByTimestop = true,
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["ship", "Breadnaught", "status", "BarrelSpin", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["ship", "Breadnaught", "status", "BarrelSpin", "description"]).Localize
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["ship", "Breadnaught", "status", "BarrelSpin", "description"]).Localize,
 		});
 		
 		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(new StatusLogicHook());
 		
 		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Prefix)),
+			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Postfix_Last)), priority: Priority.Last)
+		);
+		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Prefix))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(StatusMeta), nameof(StatusMeta.GetSound)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(StatusMeta_GetSound_Postfix))
+		);
+	}
+
+	private static void AAttack_Begin_Prefix(Combat c, out List<CardAction> __state)
+		=> __state = c.cardActions.ToList();
+
+	private static void AAttack_Begin_Postfix_Last(AAttack __instance, Combat c, in List<CardAction> __state)
+	{
+		var spin = ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(__instance, "BarrelSpin");
+		if (spin <= 0)
+			return;
+
+		foreach (var action in c.cardActions)
+		{
+			if (__state.Contains(action))
+				continue;
+			if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(action, "BarrelSpin") > 0)
+				continue;
+			
+			ModEntry.Instance.Helper.ModData.SetModData(action, "BarrelSpin", spin);
+			action.timer /= spin + 1;
+		}
 	}
 
 	private static void Combat_DrainCardActions_Prefix(Combat __instance, G g)
@@ -50,12 +82,12 @@ internal sealed class BarrelSpinManager : IRegisterable
 			var spin = Math.Max(Math.Min(totalSpin, attack.damage - 1), 0);
 			if (spin <= 0)
 				return;
-			if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(attack, "AffectedByBarrelSpin"))
+			if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(attack, "BarrelSpin") <= 0)
 				return;
 
 			attack.damage -= spin;
 			attack.timer /= spin + 1;
-			ModEntry.Instance.Helper.ModData.SetModData(attack, "AffectedByBarrelSpin", true);
+			ModEntry.Instance.Helper.ModData.SetModData(attack, "BarrelSpin", spin);
 			
 			__instance.cardActions.InsertRange(
 				i, Enumerable.Range(0, spin)
@@ -68,6 +100,13 @@ internal sealed class BarrelSpinManager : IRegisterable
 			);
 			i += spin;
 		}
+	}
+	
+	// TODO: replace with a Nickel feature
+	private static void StatusMeta_GetSound_Postfix(Status status, ref GUID __result)
+	{
+		if (status == BarrelSpinStatus.Status)
+			__result = default;
 	}
 
 	private sealed class StatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook

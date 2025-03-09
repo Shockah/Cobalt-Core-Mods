@@ -1,7 +1,7 @@
 ﻿{
 	"ship": {
 		"Breadnaught": {
-			"name": "The Breadnaught",
+			"name": "Breadnaught",
 			"description": "When diplomacy fails, Grandma fires up the oven... and the minigun.",
 			"artifact": {
 				"Minigun": {
