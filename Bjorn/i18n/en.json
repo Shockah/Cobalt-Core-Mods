@@ -104,7 +104,7 @@
 		},
 		"SideProjects": {
 			"name": "SIDE PROJECTS",
-			"description": "Every 5 non-<c=cardtrait>temp</c> cards you <c=action>analyze</c>, gain 1 <c=status>GADGET PROGRESS</c>, up to a maximum of 5 per combat."
+			"description": "Every 3 non-<c=cardtrait>temp</c> cards you <c=action>analyze</c>, gain 1 <c=status>GADGET PROGRESS</c>, up to a maximum of 5 per combat."
 		},
 		"SpecialRelativity": {
 			"name": "SPECIAL RELATIVITY",
