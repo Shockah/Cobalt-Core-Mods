@@ -1,0 +1,51 @@
+﻿{
+	"ship": {
+		"Kepler": {
+			"name": "Kepler",
+			"description": "An old war ship with two missile bays and a missile defense system.",
+			"artifact": {
+				"Bay": {
+					"name": "KEPLER BAY",
+					"description": "At the start of your turn, if you don't have a <c=card>Toggle Bay</c> in your hand, gain one."
+				},
+				"BayV2": {
+					"name": "KEPLER BAY V2",
+					"description": [
+						"Replaces <c=artifact>KEPLER BAY</c>.",
+						"At the start of your turn, if you don't have a <c=card>Swarm Mode</c> in your hand, gain one."
+					]
+				},
+				"MissilePDS": {
+					"name": "MISSILE PDS",
+					"description": "If a <c=midrow>missile</c> were to hit your inactive missile bay, it is destroyed instead."
+				},
+				"MissileTractorBeam": {
+					"name": "MISSILE TRACTOR BEAM",
+					"description": [
+						"Replaces <c=artifact>MISSILE PDS</c>.",
+						"If a missile were to hit your inactive missile bay, it is instead removed without destroying it, turned around, and added to your hand in a <c=card>Relaunch</c>."
+					]
+				}
+			},
+			"card": {
+				"ToggleBay": {
+					"name": "Toggle Bay",
+					"description": "Toggle which missile bay is active."
+				},
+				"SwarmMode": {
+					"name": "Swarm Mode",
+					"description": "Both missile bays are active until next turn. <c=keyword>Flip to toggle.</c>"
+				},
+				"Relaunch": {
+					"name": "Relaunch"
+				},
+				"BasicDrone": {
+					"name": "Basic Drone"
+				},
+				"BasicMine": {
+					"name": "Basic Mine"
+				}
+			}
+		}
+	}
+}
