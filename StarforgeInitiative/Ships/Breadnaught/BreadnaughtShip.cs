@@ -38,11 +38,11 @@ internal sealed class BreadnaughtShip : IRegisterable
 					hullMax = 12,
 					shieldMaxBase = 4,
 					parts = [
-						new() { type = PType.missiles, skin = "missiles_conveyor" },
-						new() { type = PType.wing, skin = "wing_junker", flip = true },
-						new() { type = PType.cannon, skin = "cannon_conveyor" },
 						new() { type = PType.wing, skin = "wing_junker" },
 						new() { type = PType.cockpit, skin = "cockpit_artemis" },
+						new() { type = PType.cannon, skin = "cannon_conveyor" },
+						new() { type = PType.missiles, skin = "missiles_conveyor" },
+						new() { type = PType.wing, skin = "wing_junker", flip = true },
 					]
 				},
 				artifacts = [
