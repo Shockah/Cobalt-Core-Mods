@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.4.1
+Released 10 March 2025.
 
 * Fixed artifact-based Kokoro hooks not working.
 
