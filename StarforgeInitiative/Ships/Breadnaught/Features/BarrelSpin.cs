@@ -57,6 +57,8 @@ internal sealed class BarrelSpinManager : IRegisterable
 
 		foreach (var action in c.cardActions)
 		{
+			if (action == __instance)
+				continue;
 			if (__state.Contains(action))
 				continue;
 			if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(action, "BarrelSpin") > 0)
@@ -82,7 +84,7 @@ internal sealed class BarrelSpinManager : IRegisterable
 			var spin = Math.Max(Math.Min(totalSpin, attack.damage - 1), 0);
 			if (spin <= 0)
 				return;
-			if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(attack, "BarrelSpin") <= 0)
+			if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(attack, "BarrelSpin") > 0)
 				return;
 
 			attack.damage -= spin;
