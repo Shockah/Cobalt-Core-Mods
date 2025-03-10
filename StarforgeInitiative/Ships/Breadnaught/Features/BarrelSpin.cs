@@ -54,6 +54,8 @@ internal sealed class BarrelSpinManager : IRegisterable
 		var spin = ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(__instance, "BarrelSpin");
 		if (spin <= 0)
 			return;
+		
+		__instance.timer /= spin + 1;
 
 		foreach (var action in c.cardActions)
 		{
@@ -88,7 +90,6 @@ internal sealed class BarrelSpinManager : IRegisterable
 				return;
 
 			attack.damage -= spin;
-			attack.timer /= spin + 1;
 			ModEntry.Instance.Helper.ModData.SetModData(attack, "BarrelSpin", spin);
 			
 			__instance.cardActions.InsertRange(
