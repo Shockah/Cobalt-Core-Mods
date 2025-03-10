@@ -39,7 +39,7 @@ internal class VariedApiVersionHookManager<TV2Hook, TV1Hook> : IEnumerable<TV2Ho
 		this.HookMapper = hookMapper;
 
 		this.HookToHookWithPriorityDelegate = hook => (Hook: hook, Priority: Hooks.TryGetOrderingValue(hook, out var priority) ? priority : 0);
-		this.ObjectIsHookDelegate = o => HookTypes.GetValueOrDefault(o.GetType()) != VariedApiVersionHookType.None;
+		this.ObjectIsHookDelegate = o => !HookTypes.TryGetValue(o.GetType(), out var hookType) || hookType != VariedApiVersionHookType.None;
 		this.IsV2HookMethodDelegate = m => V2HookMethodNames.Value.Contains(m.Name);
 		this.IsV1HookMethodDelegate = m => V1HookMethodNames.Value.Contains(m.Name);
 		this.PotentialHookExistsDelegate = e => e.Hook is not null;
