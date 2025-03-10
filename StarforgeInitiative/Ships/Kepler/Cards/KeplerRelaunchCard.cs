@@ -27,21 +27,8 @@ internal sealed class KeplerRelaunchCard : Card, IRegisterable
 	}
 	
 	public override CardData GetData(State state)
-		=> new() { cost = 1, floppable = true, singleUse = true, temporary = true, retain = true };
+		=> new() { cost = 1, singleUse = true, temporary = true, retain = true };
 
 	public override List<CardAction> GetActions(State s, Combat c)
-	{
-		var thing = Mutil.DeepCopy(Thing);
-		thing.isHitting = false;
-		thing.targetPlayer = false;
-		thing.fromPlayer = true;
-		thing.yAnimation = 0;
-		
-		var thingBackwards = Mutil.DeepCopy(thing);
-		thingBackwards.targetPlayer = !thingBackwards.targetPlayer;
-		return [
-			new ASpawn { thing = thing, disabled = flipped },
-			new ASpawn { thing = thingBackwards, disabled = !flipped },
-		];
-	}
+		=> [new ASpawn { thing = Thing }];
 }
