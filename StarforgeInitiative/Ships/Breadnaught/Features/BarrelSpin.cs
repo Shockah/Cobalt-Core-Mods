@@ -77,6 +77,8 @@ internal sealed class BarrelSpinManager : IRegisterable
 		{
 			if (__instance.cardActions[i] is not AAttack attack)
 				continue;
+			if (attack.fromDroneX is not null)
+				continue;
 			
 			var sourceShip = attack.targetPlayer ? __instance.otherShip : g.state.ship;
 			var totalSpin = sourceShip.Get(BarrelSpinStatus.Status);
