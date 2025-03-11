@@ -7,6 +7,10 @@
 				"Minigun": {
 					"name": "GRANDMA'S MINIGUN",
 					"description": "After spending any <c=energy>ENERGY</c>, gain that much <c=status>BARREL SPIN</c>."
+				},
+				"RotorGrease": {
+					"name": "ROTOR GREASE",
+					"description": "Whenever you are about to attack for at least as much damage as you have <c=status>BARREL SPIN</c>, first attack once for 0 damage, retaining any effects."
 				}
 			},
 			"status": {

@@ -11,6 +11,7 @@ internal sealed class BreadnaughtShip : IRegisterable
 {
 	private static readonly List<Type> ArtifactTypes = [
 		typeof(BreadnaughtMinigunArtifact),
+		typeof(BreadnaughtRotorGreaseArtifact),
 	];
 	
 	private static readonly List<Type> CardTypes = [

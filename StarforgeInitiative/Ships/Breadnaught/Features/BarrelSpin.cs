@@ -84,20 +84,32 @@ internal sealed class BarrelSpinManager : IRegisterable
 				return;
 		
 			var spin = Math.Max(Math.Min(totalSpin, attack.damage - 1), 0);
-			if (spin <= 0)
-				return;
 			if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(attack, "BarrelSpin") > 0)
 				return;
 
+			var rotorGreaseArtifact = attack.targetPlayer ? null : g.state.EnumerateAllArtifacts().OfType<BreadnaughtRotorGreaseArtifact>().FirstOrDefault();
+			var extraAttacks = spin + (spin < totalSpin && rotorGreaseArtifact is not null ? 1 : 0);
+			var hasFirstZeroDamageAttack = extraAttacks > spin;
+			if (extraAttacks <= 0)
+				return;
+			
 			attack.damage -= spin;
-			ModEntry.Instance.Helper.ModData.SetModData(attack, "BarrelSpin", spin);
+			ModEntry.Instance.Helper.ModData.SetModData(attack, "BarrelSpin", extraAttacks);
 			
 			__instance.cardActions.InsertRange(
-				i, Enumerable.Range(0, spin)
-					.Select(_ =>
+				i, Enumerable.Range(0, extraAttacks)
+					.Select(i =>
 					{
 						var splitAttack = Mutil.DeepCopy(attack);
 						splitAttack.damage = 1;
+						if (i == 0 && hasFirstZeroDamageAttack && rotorGreaseArtifact is not null)
+						{
+							splitAttack.damage = 0;
+							if (string.IsNullOrEmpty(splitAttack.artifactPulse))
+								splitAttack.artifactPulse = rotorGreaseArtifact.Key();
+							else
+								rotorGreaseArtifact.Pulse();
+						}
 						return splitAttack;
 					})
 			);
