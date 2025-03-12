@@ -10,13 +10,13 @@
 				},
 				"RotorGrease": {
 					"name": "ROTOR GREASE",
-					"description": "Whenever you are about to attack for at least as much damage as you have <c=status>BARREL SPIN</c>, first attack once for 0 damage, retaining any effects."
+					"description": "Whenever <c=status>BARREL SPIN</c> fails to reduce attack damage by any amount, first attack once for 0 damage, retaining any effects of the original attack."
 				}
 			},
 			"status": {
 				"BarrelSpin": {
 					"name": "Barrel Spin",
-					"description": "Whenever you are about to attack, decrease the damage by {0}, to a minimum of 1. Before the original attack, attack that many times for 1 damage, retaining any effects. <c=downside>Goes away at start of next turn.</c>"
+					"description": "Whenever you are about to attack, decrease the damage by {0}, to a minimum of 1. Before the original attack, for each decreased point of damage, attack for 1 damage, retaining any effects. <c=downside>Goes away at start of next turn.</c>"
 				}
 			}
 		},
