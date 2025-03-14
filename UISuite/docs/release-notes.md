@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Heat (and Oxidation from Kokoro) are now displayed as bars.
+
 ## 1.0.1
 Released 8 March 2025.
 

@@ -6,12 +6,14 @@ using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using Nickel.ModSettings;
+using Shockah.Kokoro;
 
 namespace Shockah.UISuite;
 
 public sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
+	internal readonly IKokoroApi.IV2? KokoroApi;
 	internal readonly IHarmony Harmony;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
@@ -20,13 +22,17 @@ public sealed class ModEntry : SimpleMod
 	
 	// different order - trying to work around inlining `Combat.IsVisible`/`Combat.Render`
 	private static readonly IEnumerable<Type> RegisterableTypes = [
+		// first
 		typeof(LessIntrusiveHandCardBrowse),
+		
+		// the rest
 		typeof(AnchorCardPileOverlay),
 		typeof(BrowseCardPilesDuringPeek),
 		typeof(BrowseCardsInOrder),
 		typeof(CardMarkers),
 		typeof(CardPileIndicatorWhenBrowsing),
 		typeof(ExtraArtifactCodexCategories),
+		typeof(HeatAsBars),
 		typeof(LaneDisplay),
 	];
 	
@@ -37,6 +43,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(CardMarkers),
 		typeof(CardPileIndicatorWhenBrowsing),
 		typeof(ExtraArtifactCodexCategories),
+		typeof(HeatAsBars),
 		typeof(LaneDisplay),
 		typeof(LessIntrusiveHandCardBrowse),
 	];
@@ -45,6 +52,7 @@ public sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		this.Harmony = helper.Utilities.Harmony;
+		this.KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")?.V2;
 		
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),

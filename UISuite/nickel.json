@@ -7,6 +7,13 @@
 	"RequiredApiVersion": "1.11.0",
 	"EntryPointAssembly": "UISuite.dll",
 	"LoadPhase": "AfterGameAssembly",
+	"Dependencies": [
+		{
+			"UniqueName": "Shockah.Kokoro",
+			"Version": "2.4.0",
+			"IsRequired": "false"
+		}
+	],
 	"UpdateChecks": {
 		"NexusMods": {
 			"ID": 45
