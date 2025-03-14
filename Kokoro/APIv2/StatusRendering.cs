@@ -127,6 +127,39 @@ public partial interface IKokoroApi
 					/// The position at which to start rendering the info.
 					/// </summary>
 					Vec Position { get; }
+
+					/// <summary>
+					/// Creates a builder instance that can be used to edit existing arguments and pass them to child status info renderers.
+					/// </summary>
+					/// <returns>The new builder instance.</returns>
+					IBuilder CopyToBuilder();
+
+					public interface IBuilder : IRenderArgs
+					{
+						/// <summary>
+						/// The current amount of the status.
+						/// </summary>
+						new int Amount { get; set; }
+					
+						/// <summary>
+						/// The position at which to start rendering the info.
+						/// </summary>
+						new Vec Position { get; set; }
+						
+						/// <summary>
+						/// Sets <see cref="Amount"/>.
+						/// </summary>
+						/// <param name="value">The new value.</param>
+						/// <returns>This object after the change.</returns>
+						IBuilder SetAmount(int value);
+						
+						/// <summary>
+						/// Sets <see cref="Position"/>.
+						/// </summary>
+						/// <param name="value">The new value.</param>
+						/// <returns>This object after the change.</returns>
+						IBuilder SetPosition(Vec value);
+					}
 				}
 			}
 			

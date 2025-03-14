@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added an API to copy and modify `IStatusInfoRenderer` arguments (to pass in to child renderers).
+
 ## 2.4.1
 Released 10 March 2025.
 

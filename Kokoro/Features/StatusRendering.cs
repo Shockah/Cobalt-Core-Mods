@@ -62,16 +62,44 @@ partial class ApiImplementation
 			public IKokoroApi.IV2.IStatusRenderingApi.IBarStatusInfoRenderer? AsBarStatusInfoRenderer(IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer renderer)
 				=> renderer as IKokoroApi.IV2.IStatusRenderingApi.IBarStatusInfoRenderer;
 
-			internal sealed class StatusInfoRendererRenderArgs : IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer.IRenderArgs
+			internal sealed class StatusInfoRendererRenderArgs : IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer.IRenderArgs.IBuilder
 			{
 				public G G { get; internal set; } = null!;
 				public State State { get; internal set; } = null!;
 				public Combat Combat { get; internal set; } = null!;
 				public Ship Ship { get; internal set; } = null!;
 				public Status Status { get; internal set; }
-				public int Amount { get; internal set; }
+				public int Amount { get; set; }
 				public bool DontRender { get; internal set; }
-				public Vec Position { get; internal set; }
+				public Vec Position { get; set; }
+
+				public IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer.IRenderArgs.IBuilder CopyToBuilder()
+				{
+					var args = new StatusInfoRendererRenderArgs
+					{
+						G = G,
+						State = State,
+						Combat = Combat,
+						Ship = Ship,
+						Status = Status,
+						Amount = Amount,
+						DontRender = DontRender,
+						Position = Position,
+					};
+					return args;
+				}
+
+				public IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer.IRenderArgs.IBuilder SetAmount(int value)
+				{
+					this.Amount = value;
+					return this;
+				}
+
+				public IKokoroApi.IV2.IStatusRenderingApi.IStatusInfoRenderer.IRenderArgs.IBuilder SetPosition(Vec value)
+				{
+					this.Position = value;
+					return this;
+				}
 			}
 			
 			internal sealed class GetExtraStatusesToShowArgs : IKokoroApi.IV2.IStatusRenderingApi.IHook.IGetExtraStatusesToShowArgs
@@ -351,7 +379,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 				])
 				.PointerMatcher(SequenceMatcherRelativeElement.FirstInWholeSequence)
 				.Find([
-					ILMatches.Ldloc<Ship.StatusPlan>(originalMethod).CreateLdlocaInstruction(out var ldlocaStatusPlan).ExtractLabels(out var labels).Anchor(out var renderingStartAnchor),
+					ILMatches.Ldloc<Ship.StatusPlan>(originalMethod).ExtractLabels(out var labels).Anchor(out var renderingStartAnchor),
 					ILMatches.Ldfld("asText"),
 					ILMatches.Brfalse,
 				])
@@ -365,7 +393,6 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 					new CodeInstruction(OpCodes.Ldarg_1),
 					new CodeInstruction(OpCodes.Ldarg_2),
 					ldlocKvp,
-					ldlocaStatusPlan,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_RenderStatusRow_Transpiler_HandleCustomRenderers))).WithLabels(labels),
 					new CodeInstruction(OpCodes.Brtrue, renderingEndLabel),
 				])
@@ -379,7 +406,7 @@ internal sealed class StatusRenderManager : VariedApiVersionHookManager<IKokoroA
 		// ReSharper restore PossibleMultipleEnumeration
 	}
 
-	private static bool Ship_RenderStatusRow_Transpiler_HandleCustomRenderers(Ship ship, G g, string keyPrefix, KeyValuePair<Status, int> kvp, ref Ship.StatusPlan statusPlan)
+	private static bool Ship_RenderStatusRow_Transpiler_HandleCustomRenderers(Ship ship, G g, string keyPrefix, KeyValuePair<Status, int> kvp)
 	{
 		if (g.state is not { } state)
 			return false;
