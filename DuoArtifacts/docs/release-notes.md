@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Clarified how the Frozen Control Rods (Dizzy-Drake duo) artifact works, and changed its implementation to be potentially more compatible with other mods.
+
 ## 1.3.1
 Released 3 March 2025.
 
