@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Nickel;
 using System;
+using Newtonsoft.Json.Converters;
 
 namespace Shockah.DuoArtifacts;
 
@@ -43,6 +44,8 @@ internal sealed class Settings
 
 internal sealed class ProfileSettings
 {
+	public OfferingModeEnum OfferingMode = OfferingModeEnum.ExtraOnceThenCommon;
+	
 	public bool ArtifactsCondition = true;
 	public int MinArtifacts = 1;
 
@@ -51,4 +54,12 @@ internal sealed class ProfileSettings
 
 	public bool AnyCardsCondition = true;
 	public int MinCards = 5;
+
+	[JsonConverter(typeof(StringEnumConverter))]
+	public enum OfferingModeEnum
+	{
+		Common,
+		Extra,
+		ExtraOnceThenCommon,
+	}
 }

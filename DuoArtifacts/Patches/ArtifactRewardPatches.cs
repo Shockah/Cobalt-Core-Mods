@@ -22,7 +22,9 @@ internal static class ArtifactRewardPatches
 	{
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(ArtifactReward), nameof(ArtifactReward.GetOffering)),
-			postfix: new HarmonyMethod(typeof(ArtifactRewardPatches), nameof(ArtifactReward_GetOffering_Postfix))
+			prefix: new HarmonyMethod(typeof(ArtifactRewardPatches), nameof(ArtifactReward_GetOffering_Prefix)),
+			postfix: new HarmonyMethod(typeof(ArtifactRewardPatches), nameof(ArtifactReward_GetOffering_Postfix)),
+			finalizer: new HarmonyMethod(typeof(ArtifactRewardPatches), nameof(ArtifactReward_GetOffering_Finalizer))
 		);
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(ArtifactReward), nameof(ArtifactReward.Render)),
@@ -44,16 +46,29 @@ internal static class ArtifactRewardPatches
 				yield return deck == Deck.catartifact ? Deck.colorless : deck;
 	}
 
+	private static void ArtifactReward_GetOffering_Prefix(State s)
+		=> Instance.Database.FixArtifactPools(Instance.Settings.ProfileBased.Current.OfferingMode, Instance.Helper.ModData.ObtainModData<HashSet<string>>(s, "DuosSeenThisRun"));
+
 	private static void ArtifactReward_GetOffering_Postfix(State s, List<ArtifactPool>? limitPools, List<Artifact> __result, Rand? rngOverride)
 	{
 		if (limitPools is not null && limitPools.Contains(ArtifactPool.Boss))
+			return;
+		if (Instance.Settings.ProfileBased.Current.OfferingMode == ProfileSettings.OfferingModeEnum.Common)
 			return;
 		if (s.storyVars.oncePerRunTags.Contains(GetTagForMap(s.map)))
 			return;
 
 		var random = rngOverride ?? s.rngArtifactOfferings;
+		var duosSeenThisRun = Instance.Helper.ModData.ObtainModData<HashSet<string>>(s, "DuosSeenThisRun");
 		var possibleDuoArtifacts = Instance.Database.InstantiateMatchingDuoArtifacts(GetCharactersEligibleForDuoArtifacts(s))
 			.Where(duoArtifact => !s.EnumerateAllArtifacts().Any(a => Instance.Database.IsDuoArtifact(a) && Instance.Database.GetDuoArtifactOwnership(a)!.SetEquals(Instance.Database.GetDuoArtifactOwnership(duoArtifact)!)))
+			.Where(duoArtifact => Instance.Settings.ProfileBased.Current.OfferingMode switch
+			{
+				ProfileSettings.OfferingModeEnum.Common => false,
+				ProfileSettings.OfferingModeEnum.Extra => true,
+				ProfileSettings.OfferingModeEnum.ExtraOnceThenCommon => !duosSeenThisRun.Contains(duoArtifact.Key()),
+				_ => throw new ArgumentOutOfRangeException()
+			})
 			.ToList();
 		if (possibleDuoArtifacts.Count == 0)
 			return;
@@ -64,6 +79,7 @@ internal static class ArtifactRewardPatches
 		if (__result.Count <= 3)
 		{
 			__result.Add(duoArtifact);
+			duosSeenThisRun.Add(duoArtifact.Key());
 			return;
 		}
 
@@ -73,6 +89,7 @@ internal static class ArtifactRewardPatches
 
 		var slotToReplace = possibleSlots[random.NextInt() % possibleSlots.Count];
 		__result[slotToReplace] = possibleDuoArtifacts[duoToTake];
+		duosSeenThisRun.Add(duoArtifact.Key());
 
 		IEnumerable<int> GetPossibleSlotsToReplace()
 		{
@@ -111,6 +128,9 @@ internal static class ArtifactRewardPatches
 			// no char-specific artifacts; did another mod replace rewards? nothing to return
 		}
 	}
+
+	private static void ArtifactReward_GetOffering_Finalizer()
+		=> Instance.Database.FixArtifactPools(ProfileSettings.OfferingModeEnum.Extra, null);
 
 	private static IEnumerable<CodeInstruction> ArtifactReward_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{

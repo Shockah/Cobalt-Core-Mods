@@ -111,4 +111,22 @@ internal sealed class DuoArtifactDatabase
 		result.Add(Deck.colorless);
 		return result;
 	}
+
+	internal void FixArtifactPools(ProfileSettings.OfferingModeEnum offeringMode, HashSet<string>? seenArtifacts)
+	{
+		if (seenArtifacts is null && offeringMode == ProfileSettings.OfferingModeEnum.ExtraOnceThenCommon)
+			offeringMode = ProfileSettings.OfferingModeEnum.Extra;
+		
+		foreach (var duo in InstantiateAllDuoArtifacts())
+		{
+			var key = duo.Key();
+			DB.artifactMetas[key].pools = offeringMode switch
+			{
+				ProfileSettings.OfferingModeEnum.Common => [ArtifactPool.Common],
+				ProfileSettings.OfferingModeEnum.Extra => [ArtifactPool.EventOnly],
+				ProfileSettings.OfferingModeEnum.ExtraOnceThenCommon => seenArtifacts!.Contains(key) ? [ArtifactPool.Common] : [ArtifactPool.EventOnly],
+				_ => throw new ArgumentOutOfRangeException()
+			};
+		}
+	}
 }

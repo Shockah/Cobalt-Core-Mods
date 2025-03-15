@@ -25,6 +25,7 @@ internal static class ArtifactBrowsePatches
 	{
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(ArtifactBrowse), nameof(ArtifactBrowse.Render)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ArtifactBrowse_Render_Prefix)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ArtifactBrowse_Render_Transpiler))
 		);
 		harmony.Patch(
@@ -33,6 +34,9 @@ internal static class ArtifactBrowsePatches
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Artifact_Render_Transpiler))
 		);
 	}
+	
+	private static void ArtifactBrowse_Render_Prefix()
+		=> Instance.Database.FixArtifactPools(ProfileSettings.OfferingModeEnum.Extra, null);
 
 	private static IEnumerable<CodeInstruction> ArtifactBrowse_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
