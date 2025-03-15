@@ -112,7 +112,7 @@ internal sealed class DuoArtifactDatabase
 		return result;
 	}
 
-	internal void FixArtifactPools(ProfileSettings.OfferingModeEnum offeringMode, HashSet<string>? seenArtifacts)
+	internal void FixArtifactMeta(ProfileSettings.OfferingModeEnum offeringMode, HashSet<string>? seenArtifacts)
 	{
 		if (seenArtifacts is null && offeringMode == ProfileSettings.OfferingModeEnum.ExtraOnceThenCommon)
 			offeringMode = ProfileSettings.OfferingModeEnum.Extra;
@@ -125,8 +125,23 @@ internal sealed class DuoArtifactDatabase
 				ProfileSettings.OfferingModeEnum.Common => [ArtifactPool.Common],
 				ProfileSettings.OfferingModeEnum.Extra => [ArtifactPool.EventOnly],
 				ProfileSettings.OfferingModeEnum.ExtraOnceThenCommon => seenArtifacts!.Contains(key) ? [ArtifactPool.Common] : [ArtifactPool.EventOnly],
-				_ => throw new ArgumentOutOfRangeException()
+				_ => throw new ArgumentOutOfRangeException(nameof(offeringMode), offeringMode, null)
 			};
+			DB.artifactMetas[key].owner = offeringMode switch
+			{
+				ProfileSettings.OfferingModeEnum.Common => Deck.colorless,
+				ProfileSettings.OfferingModeEnum.Extra => GetRealDuoDeck(),
+				ProfileSettings.OfferingModeEnum.ExtraOnceThenCommon => seenArtifacts!.Contains(key) ? Deck.colorless : GetRealDuoDeck(),
+				_ => throw new ArgumentOutOfRangeException(nameof(offeringMode), offeringMode, null)
+			};
+
+			Deck GetRealDuoDeck()
+				=> (GetDuoArtifactOwnership(duo)?.Count ?? 0) switch
+				{
+					2 => (Deck)DuoArtifactDeck.Id!.Value,
+					3 => (Deck)TrioArtifactDeck.Id!.Value,
+					_ => (Deck)ComboArtifactDeck.Id!.Value,
+				};
 		}
 	}
 }

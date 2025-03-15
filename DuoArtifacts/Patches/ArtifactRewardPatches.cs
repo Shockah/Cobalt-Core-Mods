@@ -47,7 +47,7 @@ internal static class ArtifactRewardPatches
 	}
 
 	private static void ArtifactReward_GetOffering_Prefix(State s)
-		=> Instance.Database.FixArtifactPools(Instance.Settings.ProfileBased.Current.OfferingMode, Instance.Helper.ModData.ObtainModData<HashSet<string>>(s, "DuosSeenThisRun"));
+		=> Instance.Database.FixArtifactMeta(Instance.Settings.ProfileBased.Current.OfferingMode, Instance.Helper.ModData.ObtainModData<HashSet<string>>(s, "DuosSeenThisRun"));
 
 	private static void ArtifactReward_GetOffering_Postfix(State s, List<ArtifactPool>? limitPools, List<Artifact> __result, Rand? rngOverride)
 	{
@@ -130,7 +130,7 @@ internal static class ArtifactRewardPatches
 	}
 
 	private static void ArtifactReward_GetOffering_Finalizer()
-		=> Instance.Database.FixArtifactPools(ProfileSettings.OfferingModeEnum.Extra, null);
+		=> Instance.Database.FixArtifactMeta(ProfileSettings.OfferingModeEnum.Extra, null);
 
 	private static IEnumerable<CodeInstruction> ArtifactReward_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{

@@ -36,7 +36,7 @@ internal static class ArtifactBrowsePatches
 	}
 	
 	private static void ArtifactBrowse_Render_Prefix()
-		=> Instance.Database.FixArtifactPools(ProfileSettings.OfferingModeEnum.Extra, null);
+		=> Instance.Database.FixArtifactMeta(ProfileSettings.OfferingModeEnum.Extra, null);
 
 	private static IEnumerable<CodeInstruction> ArtifactBrowse_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
