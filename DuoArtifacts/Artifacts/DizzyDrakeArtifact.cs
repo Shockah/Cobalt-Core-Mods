@@ -34,6 +34,8 @@ internal sealed class DizzyDrakeArtifact : DuoArtifact
 	{
 		if (!DuringOverheat)
 			return true;
+		if (!__instance.isPlayerShip)
+			return true;
 		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is DizzyDrakeArtifact) is not { } artifact)
 			return true;
 		
