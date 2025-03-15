@@ -1022,26 +1022,25 @@ internal sealed class AResourceCost : CardAction, IKokoroApi.IV2.IActionCostsApi
 
 		var card = ModEntry.Instance.Api.V2.ActionInfo.GetSourceCard(s, this);
 		var environment = ModEntry.Instance.Api.V2.ActionCosts.MakeStatePaymentEnvironment(s, c, card);
-		var baseTransaction = ModEntry.Instance.Api.V2.ActionCosts.MakeTransaction();
-		if (ChooseBestTransaction() is not { } transaction)
-			return;
+		var transaction = ModEntry.Instance.Api.V2.ActionCosts.GetBestTransaction(ActionCostsManager.Instance.ModifyActionCost(s, c, card, Action, Cost), environment);
 
-		var paymentResult = transaction.Pay(environment);
-		if (paymentResult.UnpaidResources.Count != 0)
+		var paymentResult = transaction.TestPayment(environment);
+
+		if (transaction.TestPayment(environment).TotalUnpaid == 0)
 		{
-			ModEntry.Instance.Logger!.LogError("[ActionCosts] Test for transaction {Transaction} for action {Action} succeeded, but payment itself failed: {Result}", transaction, Action, paymentResult);
-			return;
+			paymentResult = transaction.Pay(environment);
+			if (paymentResult.UnpaidResources.Count == 0)
+			{
+				Action.whoDidThis = whoDidThis;
+				c.QueueImmediate(Action);
+			}
+			else
+			{
+				ModEntry.Instance.Logger!.LogError("[ActionCosts] Test for transaction {Transaction} for action {Action} succeeded, but payment itself failed: {Result}", transaction, Action, paymentResult);
+			}
 		}
 		
-		Action.whoDidThis = whoDidThis;
-		c.QueueImmediate(Action);
-
 		ActionCostsManager.Instance.OnActionCostsTransactionFinished(s, c, card, paymentResult);
-
-		IKokoroApi.IV2.IActionCostsApi.ITransaction? ChooseBestTransaction()
-			=> ActionCostsManager.Instance.ModifyActionCost(s, c, card, Action, Cost)
-				.GetPossibleTransactions([], baseTransaction)
-				.FirstOrDefault(t => t.TestPayment(environment).UnpaidResources.Count == 0);
 	}
 
 	public override List<Tooltip> GetTooltips(State s)

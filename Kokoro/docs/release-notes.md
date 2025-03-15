@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Added an API to copy and modify `IStatusInfoRenderer` arguments (to pass in to child renderers).
+* Fixed the action cost API hook not being called on failed payments.
 
 ## 2.4.1
 Released 10 March 2025.
