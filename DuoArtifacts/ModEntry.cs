@@ -66,6 +66,30 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 					() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
 					Settings.ProfileBased
 				),
+				
+				api.MakeEnumStepper(
+					() => I18n.OfferingModeSettingName,
+					() => Settings.ProfileBased.Current.OfferingMode,
+					value => Settings.ProfileBased.Current.OfferingMode = value
+				).SetValueFormatter(
+					value => value switch
+					{
+						ProfileSettings.OfferingModeEnum.Common => I18n.OfferingModeSettingCommonValueName,
+						ProfileSettings.OfferingModeEnum.Extra => I18n.OfferingModeSettingExtraValueName,
+						ProfileSettings.OfferingModeEnum.ExtraOnceThenCommon => I18n.OfferingModeSettingExtraOnceThenCommonValueName,
+						_ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+					}
+				).SetValueWidth(
+					_ => 120
+				).SetTooltips(() => [
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.OfferingMode)}")
+					{
+						TitleColor = Colors.textBold,
+						Title = I18n.OfferingModeSettingName,
+						Description = I18n.OfferingModeSettingDescription
+					}
+				]),
+				
 				api.MakeCheckbox(
 					() => I18n.ArtifactsConditionSettingName,
 					() => Settings.ProfileBased.Current.ArtifactsCondition,

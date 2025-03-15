@@ -40,6 +40,15 @@ internal static class I18n
 		};
 	}
 
+	public static readonly string OfferingModeSettingName = "Offering mode";
+	public static readonly string OfferingModeSettingDescription = string.Join("\n", [
+		"<c=textChoice>Common</c>: Duo artifacts are treated like any other Common artifacts (except having prerequisites).",
+		"<c=textChoice>Extra</c>: Duo artifacts are special and will always appear as additional choices.",
+		"<c=textChoice>Extra -> Common</c>: After satisfying prerequisites, Duos will always appear once as additional choices. Afterwards, they are treated like any other Common artifacts."
+	]);
+	public static readonly string OfferingModeSettingCommonValueName = "Common";
+	public static readonly string OfferingModeSettingExtraValueName = "Extra";
+	public static readonly string OfferingModeSettingExtraOnceThenCommonValueName = "Extra -> Common";
 	public static readonly string ArtifactsConditionSettingName = "Crew artifacts condition";
 	public static readonly string ArtifactsConditionSettingDescription = "If enabled, duo artifacts will become available if the crew members have at least the given amount of artifacts.";
 	public static readonly string MinArtifactsSettingName = "Minimum artifacts";
