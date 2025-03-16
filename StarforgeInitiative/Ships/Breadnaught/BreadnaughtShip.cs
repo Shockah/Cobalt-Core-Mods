@@ -15,6 +15,7 @@ internal sealed class BreadnaughtShip : IRegisterable
 	];
 	
 	private static readonly List<Type> CardTypes = [
+		typeof(BreadnaughtBasicMinigunCard),
 	];
 	
 	private static readonly List<Type> RegisterableTypes = [
@@ -86,8 +87,8 @@ internal sealed class BreadnaughtShip : IRegisterable
 					new BreadnaughtMinigunArtifact(),
 				],
 				cards = [
-					new CannonColorless(),
-					new CannonColorless(),
+					new BreadnaughtBasicMinigunCard(),
+					new BreadnaughtBasicMinigunCard(),
 					new DodgeColorless(),
 					new BasicShieldColorless(),
 				],
