@@ -138,5 +138,8 @@ internal sealed class BarrelSpinManager : IRegisterable
 			args.Amount = 0;
 			return false;
 		}
+
+		public bool? IsAffectedByBoost(IKokoroApi.IV2.IStatusLogicApi.IHook.IIsAffectedByBoostArgs args)
+			=> args.Status == BarrelSpinStatus.Status ? false : null;
 	}
 }
