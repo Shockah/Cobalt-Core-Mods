@@ -21,7 +21,7 @@ internal sealed class BarrelSpinManager : IRegisterable
 			Definition = new()
 			{
 				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Breadnaught/Status/BarrelSpin.png")).Sprite,
-				color = new("E1FFCF"),
+				color = new("BE4611"),
 				isGood = true,
 				affectedByTimestop = true,
 			},

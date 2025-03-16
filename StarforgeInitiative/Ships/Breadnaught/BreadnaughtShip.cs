@@ -39,11 +39,46 @@ internal sealed class BreadnaughtShip : IRegisterable
 					hullMax = 12,
 					shieldMaxBase = 4,
 					parts = [
-						new() { type = PType.wing, skin = "wing_junker" },
-						new() { type = PType.cockpit, skin = "cockpit_artemis" },
-						new() { type = PType.cannon, skin = "cannon_conveyor" },
-						new() { type = PType.missiles, skin = "missiles_conveyor" },
-						new() { type = PType.wing, skin = "wing_junker", flip = true },
+						new()
+						{
+							type = PType.wing,
+							skin = helper.Content.Ships.RegisterPart("BreadnaughtWingLeft", new()
+							{
+								Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Breadnaught/Ship/WingLeft.png")).Sprite
+							}).UniqueName,
+						},
+						new()
+						{
+							type = PType.cockpit,
+							skin = helper.Content.Ships.RegisterPart("BreadnaughtCockpit", new()
+							{
+								Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Breadnaught/Ship/Cockpit.png")).Sprite
+							}).UniqueName,
+						},
+						new()
+						{
+							type = PType.cannon,
+							skin = helper.Content.Ships.RegisterPart("BreadnaughtCannon", new()
+							{
+								Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Breadnaught/Ship/Cannon.png")).Sprite
+							}).UniqueName,
+						},
+						new()
+						{
+							type = PType.missiles,
+							skin = helper.Content.Ships.RegisterPart("BreadnaughtBay", new()
+							{
+								Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Breadnaught/Ship/Bay.png")).Sprite
+							}).UniqueName,
+						},
+						new()
+						{
+							type = PType.wing,
+							skin = helper.Content.Ships.RegisterPart("BreadnaughtWingRight", new()
+							{
+								Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Breadnaught/Ship/WingRight.png")).Sprite
+							}).UniqueName,
+						},
 					]
 				},
 				artifacts = [
@@ -57,7 +92,6 @@ internal sealed class BreadnaughtShip : IRegisterable
 					new BasicShieldColorless(),
 				],
 			},
-			UnderChassisSprite = StableSpr.parts_chassis,
 			ExclusiveArtifactTypes = ArtifactTypes.ToHashSet(),
 		});
 		
