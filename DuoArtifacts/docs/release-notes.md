@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added an option to change how duo artifacts are offered, and changed the default mode: duo artifacts now only get offered once immediately after satisfying their prerequisites, and if not picked, become part of the Common artifact pool for that run. Any other limitations still apply.
 * Clarified how the Frozen Control Rods (Dizzy-Drake duo) artifact works, and changed its implementation to be potentially more compatible with other mods.
 
 ## 1.3.1

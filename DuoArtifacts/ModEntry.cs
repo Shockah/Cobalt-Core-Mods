@@ -55,6 +55,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 		ArtifactBrowsePatches.Apply(Harmony);
 		ArtifactRewardPatches.Apply(Harmony);
 		CharacterPatches.Apply(Harmony);
+		StatePatches.Apply(Harmony);
 
 		foreach (var definition in DuoArtifactDefinition.Definitions)
 			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.ApplyPatches(Harmony);

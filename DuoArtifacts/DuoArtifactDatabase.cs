@@ -9,6 +9,8 @@ namespace Shockah.DuoArtifacts;
 internal sealed class DuoArtifactDatabase
 {
 	private const double SingleColorTransitionAnimationLengthSeconds = 1;
+	private static readonly string FirstZoneDuoTag = $"{typeof(ModEntry).Namespace!}.Duo.FirstZone";
+	private static readonly string PastFirstZoneDuoTag = $"{typeof(ModEntry).Namespace!}.Duo.PastFirstZone";
 
 	internal ExternalDeck DuoArtifactDeck { get; set; } = null!;
 	internal ExternalDeck TrioArtifactDeck { get; set; } = null!;
@@ -112,8 +114,13 @@ internal sealed class DuoArtifactDatabase
 		return result;
 	}
 
-	internal void FixArtifactMeta(ProfileSettings.OfferingModeEnum offeringMode, HashSet<string>? seenArtifacts)
+	internal static string GetStoryVarsTagForMap(MapBase map)
+		=> map is MapFirst ? FirstZoneDuoTag : PastFirstZoneDuoTag;
+
+	internal void FixArtifactMeta(ProfileSettings.OfferingModeEnum offeringMode, State? state, HashSet<string>? seenArtifacts)
 	{
+		if (state is null || state.storyVars.oncePerRunTags.Contains(GetStoryVarsTagForMap(state.map)))
+			offeringMode = ProfileSettings.OfferingModeEnum.Extra;
 		if (seenArtifacts is null && offeringMode == ProfileSettings.OfferingModeEnum.ExtraOnceThenCommon)
 			offeringMode = ProfileSettings.OfferingModeEnum.Extra;
 		
