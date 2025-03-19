@@ -19,7 +19,7 @@ public sealed class FractalStructureCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/FractalStructure.png"), StableSpr.cards_ShieldSurge).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/FractalStructure.png"), StableSpr.cards_BoostCapacitors).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "FractalStructure", "name"]).Localize,
 		});
 	}
