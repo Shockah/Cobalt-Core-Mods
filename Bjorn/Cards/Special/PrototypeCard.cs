@@ -20,7 +20,7 @@ public sealed class PrototypeCard : Card, IRegisterable
 				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true,
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Prototype.png"), StableSpr.cards_dizzy).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Prototype.png"), StableSpr.cards_QuickThinking).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Prototype", "name"]).Localize,
 		});
 	}
