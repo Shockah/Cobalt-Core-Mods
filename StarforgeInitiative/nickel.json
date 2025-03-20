@@ -4,13 +4,13 @@
 	"DisplayName": "Starforge Initiative",
 	"Description": "A program dedicated to crafting new vessels.",
 	"Author": "Shockah",
-	"RequiredApiVersion": "1.14.5",
+	"RequiredApiVersion": "1.14.6",
 	"EntryPointAssembly": "StarforgeInitiative.dll",
 	"LoadPhase": "AfterGameAssembly",
 	"Dependencies": [
 		{
 			"UniqueName": "Shockah.Kokoro",
-			"Version": "2.4.0"
+			"Version": "2.5.1"
 		}
 	],
 	"UpdateChecks": {
