@@ -459,7 +459,7 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 		);
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
-			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Transpiler))
+			transpiler: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Transpiler_Last)), priority: Priority.Last)
 		);
 	}
 
@@ -703,7 +703,7 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 	private static void State_Render_Postfix()
 		=> CurrentDrawingEnvironment = null;
 	
-	private static IEnumerable<CodeInstruction> Combat_DrainCardActions_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
+	private static IEnumerable<CodeInstruction> Combat_DrainCardActions_Transpiler_Last(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
 		// ReSharper disable PossibleMultipleEnumeration
 		try
@@ -711,19 +711,13 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find([
 					ILMatches.Ldarg(0),
-					ILMatches.Ldfld("currentCardAction"),
-					ILMatches.Ldflda("shardcost"),
-					ILMatches.Call("get_HasValue"),
-					ILMatches.Brtrue.GetBranchTarget(out var hasShardcostLabel),
+					ILMatches.Ldfld("cardActions"),
+					ILMatches.Call("Dequeue"),
+					ILMatches.Stfld("currentCardAction"),
 				])
-				.PointerMatcher(SequenceMatcherRelativeElement.AfterLast)
-				.CreateLabel(il, out var noShardcostLabel)
-				.PointerMatcher(hasShardcostLabel)
-				.ExtractLabels(out var hasShardcostLabels)
-				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
-					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(hasShardcostLabels),
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Transpiler_ReplaceShardcostWithActionCost))),
-					new CodeInstruction(OpCodes.Br, noShardcostLabel),
 				])
 				.AllElements();
 		}
