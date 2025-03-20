@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using FMOD;
 using HarmonyLib;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
+using Nanoray.Shrike;
+using Nanoray.Shrike.Harmony;
 using Nickel;
 using Shockah.Kokoro;
 
@@ -38,7 +42,7 @@ internal sealed class BreadnaughtBarrelSpin : IRegisterable
 		);
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Prefix))
+			transpiler: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Transpiler_AlmostLast)), priority: Priority.Last + 1)
 		);
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(StatusMeta), nameof(StatusMeta.GetSound)),
@@ -70,53 +74,76 @@ internal sealed class BreadnaughtBarrelSpin : IRegisterable
 			action.timer /= spin + 1;
 		}
 	}
-
-	private static void Combat_DrainCardActions_Prefix(Combat __instance, G g)
+	
+	private static IEnumerable<CodeInstruction> Combat_DrainCardActions_Transpiler_AlmostLast(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
-		for (var i = 0; i < __instance.cardActions.Count; i++)
+		// ReSharper disable PossibleMultipleEnumeration
+		try
 		{
-			if (__instance.cardActions[i] is not AAttack attack)
-				continue;
-			if (attack.fromDroneX is not null)
-				continue;
-			
-			var sourceShip = attack.targetPlayer ? __instance.otherShip : g.state.ship;
-			var totalSpin = sourceShip.Get(BarrelSpinStatus.Status);
-			if (totalSpin <= 0)
-				return;
-		
-			var spin = Math.Max(Math.Min(totalSpin, attack.damage - 1), 0);
-			if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(attack, "BarrelSpin") > 0)
-				return;
-
-			var rotorGreaseArtifact = attack.targetPlayer ? null : g.state.EnumerateAllArtifacts().OfType<BreadnaughtRotorGreaseArtifact>().FirstOrDefault();
-			var extraAttacks = spin + (spin < totalSpin && rotorGreaseArtifact is not null ? 1 : 0);
-			var hasFirstZeroDamageAttack = extraAttacks > spin;
-			if (extraAttacks <= 0)
-				return;
-			
-			attack.damage -= spin;
-			ModEntry.Instance.Helper.ModData.SetModData(attack, "BarrelSpin", extraAttacks);
-			
-			__instance.cardActions.InsertRange(
-				i, Enumerable.Range(0, extraAttacks)
-					.Select(i =>
-					{
-						var splitAttack = Mutil.DeepCopy(attack);
-						splitAttack.damage = 1;
-						if (i == 0 && hasFirstZeroDamageAttack && rotorGreaseArtifact is not null)
-						{
-							splitAttack.damage = 0;
-							if (string.IsNullOrEmpty(splitAttack.artifactPulse))
-								splitAttack.artifactPulse = rotorGreaseArtifact.Key();
-							else
-								rotorGreaseArtifact.Pulse();
-						}
-						return splitAttack;
-					})
-			);
-			i += spin;
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find([
+					ILMatches.Ldarg(0),
+					ILMatches.Ldfld("cardActions"),
+					ILMatches.Call("Dequeue"),
+					ILMatches.Stfld("currentCardAction"),
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldarg_1),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Transpiler_AlmostLast_SpinAttacks))),
+				])
+				.AllElements();
 		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.GetDisplayName(@long: false), ex);
+			return instructions;
+		}
+		// ReSharper restore PossibleMultipleEnumeration
+	}
+
+	private static void Combat_DrainCardActions_Transpiler_AlmostLast_SpinAttacks(Combat combat, G g)
+	{
+		if (combat.currentCardAction is not AAttack attack)
+			return;
+		if (attack.fromDroneX is not null)
+			return;
+			
+		var sourceShip = attack.targetPlayer ? combat.otherShip : g.state.ship;
+		var totalSpin = sourceShip.Get(BarrelSpinStatus.Status);
+		if (totalSpin <= 0)
+			return;
+		
+		var spin = Math.Max(Math.Min(totalSpin, attack.damage - 1), 0);
+		if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(attack, "BarrelSpin") > 0)
+			return;
+
+		var rotorGreaseArtifact = attack.targetPlayer ? null : g.state.EnumerateAllArtifacts().OfType<BreadnaughtRotorGreaseArtifact>().FirstOrDefault();
+		var extraAttacks = spin + (spin < totalSpin && rotorGreaseArtifact is not null ? 1 : 0);
+		var hasFirstZeroDamageAttack = extraAttacks > spin;
+		if (extraAttacks <= 0)
+			return;
+			
+		attack.damage -= spin;
+		ModEntry.Instance.Helper.ModData.SetModData(attack, "BarrelSpin", extraAttacks);
+			
+		combat.cardActions.InsertRange(
+			0, Enumerable.Range(0, extraAttacks)
+				.Select(i =>
+				{
+					var splitAttack = Mutil.DeepCopy(attack);
+					splitAttack.damage = 1;
+					if (i == 0 && hasFirstZeroDamageAttack && rotorGreaseArtifact is not null)
+					{
+						splitAttack.damage = 0;
+						if (string.IsNullOrEmpty(splitAttack.artifactPulse))
+							splitAttack.artifactPulse = rotorGreaseArtifact.Key();
+						else
+							rotorGreaseArtifact.Pulse();
+					}
+					return splitAttack;
+				})
+		);
 	}
 	
 	// TODO: replace with a Nickel feature
