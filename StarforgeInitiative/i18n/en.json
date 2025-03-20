@@ -25,7 +25,10 @@
 			"event": {
 				"GrandmaShop": {
 					"Choice-GoodieBag": {
-						"title": "Can we get the special treat?\n<c=heal>-Gain a <c=card>Goodie Bag</c></c>"
+						"title": [
+							"Can we get the special treat?",
+							"<c=heal>-Gain a <c=card>Goodie Bag</c></c>"
+						]
 					}
 				}
 			},

@@ -28,8 +28,8 @@ internal sealed class KeplerBasicDroneCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> upgrade switch
 		{
-			Upgrade.A => new() { cost = 1, exhaust = true },
-			Upgrade.B => new() { cost = 1 },
+			Upgrade.A => new() { cost = 1 },
+			Upgrade.B => new() { cost = 1, exhaust = true },
 			_ => new() { cost = 1, exhaust = true },
 		};
 

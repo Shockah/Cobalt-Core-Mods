@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming release
+
+### Kepler
+* Fixed Basic Drone mixed up upgrade paths.
+
 ## 1.1.0
 Released 20 March 2025.
 
