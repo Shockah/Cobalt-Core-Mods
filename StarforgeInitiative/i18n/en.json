@@ -16,7 +16,10 @@
 				},
 				"RotorGrease": {
 					"name": "ROTOR GREASE",
-					"description": "Whenever <c=status>BARREL SPIN</c> fails to reduce attack damage by any amount, first attack once for 0 damage, retaining any effects of the original attack."
+					"description": [
+						"(Breadnaught-exclusive artifact!)",
+						"Whenever <c=status>BARREL SPIN</c> fails to reduce attack damage by any amount, first attack once for 0 damage, retaining any effects of the original attack."
+					]
 				}
 			},
 			"event": {
