@@ -25,7 +25,8 @@ internal sealed class BreadnaughtShip : IRegisterable
 	private static readonly List<Type> RegisterableTypes = [
 		.. ArtifactTypes,
 		.. CardTypes,
-		typeof(BarrelSpinManager),
+		typeof(BreadnaughtBarrelSpin),
+		typeof(BreadnaughtGrandmaShopEventChanges),
 	];
 	
 	internal static IShipEntry ShipEntry { get; private set; } = null!;

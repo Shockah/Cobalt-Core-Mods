@@ -45,7 +45,7 @@ internal sealed class BreadnaughtMinigunArtifact : Artifact, IRegisterable
 	}
 
 	public override List<Tooltip> GetExtraTooltips()
-		=> StatusMeta.GetTooltips(BarrelSpinManager.BarrelSpinStatus.Status, 1);
+		=> StatusMeta.GetTooltips(BreadnaughtBarrelSpin.BarrelSpinStatus.Status, 1);
 
 	public override void OnTurnStart(State state, Combat combat)
 	{
@@ -62,7 +62,7 @@ internal sealed class BreadnaughtMinigunArtifact : Artifact, IRegisterable
 
 		var amount = LostEnergy - GainedSpin;
 		GainedSpin = LostEnergy;
-		combat.QueueImmediate(new AStatus { targetPlayer = true, status = BarrelSpinManager.BarrelSpinStatus.Status, statusAmount = amount, artifactPulse = Key(), timer = 0 });
+		combat.QueueImmediate(new AStatus { targetPlayer = true, status = BreadnaughtBarrelSpin.BarrelSpinStatus.Status, statusAmount = amount, artifactPulse = Key(), timer = 0 });
 	}
 
 	private static void Combat_Update_Prefix(Combat __instance, out int __state)

@@ -24,5 +24,5 @@ internal sealed class BreadnaughtRotorGreaseArtifact : Artifact, IRegisterable
 	}
 
 	public override List<Tooltip> GetExtraTooltips()
-		=> StatusMeta.GetTooltips(BarrelSpinManager.BarrelSpinStatus.Status, 1);
+		=> StatusMeta.GetTooltips(BreadnaughtBarrelSpin.BarrelSpinStatus.Status, 1);
 }

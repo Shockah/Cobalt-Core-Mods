@@ -10,7 +10,7 @@ using Shockah.Kokoro;
 
 namespace Shockah.StarforgeInitiative;
 
-internal sealed class BarrelSpinManager : IRegisterable
+internal sealed class BreadnaughtBarrelSpin : IRegisterable
 {
 	internal static IStatusEntry BarrelSpinStatus { get; private set; } = null!;
 	

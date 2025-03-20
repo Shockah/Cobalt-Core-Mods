@@ -19,6 +19,13 @@
 					"description": "Whenever <c=status>BARREL SPIN</c> fails to reduce attack damage by any amount, first attack once for 0 damage, retaining any effects of the original attack."
 				}
 			},
+			"event": {
+				"GrandmaShop": {
+					"Choice-GoodieBag": {
+						"title": "Can we get the special treat?\n<c=heal>-Gain a <c=card>Goodie Bag</c></c>"
+					}
+				}
+			},
 			"card": {
 				"BasicPackage": {
 					"name": "Goodie Bag",
