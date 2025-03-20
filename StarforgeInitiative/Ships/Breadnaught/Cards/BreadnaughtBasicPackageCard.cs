@@ -53,6 +53,7 @@ internal sealed class BreadnaughtBasicPackageCard : CannonColorless, IRegisterab
 				new TTCard { card = new BreadnaughtBasicMinigunCard { temporaryOverride = Temporary } },
 				new TTCard { card = new BreadnaughtBasicPushCard { temporaryOverride = Temporary } },
 				new TTCard { card = new BreadnaughtBasicWeakenCard { temporaryOverride = Temporary } },
+				new TTCard { card = new BreadnaughtBasicOverdriveCard { temporaryOverride = Temporary } },
 			];
 
 		public override Route BeginWithRoute(G g, State s, Combat c)
@@ -65,6 +66,7 @@ internal sealed class BreadnaughtBasicPackageCard : CannonColorless, IRegisterab
 						new BreadnaughtBasicMinigunCard { drawAnim = 1, flipAnim = 1 },
 						new BreadnaughtBasicPushCard { drawAnim = 1, flipAnim = 1 },
 						new BreadnaughtBasicWeakenCard { drawAnim = 1, flipAnim = 1 },
+						new BreadnaughtBasicOverdriveCard { drawAnim = 1, flipAnim = 1 },
 					],
 					canSkip = false,
 				}

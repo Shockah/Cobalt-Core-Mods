@@ -23,13 +23,16 @@
 				"BasicPackage": {
 					"name": "Goodie Bag",
 					"description": {
-						"None": "Add a <c=card>Basic Minigun / Push / Weaken</c> to your hand.",
-						"A": "Add a <c=cardtrait>temp</c> <c=card>Basic Minigun / Push / Weaken</c> to your hand.",
-						"B": "Add a <c=card>Basic Minigun / Push / Weaken</c> to your hand."
+						"None": "Add a <c=card>Basic Ignite / Kickback / Weaken / Overdrive</c> to your hand.",
+						"A": "Add a <c=cardtrait>temp</c> <c=card>Basic Ignite / Kickback / Weaken / Overdrive</c> to your hand.",
+						"B": "Add a <c=card>Basic Ignite / Kickback / Weaken / Overdrive</c> to your hand."
 					}
 				},
 				"BasicMinigun": {
 					"name": "Basic Ignite"
+				},
+				"BasicOverdrive": {
+					"name": "Basic Overdrive"
 				},
 				"BasicPush": {
 					"name": "Basic Kickback"

@@ -16,8 +16,9 @@ internal sealed class BreadnaughtShip : IRegisterable
 	
 	private static readonly List<Type> CardTypes = [
 		typeof(BreadnaughtBasicMinigunCard),
-		typeof(BreadnaughtBasicPushCard),
+		typeof(BreadnaughtBasicOverdriveCard),
 		typeof(BreadnaughtBasicPackageCard),
+		typeof(BreadnaughtBasicPushCard),
 		typeof(BreadnaughtBasicWeakenCard),
 	];
 	
