@@ -20,9 +20,6 @@
 				}
 			},
 			"card": {
-				"BasicMinigun": {
-					"name": "Basic Minigun"
-				},
 				"BasicPackage": {
 					"name": "Goodie Bag",
 					"description": {
@@ -31,8 +28,11 @@
 						"B": "Add a <c=card>Basic Minigun / Push / Weaken</c> to your hand."
 					}
 				},
+				"BasicMinigun": {
+					"name": "Basic Ignite"
+				},
 				"BasicPush": {
-					"name": "Basic Push"
+					"name": "Basic Kickback"
 				},
 				"BasicWeaken": {
 					"name": "Basic Weaken"
