@@ -37,13 +37,13 @@ internal sealed class BreadnaughtBasicMinigunCard : CannonColorless, IRegisterab
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new AAttack { damage = GetDmg(s, 3), status = Status.heat, statusAmount = 2 },
+				new AAttack { piercing = true, damage = GetDmg(s, 3), status = Status.heat, statusAmount = 2 },
 			],
 			Upgrade.B => [
-				new AAttack { damage = GetDmg(s, 2), status = Status.heat, statusAmount = 1 },
+				new AAttack { piercing = true, damage = GetDmg(s, 2), status = Status.heat, statusAmount = 1 },
 			],
 			_ => [
-				new AAttack { damage = GetDmg(s, 2), status = Status.heat, statusAmount = 2 },
+				new AAttack { piercing = true, damage = GetDmg(s, 2), status = Status.heat, statusAmount = 2 },
 			],
 		};
 }
