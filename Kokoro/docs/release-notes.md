@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.5.1
+Released 20 March 2025.
 
 * Changed how Kokoro handles shard costs on cards, making it more compatible with other mods.
 
