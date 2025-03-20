@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.0
+Released 20 March 2025.
 
 ### Breadnaught
 * Renamed Basic Minigun to Basic Ignite.
