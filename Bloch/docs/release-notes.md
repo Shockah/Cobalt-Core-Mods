@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* The Mind Blast card now scales faster (3 damage each time, up from 2).
 * Fixed the Mind Blast card not resetting its scaling between combats.
 
 ## 1.2.0

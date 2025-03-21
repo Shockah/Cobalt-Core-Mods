@@ -29,14 +29,14 @@ internal sealed class MindBlastCard : Card, IRegisterable
 	}
 
 	private int GetDamage(State state)
-		=> GetDmg(state, 2 + PlayCounter * 2);
+		=> GetDmg(state, 2 + PlayCounter * 3);
 
 	public override CardData GetData(State state)
 		=> new()
 		{
 			cost = upgrade == Upgrade.A ? 1 : 2,
 			retain = true,
-			description = ModEntry.Instance.Localizations.Localize(["card", "MindBlast", "description", upgrade.ToString()], new { Damage = GetDamage(state), Gain = 2 })
+			description = ModEntry.Instance.Localizations.Localize(["card", "MindBlast", "description", upgrade.ToString()], new { Damage = GetDamage(state), Gain = 3 })
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
