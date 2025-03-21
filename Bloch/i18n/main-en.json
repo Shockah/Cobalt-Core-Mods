@@ -91,7 +91,7 @@
         },
         "MuscleMemory": {
             "name": "MUSCLE MEMORY",
-            "description": "<c=action>On Discard</c> effects now also trigger when a card is played."
+            "description": "<c=action>On Discard</c> effects trigger twice."
         },
         "UnlockedPotential": {
             "name": "UNLOCKED POTENTIAL",
