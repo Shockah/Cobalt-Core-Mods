@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using daisyowl.text;
 using HarmonyLib;
@@ -21,6 +23,40 @@ internal sealed class LessIntrusiveHandCardBrowse : IRegisterable
 {
 	private static bool ShouldRenderCardAnyway;
 	private static readonly ConditionalWeakTable<CardBrowse, List<Card>> CardBrowseCardListCache = [];
+
+	private static readonly Lazy<Func<UK>?> MultiCardBrowseChooseUkGetter = new(() =>
+	{
+		if (ModEntry.Instance.KokoroApi is null)
+			return null;
+
+		var multiCardBrowseType = AccessTools.AllAssemblies()
+			.First(a => (a.GetName().Name ?? a.GetName().FullName) == "Kokoro")
+			.GetType("Shockah.Kokoro.MultiCardBrowseManager")!
+			.GetNestedType("MultiCardBrowse", AccessTools.all)!;
+
+		return AccessTools.DeclaredField(multiCardBrowseType, "ChooseUk").EmitStaticGetter<UK>();
+	});
+	
+	private static readonly Lazy<Func<CardBrowse, List<int>>?> MultiCardBrowseSelectedCardsGetter = new(() =>
+	{
+		if (ModEntry.Instance.KokoroApi is null)
+			return null;
+
+		var multiCardBrowseType = AccessTools.AllAssemblies()
+			.First(a => (a.GetName().Name ?? a.GetName().FullName) == "Kokoro")
+			.GetType("Shockah.Kokoro.MultiCardBrowseManager")!
+			.GetNestedType("MultiCardBrowse", AccessTools.all)!;
+
+		var method = new DynamicMethod("get_MultiCardBrowse_SelectedCards", typeof(List<int>), [typeof(CardBrowse)]);
+		var il = method.GetILGenerator();
+
+		il.Emit(OpCodes.Ldarg_0);
+		il.Emit(OpCodes.Castclass, multiCardBrowseType);
+		il.Emit(OpCodes.Ldfld, AccessTools.DeclaredField(multiCardBrowseType, "SelectedCards"));
+		il.Emit(OpCodes.Ret);
+
+		return method.CreateDelegate<Func<CardBrowse, List<int>>>();
+	});
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -32,6 +68,15 @@ internal sealed class LessIntrusiveHandCardBrowse : IRegisterable
 			original: AccessTools.DeclaredMethod(typeof(CardBrowse), nameof(CardBrowse.Render)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardBrowse_Render_Prefix))
 		);
+		if (ModEntry.Instance.KokoroApi is not null)
+			ModEntry.Instance.Harmony.Patch(
+				original: AccessTools.AllAssemblies()
+					.First(a => (a.GetName().Name ?? a.GetName().FullName) == "Kokoro")
+					.GetType("Shockah.Kokoro.MultiCardBrowseManager")!
+					.GetNestedType("MultiCardBrowse", AccessTools.all)!
+					.GetMethod("Render", AccessTools.all)!,
+				prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(MultiCardBrowse_Render_Prefix))
+			);
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Prefix))
@@ -69,8 +114,8 @@ internal sealed class LessIntrusiveHandCardBrowse : IRegisterable
 	{
 		if (!ModEntry.Instance.Settings.ProfileBased.Current.LessIntrusiveHandCardBrowse)
 			return false;
-		if (route.GetType() != typeof(CardBrowse))
-			return false;
+		// if (route is not CardBrowse)
+		// 	return false;
 		if (route.subRoute is not null)
 			return false;
 		if (route.browseSource != CardBrowse.Source.Hand)
@@ -89,29 +134,8 @@ internal sealed class LessIntrusiveHandCardBrowse : IRegisterable
 		return true;
 	}
 
-	private static void Combat_IsVisible_Postfix(Combat __instance, ref bool __result)
+	private static void RenderCardBrowse(CardBrowse route, G g, Combat combat, List<Card> cards, List<int>? selectedCards)
 	{
-		if (__instance.routeOverride is CardBrowse route && CanUseLessIntrusiveUI(route, MG.inst.g))
-			__result = true;
-	}
-
-	private static bool CardBrowse_Render_Prefix(CardBrowse __instance, G g)
-	{
-		if (!CanUseLessIntrusiveUI(__instance, g))
-			return true;
-		if (g.state.route is not Combat combat)
-			return true;
-		
-		var cards = __instance.GetCardList(g).OrderBy(card => combat.hand.IndexOf(card)).ToList();
-		if (cards.Count == 0)
-		{
-			g.CloseRoute(__instance, CBResult.Done);
-			return false;
-		}
-
-		if (combat.currentCardAction is { } currentCardAction)
-			currentCardAction.timer = 0;
-		
 		var box = g.Push();
 		
 		Draw.Rect(0, 0, MG.inst.PIX_W, MG.inst.PIX_H, Colors.black.fadeAlpha(0.5));
@@ -119,7 +143,7 @@ internal sealed class LessIntrusiveHandCardBrowse : IRegisterable
 		if (GetBrowseTitle() is { } browseTitle)
 			Draw.Text(browseTitle, box.rect.x + 240, box.rect.y + 24, color: Colors.textMain, align: TAlign.Center, outline: Colors.black);
 		
-		if (__instance.browseAction?.GetCardSelectText(g.state) is { } browseSubtitle)
+		if (route.browseAction?.GetCardSelectText(g.state) is { } browseSubtitle)
 			Draw.Text(browseSubtitle, box.rect.x + 240, box.rect.y + 34, color: Colors.textBold, maxWidth: 300, align: TAlign.Center, outline: Colors.black);
 		else
 			Draw.Text(GetUpgradeHintSubtitle(), box.rect.x + 240, box.rect.y + 34, color: Colors.textMain.gain(0.5), maxWidth: 300, align: TAlign.Center, outline: Colors.black);
@@ -127,7 +151,7 @@ internal sealed class LessIntrusiveHandCardBrowse : IRegisterable
 		RenderCards(false);
 		RenderCards(true);
 
-		switch (__instance.GetBackButtonMode())
+		switch (route.GetBackButtonMode())
 		{
 			case CardBrowse.BackMode.Done:
 				SharedArt.ButtonText(
@@ -135,7 +159,7 @@ internal sealed class LessIntrusiveHandCardBrowse : IRegisterable
 					new Vec(MG.inst.PIX_W - 69, MG.inst.PIX_H - 31),
 					StableUK.cardbrowse_back,
 					Loc.T("uiShared.btnBack"),
-					onMouseDown: __instance,
+					onMouseDown: route,
 					platformButtonHint: Btn.B
 				);
 				break;
@@ -145,17 +169,16 @@ internal sealed class LessIntrusiveHandCardBrowse : IRegisterable
 					new Vec(MG.inst.PIX_W - 69, MG.inst.PIX_H - 31),
 					StableUK.cardbrowse_cancel,
 					Loc.T("uiShared.btnCancel"),
-					onMouseDown: __instance,
+					onMouseDown: route,
 					platformButtonHint: Btn.B
 				);
 				break;
 		}
 
 		g.Pop();
-		return false;
-
+		
 		string? GetBrowseTitle()
-			=> __instance.mode switch
+			=> route.mode switch
 			{
 				CardBrowse.Mode.Browse => Loc.T("cardBrowse.title.hand", "Hand: {0} Cards", cards.Count),
 				CardBrowse.Mode.DeleteCard => Loc.T("cardBrowse.title.delete"),
@@ -193,9 +216,10 @@ internal sealed class LessIntrusiveHandCardBrowse : IRegisterable
 						g,
 						new Vec(card.pos.x + Combat.marginRect.x, card.pos.y + Combat.marginRect.y),
 						ignoreAnim: true,
+						hilight: selectedCards is not null && selectedCards.Contains(card.uuid),
 						autoFocus: cards[0] == card,
-						onMouseDown: __instance,
-						onMouseDownRight: __instance,
+						onMouseDown: route,
+						onMouseDownRight: route,
 						overrideWidth: combat.hand.Count >= 9 && combat.hand.IndexOf(card) < combat.hand.Count - 1 ? 50.0 : null,
 						leftHint: cards[0] == card ? StableUK.combat_deck : null,
 						rightHint: cards[^1] == card ? StableUK.combat_exhaust : null,
@@ -208,6 +232,73 @@ internal sealed class LessIntrusiveHandCardBrowse : IRegisterable
 				ShouldRenderCardAnyway = false;
 			}
 		}
+	}
+
+	private static void Combat_IsVisible_Postfix(Combat __instance, ref bool __result)
+	{
+		if (__instance.routeOverride is CardBrowse route && CanUseLessIntrusiveUI(route, MG.inst.g))
+			__result = true;
+	}
+
+	private static bool CardBrowse_Render_Prefix(CardBrowse __instance, G g)
+	{
+		if (!CanUseLessIntrusiveUI(__instance, g))
+			return true;
+		if (g.state.route is not Combat combat)
+			return true;
+		
+		var cards = __instance.GetCardList(g).OrderBy(card => combat.hand.IndexOf(card)).ToList();
+		if (cards.Count == 0)
+		{
+			g.CloseRoute(__instance, CBResult.Done);
+			return false;
+		}
+
+		if (combat.currentCardAction is { } currentCardAction)
+			currentCardAction.timer = 0;
+		
+		RenderCardBrowse(__instance, g, combat, cards, null);
+		return false;
+	}
+
+	private static bool MultiCardBrowse_Render_Prefix(CardBrowse __instance, G g)
+	{
+		if (!CanUseLessIntrusiveUI(__instance, g))
+			return true;
+		if (g.state.route is not Combat combat)
+			return true;
+		if (ModEntry.Instance.KokoroApi!.MultiCardBrowse.AsRoute(__instance) is not { } route)
+			return true;
+		
+		var cards = __instance.GetCardList(g).OrderBy(card => combat.hand.IndexOf(card)).ToList();
+		if (cards.Count == 0)
+		{
+			g.CloseRoute(__instance, CBResult.Done);
+			return false;
+		}
+		
+		var selectedCards = MultiCardBrowseSelectedCardsGetter.Value!(__instance);
+		RenderCardBrowse(__instance, g, combat, cards, selectedCards);
+
+		if (route.CustomActions is { } customActions)
+		{
+			for (var i = 0; i < customActions.Count; i++)
+			{
+				var action = customActions[i];
+				var inactive = selectedCards.Count < (action.MinSelected ?? route.MinSelected) || selectedCards.Count > (action.MaxSelected ?? route.MaxSelected);
+				SharedArt.ButtonText(
+					g,
+					new Vec(MG.inst.PIX_W - 69, 82 + i * 26),
+					new UIKey(MultiCardBrowseChooseUkGetter.Value!(), i),
+					action.Title,
+					boxColor: inactive ? Colors.buttonInactive : null,
+					inactive: inactive,
+					onMouseDown: __instance
+				);
+			}
+		}
+		
+		return false;
 	}
 
 	private static bool Card_Render_Prefix(Card __instance, G g)

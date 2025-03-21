@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Less intrusive hand card browse feature now works for multi card browse.
 * Heat (and Oxidation from Kokoro) are now displayed as bars.
 
 ## 1.0.1
