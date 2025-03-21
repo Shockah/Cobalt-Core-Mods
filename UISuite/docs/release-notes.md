@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.1
+Released 21 March 2025.
 
 * Fixed heat/oxidation status bars not obeying the "switch to numbers" setting (and always being enabled).
 
