@@ -188,7 +188,7 @@ internal sealed class StatusAsBars : IRegisterable
 				var totalWidth = 0;
 				var threshold = thresholdDelegate(args.State, args.Ship);
 				var negativeThreshold = negativeThresholdDelegate?.Invoke(args.State, args.Ship) ?? 0;
-				var showingPositiveBars = settings.SwitchToNumbers && threshold < settings.SwitchToNumbersAt;
+				var showingPositiveBars = !settings.SwitchToNumbers || threshold < settings.SwitchToNumbersAt;
 				
 				var newArgs = args.CopyToBuilder();
 				

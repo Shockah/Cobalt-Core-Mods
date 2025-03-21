@@ -4,6 +4,11 @@
 
 ## Upcoming release
 
+* Fixed heat/oxidation status bars not obeying the "switch to numbers" setting (and always being enabled).
+
+## 1.1.0
+Released 21 March 2025.
+
 * Less intrusive hand card browse feature now works for multi card browse.
 * Heat (and Oxidation from Kokoro) are now displayed as bars.
 
