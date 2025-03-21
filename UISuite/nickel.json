@@ -4,13 +4,13 @@
 	"DisplayName": "UI Suite",
 	"Description": "All-around improvements and extra tools for the game's UI.",
 	"Author": "Shockah",
-	"RequiredApiVersion": "1.11.0",
+	"RequiredApiVersion": "1.14.0",
 	"EntryPointAssembly": "UISuite.dll",
 	"LoadPhase": "AfterGameAssembly",
 	"Dependencies": [
 		{
 			"UniqueName": "Shockah.Kokoro",
-			"Version": "2.4.0",
+			"Version": "2.5.0",
 			"IsRequired": "false"
 		}
 	],
