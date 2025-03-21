@@ -25,53 +25,28 @@ internal sealed class DistressCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> new()
+		=> upgrade switch
 		{
-			cost = 0,
-			infinite = upgrade != Upgrade.B
+			Upgrade.A => new() { cost = 0, flippable = true, infinite = true, retain = true },
+			Upgrade.B => new() { cost = 0 },
+			_ => new() { cost = 0, flippable = true, infinite = true },
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new AStatus
-				{
-					targetPlayer = true,
-					status = AuraManager.VeilingStatus.Status,
-					statusAmount = 2
-				},
-				new ADiscard
-				{
-					count = 2
-				}
+				new AStatus { targetPlayer = true, status = AuraManager.VeilingStatus.Status, statusAmount = 1 },
+				new DiscardSideAction { Amount = 2, Left = flipped },
 			],
 			Upgrade.B => [
-				new AStatus
-				{
-					targetPlayer = true,
-					status = AuraManager.IntensifyStatus.Status,
-					statusAmount = 1
-				},
-				new AStatus
-				{
-					targetPlayer = true,
-					status = AuraManager.VeilingStatus.Status,
-					statusAmount = 2
-				},
+				new AStatus { targetPlayer = true, status = AuraManager.IntensifyStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = AuraManager.VeilingStatus.Status, statusAmount = 2 },
 				new ADiscard()
 			],
 			_ => [
-				new AStatus
-				{
-					targetPlayer = true,
-					status = AuraManager.VeilingStatus.Status,
-					statusAmount = 1
-				},
-				new ADiscard
-				{
-					count = 2
-				}
+				new AStatus { targetPlayer = true, status = AuraManager.VeilingStatus.Status, statusAmount = 1 },
+				new DiscardSideAction { Amount = 2, Left = flipped },
 			]
 		};
 }

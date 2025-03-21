@@ -29,6 +29,16 @@
                 "OnDiscard": "You will gain this <c=C2FF60>Aura</c> when discarding this card.",
                 "OnTurnEnd": "You will gain this <c=C2FF60>Aura</c> when you end your turn with this card in hand."
             }
+        },
+        "DiscardSide": {
+            "name": {
+                "Left": "Discard Left",
+                "Right": "Discard Right"
+            },
+            "description": {
+                "Left": "Discard <c=boldPink>{{Amount}}</c> leftmost cards.",
+                "Right": "Discard <c=boldPink>{{Amount}}</c> rightmost cards."
+            }
         }
     },
     "status": {

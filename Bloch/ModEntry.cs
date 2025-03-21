@@ -56,10 +56,10 @@ public sealed class ModEntry : SimpleMod
 
 	internal static readonly IEnumerable<Type> AllCardTypes
 		= [
-			..CommonCardTypes,
-			..UncommonCardTypes,
-			..RareCardTypes,
-			typeof(BlochExeCard)
+			.. CommonCardTypes,
+			.. UncommonCardTypes,
+			.. RareCardTypes,
+			typeof(BlochExeCard),
 		];
 
 	internal static readonly IReadOnlyList<Type> CommonArtifacts = [
@@ -81,15 +81,15 @@ public sealed class ModEntry : SimpleMod
 
 	internal static readonly IEnumerable<Type> AllArtifactTypes
 		= [
-			..CommonArtifacts,
-			..BossArtifacts,
+			.. CommonArtifacts,
+			.. BossArtifacts,
 		];
 
 	internal static readonly IEnumerable<Type> RegisterableTypes
 		= [
-			..AllCardTypes,
-			..AllArtifactTypes,
-			..DuoArtifacts,
+			.. AllCardTypes,
+			.. AllArtifactTypes,
+			.. DuoArtifacts,
 		];
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
@@ -115,6 +115,7 @@ public sealed class ModEntry : SimpleMod
 		);
 
 		_ = new AuraManager();
+		_ = new DiscardSideManager();
 		_ = new InfiniteCharacterAnimationManager();
 		_ = new IntuitionManager();
 		_ = new MindMapManager();

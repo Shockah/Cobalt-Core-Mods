@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Changed the effect of the Muscle Memory artifact.
+* Changed the base and A upgrade paths of the Distress card.
 * The Mind Blast card now scales faster (3 damage each time, up from 2).
 * Fixed the Mind Blast card not resetting its scaling between combats.
 
