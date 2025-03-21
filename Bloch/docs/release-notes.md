@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.0
+Released 21 March 2025.
 
 * Changed the effect of the Muscle Memory artifact.
 * Changed the base and A upgrade paths of the Distress card.
