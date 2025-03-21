@@ -145,5 +145,41 @@
 				"Description": "Whether to replace the usual hand card browse screen with a less intrusive version of it."
 			}
 		}
+	},
+	"StatusAsBars": {
+		"Settings": {
+			"Header": {
+				"Heat": "<c=white>Heat status as bars</c>",
+				"Oxidation": "<c=white>Oxidation status as bars</c>"
+			},
+			"IsEnabled": {
+				"Title": "Enabled",
+				"Description": "Whether to replace status rendering with bars (like <c=status>shards</c>)."
+			},
+			"SwitchToTwoRows": {
+				"Title": "Switch to two rows",
+				"Description": "Whether the status should be split into 2 rows of bars if the max threshold is high enough."
+			},
+			"SwitchToTwoRowsAt": {
+				"Title": "Switch to two rows at",
+				"Description": "The minimum threshold at which the status should be split into 2 rows of bars."
+			},
+			"SwitchToThreeRows": {
+				"Title": "Switch to three rows",
+				"Description": "Whether the status should be split into 3 rows of bars if the max threshold is high enough."
+			},
+			"SwitchToThreeRowsAt": {
+				"Title": "Switch to three rows at",
+				"Description": "The minimum threshold at which the status should be split into 3 rows of bars."
+			},
+			"SwitchToNumbers": {
+				"Title": "Switch to numbers",
+				"Description": "Whether the status should be rendered as text, but including the threshold (for example, <c=redd>1/3</c>)."
+			},
+			"SwitchToNumbersAt": {
+				"Title": "Switch to numbers at",
+				"Description": "The minimum threshold at which the status should be rendered as text, but including the threshold (for example, <c=redd>1/3</c>)."
+			}
+		}
 	}
 }

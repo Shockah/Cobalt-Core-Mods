@@ -32,8 +32,8 @@ public sealed class ModEntry : SimpleMod
 		typeof(CardMarkers),
 		typeof(CardPileIndicatorWhenBrowsing),
 		typeof(ExtraArtifactCodexCategories),
-		typeof(HeatAsBars),
 		typeof(LaneDisplay),
+		typeof(StatusAsBars),
 	];
 	
 	private static readonly IEnumerable<Type> SortedRegisterableTypes = [
@@ -43,9 +43,9 @@ public sealed class ModEntry : SimpleMod
 		typeof(CardMarkers),
 		typeof(CardPileIndicatorWhenBrowsing),
 		typeof(ExtraArtifactCodexCategories),
-		typeof(HeatAsBars),
 		typeof(LaneDisplay),
 		typeof(LessIntrusiveHandCardBrowse),
+		typeof(StatusAsBars),
 	];
 	
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
