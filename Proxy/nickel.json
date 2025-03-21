@@ -1,0 +1,15 @@
+﻿{
+	"UniqueName": "Shockah.Proxy",
+	"Version": "{{ModVersion}}",
+	"DisplayName": "Proxy",
+	"Author": "Shockah",
+	"RequiredApiVersion": "1.14.0",
+	"EntryPointAssembly": "Proxy.dll",
+	"LoadPhase": "AfterDbInit",
+	"Dependencies": [
+		{
+			"UniqueName": "Shockah.Kokoro",
+			"Version": "2.5.0"
+		}
+	]
+}
