@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Mind Blast card not resetting its scaling between combats.
+
 ## 1.2.0
 Released 4 December 2024.
 

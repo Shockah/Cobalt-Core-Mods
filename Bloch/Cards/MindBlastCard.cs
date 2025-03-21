@@ -3,12 +3,14 @@ using Nickel;
 using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
+using Newtonsoft.Json;
 
 namespace Shockah.Bloch;
 
 internal sealed class MindBlastCard : Card, IRegisterable
 {
-	public int PlayCounter = 0;
+	[JsonProperty]
+	private int PlayCounter;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -53,9 +55,7 @@ internal sealed class MindBlastCard : Card, IRegisterable
 	public override void OnExitCombat(State s, Combat c)
 	{
 		base.OnExitCombat(s, c);
-
-		if (upgrade != Upgrade.B)
-			PlayCounter = 0;
+		PlayCounter = 0;
 	}
 
 	private sealed class CountUpAction : CardAction
