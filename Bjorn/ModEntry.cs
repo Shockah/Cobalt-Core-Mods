@@ -190,7 +190,7 @@ public sealed class ModEntry : SimpleMod
 				{
 					cards = [
 						new SmartShieldDroneCard(),
-						new ThesisCard(),
+						new TaserCard(),
 					]
 				}
 			)
