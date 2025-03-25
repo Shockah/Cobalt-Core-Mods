@@ -77,6 +77,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(DestinyCatArtifact),
 		typeof(DestinyDizzyArtifact),
 		typeof(DestinyDrakeArtifact),
+		typeof(DestinyDynaArtifact),
 		typeof(DestinyPeriArtifact),
 		typeof(DestinyRiggsArtifact),
 	];
@@ -199,13 +200,18 @@ public sealed class ModEntry : SimpleMod
 				new AStatus { targetPlayer = true, status = status, statusAmount = 4 },
 			])
 		);
-		
-		helper.ModRegistry.AwaitApi<IDuoArtifactsApi>("Shockah.DuoArtifacts", api =>
+
+		helper.Events.OnModLoadPhaseFinished += (_, phase) =>
 		{
-			DuoArtifactsApi = api;
+			if (phase != ModLoadPhase.AfterDbInit)
+				return;
+			if (helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts") is not { } duoArtifactsApi)
+				return;
+
+			DuoArtifactsApi = duoArtifactsApi;
 			foreach (var type in DuoArtifacts)
 				AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
-		});
+		};
 	}
 
 	public override object GetApi(IModManifest requestingMod)

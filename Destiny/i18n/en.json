@@ -69,6 +69,10 @@
 				"name": "SILICA TILING",
 				"description": "<c=action>Overheat</c> damage does not deplete <c=status>PRISTINE SHIELD</c>."
 			},
+			"Dyna": {
+				"name": "CLUSTER BOMBS",
+				"description": "<c=cardtrait>Explosive</c> attacks have <c=action>Blastwave 1</c>."
+			},
 			"Peri": {
 				"name": "EXPLOSIVE TEMPER",
 				"description": "<c=cardtrait>Explosive</c> gains double the damage from <c=status>OVERDRIVE</c> and <c=status>POWERDRIVE</c>."

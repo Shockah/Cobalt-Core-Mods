@@ -36,9 +36,12 @@ internal sealed class DestinyDizzyArtifact : Artifact, IRegisterable, IDestinyAp
 
 	public void OnExplosiveTrigger(IDestinyApi.IHook.IOnExplosiveTriggerArgs args)
 	{
-		args.AttackAction.stunEnemy = true;
-		if (string.IsNullOrEmpty(args.AttackAction.artifactPulse))
-			args.AttackAction.artifactPulse = Key();
+		if (args.Action is not AAttack attack)
+			return;
+		
+		attack.stunEnemy = true;
+		if (string.IsNullOrEmpty(attack.artifactPulse))
+			attack.artifactPulse = Key();
 		else
 			Pulse();
 	}

@@ -47,7 +47,7 @@ internal sealed class Explosive : IRegisterable
 				args.State = state;
 				args.Combat = combat;
 				args.Card = card;
-				args.AttackAction = attack;
+				args.Action = attack;
 				
 				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 					hook.OnExplosiveTrigger(args);
@@ -83,6 +83,6 @@ internal sealed class Explosive : IRegisterable
 		public State State { get; set; } = null!;
 		public Combat Combat { get; set; } = null!;
 		public Card? Card { get; set; }
-		public AAttack AttackAction { get; set; } = null!;
+		public CardAction? Action { get; set; }
 	}
 }

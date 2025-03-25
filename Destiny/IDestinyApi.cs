@@ -25,7 +25,7 @@ public interface IDestinyApi
 			State State { get; }
 			Combat Combat { get; }
 			Card? Card { get; }
-			AAttack AttackAction { get; }
+			CardAction? Action { get; set; }
 		}
 		
 		public interface IOnPristineShieldTriggerArgs
