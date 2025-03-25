@@ -30,7 +30,9 @@ internal sealed class Enchanted : IRegisterable
 	private static readonly Dictionary<TransactionWholePaymentResultDictionaryKey, ISpriteEntry> CostOutlineSprites = [];
 	private static readonly Dictionary<string, Dictionary<Upgrade, Dictionary<int, IKokoroApi.IV2.IActionCostsApi.ICost>>> EnchantLevelCosts = [];
 	private static readonly Dictionary<string, Dictionary<Upgrade, int>> MaxEnchantLevels = [];
+	
 	private static readonly Pool<OnEnchantArgs> OnEnchantArgsPool = new(() => new());
+	private static readonly Pool<AfterEnchantArgs> AfterEnchantArgsPool = new(() => new());
 
 	private static Card? CardRendered;
 
@@ -344,6 +346,19 @@ internal sealed class Enchanted : IRegisterable
 			Audio.Play(Event.Status_PowerUp);
 		}
 		
+		AfterEnchantArgsPool.Do(args =>
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Card = card;
+			args.FromUserInteraction = fromUserInteraction;
+			args.EnchantLevel = enchantLevel;
+			args.MaxEnchantLevel = maxEnchantLevel;
+
+			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				hook.AfterEnchant(args);
+		});
+		
 		return true;
 	}
 
@@ -507,6 +522,16 @@ internal sealed class Enchanted : IRegisterable
 	}
 
 	private sealed class OnEnchantArgs : IDestinyApi.IHook.IOnEnchantArgs
+	{
+		public State State { get; set; } = null!;
+		public Combat Combat { get; set; } = null!;
+		public Card Card { get; set; } = null!;
+		public bool FromUserInteraction { get; set; }
+		public int EnchantLevel { get; set; }
+		public int MaxEnchantLevel { get; set; }
+	}
+
+	private sealed class AfterEnchantArgs : IDestinyApi.IHook.IAfterEnchantArgs
 	{
 		public State State { get; set; } = null!;
 		public Combat Combat { get; set; } = null!;

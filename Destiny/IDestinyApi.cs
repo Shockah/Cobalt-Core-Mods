@@ -10,6 +10,7 @@ public interface IDestinyApi
 		void ModifyExplosiveDamage(IModifyExplosiveDamageArgs args) { }
 		void OnExplosiveTrigger(IOnExplosiveTriggerArgs args) { }
 		bool? OnEnchant(IOnEnchantArgs args) => null;
+		void AfterEnchant(IAfterEnchantArgs args) { }
 		void OnPristineShieldTrigger(IOnPristineShieldTriggerArgs args) { }
 
 		public interface IModifyExplosiveDamageArgs
@@ -30,6 +31,16 @@ public interface IDestinyApi
 		}
 
 		public interface IOnEnchantArgs
+		{
+			State State { get; }
+			Combat Combat { get; }
+			Card Card { get; }
+			bool FromUserInteraction { get; }
+			int EnchantLevel { get; }
+			int MaxEnchantLevel { get; }
+		}
+
+		public interface IAfterEnchantArgs
 		{
 			State State { get; }
 			Combat Combat { get; }

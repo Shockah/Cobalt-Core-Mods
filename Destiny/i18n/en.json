@@ -77,6 +77,10 @@
 				"name": "TELEKINESIS",
 				"description": "Every turn, if you have any <c=status>MAGIC FIND</c>, gain 1 <c=status>DRONESHIFT</c>."
 			},
+			"Louis": {
+				"name": "LAPIS LAZULI",
+				"description": "When unlocking a new tier of an <c=cardtrait>enchanted</c> card, gain 1 <c=status>TEMP SHIELD</c> for each <c=cardtrait>gem</c> in hand."
+			},
 			"Peri": {
 				"name": "EXPLOSIVE TEMPER",
 				"description": "<c=cardtrait>Explosive</c> gains double the damage from <c=status>OVERDRIVE</c> and <c=status>POWERDRIVE</c>."
