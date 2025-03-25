@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Changed the Shardblade Infuser (Books-Peri duo) artifact.
+
 ## 1.4.0
 
 * Added an option to change how duo artifacts are offered, and changed the default mode: duo artifacts now only get offered once immediately after satisfying their prerequisites, and if not picked, become part of the Common artifact pool for that run. Any other limitations still apply.
