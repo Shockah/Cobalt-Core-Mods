@@ -93,7 +93,7 @@ internal static class I18n
 	public static readonly string BooksCatArtifactTooltip = "At the end of each turn, gain <c=status>SHARD</c> equal to unspent <c=energy>ENERGY</c>.";
 
 	public static readonly string BooksDrakeArtifactName = "Stunflare Catalyst";
-	public static readonly string BooksDrakeArtifactTooltip = "Whenever you play an <c=action>attack</c>, lose 2 <c=status>SHARD</c>: the <c=action>attack</c> becomes piercing. If it was already piercing, it <c=action>stuns</c>. If it was already stunning, <c=action>TOTAL STUN</c> the opponent.";
+	public static readonly string BooksDrakeArtifactTooltip = "Whenever you <c=action>attack</c>, lose 2 <c=status>SHARD</c>: the <c=action>attack</c> becomes piercing. If it was already piercing, it <c=action>stuns</c>. If it was already stunning, <c=action>TOTAL STUN</c> the opponent.";
 
 	public static readonly string BooksDizzyArtifactName = "Aegis Transmuter";
 	public static readonly string BooksDizzyArtifactTooltip = "<c=status>SHIELD</c> and <c=status>SHARD</c> can be used interchangeably.";
