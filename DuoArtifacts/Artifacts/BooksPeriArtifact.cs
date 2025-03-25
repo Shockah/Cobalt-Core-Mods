@@ -22,13 +22,17 @@ internal sealed class BooksPeriArtifact : DuoArtifact
 	private static void Combat_TryPlayCard_Prefix(State s, Card card)
 	{
 		var key = $"{nameof(BooksPeriArtifact)}::AttackBuff";
-
-		if (s.ship.Get(Status.shard) < ShardThreshold)
+		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksPeriArtifact) is not { } artifact)
 		{
 			ModEntry.Instance.Helper.ModData.RemoveModData(card, key);
 			return;
 		}
-		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksPeriArtifact) is not { } artifact)
+
+		var shard = s.ship.Get(Status.shard);
+		if (s.EnumerateAllArtifacts().Any(a => a is BooksDizzyArtifact))
+			shard += s.ship.Get(Status.shield);
+
+		if (shard < ShardThreshold)
 		{
 			ModEntry.Instance.Helper.ModData.RemoveModData(card, key);
 			return;
