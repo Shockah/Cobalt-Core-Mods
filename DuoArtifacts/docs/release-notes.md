@@ -9,6 +9,7 @@
 * The Corrosive Payload (Dizzy-Isaac duo) artifact now applies 2 Oxidation (up from 1).
 * Fixed some artifact tooltips having an unneeded divider.
 * Improved wording of some artifacts.
+* Small optimization of artifact rewards.
 
 ## 1.4.0
 

@@ -123,27 +123,29 @@ internal sealed class DuoArtifactDatabase
 			offeringMode = ProfileSettings.OfferingModeEnum.Extra;
 		if (seenArtifacts is null && offeringMode == ProfileSettings.OfferingModeEnum.ExtraOnceThenCommon)
 			offeringMode = ProfileSettings.OfferingModeEnum.Extra;
-		
-		foreach (var duo in InstantiateAllDuoArtifacts())
+
+		foreach (var duoType in GetAllDuoArtifactTypes())
 		{
-			var key = duo.Key();
-			DB.artifactMetas[key].pools = offeringMode switch
+			if (ModEntry.Instance.Helper.Content.Artifacts.LookupByArtifactType(duoType) is not { } duoEntry)
+				continue;
+			
+			DB.artifactMetas[duoEntry.UniqueName].pools = offeringMode switch
 			{
 				ProfileSettings.OfferingModeEnum.Common => [ArtifactPool.Common],
 				ProfileSettings.OfferingModeEnum.Extra => [ArtifactPool.EventOnly],
-				ProfileSettings.OfferingModeEnum.ExtraOnceThenCommon => seenArtifacts!.Contains(key) ? [ArtifactPool.Common] : [ArtifactPool.EventOnly],
+				ProfileSettings.OfferingModeEnum.ExtraOnceThenCommon => seenArtifacts!.Contains(duoEntry.UniqueName) ? [ArtifactPool.Common] : [ArtifactPool.EventOnly],
 				_ => throw new ArgumentOutOfRangeException(nameof(offeringMode), offeringMode, null)
 			};
-			DB.artifactMetas[key].owner = offeringMode switch
+			DB.artifactMetas[duoEntry.UniqueName].owner = offeringMode switch
 			{
 				ProfileSettings.OfferingModeEnum.Common => Deck.colorless,
 				ProfileSettings.OfferingModeEnum.Extra => GetRealDuoDeck(),
-				ProfileSettings.OfferingModeEnum.ExtraOnceThenCommon => seenArtifacts!.Contains(key) ? Deck.colorless : GetRealDuoDeck(),
+				ProfileSettings.OfferingModeEnum.ExtraOnceThenCommon => seenArtifacts!.Contains(duoEntry.UniqueName) ? Deck.colorless : GetRealDuoDeck(),
 				_ => throw new ArgumentOutOfRangeException(nameof(offeringMode), offeringMode, null)
 			};
 
 			Deck GetRealDuoDeck()
-				=> (GetDuoArtifactOwnership(duo)?.Count ?? 0) switch
+				=> (GetDuoArtifactTypeOwnership(duoType)?.Count ?? 0) switch
 				{
 					2 => (Deck)DuoArtifactDeck.Id!.Value,
 					3 => (Deck)TrioArtifactDeck.Id!.Value,
