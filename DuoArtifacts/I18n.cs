@@ -167,7 +167,7 @@ internal static class I18n
 	public static readonly string IsaacRiggsArtifactTooltip = "<c=status>EVADE</c> and <c=status>DRONESHIFT</c> can be used interchangeably.\nGain 1 <c=status>EVADE</c> on the first turn.";
 
 	public static readonly string MaxPeriArtifactName = "Combat Spreadsheets";
-	public static readonly string MaxPeriArtifactTooltip = "Your <c=keyword>leftmost</c> <c=action>attack</c> fires an extra 1 damage shot.\nYour <c=keyword>rightmost</c> <c=action>attack</c> deals 1 more damage.\nThe last <c=action>attack</c> in your hand gets no bonuses.";
+	public static readonly string MaxPeriArtifactTooltip = "Your <c=keyword>leftmost</c> <c=action>attack</c> card fires an extra 1 damage shot.\nYour <c=keyword>rightmost</c> <c=action>attack</c> card deals 1 more damage.\nThe last <c=action>attack</c> card in your hand gets no bonuses.";
 
 	public static readonly string MaxRiggsArtifactName = "Boba Break.EXE";
 	public static readonly string MaxRiggsArtifactTooltip = "Gain 1 <c=status>AUTOPILOT</c> each turn. <c=downside>Gain 1 <c=status>ENGINE STALL</c> each turn.</c>";
