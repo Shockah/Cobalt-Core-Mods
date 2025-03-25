@@ -54,7 +54,7 @@ internal sealed class DizzyIsaacArtifact : DuoArtifact
 		(MG.inst.g.state?.route as Combat)?.Queue(new AStatus
 		{
 			status = Instance.KokoroApi.OxidationStatus.Status,
-			statusAmount = 1,
+			statusAmount = 2,
 			targetPlayer = DestroyingShip.isPlayerShip,
 			artifactPulse = artifact.Key(),
 		});

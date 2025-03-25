@@ -132,7 +132,7 @@ internal static class I18n
 	public static readonly string DizzyDrakeArtifactTooltip = "<c=action>OVERHEAT</c> now causes you to lose 2 <c=status>(TEMP) SHIELD</c> instead of any hull, if possible.";
 
 	public static readonly string DizzyIsaacArtifactName = "Corrosive Payload";
-	public static readonly string DizzyIsaacArtifactTooltip = "Whenever a <c=midrow>midrow object</c> gets destroyed by an <c=action>attack</c> or <c=action>launch</c>, the ship that caused it gains 1 <c=status>OXIDATION</c>.";
+	public static readonly string DizzyIsaacArtifactTooltip = "Whenever a <c=midrow>midrow object</c> gets destroyed by an <c=action>attack</c> or <c=action>launch</c>, the ship that caused it gains 2 <c=status>OXIDATION</c>.";
 
 	public static readonly string DizzyMaxArtifactName = "Dynamo";
 	public static readonly string DizzyMaxArtifactTooltip = "At the start of combat, gain a <c=card>Dynamo</c>.";
