@@ -73,6 +73,10 @@
 				"name": "CLUSTER BOMBS",
 				"description": "<c=cardtrait>Explosive</c> attacks have <c=action>Blastwave 1</c>."
 			},
+			"Isaac": {
+				"name": "TELEKINESIS",
+				"description": "Every turn, if you have any <c=status>MAGIC FIND</c>, gain 1 <c=status>DRONESHIFT</c>."
+			},
 			"Peri": {
 				"name": "EXPLOSIVE TEMPER",
 				"description": "<c=cardtrait>Explosive</c> gains double the damage from <c=status>OVERDRIVE</c> and <c=status>POWERDRIVE</c>."
