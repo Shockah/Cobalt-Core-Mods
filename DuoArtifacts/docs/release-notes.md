@@ -7,6 +7,7 @@
 * Changed the Shardblade Infuser (Books-Peri duo) artifact.
 * The Quantum Sanctuary (CAT-Dizzy duo) artifact now leaves you at 1 max shield (up from 0).
 * The Corrosive Payload (Dizzy-Isaac duo) artifact now applies 2 Oxidation (up from 1).
+* Fixed some artifact tooltips having an unneeded divider.
 * Improved wording of some artifacts.
 
 ## 1.4.0

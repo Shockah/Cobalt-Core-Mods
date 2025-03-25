@@ -26,8 +26,11 @@ public abstract class DuoArtifact : Artifact
 	}
 
 	public override List<Tooltip>? GetExtraTooltips()
-		=> [
+	{
+		List<Tooltip> tooltips = [
 			.. base.GetExtraTooltips() ?? [],
 			.. DuoArtifactDefinition.GetDefinition(GetType()) is { } definition ? definition.ExtraTooltips.Select(tooltip => tooltip.MakeTooltip()) : [],
 		];
+		return tooltips.Count == 0 ? null : tooltips;
+	}
 }
