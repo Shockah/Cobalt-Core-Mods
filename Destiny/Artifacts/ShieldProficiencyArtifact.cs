@@ -83,6 +83,7 @@ internal sealed class ShieldProficiencyArtifact : Artifact, IRegisterable
 				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
 					new CodeInstruction(OpCodes.Ldarg_1),
+					new CodeInstruction(OpCodes.Ldarg_2),
 					ldlocaPostArmorDamage,
 					ldlocaRemainingDamage,
 					ldlocTempShieldDamage,
@@ -99,7 +100,7 @@ internal sealed class ShieldProficiencyArtifact : Artifact, IRegisterable
 		// ReSharper restore PossibleMultipleEnumeration
 	}
 
-	private static void Ship_NormalDamage_Transpiler_HandleShields(Ship ship, State state, ref int postArmorDamage, ref int remainingDamage, int tempShieldDamage, double oldShake)
+	private static void Ship_NormalDamage_Transpiler_HandleShields(Ship ship, State state, Combat combat, ref int postArmorDamage, ref int remainingDamage, int tempShieldDamage, double oldShake)
 	{
 		if (remainingDamage <= 0)
 			return;
@@ -117,7 +118,10 @@ internal sealed class ShieldProficiencyArtifact : Artifact, IRegisterable
 		else if (ship.Get(PristineShield.PristineShieldStatus.Status) > 0)
 		{
 			shouldClearDamage = true;
-			ship.Add(PristineShield.PristineShieldStatus.Status, -1);
+			
+			var tickDown = PristineShield.RaiseOnPristineShieldTrigger(state, combat, ship, remainingDamage);
+			if (tickDown)
+				ship.Add(PristineShield.PristineShieldStatus.Status, -1);
 		}
 		else
 		{

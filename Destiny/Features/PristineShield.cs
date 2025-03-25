@@ -15,6 +15,8 @@ namespace Shockah.Destiny;
 internal sealed class PristineShield : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 {
 	internal static IStatusEntry PristineShieldStatus { get; private set; } = null!;
+	
+	private static readonly Pool<OnPristineShieldTriggerArgs> OnPristineShieldTriggerArgsPool = new(() => new());
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -39,6 +41,20 @@ internal sealed class PristineShield : IRegisterable, IKokoroApi.IV2.IStatusLogi
 		var instance = new PristineShield();
 		ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(instance);
 	}
+
+	public static bool RaiseOnPristineShieldTrigger(State state, Combat combat, Ship ship, int damage)
+		=> OnPristineShieldTriggerArgsPool.Do(args =>
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Ship = ship;
+			args.Damage = damage;
+			args.TickDown = true;
+				
+			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				hook.OnPristineShieldTrigger(args);
+			return args.TickDown;
+		});
 	
 	private static IEnumerable<CodeInstruction> Ship_DirectHullDamage_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
@@ -59,6 +75,9 @@ internal sealed class PristineShield : IRegisterable, IKokoroApi.IV2.IStatusLogi
 				.CreateLabel(il, out var successLabel)
 				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
+					new CodeInstruction(OpCodes.Ldarg_1),
+					new CodeInstruction(OpCodes.Ldarg_2),
+					new CodeInstruction(OpCodes.Ldarg_3),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_DirectHullDamage_Transpiler_HandlePristineShield))),
 					new CodeInstruction(OpCodes.Brtrue, successLabel),
 					new CodeInstruction(OpCodes.Ret),
@@ -73,12 +92,15 @@ internal sealed class PristineShield : IRegisterable, IKokoroApi.IV2.IStatusLogi
 		// ReSharper restore PossibleMultipleEnumeration
 	}
 
-	private static bool Ship_DirectHullDamage_Transpiler_HandlePristineShield(Ship ship)
+	private static bool Ship_DirectHullDamage_Transpiler_HandlePristineShield(Ship ship, State state, Combat combat, int damage)
 	{
 		if (ship.Get(PristineShieldStatus.Status) <= 0)
 			return true;
 
-		ship.Add(PristineShieldStatus.Status, -1);
+		var tickDown = RaiseOnPristineShieldTrigger(state, combat, ship, damage);
+		if (tickDown)
+			ship.Add(PristineShieldStatus.Status, -1);
+		
 		return false;
 	}
 
@@ -93,5 +115,14 @@ internal sealed class PristineShield : IRegisterable, IKokoroApi.IV2.IStatusLogi
 
 		args.Amount = Math.Max(args.Amount - 1, 0);
 		return false;
+	}
+
+	private sealed class OnPristineShieldTriggerArgs : IDestinyApi.IHook.IOnPristineShieldTriggerArgs
+	{
+		public State State { get; set; } = null!;
+		public Combat Combat { get; set; } = null!;
+		public Ship Ship { get; set; } = null!;
+		public int Damage { get; set; }
+		public bool TickDown { get; set; }
 	}
 }

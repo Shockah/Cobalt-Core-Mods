@@ -9,6 +9,7 @@ public interface IDestinyApi
 	{
 		void ModifyExplosiveDamage(IModifyExplosiveDamageArgs args) { }
 		void OnExplosiveTrigger(IOnExplosiveTriggerArgs args) { }
+		void OnPristineShieldTrigger(IOnPristineShieldTriggerArgs args) { }
 
 		public interface IModifyExplosiveDamageArgs
 		{
@@ -25,6 +26,15 @@ public interface IDestinyApi
 			Combat Combat { get; }
 			Card? Card { get; }
 			AAttack AttackAction { get; }
+		}
+		
+		public interface IOnPristineShieldTriggerArgs
+		{
+			State State { get; }
+			Combat Combat { get; }
+			Ship Ship { get; }
+			int Damage { get; }
+			bool TickDown { get; set; }
 		}
 	}
 }

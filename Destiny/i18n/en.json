@@ -62,8 +62,12 @@
 				"description": "Every 8 turns, all <c=card>Basic Shots</c> gain <c=cardtrait>explosive</c> until end of combat."
 			},
 			"Dizzy": {
-				"name": "FLASH BANG",
+				"name": "FLASHBANG",
 				"description": "<c=cardtrait>Explosive</c> <c=action>attacks</c> <c=action>stun</c>."
+			},
+			"Drake": {
+				"name": "SILICA TILING",
+				"description": "<c=action>Overheat</c> damage does not deplete <c=status>PRISTINE SHIELD</c>."
 			},
 			"Peri": {
 				"name": "EXPLOSIVE TEMPER",
