@@ -55,6 +55,24 @@
 		"WellRead": {
 			"name": "WELL-READ",
 			"description": "On your first turn, gain 3 <c=status>MAGIC FIND</c>."
+		},
+		"Duo": {
+			"Cat": {
+				"name": "AI BOMB",
+				"description": "Every 8 turns, all <c=card>Basic Shots</c> gain <c=cardtrait>explosive</c> until end of combat."
+			},
+			"Dizzy": {
+				"name": "FLASH BANG",
+				"description": "<c=cardtrait>Explosive</c> <c=action>attacks</c> <c=action>stun</c>."
+			},
+			"Peri": {
+				"name": "EXPLOSIVE TEMPER",
+				"description": "<c=cardtrait>Explosive</c> gains double the damage from <c=status>OVERDRIVE</c> and <c=status>POWERDRIVE</c>."
+			},
+			"Riggs": {
+				"name": "BAG OF HOLDING",
+				"description": "Every turn, if you have any <c=status>MAGIC FIND</c>, draw an extra card."
+			}
 		}
 	},
 	"card": {

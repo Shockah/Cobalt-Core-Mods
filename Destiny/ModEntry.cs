@@ -7,6 +7,7 @@ using HarmonyLib;
 using Shockah.Kokoro;
 using System.Linq;
 using Nickel.Common;
+using Shockah.DuoArtifacts;
 using Shockah.Shared;
 
 namespace Shockah.Destiny;
@@ -17,6 +18,7 @@ public sealed class ModEntry : SimpleMod
 	internal readonly IHarmony Harmony;
 	internal readonly HookManager<IDestinyApi.IHook> HookManager;
 	internal readonly IKokoroApi.IV2 KokoroApi;
+	internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; }
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
@@ -72,6 +74,10 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	private static readonly IReadOnlyList<Type> DuoArtifacts = [
+		typeof(DestinyCatArtifact),
+		typeof(DestinyDizzyArtifact),
+		typeof(DestinyPeriArtifact),
+		typeof(DestinyRiggsArtifact),
 	];
 
 	private static readonly IEnumerable<Type> AllArtifactTypes
@@ -84,7 +90,6 @@ public sealed class ModEntry : SimpleMod
 		= [
 			.. AllCardTypes,
 			.. AllArtifactTypes,
-			.. DuoArtifacts,
 			typeof(Enchanted),
 			typeof(Explosive),
 			typeof(Imbue),
@@ -193,6 +198,13 @@ public sealed class ModEntry : SimpleMod
 				new AStatus { targetPlayer = true, status = status, statusAmount = 4 },
 			])
 		);
+		
+		helper.ModRegistry.AwaitApi<IDuoArtifactsApi>("Shockah.DuoArtifacts", api =>
+		{
+			DuoArtifactsApi = api;
+			foreach (var type in DuoArtifacts)
+				AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
+		});
 	}
 
 	public override object GetApi(IModManifest requestingMod)

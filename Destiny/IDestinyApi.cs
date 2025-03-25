@@ -8,6 +8,7 @@ public interface IDestinyApi
 	public interface IHook
 	{
 		void ModifyExplosiveDamage(IModifyExplosiveDamageArgs args) { }
+		void OnExplosiveTrigger(IOnExplosiveTriggerArgs args) { }
 
 		public interface IModifyExplosiveDamageArgs
 		{
@@ -16,6 +17,14 @@ public interface IDestinyApi
 			Card? Card { get; }
 			int BaseDamage { get; }
 			int CurrentDamage { get; set; }
+		}
+		
+		public interface IOnExplosiveTriggerArgs
+		{
+			State State { get; }
+			Combat Combat { get; }
+			Card? Card { get; }
+			AAttack AttackAction { get; }
 		}
 	}
 }
