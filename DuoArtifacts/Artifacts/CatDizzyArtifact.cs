@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Newtonsoft.Json;
 
 namespace Shockah.DuoArtifacts;
 
@@ -19,7 +20,8 @@ internal sealed class CatDizzyArtifact : DuoArtifact
 {
 	private static ExternalSprite InactiveSprite { get; set; } = null!;
 
-	public bool TriggeredThisCombat;
+	[JsonProperty]
+	private bool TriggeredThisCombat;
 
 	protected internal override void ApplyPatches(IHarmony harmony)
 	{
@@ -62,7 +64,7 @@ internal sealed class CatDizzyArtifact : DuoArtifact
 		artifact.Pulse();
 		state.ship.Add(Status.perfectShield, state.ship.Get(Status.shield));
 		state.ship.Set(Status.shield, 0);
-		state.ship.Set(Status.maxShield, -state.ship.shieldMaxBase);
+		state.ship.Set(Status.maxShield, Math.Max(-state.ship.shieldMaxBase + 1, state.ship.Get(Status.maxShield)));
 		artifact.TriggeredThisCombat = true;
 	}
 

@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Changed the Shardblade Infuser (Books-Peri duo) artifact.
+* The Quantum Sanctuary (CAT-Dizzy duo) artifact now leaves you at 1 max shield (up from 0).
 
 ## 1.4.0
 
