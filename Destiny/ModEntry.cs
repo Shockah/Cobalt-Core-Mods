@@ -80,6 +80,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(DestinyDynaArtifact),
 		typeof(DestinyPeriArtifact),
 		typeof(DestinyRiggsArtifact),
+		typeof(DestinyTyArtifact),
 	];
 
 	private static readonly IEnumerable<Type> AllArtifactTypes

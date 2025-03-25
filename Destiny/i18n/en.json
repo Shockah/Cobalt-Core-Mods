@@ -80,6 +80,10 @@
 			"Riggs": {
 				"name": "BAG OF HOLDING",
 				"description": "Every turn, if you have any <c=status>MAGIC FIND</c>, draw an extra card."
+			},
+			"Ty": {
+				"name": "FAMILIAR",
+				"description": "TBD You may right click on a fully unlocked enchanted card to spend 1 shard and make it wild for the rest of combat."
 			}
 		}
 	},

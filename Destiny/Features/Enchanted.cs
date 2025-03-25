@@ -30,6 +30,7 @@ internal sealed class Enchanted : IRegisterable
 	private static readonly Dictionary<TransactionWholePaymentResultDictionaryKey, ISpriteEntry> CostOutlineSprites = [];
 	private static readonly Dictionary<string, Dictionary<Upgrade, Dictionary<int, IKokoroApi.IV2.IActionCostsApi.ICost>>> EnchantLevelCosts = [];
 	private static readonly Dictionary<string, Dictionary<Upgrade, int>> MaxEnchantLevels = [];
+	private static readonly Pool<OnEnchantArgs> OnEnchantArgsPool = new(() => new());
 
 	private static Card? CardRendered;
 
@@ -282,9 +283,32 @@ internal sealed class Enchanted : IRegisterable
 
 	internal static bool TryEnchant(State state, Card card, bool fromUserInteraction = true)
 	{
+		if (state.route is not Combat combat)
+			return false;
+		
 		var maxEnchantLevel = GetMaxEnchantLevel(card.Key(), card.upgrade);
 		var enchantLevel = Math.Clamp(GetEnchantLevel(card), 0, maxEnchantLevel);
 
+		var handled = OnEnchantArgsPool.Do(args =>
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Card = card;
+			args.FromUserInteraction = fromUserInteraction;
+			args.EnchantLevel = enchantLevel;
+			args.MaxEnchantLevel = maxEnchantLevel;
+
+			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+			{
+				var result = hook.OnEnchant(args);
+				if (result is not null)
+					return result.Value;
+			}
+			return false;
+		});
+
+		if (handled)
+			return true;
 		if (enchantLevel >= maxEnchantLevel)
 			return false;
 		if (GetNextEnchantLevelCost(card) is not { } cost)
@@ -292,7 +316,7 @@ internal sealed class Enchanted : IRegisterable
 		if (fromUserInteraction && state.CharacterIsMissing(card.GetMeta().deck))
 			return false;
 		
-		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, state.route as Combat ?? DB.fakeCombat, card);
+		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, combat, card);
 		var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(cost, environment);
 		var transactionPaymentResult = transaction.TestPayment(environment);
 
@@ -310,7 +334,7 @@ internal sealed class Enchanted : IRegisterable
 		SetEnchantLevel(card, enchantLevel + 1);
 		SetEnchantLevelPayment(card, enchantLevel + 1, transactionPaymentResult.Payments);
 		
-		foreach (var action in card.GetActionsOverridden(state, state.route as Combat ?? DB.fakeCombat))
+		foreach (var action in card.GetActionsOverridden(state, combat))
 			if (action is IImbueAction imbueAction && imbueAction.Level == enchantLevel + 1)
 				imbueAction.ImbueCard(state, card);
 
@@ -480,6 +504,16 @@ internal sealed class Enchanted : IRegisterable
 	
 		public static TransactionPaymentResultDictionaryKey From(IKokoroApi.IV2.IActionCostsApi.ITransactionPaymentResult result)
 			=> new() { ResourceKey = result.Payment.Resource.ResourceKey, Paid = result.Paid, Unpaid = result.Unpaid };
+	}
+
+	private sealed class OnEnchantArgs : IDestinyApi.IHook.IOnEnchantArgs
+	{
+		public State State { get; set; } = null!;
+		public Combat Combat { get; set; } = null!;
+		public Card Card { get; set; } = null!;
+		public bool FromUserInteraction { get; set; }
+		public int EnchantLevel { get; set; }
+		public int MaxEnchantLevel { get; set; }
 	}
 }
 
