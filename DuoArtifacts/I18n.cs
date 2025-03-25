@@ -152,7 +152,7 @@ internal static class I18n
 	public static readonly string DrakeMaxArtifactTooltip = "After you <c=cardtrait>exhaust</c> a card while you are about to <c=action>overheat</c>, reduce your <c=status>HEAT</c> to right below the <c=action>overheat</c> threshold.";
 
 	public static readonly string DrakePeriArtifactName = "Critical Mass";
-	public static readonly string DrakePeriArtifactTooltip = "Whenever you <c=action>OVERHEAT</c>, convert your <c=status>OVERDRIVE</c> into <c=status>POWERDRIVE</c>.";
+	public static readonly string DrakePeriArtifactTooltip = "Whenever you <c=action>overheat</c>, convert your <c=status>OVERDRIVE</c> into <c=status>POWERDRIVE</c>.";
 
 	public static readonly string DrakeRiggsArtifactName = "Backup Thrusters";
 	public static readonly string DrakeRiggsArtifactTooltip = "Once per turn, when you have no <c=status>EVADE</c>, you may still <c=status>EVADE</c> at the cost of gaining 1 <c=status>HEAT</c>.";
