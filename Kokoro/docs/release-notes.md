@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed shard action costs with disabled actions attempting to pay for that cost even though the action should not happen.
+
 ## 2.5.1
 Released 20 March 2025.
 

@@ -647,7 +647,7 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 			if (action is AResourceCost resourceCostAction)
 				resourceCostAction.Cost = ModEntry.Instance.Api.V2.ActionCosts.MakeCombinedCost([cost, resourceCostAction.Cost]);
 			else
-				resourceCostAction = new AResourceCost { Cost = cost, Action = action };
+				resourceCostAction = new AResourceCost { Cost = cost, Action = action, disabled = action.disabled };
 			ModEntry.Instance.Api.V2.ActionInfo.SetSourceCardId(resourceCostAction, ModEntry.Instance.Api.V2.ActionInfo.GetSourceCardId(action));
 			
 			RenderResourceCostAction(resourceCostAction, ref __result);
@@ -740,7 +740,7 @@ internal sealed class ActionCostsManager : HookManager<IKokoroApi.IV2.IActionCos
 		if (action is AResourceCost resourceCostAction)
 			resourceCostAction.Cost = ModEntry.Instance.Api.V2.ActionCosts.MakeCombinedCost([cost, resourceCostAction.Cost]);
 		else
-			resourceCostAction = new AResourceCost { Cost = cost, Action = action };
+			resourceCostAction = new AResourceCost { Cost = cost, Action = action, disabled = action.disabled };
 		ModEntry.Instance.Api.V2.ActionInfo.SetSourceCardId(resourceCostAction, ModEntry.Instance.Api.V2.ActionInfo.GetSourceCardId(combat.currentCardAction));
 		combat.currentCardAction = resourceCostAction;
 	}
