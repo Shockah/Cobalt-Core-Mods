@@ -155,7 +155,7 @@ internal static class I18n
 	public static readonly string DrakePeriArtifactTooltip = "Whenever you <c=action>OVERHEAT</c>, convert your <c=status>OVERDRIVE</c> into <c=status>POWERDRIVE</c>.";
 
 	public static readonly string DrakeRiggsArtifactName = "Backup Thrusters";
-	public static readonly string DrakeRiggsArtifactTooltip = "Once a turn, when you have no <c=status>EVADE</c>, you may still <c=status>EVADE</c>: gain 1 <c=status>HEAT</c>.";
+	public static readonly string DrakeRiggsArtifactTooltip = "Once per turn, when you have no <c=status>EVADE</c>, you may still <c=status>EVADE</c> at the cost of gaining 1 <c=status>HEAT</c>.";
 
 	public static readonly string IsaacMaxArtifactName = "Recycler";
 	public static readonly string IsaacMaxArtifactTooltip = "Whenever you <c=action>discard</c> or <c=cardtrait>exhaust</c> any number of cards during your turn, put a <c=midrow>bubble</c> on a random <c=midrow>midrow object</c> without one in front of the ship. If there are none, <c=action>launch</c> an <c=midrow>asteroid</c> on a random space in front of the ship.";
