@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added temporary upgrade hooks.
+
 ## 2.5.2
 Released 25 March 2025.
 

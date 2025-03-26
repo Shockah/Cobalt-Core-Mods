@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Nickel;
 using System.Collections.Generic;
 using System.Reflection;
+using Shockah.Shared;
 
 namespace Shockah.Kokoro;
 
@@ -49,8 +50,11 @@ partial class ApiImplementation
 
 			public Upgrade? GetTemporaryUpgrade(Card card)
 				=> ModEntry.Instance.Helper.ModData.ContainsModData(card, "NonTemporaryUpgrade") ? card.upgrade : null;
-			
+
 			public void SetPermanentUpgrade(Card card, Upgrade upgrade)
+				=> SetPermanentUpgrade(MG.inst.g.state, card, upgrade);
+			
+			public void SetPermanentUpgrade(State state, Card card, Upgrade upgrade)
 			{
 				if (ModEntry.Instance.Helper.ModData.ContainsModData(card, "NonTemporaryUpgrade"))
 					ModEntry.Instance.Helper.ModData.SetOptionalModData<Upgrade>(card, "NonTemporaryUpgrade", upgrade);
@@ -59,7 +63,13 @@ partial class ApiImplementation
 			}
 
 			public void SetTemporaryUpgrade(Card card, Upgrade? upgrade)
+				=> SetTemporaryUpgrade(MG.inst.g.state, card, upgrade);
+
+			public void SetTemporaryUpgrade(State state, Card card, Upgrade? upgrade)
 			{
+				var oldTemporaryUpgrade = GetTemporaryUpgrade(card);
+				var oldUpgrade = card.upgrade;
+				
 				if (upgrade is { } nonNullUpgrade)
 				{
 					if (!ModEntry.Instance.Helper.ModData.ContainsModData(card, "NonTemporaryUpgrade"))
@@ -70,6 +80,26 @@ partial class ApiImplementation
 				{
 					card.upgrade = nonTemporaryUpgrade;
 					ModEntry.Instance.Helper.ModData.RemoveModData(card, "NonTemporaryUpgrade");
+				}
+
+				var newTemporaryUpgrade = GetTemporaryUpgrade(card);
+				var newUpgrade = card.upgrade;
+				
+				var args = ModEntry.Instance.ArgsPool.Get<OnTemporaryUpgradeArgs>();
+				try
+				{
+					args.Card = card;
+					args.OldTemporaryUpgrade = oldTemporaryUpgrade;
+					args.NewTemporaryUpgrade = newTemporaryUpgrade;
+					args.OldUpgrade = oldUpgrade;
+					args.NewUpgrade = newUpgrade;
+
+					foreach (var hook in TemporaryUpgradesManager.Instance.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+						hook.OnTemporaryUpgrade(args);
+				}
+				finally
+				{
+					ModEntry.Instance.ArgsPool.Return(args);
 				}
 			}
 
@@ -84,16 +114,38 @@ partial class ApiImplementation
 
 			public IKokoroApi.IV2.ITemporaryUpgradesApi.IChooseTemporaryUpgradeAction MakeChooseTemporaryUpgradeAction(int cardId)
 				=> new TemporaryUpgradesManager.ChooseTemporaryUpgradeAction { CardId = cardId };
+
+			public void RegisterHook(IKokoroApi.IV2.ITemporaryUpgradesApi.IHook hook, double priority = 0)
+				=> TemporaryUpgradesManager.Instance.Register(hook, priority);
+
+			public void UnregisterHook(IKokoroApi.IV2.ITemporaryUpgradesApi.IHook hook)
+				=> TemporaryUpgradesManager.Instance.Unregister(hook);
+			
+			internal sealed class OnTemporaryUpgradeArgs : IKokoroApi.IV2.ITemporaryUpgradesApi.IHook.IOnTemporaryUpgradeArgs
+			{
+				public State State { get; internal set; } = null!;
+				public Card Card { get; internal set; } = null!;
+				public Upgrade? OldTemporaryUpgrade { get; internal set; }
+				public Upgrade? NewTemporaryUpgrade { get; internal set; }
+				public Upgrade OldUpgrade { get; internal set; }
+				public Upgrade NewUpgrade { get; internal set; }
+			}
 		}
 	}
 }
 
-internal sealed class TemporaryUpgradesManager
+internal sealed class TemporaryUpgradesManager : HookManager<IKokoroApi.IV2.ITemporaryUpgradesApi.IHook>
 {
+	internal static readonly TemporaryUpgradesManager Instance = new();
+
 	internal static ICardTraitEntry Trait { get; private set; } = null!;
 	internal static ISpriteEntry UpgradeIcon { get; private set; } = null!;
 	internal static ISpriteEntry DowngradeIcon { get; private set; } = null!;
 	internal static ISpriteEntry SidegradeIcon { get; private set; } = null!;
+
+	private TemporaryUpgradesManager() : base(ModEntry.Instance.Package.Manifest.UniqueName)
+	{
+	}
 	
 	internal static void Setup(IHarmony harmony)
 	{
@@ -165,7 +217,7 @@ internal sealed class TemporaryUpgradesManager
 		];
 		
 		foreach (var card in cards)
-			ModEntry.Instance.Api.V2.TemporaryUpgrades.SetTemporaryUpgrade(card, null);
+			ModEntry.Instance.Api.V2.TemporaryUpgrades.SetTemporaryUpgrade(state, card, null);
 	}
 
 	private static void State_EndRun_Prefix(State __instance)
@@ -203,7 +255,7 @@ internal sealed class TemporaryUpgradesManager
 				return baseResult;
 			}
 			
-			ModEntry.Instance.Api.V2.TemporaryUpgrades.SetTemporaryUpgrade(card, card.upgrade);
+			ModEntry.Instance.Api.V2.TemporaryUpgrades.SetTemporaryUpgrade(s, card, card.upgrade);
 			return ModEntry.Instance.Api.V2.InPlaceCardUpgrade.ModifyCardUpgrade(new CardUpgrade { cardCopy = Mutil.DeepCopy(card) }).SetIsInPlace(true).AsRoute;
 		}
 		
@@ -235,7 +287,7 @@ internal sealed class TemporaryUpgradesManager
 				return;
 			}
 			
-			ModEntry.Instance.Api.V2.TemporaryUpgrades.SetTemporaryUpgrade(card, Upgrade);
+			ModEntry.Instance.Api.V2.TemporaryUpgrades.SetTemporaryUpgrade(s, card, Upgrade);
 		}
 		
 		public IKokoroApi.IV2.ITemporaryUpgradesApi.ISetTemporaryUpgradeAction SetCardId(int value)

@@ -1,4 +1,5 @@
-﻿using Nickel;
+﻿using System;
+using Nickel;
 
 namespace Shockah.Kokoro;
 
@@ -65,7 +66,19 @@ public partial interface IKokoroApi
 			/// </remarks>
 			/// <param name="card">The card to set the upgrade for.</param>
 			/// <param name="upgrade">The upgrade to set.</param>
+			[Obsolete($"Use the {nameof(SetPermanentUpgrade)}(State state, Card card, Upgrade upgrade) override instead.")]
 			void SetPermanentUpgrade(Card card, Upgrade upgrade);
+
+			/// <summary>
+			/// Sets the permanent upgrade of a card.
+			/// </summary>
+			/// /// <remarks>
+			/// The <see cref="Card.upgrade"/> field's value will reflect the temporary upgrade if there is one set, or the permanent upgrade otherwise.
+			/// </remarks>
+			/// <param name="state">The game state.</param>
+			/// <param name="card">The card to set the upgrade for.</param>
+			/// <param name="upgrade">The upgrade to set.</param>
+			void SetPermanentUpgrade(State state, Card card, Upgrade upgrade);
 			
 			/// <summary>
 			/// Sets the temporary upgrade of a card.
@@ -75,7 +88,19 @@ public partial interface IKokoroApi
 			/// </remarks>
 			/// <param name="card">The card to set the upgrade for.</param>
 			/// <param name="upgrade">The upgrade to set.</param>
+			[Obsolete($"Use the {nameof(SetTemporaryUpgrade)}(State state, Card card, Upgrade upgrade) override instead.")]
 			void SetTemporaryUpgrade(Card card, Upgrade? upgrade);
+			
+			/// <summary>
+			/// Sets the temporary upgrade of a card.
+			/// </summary>
+			/// /// <remarks>
+			/// The <see cref="Card.upgrade"/> field's value will reflect the temporary upgrade if there is one set, or the permanent upgrade otherwise.
+			/// </remarks>
+			/// <param name="state">The game state.</param>
+			/// <param name="card">The card to set the upgrade for.</param>
+			/// <param name="upgrade">The upgrade to set.</param>
+			void SetTemporaryUpgrade(State state, Card card, Upgrade? upgrade);
 
 			/// <summary>
 			/// Casts the action to <see cref="ISetTemporaryUpgradeAction"/>, if it is one.
@@ -105,6 +130,19 @@ public partial interface IKokoroApi
 			/// <param name="cardId">The ID of the card to set the upgrade for.</param>
 			/// <returns>The new action.</returns>
 			IChooseTemporaryUpgradeAction MakeChooseTemporaryUpgradeAction(int cardId);
+			
+			/// <summary>
+			/// Registers a new hook related to temporary upgrades.
+			/// </summary>
+			/// <param name="hook">The hook.</param>
+			/// <param name="priority">The priority for the hook. Higher priority hooks are called before lower priority ones. Defaults to <c>0</c>.</param>
+			void RegisterHook(IHook hook, double priority = 0);
+			
+			/// <summary>
+			/// Unregisters the given hook related to temporary upgrades.
+			/// </summary>
+			/// <param name="hook">The hook.</param>
+			void UnregisterHook(IHook hook);
 
 			/// <summary>
 			/// An action that sets a given card's temporary upgrade.
@@ -152,6 +190,54 @@ public partial interface IKokoroApi
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
 				IChooseTemporaryUpgradeAction SetCardId(int value);
+			}
+			
+			/// <summary>
+			/// A hook related to temporary upgrades.
+			/// </summary>
+			public interface IHook : IKokoroV2ApiHook
+			{
+				/// <summary>
+				/// An event called whenever a card's temporary upgrade changed.
+				/// </summary>
+				/// <param name="args">The arguments for the hook method.</param>
+				void OnTemporaryUpgrade(IOnTemporaryUpgradeArgs args) { }
+
+				/// <summary>
+				/// The arguments for the <see cref="OnTemporaryUpgrade"/> hook method.
+				/// </summary>
+				public interface IOnTemporaryUpgradeArgs
+				{
+					/// <summary>
+					/// The game state.
+					/// </summary>
+					State State { get; }
+					
+					/// <summary>
+					/// The card the temporary upgrade changed for.
+					/// </summary>
+					Card Card { get; }
+					
+					/// <summary>
+					/// The old temporary upgrade.
+					/// </summary>
+					Upgrade? OldTemporaryUpgrade { get; }
+					
+					/// <summary>
+					/// The new temporary upgrade.
+					/// </summary>
+					Upgrade? NewTemporaryUpgrade { get; }
+					
+					/// <summary>
+					/// The old upgrade (including the persistent upgrade, if there was no temporary upgrade).
+					/// </summary>
+					Upgrade OldUpgrade { get; }
+					
+					/// <summary>
+					/// The new upgrade (including the persistent upgrade, if there is no temporary upgrade).
+					/// </summary>
+					Upgrade NewUpgrade { get; }
+				}
 			}
 		}
 	}
