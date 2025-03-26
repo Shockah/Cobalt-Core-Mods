@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.1
+Released 26 March 2025.
 
 * Fixed the Muscle Memory artifact having the effect of the Unlocked Potential artifact (and the latter not having one at all).
 
