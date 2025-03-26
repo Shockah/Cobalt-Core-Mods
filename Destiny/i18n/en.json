@@ -57,6 +57,10 @@
 			"description": "On your first turn, gain 3 <c=status>MAGIC FIND</c>."
 		},
 		"Duo": {
+			"Books": {
+				"name": "CRYSTAL BALL",
+				"description": "Whenever you lose any <c=status>SHARD</c>, trigger <c=status>MAGIC FIND</c>."
+			},
 			"Bucket": {
 				"name": "IMPROVISED EXPLOSIVE",
 				"description": "Every 5th <c=trash>trash</c> card drawn becomes <c=cardtrait>explosive</c>."

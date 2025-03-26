@@ -74,6 +74,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	private static readonly IReadOnlyList<Type> DuoArtifacts = [
+		typeof(DestinyBooksArtifact),
 		typeof(DestinyBucketArtifact),
 		typeof(DestinyCatArtifact),
 		typeof(DestinyDizzyArtifact),
