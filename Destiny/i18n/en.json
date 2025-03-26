@@ -57,6 +57,10 @@
 			"description": "On your first turn, gain 3 <c=status>MAGIC FIND</c>."
 		},
 		"Duo": {
+			"Bucket": {
+				"name": "IMPROVISED EXPLOSIVE",
+				"description": "Every 5th <c=trash>trash</c> card drawn becomes <c=cardtrait>explosive</c>."
+			},
 			"Cat": {
 				"name": "AI BOMB",
 				"description": "Every 8 turns, all <c=card>Basic Shots</c> gain <c=cardtrait>explosive</c> until end of combat."
@@ -91,7 +95,7 @@
 			},
 			"Ty": {
 				"name": "FAMILIAR",
-				"description": "TBD You may right click on a fully unlocked enchanted card to spend 1 shard and make it wild for the rest of combat."
+				"description": "Fully-enchanted cards can be enchanted again for 1 <c=status>SHARD</c> to <c=action>imbue</c> <c=cardtrait>wild</c> onto them."
 			}
 		}
 	},

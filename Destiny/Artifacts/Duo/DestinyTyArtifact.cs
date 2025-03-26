@@ -39,7 +39,7 @@ internal sealed class DestinyTyArtifact : Artifact, IRegisterable, IDestinyApi.I
 	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			.. Enchanted.EnchantedTrait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? [],
-			.. TyAndSashaApi.WildTrait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? [],
+			.. new ImbueTraitAction { Level = 0, Trait = TyAndSashaApi.WildTrait }.GetTooltips(DB.fakeState),
 		];
 
 	public bool? OnEnchant(IDestinyApi.IHook.IOnEnchantArgs args)

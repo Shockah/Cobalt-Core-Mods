@@ -131,16 +131,18 @@ internal sealed class ImbueTraitAction : CardAction, IImbueAction
 	private string? TraitUniqueName;
 
 	public override List<Tooltip> GetTooltips(State s)
-		=> Trait is { } trait && trait.Configuration.Name?.Invoke(DB.currentLocale.locale) is { } traitName ? [
-			new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::Imbue")
-			{
-				Icon = Imbue.Icon.Sprite,
-				TitleColor = Colors.action,
-				Title = ModEntry.Instance.Localizations.Localize(["action", "Imbue", "name"]),
-				Description = ModEntry.Instance.Localizations.Localize(["action", "Imbue", "description"], new { Trait = traitName }),
-			},
-			.. trait.Configuration.Tooltips?.Invoke(s, null) ?? [],
-		] : [];
+		=> [
+			.. Trait is { } trait && trait.Configuration.Name?.Invoke(DB.currentLocale.locale) is { } traitName ? [
+				new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::Imbue")
+				{
+					Icon = Imbue.Icon.Sprite,
+					TitleColor = Colors.action,
+					Title = ModEntry.Instance.Localizations.Localize(["action", "Imbue", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["action", "Imbue", "description"], new { Trait = traitName }),
+				},
+			] : new List<Tooltip>(),
+			.. Trait?.Configuration.Tooltips?.Invoke(s, null) ?? [],
+		];
 
 	public override void Begin(G g, State s, Combat c)
 	{
