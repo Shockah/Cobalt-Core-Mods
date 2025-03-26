@@ -34,12 +34,12 @@ internal sealed class UnlockedPotentialArtifact : Artifact, IRegisterable
 		);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> ModEntry.Instance.KokoroApi.Spontaneous.MakeAction(new ADummyAction()).AsCardAction.GetTooltips(DB.fakeState);
 
 	private static void SpontaneousManager_TriggerAction_Begin_Postfix(CardAction __instance, State s, Combat c)
 	{
-		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is MuscleMemoryArtifact) is not { } artifact)
+		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is UnlockedPotentialArtifact) is not { } artifact)
 			return;
 		if (ModEntry.Instance.KokoroApi.Spontaneous.AsAction(__instance) is not { } spontaneousAction)
 			return;
