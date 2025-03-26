@@ -1,7 +1,16 @@
-﻿namespace Shockah.Destiny;
+﻿using Nickel;
+
+namespace Shockah.Destiny;
 
 public interface IDestinyApi
 {
+	IDeckEntry DestinyDeck { get; }
+	
+	IStatusEntry MagicFindStatus { get; }
+	
+	ICardTraitEntry EnchantedTrait { get; }
+	ICardTraitEntry ExplosiveTrait { get; }
+	
 	void RegisterHook(IHook hook, double priority = 0);
 	void UnregisterHook(IHook hook);
 	
