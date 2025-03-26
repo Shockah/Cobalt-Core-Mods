@@ -54,11 +54,11 @@ internal sealed class Enchanted : IRegisterable
 			.Select(i => ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Cards/Enchanted{i + 1}of3.png")))
 			.ToArray();
 		
-		EnchantedOf2Split1to2Art = Enumerable.Range(0, 3)
+		EnchantedOf2Split1to2Art = Enumerable.Range(0, 2)
 			.Select(i => ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Cards/Enchanted{i + 1}of2Split1to2.png")))
 			.ToArray();
 		
-		EnchantedOf2Split2to1Art = Enumerable.Range(0, 3)
+		EnchantedOf2Split2to1Art = Enumerable.Range(0, 2)
 			.Select(i => ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Cards/Enchanted{i + 1}of2Split2to1.png")))
 			.ToArray();
 		
@@ -260,7 +260,7 @@ internal sealed class Enchanted : IRegisterable
 		}
 	}
 
-	internal static List<IKokoroApi.IV2.IActionCostsApi.ITransactionPaymentResult>? GetEnchantLevelPayment(Card card, int level)
+	internal static IReadOnlyList<IKokoroApi.IV2.IActionCostsApi.ITransactionPaymentResult>? GetEnchantLevelPayment(Card card, int level)
 	{
 		if (level < 0)
 			return null;
@@ -337,7 +337,7 @@ internal sealed class Enchanted : IRegisterable
 		SetEnchantLevelPayment(card, enchantLevel + 1, transactionPaymentResult.Payments);
 		
 		foreach (var action in card.GetActionsOverridden(state, combat))
-			if (action is IImbueAction imbueAction && imbueAction.Level == enchantLevel + 1)
+			if (action is IDestinyApi.IImbueAction imbueAction && imbueAction.Level == enchantLevel + 1)
 				imbueAction.ImbueCard(state, card);
 
 		if (fromUserInteraction)
@@ -542,22 +542,34 @@ internal sealed class Enchanted : IRegisterable
 	}
 }
 
-internal sealed class EnchantGateAction : CardAction
+internal sealed class EnchantGateAction : CardAction, IDestinyApi.IEnchantGateAction
 {
-	public required int Level;
-	
+	public required int Level { get; set; }
+
+	public CardAction AsCardAction
+		=> this;
+
 	public override void Begin(G g, State s, Combat c)
 	{
 		base.Begin(g, s, c);
 		timer = 0;
 	}
+	
+	public IDestinyApi.IEnchantGateAction SetLevel(int value)
+	{
+		this.Level = value;
+		return this;
+	}
 }
 
-internal sealed class EnchantedAction : CardAction
+internal sealed class EnchantedAction : CardAction, IDestinyApi.IEnchantedAction
 {
-	public required int CardId;
-	public required int Level;
-	public required CardAction Action;
+	public required int CardId { get; set; }
+	public required int Level { get; set; }
+	public required CardAction Action { get; set; }
+
+	public CardAction AsCardAction
+		=> this;
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> Action.GetTooltips(s);
@@ -572,5 +584,23 @@ internal sealed class EnchantedAction : CardAction
 		if (Enchanted.GetEnchantLevel(card) < Level)
 			return;
 		c.QueueImmediate(Action);
+	}
+	
+	public IDestinyApi.IEnchantedAction SetCardId(int value)
+	{
+		this.CardId = value;
+		return this;
+	}
+
+	public IDestinyApi.IEnchantedAction SetLevel(int value)
+	{
+		this.Level = value;
+		return this;
+	}
+
+	public IDestinyApi.IEnchantedAction SetAction(CardAction value)
+	{
+		this.Action = value;
+		return this;
 	}
 }

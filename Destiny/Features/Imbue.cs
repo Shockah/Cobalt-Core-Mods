@@ -43,7 +43,7 @@ internal sealed class Imbue : IRegisterable
 
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, ref int __result)
 	{
-		if (action is not IImbueAction anyImbueAction)
+		if (action is not IDestinyApi.IImbueAction anyImbueAction)
 			return true;
 		
 		var renderAsDisabled = state != DB.fakeState && (action.disabled || (CardRendered is not null && Enchanted.GetEnchantLevel(CardRendered) != anyImbueAction.Level - 1));
@@ -109,14 +109,7 @@ internal sealed class Imbue : IRegisterable
 	}
 }
 
-internal interface IImbueAction
-{
-	int Level { get; }
-	
-	void ImbueCard(State state, Card card);
-}
-
-internal sealed class ImbueTraitAction : CardAction, IImbueAction
+internal sealed class ImbueTraitAction : CardAction, IDestinyApi.IImbueTraitAction
 {
 	public required int Level { get; set; }
 	
@@ -129,6 +122,9 @@ internal sealed class ImbueTraitAction : CardAction, IImbueAction
 
 	[JsonProperty]
 	private string? TraitUniqueName;
+
+	public CardAction AsCardAction
+		=> this;
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
@@ -156,13 +152,28 @@ internal sealed class ImbueTraitAction : CardAction, IImbueAction
 			return;
 		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, trait, true, permanent: false);
 	}
+
+	public IDestinyApi.IImbueAction SetLevel(int value)
+	{
+		this.Level = value;
+		return this;
+	}
+
+	public IDestinyApi.IImbueTraitAction SetTrait(ICardTraitEntry value)
+	{
+		this.Trait = value;
+		return this;
+	}
 }
 
-internal sealed class ImbueDiscountAction : CardAction, IImbueAction
+internal sealed class ImbueDiscountAction : CardAction, IDestinyApi.IImbueDiscountAction
 {
 	public required int Level { get; set; }
 	
-	public int Discount = -1;
+	public int Discount { get; set; } = -1;
+
+	public CardAction AsCardAction
+		=> this;
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
@@ -184,4 +195,16 @@ internal sealed class ImbueDiscountAction : CardAction, IImbueAction
 
 	public void ImbueCard(State state, Card card)
 		=> card.discount += Discount;
+
+	public IDestinyApi.IImbueAction SetLevel(int value)
+	{
+		this.Level = value;
+		return this;
+	}
+	
+	public IDestinyApi.IImbueDiscountAction SetDiscount(int value)
+	{
+		this.Discount = value;
+		return this;
+	}
 }
