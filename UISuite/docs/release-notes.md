@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.2
+Released 26 March 2025.
 
 * Fixed less intrusive hand card browse softlocking under some circumstances.
 
