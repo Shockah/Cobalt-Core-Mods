@@ -144,6 +144,9 @@
 				"Title": "Enabled",
 				"Description": "Whether to replace the usual hand card browse screen with a less intrusive version of it."
 			}
+		},
+		"MultiCardBrowse": {
+			"Done": "DONE"
 		}
 	},
 	"StatusAsBars": {

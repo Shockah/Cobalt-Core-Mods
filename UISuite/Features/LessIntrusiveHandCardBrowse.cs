@@ -280,22 +280,35 @@ internal sealed class LessIntrusiveHandCardBrowse : IRegisterable
 		var selectedCards = MultiCardBrowseSelectedCardsGetter.Value!(__instance);
 		RenderCardBrowse(__instance, g, combat, cards, selectedCards);
 
-		if (route.CustomActions is { } customActions)
+		var customActions = route.CustomActions ?? [];
+		for (var i = 0; i < customActions.Count; i++)
 		{
-			for (var i = 0; i < customActions.Count; i++)
-			{
-				var action = customActions[i];
-				var inactive = selectedCards.Count < (action.MinSelected ?? route.MinSelected) || selectedCards.Count > (action.MaxSelected ?? route.MaxSelected);
-				SharedArt.ButtonText(
-					g,
-					new Vec(MG.inst.PIX_W - 69, 82 + i * 26),
-					new UIKey(MultiCardBrowseChooseUkGetter.Value!(), i),
-					action.Title,
-					boxColor: inactive ? Colors.buttonInactive : null,
-					inactive: inactive,
-					onMouseDown: __instance
-				);
-			}
+			var action = customActions[i];
+			var inactive = selectedCards.Count < (action.MinSelected ?? route.MinSelected) || selectedCards.Count > (action.MaxSelected ?? route.MaxSelected);
+			SharedArt.ButtonText(
+				g,
+				new Vec(MG.inst.PIX_W - 69, 82 + i * 26),
+				new UIKey(MultiCardBrowseChooseUkGetter.Value!(), i),
+				action.Title,
+				boxColor: inactive ? Colors.buttonInactive : null,
+				inactive: inactive,
+				onMouseDown: __instance
+			);
+		}
+
+		if ((__instance.browseAction is not null && !route.BrowseActionIsOnlyForTitle) || customActions.Count == 0)
+		{
+			var inactive = selectedCards.Count < route.MinSelected || selectedCards.Count > route.MaxSelected;
+			SharedArt.ButtonText(
+				g,
+				new Vec(MG.inst.PIX_W - 69, MG.inst.PIX_H - 31),
+				new UIKey(MultiCardBrowseChooseUkGetter.Value!(), customActions.Count),
+				ModEntry.Instance.Localizations.Localize(["LessIntrusiveHandCardBrowse", "MultiCardBrowse", "Done"]),
+				boxColor: inactive ? Colors.buttonInactive : null,
+				inactive: inactive,
+				onMouseDown: __instance,
+				platformButtonHint: Btn.B
+			);
 		}
 		
 		return false;
