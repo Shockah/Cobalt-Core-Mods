@@ -81,6 +81,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(DestinyDynaArtifact),
 		typeof(DestinyIsaacArtifact),
 		typeof(DestinyLouisArtifact),
+		typeof(DestinyMarielleArtifact),
 		typeof(DestinyPeriArtifact),
 		typeof(DestinyRiggsArtifact),
 		typeof(DestinyTyArtifact),

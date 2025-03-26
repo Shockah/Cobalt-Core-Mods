@@ -85,6 +85,10 @@
 				"name": "LAPIS LAZULI",
 				"description": "When unlocking a new tier of an <c=cardtrait>enchanted</c> card, gain 1 <c=status>TEMP SHIELD</c> for each <c=cardtrait>gem</c> in hand."
 			},
+			"Marielle": {
+				"name": "STEADY FLAME",
+				"description": "If you end your turn without moving, apply 1 <c=status>HEAT</c> to the enemy, then increase this amount by 1 until you next move."
+			},
 			"Peri": {
 				"name": "EXPLOSIVE TEMPER",
 				"description": "<c=cardtrait>Explosive</c> gains double the damage from <c=status>OVERDRIVE</c> and <c=status>POWERDRIVE</c>."
