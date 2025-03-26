@@ -93,6 +93,10 @@
 				"name": "STEADY FLAME",
 				"description": "If you end your turn without moving, apply 1 <c=status>HEAT</c> to the enemy, then increase this amount by 1 until you next move."
 			},
+			"Max": {
+				"name": "NECRONOMICON",
+				"description": "The first time you <c=cardtrait>exhaust</c> a non-<c=cardtrait>temp</c> card each turn, gain 1 <c=status>SHARD</c>."
+			},
 			"Peri": {
 				"name": "EXPLOSIVE TEMPER",
 				"description": "<c=cardtrait>Explosive</c> gains double the damage from <c=status>OVERDRIVE</c> and <c=status>POWERDRIVE</c>."
