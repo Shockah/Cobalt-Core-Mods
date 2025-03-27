@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Added temporary upgrade hooks.
+* Added an API to retrieve an action that would change the amount of a given action cost resource.
 
 ## 2.5.2
 Released 25 March 2025.

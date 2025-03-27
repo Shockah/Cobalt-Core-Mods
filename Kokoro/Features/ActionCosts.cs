@@ -1382,6 +1382,9 @@ internal sealed class ActionCostStatusResource : BaseActionCostResource, IKokoro
 		ship.Add(Status, -amount);
 	}
 
+	public CardAction GetChangeAction(State state, Combat combat, int amount, AStatusMode mode = AStatusMode.Add)
+		=> new AStatus { targetPlayer = TargetPlayer, status = Status, statusAmount = amount, mode = mode };
+
 	public override IReadOnlyList<Tooltip> GetTooltips(State state, Combat combat, int amount)
 	{
 		if (amount <= 0)
@@ -1416,6 +1419,9 @@ internal sealed class ActionCostEnergyResource : BaseActionCostResource, IKokoro
 
 	public override void Pay(State state, Combat combat, int amount)
 		=> combat.energy = Math.Max(combat.energy - amount, 0);
+
+	public CardAction GetChangeAction(State state, Combat combat, int amount, AStatusMode mode = AStatusMode.Add)
+		=> ModEntry.Instance.Api.V2.EnergyAsStatus.MakeStatusAction(amount, mode).AsCardAction;
 
 	public override IReadOnlyList<Tooltip> GetTooltips(State state, Combat combat, int amount)
 	{

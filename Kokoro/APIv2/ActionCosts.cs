@@ -360,6 +360,17 @@ public partial interface IKokoroApi
 				/// <param name="combat">The current combat.</param>
 				/// <param name="amount">The amount of the resource to remove.</param>
 				void Pay(State state, Combat combat, int amount);
+
+				/// <summary>
+				/// Provides an action that can be used to change the amount of the given resource.
+				/// </summary>
+				/// <param name="state">The game state.</param>
+				/// <param name="combat">The current combat.</param>
+				/// <param name="amount">The amount to change to/with, according to the change mode.</param>
+				/// <param name="mode">The change mode.</param>
+				/// <returns>An action that can be used to change the amount of the given resource.</returns>
+				CardAction? GetChangeAction(State state, Combat combat, int amount, AStatusMode mode = AStatusMode.Add)
+					=> null;
 				
 				/// <summary>
 				/// Provides a list of tooltips for this resource cost.
