@@ -88,6 +88,7 @@ partial class ApiImplementation
 				var args = ModEntry.Instance.ArgsPool.Get<OnTemporaryUpgradeArgs>();
 				try
 				{
+					args.State = state;
 					args.Card = card;
 					args.OldTemporaryUpgrade = oldTemporaryUpgrade;
 					args.NewTemporaryUpgrade = newTemporaryUpgrade;
