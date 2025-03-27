@@ -85,6 +85,10 @@
 				"name": "TELEKINESIS",
 				"description": "Every turn, if you have any <c=status>MAGIC FIND</c>, gain 1 <c=status>DRONESHIFT</c>."
 			},
+			"Johnson": {
+				"name": "BROKEN SHACKLES",
+				"description": "Whenever you <c=cardtrait>temp upgrade</c> an <c=cardtrait>enchanted</c> card, gain <c=status>SHARD</c> equal to the cost of its next unlock."
+			},
 			"Louis": {
 				"name": "LAPIS LAZULI",
 				"description": "When unlocking a new tier of an <c=cardtrait>enchanted</c> card, gain 1 <c=status>TEMP SHIELD</c> for each <c=cardtrait>gem</c> in hand."
