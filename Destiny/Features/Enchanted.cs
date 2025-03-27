@@ -310,7 +310,12 @@ internal sealed class Enchanted : IRegisterable
 		});
 
 		if (handled)
+		{
+			// forcing `Artifact.OnQueueEmptyDuringPlayerTurn` to be called
+			combat.QueueImmediate(new ADummyAction());
 			return true;
+		}
+		
 		if (enchantLevel >= maxEnchantLevel)
 			return false;
 		if (GetNextEnchantLevelCost(card) is not { } cost)
@@ -359,6 +364,11 @@ internal sealed class Enchanted : IRegisterable
 				hook.AfterEnchant(args);
 		});
 		
+		// forcing `Artifact.OnQueueEmptyDuringPlayerTurn` to be called
+		combat.QueueImmediate([
+			new ADelayNonSkippable(),
+			new ADummyAction(),
+		]);
 		return true;
 	}
 

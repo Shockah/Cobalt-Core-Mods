@@ -116,7 +116,7 @@ internal sealed class DestinyBooksArtifact : Artifact, IRegisterable
 		if (!combat.isPlayerTurn)
 			return;
 		
-		var shardsLost = __state - combat.energy;
+		var shardsLost = __state - __instance.state.ship.Get(Status.shard);
 		if (shardsLost <= 0)
 			return;
 		
