@@ -63,6 +63,8 @@ internal sealed class DestinyCatArtifact : Artifact, IRegisterable
 			
 			foreach (var card in cards)
 			{
+				if (card is not CannonColorless)
+					continue;
 				if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, Explosive.ExplosiveTrait))
 					continue;
 				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, Explosive.ExplosiveTrait, true, false);
