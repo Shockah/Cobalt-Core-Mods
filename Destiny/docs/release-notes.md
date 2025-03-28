@@ -2,6 +2,12 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added duo artifacts for all vanilla characters.
+* Added duo artifacts for Bucket, Dyna, Johnson, Louis, Marielle and Ty&Sasha (modded characters).
+* Added an API for other mods to integrate with.
+
 ## 1.1.1
 Released 9 February 2025.
 
