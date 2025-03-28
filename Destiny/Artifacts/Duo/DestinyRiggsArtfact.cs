@@ -6,7 +6,7 @@ using Shockah.Kokoro;
 
 namespace Shockah.Destiny;
 
-internal sealed class DestinyRiggsArtifact : Artifact, IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
+internal sealed class DestinyRiggsArtifact : Artifact, IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IHookPriority
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -31,6 +31,9 @@ internal sealed class DestinyRiggsArtifact : Artifact, IRegisterable, IKokoroApi
 
 	public override List<Tooltip> GetExtraTooltips()
 		=> StatusMeta.GetTooltips(MagicFind.MagicFindStatus.Status, 1);
+
+	public double HookPriority
+		=> 100;
 	
 	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
