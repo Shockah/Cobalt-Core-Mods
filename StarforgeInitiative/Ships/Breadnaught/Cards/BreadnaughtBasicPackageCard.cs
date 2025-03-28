@@ -63,10 +63,10 @@ internal sealed class BreadnaughtBasicPackageCard : CannonColorless, IRegisterab
 				new CardReward
 				{
 					cards = [
-						new BreadnaughtBasicMinigunCard { drawAnim = 1, flipAnim = 1 },
-						new BreadnaughtBasicPushCard { drawAnim = 1, flipAnim = 1 },
-						new BreadnaughtBasicWeakenCard { drawAnim = 1, flipAnim = 1 },
-						new BreadnaughtBasicOverdriveCard { drawAnim = 1, flipAnim = 1 },
+						new BreadnaughtBasicMinigunCard { drawAnim = 1, flipAnim = 1, temporaryOverride = Temporary },
+						new BreadnaughtBasicPushCard { drawAnim = 1, flipAnim = 1, temporaryOverride = Temporary },
+						new BreadnaughtBasicWeakenCard { drawAnim = 1, flipAnim = 1, temporaryOverride = Temporary },
+						new BreadnaughtBasicOverdriveCard { drawAnim = 1, flipAnim = 1, temporaryOverride = Temporary },
 					],
 					canSkip = false,
 				}
