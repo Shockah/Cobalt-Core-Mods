@@ -49,6 +49,9 @@ internal sealed class DestinyMarielleArtifact : Artifact, IRegisterable, IDestin
 		return StatusMeta.GetTooltips(Status.heat, ship.heatTrigger);
 	}
 
+	public override int? GetDisplayNumber(State s)
+		=> Counter;
+
 	public override void OnCombatStart(State state, Combat combat)
 	{
 		base.OnCombatStart(state, combat);
