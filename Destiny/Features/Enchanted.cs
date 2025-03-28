@@ -469,12 +469,6 @@ internal sealed class Enchanted : IRegisterable
 	{
 		if (__instance.TryGetHandCardFromBox(b) is not { } card)
 			return;
-		
-		var maxEnchantLevel = GetMaxEnchantLevel(card.Key(), card.upgrade);
-		var enchantLevel = Math.Clamp(GetEnchantLevel(card), 0, maxEnchantLevel);
-		if (enchantLevel >= maxEnchantLevel)
-			return;
-
 		TryEnchant(g.state, card);
 	}
 
