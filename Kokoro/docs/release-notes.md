@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.6.0
+Released 28 March 2025.
 
 * Added temporary upgrade hooks.
 * Added an API to specify a custom action for in-place card upgrades.
