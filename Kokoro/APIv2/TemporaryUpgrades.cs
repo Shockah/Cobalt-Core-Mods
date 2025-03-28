@@ -46,7 +46,19 @@ public partial interface IKokoroApi
 			/// </remarks>
 			/// <param name="card">The card to get the upgrade for.</param>
 			/// <returns>The permanent upgrade of a card.</returns>
+			[Obsolete($"Use the {nameof(GetPermanentUpgrade)}(State state, Card card) override instead.")]
 			Upgrade GetPermanentUpgrade(Card card);
+
+			/// <summary>
+			/// Returns the permanent upgrade of a card.
+			/// </summary>
+			/// /// <remarks>
+			/// The <see cref="Card.upgrade"/> field's value will reflect the temporary upgrade if there is one set, or the permanent upgrade otherwise.
+			/// </remarks>
+			/// <param name="state">The game state.</param>
+			/// <param name="card">The card to get the upgrade for.</param>
+			/// <returns>The permanent upgrade of a card.</returns>
+			Upgrade GetPermanentUpgrade(State state, Card card);
 			
 			/// <summary>
 			/// Returns the temporary upgrade of a card.
@@ -56,7 +68,19 @@ public partial interface IKokoroApi
 			/// </remarks>
 			/// <param name="card">The card to get the upgrade for.</param>
 			/// <returns>The temporary upgrade of a card.</returns>
+			[Obsolete($"Use the {nameof(GetTemporaryUpgrade)}(State state, Card card) override instead.")]
 			Upgrade? GetTemporaryUpgrade(Card card);
+			
+			/// <summary>
+			/// Returns the temporary upgrade of a card.
+			/// </summary>
+			/// <remarks>
+			/// The <see cref="Card.upgrade"/> field's value will reflect the temporary upgrade if there is one set, or the permanent upgrade otherwise.
+			/// </remarks>
+			/// <param name="state">The game state.</param>
+			/// <param name="card">The card to get the upgrade for.</param>
+			/// <returns>The temporary upgrade of a card.</returns>
+			Upgrade? GetTemporaryUpgrade(State state, Card card);
 			
 			/// <summary>
 			/// Sets the permanent upgrade of a card.
@@ -131,6 +155,9 @@ public partial interface IKokoroApi
 			/// <returns>The new action.</returns>
 			IChooseTemporaryUpgradeAction MakeChooseTemporaryUpgradeAction(int cardId);
 			
+			// TODO: XML docs
+			ICardUpgrade ModifyCardUpgrade(CardUpgrade route);
+			
 			/// <summary>
 			/// Registers a new hook related to temporary upgrades.
 			/// </summary>
@@ -143,6 +170,22 @@ public partial interface IKokoroApi
 			/// </summary>
 			/// <param name="hook">The hook.</param>
 			void UnregisterHook(IHook hook);
+			
+			// TODO: XML docs
+			public interface ICardUpgrade : IRoute<CardUpgrade>
+			{
+				/// <summary>
+				/// Whether the applied upgrade should be temporary.
+				/// </summary>
+				bool IsTemporaryUpgrade { get; set; }
+
+				/// <summary>
+				/// Sets <see cref="IsTemporaryUpgrade"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				ICardUpgrade SetIsTemporaryUpgrade(bool value);
+			}
 
 			/// <summary>
 			/// An action that sets a given card's temporary upgrade.
