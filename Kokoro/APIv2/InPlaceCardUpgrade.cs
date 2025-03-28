@@ -19,7 +19,9 @@ public partial interface IKokoroApi
 			/// <returns>A wrapper, granting access to the modifications.</returns>
 			ICardUpgrade ModifyCardUpgrade(CardUpgrade route);
 			
-			// TODO: XML docs
+			/// <summary>
+			/// A <see cref="CardUpgrade"/> route wrapper, which allows modifying it to do the upgrade in place, without moving the card.
+			/// </summary>
 			public interface ICardUpgrade : IRoute<CardUpgrade>
 			{
 				/// <summary>

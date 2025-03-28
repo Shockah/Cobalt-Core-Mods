@@ -155,7 +155,11 @@ public partial interface IKokoroApi
 			/// <returns>The new action.</returns>
 			IChooseTemporaryUpgradeAction MakeChooseTemporaryUpgradeAction(int cardId);
 			
-			// TODO: XML docs
+			/// <summary>
+			/// Allows modifying a <see cref="CardUpgrade"/> route to upgrade cards temporarily.
+			/// </summary>
+			/// <param name="route">The route.</param>
+			/// <returns>A wrapper, granting access to the modifications.</returns>
 			ICardUpgrade ModifyCardUpgrade(CardUpgrade route);
 			
 			/// <summary>
@@ -171,7 +175,9 @@ public partial interface IKokoroApi
 			/// <param name="hook">The hook.</param>
 			void UnregisterHook(IHook hook);
 			
-			// TODO: XML docs
+			/// <summary>
+			/// A <see cref="CardUpgrade"/> route wrapper, which allows modifying it to upgrade cards temporarily.
+			/// </summary>
 			public interface ICardUpgrade : IRoute<CardUpgrade>
 			{
 				/// <summary>
