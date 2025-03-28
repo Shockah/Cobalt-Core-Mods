@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.2
+Released 28 March 2025.
 
 ### Breadnaught
 * Fixed the Goodie Bag A upgrade choices not being temporary as the card states.
