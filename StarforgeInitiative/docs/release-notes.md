@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming release
+
+### Kepler
+* The Missile PDS starter artifact now triggers artifacts like Salvage Arm.
+
 ## 1.1.2
 Released 28 March 2025.
 

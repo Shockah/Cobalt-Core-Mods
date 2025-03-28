@@ -89,6 +89,9 @@ internal sealed class KeplerMissileHitHookManager : IRegisterable
 			state.AddShake(1.0);
 			Input.Rumble(0.5);
 			EffectSpawner.NonCannonHit(g, action.targetPlayer, ray, new() { hitShield = true });
+			
+			foreach (var artifact in state.EnumerateAllArtifacts())
+				artifact.OnPlayerDestroyDrone(state, combat);
 		}
 		
 		return @continue;
