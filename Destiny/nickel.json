@@ -4,13 +4,13 @@
 	"DisplayName": "Destiny",
 	"Description": "Destiny: An enchantress. Can spend shards to empower her cards, and uses a variety of different shields with different effects.",
 	"Author": "Shockah, Soggoru Waffle",
-	"RequiredApiVersion": "1.10.0",
+	"RequiredApiVersion": "1.14.0",
 	"EntryPointAssembly": "Destiny.dll",
 	"LoadPhase": "AfterDbInit",
 	"Dependencies": [
 		{
 			"UniqueName": "Shockah.Kokoro",
-			"Version": "2.3.0"
+			"Version": "2.6.0"
 		}
 	],
 	"UpdateChecks": {

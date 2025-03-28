@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.2.0
+Released 28 March 2025.
 
 * Added duo artifacts for all vanilla characters.
 * Added duo artifacts for Bucket, Dyna, Johnson, Louis, Marielle and Ty&Sasha (modded characters).
