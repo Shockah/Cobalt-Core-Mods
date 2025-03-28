@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
-using Shockah.Kokoro;
 using Shockah.Shared;
 
 namespace Shockah.Bjorn;
@@ -62,7 +61,7 @@ public sealed class SafetyProtocolCard : Card, IRegisterable, IHasCustomCardTrai
 		});
 
 	public override CardData GetData(State state)
-		=> new() { cost = 0, floppable = true };
+		=> new() { cost = 1 };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
@@ -71,48 +70,26 @@ public sealed class SafetyProtocolCard : Card, IRegisterable, IHasCustomCardTrai
 				new AnalyzeCostAction
 				{
 					CardId = uuid,
-					Action = new SmartShieldAction { Amount = 1 },
-					disabled = flipped,
+					Action = new AEnergy { changeAmount = 1 },
 				},
-				new ADummyAction(),
-				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
-					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.EnergyResource, 1),
-					new SmartShieldAction { Amount = 1 }
-				).AsCardAction.Disabled(!flipped),
+				new SmartShieldAction { Amount = 1 },
 			],
 			a: () => [
 				new AnalyzeCostAction
 				{
 					CardId = uuid,
-					Action = new SmartShieldAction { Amount = 2 },
-					disabled = flipped,
+					Action = new AEnergy { changeAmount = 1 },
 				},
-				new ADummyAction(),
-				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
-					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.EnergyResource, 1),
-					new SmartShieldAction { Amount = 2 }
-				).AsCardAction.Disabled(!flipped),
+				new SmartShieldAction { Amount = 2 },
 			],
 			b: () => [
 				new AnalyzeCostAction
 				{
 					CardId = uuid,
-					Action = ModEntry.Instance.KokoroApi.ContinueStop.MakeTriggerAction(IKokoroApi.IV2.IContinueStopApi.ActionType.Continue, out var analyzeContinueId).AsCardAction,
-					disabled = flipped,
+					Action = new AEnergy { changeAmount = 1 },
 				},
-				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
-					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.EnergyResource, 1),
-					ModEntry.Instance.KokoroApi.ContinueStop.MakeTriggerAction(IKokoroApi.IV2.IContinueStopApi.ActionType.Continue, out var energyContinueId).AsCardAction
-				).AsCardAction.Disabled(!flipped),
-				new ADummyAction(),
-				.. ModEntry.Instance.KokoroApi.ContinueStop.MakeFlaggedActions(
-					IKokoroApi.IV2.IContinueStopApi.ActionType.Continue,
-					flipped ? energyContinueId : analyzeContinueId,
-					[
-						new SmartShieldAction { Amount = 1 },
-						new ADrawCard { count = 1 }
-					]
-				).Select(a => a.AsCardAction),
+				new SmartShieldAction { Amount = 1 },
+				new ADrawCard { count = 1 },
 			]
 		);
 	}
