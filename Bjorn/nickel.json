@@ -10,7 +10,7 @@
     "Dependencies": [
         {
             "UniqueName": "Shockah.Kokoro",
-            "Version": "2.4.0"
+            "Version": "2.6.0"
         },
         {
             "UniqueName": "Shockah.UISuite",
