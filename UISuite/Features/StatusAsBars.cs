@@ -191,13 +191,14 @@ internal sealed class StatusAsBars : IRegisterable
 				var showingPositiveBars = !settings.SwitchToNumbers || threshold < settings.SwitchToNumbersAt;
 				
 				var newArgs = args.CopyToBuilder();
-				
-				if (negativeThreshold != 0)
+
+				var negativeDisplayThreshold = Math.Min(negativeThreshold, args.Amount);
+				if (negativeDisplayThreshold != 0)
 				{
-					BarRenderer.Rows = GetRowsForThreshold(-negativeThreshold);
+					BarRenderer.Rows = GetRowsForThreshold(-negativeDisplayThreshold);
 					BarRenderer.Segments = [
-						.. Enumerable.Repeat(Colors.faint.fadeAlpha(0.3), Math.Clamp(args.Amount - negativeThreshold, 0, -negativeThreshold)),
-						.. Enumerable.Repeat(Colors.faint, Math.Clamp(-args.Amount, 0, -negativeThreshold)),
+						.. Enumerable.Repeat(Colors.faint.fadeAlpha(0.3), Math.Clamp(args.Amount - negativeDisplayThreshold, 0, -negativeDisplayThreshold)),
+						.. Enumerable.Repeat(Colors.faint, Math.Clamp(-args.Amount, 0, -negativeDisplayThreshold)),
 					];
 					BarRenderer.SegmentWidth = 1;
 					newArgs.Position = new(args.Position.x + totalWidth, args.Position.y);

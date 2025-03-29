@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed heat/oxidation status bars not displaying negative values under some circumstances.
+
 ## 1.1.2
 Released 26 March 2025.
 
