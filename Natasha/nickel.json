@@ -2,6 +2,7 @@
     "UniqueName": "Shockah.Natasha",
     "Version": "{{ModVersion}}",
     "DisplayName": "Natasha",
+    "Description": "An *actual* hacker. Her cards often exhaust after several uses and apply negative statuses to enemies.",
     "Author": "Shockah",
     "RequiredApiVersion": "1.6.0",
     "EntryPointAssembly": "Natasha.dll",
