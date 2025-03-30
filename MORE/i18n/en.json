@@ -215,7 +215,11 @@
 				"Give us <c=textBold>{{ShipName}}</c>.",
 				"<c=textBold>{{ShipName}}</c> isn't half bad."
 			],
-			"Choice-Part": "Can you take *just* the part?",
+			"Choice-Part": {
+				"choice": "Can you take *just* the part?",
+				"title": "Show more",
+				"description": "Show more options. You can return to the current options."
+			},
 			"Choice-No": "Please leave my ship alone.",
 			"Yes-1-Selene": "Thanks a lot.",
 			"No-1-Selene": "Fine! Whatever!",

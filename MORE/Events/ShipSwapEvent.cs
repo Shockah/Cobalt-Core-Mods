@@ -156,8 +156,14 @@ internal sealed class ShipSwapEvent : IRegisterable
 				}),
 			.. eventRngData.PartToRipIndex is null ? Array.Empty<Choice>() : [new()
 			{
-				label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-Part"]),
+				label = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-Part", "choice"]),
 				key = $"{EventName}::Part",
+				actions = [new ATooltipAction { Tooltips = [new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::{nameof(ARipPart)}::ChoicePart")
+				{
+					TitleColor = Colors.action,
+					Title = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-Part", "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "Choice-Part", "description"]),
+				}] }]
 			}],
 			new()
 			{

@@ -7,11 +7,14 @@
 ### Abyssal Power event
 * The Abyssal Power card now puts the Abyssal Visions card in your draw pile instead of your hand.
 
-### Dracula's Deck Trial
+### Dracula's Deck Trial event
 * Added a Friendship trial.
 * Improved clarity of dialogue options.
 
-### Tooth's Emporium of Wonderful Ideas
+### Ship Swap event
+* Improved clarity of dialogue options.
+
+### Tooth's Emporium of Wonderful Ideas event
 * Improved clarity of dialogue options.
 
 ## 1.4.0
