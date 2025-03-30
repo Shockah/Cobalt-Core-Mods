@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.4.1
+Released 30 March 2025.
 
 * Fixed the Man-in-the-Middle card not working properly on multi-bay ships.
 
