@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.7.0
+Released 30 March 2025.
 
 * Added an API to get the Limited/Finite icon for a given amount.
 
