@@ -86,7 +86,7 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 				.. new Asteroid().GetTooltips()
 			];
 		
-		public override Route? BeginWithRoute(G g, State s, Combat c)
+		public override Route BeginWithRoute(G g, State s, Combat c)
 			=> new ActionRoute { Random = Random };
 	}
 
@@ -173,7 +173,7 @@ internal sealed class ManInTheMiddleCard : Card, IRegisterable, IHasCustomCardTr
 			}
 			
 			Thing ??= CreateNextObject(g.state, combat);
-			combat.QueueImmediate(new ASpawn { fromX = partIndex, thing = Mutil.DeepCopy(Thing) });
+			combat.QueueImmediate(new ASpawn { fromX = partIndex, multiBayVolley = true, thing = Mutil.DeepCopy(Thing) });
 			g.CloseRoute(this);
 		}
 		
