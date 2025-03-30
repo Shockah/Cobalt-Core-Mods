@@ -100,7 +100,11 @@
 			"3-Bjorn": "After calibrating, the gadget will be of great help to your endeavours.",
 			"4-Bjorn": "Oh, did I mention that it has some side-effects until then?",
 			"Choice-Yes": "Sure...",
-			"Choice-Concerns": "We have concerns.",
+			"Choice-Concerns": {
+				"choice": "We have concerns.",
+				"title": "Show more",
+				"description": "Show more options. You can return to the current options."
+			},
 			"Choice-No": "Side-effects? Yeah, no, thank you.",
 			"Yes-1-Bjorn": "No need to return the gadget later, it will automatically transmit the data I need.",
 			"No-1-Bjorn": "Ah, well. Nevertheless!",

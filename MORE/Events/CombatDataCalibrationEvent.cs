@@ -132,14 +132,18 @@ internal sealed class CombatDataCalibrationEvent : IRegisterable
 			{
 				label = ModEntry.Instance.Localizations.Localize(["event", "CombatDataCalibration", "Choice-Yes"]),
 				key = $"{EventName}::Yes",
-				actions = [
-					new AAddArtifact { artifact = new CombatAnalyzerGadgetArtifact() }
-				]
+				actions = [new AAddArtifact { artifact = new CombatAnalyzerGadgetArtifact() }]
 			},
 			new()
 			{
-				label = ModEntry.Instance.Localizations.Localize(["event", "CombatDataCalibration", "Choice-Concerns"]),
-				key = $"{EventName}::Concerns"
+				label = ModEntry.Instance.Localizations.Localize(["event", "CombatDataCalibration", "Choice-Concerns", "choice"]),
+				key = $"{EventName}::Concerns",
+				actions = [new ATooltipAction { Tooltips = [new GlossaryTooltip($"event.{ModEntry.Instance.Package.Manifest.UniqueName}::{nameof(CombatDataCalibrationEvent)}::Concerns")
+				{
+					TitleColor = Colors.textChoice,
+					Title = ModEntry.Instance.Localizations.Localize(["event", "CombatDataCalibration", "Choice-Concerns", "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["event", "CombatDataCalibration", "Choice-Concerns", "description"]),
+				}] }]
 			},
 			new()
 			{

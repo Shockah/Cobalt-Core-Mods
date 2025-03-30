@@ -7,6 +7,9 @@
 ### Abyssal Power event
 * The Abyssal Power card now puts the Abyssal Visions card in your draw pile instead of your hand.
 
+### Combat Data Calibration event
+* Improved clarity of dialogue options.
+
 ### Dracula's Deck Trial event
 * Added a Friendship trial.
 * Improved clarity of dialogue options.
