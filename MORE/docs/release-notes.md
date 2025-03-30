@@ -11,6 +11,9 @@
 * Added a Friendship trial.
 * Improved clarity of dialogue options.
 
+### Tooth's Emporium of Wonderful Ideas
+* Improved clarity of dialogue options.
+
 ## 1.4.0
 Released 2 March 2025.
 

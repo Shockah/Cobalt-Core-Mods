@@ -262,7 +262,6 @@
 				}
 			}
 		},
-
 		"ToothCardOffering": {
 			"choices": [
 				"Let's try <c=card>{{Card}}</c>.",
@@ -270,7 +269,11 @@
 				"How about <c=card>{{Card}}</c>?",
 				"<c=card>{{Card}}</c>, please!"
 			],
-			"nextPageChoice": "Anything else?",
+			"nextPageChoice": {
+				"choice": "Anything else?",
+				"title": "Show more",
+				"description": "Show more options. You can return to the current options."
+			},
 			"card": {
 				"Fiddle": {
 					"name": "Fiddle",

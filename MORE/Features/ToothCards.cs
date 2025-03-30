@@ -85,7 +85,7 @@ internal sealed class ToothCards : IRegisterable
 		if (needsPaging)
 			choices.Add(new Choice
 			{
-				label = ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "nextPageChoice"]),
+				label = ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "nextPageChoice", "choice"]),
 				key = "ToothCardOffering",
 				actions = [new NextPageAction()],
 			});
@@ -101,6 +101,16 @@ internal sealed class ToothCards : IRegisterable
 
 	private sealed class NextPageAction : CardAction
 	{
+		public override List<Tooltip> GetTooltips(State s)
+			=> [
+				new GlossaryTooltip($"event.{ModEntry.Instance.Package.Manifest.UniqueName}::{GetType().Name}::NextPage")
+				{
+					TitleColor = Colors.textChoice,
+					Title = ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "nextPageChoice", "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "nextPageChoice", "description"]),
+				},
+			];
+
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
