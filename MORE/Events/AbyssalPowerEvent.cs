@@ -300,7 +300,7 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 					},
 					new AAddCard
 					{
-						destination = CardDestination.Hand,
+						destination = CardDestination.Deck,
 						card = new AbyssalVisions { discount = upgrade == Upgrade.A ? -1 : 0 },
 						disabled = flipped,
 					},
@@ -314,7 +314,7 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 					},
 					new AAddCard
 					{
-						destination = CardDestination.Hand,
+						destination = CardDestination.Deck,
 						card = new AbyssalVisions { discount = upgrade == Upgrade.A ? -1 : 0 },
 						disabled = !flipped,
 					}

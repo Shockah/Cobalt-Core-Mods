@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming release
+
+### Abyssal Power event
+* The Abyssal Power card now puts the Abyssal Visions card in your draw pile instead of your hand.
+
 ## 1.4.0
 Released 2 March 2025.
 
