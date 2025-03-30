@@ -120,53 +120,57 @@
 		},
 		"DraculaDeckTrial": {
 			"5-Dracula": "I'm doing some deck trials today. May I interest you in one?",
+			"Setup": {
+				"name": "Setup trial",
+				"description": "Draw your first hand and trigger all combat and turn start effects. Then check your hand."
+			},
 			"Choice": {
 				"Crew": {
 					"name": "The {{Deck}} Trial",
-					"description": "Your drawn hand must contain at least 2 <c={{DeckColor}}>{{Deck}}</c> cards."
+					"description": "Your hand must contain at least 2 <c={{DeckColor}}>{{Deck}}</c> cards to succeed."
 				},
 				"Trait": {
 					"name": "The {{Trait}} Trial",
 					"description": {
-						"one": "Your drawn hand must contain at least 1 <c=cardtrait>{{Trait}}</c> card.",
-						"other": "Your drawn hand must contain at least {{Count}} <c=cardtrait>{{Trait}}</c> cards."
+						"one": "Your hand must contain at least 1 <c=cardtrait>{{Trait}}</c> card to succeed.",
+						"other": "Your hand must contain at least {{Count}} <c=cardtrait>{{Trait}}</c> cards to succeed."
 					}
 				},
 				"Cheap": {
 					"name": "The Cheap Trial",
-					"description": "Your drawn hand must have a total cost of 3 or less."
+					"description": "Your hand must have a total cost of 3 or less to succeed."
 				},
 				"Expensive": {
 					"name": "The Expensive Trial",
-					"description": "Your drawn hand must have a total cost of 7 or more."
+					"description": "Your hand must have a total cost of 7 or more to succeed."
 				},
 				"Exotic": {
 					"name": "The Exotic Trial",
-					"description": "Your drawn hand must contain at least 2 non-colorless, non-crew cards."
+					"description": "Your hand must contain at least 2 non-colorless, non-crew cards to succeed."
 				},
 				"Duplicates": {
 					"name": "The Duplicates Trial",
-					"description": "Your drawn hand must contain at least 2 of the same card (ignoring their upgrade path)."
+					"description": "Your hand must contain at least 2 of the same card (ignoring their upgrade path) to succeed."
 				},
 				"Upgrades": {
 					"name": "The Upgrades Trial",
-					"description": "Your drawn hand must contain at least 3 upgraded cards."
+					"description": "Your hand must contain at least 3 upgraded cards to succeed."
 				},
 				"Reader": {
 					"name": "The Reader Trial",
-					"description": "Your drawn hand must contain at least 2 text cards."
+					"description": "Your hand must contain at least 2 text cards to succeed."
 				},
 				"Pauper": {
 					"name": "The Pauper Trial",
-					"description": "Your drawn hand must only contain common cards."
+					"description": "Your hand must only contain common cards to succeed."
 				},
 				"Connoisseur": {
 					"name": "The Connoisseur Trial",
-					"description": "Your drawn hand must contain at least 2 uncommon cards."
+					"description": "Your hand must contain at least 2 uncommon cards to succeed."
 				},
 				"Collector": {
 					"name": "The Collector Trial",
-					"description": "Your drawn hand must contain at least 2 rare cards."
+					"description": "Your hand must contain at least 2 rare cards to succeed."
 				}
 			},
 			"Success-1-Dracula": "The trial was successful! You may choose your reward, my friend.",

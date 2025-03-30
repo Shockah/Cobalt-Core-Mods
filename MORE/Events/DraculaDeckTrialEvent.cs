@@ -145,7 +145,18 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 				if (choice is null)
 					return null;
 
-				choice.actions.Add(new AStartCombat { ai = new TrialEnemy { Trial = t } });
+				choice.actions = [
+					new AStartCombat { ai = new TrialEnemy { Trial = t } },
+					new ATooltipAction { Tooltips = [
+						new GlossaryTooltip($"event.{ModEntry.Instance.Package.Manifest.UniqueName}::Setup")
+						{
+							TitleColor = Colors.textChoice,
+							Title = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Setup", "name"]),
+							Description = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Setup", "description"]),
+						},
+					] },
+					.. choice.actions,
+				];
 				return choice;
 			})
 			.WhereNotNull()
@@ -173,7 +184,8 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 						browseSource = CardBrowse.Source.Deck,
 						filterMinCost = 1,
 						filterTemporary = false
-					}.SetFilterRecycle(false)
+					}.SetFilterRecycle(false),
+					new ATooltipAction { Tooltips = [new TTGlossary("cardtrait.recycle")] },
 				]
 			});
 
@@ -194,7 +206,8 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 						browseSource = CardBrowse.Source.Deck,
 						filterRetain = false,
 						filterTemporary = false
-					}
+					},
+					new ATooltipAction { Tooltips = [new TTGlossary("cardtrait.retain")] },
 				]
 			});
 
@@ -215,7 +228,8 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 						browseSource = CardBrowse.Source.Deck,
 						filterBuoyant = false,
 						filterTemporary = false
-					}
+					},
+					new ATooltipAction { Tooltips = [new TTGlossary("cardtrait.buoyant")] },
 				]
 			});
 
@@ -236,7 +250,8 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 						browseSource = CardBrowse.Source.Deck,
 						filterExhaust = true,
 						filterTemporary = false
-					}
+					},
+					new ATooltipAction { Tooltips = [new TTGlossary("cardtrait.exhaust")] },
 				]
 			});
 
