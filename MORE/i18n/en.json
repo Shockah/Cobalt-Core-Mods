@@ -171,6 +171,10 @@
 				"Collector": {
 					"name": "The Collector Trial",
 					"description": "Your hand must contain at least 2 rare cards to succeed."
+				},
+				"Friendship": {
+					"name": "The Friendship Trial",
+					"description": "Your hand must contain at least 1 card of each of your crew members to succeed."
 				}
 			},
 			"Success-1-Dracula": "The trial was successful! You may choose your reward, my friend.",

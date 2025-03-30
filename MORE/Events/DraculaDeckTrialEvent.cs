@@ -31,6 +31,7 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 		new PauperTrial(),
 		new ConnoisseurTrial(),
 		new CollectorTrial(),
+		new FriendshipTrial(),
 	];
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
@@ -732,5 +733,23 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 
 		public bool TestCards(State state, IReadOnlyList<Card> cards)
 			=> cards.Count(c => c.GetMeta().rarity == Rarity.rare) >= 2;
+	}
+
+	public sealed class FriendshipTrial : IDeckTrial
+	{
+		public Choice MakeChoice(State state)
+			=> new()
+			{
+				label = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Friendship", "name"]),
+				actions = [new ATooltipAction { Tooltips = [new GlossaryTooltip($"event.{ModEntry.Instance.Package.Manifest.UniqueName}::{GetType().Name}")
+				{
+					TitleColor = Colors.textChoice,
+					Title = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Friendship", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "Choice", "Friendship", "description"]),
+				}] }]
+			};
+
+		public bool TestCards(State state, IReadOnlyList<Card> cards)
+			=> state.characters.Select(character => character.deckType).WhereNotNull().All(deck => cards.Any(card => card.GetMeta().deck == deck));
 	}
 }

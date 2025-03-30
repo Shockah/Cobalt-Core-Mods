@@ -8,6 +8,7 @@
 * The Abyssal Power card now puts the Abyssal Visions card in your draw pile instead of your hand.
 
 ### Dracula's Deck Trial
+* Added a Friendship trial.
 * Improved clarity of dialogue options.
 
 ## 1.4.0
