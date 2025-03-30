@@ -62,6 +62,9 @@ partial class ApiImplementation
 			public IKokoroApi.IV2.ILimitedApi.ICardBrowse ModifyCardBrowse(CardBrowse route)
 				=> new CardBrowseWrapper { Wrapped = route };
 
+			public Spr GetIcon(int amount)
+				=> LimitedManager.ObtainIcon(amount);
+
 			public void RegisterHook(IKokoroApi.IV2.ILimitedApi.IHook hook, double priority = 0)
 				=> LimitedManager.Instance.Register(hook, priority);
 

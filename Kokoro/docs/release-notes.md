@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added an API to get the Limited/Finite icon for a given amount.
+
 ## 2.6.0
 Released 28 March 2025.
 

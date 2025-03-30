@@ -62,6 +62,9 @@ partial class ApiImplementation
 			public IKokoroApi.IV2.IFiniteApi.ICardBrowse ModifyCardBrowse(CardBrowse route)
 				=> new CardBrowseWrapper { Wrapped = route };
 
+			public Spr GetIcon(int amount)
+				=> FiniteManager.ObtainIcon(amount);
+
 			public void RegisterHook(IKokoroApi.IV2.IFiniteApi.IHook hook, double priority = 0)
 				=> FiniteManager.Instance.Register(hook, priority);
 

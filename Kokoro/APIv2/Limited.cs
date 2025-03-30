@@ -131,6 +131,14 @@ public partial interface IKokoroApi
 			/// <param name="route">The route to modify.</param>
 			/// <returns>A wrapper, granting access to the modifications.</returns>
 			ICardBrowse ModifyCardBrowse(CardBrowse route);
+
+			/// <summary>
+			/// Retrieves an icon for the Limited card trait with the given amount of uses.
+			/// Amounts of 10+ get replaced with a <c>+</c> symbol.
+			/// </summary>
+			/// <param name="amount">The amount.</param>
+			/// <returns>The icon.</returns>
+			Spr GetIcon(int amount);
 			
 			/// <summary>
 			/// Registers a new hook related to the Limited card trait.
