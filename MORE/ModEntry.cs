@@ -71,12 +71,17 @@ internal sealed class ModEntry : SimpleMod
 		typeof(DraculaDeckTrialEvent),
 		typeof(ShipSwapEvent),
 	];
+	
+	internal static IReadOnlyList<Type> ArtifactTypes { get; } = [
+		typeof(LongRangeScannersArtifact),
+	];
 
 	internal static IEnumerable<Type> RegisterableTypes { get; }
 		= [
 			.. StatusTypes,
 			.. EnemyTypes,
 			.. EventTypes,
+			.. ArtifactTypes,
 			typeof(EphemeralUpgrades),
 			typeof(ReleaseUpgrades),
 			typeof(CardSelectFilters),
