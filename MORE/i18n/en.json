@@ -58,6 +58,53 @@
 			"description": "The cards that will be offered by <c=tooth>Tooth</c>."
 		}
 	},
+	"artifact": {
+		"LongRangeScanners": {
+			"name": "LONG RANGE SCANNERS",
+			"description": "Adds a bit of information about nearby nodes when navigating through sectors.",
+			"battleTooltip": {
+				"title": "Scan Result",
+				"description": "<c=textFaint>Detected:</c> {{Name}}",
+				"modifier": "<c=textFaint>Detected:</c> <c=downside>{{Name}}</c>",
+				"card": "<c=textFaint>Detected Card:</c>",
+				"artifact": "<c=textFaint>Detected Artifact:</c>"
+			},
+			"eventTooltip": {
+				"character": {
+					"title": "Scan Result",
+					"description": "<c=textFaint>Detected:</c> {{Name}}"
+				},
+				"void": {
+					"title": "Scan Result",
+					"description": "<c=textFaint>Detected:</c> Void"
+				},
+				"tentacle": {
+					"title": "Scan Result",
+					"description": "<c=textFaint>Detected:</c> Starnacle"
+				},
+				"blackHole": {
+					"title": "Scan Result",
+					"description": "<c=textFaint>Detected:</c> Black Hole"
+				},
+				"minefield": {
+					"title": "Scan Result",
+					"description": "<c=textFaint>Detected:</c> Minefield"
+				},
+				"crystal": {
+					"title": "Scan Result",
+					"description": "<c=textFaint>Detected:</c> Crystal"
+				},
+				"unknown": {
+					"title": "Scan Result",
+					"description": "<c=textFaint>Detected:</c> ???"
+				}
+			},
+			"artifactTooltip": {
+				"title": "Scan Result",
+				"description": "<c=textFaint>Detected Artifact:</c>"
+			}
+		}
+	},
 	"event": {
 		"AbyssalPower": {
 			"1-Tentacle": "GLORP!!",
