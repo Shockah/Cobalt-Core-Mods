@@ -60,7 +60,7 @@
 	},
 	"artifact": {
 		"LongRangeScanners": {
-			"name": "LONG RANGE SCANNERS",
+			"name": "LONG RANGE SCANNER",
 			"description": "Adds a bit of information about nearby nodes when navigating through sectors.",
 			"battleTooltip": {
 				"title": "Scan Result",
