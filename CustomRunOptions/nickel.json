@@ -1,0 +1,20 @@
+﻿{
+	"UniqueName": "Shockah.CustomRunOptions",
+	"Version": "{{ModVersion}}",
+	"DisplayName": "Custom Run Options",
+	"Description": "TBD",
+	"Author": "Shockah",
+	"RequiredApiVersion": "1.14.0",
+	"EntryPointAssembly": "CustomRunOptions.dll",
+	"LoadPhase": "AfterDbInit",
+	"Dependencies": [
+		{
+			"UniqueName": "Shockah.Kokoro",
+			"Version": "2.6.0"
+		},
+		{
+			"UniqueName": "Nickel.ModSettings",
+			"Version": "1.14.0"
+		}
+	]
+}
