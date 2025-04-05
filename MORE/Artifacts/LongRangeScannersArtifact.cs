@@ -67,7 +67,7 @@ internal sealed class LongRangeScannersArtifact : Artifact, IRegisterable
 				
 				var stateCopy = Mutil.DeepCopy(g.state);
 				g.state = stateCopy;
-				_ = stateCopy.map.MakeRoute(stateCopy, pair.Key);
+				var maybeCombatRoute = stateCopy.map.MakeRoute(stateCopy, pair.Key);
 				
 				if (!stateCopy.map.markers.TryGetValue(pair.Key, out var nodeCopy))
 					return;
@@ -80,7 +80,7 @@ internal sealed class LongRangeScannersArtifact : Artifact, IRegisterable
 
 				if (battleNode.battleType != BattleType.Boss)
 				{
-					var combat = Combat.Make(stateCopy, ai);
+					var combat = (maybeCombatRoute as Combat) ?? Combat.Make(stateCopy, ai);
 					RecordFightModifier();
 					combat.PlayerWon(g);
 					RecordBattleCard();
