@@ -166,21 +166,11 @@ internal sealed class TemporaryUpgradesManager : HookManager<IKokoroApi.IV2.ITem
 		
 		Trait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("TemporaryUpgrade", new()
 		{
-			Icon = (state, card) =>
+			Icon = (state, card) => GetIcon(state, card),
+			Renderer = (state, card, position) =>
 			{
-				if (card is null)
-					return UpgradeIcon.Sprite;
-				
-				var permUpgrade = ModEntry.Instance.Api.V2.TemporaryUpgrades.GetPermanentUpgrade(state, card);
-				var tempUpgrade = ModEntry.Instance.Api.V2.TemporaryUpgrades.GetTemporaryUpgrade(state, card);
-				
-				if (permUpgrade == tempUpgrade)
-					return UpgradeIcon.Sprite;
-				if (permUpgrade == Upgrade.None)
-					return UpgradeIcon.Sprite;
-				if (tempUpgrade == Upgrade.None)
-					return DowngradeIcon.Sprite;
-				return SidegradeIcon.Sprite;
+				Draw.Sprite(GetIcon(state, card), position.x, position.y, color: Colors.white.fadeAlpha(0.7));
+				return true;
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "TemporaryUpgrade", "name"]).Localize,
 			Tooltips = (state, card) =>
@@ -220,6 +210,23 @@ internal sealed class TemporaryUpgradesManager : HookManager<IKokoroApi.IV2.ITem
 			original: AccessTools.DeclaredMethod(typeof(CardUpgrade), nameof(CardUpgrade.Render)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardUpgrade_Render_Prefix))
 		);
+
+		Spr GetIcon(State state, Card? card)
+		{
+			if (card is null)
+				return UpgradeIcon.Sprite;
+				
+			var permUpgrade = ModEntry.Instance.Api.V2.TemporaryUpgrades.GetPermanentUpgrade(state, card);
+			var tempUpgrade = ModEntry.Instance.Api.V2.TemporaryUpgrades.GetTemporaryUpgrade(state, card);
+				
+			if (permUpgrade == tempUpgrade)
+				return UpgradeIcon.Sprite;
+			if (permUpgrade == Upgrade.None)
+				return UpgradeIcon.Sprite;
+			if (tempUpgrade == Upgrade.None)
+				return DowngradeIcon.Sprite;
+			return SidegradeIcon.Sprite;
+		}
 	}
 
 	private static void RemoveTemporaryUpgrades(State state)

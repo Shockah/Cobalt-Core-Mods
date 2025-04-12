@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Limited and Temp Upgrade card traits now render at 70% alpha, akin to Exhaust and Temporary card traits.
 * Added Overdrive Next Turn, Underdrive, Pulsedrive and Minidrive statuses.
 
 ## 2.7.0

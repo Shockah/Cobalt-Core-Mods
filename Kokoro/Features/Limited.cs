@@ -149,6 +149,11 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 		Trait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Limited", new()
 		{
 			Icon = (state, card) => ObtainIcon(card is null ? 10 : GetLimitedUses(state, card)),
+			Renderer = (state, card, position) =>
+			{
+				Draw.Sprite(ObtainIcon(card is null ? 10 : GetLimitedUses(state, card)), position.x, position.y, color: Colors.white.fadeAlpha(0.7));
+				return true;
+			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["limited", "name"]).Localize,
 			Tooltips = (state, card) =>
 			{
