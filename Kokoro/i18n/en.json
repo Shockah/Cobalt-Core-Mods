@@ -15,6 +15,22 @@
 		"ShieldNextTurn": {
 			"name": "Shield Next Turn",
 			"description": "Gain {0} <c=status>SHIELD</c> next turn."
+		},
+		"OverdriveNextTurn": {
+			"name": "Overdrive Next Turn",
+			"description": "Gain {0} <c=status>OVERDRIVE</c> next turn."
+		},
+		"Underdrive": {
+			"name": "Underdrive",
+			"description": "Remove {0} damage from all attacks. <c=downside>Decreases by 1 at end of turn.</c>"
+		},
+		"Pulsedrive": {
+			"name": "Pulsedrive",
+			"description": "Add {0} damage to all attacks. <c=downside>Goes away at end of turn.</c>"
+		},
+		"Minidrive": {
+			"name": "Minidrive",
+			"description": "Add 1 damage to all attacks. <c=downside>Decreases by 1 at end of turn.</c>"
 		}
 	},
 	"cardTrait": {

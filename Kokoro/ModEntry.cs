@@ -64,6 +64,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		ConditionalActionManager.Setup(Harmony);
 		ContinueStopActionManager.Setup(Harmony);
 		CustomCardBrowseSourceManager.Setup(Harmony);
+		DriveStatusManager.Setup(Harmony);
 		DroneShiftManager.Setup(Harmony);
 		EnergyAsStatusManager.Setup(Harmony);
 		EvadeManager.Setup(Harmony);
@@ -87,6 +88,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		VariableHintTargetPlayerManager.Setup(Harmony);
 		WrappedActionManager.Setup(Harmony);
 		
+		StatusLogicManager.Instance.Register(DriveStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(OxidationStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(StatusNextTurnManager.Instance, 0);
 		

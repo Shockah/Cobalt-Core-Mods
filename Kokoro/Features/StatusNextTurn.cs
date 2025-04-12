@@ -1,6 +1,5 @@
-﻿using CobaltCoreModding.Definitions.ExternalItems;
-using Shockah.Shared;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using CobaltCoreModding.Definitions.ExternalItems;
 
 namespace Shockah.Kokoro;
 
@@ -33,15 +32,18 @@ partial class ApiImplementation
 			
 			public Status TempShield
 				=> (Status)ModEntry.Instance.Content.TempShieldNextTurnStatus.Id!.Value;
+			
+			public Status Overdrive
+				=> (Status)ModEntry.Instance.Content.OverdriveNextTurnStatus.Id!.Value;
 		}
 	}
 }
 
-internal sealed class StatusNextTurnManager : HookManager<IOxidationStatusHook>, IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
+internal sealed class StatusNextTurnManager : IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static readonly StatusNextTurnManager Instance = new();
 
-	private StatusNextTurnManager() : base(ModEntry.Instance.Package.Manifest.UniqueName)
+	private StatusNextTurnManager()
 	{
 	}
 	
@@ -57,6 +59,11 @@ internal sealed class StatusNextTurnManager : HookManager<IOxidationStatusHook>,
 				.. args.Tooltips,
 				.. StatusMeta.GetTooltips(Status.shield, args.Amount)
 			];
+		if (args.Status == (Status)ModEntry.Instance.Content.OverdriveNextTurnStatus.Id!.Value)
+			return [
+				.. args.Tooltips,
+				.. StatusMeta.GetTooltips(Status.overdrive, args.Amount)
+			];
 		return args.Tooltips;
 	}
 
@@ -66,27 +73,48 @@ internal sealed class StatusNextTurnManager : HookManager<IOxidationStatusHook>,
 			return false;
 
 		if (args.Status == (Status)ModEntry.Instance.Content.TempShieldNextTurnStatus.Id!.Value)
+			args.Amount = 0;
+		else if (args.Status == (Status)ModEntry.Instance.Content.ShieldNextTurnStatus.Id!.Value)
+			args.Amount = 0;
+		else if (args.Status == (Status)ModEntry.Instance.Content.OverdriveNextTurnStatus.Id!.Value)
+			args.Amount = 0;
+		return false;
+	}
+
+	public void OnStatusTurnTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IOnStatusTurnTriggerArgs args)
+	{
+		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
+			return;
+		
+		if (args.Status == (Status)ModEntry.Instance.Content.TempShieldNextTurnStatus.Id!.Value)
 		{
-			if (args.Amount != 0)
+			if (args.OldAmount != 0)
 				args.Combat.QueueImmediate(new AStatus
 				{
 					targetPlayer = args.Ship.isPlayerShip,
 					status = Status.tempShield,
-					statusAmount = args.Amount
+					statusAmount = args.OldAmount
 				});
-			args.Amount = 0;
 		}
 		else if (args.Status == (Status)ModEntry.Instance.Content.ShieldNextTurnStatus.Id!.Value)
 		{
-			if (args.Amount != 0)
+			if (args.OldAmount != 0)
 				args.Combat.QueueImmediate(new AStatus
 				{
 					targetPlayer = args.Ship.isPlayerShip,
 					status = Status.shield,
-					statusAmount = args.Amount
+					statusAmount = args.OldAmount
 				});
-			args.Amount = 0;
 		}
-		return false;
+		else if (args.Status == (Status)ModEntry.Instance.Content.OverdriveNextTurnStatus.Id!.Value)
+		{
+			if (args.OldAmount != 0)
+				args.Combat.QueueImmediate(new AStatus
+				{
+					targetPlayer = args.Ship.isPlayerShip,
+					status = Status.overdrive,
+					statusAmount = args.OldAmount
+				});
+		}
 	}
 }

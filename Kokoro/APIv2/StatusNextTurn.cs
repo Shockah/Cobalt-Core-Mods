@@ -21,6 +21,11 @@ public partial interface IKokoroApi
 			/// Grants <see cref="Status.tempShield"/> next turn.
 			/// </summary>
 			Status TempShield { get; }
+			
+			/// <summary>
+			/// Grants <see cref="Status.overdrive"/> next turn.
+			/// </summary>
+			Status Overdrive { get; }
 		}
 	}
 }

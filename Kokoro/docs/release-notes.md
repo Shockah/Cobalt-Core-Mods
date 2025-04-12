@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added Overdrive Next Turn, Underdrive, Pulsedrive and Minidrive statuses.
+
 ## 2.7.0
 Released 30 March 2025.
 

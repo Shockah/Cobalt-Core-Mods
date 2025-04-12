@@ -54,6 +54,15 @@ internal sealed partial class Content
 	internal ExternalStatus TempShieldNextTurnStatus { get; private set; } = null!;
 	internal ExternalSprite ShieldNextTurnSprite { get; private set; } = null!;
 	internal ExternalStatus ShieldNextTurnStatus { get; private set; } = null!;
+	internal ExternalSprite OverdriveNextTurnSprite { get; private set; } = null!;
+	internal ExternalStatus OverdriveNextTurnStatus { get; private set; } = null!;
+	
+	internal ExternalSprite UnderdriveSprite { get; private set; } = null!;
+	internal ExternalStatus UnderdriveStatus { get; private set; } = null!;
+	internal ExternalSprite PulsedriveSprite { get; private set; } = null!;
+	internal ExternalStatus PulsedriveStatus { get; private set; } = null!;
+	internal ExternalSprite MinidriveSprite { get; private set; } = null!;
+	internal ExternalStatus MinidriveStatus { get; private set; } = null!;
 	
 	internal ExternalSprite ShieldCostSatisfiedSprite { get; private set; } = null!;
 	internal ExternalSprite ShieldCostUnsatisfiedSprite { get; private set; } = null!;
@@ -137,6 +146,22 @@ internal sealed partial class Content
 		ShieldNextTurnSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Status.ShieldNextTurn",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "ShieldNextTurn.png"))
+		);
+		OverdriveNextTurnSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.OverdriveNextTurn",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "OverdriveNextTurn.png"))
+		);
+		UnderdriveSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.Underdrive",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Underdrive.png"))
+		);
+		PulsedriveSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.Pulsedrive",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Pulsedrive.png"))
+		);
+		MinidriveSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.Minidrive",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "Minidrive.png"))
 		);
 		ShieldCostSatisfiedSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Status.ShieldCostSatisfied",
@@ -239,6 +264,66 @@ internal sealed partial class Content
 				ModEntry.Instance.Localizations.Localize(["status", "ShieldNextTurn", "description"])
 			);
 			registry.RegisterStatus(ShieldNextTurnStatus);
+		}
+		{
+			OverdriveNextTurnStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.OverdriveNextTurn",
+				isGood: true,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFFF3838)),
+				borderColor: null,
+				OverdriveNextTurnSprite,
+				affectedByTimestop: false
+			);
+			OverdriveNextTurnStatus.AddLocalisation(
+				ModEntry.Instance.Localizations.Localize(["status", "OverdriveNextTurn", "name"]),
+				ModEntry.Instance.Localizations.Localize(["status", "OverdriveNextTurn", "description"])
+			);
+			registry.RegisterStatus(OverdriveNextTurnStatus);
+		}
+		{
+			UnderdriveStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.Underdrive",
+				isGood: false,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF984BFF)),
+				borderColor: null,
+				UnderdriveSprite,
+				affectedByTimestop: true
+			);
+			UnderdriveStatus.AddLocalisation(
+				ModEntry.Instance.Localizations.Localize(["status", "Underdrive", "name"]),
+				ModEntry.Instance.Localizations.Localize(["status", "Underdrive", "description"])
+			);
+			registry.RegisterStatus(UnderdriveStatus);
+		}
+		{
+			PulsedriveStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.Pulsedrive",
+				isGood: true,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF4EB4FF)),
+				borderColor: null,
+				PulsedriveSprite,
+				affectedByTimestop: true
+			);
+			PulsedriveStatus.AddLocalisation(
+				ModEntry.Instance.Localizations.Localize(["status", "Pulsedrive", "name"]),
+				ModEntry.Instance.Localizations.Localize(["status", "Pulsedrive", "description"])
+			);
+			registry.RegisterStatus(PulsedriveStatus);
+		}
+		{
+			MinidriveStatus = new(
+				$"{typeof(ModEntry).Namespace}.Status.Minidrive",
+				isGood: true,
+				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFFB331B9)),
+				borderColor: null,
+				MinidriveSprite,
+				affectedByTimestop: true
+			);
+			MinidriveStatus.AddLocalisation(
+				ModEntry.Instance.Localizations.Localize(["status", "Minidrive", "name"]),
+				ModEntry.Instance.Localizations.Localize(["status", "Minidrive", "description"])
+			);
+			registry.RegisterStatus(MinidriveStatus);
 		}
 	}
 
