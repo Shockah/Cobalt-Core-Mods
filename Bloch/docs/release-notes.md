@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.2
+Released 12 April 2025.
 
 * Fixed extra sounds being played and delays whenever a turn ends or starts.
 
