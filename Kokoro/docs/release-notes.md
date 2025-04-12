@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.8.0
+Released 12 April 2025.
 
 * Limited and Temp Upgrade card traits now render at 70% alpha, akin to Exhaust and Temporary card traits.
 * Added Overdrive Next Turn, Underdrive, Pulsedrive and Minidrive statuses.
