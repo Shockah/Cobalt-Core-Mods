@@ -32,6 +32,8 @@ internal sealed class IntuitionManager : IKokoroApi.IV2.IStatusLogicApi.IHook, I
 			return;
 		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
 			return;
+		if (args.OldAmount == 0)
+			return;
 
 		args.Combat.QueueImmediate(new AStatus
 		{

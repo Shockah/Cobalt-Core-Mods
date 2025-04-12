@@ -76,9 +76,6 @@ internal sealed class AuraManager : IKokoroApi.IV2.IStatusLogicApi.IHook, IKokor
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnTurnStart), (State state, Combat combat) =>
 		{
-			if (!combat.isPlayerTurn)
-				return;
-
 			var insight = state.ship.Get(InsightStatus.Status);
 			var maxInsight = Math.Min(insight, state.ship.Get(IntensifyStatus.Status) + 1);
 			maxInsight = Math.Min(maxInsight, state.deck.Count + combat.discard.Count);
