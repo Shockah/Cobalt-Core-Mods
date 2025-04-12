@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed extra sounds being played and delays whenever a turn ends.
+
 ## 2.8.0
 Released 12 April 2025.
 

@@ -87,6 +87,8 @@ internal sealed class DriveStatusManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 	{
 		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
 			return false;
+		if (args.Amount <= 0)
+			return false;
 
 		if (args.Status == (Status)ModEntry.Instance.Content.UnderdriveStatus.Id!.Value)
 			args.Amount--;
