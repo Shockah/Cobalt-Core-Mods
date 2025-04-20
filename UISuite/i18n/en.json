@@ -182,6 +182,10 @@
 			"SwitchToNumbersAt": {
 				"Title": "Switch to numbers at",
 				"Description": "The minimum threshold at which the status should be rendered as text, but including the threshold (for example, <c=redd>1/3</c>)."
+			},
+			"IrrelevantAt": {
+				"Title": "Irrelevant",
+				"Description": "The threshold at which the bars become irrelevant and should only use numbers."
 			}
 		}
 	}

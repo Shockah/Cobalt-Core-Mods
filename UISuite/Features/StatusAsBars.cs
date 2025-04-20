@@ -38,6 +38,9 @@ internal sealed partial class ProfileSettings
 		
 		[JsonProperty]
 		public int SwitchToNumbersAt = 16;
+		
+		[JsonProperty]
+		public int IrrelevantAt = 900;
 	}
 }
 
@@ -188,12 +191,14 @@ internal sealed class StatusAsBars : IRegisterable
 				var totalWidth = 0;
 				var threshold = thresholdDelegate(args.State, args.Ship);
 				var negativeThreshold = negativeThresholdDelegate?.Invoke(args.State, args.Ship) ?? 0;
-				var showingPositiveBars = !settings.SwitchToNumbers || threshold < settings.SwitchToNumbersAt;
+				var isPositiveIrrelevant = threshold >= settings.IrrelevantAt;
+				var isNegativeIrrelevant = -negativeThreshold >= settings.IrrelevantAt;
+				var showingPositiveBars = !isPositiveIrrelevant && (!settings.SwitchToNumbers || threshold < settings.SwitchToNumbersAt);
 				
 				var newArgs = args.CopyToBuilder();
 
 				var negativeDisplayThreshold = Math.Min(negativeThreshold, args.Amount);
-				if (negativeDisplayThreshold != 0)
+				if (negativeDisplayThreshold != 0 && !isNegativeIrrelevant)
 				{
 					BarRenderer.Rows = GetRowsForThreshold(-negativeDisplayThreshold);
 					BarRenderer.Segments = [
@@ -220,11 +225,22 @@ internal sealed class StatusAsBars : IRegisterable
 					totalWidth += BarRenderer.Render(newArgs);
 				}
 
+				if ((args.Amount >= 0 && isPositiveIrrelevant) || (args.Amount < 0 && isNegativeIrrelevant))
+				{
+					if (totalWidth > 0)
+						totalWidth += 1;
+					
+					TextRenderer.Text = $"{args.Amount}";
+					newArgs.Position = new(args.Position.x + totalWidth, args.Position.y);
+					totalWidth += TextRenderer.Render(newArgs);
+					return totalWidth;
+				}
+
 				if ((!showingPositiveBars && args.Amount > 0) || args.Amount > threshold)
 				{
 					if (totalWidth > 0)
 						totalWidth += 1;
-
+					
 					TextRenderer.Text = showingPositiveBars ? $"+{args.Amount - threshold}" : $"{args.Amount}/{threshold}";
 					newArgs.Position = new(args.Position.x + totalWidth, args.Position.y);
 					totalWidth += TextRenderer.Render(newArgs);
