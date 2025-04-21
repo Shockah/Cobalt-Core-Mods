@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.2.0
+Released 21 April 2025.
 
 * Added an option to use a compact font for all tooltips.
 * Heat/oxidation status bars no longer show up if the thresholds make it irrelevant (for example, with the One Hit Wonder daily run modifer).
