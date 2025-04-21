@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added an option to use a compact font for all tooltips.
 * Heat/oxidation status bars no longer show up if the thresholds make it irrelevant (for example, with the One Hit Wonder daily run modifer).
 
 ## 1.1.3

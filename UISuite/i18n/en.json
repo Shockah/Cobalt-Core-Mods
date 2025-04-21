@@ -75,6 +75,15 @@
 			}
 		}
 	},
+	"CompactTooltipFont": {
+		"Settings": {
+			"Header": "<c=white>Compact tooltip font</c>",
+			"IsEnabled": {
+				"Title": "Enabled",
+				"Description": "Whether to use the compact font for tooltips."
+			}
+		}
+	},
 	"ExtraArtifactCodexCategories": {
 		"Category": {
 			"Ship": "Ship",
@@ -184,7 +193,7 @@
 				"Description": "The minimum threshold at which the status should be rendered as text, but including the threshold (for example, <c=redd>1/3</c>)."
 			},
 			"IrrelevantAt": {
-				"Title": "Irrelevant",
+				"Title": "Irrelevant at",
 				"Description": "The threshold at which the bars become irrelevant and should only use numbers."
 			}
 		}

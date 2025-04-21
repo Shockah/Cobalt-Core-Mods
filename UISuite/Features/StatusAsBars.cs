@@ -102,7 +102,14 @@ internal sealed class StatusAsBars : IRegisterable
 								() => settings(ModEntry.Instance.Settings.ProfileBased.Current).SwitchToTwoRowsAt,
 								value => settings(ModEntry.Instance.Settings.ProfileBased.Current).SwitchToTwoRowsAt = value,
 								minValue: 0
-							),
+							).SetTooltips(() => [
+								new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.StatusAsBarSettings)}::{nameof(ProfileSettings.StatusAsBarSettings.SwitchToTwoRowsAt)}")
+								{
+									TitleColor = Colors.textBold,
+									Title = ModEntry.Instance.Localizations.Localize(["StatusAsBars", "Settings", "SwitchToTwoRowsAt", "Title"]),
+									Description = ModEntry.Instance.Localizations.Localize(["StatusAsBars", "Settings", "SwitchToTwoRowsAt", "Description"]),
+								},
+							]),
 							() => settings(ModEntry.Instance.Settings.ProfileBased.Current).SwitchToTwoRows
 						),
 						api.MakeCheckbox(
@@ -123,7 +130,14 @@ internal sealed class StatusAsBars : IRegisterable
 								() => settings(ModEntry.Instance.Settings.ProfileBased.Current).SwitchToThreeRowsAt,
 								value => settings(ModEntry.Instance.Settings.ProfileBased.Current).SwitchToThreeRowsAt = value,
 								minValue: 0
-							),
+							).SetTooltips(() => [
+								new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.StatusAsBarSettings)}::{nameof(ProfileSettings.StatusAsBarSettings.SwitchToThreeRowsAt)}")
+								{
+									TitleColor = Colors.textBold,
+									Title = ModEntry.Instance.Localizations.Localize(["StatusAsBars", "Settings", "SwitchToThreeRowsAt", "Title"]),
+									Description = ModEntry.Instance.Localizations.Localize(["StatusAsBars", "Settings", "SwitchToThreeRowsAt", "Description"]),
+								},
+							]),
 							() => settings(ModEntry.Instance.Settings.ProfileBased.Current).SwitchToThreeRows
 						),
 						api.MakeCheckbox(
@@ -144,9 +158,29 @@ internal sealed class StatusAsBars : IRegisterable
 								() => settings(ModEntry.Instance.Settings.ProfileBased.Current).SwitchToNumbersAt,
 								value => settings(ModEntry.Instance.Settings.ProfileBased.Current).SwitchToNumbersAt = value,
 								minValue: 0
-							),
+							).SetTooltips(() => [
+								new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.StatusAsBarSettings)}::{nameof(ProfileSettings.StatusAsBarSettings.SwitchToNumbersAt)}")
+								{
+									TitleColor = Colors.textBold,
+									Title = ModEntry.Instance.Localizations.Localize(["StatusAsBars", "Settings", "SwitchToNumbersAt", "Title"]),
+									Description = ModEntry.Instance.Localizations.Localize(["StatusAsBars", "Settings", "SwitchToNumbersAt", "Description"]),
+								},
+							]),
 							() => settings(ModEntry.Instance.Settings.ProfileBased.Current).SwitchToNumbers
 						),
+						api.MakeNumericStepper(
+							() => ModEntry.Instance.Localizations.Localize(["StatusAsBars", "Settings", "IrrelevantAt", "Title"]),
+							() => settings(ModEntry.Instance.Settings.ProfileBased.Current).IrrelevantAt,
+							value => settings(ModEntry.Instance.Settings.ProfileBased.Current).IrrelevantAt = value,
+							minValue: 0
+						).SetTooltips(() => [
+							new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.StatusAsBarSettings)}::{nameof(ProfileSettings.StatusAsBarSettings.IrrelevantAt)}")
+							{
+								TitleColor = Colors.textBold,
+								Title = ModEntry.Instance.Localizations.Localize(["StatusAsBars", "Settings", "IrrelevantAt", "Title"]),
+								Description = ModEntry.Instance.Localizations.Localize(["StatusAsBars", "Settings", "IrrelevantAt", "Description"]),
+							},
+						])
 					]),
 					() => settings(ModEntry.Instance.Settings.ProfileBased.Current).IsEnabled
 				),
