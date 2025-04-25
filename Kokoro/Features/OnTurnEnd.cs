@@ -76,6 +76,12 @@ internal sealed class OnTurnEndManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 		if (action is not TriggerAction triggerAction)
 			return true;
 
+		if (!triggerAction.ShowOnTurnEndIcon)
+		{
+			__result = Card.RenderAction(g, state, triggerAction.Action, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+			return false;
+		}
+
 		var oldActionDisabled = triggerAction.Action.disabled;
 		triggerAction.Action.disabled = triggerAction.disabled;
 
@@ -100,7 +106,9 @@ internal sealed class OnTurnEndManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 	internal sealed class TriggerAction : CardAction, IKokoroApi.IV2.IOnTurnEndApi.IOnTurnEndAction
 	{
 		public required CardAction Action { get; set; }
-		
+		public bool ShowOnTurnEndIcon { get; set; } = true;
+		public bool ShowOnTurnEndTooltip { get; set; } = true;
+
 		[JsonIgnore]
 		public CardAction AsCardAction
 			=> this;
@@ -110,13 +118,13 @@ internal sealed class OnTurnEndManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 
 		public override List<Tooltip> GetTooltips(State s)
 			=> [
-				new GlossaryTooltip($"action.{GetType().Namespace!}::OnTurnEnd")
+				.. ShowOnTurnEndTooltip ? [new GlossaryTooltip($"action.{GetType().Namespace!}::OnTurnEnd")
 				{
 					Icon = ActionIcon.Sprite,
 					TitleColor = Colors.action,
 					Title = ModEntry.Instance.Localizations.Localize(["onTurnEnd", "name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["onTurnEnd", "description"]),
-				},
+				}] : new List<Tooltip>(),
 				.. Action.GetTooltips(s)
 			];
 
@@ -129,6 +137,18 @@ internal sealed class OnTurnEndManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 		public IKokoroApi.IV2.IOnTurnEndApi.IOnTurnEndAction SetAction(CardAction value)
 		{
 			this.Action = value;
+			return this;
+		}
+
+		public IKokoroApi.IV2.IOnTurnEndApi.IOnTurnEndAction SetShowOnTurnEndIcon(bool value)
+		{
+			this.ShowOnTurnEndIcon = value;
+			return this;
+		}
+
+		public IKokoroApi.IV2.IOnTurnEndApi.IOnTurnEndAction SetShowOnTurnEndTooltip(bool value)
+		{
+			this.ShowOnTurnEndTooltip = value;
 			return this;
 		}
 	}

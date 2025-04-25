@@ -61,6 +61,16 @@ public partial interface IKokoroApi
 				/// The actual action to run.
 				/// </summary>
 				CardAction Action { get; set; }
+				
+				/// <summary>
+				/// Whether to show the icon for the wrapper action.
+				/// </summary>
+				bool ShowImpulsiveIcon { get; set; }
+				
+				/// <summary>
+				/// Whether to show the tooltip for the wrapper action.
+				/// </summary>
+				bool ShowImpulsiveTooltip { get; set; }
 
 				/// <summary>
 				/// Sets <see cref="Action"/>.
@@ -68,6 +78,20 @@ public partial interface IKokoroApi
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
 				IImpulsiveAction SetAction(CardAction value);
+
+				/// <summary>
+				/// Sets <see cref="ShowImpulsiveIcon"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				IImpulsiveAction SetShowImpulsiveIcon(bool value);
+
+				/// <summary>
+				/// Sets <see cref="ShowImpulsiveTooltip"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				IImpulsiveAction SetShowImpulsiveTooltip(bool value);
 			}
 		}
 	}

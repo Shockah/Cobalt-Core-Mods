@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Renamed Spontaneous to Impulsive.
+* Added a way to hide On Discard / On Turn End / Impulsive icons and/or tooltips.
 
 ## 2.8.1
 Released 12 April 2025.

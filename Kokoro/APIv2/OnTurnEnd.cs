@@ -35,6 +35,16 @@ public partial interface IKokoroApi
 				/// The actual action to run on turn end.
 				/// </summary>
 				CardAction Action { get; set; }
+				
+				/// <summary>
+				/// Whether to show the icon for the wrapper action.
+				/// </summary>
+				bool ShowOnTurnEndIcon { get; set; }
+				
+				/// <summary>
+				/// Whether to show the tooltip for the wrapper action.
+				/// </summary>
+				bool ShowOnTurnEndTooltip { get; set; }
 
 				/// <summary>
 				/// Sets <see cref="Action"/>.
@@ -42,6 +52,20 @@ public partial interface IKokoroApi
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
 				IOnTurnEndAction SetAction(CardAction value);
+
+				/// <summary>
+				/// Sets <see cref="ShowOnTurnEndIcon"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				IOnTurnEndAction SetShowOnTurnEndIcon(bool value);
+
+				/// <summary>
+				/// Sets <see cref="ShowOnTurnEndTooltip"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				IOnTurnEndAction SetShowOnTurnEndTooltip(bool value);
 			}
 		}
 	}

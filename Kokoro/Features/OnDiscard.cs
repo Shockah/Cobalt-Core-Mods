@@ -89,6 +89,12 @@ internal sealed class OnDiscardManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 		if (action is not TriggerAction triggerAction)
 			return true;
 
+		if (!triggerAction.ShowOnDiscardIcon)
+		{
+			__result = Card.RenderAction(g, state, triggerAction.Action, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+			return false;
+		}
+
 		var oldActionDisabled = triggerAction.Action.disabled;
 		triggerAction.Action.disabled = triggerAction.disabled;
 
@@ -113,6 +119,8 @@ internal sealed class OnDiscardManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 	internal sealed class TriggerAction : CardAction, IKokoroApi.IV2.IOnDiscardApi.IOnDiscardAction
 	{
 		public required CardAction Action { get; set; }
+		public bool ShowOnDiscardIcon { get; set; } = true;
+		public bool ShowOnDiscardTooltip { get; set; } = true;
 
 		[JsonIgnore]
 		public CardAction AsCardAction
@@ -123,13 +131,13 @@ internal sealed class OnDiscardManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 
 		public override List<Tooltip> GetTooltips(State s)
 			=> [
-				new GlossaryTooltip($"action.{GetType().Namespace!}::OnDiscard")
+				.. ShowOnDiscardTooltip ? [new GlossaryTooltip($"action.{GetType().Namespace!}::OnDiscard")
 				{
 					Icon = ActionIcon.Sprite,
 					TitleColor = Colors.action,
 					Title = ModEntry.Instance.Localizations.Localize(["onDiscard", "name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["onDiscard", "description"]),
-				},
+				}] : new List<Tooltip>(),
 				.. Action.GetTooltips(s)
 			];
 
@@ -142,6 +150,18 @@ internal sealed class OnDiscardManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 		public IKokoroApi.IV2.IOnDiscardApi.IOnDiscardAction SetAction(CardAction value)
 		{
 			this.Action = value;
+			return this;
+		}
+
+		public IKokoroApi.IV2.IOnDiscardApi.IOnDiscardAction SetShowOnDiscardIcon(bool value)
+		{
+			this.ShowOnDiscardIcon = value;
+			return this;
+		}
+
+		public IKokoroApi.IV2.IOnDiscardApi.IOnDiscardAction SetShowOnDiscardTooltip(bool value)
+		{
+			this.ShowOnDiscardTooltip = value;
 			return this;
 		}
 	}

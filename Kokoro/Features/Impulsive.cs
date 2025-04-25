@@ -135,6 +135,12 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 		if (action is not TriggerAction triggerAction)
 			return true;
 
+		if (!triggerAction.ShowImpulsiveIcon)
+		{
+			__result = Card.RenderAction(g, state, triggerAction.Action, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+			return false;
+		}
+
 		var oldActionDisabled = triggerAction.Action.disabled;
 		triggerAction.Action.disabled = triggerAction.disabled;
 
@@ -162,6 +168,8 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 	internal sealed class TriggerAction : CardAction, IKokoroApi.IV2.IImpulsiveApi.IImpulsiveAction
 	{
 		public required CardAction Action { get; set; }
+		public bool ShowImpulsiveIcon { get; set; } = true;
+		public bool ShowImpulsiveTooltip { get; set; } = true;
 
 		[JsonIgnore]
 		public CardAction AsCardAction
@@ -172,13 +180,13 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 
 		public override List<Tooltip> GetTooltips(State s)
 			=> [
-				new GlossaryTooltip($"action.{GetType().Namespace!}::Impulsive")
+				.. ShowImpulsiveTooltip ? [new GlossaryTooltip($"action.{GetType().Namespace!}::Impulsive")
 				{
 					Icon = ActionIcon.Sprite,
 					TitleColor = Colors.action,
 					Title = ModEntry.Instance.Localizations.Localize(["impulsive", "name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["impulsive", "description"]),
-				},
+				}] : new List<Tooltip>(),
 				.. Action.GetTooltips(s)
 			];
 
@@ -191,6 +199,18 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 		public IKokoroApi.IV2.IImpulsiveApi.IImpulsiveAction SetAction(CardAction value)
 		{
 			this.Action = value;
+			return this;
+		}
+
+		public IKokoroApi.IV2.IImpulsiveApi.IImpulsiveAction SetShowImpulsiveIcon(bool value)
+		{
+			this.ShowImpulsiveIcon = value;
+			return this;
+		}
+
+		public IKokoroApi.IV2.IImpulsiveApi.IImpulsiveAction SetShowImpulsiveTooltip(bool value)
+		{
+			this.ShowImpulsiveTooltip = value;
 			return this;
 		}
 	}
