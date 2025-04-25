@@ -105,7 +105,7 @@
         },
         "UnlockedPotential": {
             "name": "UNLOCKED POTENTIAL",
-            "description": "<c=action>Spontaneous</c> effects now also trigger when a card is played."
+            "description": "<c=action>Impulsive</c> effects now also trigger when a card is played."
         },
         "VainMemories": {
             "name": "VAIN MEMORIES",
