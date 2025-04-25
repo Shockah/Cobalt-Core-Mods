@@ -33,7 +33,7 @@ internal sealed class CalmCard : Card, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			ModEntry.Instance.KokoroApi.Spontaneous.MakeAction(new AStatus
+			ModEntry.Instance.KokoroApi.Impulsive.MakeAction(new AStatus
 			{
 				targetPlayer = true,
 				status = AuraManager.VeilingStatus.Status,
