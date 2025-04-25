@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.3
+Released 25 April 2025.
 
 * Updated wording from Spontaneous to Impulsive.
 
