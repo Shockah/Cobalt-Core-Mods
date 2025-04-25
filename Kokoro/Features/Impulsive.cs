@@ -11,17 +11,23 @@ partial class ApiImplementation
 {
 	partial class V2Api
 	{
-		public IKokoroApi.IV2.ISpontaneousApi Spontaneous { get; } = new SpontaneousApi();
+		public IKokoroApi.IV2.IImpulsiveApi Spontaneous
+			=> Impulsive;
+
+		public IKokoroApi.IV2.IImpulsiveApi Impulsive { get; } = new ImpulsiveApi();
 		
-		public sealed class SpontaneousApi : IKokoroApi.IV2.ISpontaneousApi
+		public sealed class ImpulsiveApi : IKokoroApi.IV2.IImpulsiveApi
 		{
+			public ICardTraitEntry ImpulsiveTriggeredTrait
+				=> SpontaneousManager.ImpulsiveTriggeredTrait;
+			
 			public ICardTraitEntry SpontaneousTriggeredTrait
-				=> SpontaneousManager.SpontaneousTriggeredTrait;
+				=> SpontaneousManager.ImpulsiveTriggeredTrait;
 
-			public IKokoroApi.IV2.ISpontaneousApi.ISpontaneousAction? AsAction(CardAction action)
-				=> action as IKokoroApi.IV2.ISpontaneousApi.ISpontaneousAction;
+			public IKokoroApi.IV2.IImpulsiveApi.IImpulsiveAction? AsAction(CardAction action)
+				=> action as IKokoroApi.IV2.IImpulsiveApi.IImpulsiveAction;
 
-			public IKokoroApi.IV2.ISpontaneousApi.ISpontaneousAction MakeAction(CardAction action)
+			public IKokoroApi.IV2.IImpulsiveApi.IImpulsiveAction MakeAction(CardAction action)
 				=> new SpontaneousManager.TriggerAction { Action = action };
 		}
 	}
@@ -32,24 +38,24 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 	internal static readonly SpontaneousManager Instance = new();
 	
 	private static ISpriteEntry ActionIcon = null!;
-	internal static ICardTraitEntry SpontaneousTriggeredTrait { get; private set; } = null!;
+	internal static ICardTraitEntry ImpulsiveTriggeredTrait { get; private set; } = null!;
 
 	internal static void Setup(IHarmony harmony)
 	{
-		ActionIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Spontaneous.png"));
-		var triggeredIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/SpontaneousTriggered.png"));
+		ActionIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Impulsive.png"));
+		var triggeredIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/ImpulsiveTriggered.png"));
 
-		SpontaneousTriggeredTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Spontaneous", new()
+		ImpulsiveTriggeredTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Impulsive", new()
 		{
 			Icon = (_, _) => triggeredIcon.Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Spontaneous"]).Localize,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Impulsive"]).Localize,
 			Tooltips = (_, _) => [
-				new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Spontaneous")
+				new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Impulsive")
 				{
 					Icon = triggeredIcon.Sprite,
 					TitleColor = Colors.action,
-					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Spontaneous", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Spontaneous", "description"]),
+					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Impulsive", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Impulsive", "description"]),
 				}
 			]
 		});
@@ -81,8 +87,8 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 				return;
 
 			foreach (var card in state.GetAllCards())
-				if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, SpontaneousTriggeredTrait))
-					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, SpontaneousTriggeredTrait, null, permanent: false);
+				if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, ImpulsiveTriggeredTrait))
+					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, ImpulsiveTriggeredTrait, null, permanent: false);
 		});
 	}
 
@@ -91,14 +97,14 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 
 	private static void QueueSpontaneousActions(State state, Combat combat, IEnumerable<Card> cards)
 	{
-		var firstNonSpontanenousIndex = combat.cardActions.FindIndex(action => !ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(action, "Spontaneous"));
+		var firstNonSpontanenousIndex = combat.cardActions.FindIndex(action => !ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(action, "Impulsive"));
 		var indexToInsertAt = firstNonSpontanenousIndex < 0 ? 0 : firstNonSpontanenousIndex;
 
 		combat.cardActions.InsertRange(
 			indexToInsertAt,
 			cards
 				.Where(card => !state.CharacterIsMissing(card.GetMeta().deck))
-				.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, SpontaneousTriggeredTrait))
+				.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, ImpulsiveTriggeredTrait))
 				.Select(card => (Card: card, Actions: card.GetActionsOverridden(state, combat).Where(action => !action.disabled).OfType<TriggerAction>().Select(triggerAction => triggerAction.Action).ToList()))
 				.Where(e => e.Actions.Count != 0)
 				.SelectMany(e =>
@@ -109,7 +115,7 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 						.Select(action =>
 						{
 							action.whoDidThis = meta.deck;
-							ModEntry.Instance.Helper.ModData.SetModData(action, "Spontaneous", true);
+							ModEntry.Instance.Helper.ModData.SetModData(action, "Impulsive", true);
 							return action;
 						});
 				})
@@ -153,7 +159,7 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 	private static void Combat_SaveThemFromTheVoid_Prefix(Combat __instance, Deck d)
 		=> __instance.QueueImmediate(new RequeueActionsAfterSavingFromTheVoidAction { Deck = d });
 
-	internal sealed class TriggerAction : CardAction, IKokoroApi.IV2.ISpontaneousApi.ISpontaneousAction
+	internal sealed class TriggerAction : CardAction, IKokoroApi.IV2.IImpulsiveApi.IImpulsiveAction
 	{
 		public required CardAction Action { get; set; }
 
@@ -166,12 +172,12 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 
 		public override List<Tooltip> GetTooltips(State s)
 			=> [
-				new GlossaryTooltip($"action.{GetType().Namespace!}::Spontaneous")
+				new GlossaryTooltip($"action.{GetType().Namespace!}::Impulsive")
 				{
 					Icon = ActionIcon.Sprite,
 					TitleColor = Colors.action,
-					Title = ModEntry.Instance.Localizations.Localize(["spontaneous", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["spontaneous", "description"]),
+					Title = ModEntry.Instance.Localizations.Localize(["impulsive", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["impulsive", "description"]),
 				},
 				.. Action.GetTooltips(s)
 			];
@@ -182,7 +188,7 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 			timer = 0;
 		}
 		
-		public IKokoroApi.IV2.ISpontaneousApi.ISpontaneousAction SetAction(CardAction value)
+		public IKokoroApi.IV2.IImpulsiveApi.IImpulsiveAction SetAction(CardAction value)
 		{
 			this.Action = value;
 			return this;
@@ -200,7 +206,7 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 
 			if (s.FindCard(CardId) is not { } card)
 				return;
-			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, SpontaneousTriggeredTrait, true, permanent: false);
+			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, ImpulsiveTriggeredTrait, true, permanent: false);
 		}
 	}
 

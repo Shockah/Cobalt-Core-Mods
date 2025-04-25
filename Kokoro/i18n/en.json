@@ -34,9 +34,9 @@
 		}
 	},
 	"cardTrait": {
-		"Spontaneous": {
+		"Impulsive": {
 			"name": "Triggered This Turn",
-			"description": "This card's <c=action>Spontaneous</c> actions already triggered this turn."
+			"description": "This card's <c=action>Impulsive</c> actions already triggered this turn."
 		},
 		"TemporaryUpgrade": {
 			"name": {
@@ -195,8 +195,8 @@
 		"name": "On Turn End",
 		"description": "This action only triggers when you end your turn with this card in hand."
 	},
-	"spontaneous": {
-		"name": "Spontaneous",
+	"impulsive": {
+		"name": "Impulsive",
 		"description": "This action only triggers whenever a turn starts with this card in hand, or if it's drawn for the first time this turn."
 	},
 	"sequence": {

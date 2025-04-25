@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Renamed Spontaneous to Impulsive.
+
 ## 2.8.1
 Released 12 April 2025.
 
