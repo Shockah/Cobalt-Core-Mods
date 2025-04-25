@@ -61,7 +61,7 @@ internal sealed class RemoteExecutionCard : Card, IRegisterable, IHasCustomCardT
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				ModEntry.Instance.KokoroApi.Spontaneous.MakeAction(new SelfDiscountAction { CardId = uuid }).AsCardAction,
+				ModEntry.Instance.KokoroApi.Impulsive.MakeAction(new SelfDiscountAction { CardId = uuid }).AsCardAction,
 				new Action()
 			],
 			_ => [
