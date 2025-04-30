@@ -98,6 +98,8 @@ internal sealed class RelativityManager : IRegisterable, IKokoroApi.IV2.IStatusR
 	{
 		if (!__instance.isPlayerTurn || g.state.ship.hull <= 0 || __instance.otherShip.hull <= 0)
 			return;
+		if (__instance.otherShip.immovable)
+			return;
 		if (g.state.ship.Get(RelativityStatus.Status) <= 0)
 			return;
 
