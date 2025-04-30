@@ -112,7 +112,7 @@
 		},
 		"Synchrotron": {
 			"name": "SYNCHROTRON",
-			"description": "Each combat, if your deck contains at least 3 cards that cost 2+, one of them at random gains <c=cardtrait>ACCELERATED</c> until end of combat."
+			"description": "Each combat, if your deck contains at least 3 cards that cost 2+ energy, one of them at random gains <c=cardtrait>accelerated</c> until end of combat."
 		}
 	},
 	"card": {
