@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Technically changed how Soggins.EXE is added to the game (no gameplay implications).
+
 ## 1.6.1
 Released 6 February 2025.
 

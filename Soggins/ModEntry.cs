@@ -283,7 +283,6 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 		CombatPatches.Apply(Harmony);
 		MGPatches.Apply(Harmony);
 		ShipPatches.Apply(Harmony);
-		StatePatches.Apply(Harmony);
 	}
 
 	public object GetApi(IManifest requestingMod)
@@ -655,5 +654,8 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 		SogginsCharacter.AddNameLocalisation(I18n.SogginsName);
 		SogginsCharacter.AddDescLocalisation(I18n.SogginsDescription);
 		registry.RegisterCharacter(SogginsCharacter);
+
+		var entry = Helper.Content.Characters.V2.LookupByDeck((Deck)SogginsDeck.Id!.Value)!;
+		entry.Amend(new() { ExeCardType = typeof(SogginsExeCard) });
 	}
 }
