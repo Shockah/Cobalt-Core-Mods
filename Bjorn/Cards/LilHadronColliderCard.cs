@@ -106,9 +106,11 @@ public sealed class LilHadronColliderCard : Card, IRegisterable
 		{
 			base.Begin(g, s, c);
 
-			foreach (var card in c.hand)
-				if (card.uuid != CardId)
-					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, true, permanent: false);
+			var analyzableCards = c.hand.Where(card => card.uuid != CardId && card.IsAnalyzable(s, c)).ToList();
+			foreach (var card in analyzableCards)
+				ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, AnalyzeManager.AnalyzedTrait, true, permanent: false);
+			if (analyzableCards.Count != 0)
+				AnalyzeManager.OnCardsAnalyzed(s, c, analyzableCards, false);
 		}
 	}
 }
