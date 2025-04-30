@@ -116,8 +116,12 @@ internal sealed class AnalyzeManager : IRegisterable
 			var meta = e.Card.GetMeta();
 			if (MG.inst.g.state.CharacterIsMissing(meta.deck))
 				return;
+			
+			var firstNonJustAnalyzedIndex = combat.cardActions.FindIndex(action => !ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(action, "JustAnalyzed"));
+			var indexToInsertAt = firstNonJustAnalyzedIndex < 0 ? 0 : firstNonJustAnalyzedIndex;
 
-			combat.QueueImmediate(
+			combat.cardActions.InsertRange(
+				indexToInsertAt,
 				e.Card.GetActionsOverridden(MG.inst.g.state, combat)
 					.Where(action => !action.disabled)
 					.OfType<OnAnalyzeAction>()
