@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Slowed down duo artifact pulsing color animation during offerings.
 * Switched duo artifact offerings from checking for non-boss offerings to specifically common offerings, which fixes some potential issues with (upcoming) mods.
 
 ## 1.5.0

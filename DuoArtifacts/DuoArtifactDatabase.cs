@@ -8,7 +8,7 @@ namespace Shockah.DuoArtifacts;
 
 internal sealed class DuoArtifactDatabase
 {
-	private const double SingleColorTransitionAnimationLengthSeconds = 1;
+	private const double SingleColorTransitionAnimationLengthSeconds = 2;
 	private static readonly string FirstZoneDuoTag = $"{typeof(ModEntry).Namespace!}.Duo.FirstZone";
 	private static readonly string PastFirstZoneDuoTag = $"{typeof(ModEntry).Namespace!}.Duo.PastFirstZone";
 
