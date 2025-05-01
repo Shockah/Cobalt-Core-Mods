@@ -53,7 +53,7 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 				new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Impulsive")
 				{
 					Icon = triggeredIcon.Sprite,
-					TitleColor = Colors.action,
+					TitleColor = Colors.cardtrait,
 					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Impulsive", "name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Impulsive", "description"]),
 				}

@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added the Fleeting card trait (previously implemented and used in the Louis and Marielle mods).
 * Fixed Limited/Finite traits and Sequence actions sometimes getting garbled icons (related to screen shake).
 * Improved tooltip wording of Impulsive, On Discard and On Turn End.
 

@@ -34,6 +34,10 @@
 		}
 	},
 	"cardTrait": {
+		"Fleeting": {
+			"name": "Fleeting",
+			"description": "If this card is in your hand at the end of your turn, it is exhausted."
+		},
 		"Impulsive": {
 			"name": "Triggered This Turn",
 			"description": "This card's <c=action>Impulsive</c> actions already triggered this turn."
