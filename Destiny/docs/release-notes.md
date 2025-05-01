@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Enchanted gate costs sometimes getting garbled icons (related to screen shake).
+
 ## 1.2.0
 Released 28 March 2025.
 

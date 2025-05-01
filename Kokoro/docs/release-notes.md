@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Limited/Finite traits and Sequence actions sometimes getting garbled icons (related to screen shake).
+
 ## 2.9.0
 Released 25 April 2025.
 

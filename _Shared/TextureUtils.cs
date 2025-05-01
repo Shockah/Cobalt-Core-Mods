@@ -14,6 +14,7 @@ internal static class TextureUtils
 
 		Draw.EndAutoBatchFrame();
 
+		var oldShake = MG.inst.g.state.shake;
 		var oldCamera = MG.inst.cameraMatrix;
 		var oldBatch = MG.inst.sb;
 
@@ -33,6 +34,7 @@ internal static class TextureUtils
 			MG.inst.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Transparent);
 
 			using var resultBatch = new SpriteBatch(MG.inst.GraphicsDevice);
+			MG.inst.g.state.shake = 0;
 			MG.inst.cameraMatrix = MG.inst.g.GetMatrix();
 			MG.inst.sb = resultBatch;
 
@@ -49,6 +51,7 @@ internal static class TextureUtils
 		finally
 		{
 			MG.inst.GraphicsDevice.SetRenderTargets(oldRenderTarget);
+			MG.inst.g.state.shake = oldShake;
 			MG.inst.cameraMatrix = oldCamera;
 			MG.inst.sb = oldBatch;
 			oldBatch.Begin();
