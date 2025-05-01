@@ -45,7 +45,7 @@ internal static class ArtifactRewardPatches
 
 	private static void ArtifactReward_GetOffering_Postfix(State s, List<ArtifactPool>? limitPools, List<Artifact> __result, Rand? rngOverride)
 	{
-		if (limitPools is not null && limitPools.Contains(ArtifactPool.Boss))
+		if (limitPools is not null && !limitPools.Contains(ArtifactPool.Common))
 			return;
 		if (Instance.Settings.ProfileBased.Current.OfferingMode == ProfileSettings.OfferingModeEnum.Common)
 			return;

@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Switched duo artifact offerings from checking for non-boss offerings to specifically common offerings, which fixes some potential issues with (upcoming) mods.
+
 ## 1.5.0
 Released 25 March 2025.
 
