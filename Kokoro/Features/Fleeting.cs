@@ -156,17 +156,17 @@ internal sealed class FleetingManager : HookManager<IKokoroApi.IV2.IFleetingApi.
 		if (__result is not CardBrowse route)
 			return;
 		
-		ModEntry.Instance.Helper.ModData.SetOptionalModData(route, "FilterFinite", ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "FilterFinite"));
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(route, "FilterFleeting", ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "FilterFleeting"));
 	}
 
 	private static void CardBrowse_GetCardList_Postfix(CardBrowse __instance, G g, ref List<Card> __result)
 	{
-		var filterFinite = ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "FilterFinite");
-		if (filterFinite is null)
+		var filterFleeting = ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "FilterFleeting");
+		if (filterFleeting is null)
 			return;
 
 		for (var i = __result.Count - 1; i >= 0; i--)
-			if (filterFinite is not null && ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(g.state, __result[i], Trait) != filterFinite.Value)
+			if (filterFleeting is not null && ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(g.state, __result[i], Trait) != filterFleeting.Value)
 				__result.RemoveAt(i);
 	}
 

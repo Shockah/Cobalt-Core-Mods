@@ -70,6 +70,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		EvadeManager.Setup(Harmony);
 		FiniteManager.Setup(Harmony);
 		FleetingManager.Setup(Harmony);
+		HeavyManager.Setup(Harmony);
 		HiddenActionManager.Setup(Harmony);
 		InPlaceCardUpgradeManager.Setup(Harmony);
 		LimitedManager.Setup(Harmony);
@@ -88,6 +89,8 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		TimesPlayedManager.Setup(Harmony);
 		VariableHintTargetPlayerManager.Setup(Harmony);
 		WrappedActionManager.Setup(Harmony);
+		
+		FleetingManager.Instance.Register(HeavyManager.Instance, 0);
 		
 		StatusLogicManager.Instance.Register(DriveStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(OxidationStatusManager.Instance, 0);

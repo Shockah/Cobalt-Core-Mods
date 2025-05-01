@@ -38,6 +38,13 @@
 			"name": "Fleeting",
 			"description": "If this card is in your hand at the end of your turn, it is exhausted."
 		},
+		"Heavy": {
+			"name": {
+				"active": "Heavy",
+				"used": "Heavy (inactive)"
+			},
+			"description": "This card is not discarded or exhausted at the end of the turn it is drawn."
+		},
 		"Impulsive": {
 			"name": "Triggered This Turn",
 			"description": "This card's <c=action>Impulsive</c> actions already triggered this turn."
