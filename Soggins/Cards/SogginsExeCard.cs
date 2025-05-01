@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Shockah.Soggins;
 
-[CardMeta(deck = Deck.colorless, rarity = Rarity.common, upgradesTo = [Upgrade.A, Upgrade.B])]
+[CardMeta(deck = Deck.colorless, rarity = Rarity.uncommon, upgradesTo = [Upgrade.A, Upgrade.B])]
 public sealed class SogginsExeCard : Card, IRegisterableCard, IFrogproofCard
 {
 	private static ModEntry Instance => ModEntry.Instance;
@@ -88,9 +88,9 @@ public sealed class SogginsExeCard : Card, IRegisterableCard, IFrogproofCard
 	private int GetChoiceCount()
 		=> upgrade switch
 		{
-			Upgrade.A => 2,
-			Upgrade.B => 3,
-			_ => 2
+			Upgrade.A => 3,
+			Upgrade.B => 5,
+			_ => 3
 		};
 
 	public override CardData GetData(State state)

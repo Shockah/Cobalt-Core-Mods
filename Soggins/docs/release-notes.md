@@ -4,6 +4,8 @@
 
 ## Upcoming release
 
+* Switched Soggins.EXE from common to uncommon.
+* Buffed Soggins.EXE from 1 of 2 to 1 of 3 cards at base (and from 1 of 3 to 1 of 5 in the B upgrade path).
 * Technically changed how Soggins.EXE is added to the game (no gameplay implications).
 
 ## 1.6.1
