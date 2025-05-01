@@ -98,7 +98,7 @@ internal sealed class HeavyManager : IKokoroApi.IV2.IFleetingApi.IHook
 		Trait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Heavy", new()
 		{
 			Icon = (state, card) => card is null || !ModEntry.Instance.Api.V2.Heavy.IsHeavyUsed(state, card) ? traitIcon.Sprite : traitUsedIcon.Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Heavy", "name"]).Localize,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Heavy", "name", "active"]).Localize,
 			Tooltips = (state, card) =>
 			{
 				var isUsed = card is not null && ModEntry.Instance.Api.V2.Heavy.IsHeavyUsed(state, card);
@@ -205,7 +205,15 @@ internal sealed class HeavyManager : IKokoroApi.IV2.IFleetingApi.IHook
 	{
 		if (!IgnoreHeavyForDiscard)
 			return;
-		cards.RemoveAll(card => !ModEntry.Instance.Api.V2.Heavy.IsHeavyUsed(state, card) && ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Trait));
+
+		for (var i = cards.Count - 1; i >= 0; i--)
+		{
+			var card = cards[i];
+			if (ModEntry.Instance.Api.V2.Heavy.IsHeavyUsed(state, card) || !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Trait))
+				continue;
+			ModEntry.Instance.Api.V2.Heavy.SetHeavyUsed(state, card, true);
+			cards.RemoveAt(i);
+		}
 	}
 	
 	private static void ACardSelect_BeginWithRoute_Postfix(ACardSelect __instance, ref Route? __result)
