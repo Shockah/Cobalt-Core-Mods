@@ -4,6 +4,8 @@
 
 ## Upcoming release
 
+* Removed the Prototyping card.
+* Added the Contingency Plan card.
 * Fixed the Lil' Hadron Collider card analyzing non-analyzable cards.
 * Fixed the Lil' Hadron Collider card not counting as analyzing cards for some effects (for example, the Side Projects artifact).
 * Fixed "On Analyze" action trigger order.

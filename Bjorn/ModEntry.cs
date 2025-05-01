@@ -50,9 +50,9 @@ public sealed class ModEntry : SimpleMod
 
 	private static readonly IReadOnlyList<Type> RareCardTypes = [
 		typeof(AccelerateCard),
+		typeof(ContingencyPlanCard),
 		typeof(LilHadronColliderCard),
 		typeof(NeglectSafetyCard),
-		typeof(PrototypingCard),
 		typeof(WaterfallModelCard),
 	];
 
@@ -61,7 +61,6 @@ public sealed class ModEntry : SimpleMod
 			.. CommonCardTypes,
 			.. UncommonCardTypes,
 			.. RareCardTypes,
-			typeof(PrototypeCard),
 			typeof(TerminateCard),
 			//typeof(BlochExeCard),
 		];
@@ -202,8 +201,6 @@ public sealed class ModEntry : SimpleMod
 
 	internal static Rarity GetCardRarity(Type type)
 	{
-		if (type == typeof(PrototypeCard))
-			return Rarity.uncommon;
 		if (type == typeof(TerminateCard))
 			return Rarity.rare;
 		if (RareCardTypes.Contains(type))
