@@ -93,13 +93,13 @@ internal static class I18n
 	public static readonly string BooksCatArtifactTooltip = "At the end of each turn, gain <c=status>SHARD</c> equal to unspent <c=energy>ENERGY</c>.";
 
 	public static readonly string BooksDrakeArtifactName = "Stunflare Catalyst";
-	public static readonly string BooksDrakeArtifactTooltip = "Whenever you <c=action>attack</c>, lose 2 <c=status>SHARD</c>: the <c=action>attack</c> becomes piercing. If it was already piercing, it <c=action>stuns</c>. If it was already stunning, <c=action>TOTAL STUN</c> the opponent.";
+	public static readonly string BooksDrakeArtifactTooltip = "Whenever you <c=action>attack</c>, spend 2 <c=status>SHARD</c> to make the <c=action>attack</c> pierce. If it was already piercing, it <c=action>stuns</c>. If it was already stunning, <c=action>TOTAL STUN</c> the opponent.";
 
 	public static readonly string BooksDizzyArtifactName = "Aegis Transmuter";
 	public static readonly string BooksDizzyArtifactTooltip = "<c=status>SHIELD</c> and <c=status>SHARD</c> can be used interchangeably.";
 
 	public static readonly string BooksIsaacArtifactName = "Drone Amplification Matrix";
-	public static readonly string BooksIsaacArtifactTooltip = "At the end of each turn, lose 2 <c=status>SHARD</c>: your <c=midrow>Attack Drones</c> deal 1 more damage.";
+	public static readonly string BooksIsaacArtifactTooltip = "At the end of each turn, spend 2 <c=status>SHARD</c> to make your <c=midrow>Attack Drones</c> deal 1 more damage this turn.";
 
 	public static readonly string BooksMaxArtifactName = "Evaporator";
 	public static readonly string BooksMaxArtifactTooltip = "Whenever you <c=cardtrait>exhaust</c> a card, gain 1 <c=status>SHARD</c>.";
@@ -129,7 +129,7 @@ internal static class I18n
 	public static readonly string CatRiggsArtifactTooltip = "<c=cardtrait>Discount</c> the first non-zero-cost extra card drawn each turn.";
 
 	public static readonly string DizzyDrakeArtifactName = "Frozen Control Rods";
-	public static readonly string DizzyDrakeArtifactTooltip = "<c=action>Overheating</c> now causes you to lose 2 <c=status>(TEMP) SHIELD</c> instead of any hull, if possible.";
+	public static readonly string DizzyDrakeArtifactTooltip = "<c=downside>Overheating</c> now causes you to lose 2 <c=status>(TEMP) SHIELD</c> instead of any hull, if possible.";
 
 	public static readonly string DizzyIsaacArtifactName = "Corrosive Payload";
 	public static readonly string DizzyIsaacArtifactTooltip = "Whenever a <c=midrow>midrow object</c> gets destroyed by an <c=action>attack</c> or <c=action>launch</c>, the ship that caused it gains 2 <c=status>OXIDATION</c>.";
@@ -149,22 +149,22 @@ internal static class I18n
 	public static readonly string DrakeIsaacArtifactTooltip = "Your <c=midrow>Attack and Shield Drones</c> trigger twice. <c=downside>Each turn, gain <c=status>HEAT</c> equal to the number of these drones, -1.</c>";
 
 	public static readonly string DrakeMaxArtifactName = "CO2 Fire Extinguisher";
-	public static readonly string DrakeMaxArtifactTooltip = "After you <c=cardtrait>exhaust</c> a card while you are about to <c=action>overheat</c>, reduce your <c=status>HEAT</c> to right below the <c=action>overheat</c> threshold.";
+	public static readonly string DrakeMaxArtifactTooltip = "After you <c=cardtrait>exhaust</c> a card while you are about to <c=downside>overheat</c>, reduce your <c=status>HEAT</c> to right below the <c=downside>overheat</c> threshold.";
 
 	public static readonly string DrakePeriArtifactName = "Critical Mass";
-	public static readonly string DrakePeriArtifactTooltip = "Whenever you <c=action>overheat</c>, convert your <c=status>OVERDRIVE</c> into <c=status>POWERDRIVE</c>.";
+	public static readonly string DrakePeriArtifactTooltip = "Whenever you <c=downside>overheat</c>, convert your <c=status>OVERDRIVE</c> into <c=status>POWERDRIVE</c>.";
 
 	public static readonly string DrakeRiggsArtifactName = "Backup Thrusters";
-	public static readonly string DrakeRiggsArtifactTooltip = "Once per turn, when you have no <c=status>EVADE</c>, you may still <c=status>EVADE</c> at the cost of gaining 1 <c=status>HEAT</c>.";
+	public static readonly string DrakeRiggsArtifactTooltip = "Once per turn, when you have no <c=status>EVADE</c> left to spend, you may still <c=status>EVADE</c> at the cost of gaining 1 <c=status>HEAT</c>.";
 
 	public static readonly string IsaacMaxArtifactName = "Recycler";
 	public static readonly string IsaacMaxArtifactTooltip = "Whenever you <c=action>discard</c> or <c=cardtrait>exhaust</c> any number of cards during your turn, put a <c=midrow>bubble</c> on a random <c=midrow>midrow object</c> without one in front of the ship. If there are none, <c=action>launch</c> an <c=midrow>asteroid</c> on a random space in front of the ship.";
 
 	public static readonly string IsaacPeriArtifactName = "Enhanced Antenna";
-	public static readonly string IsaacPeriArtifactTooltip = "Your <c=midrow>Attack Drones</c> benefit from <c=status>OVERDRIVE</c>, <c=status>POWERDRIVE</c> and <c=status>FLUX</c>.";
+	public static readonly string IsaacPeriArtifactTooltip = "Your <c=midrow>Attack Drones</c> benefit from <c=status>FLUX</c>, <c=status>OVERDRIVE</c> and <c=status>POWERDRIVE</c>.";
 
 	public static readonly string IsaacRiggsArtifactName = "Relativistic Motion Engine";
-	public static readonly string IsaacRiggsArtifactTooltip = "<c=status>EVADE</c> and <c=status>DRONESHIFT</c> can be used interchangeably.\nGain 1 <c=status>EVADE</c> on the first turn.";
+	public static readonly string IsaacRiggsArtifactTooltip = "<c=status>DRONESHIFT</c> and <c=status>EVADE</c> can be used interchangeably.\nGain 1 <c=status>EVADE</c> on the first turn.";
 
 	public static readonly string MaxPeriArtifactName = "Combat Spreadsheets";
 	public static readonly string MaxPeriArtifactTooltip = "Your <c=keyword>leftmost</c> <c=action>attack</c> card fires an extra 1 damage shot.\nYour <c=keyword>rightmost</c> <c=action>attack</c> card deals 1 more damage.\nThe last <c=action>attack</c> card in your hand gets no bonuses.";
