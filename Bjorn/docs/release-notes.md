@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.0
+Released 1 May 2025.
 
 * Removed the Prototyping card.
 * Added the Contingency Plan card.
