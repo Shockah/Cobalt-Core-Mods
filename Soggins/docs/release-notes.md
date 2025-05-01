@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.7.0
+Released 1 May 2025.
 
 * Switched Soggins.EXE from common to uncommon.
 * Buffed Soggins.EXE from 1 of 2 to 1 of 3 cards at base (and from 1 of 3 to 1 of 5 in the B upgrade path).
