@@ -189,15 +189,15 @@
 	},
 	"onDiscard": {
 		"name": "On Discard",
-		"description": "This action only triggers whenever this card is discarded during your turn without playing it."
+		"description": "This action automatically triggers whenever this card is discarded during your turn without playing it. <c=downside>Does nothing otherwise.</c>"
 	},
 	"onTurnEnd": {
 		"name": "On Turn End",
-		"description": "This action only triggers when you end your turn with this card in hand."
+		"description": "This action automatically triggers when you end your turn with this card in hand. <c=downside>Does nothing otherwise.</c>"
 	},
 	"impulsive": {
 		"name": "Impulsive",
-		"description": "This action only triggers whenever a turn starts with this card in hand, or if it's drawn for the first time this turn."
+		"description": "Once per turn, this action automatically triggers when this card is in your hand. <c=downside>Does nothing otherwise.</c>"
 	},
 	"sequence": {
 		"Run": {
