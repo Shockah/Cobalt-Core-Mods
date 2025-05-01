@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.5.1
+Released 1 May 2025.
 
 * Slowed down duo artifact pulsing color animation during offerings.
 * Switched duo artifact offerings from checking for non-boss offerings to specifically common offerings, which fixes some potential issues with (upcoming) mods.
