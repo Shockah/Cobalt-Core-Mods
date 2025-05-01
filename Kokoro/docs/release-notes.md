@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.10.0
+Released 1 May 2025.
 
 * Added the Fleeting and Heavy card traits (previously implemented and used in the Louis and Marielle mods).
 * Fixed Limited/Finite traits and Sequence actions sometimes getting garbled icons (related to screen shake).
