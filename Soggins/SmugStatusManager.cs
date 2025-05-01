@@ -185,9 +185,11 @@ internal class SmugStatusManager : HookManager<ISmugHook>
 			apology = weightedRandom.Next(rng);
 		}
 
-		var totalApologies = timesApologyWasGiven.Values.Sum() - timesApologyWasGiven.GetValueOrDefault(typeof(DualApologyCard).FullName!);
 		if (!forDual)
+		{
+			var totalApologies = timesApologyWasGiven.Values.Sum() - timesApologyWasGiven.GetValueOrDefault(typeof(DualApologyCard).FullName!) + 1;
 			apology.ApologyFlavorText = $"<c={I18n.SogginsColor}>{string.Format(I18n.ApologyFlavorTexts[rng.NextInt() % I18n.ApologyFlavorTexts.Length], totalApologies)}</c>";
+		}
 		timesApologyWasGiven[apology.GetType().FullName!] = timesApologyWasGiven.GetValueOrDefault(apology.GetType().FullName!) + 1;
 		return apology;
 	}
