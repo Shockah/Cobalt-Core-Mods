@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.2.1
+Released 2 May 2025.
 
 * Fixed alternative shard payment options not working for enchanting cards.
 * Fixed Enchanted gate costs sometimes getting garbled icons (related to screen shake).
