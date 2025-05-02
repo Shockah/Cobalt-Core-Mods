@@ -54,6 +54,7 @@ public interface IDynaCharge
 
 	IEnumerable<Tooltip> GetTooltips(State state) => [];
 	void OnTrigger(State state, Combat combat, Ship ship, Part part) { }
+	void OnHitMidrow(State state, Combat combat, bool fromPlayer, int worldX) { }
 }
 
 public interface IDynaHook

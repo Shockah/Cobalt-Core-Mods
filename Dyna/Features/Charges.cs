@@ -396,6 +396,8 @@ public sealed class FireChargeAction : CardAction
 			var dynaChargeFakeDrone = new DynaChargeFakeDrone { ExtraDamage = Charge.BonkDamage - 2 };
 			var outcome = ASpawn.GetCollisionOutcome(dynaChargeFakeDrone, @object);
 			@object.bubbleShield = false;
+			
+			Charge.OnHitMidrow(s, c, !TargetPlayer, worldX);
 
 			if (outcome is ASpawn.Outcome.BothDie or ASpawn.Outcome.LaunchedWins)
 				c.DestroyDroneAt(s, worldX, !TargetPlayer);
@@ -452,7 +454,7 @@ public abstract class BaseDynaCharge(string key) : IDynaCharge
 	public virtual IEnumerable<Tooltip> GetTooltips(State state)
 		=> [];
 
-	public virtual void OnTrigger(State state, Combat combat, Ship ship, Part part)
-	{
-	}
+	public virtual void OnTrigger(State state, Combat combat, Ship ship, Part part) { }
+	
+	public virtual void OnHitMidrow(State state, Combat combat, bool fromPlayer, int worldX) { }
 }

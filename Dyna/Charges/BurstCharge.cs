@@ -54,6 +54,15 @@ public sealed class BurstCharge() : BaseDynaCharge($"{ModEntry.Instance.Package.
 		});
 	}
 
+	public override void OnHitMidrow(State state, Combat combat, bool fromPlayer, int worldX)
+	{
+		base.OnHitMidrow(state, combat, fromPlayer, worldX);
+		combat.QueueImmediate([
+			new ADelay(),
+			ModEntry.Instance.Api.MakeBlastwaveInMidrowAction(fromPlayer, worldX, 1),
+		]);
+	}
+
 	private sealed class Action : CardAction
 	{
 		public required bool TargetPlayer;

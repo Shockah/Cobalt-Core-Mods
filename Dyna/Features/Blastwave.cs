@@ -223,6 +223,9 @@ internal sealed class BlastwaveManager
 		public bool IsStunwave;
 		public bool HitMidrow;
 
+		public override bool CanSkipTimerIfLastEvent()
+			=> false;
+
 		public override List<Tooltip> GetTooltips(State s)
 		{
 			string key;
