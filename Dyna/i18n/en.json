@@ -120,7 +120,7 @@
         },
         "UnstableCompound": {
             "name": "UNSTABLE COMPOUND",
-            "description": "All <c=action>Blastwave</c> attacks on cards are <c=action>Wide Blastwave</c>. <c=downside>Whenever you trigger <c=action>Blastwave</c>, take 1 damage.</c>"
+            "description": "All <c=action>Blastwaves</c> hit 1 more space in each direction.</c>"
         },
         "VolatileFuse": {
             "name": "VOLATILE FUSE",

@@ -1,14 +1,11 @@
-﻿using HarmonyLib;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
-using Shockah.Shared;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace Shockah.Dyna;
 
-internal sealed class UnstableCompoundArtifact : Artifact, IRegisterable, IDynaHook, IHookPriority
+internal sealed class UnstableCompoundArtifact : Artifact, IRegisterable, IDynaHook
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -24,44 +21,22 @@ internal sealed class UnstableCompoundArtifact : Artifact, IRegisterable, IDynaH
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "UnstableCompound", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "UnstableCompound", "description"]).Localize,
 		});
-
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
-			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetActionsOverridden_Postfix)), priority: Priority.Low)
-		);
 	}
 
 	public override List<Tooltip> GetExtraTooltips()
-		=> new BlastwaveManager.BlastwaveAction { Damage = 1, Range = 1 }.GetTooltips(DB.fakeState)
-			.Concat(new BlastwaveManager.BlastwaveAction { Damage = 1, Range = 2 }.GetTooltips(DB.fakeState))
-			.ToList();
+		=> new BlastwaveManager.BlastwaveAction { Damage = 1, Range = 1 }.GetTooltips(DB.fakeState);
 
-	public double HookPriority
-		=> -10;
-
-	public void OnBlastwaveTrigger(State state, Combat combat, Ship ship, int worldX, bool hitMidrow)
+	public bool ModifyShipBlastwave(State state, Combat combat, AAttack? source, bool targetPlayer, int localX, ref int? damage, ref int range, ref bool isStunwave)
 	{
-		if (ship.isPlayerShip)
-			return;
-
-		combat.QueueImmediate(new AHurt
-		{
-			targetPlayer = true,
-			hurtShieldsFirst = true,
-			hurtAmount = 1,
-			artifactPulse = Key()
-		});
+		Pulse();
+		range++;
+		return false;
 	}
 
-	private static void Card_GetActionsOverridden_Postfix(State s, ref List<CardAction> __result)
+	public bool ModifyMidrowBlastwave(State state, Combat combat, AAttack? source, bool playerDidIt, int worldX, ref int? damage, ref int range, ref bool isStunwave)
 	{
-		if (!s.EnumerateAllArtifacts().Any(a => a is UnstableCompoundArtifact))
-			return;
-
-		foreach (var action in __result)
-			foreach (var wrappedAction in ModEntry.Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively(action))
-				if (wrappedAction is AAttack attack && attack.IsBlastwave() && attack.GetBlastwaveRange() <= 1)
-					ModEntry.Instance.Helper.ModData.SetModData(attack, "BlastwaveRange", 2);
+		Pulse();
+		range++;
+		return false;
 	}
 }

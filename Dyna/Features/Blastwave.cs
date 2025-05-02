@@ -279,13 +279,28 @@ internal sealed class BlastwaveManager
 		public override void Begin(G g, State s, Combat c)
 		{
 			base.Begin(g, s, c);
+			
+			var targetShip = TargetPlayer ? s.ship : c.otherShip;
+			var worldX = targetShip.x + LocalX;
+
+			if (HitMidrow)
+			{
+				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
+					if (hook.ModifyMidrowBlastwave(s, c, Source, !TargetPlayer, worldX, ref Damage, ref Range, ref IsStunwave))
+						break;
+			}
+			else
+			{
+				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
+					if (hook.ModifyShipBlastwave(s, c, Source, TargetPlayer, LocalX, ref Damage, ref Range, ref IsStunwave))
+						break;
+			}
+			
 			timer = Range * SinglePartDuration;
 
 			if (Range > 0)
 				Run(g, s, c, 1);
-
-			var targetShip = TargetPlayer ? s.ship : c.otherShip;
-			var worldX = targetShip.x + LocalX;
+			
 			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
 				hook.OnBlastwaveTrigger(s, c, targetShip, worldX, HitMidrow);
 		}
