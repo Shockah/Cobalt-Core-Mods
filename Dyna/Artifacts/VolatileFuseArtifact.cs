@@ -37,7 +37,7 @@ internal sealed class VolatileFuseArtifact : Artifact, IRegisterable, IDynaHook
 	}
 
 	public override List<Tooltip> GetExtraTooltips()
-		=> new BlastwaveManager.BlastwaveAction { Source = new(), Damage = 1, WorldX = 0 }.GetTooltips(MG.inst.g?.state ?? DB.fakeState);
+		=> new BlastwaveManager.BlastwaveAction { Source = new(), Damage = 1, LocalX = 0 }.GetTooltips(MG.inst.g?.state ?? DB.fakeState);
 
 	public override int? GetDisplayNumber(State s)
 		=> Counter;

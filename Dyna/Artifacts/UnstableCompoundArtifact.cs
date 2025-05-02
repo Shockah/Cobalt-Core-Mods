@@ -33,8 +33,8 @@ internal sealed class UnstableCompoundArtifact : Artifact, IRegisterable, IDynaH
 	}
 
 	public override List<Tooltip> GetExtraTooltips()
-		=> new BlastwaveManager.BlastwaveAction { Source = new(), Damage = 1, Range = 1, WorldX = 0 }.GetTooltips(DB.fakeState)
-			.Concat(new BlastwaveManager.BlastwaveAction { Source = new(), Damage = 1, Range = 2, WorldX = 0 }.GetTooltips(DB.fakeState))
+		=> new BlastwaveManager.BlastwaveAction { Source = new(), Damage = 1, Range = 1, LocalX = 0 }.GetTooltips(DB.fakeState)
+			.Concat(new BlastwaveManager.BlastwaveAction { Source = new(), Damage = 1, Range = 2, LocalX = 0 }.GetTooltips(DB.fakeState))
 			.ToList();
 
 	public double HookPriority

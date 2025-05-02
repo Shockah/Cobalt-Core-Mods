@@ -47,7 +47,7 @@ internal sealed class DynaMaxArtifact : Artifact, IRegisterable
 	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			new TTGlossary("cardtrait.exhaust"),
-			..new BlastwaveManager.BlastwaveAction { Source = new(), Damage = null, IsStunwave = true, WorldX = 0 }.GetTooltips(DB.fakeState)
+			..new BlastwaveManager.BlastwaveAction { Source = new(), Damage = null, IsStunwave = true, LocalX = 0 }.GetTooltips(DB.fakeState)
 		];
 
 	public override void OnTurnEnd(State state, Combat combat)

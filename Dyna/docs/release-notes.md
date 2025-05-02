@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Fixed Blastwave triggering at the wrong spot for attacks which move the enemy around.
 * Fixed the Bazooka Mod (Dyna-Isaac duo) artifact also triggering on enemy drones.
 
 ## 1.4.2

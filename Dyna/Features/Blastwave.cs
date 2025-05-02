@@ -81,19 +81,16 @@ internal sealed class BlastwaveManager
 		if (!attack.IsBlastwave())
 			return;
 
-		if (!hitMidrow)
-		{
-			var targetShip = targetPlayer ? state.ship : combat.otherShip;
-			if (targetShip.GetPartAtWorldX(worldX) is null)
-				return;
-		}
+		var targetShip = targetPlayer ? state.ship : combat.otherShip;
+		if (!hitMidrow && (targetShip.GetPartAtWorldX(worldX) is not { } part || part.type == PType.empty))
+			return;
 
 		attack.timer *= 0.5;
 		combat.QueueImmediate(new BlastwaveAction
 		{
 			Source = attack,
 			TargetPlayer = targetPlayer,
-			WorldX = worldX,
+			LocalX = worldX - targetShip.x,
 			Damage = attack.GetBlastwaveDamage(),
 			Range = attack.GetBlastwaveRange(),
 			IsStunwave = attack.IsStunwave(),
@@ -155,7 +152,7 @@ internal sealed class BlastwaveManager
 		{
 			Source = __instance,
 			TargetPlayer = __instance.targetPlayer,
-			WorldX = 0,
+			LocalX = 0,
 			Damage = __instance.GetBlastwaveDamage(),
 			Range = __instance.GetBlastwaveRange(),
 			IsStunwave = __instance.IsStunwave(),
@@ -219,7 +216,7 @@ internal sealed class BlastwaveManager
 
 		public required AAttack Source;
 		public bool TargetPlayer;
-		public required int WorldX;
+		public required int LocalX;
 		public required int? Damage;
 		public int Range = 1;
 		public bool IsStunwave;
@@ -288,8 +285,9 @@ internal sealed class BlastwaveManager
 				Run(g, s, c, 1);
 
 			var targetShip = TargetPlayer ? s.ship : c.otherShip;
+			var worldX = targetShip.x + LocalX;
 			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
-				hook.OnBlastwaveTrigger(s, c, targetShip, WorldX, HitMidrow);
+				hook.OnBlastwaveTrigger(s, c, targetShip, worldX, HitMidrow);
 		}
 
 		public override void Update(G g, State s, Combat c)
@@ -308,13 +306,14 @@ internal sealed class BlastwaveManager
 		private void Run(G g, State state, Combat combat, int offset)
 		{
 			var targetShip = TargetPlayer ? state.ship : combat.otherShip;
+			var worldX = targetShip.x + LocalX;
 
-			RunAt(WorldX - offset);
-			RunAt(WorldX + offset);
+			RunAt(worldX - offset);
+			RunAt(worldX + offset);
 
-			void RunForPartAt(int worldX)
+			void RunForPartAt(int bitWorldX)
 			{
-				if (targetShip.GetPartAtWorldX(worldX) is not { } part || part.type == PType.empty)
+				if (targetShip.GetPartAtWorldX(bitWorldX) is not { } part || part.type == PType.empty)
 					return;
 
 				var hitShield = targetShip.Get(Status.shield) + targetShip.Get(Status.tempShield) > 0;
@@ -325,34 +324,34 @@ internal sealed class BlastwaveManager
 				};
 
 				if (IsStunwave || part.stunModifier == PStunMod.stunnable)
-					new AStunPart { worldX = worldX }.FullyRun(g, state, combat);
+					new AStunPart { worldX = bitWorldX }.FullyRun(g, state, combat);
 
 				if (Damage is { } damage)
-					damageDone = targetShip.NormalDamage(state, combat, damage, worldX, piercing: IsPiercing);
+					damageDone = targetShip.NormalDamage(state, combat, damage, bitWorldX, piercing: IsPiercing);
 				else if (IsStunwave)
 					ChargeManager.TriggerChargeIfAny(state, combat, part, TargetPlayer);
 
 				var raycastResult = new RaycastResult
 				{
 					hitShip = true,
-					worldX = worldX
+					worldX = bitWorldX
 				};
 				EffectSpawnerExt.HitEffect(g, TargetPlayer, raycastResult, damageDone);
 
 				if (!TargetPlayer)
 				{
-					combat.otherShip.ai?.OnHitByAttack(state, combat, worldX, Source);
+					combat.otherShip.ai?.OnHitByAttack(state, combat, bitWorldX, Source);
 					foreach (var artifact in state.EnumerateAllArtifacts())
 						artifact.OnEnemyGetHit(state, combat, part);
 				}
 
 				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-					hook.OnBlastwaveHit(state, combat, targetShip, WorldX, worldX, HitMidrow);
+					hook.OnBlastwaveHit(state, combat, targetShip, worldX, bitWorldX, HitMidrow);
 			}
 
-			void RunForMidrowAt(int worldX)
+			void RunForMidrowAt(int bitWorldX)
 			{
-				if (!combat.stuff.TryGetValue(worldX, out var @object))
+				if (!combat.stuff.TryGetValue(bitWorldX, out var @object))
 					return;
 
 				var isInvincible = @object.Invincible();
@@ -373,7 +372,7 @@ internal sealed class BlastwaveManager
 				var raycastResult = new RaycastResult
 				{
 					hitDrone = true,
-					worldX = worldX
+					worldX = bitWorldX
 				};
 				EffectSpawnerExt.HitEffect(g, TargetPlayer, raycastResult, damageDone);
 
@@ -388,19 +387,19 @@ internal sealed class BlastwaveManager
 				}
 				else
 				{
-					combat.DestroyDroneAt(state, worldX, !TargetPlayer);
+					combat.DestroyDroneAt(state, bitWorldX, !TargetPlayer);
 				}
 
 				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-					hook.OnBlastwaveHit(state, combat, targetShip, worldX, WorldX, HitMidrow);
+					hook.OnBlastwaveHit(state, combat, targetShip, worldX, bitWorldX, HitMidrow);
 			}
 
-			void RunAt(int worldX)
+			void RunAt(int bitWorldX)
 			{
 				if (HitMidrow)
-					RunForMidrowAt(worldX);
+					RunForMidrowAt(bitWorldX);
 				else
-					RunForPartAt(worldX);
+					RunForPartAt(bitWorldX);
 			}
 		}
 	}
