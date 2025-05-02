@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Fixed alternative shard payment options not working for enchanting cards.
 * Fixed Enchanted gate costs sometimes getting garbled icons (related to screen shake).
 * Improved some tooltip wording.
 

@@ -318,10 +318,12 @@ internal sealed class Enchanted : IRegisterable
 		
 		if (enchantLevel >= maxEnchantLevel)
 			return false;
-		if (GetNextEnchantLevelCost(card) is not { } cost)
-			return false;
 		if (fromUserInteraction && state.CharacterIsMissing(card.GetMeta().deck))
 			return false;
+		if (GetNextEnchantLevelCost(card) is not { } cost)
+			return false;
+		
+		cost = ModEntry.Instance.KokoroApi.ActionCosts.ModifyActionCost(Mutil.DeepCopy(cost), state, state.route as Combat ?? DB.fakeCombat, card, null);
 		
 		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, combat, card);
 		var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(cost, environment);
