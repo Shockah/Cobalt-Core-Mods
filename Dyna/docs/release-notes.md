@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Bazooka Mod (Dyna-Isaac duo) artifact also triggering on enemy drones.
+
 ## 1.4.2
 Released 7 March 2025.
 

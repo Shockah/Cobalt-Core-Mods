@@ -48,6 +48,8 @@ internal sealed class DynaIsaacArtifact : Artifact, IRegisterable
 
 	private static void AAttack_Begin_Prefix(AAttack __instance, State s, Combat c)
 	{
+		if (__instance.targetPlayer)
+			return;
 		if (__instance.fromDroneX is not { } droneX)
 			return;
 		if (!c.stuff.TryGetValue(droneX, out var @object))
