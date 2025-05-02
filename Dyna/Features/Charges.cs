@@ -406,26 +406,25 @@ public sealed class FireChargeAction : CardAction
 		}
 		else if (targetShip.GetPartAtWorldX(worldX) is { } part && part.type != PType.empty)
 		{
-			if (part.GetStickedCharge() is { } existingCharge)
+			var existingCharge = part.GetStickedCharge();
+
+			if (existingCharge is null)
 			{
-				Audio.Play(Event.Hits_DroneCollision);
-				part.SetStickedCharge(null);
-				
-				// reversed order - charges are expected to QueueImmediate their actions, which reverses their order
-				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
-					hook.OnChargeTrigger(s, c, targetShip, worldX);
-				Charge.OnTrigger(s, c, targetShip, part);
-				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
-					hook.OnChargeTrigger(s, c, targetShip, worldX);
-				existingCharge.OnTrigger(s, c, targetShip, part);
-			}
-			else
-			{
+				targetShip.NormalDamage(s, c, 1, worldX);
 				Audio.Play(Event.Hits_ShieldHit);
 				part.SetStickedCharge(Charge);
 
 				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
 					hook.OnChargeSticked(s, c, targetShip, worldX);
+			}
+			else
+			{
+				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
+					hook.OnChargeTrigger(s, c, targetShip, worldX);
+				Charge.OnTrigger(s, c, targetShip, part);
+				
+				targetShip.NormalDamage(s, c, 1, worldX);
+				Audio.Play(Event.Hits_DroneCollision);
 			}
 		}
 	}
@@ -440,7 +439,7 @@ public abstract class BaseDynaCharge(string key) : IDynaCharge
 {
 	public string Key() => key;
 	public double YOffset { get; set; }
-	public virtual int BonkDamage { get; } = 2;
+	public virtual int BonkDamage { get; } = 1;
 
 	public abstract Spr GetIcon(State state);
 

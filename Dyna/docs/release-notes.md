@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Charges now deal 1 damage when sticking to ships.
 * Changed the Bang card.
 * Changed the Light It Up card.
 * Changed the Lock and Load (and by extension Custom Charge) cards.
