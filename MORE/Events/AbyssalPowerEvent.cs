@@ -152,6 +152,11 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 
 		DB.eventChoiceFns[EventName] = AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(GetChoices));
 		DB.eventChoiceFns[$"{EventName}::EnterCombat"] = AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(GetEnterCombatChoices));
+		
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.CanBeNegative)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_CanBeNegative_Postfix))
+		);
 	}
 
 	public static void UpdateSettings(IPluginPackage<IModManifest> package, IModHelper helper, ProfileSettings settings)
@@ -245,6 +250,12 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 				]
 			}
 		];
+	}
+
+	private static void Ship_CanBeNegative_Postfix(Status status, ref bool __result)
+	{
+		if (status == Status.powerdrive)
+			__result = true;
 	}
 
 	private sealed class AbyssalPowerCard : Card

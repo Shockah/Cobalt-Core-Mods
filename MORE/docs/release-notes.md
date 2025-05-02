@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming release
+
+### Abyssal Power event
+* Fixed the Abyssal Power fight not giving the enemy negative Powerdrive when fighting in zone 1.
+
 ## 1.5.0
 Released 30 March 2025.
 
