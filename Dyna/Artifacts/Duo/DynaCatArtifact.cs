@@ -41,7 +41,7 @@ internal sealed class DynaCatArtifact : Artifact, IRegisterable
 	}
 
 	public override List<Tooltip> GetExtraTooltips()
-		=> new BlastwaveManager.BlastwaveAction { Source = new(), Damage = 1, LocalX = 0 }.GetTooltips(DB.fakeState);
+		=> new BlastwaveManager.BlastwaveAction { Damage = 1 }.GetTooltips(DB.fakeState);
 
 	public override void OnReceiveArtifact(State state)
 	{

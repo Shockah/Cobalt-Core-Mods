@@ -50,11 +50,7 @@ public sealed class SwiftCharge() : BaseDynaCharge($"{ModEntry.Instance.Package.
 		]);
 
 		var damageDone = new DamageDone { hitHull = true };
-		var raycastResult = new RaycastResult
-		{
-			hitShip = true,
-			worldX = worldX
-		};
+		var raycastResult = new RaycastResult { hitShip = true, worldX = worldX };
 		EffectSpawnerExt.HitEffect(MG.inst.g, ship.isPlayerShip, raycastResult, damageDone);
 	}
 }

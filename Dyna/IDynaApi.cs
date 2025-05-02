@@ -21,6 +21,9 @@ public interface IDynaApi
 	int GetBlastwaveRange(AAttack attack);
 	AAttack SetBlastwave(AAttack attack, int? damage, int range = 1, bool isStunwave = false);
 
+	CardAction MakeBlastwaveOnShipAction(bool targetPlayer, int localX, int? damage, int range = 1, bool isStunwave = false);
+	CardAction MakeBlastwaveInMidrowAction(bool playerDidIt, int worldX, int? damage, int range = 1, bool isStunwave = false);
+
 	IDynaCharge MakeBurstCharge();
 	IDynaCharge MakeConcussionCharge();
 	IDynaCharge MakeDemoCharge();

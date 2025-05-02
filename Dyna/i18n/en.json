@@ -49,7 +49,7 @@
     "charge": {
         "Burst": {
             "name": "Burst Charge",
-            "description": "Deals 3 damage when triggered."
+            "description": "Triggers a <c=action>Blastwave 1</c> when triggered."
         },
         "Concussion": {
             "name": "Concussion Charge",

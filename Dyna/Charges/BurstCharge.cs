@@ -33,7 +33,8 @@ public sealed class BurstCharge() : BaseDynaCharge($"{ModEntry.Instance.Package.
 				TitleColor = Colors.parttrait,
 				Title = ModEntry.Instance.Localizations.Localize(["charge", "Burst", "name"]),
 				Description = ModEntry.Instance.Localizations.Localize(["charge", "Burst", "description"])
-			}
+			},
+			.. new BlastwaveManager.BlastwaveAction { Damage = 1 }.GetTooltips(state),
 		];
 
 	public override void OnTrigger(State state, Combat combat, Ship ship, Part part)
@@ -68,18 +69,19 @@ public sealed class BurstCharge() : BaseDynaCharge($"{ModEntry.Instance.Package.
 				timer = 0;
 				return;
 			}
-			
-			var worldX = targetShip.x + targetShip.parts.IndexOf(part);
-			var damageDone = targetShip.NormalDamage(s, c, 3, worldX);
-			var raycastResult = new RaycastResult
-			{
-				hitShip = true,
-				worldX = worldX
-			};
-			EffectSpawnerExt.HitEffect(MG.inst.g, TargetPlayer, raycastResult, damageDone);
 
+			var localX = targetShip.parts.IndexOf(part);
+			var worldX = targetShip.x + localX;
+			
+			var actions = new List<CardAction> { ModEntry.Instance.Api.MakeBlastwaveOnShipAction(TargetPlayer, localX, ModEntry.Instance.Api.GetBlastwaveDamage(null, s, 1, TargetPlayer)) };
 			if (part.stunModifier == PStunMod.stunnable)
-				c.QueueImmediate(new AStunPart { worldX = worldX });
+				actions.Add(new AStunPart { worldX = worldX });
+			
+			c.QueueImmediate(actions);
+
+			var damageDone = new DamageDone { hitHull = true };
+			var raycastResult = new RaycastResult { hitShip = true, worldX = worldX };
+			EffectSpawnerExt.HitEffect(MG.inst.g, TargetPlayer, raycastResult, damageDone);
 		}
 	}
 }

@@ -55,11 +55,7 @@ public sealed class FluxCharge() : BaseDynaCharge($"{ModEntry.Instance.Package.M
 		});
 
 		var damageDone = new DamageDone { hitHull = true };
-		var raycastResult = new RaycastResult
-		{
-			hitShip = true,
-			worldX = worldX
-		};
+		var raycastResult = new RaycastResult { hitShip = true, worldX = worldX };
 		EffectSpawnerExt.HitEffect(MG.inst.g, ship.isPlayerShip, raycastResult, damageDone);
 	}
 

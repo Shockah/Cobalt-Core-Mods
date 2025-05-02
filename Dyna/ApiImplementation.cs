@@ -42,6 +42,30 @@ public sealed class ApiImplementation : IDynaApi
 	public AAttack SetBlastwave(AAttack attack, int? damage, int range = 1, bool isStunwave = false)
 		=> attack.SetBlastwave(damage, range, isStunwave);
 
+	public CardAction MakeBlastwaveOnShipAction(bool targetPlayer, int localX, int? damage, int range = 1, bool isStunwave = false)
+		=> new BlastwaveManager.BlastwaveAction
+		{
+			Source = null,
+			TargetPlayer = targetPlayer,
+			LocalX = localX,
+			Damage = damage,
+			Range = range,
+			IsStunwave = isStunwave,
+			HitMidrow = false,
+		};
+
+	public CardAction MakeBlastwaveInMidrowAction(bool playerDidIt, int worldX, int? damage, int range = 1, bool isStunwave = false)
+		=> new BlastwaveManager.BlastwaveAction
+		{
+			Source = null,
+			TargetPlayer = !playerDidIt,
+			WorldX = worldX,
+			Damage = damage,
+			Range = range,
+			IsStunwave = isStunwave,
+			HitMidrow = true,
+		};
+
 	public IDynaCharge MakeBurstCharge()
 		=> new BurstCharge();
 

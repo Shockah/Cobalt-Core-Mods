@@ -90,6 +90,7 @@ internal sealed class BlastwaveManager
 		{
 			Source = attack,
 			TargetPlayer = targetPlayer,
+			WorldX = hitMidrow ? worldX : null,
 			LocalX = worldX - targetShip.x,
 			Damage = attack.GetBlastwaveDamage(),
 			Range = attack.GetBlastwaveRange(),
@@ -152,7 +153,6 @@ internal sealed class BlastwaveManager
 		{
 			Source = __instance,
 			TargetPlayer = __instance.targetPlayer,
-			LocalX = 0,
 			Damage = __instance.GetBlastwaveDamage(),
 			Range = __instance.GetBlastwaveRange(),
 			IsStunwave = __instance.IsStunwave(),
@@ -214,13 +214,13 @@ internal sealed class BlastwaveManager
 	{
 		private const double SinglePartDuration = 0.2;
 
-		public required AAttack Source;
+		public AAttack? Source;
 		public bool TargetPlayer;
-		public required int LocalX;
+		public int LocalX;
+		public int? WorldX;
 		public required int? Damage;
 		public int Range = 1;
 		public bool IsStunwave;
-		public bool IsPiercing;
 		public bool HitMidrow;
 
 		public override List<Tooltip> GetTooltips(State s)
@@ -306,7 +306,7 @@ internal sealed class BlastwaveManager
 		private void Run(G g, State state, Combat combat, int offset)
 		{
 			var targetShip = TargetPlayer ? state.ship : combat.otherShip;
-			var worldX = targetShip.x + LocalX;
+			var worldX = WorldX ?? (targetShip.x + LocalX);
 
 			RunAt(worldX - offset);
 			RunAt(worldX + offset);
@@ -327,7 +327,7 @@ internal sealed class BlastwaveManager
 					new AStunPart { worldX = bitWorldX }.FullyRun(g, state, combat);
 
 				if (Damage is { } damage)
-					damageDone = targetShip.NormalDamage(state, combat, damage, bitWorldX, piercing: IsPiercing);
+					damageDone = targetShip.NormalDamage(state, combat, damage, bitWorldX);
 				else if (IsStunwave)
 					ChargeManager.TriggerChargeIfAny(state, combat, part, TargetPlayer);
 
@@ -340,7 +340,8 @@ internal sealed class BlastwaveManager
 
 				if (!TargetPlayer)
 				{
-					combat.otherShip.ai?.OnHitByAttack(state, combat, bitWorldX, Source);
+					if (Source is not null)
+						combat.otherShip.ai?.OnHitByAttack(state, combat, bitWorldX, Source);
 					foreach (var artifact in state.EnumerateAllArtifacts())
 						artifact.OnEnemyGetHit(state, combat, part);
 				}
