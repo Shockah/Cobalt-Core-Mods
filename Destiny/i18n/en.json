@@ -75,7 +75,7 @@
 			},
 			"Drake": {
 				"name": "SILICA TILING",
-				"description": "<c=action>Overheat</c> damage does not deplete <c=status>PRISTINE SHIELD</c>."
+				"description": "<c=downside>Overheat</c> damage does not deplete <c=status>PRISTINE SHIELD</c>."
 			},
 			"Dyna": {
 				"name": "CLUSTER BOMBS",
