@@ -343,8 +343,10 @@ public sealed class FireChargeAction : CardAction
 
 		var worldX = x + Offset;
 		var initialPosition = TargetPlayer ? -ShipDistanceFromMidrow : ShipDistanceFromMidrow;
+		var hasMidrow = c.stuff.ContainsKey(worldX);
+		
 		double finalPosition;
-		if (c.stuff.ContainsKey(worldX))
+		if (hasMidrow)
 			finalPosition = 0;
 		else if (targetShip.GetPartAtWorldX(worldX) is { } targetPart && targetPart.type != PType.empty)
 			finalPosition = TargetPlayer ? ShipDistanceFromMidrow : -ShipDistanceFromMidrow;
@@ -352,7 +354,7 @@ public sealed class FireChargeAction : CardAction
 			finalPosition = TargetPlayer ? BottomOuterSpaceDistanceFromMidrow : -TopOuterSpaceDistanceFromMidrow;
 
 		timer = Math.Abs(finalPosition - initialPosition) / DistancePerSecond;
-		Audio.Play(Event.Drones_MissileLaunch);
+		Audio.Play(hasMidrow ? Event.Hits_DroneCollision : Event.Drones_MissileLaunch);
 		if (ownerShip.GetPartAtWorldX(worldX) is { } firingPart)
 			firingPart.pulse = 1;
 
@@ -403,8 +405,6 @@ public sealed class FireChargeAction : CardAction
 				c.DestroyDroneAt(s, worldX, !TargetPlayer);
 			else if (@object.Invincible())
 				c.QueueImmediate(@object.GetActionsOnBonkedWhileInvincible(s, c, !TargetPlayer, dynaChargeFakeDrone));
-
-			Audio.Play(Event.Hits_DroneCollision);
 		}
 		else if (targetShip.GetPartAtWorldX(worldX) is { } part && part.type != PType.empty)
 		{
@@ -426,7 +426,6 @@ public sealed class FireChargeAction : CardAction
 				Charge.OnTrigger(s, c, targetShip, part);
 				
 				targetShip.NormalDamage(s, c, 1, worldX);
-				Audio.Play(Event.Hits_DroneCollision);
 			}
 		}
 	}

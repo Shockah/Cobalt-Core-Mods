@@ -58,7 +58,7 @@ public sealed class BurstCharge() : BaseDynaCharge($"{ModEntry.Instance.Package.
 	{
 		base.OnHitMidrow(state, combat, fromPlayer, worldX);
 		combat.QueueImmediate([
-			new ADelay(),
+			new ADelay { timer = 0.2 },
 			ModEntry.Instance.Api.MakeBlastwaveInMidrowAction(fromPlayer, worldX, 1),
 		]);
 	}
