@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Changed the Bang card.
 * Changed the Light It Up card.
 * Changed the Lock and Load (and by extension Custom Charge) cards.
 * Fixed Blastwave triggering at the wrong spot for attacks which move the enemy around.

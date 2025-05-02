@@ -24,19 +24,24 @@ internal sealed class BangCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> new()
+		=> upgrade switch
 		{
-			cost = upgrade == Upgrade.A ? 0 : 1
+			Upgrade.A => new() { cost = 0 },
+			Upgrade.B => new() { cost = 1 },
+			_ => new() { cost = 1 },
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new AAttack
-			{
-				damage = GetDmg(s, 1)
-			}.SetBlastwave(
-				damage: ModEntry.Instance.Api.GetBlastwaveDamage(this, s, 0),
-				range: upgrade == Upgrade.B ? 2 : 1
-			)
-		];
+		=> upgrade switch
+		{
+			Upgrade.A => [
+				new AAttack { damage = GetDmg(s, 1) }.SetBlastwave(ModEntry.Instance.Api.GetBlastwaveDamage(this, s, 0), range: 2),
+			],
+			Upgrade.B => [
+				new AAttack { damage = GetDmg(s, 2) }.SetBlastwave(ModEntry.Instance.Api.GetBlastwaveDamage(this, s, 0), range: 2),
+			],
+			_ => [
+				new AAttack { damage = GetDmg(s, 1) }.SetBlastwave(ModEntry.Instance.Api.GetBlastwaveDamage(this, s, 0), range: 2),
+			]
+		};
 }
