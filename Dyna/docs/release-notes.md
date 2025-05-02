@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.5.0
+Released 2 May 2025.
 
 * Charges now deal 1 damage when sticking to ships.
 * Changed the Bang card.
