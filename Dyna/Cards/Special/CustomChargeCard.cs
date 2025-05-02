@@ -20,8 +20,8 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 {
 	private static ISpriteEntry TopArt = null!;
 	private static ISpriteEntry BottomArt = null!;
-	private static List<ISpriteEntry> TriadArt = null!;
-	private static List<ISpriteEntry> TriadIcon = null!;
+	private static List<ISpriteEntry> QuadArt = null!;
+	private static List<ISpriteEntry> QuadIcon = null!;
 
 	[JsonProperty]
 	public int FlipIndex { get; private set; }
@@ -34,11 +34,11 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 		TopArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/CustomChargeTop.png"));
 		BottomArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/CustomChargeBottom.png"));
 
-		TriadArt = Enumerable.Range(0, 3)
-			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Cards/CustomChargeTriad{i}.png")))
+		QuadArt = Enumerable.Range(0, 4)
+			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Cards/CustomChargeQuad{i}.png")))
 			.ToList();
-		TriadIcon = Enumerable.Range(0, 3)
-			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Icons/Triad{i}.png")))
+		QuadIcon = Enumerable.Range(0, 4)
+			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Icons/Quad{i}.png")))
 			.ToList();
 
 		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
@@ -69,15 +69,11 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> new()
+		=> upgrade switch
 		{
-			cost = 0,
-			exhaust = upgrade != Upgrade.B,
-			floppable = true,
-			temporary = true,
-			art = upgrade == Upgrade.A
-				? TriadArt[FlipIndex % 3].Sprite
-				: (FlipIndex % 2 == 0 ? TopArt.Sprite : BottomArt.Sprite)
+			Upgrade.A => new() { cost = 0, floppable = true, retain = true, exhaust = true, temporary = true, art = FlipIndex % 2 == 0 ? TopArt.Sprite : BottomArt.Sprite },
+			Upgrade.B => new() { cost = 1, floppable = true, retain = true, exhaust = true, temporary = true, art = QuadArt[FlipIndex % 4].Sprite },
+			_ => new() { cost = 1, floppable = true, retain = true, exhaust = true, temporary = true, art = FlipIndex % 2 == 0 ? TopArt.Sprite : BottomArt.Sprite },
 		};
 
 	public override void ExtraRender(G g, Vec v)
@@ -86,7 +82,7 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 		if (LastFlipped != flipped)
 		{
 			LastFlipped = flipped;
-			FlipIndex = (FlipIndex + 1) % (upgrade == Upgrade.A ? 3 : 2);
+			FlipIndex = (FlipIndex + 1) % (upgrade == Upgrade.B ? 4 : 2);
 		}
 	}
 
@@ -94,34 +90,20 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new FireChargeAction
-				{
-					Charge = new DemoCharge(),
-					disabled = FlipIndex % 3 != 0
-				},
-				new FireChargeAction
-				{
-					Charge = new FluxCharge(),
-					disabled = FlipIndex % 3 != 1
-				},
-				new FireChargeAction
-				{
-					Charge = new BurstCharge(),
-					disabled = FlipIndex % 3 != 2
-				}
+				new FireChargeAction { Charge = new DemoCharge(), disabled = FlipIndex % 2 != 0 },
+				new ADummyAction(),
+				new FireChargeAction { Charge = new FluxCharge(), disabled = FlipIndex % 2 != 1 },
+			],
+			Upgrade.B => [
+				new FireChargeAction { Charge = new DemoCharge(), disabled = FlipIndex % 4 != 0 },
+				new FireChargeAction { Charge = new FluxCharge(), disabled = FlipIndex % 4 != 1 },
+				new FireChargeAction { Charge = new BurstCharge(), disabled = FlipIndex % 4 != 2 },
+				new FireChargeAction { Charge = new SwiftCharge(), disabled = FlipIndex % 4 != 3 },
 			],
 			_ => [
-				new FireChargeAction
-				{
-					Charge = new DemoCharge(),
-					disabled = FlipIndex % 2 != 0
-				},
+				new FireChargeAction { Charge = new DemoCharge(), disabled = FlipIndex % 2 != 0 },
 				new ADummyAction(),
-				new FireChargeAction
-				{
-					Charge = new FluxCharge(),
-					disabled = FlipIndex % 2 != 1
-				}
+				new FireChargeAction { Charge = new FluxCharge(), disabled = FlipIndex % 2 != 1 },
 			]
 		};
 
@@ -161,8 +143,8 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 	{
 		if (card is not CustomChargeCard thisCard)
 			return sprite;
-		return thisCard.upgrade == Upgrade.A
-			? TriadIcon[thisCard.FlipIndex % TriadIcon.Count].Sprite
+		return thisCard.upgrade == Upgrade.B
+			? QuadIcon[thisCard.FlipIndex % QuadIcon.Count].Sprite
 			: sprite;
 	}
 
@@ -173,7 +155,7 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 	{
 		if (!showCardTraits)
 			return;
-		if (__instance is not CustomChargeCard thisCard || thisCard.upgrade != Upgrade.A)
+		if (__instance is not CustomChargeCard thisCard || thisCard.upgrade != Upgrade.B)
 			return;
 
 		__result = __result
@@ -182,41 +164,42 @@ internal sealed class CustomChargeCard : Card, IRegisterable
 				if (tooltip is not TTGlossary glossary || glossary.key != "cardtrait.floppable")
 					return tooltip;
 
-				string buttonText = PlatformIcons.GetPlatform() switch
+				var buttonText = PlatformIcons.GetPlatform() switch
 				{
 					Platform.NX => Loc.T("controller.nx.b"),
 					Platform.PS => Loc.T("controller.ps.circle"),
 					_ => Loc.T("controller.xbox.b"),
 				};
 
-				return new GlossaryTooltip("cardtrait.triad")
+				return new GlossaryTooltip("cardtrait.quad")
 				{
-					Icon = TriadIcon[0].Sprite,
+					Icon = QuadIcon[0].Sprite,
 					TitleColor = Colors.cardtrait,
-					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "triad", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "triad", "description", PlatformIcons.GetPlatform() == Platform.MouseKeyboard ? "m&k" : "controller"], new { Button = buttonText })
+					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "quad", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "quad", "description", PlatformIcons.GetPlatform() == Platform.MouseKeyboard ? "m&k" : "controller"], new { Button = buttonText })
 				};
 			});
 	}
 
 	private sealed class Hook : IKokoroApi.IV2.ICardRenderingApi.IHook
 	{
-		public Matrix ModifyNonTextCardRenderMatrix(IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyNonTextCardRenderMatrixArgs args)
-		{
-			if (args.Card is not CustomChargeCard)
-				return Matrix.Identity;
-			if (args.Card.upgrade != Upgrade.A)
-				return Matrix.Identity;
-			return Matrix.CreateScale(1.5f);
-		}
-
 		public Matrix ModifyCardActionRenderMatrix(IKokoroApi.IV2.ICardRenderingApi.IHook.IModifyCardActionRenderMatrixArgs args)
 		{
-			if (args.Card is not CustomChargeCard)
+			if (args.Card is not CustomChargeCard { upgrade: Upgrade.B })
 				return Matrix.Identity;
-			if (args.Card.upgrade != Upgrade.A)
-				return Matrix.Identity;
-			return Matrix.CreateScale(1f / 1.5f);
+			
+			var spacing = 12 * args.G.mg.PIX_SCALE;
+			var newXOffset = 12 * args.G.mg.PIX_SCALE;
+			var newYOffset = 10 * args.G.mg.PIX_SCALE;
+			var index = args.Actions.ToList().IndexOf(args.Action);
+			return index switch
+			{
+				0 => Matrix.CreateTranslation(-newXOffset, -newYOffset - (int)((index - args.Actions.Count / 2.0 + 0.5) * spacing), 0),
+				1 => Matrix.CreateTranslation(newXOffset, -newYOffset - (int)((index - args.Actions.Count / 2.0 + 0.5) * spacing), 0),
+				2 => Matrix.CreateTranslation(newXOffset, newYOffset - (int)((index - args.Actions.Count / 2.0 + 0.5) * spacing), 0),
+				3 => Matrix.CreateTranslation(-newXOffset, newYOffset - (int)((index - args.Actions.Count / 2.0 + 0.5) * spacing), 0),
+				_ => Matrix.Identity
+			};
 		}
 	}
 }

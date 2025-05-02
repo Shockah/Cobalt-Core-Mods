@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Changed the Light It Up card.
+* Changed the Lock and Load (and by extension Custom Charge) cards.
 * Fixed Blastwave triggering at the wrong spot for attacks which move the enemy around.
 * Fixed the Bazooka Mod (Dyna-Isaac duo) artifact also triggering on enemy drones.
 
