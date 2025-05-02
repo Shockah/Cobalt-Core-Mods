@@ -44,7 +44,10 @@ public sealed class SwiftCharge() : BaseDynaCharge($"{ModEntry.Instance.Package.
 			return;
 		var worldX = ship.x + partIndex;
 
-		combat.QueueImmediate(new ADrawCard { count = 3 });
+		combat.QueueImmediate([
+			new ADrawCard { count = 1 },
+			new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 1 },
+		]);
 
 		var damageDone = new DamageDone { hitHull = true };
 		var raycastResult = new RaycastResult

@@ -69,7 +69,7 @@
         },
         "Swift": {
             "name": "Swift Charge",
-            "description": "Draws 3 cards when triggered."
+            "description": "Draws a card and grants you 1 <c=status>EVADE</c> when triggered."
         }
     },
     "partModifier": {
