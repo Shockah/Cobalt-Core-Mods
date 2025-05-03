@@ -142,36 +142,19 @@ internal sealed class ToothCards : IRegisterable
 		}
 
 		public override CardData GetData(State state)
-			=> new()
-			{
-				cost = 0,
-				art = StableSpr.cards_riggs,
-				description = ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "card", "Fiddle", "description", upgrade.ToString()]),
-			};
+			=> new() { cost = 0, art = StableSpr.cards_riggs, description = ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "card", "Fiddle", "description", upgrade.ToString()]) };
 
 		public override List<CardAction> GetActions(State s, Combat c)
 			=> upgrade switch
 			{
 				Upgrade.B => [
-					new ACardSelect
-					{
-						browseSource = CardBrowse.Source.Hand,
-						browseAction = new DiscardAndDrawAction()
-					}
+					new ACardSelect { browseSource = CardBrowse.Source.Hand, browseAction = new DiscardAndDrawAction() }
 				],
 				Upgrade.A => [
-					new ACardSelect
-					{
-						browseSource = CardBrowse.Source.Hand,
-						browseAction = new RedrawAction { Times = 2 }
-					}
+					new ACardSelect { browseSource = CardBrowse.Source.Hand, browseAction = new RedrawAction { Times = 2 } }
 				],
 				_ => [
-					new ACardSelect
-					{
-						browseSource = CardBrowse.Source.Hand,
-						browseAction = new RedrawAction()
-					}
+					new ACardSelect { browseSource = CardBrowse.Source.Hand, browseAction = new RedrawAction() }
 				]
 			};
 
@@ -261,28 +244,23 @@ internal sealed class ToothCards : IRegisterable
 		}
 
 		public override CardData GetData(State state)
-			=> new()
-			{
-				cost = 0,
-				flippable = true,
-				art = StableSpr.cards_Dodge,
-			};
+			=> new() { cost = 0, flippable = true, art = StableSpr.cards_Dodge };
 
 		public override List<CardAction> GetActions(State s, Combat c)
 			=> upgrade switch
 			{
 				Upgrade.B => [
 					new AStatus { targetPlayer = true, status = Status.engineStall, statusAmount = 3 },
-					new AMove { targetPlayer = true, dir = 1 },
-					new AMove { targetPlayer = true, dir = 1 },
-					new AMove { targetPlayer = true, dir = 1 },
+					new AMove { targetPlayer = true, dir = 1, preferRightWhenZero = true },
+					new AMove { targetPlayer = true, dir = 1, preferRightWhenZero = true },
+					new AMove { targetPlayer = true, dir = 1, preferRightWhenZero = true },
 				],
 				Upgrade.A => [
-					new AMove { targetPlayer = true, dir = 0 },
-					new AMove { targetPlayer = true, dir = 0 },
+					new AMove { targetPlayer = true, dir = 0, preferRightWhenZero = true },
+					new AMove { targetPlayer = true, dir = 0, preferRightWhenZero = true },
 				],
 				_ => [
-					new AMove { targetPlayer = true, dir = 0 },
+					new AMove { targetPlayer = true, dir = 0, preferRightWhenZero = true },
 				]
 			};
 	}
@@ -320,7 +298,7 @@ internal sealed class ToothCards : IRegisterable
 					new AEndTurn(),
 				],
 				Upgrade.A => [
-					new AStatus { targetPlayer = true, status = Status.autopilot, statusAmount = 1 },
+					new AStatus { targetPlayer = true, status = Status.libra, statusAmount = 1 },
 					new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 },
 					new AStatus { targetPlayer = true, status = Status.stunCharge, statusAmount = 9 },
 					new AEndTurn(),
@@ -354,11 +332,7 @@ internal sealed class ToothCards : IRegisterable
 		}
 
 		public override CardData GetData(State state)
-			=> new()
-			{
-				cost = 1,
-				art = StableSpr.cards_Options,
-			};
+			=> new() { cost = 1, art = StableSpr.cards_Options };
 
 		public override List<CardAction> GetActions(State s, Combat c)
 			=> upgrade switch
@@ -399,11 +373,7 @@ internal sealed class ToothCards : IRegisterable
 		}
 
 		public override CardData GetData(State state)
-			=> new()
-			{
-				cost = 1,
-				art = StableSpr.cards_GoatDrone,
-			};
+			=> new() { cost = 1, art = StableSpr.cards_GoatDrone };
 
 		public override List<CardAction> GetActions(State s, Combat c)
 			=> upgrade switch
