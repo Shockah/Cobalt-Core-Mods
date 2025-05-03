@@ -11,6 +11,7 @@
 * Fixed the Abyssal Power fight not giving the enemy negative Powerdrive when fighting in zone 1.
 
 ### Tooth's Emporium of Wonderful Ideas event
+* Added the Fidget card.
 * Swapped around the actions of the Final Form card and replaced Autopilot with Flux.
 * The Slip card's 0 movement actions now show up as moving 0 to the right instead of left.
 

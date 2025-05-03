@@ -18,6 +18,7 @@ internal sealed class ToothCards : IRegisterable
 	internal static ICardEntry FinalFormCardEntry = null!;
 	internal static ICardEntry SkimCardEntry = null!;
 	internal static ICardEntry SmashCardEntry = null!;
+	internal static ICardEntry FidgetCardEntry = null!;
 
 	internal static string[] AllToothCardKeys = null!;
 
@@ -28,10 +29,12 @@ internal sealed class ToothCards : IRegisterable
 		FinalFormCard.RegisterCard(helper);
 		SkimCard.RegisterCard(helper);
 		SmashCard.RegisterCard(helper);
+		FidgetCard.RegisterCard(helper);
 
 		AllToothCardKeys = [
 			nameof(Buckshot), nameof(WaltzCard), nameof(BruiseCard), nameof(LightningBottle),
-			FiddleCardEntry.UniqueName, SlipCardEntry.UniqueName, FinalFormCardEntry.UniqueName, SkimCardEntry.UniqueName, SmashCardEntry.UniqueName,
+			FiddleCardEntry.UniqueName, SlipCardEntry.UniqueName, FinalFormCardEntry.UniqueName,
+			SkimCardEntry.UniqueName, SmashCardEntry.UniqueName, FiddleCardEntry.UniqueName,
 		];
 
 		ModEntry.Instance.Harmony.TryPatch(
@@ -392,6 +395,39 @@ internal sealed class ToothCards : IRegisterable
 					new ASpawn { thing = new Asteroid() },
 					new ASpawn { thing = new AttackDrone() },
 				]
+			};
+	}
+
+	[UsedImplicitly]
+	private sealed class FidgetCard : Card
+	{
+		public static void RegisterCard(IModHelper helper)
+		{
+			FidgetCardEntry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
+			{
+				CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
+				Meta = new()
+				{
+					deck = Deck.tooth,
+					rarity = Rarity.rare,
+					upgradesTo = [Upgrade.A, Upgrade.B],
+					dontOffer = true,
+					extraGlossary = ["cardMisc.toothCardExtraTooltip"],
+				},
+				Name = ModEntry.Instance.AnyLocalizations.Bind(["event", "ToothCardOffering", "card", "Fidget", "name"]).Localize
+			});
+		}
+
+		public override CardData GetData(State state)
+			=> new() { cost = 0, infinite = upgrade != Upgrade.B, flippable = upgrade == Upgrade.A, recycle = upgrade == Upgrade.B, art = StableSpr.cards_ButtonMash };
+
+		public override List<CardAction> GetActions(State s, Combat c)
+			=> upgrade switch
+			{
+				Upgrade.B => [
+					new ADrawCard { count = 1 },
+				],
+				_ => []
 			};
 	}
 }

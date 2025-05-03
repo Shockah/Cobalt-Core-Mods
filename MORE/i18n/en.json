@@ -343,14 +343,17 @@
 					"drawACardInYourHand": "Select a card to draw.",
 					"discardAndDrawACardInYourHand": "Select a card to discard and draw again."
 				},
-				"Slip": {
-					"name": "Slip"
+				"Fidget": {
+					"name": "Fidget"
 				},
 				"FinalForm": {
 					"name": "Final Form"
 				},
 				"Skim": {
 					"name": "Skim"
+				},
+				"Slip": {
+					"name": "Slip"
 				},
 				"Smash": {
 					"name": "Smash"
