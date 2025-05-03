@@ -4,6 +4,9 @@
 
 ## Upcoming release
 
+### Generic artifacts
+* Added the Long Range Scanner artifact.
+
 ### Abyssal Power event
 * Fixed the Abyssal Power fight not giving the enemy negative Powerdrive when fighting in zone 1.
 
