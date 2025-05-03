@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.6.0
+Released 3 May 2025.
 
 ### Generic artifacts
 * Added the Long Range Scanner artifact.
