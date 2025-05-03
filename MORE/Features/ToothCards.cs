@@ -308,30 +308,26 @@ internal sealed class ToothCards : IRegisterable
 		}
 
 		public override CardData GetData(State state)
-			=> new()
-			{
-				cost = 1,
-				art = StableSpr.cards_Overpower,
-			};
+			=> new() { cost = 1, art = StableSpr.cards_Overpower };
 
 		public override List<CardAction> GetActions(State s, Combat c)
 			=> upgrade switch
 			{
 				Upgrade.B => [
-					new AStatus { targetPlayer = true, status = Status.stunCharge, statusAmount = 9 },
-					new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 },
 					new AStatus { targetPlayer = true, status = Status.temporaryCheap, statusAmount = 1 },
+					new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 },
+					new AStatus { targetPlayer = true, status = Status.stunCharge, statusAmount = 9 },
 					new AEndTurn(),
 				],
 				Upgrade.A => [
-					new AStatus { targetPlayer = true, status = Status.stunCharge, statusAmount = 9 },
-					new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 },
 					new AStatus { targetPlayer = true, status = Status.autopilot, statusAmount = 1 },
+					new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 },
+					new AStatus { targetPlayer = true, status = Status.stunCharge, statusAmount = 9 },
 					new AEndTurn(),
 				],
 				_ => [
-					new AStatus { targetPlayer = true, status = Status.stunCharge, statusAmount = 9 },
 					new AStatus { targetPlayer = true, status = Status.overdrive, statusAmount = 1 },
+					new AStatus { targetPlayer = true, status = Status.stunCharge, statusAmount = 9 },
 					new AEndTurn(),
 				]
 			};

@@ -7,6 +7,9 @@
 ### Abyssal Power event
 * Fixed the Abyssal Power fight not giving the enemy negative Powerdrive when fighting in zone 1.
 
+### Tooth's Emporium of Wonderful Ideas event
+* Swapped around the actions of the Final Form card.
+
 ## 1.5.0
 Released 30 March 2025.
 
