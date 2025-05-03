@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
@@ -73,7 +74,7 @@ internal sealed class ModEntry : SimpleMod
 	];
 	
 	internal static IReadOnlyList<Type> ArtifactTypes { get; } = [
-		typeof(LongRangeScannersArtifact),
+		typeof(LongRangeScannerArtifact),
 	];
 
 	internal static IEnumerable<Type> RegisterableTypes { get; }
@@ -88,6 +89,8 @@ internal sealed class ModEntry : SimpleMod
 			typeof(ToothCards),
 			//typeof(BootSequenceDownsides),
 		];
+
+	private static readonly Dictionary<Type, Artifact> ArtifactCache = [];
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
@@ -199,6 +202,47 @@ internal sealed class ModEntry : SimpleMod
 						TitleColor = Colors.textBold,
 						Title = Localizations.Localize(["settings", "toothCards", "name"]),
 						Description = Localizations.Localize(["settings", "toothCards", "description"])
+					}
+				]),
+				api.MakeButton(
+					() => Localizations.Localize(["settings", "artifacts", "name"]),
+					(g, route) => route.OpenSubroute(g, api.MakeModSettingsRoute(api.MakeList([
+						api.MakeHeader(
+							() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
+							() => Localizations.Localize(["settings", "artifacts", "name"])
+						),
+						api.MakeList(
+							ArtifactTypes
+								.Select(IModSettingsApi.IModSetting (type) =>
+								{
+									ref var refArtifact = ref CollectionsMarshal.GetValueRefOrAddDefault(ArtifactCache, type, out var artifactExists);
+									if (!artifactExists)
+										refArtifact = (Artifact)Activator.CreateInstance(type)!;
+									var artifact = refArtifact!;
+									
+									return api.MakeCheckbox(
+										() => artifact.GetLocName(),
+										() => !Settings.ProfileBased.Current.DisabledArtifacts.Contains(artifact.Key()),
+										(_, _, value) =>
+										{
+											if (value)
+												Settings.ProfileBased.Current.DisabledArtifacts.Remove(artifact.Key());
+											else
+												Settings.ProfileBased.Current.DisabledArtifacts.Add(artifact.Key());
+										}
+									).SetTooltips(() => artifact.GetTooltips());
+								})
+								.ToList()
+						),
+						api.MakeBackButton()
+					]).SetSpacing(8)))
+				).SetValueText(
+					() => $"{ArtifactTypes.Count - Settings.ProfileBased.Current.DisabledArtifacts.Count}/{ArtifactTypes.Count}"
+				).SetTooltips(() => [
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.DisabledArtifacts)}")
+					{
+						TitleColor = Colors.textBold,
+						Title = Localizations.Localize(["settings", "artifacts", "name"])
 					}
 				])
 			]).SubscribeToOnMenuClose(_ =>

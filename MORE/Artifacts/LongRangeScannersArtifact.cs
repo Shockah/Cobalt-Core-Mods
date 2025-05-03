@@ -8,13 +8,13 @@ using Nickel;
 
 namespace Shockah.MORE;
 
-internal sealed class LongRangeScannersArtifact : Artifact, IRegisterable
+internal sealed class LongRangeScannerArtifact : Artifact, IRegisterable
 {
 	private static IArtifactEntry ArtifactEntry = null!;
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		ArtifactEntry = helper.Content.Artifacts.RegisterArtifact("LongRangeScanners", new()
+		ArtifactEntry = helper.Content.Artifacts.RegisterArtifact("LongRangeScanner", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
@@ -22,10 +22,11 @@ internal sealed class LongRangeScannersArtifact : Artifact, IRegisterable
 				owner = Deck.colorless,
 				pools = [ArtifactPool.Common],
 			},
-			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifact/LongRangeScanners.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "LongRangeScanners", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "LongRangeScanners", "description"]).Localize
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifact/LongRangeScanner.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "LongRangeScanner", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "LongRangeScanner", "description"]).Localize,
 		});
+		ArtifactEntry.Amend(new() { CanBeOffered = new() { Value = _ => !ModEntry.Instance.Settings.ProfileBased.Current.DisabledArtifacts.Contains(ArtifactEntry.UniqueName) } });
 		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(MapRoute), nameof(MapRoute.DrawMapMarker)),
@@ -55,7 +56,7 @@ internal sealed class LongRangeScannersArtifact : Artifact, IRegisterable
 			return;
 		if (pair.Value.contents is not MapBattle { battleType: BattleType.Boss } && !map.CanGoHere(pair.Key))
 			return;
-		if (!g.state.EnumerateAllArtifacts().Any(a => a is LongRangeScannersArtifact))
+		if (!g.state.EnumerateAllArtifacts().Any(a => a is LongRangeScannerArtifact))
 			return;
 
 		try
@@ -177,8 +178,8 @@ internal sealed class LongRangeScannersArtifact : Artifact, IRegisterable
 		tooltips.Add(new GlossaryTooltip($"artifact.{ArtifactEntry.UniqueName}::Battle")
 		{
 			TitleColor = Colors.textBold,
-			Title = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanners", "battleTooltip", "title"]),
-			Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanners", "battleTooltip", "description"], new { Name = Loc.GetLocString("enemy.{0}.name".FF(aiKey)) }),
+			Title = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanner", "battleTooltip", "title"]),
+			Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanner", "battleTooltip", "description"], new { Name = Loc.GetLocString("enemy.{0}.name".FF(aiKey)) }),
 		});
 
 		if (ModEntry.Instance.Helper.ModData.TryGetModData<FightModifier>(__instance, "ExposedBattleModifier", out var modifier))
@@ -186,7 +187,7 @@ internal sealed class LongRangeScannersArtifact : Artifact, IRegisterable
 			tooltips.Add(new GlossaryTooltip($"artifact.{ArtifactEntry.UniqueName}::Battle::Modifier")
 			{
 				TitleColor = Colors.textBold,
-				Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanners", "battleTooltip", "modifier"], new { Name = modifier.GetNameLoc() }),
+				Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanner", "battleTooltip", "modifier"], new { Name = modifier.GetNameLoc() }),
 			});
 			tooltips.AddRange(modifier.GetTooltips(DB.fakeState, DB.fakeCombat));
 		}
@@ -215,7 +216,7 @@ internal sealed class LongRangeScannersArtifact : Artifact, IRegisterable
 			tooltips.Add(new GlossaryTooltip($"artifact.{ArtifactEntry.UniqueName}::Battle::Artifact")
 			{
 				TitleColor = Colors.textBold,
-				Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanners", "battleTooltip", "artifact"]),
+				Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanner", "battleTooltip", "artifact"]),
 			});
 			tooltips.AddRange(((Artifact)Activator.CreateInstance(entry.Configuration.ArtifactType)!).GetTooltips());
 			return true;
@@ -233,7 +234,7 @@ internal sealed class LongRangeScannersArtifact : Artifact, IRegisterable
 			tooltips.Add(new GlossaryTooltip($"artifact.{ArtifactEntry.UniqueName}::Battle::Card")
 			{
 				TitleColor = Colors.textBold,
-				Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanners", "battleTooltip", "card"]),
+				Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanner", "battleTooltip", "card"]),
 			});
 			tooltips.Add(new TTCard { card = (Card)Activator.CreateInstance(entry.Configuration.CardType)! });
 			return true;
@@ -249,8 +250,8 @@ internal sealed class LongRangeScannersArtifact : Artifact, IRegisterable
 				__result.Add(new GlossaryTooltip($"artifact.{ArtifactEntry.UniqueName}::Event")
 				{
 					TitleColor = Colors.textBold,
-					Title = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanners", "eventTooltip", eventCharacterKey, "title"]),
-					Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanners", "eventTooltip", eventCharacterKey, "description"]),
+					Title = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanner", "eventTooltip", eventCharacterKey, "title"]),
+					Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanner", "eventTooltip", eventCharacterKey, "description"]),
 				});
 			}
 			else
@@ -266,8 +267,8 @@ internal sealed class LongRangeScannersArtifact : Artifact, IRegisterable
 					__result.Add(new GlossaryTooltip($"artifact.{ArtifactEntry.UniqueName}::Event")
 					{
 						TitleColor = Colors.textBold,
-						Title = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanners", "eventTooltip", "unknown", "title"]),
-						Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanners", "eventTooltip", "unknown", "description"]),
+						Title = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanner", "eventTooltip", "unknown", "title"]),
+						Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanner", "eventTooltip", "unknown", "description"]),
 					});
 				}
 				else
@@ -275,8 +276,8 @@ internal sealed class LongRangeScannersArtifact : Artifact, IRegisterable
 					__result.Add(new GlossaryTooltip($"artifact.{ArtifactEntry.UniqueName}::Event")
 					{
 						TitleColor = Colors.textBold,
-						Title = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanners", "eventTooltip", "character", "title"]),
-						Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanners", "eventTooltip", "character", "description"], new { Name = Character.GetDisplayName(eventCharacterKey, g.state) }),
+						Title = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanner", "eventTooltip", "character", "title"]),
+						Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanner", "eventTooltip", "character", "description"], new { Name = Character.GetDisplayName(eventCharacterKey, g.state) }),
 					});
 				}
 			}
@@ -294,8 +295,8 @@ internal sealed class LongRangeScannersArtifact : Artifact, IRegisterable
 			__result.Add(new GlossaryTooltip($"artifact.{ArtifactEntry.UniqueName}::Event")
 			{
 				TitleColor = Colors.textBold,
-				Title = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanners", "eventTooltip", localizationKey, "title"]),
-				Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanners", "eventTooltip", localizationKey, "description"]),
+				Title = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanner", "eventTooltip", localizationKey, "title"]),
+				Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanner", "eventTooltip", localizationKey, "description"]),
 			});
 		}
 	}
@@ -312,8 +313,8 @@ internal sealed class LongRangeScannersArtifact : Artifact, IRegisterable
 		__result.Add(new GlossaryTooltip($"artifact.{ArtifactEntry.UniqueName}::Artifact")
 		{
 			TitleColor = Colors.textBold,
-			Title = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanners", "artifactTooltip", "title"]),
-			Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanners", "artifactTooltip", "description"], new { Name = artifactName.ToUpper() }),
+			Title = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanner", "artifactTooltip", "title"]),
+			Description = ModEntry.Instance.Localizations.Localize(["artifact", "LongRangeScanner", "artifactTooltip", "description"], new { Name = artifactName.ToUpper() }),
 		});
 		__result.AddRange(((Artifact)Activator.CreateInstance(entry.Configuration.ArtifactType)!).GetTooltips());
 	}

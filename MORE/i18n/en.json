@@ -41,6 +41,9 @@
 				"ShipSwap": "Ship Swap"
 			}
 		},
+		"artifacts": {
+			"name": "Artifacts enabled"
+		},
 		"ephemeralUpgrades": {
 			"name": "Ephemeral upgrades",
 			"description": "Whether Ephemeral cards should be upgradable."
@@ -59,7 +62,7 @@
 		}
 	},
 	"artifact": {
-		"LongRangeScanners": {
+		"LongRangeScanner": {
 			"name": "LONG RANGE SCANNER",
 			"description": "Adds a bit of information about nearby nodes when navigating through sectors.",
 			"battleTooltip": {
