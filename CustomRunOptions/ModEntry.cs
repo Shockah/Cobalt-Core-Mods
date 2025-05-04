@@ -24,6 +24,7 @@ internal sealed class ModEntry : SimpleMod
 	
 	private static IReadOnlyList<Type> RegisterableTypes { get; } = [
 		typeof(NewRunOptionsButton),
+		typeof(SoloRuns),
 		.. CustomRunOptionTypes,
 	];
 
