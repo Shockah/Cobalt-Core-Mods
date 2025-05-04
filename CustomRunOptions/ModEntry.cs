@@ -5,6 +5,7 @@ using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
+using Nickel.ModSettings;
 
 namespace Shockah.CustomRunOptions;
 
@@ -12,6 +13,7 @@ internal sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal IHarmony Harmony { get; }
+	internal readonly IModSettingsApi ModSettingsApi;
 
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
@@ -22,9 +24,10 @@ internal sealed class ModEntry : SimpleMod
 	
 	private static IReadOnlyList<Type> RegisterableTypes { get; } = [
 		typeof(NewRunOptionsButton),
+		.. CustomRunOptionTypes,
 	];
 
-	internal static IReadOnlyList<ICustomRunOption> CustomRunOptions = CustomRunOptionTypes
+	internal static readonly IReadOnlyList<ICustomRunOption> CustomRunOptions = CustomRunOptionTypes
 		.Select(t => (ICustomRunOption)Activator.CreateInstance(t)!)
 		.ToList();
 	
@@ -32,6 +35,7 @@ internal sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
+		ModSettingsApi = helper.ModRegistry.GetApi<IModSettingsApi>("Nickel.ModSettings")!;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),

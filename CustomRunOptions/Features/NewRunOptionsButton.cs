@@ -27,13 +27,29 @@ internal sealed class NewRunOptionsButton : IRegisterable
 		);
 	}
 
+	private static void OpenModSettings(NewRunOptions options, RunConfig config)
+	{
+		var setting = ModEntry.Instance.ModSettingsApi.MakeList([
+			ModEntry.Instance.ModSettingsApi.MakeHeader(() => "Custom Run Options"),
+			.. ModEntry.CustomRunOptions.Select(o => o.MakeCustomRunSettings(ModEntry.Instance.Package, ModEntry.Instance.ModSettingsApi, config)),
+			ModEntry.Instance.ModSettingsApi.MakeBackButton(),
+		]);
+		options.subRoute = ModEntry.Instance.ModSettingsApi.MakeModSettingsRoute(setting);
+	}
+
 	private static void NewRunOptions_RenderWarning_Prefix_First()
 		=> Draw.Sprite(BackgroundOverlaySprite.Sprite, 0, 0);
 
-	private static void NewRunOptions_DifficultyOptions_Prefix(G g, RunConfig runConfig)
+	private static void NewRunOptions_DifficultyOptions_Prefix(NewRunOptions __instance, G g, RunConfig runConfig)
 	{
 		var elements = ModEntry.CustomRunOptions.SelectMany(o => o.GetNewRunOptionsElements(g, runConfig)).ToList();
-		var buttonResult = SharedArt.ButtonText(g, new Vec(301, 70), CustomOptionsUk, elements.Count == 0 ? "CUSTOM" : "", onMouseDown: new MouseDownHandler(() => { }));
+		var buttonResult = SharedArt.ButtonText(
+			g,
+			new Vec(301, 70),
+			CustomOptionsUk,
+			elements.Count == 0 ? "CUSTOM" : "",
+			onMouseDown: new MouseDownHandler(() => OpenModSettings(__instance, runConfig))
+		);
 
 		var totalWidth = 0;
 		var elementsFitting = 0;
@@ -69,6 +85,7 @@ internal sealed class NewRunOptionsButton : IRegisterable
 				plusWidth = (int)Draw.Text("+", 0, 0, dontDraw: true).w + $"{elementsFitting - i}".Length * 6;
 				newTotalWidth = totalWidth + plusWidth - 2;
 				totalWidth = newTotalWidth;
+				break;
 			}
 		}
 

@@ -7,8 +7,8 @@ namespace Shockah.CustomRunOptions;
 
 internal interface ICustomRunOption : IRegisterable
 {
-	IReadOnlyList<INewRunOptionsElement> GetNewRunOptionsElements(G g, RunConfig runConfig);
-	IModSettingsApi.IModSetting MakeCustomRunSettings(IPluginPackage<IModManifest> package, IModSettingsApi api, RunConfig runConfig);
+	IReadOnlyList<INewRunOptionsElement> GetNewRunOptionsElements(G g, RunConfig config);
+	IModSettingsApi.IModSetting MakeCustomRunSettings(IPluginPackage<IModManifest> package, IModSettingsApi api, RunConfig config);
 
 	public interface INewRunOptionsElement
 	{
