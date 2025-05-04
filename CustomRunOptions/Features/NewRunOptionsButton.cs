@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
+using FSPRO;
 using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
@@ -48,7 +49,11 @@ internal sealed class NewRunOptionsButton : IRegisterable
 			new Vec(301, 70),
 			CustomOptionsUk,
 			elements.Count == 0 ? "CUSTOM" : "",
-			onMouseDown: new MouseDownHandler(() => OpenModSettings(__instance, runConfig))
+			onMouseDown: new MouseDownHandler(() =>
+			{
+				Audio.Play(Event.Click);
+				OpenModSettings(__instance, runConfig);
+			})
 		);
 
 		var totalWidth = 0;
