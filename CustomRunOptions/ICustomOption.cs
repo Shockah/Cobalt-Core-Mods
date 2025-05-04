@@ -7,6 +7,12 @@ namespace Shockah.CustomRunOptions;
 
 internal interface ICustomRunOption : IRegisterable
 {
-	IReadOnlyList<Vec> RenderInNewRunOptions(G g, Vec centerLinePosition, RunConfig runConfig);
+	IReadOnlyList<INewRunOptionsElement> GetNewRunOptionsElements(G g, RunConfig runConfig);
 	IModSettingsApi.IModSetting MakeCustomRunSettings(IPluginPackage<IModManifest> package, IModSettingsApi api, RunConfig runConfig);
+
+	public interface INewRunOptionsElement
+	{
+		Vec Size { get; }
+		void Render(G g, Vec position);
+	}
 }
