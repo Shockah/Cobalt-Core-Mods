@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed `PlayCardsFromAnywhere`-`ModifyCardsAnywhere` finishing before it actually did its thing (fixes Destiny's Unstable Magic card).
+
 ## 2.10.0
 Released 1 May 2025.
 

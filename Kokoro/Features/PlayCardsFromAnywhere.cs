@@ -382,6 +382,9 @@ public sealed class AModifyCardAnywhere : CardAction, IKokoroApi.IV2.IPlayCardsF
 	public CardAction AsCardAction
 		=> this;
 
+	public override bool CanSkipTimerIfLastEvent()
+		=> false;
+
 	public override List<Tooltip> GetTooltips(State s)
 		=> Action.GetTooltips(s);
 
