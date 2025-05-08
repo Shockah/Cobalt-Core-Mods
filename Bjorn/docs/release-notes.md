@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.1
+Released 8 May 2025.
 
 * Fixed the Safety Protocol card being unplayable with no analyzable cards in hand.
 
