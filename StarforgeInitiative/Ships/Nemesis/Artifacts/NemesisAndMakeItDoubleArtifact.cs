@@ -28,13 +28,13 @@ internal sealed class NemesisAndMakeItDoubleArtifact : Artifact, IRegisterable
 	public override void OnTurnEnd(State state, Combat combat)
 	{
 		base.OnTurnEnd(state, combat);
-		combat.QueueImmediate(new ActivateCannonsAction());
+		combat.QueueImmediate(new ActivateCannonsAction { artifactPulse = Key() });
 	}
 
 	public override void OnTurnStart(State state, Combat combat)
 	{
 		base.OnTurnStart(state, combat);
-		combat.QueueImmediate(new DeactivateCannonsAction());
+		combat.QueueImmediate(new DeactivateCannonsAction { artifactPulse = Key() });
 	}
 
 	private sealed class DeactivateCannonsAction : CardAction
