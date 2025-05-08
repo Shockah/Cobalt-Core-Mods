@@ -101,6 +101,20 @@
 					"name": "Basic Mine"
 				}
 			}
+		},
+		"Nemesis": {
+			"name": "Nemesis",
+			"description": "A ship built to withstand punishment and return it with overwhelming force.",
+			"artifact": {
+				"PrepareForTrouble": {
+					"name": "PREPARE FOR TROUBLE",
+					"description": "At the end of each turn, gain as much <c=status>TEMPORARY PAYBACK</c> as the enemy has <c=status>PAYBACK</c> and <c=status>TEMPORARY PAYBACK</c>, +1."
+				},
+				"AndMakeItDouble": {
+					"name": "AND MAKE IT DOUBLE",
+					"description": "At the end of each turn, activate both of your cannons. <c=downside>At the start of each turn, deactivate all but the leftmost cannon.</c>"
+				}
+			}
 		}
 	}
 }
