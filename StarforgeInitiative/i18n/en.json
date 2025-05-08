@@ -108,7 +108,7 @@
 			"artifact": {
 				"PrepareForTrouble": {
 					"name": "PREPARE FOR TROUBLE",
-					"description": "At the end of each turn, gain as much <c=status>TEMPORARY PAYBACK</c> as the enemy has <c=status>PAYBACK</c> and <c=status>TEMPORARY PAYBACK</c>, +1."
+					"description": "At the end of each turn, gain as much <c=status>TEMPORARY PAYBACK</c> as the enemy has <c=status>TEMPORARY PAYBACK</c> and <c=status>PAYBACK</c>, +1."
 				},
 				"AndMakeItDouble": {
 					"name": "AND MAKE IT DOUBLE",
