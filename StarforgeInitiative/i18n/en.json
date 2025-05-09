@@ -112,7 +112,7 @@
 				},
 				"AndMakeItDouble": {
 					"name": "AND MAKE IT DOUBLE",
-					"description": "At the end of each turn, activate both of your cannons. <c=downside>At the start of each turn, deactivate all but the leftmost cannon.</c>"
+					"description": "At the end of each turn, activate both of your cannons. <c=downside>At the start of each turn, deactivate all but the rightmost cannon.</c>"
 				}
 			}
 		}
