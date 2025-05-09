@@ -58,7 +58,7 @@ internal sealed class NemesisAndMakeItDoubleArtifact : Artifact, IRegisterable
 			foreach (var part in parts)
 				part.active = false;
 			if (parts.Count != 0)
-				parts[0].active = true;
+				parts[^1].active = true;
 			Audio.Play(Event.TogglePart);
 		}
 	}
