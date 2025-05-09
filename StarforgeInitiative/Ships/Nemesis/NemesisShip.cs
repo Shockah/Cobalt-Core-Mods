@@ -39,10 +39,10 @@ internal sealed class NemesisShip : IRegisterable
 					shieldMaxBase = 5,
 					parts = [
 						new() { type = PType.wing, skin = "wing_bruiser", damageModifier = PDamMod.armor },
+						new() { type = PType.missiles, skin = "missiles_rust" },
+						new() { type = PType.cannon, skin = "wing_ares", active = false },
 						new() { type = PType.cockpit, skin = "cockpit_goliath" },
 						new() { type = PType.cannon, skin = "wing_ares", flip = true },
-						new() { type = PType.cannon, skin = "wing_ares", active = false },
-						new() { type = PType.missiles, skin = "missiles_rust" },
 						new() { type = PType.wing, skin = "wing_bruiser", flip = true, damageModifier = PDamMod.armor },
 					]
 				},
