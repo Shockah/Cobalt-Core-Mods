@@ -113,6 +113,13 @@
 				"AndMakeItDouble": {
 					"name": "AND MAKE IT DOUBLE",
 					"description": "At the end of each turn, activate both of your cannons. <c=downside>At the start of each turn, deactivate all but the rightmost cannon.</c>"
+				},
+				"ThirdWheel": {
+					"name": "THIRD WHEEL",
+					"description": [
+						"(Nemesis-exclusive artifact!)",
+						"Your leftmost wing becomes a cannon."
+					]
 				}
 			}
 		}
