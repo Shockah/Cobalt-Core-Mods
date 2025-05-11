@@ -50,14 +50,7 @@ internal sealed class NitroManager : IDynaHook, IKokoroApi.IV2.IStatusRenderingA
 		var ownerShip = ship.isPlayerShip ? combat.otherShip : state.ship;
 		if (ownerShip.Get(TempNitroStatus.Status) <= 0)
 			return;
-
-		combat.QueueImmediate(new AStatus
-		{
-			targetPlayer = ownerShip.isPlayerShip,
-			mode = AStatusMode.Set,
-			status = TempNitroStatus.Status,
-			statusAmount = 0
-		});
+		ownerShip.Set(TempNitroStatus.Status, 0);
 	}
 
 	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)

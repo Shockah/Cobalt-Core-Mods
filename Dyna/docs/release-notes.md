@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Temp Nitro being able to benefit multiple Burst Charge Blastwaves during a chain reaction.
+
 ## 1.5.0
 Released 2 May 2025.
 
