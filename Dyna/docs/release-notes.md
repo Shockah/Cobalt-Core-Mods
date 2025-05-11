@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.6.0
+Released 11 May 2025.
 
 * Buffed the Gelignite artifact.
 * Fixed Temp Nitro being able to benefit multiple Burst Charge Blastwaves during a chain reaction.
