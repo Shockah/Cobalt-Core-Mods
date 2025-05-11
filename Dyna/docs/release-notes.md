@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Buffed the Gelignite artifact.
 * Fixed Temp Nitro being able to benefit multiple Burst Charge Blastwaves during a chain reaction.
 
 ## 1.5.0

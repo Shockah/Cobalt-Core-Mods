@@ -1,4 +1,5 @@
-﻿using Nanoray.PluginManager;
+﻿using System;
+using Nanoray.PluginManager;
 using Nickel;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,11 +32,37 @@ internal sealed class GeligniteArtifact : Artifact, IRegisterable
 	{
 		base.OnCombatStart(state, combat);
 
-		var partIndexes = Enumerable.Range(0, combat.otherShip.parts.Count)
+		var picks = Enumerable.Range(0, combat.otherShip.parts.Count)
 			.Where(i => combat.otherShip.parts[i].type != PType.empty)
+			.Shuffle(state.rngActions)
+			.Select(i =>
+			{
+				var neighbors = 0;
+				if (combat.otherShip.GetPartAtLocalX(i - 1) is { } left && left.type != PType.empty)
+					neighbors++;
+				if (combat.otherShip.GetPartAtLocalX(i + 1) is { } right && right.type != PType.empty)
+					neighbors++;
+				return (Index: i, Neighbors: neighbors);
+			})
+			.OrderByDescending(e => e.Neighbors)
 			.ToList();
-		var partIndex = partIndexes[state.rngActions.NextInt() % partIndexes.Count];
-		combat.otherShip.parts[partIndex].SetStickedCharge(new BurstCharge());
+
+		var zippedPicks = GetAllCombinations()
+			.OrderByDescending(e => e.Distance >= 2)
+			.ThenByDescending(e => e.First.Neighbors + e.Second.Neighbors);
+
+		if (zippedPicks.FirstOrNull() is not { } pickPair)
+			return;
+		
+		combat.otherShip.parts[pickPair.First.Index].SetStickedCharge(new BurstCharge());
+		combat.otherShip.parts[pickPair.Second.Index].SetStickedCharge(new BurstCharge());
 		Pulse();
+
+		IEnumerable<((int Index, int Neighbors) First, (int Index, int Neighbors) Second, int Distance)> GetAllCombinations()
+		{
+			foreach (var first in picks)
+				foreach (var second in picks)
+					yield return (first, second, Math.Abs(first.Index - second.Index));
+		}
 	}
 }

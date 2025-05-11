@@ -108,7 +108,7 @@
         },
         "Gelignite": {
             "name": "GELIGNITE",
-            "description": "Each combat, stick a <c=parttrait>Burst Charge</c> to a random enemy ship's part."
+            "description": "Each combat, stick two <c=parttrait>Burst Charge</c>s to random enemy ship parts."
         },
         "HardHat": {
             "name": "HARD HAT",
