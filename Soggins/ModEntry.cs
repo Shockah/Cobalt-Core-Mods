@@ -279,10 +279,9 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 		Harmony = new(Name);
 		FrogproofManager.ApplyPatches(Harmony);
 		SmugStatusManager.ApplyPatches(Harmony);
+		SmugPortraitManager.ApplyPatches(Harmony);
 		NarrativeManager.ApplyPatches(Harmony);
-		CombatPatches.Apply(Harmony);
-		MGPatches.Apply(Harmony);
-		ShipPatches.Apply(Harmony);
+		Dialogue.ApplyPatches(Harmony);
 	}
 
 	public object GetApi(IManifest requestingMod)

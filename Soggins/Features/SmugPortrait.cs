@@ -3,25 +3,26 @@ using HarmonyLib;
 using Shockah.Shared;
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace Shockah.Soggins;
 
-internal static class CombatPatches
+internal static class SmugPortraitManager
 {
 	private static ModEntry Instance => ModEntry.Instance;
 
-	public static void Apply(Harmony harmony)
+	public static void ApplyPatches(Harmony harmony)
 	{
 		harmony.TryPatch(
 			logger: Instance.Logger!,
 			original: () => AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.Update)),
-			postfix: new HarmonyMethod(typeof(CombatPatches), nameof(Combat_Update_Postfix))
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_Update_Postfix))
 		);
 	}
 
 	private static ExternalAnimation GetClosestAnimation(int smug)
 	{
-		int smugIndex = smug;
+		var smugIndex = smug;
 		while (true)
 		{
 			if (Instance.SmugPortraitAnimations.TryGetValue(smugIndex, out var animation))
