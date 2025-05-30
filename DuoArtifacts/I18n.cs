@@ -140,7 +140,7 @@ internal static class I18n
 	public static readonly string DizzyMaxArtifactCardDescription = "Lose 3 <c=status>(temp) shield</c>: gain 1 <c=status>boost</c>.";
 
 	public static readonly string DizzyPeriArtifactName = "Energy Condenser";
-	public static readonly string DizzyPeriArtifactTooltip = "Any gained <c=status>SHIELD</c> over <c=status>max shield</c> is converted into <c=status>OVERDRIVE</c> instead.\n<c=downside>Lose <c=status>SHIELD</c> equal to <c=status>OVERDRIVE</c>, and lose <c=status>OVERDRIVE</c> equal to <c=status>PERFECT SHIELD</c> at the start of each turn.</c>";
+	public static readonly string DizzyPeriArtifactTooltip = "Whenever you gain any amount of <c=status>SHIELD</c> over capacity, gain 1 <c=status>OVERDRIVE</c>.";
 
 	public static readonly string DizzyRiggsArtifactName = "Emergency Box";
 	public static readonly string DizzyRiggsArtifactTooltip = "Whenever you lose all <c=status>SHIELD</c>, gain 1 <c=status>EVADE</c>.";
