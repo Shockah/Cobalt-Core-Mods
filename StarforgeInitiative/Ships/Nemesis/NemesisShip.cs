@@ -16,6 +16,7 @@ internal sealed class NemesisShip : IRegisterable
 	];
 	
 	private static readonly List<Type> CardTypes = [
+		typeof(NemesisBasicDualDroneCard),
 	];
 	
 	private static readonly List<Type> RegisterableTypes = [
@@ -56,7 +57,7 @@ internal sealed class NemesisShip : IRegisterable
 					new CannonColorless(),
 					new DodgeColorless(),
 					new BasicShieldColorless(),
-					new BasicShieldColorless(),
+					new NemesisBasicDualDroneCard(),
 				],
 			},
 			UnderChassisSprite = StableSpr.parts_chassis_bramblepelt,
