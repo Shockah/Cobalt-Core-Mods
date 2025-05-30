@@ -11,7 +11,7 @@ internal sealed class FluxPartModManager : IDynaHook
 {
 	internal const PDamMod FluxDamageModifier = (PDamMod)2137401;
 
-	internal static ISpriteEntry FluxTraitIcon { get; private set; } = null!;
+	private static ISpriteEntry FluxTraitIcon = null!;
 
 	private static AAttack? AttackContext;
 
@@ -120,8 +120,10 @@ internal sealed class FluxPartModManager : IDynaHook
 		return false;
 	}
 
-	public void OnBlastwaveHit(State state, Combat combat, Ship ship, int originWorldX, int waveWorldX, bool hitMidrow)
+	public void OnBlastwaveHit(State state, Combat combat, Ship ship, int originWorldX, int waveWorldX, bool hitMidrow, int? damage, bool isStunwave)
 	{
+		if (damage is null)
+			return;
 		if (ship.GetPartAtWorldX(waveWorldX) is not { } part)
 			return;
 		TriggerFluxIfNeeded(state, combat, part, ship.isPlayerShip);

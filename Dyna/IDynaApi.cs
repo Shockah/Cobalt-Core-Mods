@@ -60,7 +60,9 @@ public interface IDynaCharge
 public interface IDynaHook
 {
 	void OnBlastwaveTrigger(State state, Combat combat, Ship ship, int worldX, bool hitMidrow) { }
+	void OnBlastwaveTrigger(State state, Combat combat, Ship ship, int worldX, bool hitMidrow, int? damage, int range, bool isStunwave) => OnBlastwaveTrigger(state, combat, ship, worldX, hitMidrow);
 	void OnBlastwaveHit(State state, Combat combat, Ship ship, int originWorldX, int waveWorldX, bool hitMidrow) { }
+	void OnBlastwaveHit(State state, Combat combat, Ship ship, int originWorldX, int waveWorldX, bool hitMidrow, int? damage, bool isStunwave) => OnBlastwaveHit(state, combat, ship, originWorldX, waveWorldX, hitMidrow);
 	int ModifyBlastwaveDamage(Card? card, State state, bool targetPlayer, int blastwaveIndex) => 0;
 	bool ModifyShipBlastwave(State state, Combat combat, AAttack? source, bool targetPlayer, int localX, ref int? damage, ref int range, ref bool isStunwave) => false;
 	bool ModifyMidrowBlastwave(State state, Combat combat, AAttack? source, bool playerDidIt, int worldX, ref int? damage, ref int range, ref bool isStunwave) => false;

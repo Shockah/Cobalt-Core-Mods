@@ -305,7 +305,7 @@ internal sealed class BlastwaveManager
 				Run(g, s, c, 1);
 			
 			foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
-				hook.OnBlastwaveTrigger(s, c, targetShip, worldX, HitMidrow);
+				hook.OnBlastwaveTrigger(s, c, targetShip, worldX, HitMidrow, Damage, Range, IsStunwave);
 		}
 
 		public override void Update(G g, State s, Combat c)
@@ -365,7 +365,7 @@ internal sealed class BlastwaveManager
 				}
 
 				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-					hook.OnBlastwaveHit(state, combat, targetShip, worldX, bitWorldX, HitMidrow);
+					hook.OnBlastwaveHit(state, combat, targetShip, worldX, bitWorldX, HitMidrow, Damage, IsStunwave);
 			}
 
 			void RunForMidrowAt(int bitWorldX)
@@ -410,7 +410,7 @@ internal sealed class BlastwaveManager
 				}
 
 				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
-					hook.OnBlastwaveHit(state, combat, targetShip, worldX, bitWorldX, HitMidrow);
+					hook.OnBlastwaveHit(state, combat, targetShip, worldX, bitWorldX, HitMidrow, Damage, IsStunwave);
 			}
 
 			void RunAt(int bitWorldX)

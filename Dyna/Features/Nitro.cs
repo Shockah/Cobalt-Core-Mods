@@ -45,11 +45,15 @@ internal sealed class NitroManager : IDynaHook, IKokoroApi.IV2.IStatusRenderingA
 		return ownerShip.Get(NitroStatus.Status) + (blastwaveIndex == 0 ? ownerShip.Get(TempNitroStatus.Status) : 0);
 	}
 
-	public void OnBlastwaveTrigger(State state, Combat combat, Ship ship, int worldX, bool hitMidrow)
+	public void OnBlastwaveHit(State state, Combat combat, Ship ship, int originWorldX, int waveWorldX, bool hitMidrow, int? damage, bool isStunwave)
 	{
+		if (damage is null)
+			return;
+		
 		var ownerShip = ship.isPlayerShip ? combat.otherShip : state.ship;
 		if (ownerShip.Get(TempNitroStatus.Status) <= 0)
 			return;
+		
 		ownerShip.Set(TempNitroStatus.Status, 0);
 	}
 
