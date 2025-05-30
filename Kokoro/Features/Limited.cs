@@ -63,7 +63,10 @@ partial class ApiImplementation
 				=> new CardBrowseWrapper { Wrapped = route };
 
 			public Spr GetIcon(int amount)
-				=> LimitedManager.ObtainIcon(amount);
+				=> LimitedManager.ObtainIcon(amount, true);
+
+			public Spr GetTopIconLayer(int amount)
+				=> LimitedManager.ObtainIcon(amount, false);
 
 			public void RegisterHook(IKokoroApi.IV2.ILimitedApi.IHook hook, double priority = 0)
 				=> LimitedManager.Instance.Register(hook, priority);
@@ -138,7 +141,8 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 	internal static ICardTraitEntry Trait = null!;
 
 	private static readonly Dictionary<string, Dictionary<Upgrade, int>> BaseLimitedUses = [];
-	private static readonly Dictionary<int, Spr> Icons = [];
+	private static readonly Dictionary<int, Spr> ExhaustIcons = [];
+	private static readonly Dictionary<int, Spr> NoExhaustIcons = [];
 	
 	private LimitedManager() : base(ModEntry.Instance.Package.Manifest.UniqueName)
 	{
@@ -148,10 +152,11 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 	{
 		Trait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Limited", new()
 		{
-			Icon = (state, card) => ObtainIcon(card is null ? 10 : GetLimitedUses(state, card)),
+			Icon = (state, card) => ObtainIcon(card is null ? 10 : GetLimitedUses(state, card), true),
 			Renderer = (state, card, position) =>
 			{
-				Draw.Sprite(ObtainIcon(card is null ? 10 : GetLimitedUses(state, card)), position.x, position.y, color: Colors.white.fadeAlpha(0.7));
+				Draw.Sprite(StableSpr.icons_exhaust, position.x, position.y, color: Colors.white.fadeAlpha(0.7));
+				Draw.Sprite(ObtainIcon(card is null ? 10 : GetLimitedUses(state, card), false), position.x, position.y);
 				return true;
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["limited", "name"]).Localize,
@@ -168,7 +173,7 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 				return [
 					new GlossaryTooltip($"cardtrait.{MethodBase.GetCurrentMethod()!.DeclaringType!.Namespace!}::Limited")
 					{
-						Icon = ObtainIcon(card is null ? 10 : GetLimitedUses(DB.fakeState, card)),
+						Icon = ObtainIcon(card is null ? 10 : GetLimitedUses(DB.fakeState, card), true),
 						TitleColor = Colors.cardtrait,
 						Title = ModEntry.Instance.Localizations.Localize(["limited", "name"]),
 						Description = description,
@@ -301,26 +306,26 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 		}
 	}
 
-	internal static Spr ObtainIcon(int amount)
+	internal static Spr ObtainIcon(int amount, bool drawExhaustIcon)
 	{
-		amount = Math.Clamp(amount, 0, 10);
-		if (Icons.TryGetValue(amount, out var icon))
-			return icon;
-
-		icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite($"Limited{amount}", () =>
-		{
-			var exhaustIcon = SpriteLoader.Get(StableSpr.icons_exhaust)!;
-			return TextureUtils.CreateTexture(exhaustIcon.Width, exhaustIcon.Height, () =>
+		var icons = drawExhaustIcon ? ExhaustIcons : NoExhaustIcons;
+		
+		ref var icon = ref CollectionsMarshal.GetValueRefOrAddDefault(icons, amount, out var iconExists);
+		if (!iconExists)
+			icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite($"Limited{(drawExhaustIcon ? "WithExhaust" : "WithoutExhaust")}{amount}", () =>
 			{
-				Draw.Sprite(exhaustIcon, 0, 0);
+				var exhaustIcon = SpriteLoader.Get(StableSpr.icons_exhaust)!;
+				return TextureUtils.CreateTexture(exhaustIcon.Width, exhaustIcon.Height, () =>
+				{
+					if (drawExhaustIcon)
+						Draw.Sprite(exhaustIcon, 0, 0);
 
-				var text = amount > 9 ? "+" : amount.ToString();
-				var textRect = Draw.Text(text, 0, 0, outline: Colors.black, dontDraw: true, dontSubstituteLocFont: true);
-				Draw.Text(text, exhaustIcon.Width - textRect.w, exhaustIcon.Height - textRect.h - 1, color: Colors.white, outline: Colors.black, dontSubstituteLocFont: true);
-			});
-		}).Sprite;
-
-		Icons[amount] = icon;
+					var text = amount > 9 ? "+" : amount.ToString();
+					var textRect = Draw.Text(text, 0, 0, outline: Colors.black, dontDraw: true, dontSubstituteLocFont: true);
+					Draw.Text(text, exhaustIcon.Width - textRect.w, exhaustIcon.Height - textRect.h - 1, color: Colors.white, outline: Colors.black, dontSubstituteLocFont: true);
+				});
+			}).Sprite;
+		
 		return icon;
 	}
 
@@ -333,7 +338,7 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 		var initialX = (int)position.x;
 
 		if (!dontDraw)
-			Draw.Sprite(ObtainIcon(10), position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
+			Draw.Sprite(ObtainIcon(10, true), position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
 		position.x += 10;
 
 		if (usesAction.Mode == AStatusMode.Set)
@@ -388,7 +393,7 @@ internal sealed class LimitedUsesVariableHint : AVariableHint, IKokoroApi.IV2.IL
 	}
 
 	public override Icon? GetIcon(State s)
-		=> new() { path = LimitedManager.ObtainIcon(10) };
+		=> new() { path = LimitedManager.ObtainIcon(10, true) };
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
@@ -416,13 +421,13 @@ internal sealed class ChangeLimitedUsesAction : CardAction, IKokoroApi.IV2.ILimi
 		=> this;
 
 	public override Icon? GetIcon(State s)
-		=> new(LimitedManager.ObtainIcon(10), Amount, Colors.textMain);
+		=> new(LimitedManager.ObtainIcon(10, true), Amount, Colors.textMain);
 
 	public override List<Tooltip> GetTooltips(State s)
 		=> [
 			new GlossaryTooltip($"action.{GetType().Namespace!}::ChangeLimitedUses::{Mode}")
 			{
-				Icon = LimitedManager.ObtainIcon(10),
+				Icon = LimitedManager.ObtainIcon(10, true),
 				TitleColor = Colors.action,
 				Title = Mode switch
 				{

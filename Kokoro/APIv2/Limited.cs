@@ -139,6 +139,14 @@ public partial interface IKokoroApi
 			/// <param name="amount">The amount.</param>
 			/// <returns>The icon.</returns>
 			Spr GetIcon(int amount);
+
+			/// <summary>
+			/// Retrieves the top icon layer for the Limited card trait with the given amount of uses.
+			/// Amounts of 10+ get replaced with a <c>+</c> symbol.
+			/// </summary>
+			/// <param name="amount">The amount.</param>
+			/// <returns>The icon.</returns>
+			Spr GetTopIconLayer(int amount);
 			
 			/// <summary>
 			/// Registers a new hook related to the Limited card trait.

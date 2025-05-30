@@ -20,6 +20,15 @@ partial class ApiImplementation
 			public ICardTraitEntry Trait
 				=> FleetingManager.Trait;
 
+			public Spr TopIconLayer
+				=> FleetingManager.TopIconLayer.Sprite;
+
+			public Spr BottomIconLayer
+				=> FleetingManager.BottomIconLayer.Sprite;
+
+			public Spr CombinedIcon
+				=> FleetingManager.CombinedIcon.Sprite;
+
 			public IKokoroApi.IV2.IFleetingApi.ICardSelect ModifyCardSelect(ACardSelect action)
 				=> new CardSelectWrapper { Wrapped = action };
 
@@ -102,6 +111,9 @@ internal sealed class FleetingManager : HookManager<IKokoroApi.IV2.IFleetingApi.
 	internal static readonly FleetingManager Instance = new();
 	
 	internal static ICardTraitEntry Trait = null!;
+	internal static ISpriteEntry TopIconLayer = null!;
+	internal static ISpriteEntry BottomIconLayer = null!;
+	internal static ISpriteEntry CombinedIcon = null!;
 	
 	private FleetingManager() : base(ModEntry.Instance.Package.Manifest.UniqueName)
 	{
@@ -109,20 +121,24 @@ internal sealed class FleetingManager : HookManager<IKokoroApi.IV2.IFleetingApi.
 
 	internal static void Setup(IHarmony harmony)
 	{
-		var traitIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Fleeting.png"));
+		TopIconLayer = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/FleetingTop.png"));
+		BottomIconLayer = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/FleetingBottom.png"));
+		CombinedIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Fleeting.png"));
+		
 		Trait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Fleeting", new()
 		{
-			Icon = (_, _) => traitIcon.Sprite,
+			Icon = (_, _) => CombinedIcon.Sprite,
 			Renderer = (_, _, position) =>
 			{
-				Draw.Sprite(traitIcon.Sprite, position.x, position.y, color: Colors.white.fadeAlpha(0.7));
+				Draw.Sprite(BottomIconLayer.Sprite, position.x, position.y, color: Colors.white.fadeAlpha(0.7));
+				Draw.Sprite(TopIconLayer.Sprite, position.x, position.y);
 				return true;
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Fleeting", "name"]).Localize,
 			Tooltips = (_, _) => [
 				new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Fleeting")
 				{
-					Icon = traitIcon.Sprite,
+					Icon = CombinedIcon.Sprite,
 					TitleColor = Colors.cardtrait,
 					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Fleeting", "name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Fleeting", "description"]),

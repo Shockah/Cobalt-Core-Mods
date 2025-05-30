@@ -20,6 +20,21 @@ public partial interface IKokoroApi
 			/// The Fleeting card trait.
 			/// </summary>
 			ICardTraitEntry Trait { get; }
+			
+			/// <summary>
+			/// The top layer of the trait's icon, if rendered separately.
+			/// </summary>
+			Spr TopIconLayer { get; }
+			
+			/// <summary>
+			/// The bottom layer of the trait's icon, if rendered separately.
+			/// </summary>
+			Spr BottomIconLayer { get; }
+			
+			/// <summary>
+			/// The combined trait icon, if not rendering layers separately.
+			/// </summary>
+			Spr CombinedIcon { get; }
 
 			/// <summary>
 			/// Allows modifying an <see cref="ACardSelect"/> action with Fleeting-related changes.

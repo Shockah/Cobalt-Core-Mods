@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Improved visuals of the Fleeting and Limited card traits.
+
 ## 2.10.1
 Released 8 May 2025.
 
