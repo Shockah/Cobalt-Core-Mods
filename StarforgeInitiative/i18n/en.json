@@ -121,6 +121,11 @@
 						"Your leftmost wing becomes a cannon."
 					]
 				}
+			},
+			"card": {
+				"BasicDualDrone": {
+					"name": "Basic Dual Drone"
+				}
 			}
 		}
 	}
