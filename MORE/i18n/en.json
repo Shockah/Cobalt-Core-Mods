@@ -344,7 +344,11 @@
 					"discardAndDrawACardInYourHand": "Select a card to discard and draw again."
 				},
 				"Fidget": {
-					"name": "Fidget"
+					"name": "Fidget",
+					"descriptionA": {
+						"left": "Move this card <c=keyword>left</c>.",
+						"right": "Move this card <c=keyword>right</c>."
+					}
 				},
 				"FinalForm": {
 					"name": "Final Form"

@@ -425,15 +425,59 @@ internal sealed class ToothCards : IRegisterable
 		}
 
 		public override CardData GetData(State state)
-			=> new() { cost = 0, infinite = upgrade != Upgrade.B, flippable = upgrade == Upgrade.A, recycle = upgrade == Upgrade.B, art = StableSpr.cards_ButtonMash };
+			=> new()
+			{
+				cost = 0,
+				infinite = true,
+				flippable = upgrade == Upgrade.A,
+				unplayable = upgrade == Upgrade.A && state.route is Combat combat && combat.hand.Count != 0 && (flipped ? combat.hand[0] == this : combat.hand[^1] == this),
+				art = StableSpr.cards_ButtonMash,
+				description = upgrade == Upgrade.A ? ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "card", "Fidget", "descriptionA", flipped ? "left" : "right"]) : null,
+			};
 
 		public override List<CardAction> GetActions(State s, Combat c)
 			=> upgrade switch
 			{
+				Upgrade.A => [
+					new MoveAction { CardId = uuid, Offset = flipped ? -1 : 1 },
+				],
 				Upgrade.B => [
-					new ADrawCard { count = 1 },
+					new AShuffleHand(),
 				],
 				_ => []
 			};
+
+		private sealed class MoveAction : CardAction
+		{
+			public required int CardId;
+			public required int Offset;
+
+			public override void Begin(G g, State s, Combat c)
+			{
+				base.Begin(g, s, c);
+				var index = c.hand.FindIndex(card => card.uuid == CardId);
+				if (index == -1)
+				{
+					timer = 0;
+					return;
+				}
+
+				var newIndex = index + Offset;
+				if (newIndex < 0 || newIndex >= c.hand.Count)
+				{
+					timer = 0;
+					return;
+				}
+
+				var card = c.hand[index];
+				c.hand.RemoveAt(index);
+				
+				if (newIndex == c.hand.Count)
+					c.hand.Add(card);
+				else
+					c.hand.Insert(newIndex, card);
+				Audio.Play(Event.CardHandling);
+			}
+		}
 	}
 }
