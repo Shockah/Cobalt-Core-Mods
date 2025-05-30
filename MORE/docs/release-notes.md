@@ -4,7 +4,9 @@
 
 ## Upcoming release
 
+### Tooth's Emporium of Wonderful Ideas event
 * Fixed the Fidget card not being available, and the Fiddle card being available twice instead.
+* Fixed the Fiddle card not triggering artifacts' on draw effects.
 
 ## 1.6.0
 Released 3 May 2025.

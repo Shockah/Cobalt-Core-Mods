@@ -180,6 +180,9 @@ internal sealed class ToothCards : IRegisterable
 				s.RemoveCardFromWhereverItIs(selectedCard.uuid);
 				c.SendCardToHand(s, card);
 				Audio.Play(Event.CardHandling);
+					
+				foreach (var artifact in s.EnumerateAllArtifacts())
+					artifact.OnDrawCard(s, c, 1);
 
 				if (Times > 1)
 					c.QueueImmediate(new RedrawAction { selectedCard = selectedCard, Times = Times - 1 });
@@ -221,6 +224,9 @@ internal sealed class ToothCards : IRegisterable
 					s.RemoveCardFromWhereverItIs(card.uuid);
 					c.SendCardToHand(s, card);
 					Audio.Play(Event.CardHandling);
+					
+					foreach (var artifact in s.EnumerateAllArtifacts())
+						artifact.OnDrawCard(s, c, 1);
 				}
 			}
 		}
