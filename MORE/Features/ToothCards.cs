@@ -13,12 +13,12 @@ namespace Shockah.MORE;
 
 internal sealed class ToothCards : IRegisterable
 {
-	internal static ICardEntry FiddleCardEntry = null!;
-	internal static ICardEntry SlipCardEntry = null!;
-	internal static ICardEntry FinalFormCardEntry = null!;
-	internal static ICardEntry SkimCardEntry = null!;
-	internal static ICardEntry SmashCardEntry = null!;
-	internal static ICardEntry FidgetCardEntry = null!;
+	private static ICardEntry FiddleCardEntry = null!;
+	private static ICardEntry SlipCardEntry = null!;
+	private static ICardEntry FinalFormCardEntry = null!;
+	private static ICardEntry SkimCardEntry = null!;
+	private static ICardEntry SmashCardEntry = null!;
+	private static ICardEntry FidgetCardEntry = null!;
 
 	internal static string[] AllToothCardKeys = null!;
 
@@ -34,7 +34,7 @@ internal sealed class ToothCards : IRegisterable
 		AllToothCardKeys = [
 			nameof(Buckshot), nameof(WaltzCard), nameof(BruiseCard), nameof(LightningBottle),
 			FiddleCardEntry.UniqueName, SlipCardEntry.UniqueName, FinalFormCardEntry.UniqueName,
-			SkimCardEntry.UniqueName, SmashCardEntry.UniqueName, FiddleCardEntry.UniqueName,
+			SkimCardEntry.UniqueName, SmashCardEntry.UniqueName, FidgetCardEntry.UniqueName,
 		];
 
 		ModEntry.Instance.Harmony.TryPatch(

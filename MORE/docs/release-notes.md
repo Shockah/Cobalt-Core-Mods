@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Fidget card not being available, and the Fiddle card being available twice instead.
+
 ## 1.6.0
 Released 3 May 2025.
 
