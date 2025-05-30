@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added an extra dialogue option after failing to save Soggins in his event.
+
 ## 1.7.0
 Released 1 May 2025.
 
