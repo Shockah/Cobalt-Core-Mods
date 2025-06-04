@@ -47,17 +47,14 @@ internal sealed class DraculaDeckTrialEvent : IRegisterable
 			oncePerRun = true,
 			zones = ["zone_lawless", "zone_three"],
 			lines = [
-				new InstructionWrapper { Instruction = draculaEventNode.lines[0], ScriptOverride = "DraculaTime" },
-				new InstructionWrapper { Instruction = draculaEventNode.lines[1], ScriptOverride = "DraculaTime" },
-				new InstructionWrapper { Instruction = draculaEventNode.lines[2], ScriptOverride = "DraculaTime" },
-				new InstructionWrapper { Instruction = draculaEventNode.lines[3], ScriptOverride = "DraculaTime" },
+				.. draculaEventNode.lines.Take(4).Select(line => new InstructionWrapper { Instruction = line, ScriptOverride = "DraculaTime" }),
 				new CustomSay
 				{
 					who = "dracula",
 					loopTag = "neutral",
 					flipped = true,
 					Text = ModEntry.Instance.Localizations.Localize(["event", "DraculaDeckTrial", "5-Dracula"])
-				}
+				},
 			],
 			choiceFunc = EventName
 		};
