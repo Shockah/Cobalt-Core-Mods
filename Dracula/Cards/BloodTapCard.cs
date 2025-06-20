@@ -67,21 +67,21 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 
 	public sealed class ABloodTap : CardAction
 	{
-		public List<Status>? Statuses;
+		public List<List<CardAction>>? Choices;
 		public bool IncludeEnemy;
 
-		public override Route? BeginWithRoute(G g, State s, Combat c)
+		public override Route BeginWithRoute(G g, State s, Combat c)
 			=> new ActionChoiceRoute
 			{
 				Title = ModEntry.Instance.Localizations.Localize(["card", "BloodTap", "ui", "title"]),
 				Choices = ModEntry.Instance.BloodTapManager.MakeChoices(s, c, includeEnemy: IncludeEnemy).ToList()
 			};
 
-		private List<Status> GetStatuses(State s)
+		private List<List<CardAction>> GetChoices(State s)
 		{
-			if (Statuses is null && s.route is Combat combat)
-				Statuses = ModEntry.Instance.BloodTapManager.GetApplicableStatuses(s, combat, includeEnemy: IncludeEnemy);
-			return Statuses ?? [];
+			if (Choices is null && s.route is Combat combat)
+				Choices = ModEntry.Instance.BloodTapManager.MakeChoices(s, combat, IncludeEnemy).ToList();
+			return Choices ?? [];
 		}
 
 		public override List<Tooltip> GetTooltips(State s)
@@ -91,21 +91,22 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 				return tooltips;
 
 			tooltips.Add(new TTText(ModEntry.Instance.Localizations.Localize(["card", "BloodTap", "tooltip", "title"])));
-			if (GetStatuses(s).Count == 0)
+			
+			var choices = GetChoices(s);
+			if (choices.Count == 0)
 			{
 				tooltips.Add(new TTText(ModEntry.Instance.Localizations.Localize(["card", "BloodTap", "tooltip", "none"])));
 			}
 			else
 			{
-				foreach (var status in GetStatuses(s))
-					tooltips.Add(new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::BloodTap::Status::{status.Key()}")
-					{
-						Icon = DB.statuses[status].icon,
-						TitleColor = Colors.status,
-						Title = status.GetLocName()
-					});
+				for (var i = 0; i < choices.Count; i++)
+				{
+					if (i != 0)
+						tooltips.Add(new SpacerTooltip { Height = -10 });
+					tooltips.Add(new ActionTooltip { Actions = choices[i] });
+				}
 			}
-
+			
 			return tooltips;
 		}
 	}
