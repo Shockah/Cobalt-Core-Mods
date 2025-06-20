@@ -37,7 +37,7 @@ internal sealed class TheCountArtifact : Artifact, IRegisterable
 	public override Spr GetSprite()
 		=> Sprites[NextTrigger].Sprite;
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			new TTGlossary($"action.stunShip"),
 			new TTGlossary($"action.endTurn"),

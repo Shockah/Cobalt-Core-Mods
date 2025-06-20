@@ -23,10 +23,10 @@ internal sealed class ThinBloodArtifact : Artifact, IRegisterable
 		});
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
-			..StatusMeta.GetTooltips(ModEntry.Instance.BleedingStatus.Status, 1),
-			..StatusMeta.GetTooltips(ModEntry.Instance.TransfusionStatus.Status, 1),
-			..StatusMeta.GetTooltips(ModEntry.Instance.TransfusingStatus.Status, 0),
+			.. StatusMeta.GetTooltips(ModEntry.Instance.BleedingStatus.Status, 1),
+			.. StatusMeta.GetTooltips(ModEntry.Instance.TransfusionStatus.Status, 1),
+			.. StatusMeta.GetTooltips(ModEntry.Instance.TransfusingStatus.Status, 0),
 		];
 }

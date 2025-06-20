@@ -47,7 +47,7 @@ internal sealed class DraculaCatArtifact : Artifact, IRegisterable
 		);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [new TTCard { card = new GrimoireOfSecretsCard() }];
 
 	private static void Card_GetActionsOverridden_Postfix(Card __instance, State s, ref List<CardAction> __result)

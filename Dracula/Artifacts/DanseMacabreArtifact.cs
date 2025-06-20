@@ -30,7 +30,7 @@ internal sealed class DanseMacabreArtifact : Artifact, IRegisterable
 		);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> StatusMeta.GetTooltips(ModEntry.Instance.BloodMirrorStatus.Status, 1);
 
 	public override void OnTurnStart(State state, Combat combat)

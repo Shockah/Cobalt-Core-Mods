@@ -40,10 +40,10 @@ internal sealed class DraculaIsaacArtifact : Artifact, IRegisterable
 	public override List<Tooltip>? GetExtraTooltips()
 		=> new BatStuff().GetTooltips();
 
-	private static void Combat_DestroyDroneAt_Prefix(Combat __instance, int x, ref StuffBase? __state)
-		=> __state = __instance.stuff.TryGetValue(x, out var @object) ? @object : null;
+	private static void Combat_DestroyDroneAt_Prefix(Combat __instance, int x, out StuffBase? __state)
+		=> __state = __instance.stuff.GetValueOrDefault(x);
 
-	private static void Combat_DestroyDroneAt_Postfix(Combat __instance, State s, int x, ref StuffBase? __state)
+	private static void Combat_DestroyDroneAt_Postfix(Combat __instance, State s, int x, in StuffBase? __state)
 	{
 		if (__state?.targetPlayer != false)
 			return;

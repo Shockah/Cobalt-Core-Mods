@@ -10,7 +10,7 @@ namespace Shockah.Dracula;
 
 internal sealed class DraculaBooksArtifact : Artifact, IRegisterable
 {
-	internal const int HealAmount = 2;
+	private const int HealAmount = 2;
 
 	private static ISpriteEntry ActiveSprite = null!;
 	private static ISpriteEntry InactiveSprite = null!;
@@ -51,10 +51,10 @@ internal sealed class DraculaBooksArtifact : Artifact, IRegisterable
 	public override Spr GetSprite()
 		=> (TriggeredThisCombat ? InactiveSprite : ActiveSprite).Sprite;
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
-			..StatusMeta.GetTooltips(Status.shard, (MG.inst.g.state?.ship ?? DB.fakeState.ship).GetMaxShard()),
-			..new AHeal { targetPlayer = true, healAmount = HealAmount }.GetTooltips(MG.inst.g.state ?? DB.fakeState),
+			.. StatusMeta.GetTooltips(Status.shard, (MG.inst.g.state?.ship ?? DB.fakeState.ship).GetMaxShard()),
+			.. new AHeal { targetPlayer = true, healAmount = HealAmount }.GetTooltips(MG.inst.g.state ?? DB.fakeState),
 		];
 
 	public override void OnCombatStart(State state, Combat combat)
@@ -63,10 +63,10 @@ internal sealed class DraculaBooksArtifact : Artifact, IRegisterable
 		TriggeredThisCombat = false;
 	}
 
-	private static void Combat_DrainCardActions_Prefix(G g, ref int __state)
+	private static void Combat_DrainCardActions_Prefix(G g, out int __state)
 		=> __state = g.state.ship.Get(Status.shard);
 
-	private static void Combat_DrainCardActions_Finalizer(Combat __instance, G g, ref int __state)
+	private static void Combat_DrainCardActions_Finalizer(Combat __instance, G g, in int __state)
 	{
 		if (__state <= 0)
 			return;

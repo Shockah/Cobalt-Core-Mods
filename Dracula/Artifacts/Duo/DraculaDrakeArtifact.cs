@@ -37,11 +37,11 @@ internal sealed class DraculaDrakeArtifact : Artifact, IRegisterable
 		);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			new TTGlossary("action.attackPiercing"),
 			new TTGlossary("action.stun"),
-			..StatusMeta.GetTooltips(ModEntry.Instance.BleedingStatus.Status, 1),
+			.. StatusMeta.GetTooltips(ModEntry.Instance.BleedingStatus.Status, 1),
 		];
 
 	public override void OnEnemyGetHit(State state, Combat combat, Part? part)
@@ -49,7 +49,7 @@ internal sealed class DraculaDrakeArtifact : Artifact, IRegisterable
 		base.OnEnemyGetHit(state, combat, part);
 		if (CurrentAttack is null)
 			return;
-		if (!CurrentAttack.piercing && !CurrentAttack.stunEnemy)
+		if (CurrentAttack is { piercing: false, stunEnemy: false })
 			return;
 
 		combat.QueueImmediate(new AStatus

@@ -71,29 +71,26 @@ internal sealed class BatStuff : StuffBase
 		if (ClosestShipPart(ownerShip, x) is not { } closestShipPart || Animation is not { } animation)
 			return offset;
 
-		float playerShipOffset = 32;
-		float enemyShipOffset = 40;
-		Vec normalPosition = offset;
-		Vec attackedPosition = new(offset.x, offset.y + (targetPlayer ? playerShipOffset : -enemyShipOffset));
-		Vec ownerPosition = new(offset.x + (closestShipPart - x) * 16, offset.y + (targetPlayer ? -enemyShipOffset : playerShipOffset));
+		const float playerShipOffset = 32;
+		const float enemyShipOffset = 40;
+		var normalPosition = offset;
+		var attackedPosition = new Vec(offset.x, offset.y + (targetPlayer ? playerShipOffset : -enemyShipOffset));
+		var ownerPosition = new Vec(offset.x + (closestShipPart - x) * 16, offset.y + (targetPlayer ? -enemyShipOffset : playerShipOffset));
 
-		Vec oldPosition;
-		Vec targetPosition;
+		var oldPosition = animation.From switch
+		{
+			AnimationDestination.Enemy => attackedPosition,
+			AnimationDestination.Owner => ownerPosition,
+			_ => normalPosition
+		};
+		var targetPosition = animation.To switch
+		{
+			AnimationDestination.Enemy => attackedPosition,
+			AnimationDestination.Owner => ownerPosition,
+			_ => normalPosition
+		};
+
 		double xOffset;
-
-		oldPosition = animation.From switch
-		{
-			AnimationDestination.Enemy => attackedPosition,
-			AnimationDestination.Owner => ownerPosition,
-			_ => normalPosition
-		};
-		targetPosition = animation.To switch
-		{
-			AnimationDestination.Enemy => attackedPosition,
-			AnimationDestination.Owner => ownerPosition,
-			_ => normalPosition
-		};
-
 		if (animation.From == AnimationDestination.Rest)
 			xOffset = -(1 - Math.Abs(animation.Progress - 0.5) * 2) * 24;
 		else if (animation.From == AnimationDestination.Enemy)
@@ -123,14 +120,9 @@ internal sealed class BatStuff : StuffBase
 		DrawWithHilight(g, sprite.Sprite, v + GetOffset(g, doRound: false), flipY: targetPlayer);
 	}
 
-	public override List<CardAction>? GetActions(State s, Combat c)
+	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new ABatAttack
-			{
-				Type = Type,
-				TargetPlayer = targetPlayer,
-				FromX = x
-			}
+			new ABatAttack { Type = Type, TargetPlayer = targetPlayer, FromX = x }
 		];
 
 	public override List<Tooltip> GetTooltips()
@@ -189,7 +181,7 @@ internal sealed class BatStuff : StuffBase
 			var attackedShip = TargetPlayer ? s.ship : c.otherShip;
 			HasValidTarget = attackedShip.GetPartAtWorldX(FromX) is { } part && part.type != PType.empty;
 
-			var bat = c.stuff.TryGetValue(FromX, out var existingBat) ? existingBat : null;
+			var bat = c.stuff.GetValueOrDefault(FromX);
 
 			Animation.Add((From: AnimationDestination.Rest, To: AnimationDestination.Enemy, ShortDistanceDuration, Action: AnimationAction.HitEnemy));
 			if (Type == BatType.Protective && bat?.bubbleShield == false && HasValidTarget)
@@ -206,7 +198,7 @@ internal sealed class BatStuff : StuffBase
 
 		public override void Update(G g, State s, Combat c)
 		{
-			if (CurrentSubAction is { } currentSubAction)
+			if (CurrentSubAction is not null)
 			{
 				CurrentSubAction.Update(g, s, c);
 				if (CurrentSubAction.timer <= 0)

@@ -23,19 +23,10 @@ internal sealed class WingsOfNightArtifact : Artifact, IRegisterable
 		});
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
-		=>
-		[
-			new TTCard
-			{
-				card = new BatFormCard
-				{
-					upgrade = Upgrade.A,
-					temporaryOverride = true,
-					exhaustOverride = true
-				}
-			},
-			..StatusMeta.GetTooltips(Status.evade, 1),
+	public override List<Tooltip> GetExtraTooltips()
+		=> [
+			new TTCard { card = new BatFormCard { upgrade = Upgrade.A, temporaryOverride = true, exhaustOverride = true } },
+			.. StatusMeta.GetTooltips(Status.evade, 1),
 		];
 
 	public override void OnTurnStart(State state, Combat combat)
@@ -59,21 +50,10 @@ internal sealed class WingsOfNightArtifact : Artifact, IRegisterable
 				return;
 
 			c.QueueImmediate([
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.evade,
-					statusAmount = -1,
-					timer = 0,
-				},
+				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = -1, timer = 0 },
 				new AAddCard
 				{
-					card = new BatFormCard
-					{
-						upgrade = Upgrade.A,
-						temporaryOverride = true,
-						exhaustOverride = true,
-					},
+					card = new BatFormCard { upgrade = Upgrade.A, temporaryOverride = true, exhaustOverride = true },
 					destination = CardDestination.Hand,
 					artifactPulse = PassthroughArtifactPulse,
 				},

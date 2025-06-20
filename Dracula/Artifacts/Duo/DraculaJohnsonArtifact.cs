@@ -8,7 +8,6 @@ namespace Shockah.Dracula;
 
 internal sealed class DraculaJohnsonArtifact : Artifact, IRegisterable
 {
-	private static IJohnsonApi JohnsonApi = null!;
 	private static ISpriteEntry TemporaryToPermanentUpgradeIcon = null!;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
@@ -17,7 +16,6 @@ internal sealed class DraculaJohnsonArtifact : Artifact, IRegisterable
 			return;
 		if (ModEntry.Instance.JohnsonApi is not { } johnsonApi)
 			return;
-		JohnsonApi = johnsonApi;
 
 		TemporaryToPermanentUpgradeIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/TemporaryToPermanentUpgrade.png"));
 
@@ -39,7 +37,7 @@ internal sealed class DraculaJohnsonArtifact : Artifact, IRegisterable
 		ModEntry.Instance.BloodTapManager.RegisterOptionProvider(new Provider(), -1000);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			new TTCard { card = new BloodTapCard { discount = -1, temporaryOverride = true, exhaustOverride = true } },
 			ModEntry.Instance.KokoroApi.TemporaryUpgrades.UpgradeTooltip,

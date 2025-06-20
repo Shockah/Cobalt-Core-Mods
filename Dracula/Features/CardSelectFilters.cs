@@ -21,7 +21,7 @@ internal static class CardSelectFiltersExt
 	}
 }
 
-internal sealed class CardSelectFilters
+internal static class CardSelectFilters
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{

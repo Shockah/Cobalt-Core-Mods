@@ -10,7 +10,7 @@ namespace Shockah.Dracula;
 
 internal sealed class DraculaDizzyArtifact : Artifact, IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IHookPriority
 {
-	internal const int ResultingOxidation = 2;
+	private const int ResultingOxidation = 2;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -33,11 +33,11 @@ internal sealed class DraculaDizzyArtifact : Artifact, IRegisterable, IKokoroApi
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.DraculaDeck.Deck, Deck.dizzy]);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
-			..StatusMeta.GetTooltips(ModEntry.Instance.BleedingStatus.Status, 1),
-			..StatusMeta.GetTooltips(ModEntry.Instance.KokoroApi.OxidationStatus.Status, ResultingOxidation),
-			..StatusMeta.GetTooltips(Status.corrode, 1),
+			.. StatusMeta.GetTooltips(ModEntry.Instance.BleedingStatus.Status, 1),
+			.. StatusMeta.GetTooltips(ModEntry.Instance.KokoroApi.OxidationStatus.Status, ResultingOxidation),
+			.. StatusMeta.GetTooltips(Status.corrode, 1),
 		];
 
 	public double HookPriority

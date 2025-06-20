@@ -84,7 +84,7 @@ internal sealed class LifestealManager
 		if (AttackContext is not { } attack)
 			return;
 
-		int lifestealMultiplier = attack.GetLifestealMultiplier();
+		var lifestealMultiplier = attack.GetLifestealMultiplier();
 		if (lifestealMultiplier <= 0)
 			return;
 

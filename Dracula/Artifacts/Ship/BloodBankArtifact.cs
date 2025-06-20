@@ -16,7 +16,7 @@ internal sealed class BloodBankArtifact : Artifact, IRegisterable
 	public int Charges { get; set; } = 3;
 
 	[JsonProperty]
-	private int LastHull = 0;
+	private int LastHull;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -62,11 +62,11 @@ internal sealed class BloodBankArtifact : Artifact, IRegisterable
 	public override int? GetDisplayNumber(State s)
 		=> Charges;
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			new TTText(ModEntry.Instance.Localizations.Localize(["artifact", "ship", "BloodBank", "healBoosterRestrictionDescription"])),
 			new TTDivider(),
-			new TTCard { card = new BatDebitCard() }
+			new TTCard { card = new BatDebitCard() },
 		];
 
 	public override void OnTurnStart(State state, Combat combat)
@@ -112,10 +112,10 @@ internal sealed class BloodBankArtifact : Artifact, IRegisterable
 		artifact.LastHull = __instance.ship.hull;
 	}
 
-	private static void Combat_DrainCardActions_Prefix(Combat __instance, ref bool __state)
+	private static void Combat_DrainCardActions_Prefix(Combat __instance, out bool __state)
 		=> __state = __instance.currentCardAction is not null || __instance.cardActions.Count != 0;
 
-	private static void Combat_DrainCardActions_Postfix(Combat __instance, G g, ref bool __state)
+	private static void Combat_DrainCardActions_Postfix(Combat __instance, G g, in bool __state)
 	{
 		var isWorkingOnActions = __instance.currentCardAction is not null || __instance.cardActions.Count != 0;
 		if (isWorkingOnActions || !__state)

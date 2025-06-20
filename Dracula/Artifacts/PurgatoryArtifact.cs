@@ -14,7 +14,7 @@ internal sealed class PurgatoryArtifact : Artifact, IRegisterable
 	private static ISpriteEntry InactiveSprite = null!;
 
 	[JsonProperty]
-	public bool TriggeredThisCombat { get; set; } = false;
+	public bool TriggeredThisCombat { get; set; }
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -43,7 +43,7 @@ internal sealed class PurgatoryArtifact : Artifact, IRegisterable
 	public override Spr GetSprite()
 		=> (TriggeredThisCombat ? InactiveSprite : ActiveSprite).Sprite;
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> StatusMeta.GetTooltips(Status.perfectShield, 1);
 
 	public override void OnCombatStart(State state, Combat combat)

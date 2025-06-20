@@ -18,16 +18,16 @@ internal sealed class BatmobileArtifact : Artifact, IRegisterable
 	private static ISpriteEntry Sprite1 = null!;
 
 	[JsonProperty]
-	private bool WasBelow75 = false;
+	private bool WasBelow75;
 
 	[JsonProperty]
-	private bool WasBelow50 = false;
+	private bool WasBelow50;
 
 	[JsonProperty]
-	private bool WasBelow25 = false;
+	private bool WasBelow25;
 
 	[JsonProperty]
-	private bool InCombat = false;
+	private bool InCombat;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -76,11 +76,11 @@ internal sealed class BatmobileArtifact : Artifact, IRegisterable
 		}).Sprite;
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
-			..StatusMeta.GetTooltips(Status.maxShield, 1),
-			..StatusMeta.GetTooltips(Status.evade, 1),
-			..StatusMeta.GetTooltips(Status.shield, 1),
+			.. StatusMeta.GetTooltips(Status.maxShield, 1),
+			.. StatusMeta.GetTooltips(Status.evade, 1),
+			.. StatusMeta.GetTooltips(Status.shield, 1),
 			new TTGlossary("parttrait.weak"),
 		];
 
@@ -221,7 +221,7 @@ internal sealed class BatmobileArtifact : Artifact, IRegisterable
 				return;
 			}
 
-			var isGood = newDamageModifier != PDamMod.armor && partAtWorldX.damageModifier == PDamMod.weak;
+			var isGood = partAtWorldX.damageModifier == PDamMod.weak;
 			partAtWorldX.damageModifier = newDamageModifier;
 			if (s.ship.key == ModEntry.Instance.Ship.UniqueName)
 				partAtWorldX.skin = Weaken ? ModEntry.Instance.ShipWing.UniqueName : ModEntry.Instance.ShipArmoredWing.UniqueName;

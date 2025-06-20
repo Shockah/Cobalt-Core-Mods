@@ -11,7 +11,7 @@ namespace Shockah.Dracula;
 internal sealed class MasochismArtifact : Artifact, IRegisterable
 {
 	[JsonProperty]
-	public int Stacks { get; set; } = 0;
+	public int Stacks { get; set; }
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -38,23 +38,13 @@ internal sealed class MasochismArtifact : Artifact, IRegisterable
 	public override int? GetDisplayNumber(State s)
 		=> Stacks;
 
-	public override List<Tooltip>? GetExtraTooltips()
-		=> [
-			new TTCard
-			{
-				card = new BloodTapCard
-				{
-					discount = -1,
-					exhaustOverride = true,
-					temporaryOverride = true
-				}
-			}
-		];
+	public override List<Tooltip> GetExtraTooltips()
+		=> [new TTCard { card = new BloodTapCard { discount = -1, exhaustOverride = true, temporaryOverride = true } }];
 
-	private static void Ship_DirectHullDamage_Prefix(Ship __instance, ref int __state)
+	private static void Ship_DirectHullDamage_Prefix(Ship __instance, out int __state)
 		=> __state = __instance.hull;
 
-	private static void Ship_DirectHullDamage_Postfix(Ship __instance, State s, Combat c, ref int __state)
+	private static void Ship_DirectHullDamage_Postfix(Ship __instance, State s, Combat c, in int __state)
 	{
 		var damageTaken = __state - __instance.hull;
 		if (damageTaken <= 0)

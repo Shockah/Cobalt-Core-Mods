@@ -30,7 +30,7 @@ internal sealed class DraculaDynaArtifact : Artifact, IRegisterable, IDynaHook
 		api.RegisterDuoArtifact(MethodBase.GetCurrentMethod()!.DeclaringType!, [ModEntry.Instance.DraculaDeck.Deck, dynaApi.DynaDeck.Deck]);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> StatusMeta.GetTooltips(ModEntry.Instance.BleedingStatus.Status, 1);
 
 	public void OnChargeTrigger(State state, Combat combat, Ship ship, int worldX)
