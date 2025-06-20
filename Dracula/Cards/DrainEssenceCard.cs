@@ -1,40 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
-using Shockah.Shared;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace Shockah.Dracula;
 
 internal sealed class DrainEssenceCard : Card, IDraculaCard
 {
-	private static ISpriteEntry TopArt = null!;
-	private static ISpriteEntry BottomArt = null!;
-
-	public Matrix ModifyCardActionRenderMatrix(G g, IReadOnlyList<CardAction> actions, CardAction action, int actionWidth)
-	{
-		if (upgrade == Upgrade.B)
-			return Matrix.Identity;
-
-		var spacing = 12 * g.mg.PIX_SCALE;
-		var halfYCenterOffset = 16 * g.mg.PIX_SCALE;
-		var index = actions.ToList().IndexOf(action);
-		var recenterY = -(int)((index - actions.Count / 2.0 + 0.5) * spacing);
-		return index switch
-		{
-			0 or 1 => Matrix.CreateTranslation(0, recenterY - halfYCenterOffset - spacing / 2 + spacing * index, 0),
-			2 => Matrix.CreateTranslation(0, recenterY + halfYCenterOffset, 0),
-			_ => Matrix.Identity
-		};
-	}
-
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		TopArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/DrainEssenceTop.png"));
-		BottomArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/DrainEssenceBottom.png"));
-
 		helper.Content.Cards.RegisterCard("DrainEssence", new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
@@ -52,107 +26,49 @@ internal sealed class DrainEssenceCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
-			art = upgrade switch
-			{
-				Upgrade.B => null,
-				_ => (flipped ? BottomArt : TopArt).Sprite
-			},
-			cost = 1,
-			floppable = upgrade != Upgrade.B,
-			recycle = upgrade == Upgrade.A
+			cost = upgrade == Upgrade.B ? 0 : 1,
+			exhaust = upgrade == Upgrade.B,
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.tempShield,
-					statusAmount = 2
-				}.Disabled(flipped),
 				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
 					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
 						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 1
 					),
-					new AStatus
-					{
-						targetPlayer = true,
-						status = Status.shield,
-						statusAmount = 1
-					}
-				).AsCardAction.Disabled(flipped),
-				new ADummyAction(),
+					new AHeal { targetPlayer = true, healAmount = 1 }
+				).AsCardAction,
 				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
 					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
-						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 2
+						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 1
 					),
-					new AHeal
-					{
-						targetPlayer = true,
-						healAmount = 1
-					}
-				).AsCardAction.Disabled(!flipped),
+					new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 }
+				).AsCardAction,
+				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 },
 			],
 			Upgrade.B => [
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.shield,
-					statusAmount = 1
-				},
-				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
-					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
-						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 1
-					),
-					new AStatus
-					{
-						targetPlayer = true,
-						status = Status.shield,
-						statusAmount = 1
-					}
-				).AsCardAction,
-				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
-					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
-						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 1
-					),
-					new AHeal
-					{
-						targetPlayer = true,
-						healAmount = 1
-					}
-				).AsCardAction,
+				ModEntry.Instance.KokoroApi.VariableHintTargetPlayerTargetPlayer.MakeVariableHint(
+					new AVariableHint { status = ModEntry.Instance.BleedingStatus.Status }
+				).SetTargetPlayer(false).AsCardAction,
+				new AHeal { targetPlayer = true, healAmount = c.otherShip.Get(ModEntry.Instance.BleedingStatus.Status), xHint = 1 },
+				new AStatus { targetPlayer = false, status = ModEntry.Instance.BleedingStatus.Status, mode = AStatusMode.Set, statusAmount = 0 },
 			],
 			_ => [
-				new AStatus
-				{
-					targetPlayer = true,
-					status = Status.shield,
-					statusAmount = 1
-				}.Disabled(flipped),
+				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 },
 				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
 					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
 						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 1
 					),
-					new AStatus
-					{
-						targetPlayer = true,
-						status = Status.shield,
-						statusAmount = 1
-					}
-				).AsCardAction.Disabled(flipped),
-				new ADummyAction(),
+					new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 }
+				).AsCardAction,
 				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
 					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(
 						ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 1
 					),
-					new AHeal
-					{
-						targetPlayer = true,
-						healAmount = 1
-					}
-				).AsCardAction.Disabled(!flipped),
+					new AHeal { targetPlayer = true, healAmount = 1 }
+				).AsCardAction,
 			]
 		};
 }
