@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed mismatched button hitboxes in the Blood Tap UI.
+
 ## 1.3.0
 Released 4 December 2024.
 

@@ -8,7 +8,7 @@ namespace Shockah.Dracula;
 
 internal sealed class ActionChoiceRoute : Route
 {
-	private const UK ChoiceKey = (UK)2137021;
+	private static readonly UK ChoiceKey = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
 
 	public required string Title;
 	public List<List<CardAction>> Choices = [];
@@ -29,16 +29,16 @@ internal sealed class ActionChoiceRoute : Route
 			return;
 		}
 
-		var centerX = 240;
-		var topY = 44;
+		const int centerX = 240;
+		const int topY = 44;
 
-		var columns = 3;
-		var choiceWidth = 56;
-		var choiceHeight = 18;
-		var choiceSpacing = 4;
-		var actionSpacing = 4;
-		var actionYOffset = 7;
-		var actionHoverYOffset = 1;
+		const int columns = 3;
+		const int choiceWidth = 61;
+		const int choiceHeight = 25;
+		const int choiceSpacing = 4;
+		const int actionSpacing = 4;
+		const int actionYOffset = 7;
+		const int actionHoverYOffset = 1;
 
 		var fullRowWidth = columns * choiceWidth + Math.Max(columns - 1, 0) * choiceSpacing;
 		var choicesStartX = centerX - fullRowWidth / 2;
@@ -77,7 +77,7 @@ internal sealed class ActionChoiceRoute : Route
 					totalActionWidth += Card.RenderAction(g, g.state, action, dontDraw: true);
 				}
 
-				var actionStartX = choiceStartX + 3 + choiceWidth / 2 - totalActionWidth / 2;
+				var actionStartX = choiceStartX + choiceWidth / 2 - totalActionWidth / 2;
 				var actionXOffset = 0;
 				foreach (var action in choice)
 				{
