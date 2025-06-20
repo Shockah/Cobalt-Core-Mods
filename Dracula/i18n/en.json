@@ -302,9 +302,9 @@
         "Echolocation": {
             "name": "Echolocation",
             "description": {
-                "None": "Align your cannon with the closest <c=parttrait>weak</c> part.",
-                "A": "Align your cannon with the closest <c=parttrait>weak</c> part.",
-                "B": "Align your cannon with the closest <c=parttrait>weak</c> part. Move back on turn end."
+                "None": "Align your cannon with the <c=parttrait>weakest</c> part.",
+                "A": "Align your cannon with the <c=parttrait>weakest</c> part.",
+                "B": "Align your cannon with the <c=parttrait>weakest</c> part. Move back on turn end."
             }
         },
         "Enshroud": {

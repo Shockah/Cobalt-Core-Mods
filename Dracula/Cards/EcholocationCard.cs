@@ -60,35 +60,6 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 	{
 		var maxCheck = Math.Abs(c.otherShip.x - s.ship.x) + s.ship.parts.Count + c.otherShip.parts.Count;
 
-		int? FindClosestAlignment(bool inactiveCannons, bool nonArmored)
-		{
-			for (var i = 0; i < maxCheck; i++)
-			{
-				for (var partIndex = 0; partIndex < s.ship.parts.Count; partIndex++)
-				{
-					if (s.ship.parts[partIndex].type != PType.cannon)
-						continue;
-					if (!inactiveCannons && !s.ship.parts[partIndex].active)
-						continue;
-					if (i != 0 && c.otherShip.GetPartAtWorldX(s.ship.x + partIndex - i) is { } enemyPartLeft)
-					{
-						if (enemyPartLeft.damageModifier is PDamMod.weak or PDamMod.brittle)
-							return -i;
-						else if (nonArmored && enemyPartLeft.damageModifier == PDamMod.none)
-							return -i;
-					}
-					if (c.otherShip.GetPartAtWorldX(s.ship.x + partIndex + i) is { } enemyPartRight)
-					{
-						if (enemyPartRight.damageModifier is PDamMod.weak or PDamMod.brittle)
-							return i;
-						else if (nonArmored && enemyPartRight.damageModifier == PDamMod.none)
-							return i;
-					}
-				}
-			}
-			return null;
-		}
-
 		int? nullableAlignment = null;
 		nullableAlignment ??= FindClosestAlignment(inactiveCannons: false, nonArmored: false);
 		nullableAlignment ??= FindClosestAlignment(inactiveCannons: false, nonArmored: true);
@@ -107,12 +78,41 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 			new ATooltipAction
 			{
 				Tooltips = [
-					new TTGlossary("parttrait.weak"),
 					new TTGlossary("parttrait.brittle"),
+					new TTGlossary("parttrait.weak"),
 				]
 			}
 		);
 		return actions;
+
+		int? FindClosestAlignment(bool inactiveCannons, bool nonArmored)
+		{
+			for (var i = 0; i < maxCheck; i++)
+			{
+				for (var partIndex = 0; partIndex < s.ship.parts.Count; partIndex++)
+				{
+					if (s.ship.parts[partIndex].type != PType.cannon)
+						continue;
+					if (!inactiveCannons && !s.ship.parts[partIndex].active)
+						continue;
+					if (i != 0 && c.otherShip.GetPartAtWorldX(s.ship.x + partIndex - i) is { } enemyPartLeft)
+					{
+						if (enemyPartLeft.damageModifier is PDamMod.weak or PDamMod.brittle)
+							return -i;
+						if (nonArmored && enemyPartLeft.damageModifier == PDamMod.none)
+							return -i;
+					}
+					if (c.otherShip.GetPartAtWorldX(s.ship.x + partIndex + i) is { } enemyPartRight)
+					{
+						if (enemyPartRight.damageModifier is PDamMod.weak or PDamMod.brittle)
+							return i;
+						if (nonArmored && enemyPartRight.damageModifier == PDamMod.none)
+							return i;
+					}
+				}
+			}
+			return null;
+		}
 	}
 
 	public sealed class AEcholocationMove : CardAction
@@ -136,6 +136,7 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 
 			if (Return)
 				c.SetEcholocationReturnPosition(s.ship.x);
+			
 			c.QueueImmediate(new AMove
 			{
 				targetPlayer = true,
