@@ -1,5 +1,6 @@
-﻿using CobaltCoreModding.Definitions.ExternalItems;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using CobaltCoreModding.Definitions.ExternalItems;
+using Nickel;
 
 namespace Shockah.Kokoro;
 
@@ -63,6 +64,10 @@ internal sealed class OxidationStatusManager : VariedApiVersionHookManager<IKoko
 
 	private OxidationStatusManager() : base(ModEntry.Instance.Package.Manifest.UniqueName, new HookMapper<IKokoroApi.IV2.IOxidationStatusApi.IHook, IOxidationStatusHook>(hook => new V1ToV2OxidationStatusHookWrapper(hook)))
 	{
+		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
+		{
+			SetShouldCorrode(state.ship, false);
+		});
 	}
 
 	public int GetOxidationStatusMaxValue(State state, Ship ship)
@@ -95,26 +100,37 @@ internal sealed class OxidationStatusManager : VariedApiVersionHookManager<IKoko
 		return args.Tooltips;
 	}
 
+	public double ModifyStatusTurnTriggerPriority(IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusTurnTriggerPriorityArgs args)
+		=> args.Status == ModEntry.Instance.Content.OxidationStatus.Status ? args.Priority + 10 : args.Priority;
+
 	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
 		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
 			return false;
 
-		if (args.Status == Status.corrode && args.Ship.Get(ModEntry.Instance.Content.OxidationStatus.Status) >= GetOxidationStatusMaxValue(args.State, args.Ship))
+		if (args.Status == Status.corrode && (args.Ship.Get(ModEntry.Instance.Content.OxidationStatus.Status) >= GetOxidationStatusMaxValue(args.State, args.Ship) || GetShouldCorrode(args.Ship)))
 		{
 			args.Amount++;
 			args.SetStrategy = IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.Direct;
+			SetShouldCorrode(args.Ship, false);
 			return false;
 		}
 		if (args.Status == ModEntry.Instance.Content.OxidationStatus.Status && args.Amount >= GetOxidationStatusMaxValue(args.State, args.Ship))
 		{
 			args.Amount = 0;
 			args.SetStrategy = IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueSet;
+			SetShouldCorrode(args.Ship, true);
 			return false;
 		}
 
 		return false;
 	}
+
+	private static bool GetShouldCorrode(Ship ship)
+		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(ship, "ShouldCorrode");
+
+	private static void SetShouldCorrode(Ship ship, bool flag)
+		=> ModEntry.Instance.Helper.ModData.SetOptionalModData<bool>(ship, "ShouldCorrode", flag);
 }
 
 internal sealed class V1ToV2OxidationStatusHookWrapper(IOxidationStatusHook v1) : IKokoroApi.IV2.IOxidationStatusApi.IHook

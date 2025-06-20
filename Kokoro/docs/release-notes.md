@@ -4,7 +4,9 @@
 
 ## Upcoming release
 
+* Added an API to control the priority of turn start/end status handling.
 * Improved visuals of the Fleeting and Limited card traits.
+* Fixed Oxidation sometimes not turning into Corrode, depending on timing of its gain.
 
 ## 2.10.1
 Released 8 May 2025.

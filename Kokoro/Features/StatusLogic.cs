@@ -53,6 +53,17 @@ partial class ApiImplementation
 				public Status Status { get; internal set; }
 			}
 			
+			internal sealed class ModifyStatusTurnTriggerPriorityArgs : IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusTurnTriggerPriorityArgs
+			{
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming Timing { get; internal set; }
+				public Ship Ship { get; internal set; } = null!;
+				public Status Status { get; internal set; }
+				public int Amount { get; internal set; }
+				public double Priority { get; internal set; }
+			}
+			
 			internal sealed class OnStatusTurnTriggerArgs : IKokoroApi.IV2.IStatusLogicApi.IHook.IOnStatusTurnTriggerArgs
 			{
 				public State State { get; internal set; } = null!;
@@ -181,10 +192,36 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 
 	private void OnTurnStartOrEnd(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship)
 	{
-		var oldAmounts = DB.statuses.Keys
-			.ToDictionary(status => status, ship.Get);
+		var oldStatuses = DB.statuses.Keys
+			.Select(status => (Status: status, Amount: ship.Get(status)))
+			.ToList();
+		
+		var statusPriorities = oldStatuses
+			.ToDictionary(e => e.Status, e =>
+			{
+				var modifyStatusTurnTriggerPriorityArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusLogicApi.ModifyStatusTurnTriggerPriorityArgs>();
+				try
+				{
+					modifyStatusTurnTriggerPriorityArgs.State = state;
+					modifyStatusTurnTriggerPriorityArgs.Combat = combat;
+					modifyStatusTurnTriggerPriorityArgs.Timing = timing;
+					modifyStatusTurnTriggerPriorityArgs.Ship = ship;
+					modifyStatusTurnTriggerPriorityArgs.Status = e.Status;
+					modifyStatusTurnTriggerPriorityArgs.Amount = e.Amount;
+					modifyStatusTurnTriggerPriorityArgs.Priority = 0;
 
-		foreach (var (status, oldAmount) in oldAmounts)
+					foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+						modifyStatusTurnTriggerPriorityArgs.Priority = hook.ModifyStatusTurnTriggerPriority(modifyStatusTurnTriggerPriorityArgs);
+
+					return modifyStatusTurnTriggerPriorityArgs.Priority;
+				}
+				finally
+				{
+					ModEntry.Instance.ArgsPool.Return(modifyStatusTurnTriggerPriorityArgs);
+				}
+			});
+
+		foreach (var (status, oldAmount) in oldStatuses.OrderByDescending(e => statusPriorities.GetValueOrDefault(e.Status)))
 		{
 			var newAmount = oldAmount;
 			var setStrategy = AutoStepSetStrategies.GetValueOrDefault(status, IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueImmediateAdd);
@@ -221,6 +258,8 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 						hook.OnStatusTurnTrigger(onStatusTurnTriggerArgs);
 
 					if (newAmount == oldAmount)
+						continue;
+					if (oldAmount <= 0 && newAmount < 0 && !ship.CanBeNegative(status))
 						continue;
 
 					switch (setStrategy)
