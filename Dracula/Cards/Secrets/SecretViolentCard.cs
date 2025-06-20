@@ -14,7 +14,7 @@ internal sealed class SecretViolentCard : SecretCard, IDraculaCard
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
 			{
-				deck = ModEntry.Instance.DraculaDeck.Deck,
+				deck = ModEntry.Instance.SpellDeck.Deck,
 				rarity = Rarity.common,
 				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true

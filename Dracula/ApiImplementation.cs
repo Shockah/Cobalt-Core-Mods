@@ -8,6 +8,9 @@ public sealed class ApiImplementation : IDraculaApi
 {
 	public IDeckEntry DraculaDeck
 		=> ModEntry.Instance.DraculaDeck;
+	
+	public IDeckEntry SpellDeck
+		=> ModEntry.Instance.SpellDeck;
 
 	public IDeckEntry BatmobileDeck
 		=> ModEntry.Instance.BatmobileDeck;

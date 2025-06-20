@@ -9,6 +9,7 @@
 * Changed the Aura of Darkness card.
 * Changed the Bat Form B card.
 * Changed the Drain Essence card.
+* Spell cards from the Grimoire of Secrets card now have their own deck.
 * Fixed mismatched button hitboxes in the Blood Tap UI.
 * Improved wording of the Dominate card.
 * Improved wording of the Echolocation card.

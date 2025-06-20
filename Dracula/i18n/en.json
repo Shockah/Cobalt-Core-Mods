@@ -377,6 +377,8 @@
         },
 
         "Secret": {
+            "deck": "Spell",
+            
             "Placeholder": {
                 "name": "Secret Spell",
                 "description": "*a random Spell*"

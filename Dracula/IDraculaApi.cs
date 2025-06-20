@@ -7,6 +7,7 @@ namespace Shockah.Dracula;
 public interface IDraculaApi
 {
 	IDeckEntry DraculaDeck { get; }
+	IDeckEntry SpellDeck { get; }
 	IDeckEntry BatmobileDeck { get; }
 	IStatusEntry BleedingStatus { get; }
 	IStatusEntry BloodMirrorStatus { get; }
