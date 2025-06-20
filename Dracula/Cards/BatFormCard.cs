@@ -14,11 +14,9 @@ using System.Reflection.Emit;
 
 namespace Shockah.Dracula;
 
-internal sealed class BatFormCard : Card, IDraculaCard
+internal sealed class BatFormCard : Card, IDraculaCard, IHasCustomCardTraits
 {
-	private static List<ISpriteEntry> TriadArt = null!;
 	private static List<ISpriteEntry> QuadArt = null!;
-	private static List<ISpriteEntry> TriadIcon = null!;
 	private static List<ISpriteEntry> QuadIcon = null!;
 
 	[JsonProperty]
@@ -27,21 +25,11 @@ internal sealed class BatFormCard : Card, IDraculaCard
 	[JsonProperty]
 	private bool LastFlipped { get; set; }
 
-	public float ActionSpacingScaling
-		=> 1.5f;
-
 	public Matrix ModifyNonTextCardRenderMatrix(G g, IReadOnlyList<CardAction> actions)
-	{
-		if (upgrade == Upgrade.B)
-			return Matrix.CreateScale(1.5f);
-		return Matrix.Identity;
-	}
+		=> Matrix.Identity;
 
 	public Matrix ModifyCardActionRenderMatrix(G g, IReadOnlyList<CardAction> actions, CardAction action, int actionWidth)
 	{
-		if (upgrade == Upgrade.B)
-			return Matrix.CreateScale(1f / 1.5f);
-
 		var spacing = 12 * g.mg.PIX_SCALE;
 		var newXOffset = 12 * g.mg.PIX_SCALE;
 		var newYOffset = 10 * g.mg.PIX_SCALE;
@@ -58,14 +46,8 @@ internal sealed class BatFormCard : Card, IDraculaCard
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		TriadArt = Enumerable.Range(0, 3)
-			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Cards/BatFormTriad{i}.png")))
-			.ToList();
 		QuadArt = Enumerable.Range(0, 4)
 			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Cards/BatFormQuad{i}.png")))
-			.ToList();
-		TriadIcon = Enumerable.Range(0, 3)
-			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Icons/Triad{i}.png")))
 			.ToList();
 		QuadIcon = Enumerable.Range(0, 4)
 			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Icons/Quad{i}.png")))
@@ -97,12 +79,17 @@ internal sealed class BatFormCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
-			art = upgrade == Upgrade.B
-				? TriadArt[FlipIndex % 3].Sprite
-				: QuadArt[FlipIndex % 4].Sprite,
-			cost = upgrade == Upgrade.None ? 1 : 0,
-			floppable = true
+			art = QuadArt[FlipIndex % 4].Sprite,
+			cost = upgrade == Upgrade.A ? 0 : 1,
+			floppable = true,
 		};
+
+	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
+		=> (HashSet<ICardTraitEntry>)(upgrade switch
+		{
+			Upgrade.B => [ModEntry.Instance.KokoroApi.Fleeting.Trait],
+			_ => [],
+		});
 
 	public override void ExtraRender(G g, Vec v)
 	{
@@ -110,7 +97,7 @@ internal sealed class BatFormCard : Card, IDraculaCard
 		if (LastFlipped != flipped)
 		{
 			LastFlipped = flipped;
-			FlipIndex = (FlipIndex + 1) % (upgrade == Upgrade.B ? 3 : 4);
+			FlipIndex = (FlipIndex + 1) % 4;
 		}
 	}
 
@@ -118,56 +105,16 @@ internal sealed class BatFormCard : Card, IDraculaCard
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AMove
-				{
-					targetPlayer = true,
-					dir = 1,
-					isRandom = true,
-					disabled = FlipIndex % 3 != 0,
-				},
-				new AMove
-				{
-					targetPlayer = true,
-					dir = 2,
-					isRandom = true,
-					disabled = FlipIndex % 3 != 1,
-				},
-				new AMove				{
-					targetPlayer = true,
-					dir = 3,
-					isRandom = true,
-					disabled = FlipIndex % 3 != 2,
-				}
+				new AMove { targetPlayer = true, dir = -2, ignoreFlipped = true, disabled = FlipIndex % 4 != 0 },
+				new AMove { targetPlayer = true, dir = 2, ignoreFlipped = true, disabled = FlipIndex % 4 != 1 },
+				new AMove { targetPlayer = true, dir = 3, ignoreFlipped = true, disabled = FlipIndex % 4 != 2 },
+				new AMove { targetPlayer = true, dir = -3, ignoreFlipped = true, disabled = FlipIndex % 4 != 3 }
 			],
 			_ => [
-				new AMove
-				{
-					targetPlayer = true,
-					dir = -1,
-					ignoreFlipped = true,
-					disabled = FlipIndex % 4 != 0,
-				},
-				new AMove
-				{
-					targetPlayer = true,
-					dir = 1,
-					ignoreFlipped = true,
-					disabled = FlipIndex % 4 != 1,
-				},
-				new AMove
-				{
-					targetPlayer = true,
-					dir = 2,
-					ignoreFlipped = true,
-					disabled = FlipIndex % 4 != 2,
-				},
-				new AMove
-				{
-					targetPlayer = true,
-					dir = -2,
-					ignoreFlipped = true,
-					disabled = FlipIndex % 4 != 3,
-				}
+				new AMove { targetPlayer = true, dir = -1, ignoreFlipped = true, disabled = FlipIndex % 4 != 0 },
+				new AMove { targetPlayer = true, dir = 1, ignoreFlipped = true, disabled = FlipIndex % 4 != 1 },
+				new AMove { targetPlayer = true, dir = 2, ignoreFlipped = true, disabled = FlipIndex % 4 != 2 },
+				new AMove { targetPlayer = true, dir = -2, ignoreFlipped = true, disabled = FlipIndex % 4 != 3 }
 			]
 		};
 
@@ -207,9 +154,7 @@ internal sealed class BatFormCard : Card, IDraculaCard
 	{
 		if (card is not BatFormCard batFormCard)
 			return sprite;
-		return batFormCard.upgrade == Upgrade.B
-			? TriadIcon[batFormCard.FlipIndex % TriadIcon.Count].Sprite
-			: QuadIcon[batFormCard.FlipIndex % QuadIcon.Count].Sprite;
+		return QuadIcon[batFormCard.FlipIndex % QuadIcon.Count].Sprite;
 	}
 
 	private static bool Card_Render_Transpiler_ReplaceFlipped(bool flipped, Card card)
@@ -219,7 +164,7 @@ internal sealed class BatFormCard : Card, IDraculaCard
 	{
 		if (!showCardTraits)
 			return;
-		if (__instance is not BatFormCard batFormCard)
+		if (__instance is not BatFormCard)
 			return;
 
 		__result = __result
@@ -237,19 +182,11 @@ internal sealed class BatFormCard : Card, IDraculaCard
 
 				return new GlossaryTooltip("cardtrait.triad")
 				{
-					Icon = batFormCard.upgrade == Upgrade.B
-						? TriadIcon[0].Sprite
-						: QuadIcon[0].Sprite,
+					Icon = QuadIcon[0].Sprite,
 					TitleColor = Colors.cardtrait,
-					Title = ModEntry.Instance.Localizations.Localize([
-						"cardTrait",
-						batFormCard.upgrade == Upgrade.B ? "triad" : "quad",
-						"name"
-					]),
+					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "quad", "name"]),
 					Description = ModEntry.Instance.Localizations.Localize([
-						"cardTrait",
-						batFormCard.upgrade == Upgrade.B ? "triad" : "quad",
-						"description",
+						"cardTrait", "quad", "description",
 						PlatformIcons.GetPlatform() == Platform.MouseKeyboard ? "m&k" : "controller"
 					], new { Button = buttonText })
 				};

@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Changed the Aura of Darkness card.
+* Changed the Bat Form B card.
 * Fixed mismatched button hitboxes in the Blood Tap UI.
 * Improved wording of the O Type ship artifact.
 
