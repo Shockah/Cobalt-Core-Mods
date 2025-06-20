@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Fixed mismatched button hitboxes in the Blood Tap UI.
+* Improved wording of the O Type ship artifact.
 
 ## 1.3.0
 Released 4 December 2024.

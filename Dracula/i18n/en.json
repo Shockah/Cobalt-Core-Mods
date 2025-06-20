@@ -148,7 +148,7 @@
                 "name": "O TYPE",
                 "description": [
                     "(Batmobile-exclusive artifact!)",
-                    "At the start of combat, the <c=artifact>Blood Bank</c> recharges up to 3 charges."
+                    "You start each combat with at least 3 charges in the <c=artifact>Blood Bank</c>."
                 ]
             }
         },
