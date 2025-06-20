@@ -11,6 +11,7 @@
 * Changed the Drain Essence card.
 * Spell cards from the Grimoire of Secrets card now have their own deck.
 * Fixed mismatched button hitboxes in the Blood Tap UI.
+* Changed art of the Red Thirst card.
 * Improved the tooltip of the Blood Tap card.
 * Improved wording of the Dominate card.
 * Improved wording of the Echolocation card.
