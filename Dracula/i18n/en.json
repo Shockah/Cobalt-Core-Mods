@@ -353,6 +353,9 @@
                 "handDrawDiscard": "Hand, Draw and Discard Piles: {{Count}} Cards"
             }
         },
+        "SanguinePath": {
+            "name": "Sanguine Path"
+        },
         "Screech": {
             "name": "Screech"
         },

@@ -4,6 +4,8 @@
 
 ## Upcoming release
 
+* Added the Sanguine Path card.
+* Removed the Echolocation card.
 * Changed the Aura of Darkness card.
 * Changed the Bat Form B card.
 * Changed the Drain Essence card.

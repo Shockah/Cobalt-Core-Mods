@@ -53,33 +53,36 @@ public sealed class ModEntry : SimpleMod
 	private readonly HashSet<Type> ExeTypes = [];
 
 	internal static IReadOnlyList<Type> CommonCardTypes { get; } = [
+		typeof(BatFormCard),
 		typeof(BiteCard),
+		typeof(BloodMirrorCard),
 		typeof(BloodShieldCard),
 		typeof(ClonedLeechCard),
+		typeof(DeathCoilCard),
 		typeof(DrainEssenceCard),
-		typeof(BatFormCard),
-		typeof(BloodMirrorCard),
 		typeof(GrimoireOfSecretsCard),
 		typeof(SummonBatCard),
-		typeof(DeathCoilCard),
 	];
 
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
 		typeof(AuraOfDarknessCard),
-		typeof(HeartbreakCard),
 		typeof(BloodScentCard),
 		typeof(DispersionCard),
-		typeof(EnshroudCard),
-		typeof(EcholocationCard),
 		typeof(DominateCard),
+		typeof(HeartbreakCard),
+		typeof(EnshroudCard),
+		typeof(SanguinePathCard),
+		
+		// old
+		typeof(EcholocationCard),
 	];
 
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
-		typeof(ScreechCard),
-		typeof(RedThirstCard),
-		typeof(CrimsonWaveCard),
 		typeof(BloodTapCard),
+		typeof(CrimsonWaveCard),
+		typeof(RedThirstCard),
 		typeof(SacrificeCard),
+		typeof(ScreechCard),
 	];
 
 	internal static IReadOnlyList<Type> SecretAttackCardTypes { get; } = [

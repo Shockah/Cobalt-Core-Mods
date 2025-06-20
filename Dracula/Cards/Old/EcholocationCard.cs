@@ -26,7 +26,9 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 			{
 				deck = ModEntry.Instance.DraculaDeck.Deck,
 				rarity = Rarity.uncommon,
-				upgradesTo = [Upgrade.A, Upgrade.B]
+				upgradesTo = [Upgrade.A, Upgrade.B],
+				dontOffer = true,
+				unreleased = true,
 			},
 			Art = StableSpr.cards_ScootRight,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Echolocation", "name"]).Localize
