@@ -290,7 +290,7 @@
                     "active": "Trigger its actions.",
                     "inactive": "<c=5f5f5f>Trigger its actions.</c>"
                 },
-                "Draw": "Draw 1 card."
+                "Draw": "Draw a card."
             },
             "ui": {
                 "cancel": "CANCEL"

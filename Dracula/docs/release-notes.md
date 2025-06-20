@@ -8,6 +8,7 @@
 * Changed the Bat Form B card.
 * Changed the Drain Essence card.
 * Fixed mismatched button hitboxes in the Blood Tap UI.
+* Improved wording of the Dominate card.
 * Improved wording of the Echolocation card.
 * Improved wording of the O Type ship artifact.
 
