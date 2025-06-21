@@ -1,12 +1,12 @@
-﻿using Nanoray.PluginManager;
+﻿using System.Collections.Generic;
+using System.Reflection;
+using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace Shockah.Bloch;
 
-internal sealed class AttentionSpanCard : Card, IRegisterable
+internal sealed class AttentionSpanCard : Card, IRegisterable, IHasCustomCardTraits
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -23,6 +23,9 @@ internal sealed class AttentionSpanCard : Card, IRegisterable
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "AttentionSpan", "name"]).Localize
 		});
 	}
+
+	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
+		=> new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Fleeting.Trait };
 
 	public override CardData GetData(State state)
 		=> new()
@@ -53,7 +56,6 @@ internal sealed class AttentionSpanCard : Card, IRegisterable
 					status = AuraManager.IntensifyStatus.Status,
 					statusAmount = 1
 				}).AsCardAction,
-				ModEntry.Instance.KokoroApi.OnTurnEnd.MakeAction(new ExhaustCardAction { CardId = uuid }).AsCardAction,
 			],
 			_ => [
 				ModEntry.Instance.KokoroApi.Impulsive.MakeAction(new AStatus
@@ -68,7 +70,6 @@ internal sealed class AttentionSpanCard : Card, IRegisterable
 					status = AuraManager.IntensifyStatus.Status,
 					statusAmount = 1
 				}).AsCardAction,
-				ModEntry.Instance.KokoroApi.OnTurnEnd.MakeAction(new ExhaustCardAction { CardId = uuid }).AsCardAction,
 			]
 		};
 }

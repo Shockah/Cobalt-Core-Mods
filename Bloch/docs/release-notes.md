@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Technically changed the Attention Span card (but practically it works the same).
+
 ## 1.3.3
 Released 25 April 2025.
 
