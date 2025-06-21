@@ -5,7 +5,9 @@
 ## Upcoming release
 
 * Added the Sanguine Path card.
+* Added the Lacerations artifact.
 * Removed the Echolocation card.
+* Removed the "The Count" artifact.
 * Changed the Aura of Darkness card.
 * Changed the Bat Form B card.
 * Changed the Blood Scent card.

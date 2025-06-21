@@ -26,7 +26,7 @@ internal sealed class TheCountArtifact : Artifact, IRegisterable
 			Meta = new()
 			{
 				owner = ModEntry.Instance.DraculaDeck.Deck,
-				pools = [ArtifactPool.Common]
+				pools = [ArtifactPool.Unreleased]
 			},
 			Sprite = Sprites.Last().Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "TheCount", "name"]).Localize,

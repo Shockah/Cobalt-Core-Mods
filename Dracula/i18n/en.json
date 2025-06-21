@@ -148,6 +148,10 @@
                 "odd": "Every odd turn (like this one) gain <c=status>BLOOD MIRROR</c>. Every even turn your enemy gains <c=status>BLOOD MIRROR</c>."
             }
         },
+        "Lacerations": {
+            "name": "LACERATIONS",
+            "description": "Hitting enemy <c=parttrait>weak</c> or <c=parttrait>brittle</c> parts gives them 1 <c=status>BLEEDING</c>."
+        },
         "Masochism": {
             "name": "MASOCHISM",
             "description": "Every 5 hull lost during your turn, add a <c=cardtrait>discounted, temporary</c> <c=card>Blood Tap</c> with <c=cardtrait>exhaust</c> to your hand."
