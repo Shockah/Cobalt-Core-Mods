@@ -26,25 +26,25 @@ internal sealed class SanguinePathCard : Card, IDraculaCard
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = upgrade == Upgrade.None ? 0 : 1,
-			infinite = upgrade == Upgrade.A,
+			cost = 1,
+			infinite = upgrade == Upgrade.B,
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
 			Upgrade.A => [
+				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 1 },
+			],
+			Upgrade.B => [
 				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 1 },
 				new AStatus { targetPlayer = true, status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 1 },
 				ModEntry.Instance.KokoroApi.Impulsive.MakeAction(new ADiscount { CardId = uuid }).AsCardAction,
 			],
-			Upgrade.B => [
-				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 },
-				new AStatus { targetPlayer = true, status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 1 },
-			],
 			_ => [
-				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 1 },
-				new AStatus { targetPlayer = true, status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 2 },
 			]
 		};
 }
