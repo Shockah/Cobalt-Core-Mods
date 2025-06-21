@@ -30,7 +30,10 @@ partial class ApiImplementation
 	
 	partial class V2Api
 	{
-		public IKokoroApi.IV2.IVariableHintTargetPlayerApi VariableHintTargetPlayerTargetPlayer { get; } = new VariableHintTargetPlayerApi();
+		public IKokoroApi.IV2.IVariableHintTargetPlayerApi VariableHintTargetPlayer { get; } = new VariableHintTargetPlayerApi();
+		
+		public IKokoroApi.IV2.IVariableHintTargetPlayerApi VariableHintTargetPlayerTargetPlayer
+			=> VariableHintTargetPlayer;
 		
 		public sealed class VariableHintTargetPlayerApi : IKokoroApi.IV2.IVariableHintTargetPlayerApi
 		{
@@ -91,7 +94,7 @@ internal sealed class VariableHintTargetPlayerManager
 		var index = __result.FindIndex(t => t is TTGlossary { key: "action.xHint.desc" });
 		if (index < 0)
 			return;
-		if (ModEntry.Instance.Api.V2.VariableHintTargetPlayerTargetPlayer.AsVariableHint(__instance)?.TargetPlayer != false)
+		if (ModEntry.Instance.Api.V2.VariableHintTargetPlayer.AsVariableHint(__instance)?.TargetPlayer != false)
 			return;
 
 		__result[index] = new GlossaryTooltip($"{typeof(ModEntry).Namespace}::EnemyVariableHint")
@@ -142,7 +145,7 @@ internal sealed class VariableHintTargetPlayerManager
 			return w;
 		if (variableHint.hand)
 			return w;
-		if (ModEntry.Instance.Api.V2.VariableHintTargetPlayerTargetPlayer.AsVariableHint(variableHint)?.TargetPlayer != false)
+		if (ModEntry.Instance.Api.V2.VariableHintTargetPlayer.AsVariableHint(variableHint)?.TargetPlayer != false)
 			return w;
 
 		if (!dontDraw)
