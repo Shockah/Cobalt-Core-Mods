@@ -2,7 +2,6 @@
 using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
-using Shockah.Kokoro;
 
 namespace Shockah.Dracula;
 
@@ -25,35 +24,22 @@ internal sealed class AuraOfDarknessCard : Card, IDraculaCard
 	}
 
 	public override CardData GetData(State state)
-		=> new()
-		{
-			cost = 0,
-			recycle = upgrade != Upgrade.B,
-			infinite = upgrade == Upgrade.B,
-			retain = upgrade == Upgrade.B,
-		};
+		=> new() { cost = 0, recycle = true };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
-					ModEntry.Instance.KokoroApi.Conditional.Equation(
-						ModEntry.Instance.KokoroApi.Conditional.Status(ModEntry.Instance.BleedingStatus.Status),
-						IKokoroApi.IV2.IConditionalApi.EquationOperator.LessThanOrEqual,
-						ModEntry.Instance.KokoroApi.Conditional.Constant(2),
-						IKokoroApi.IV2.IConditionalApi.EquationStyle.Possession
-					),
-					new ADrawCard { count = 1 }
-				).AsCardAction,
-				new AStatus { targetPlayer = true, status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 1 },
+				new AHurt { targetPlayer = true, hurtAmount = 1 },
+				new AHurt { targetPlayer = false, hurtAmount = 1 },
+				new AStatus { targetPlayer = false, status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 1 },
 			],
 			Upgrade.A => [
 				new AStatus { targetPlayer = false, status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 2 },
 			],
 			_ => [
-				new AStatus { targetPlayer = false, status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 2 },
 				new AStatus { targetPlayer = true, status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = false, status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 2 },
 			]
 		};
 }
