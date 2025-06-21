@@ -1,6 +1,9 @@
 {
     "UniqueName": "Shockah.Dracula",
     "Version": "{{ModVersion}}",
+    "DisplayName": "Dracula",
+    "Description": "Dracula: A so-called \"last living human\". His cards often self-hurt, but they also often heal.",
+    "Author": "Arin, Shockah",
     "RequiredApiVersion": "1.6.0",
     "EntryPointAssembly": "Dracula.dll",
     "LoadPhase": "AfterDbInit",
