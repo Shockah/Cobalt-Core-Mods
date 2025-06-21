@@ -18,6 +18,7 @@
 * Improved the tooltip of the Blood Tap card.
 * Improved wording of the Dominate card.
 * Improved wording of the O Type ship artifact.
+* Fixed a sprite warning in the console/log.
 
 ## 1.3.0
 Released 4 December 2024.
