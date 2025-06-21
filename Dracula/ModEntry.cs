@@ -436,14 +436,14 @@ public sealed class ModEntry : SimpleMod
 			starterDeck: new StarterDeck
 			{
 				cards = [
+					new BatFormCard(),
 					new SummonBatCard(),
-					new BatFormCard()
 				]
 			}
 		);
 	}
 
-	public override object? GetApi(IModManifest requestingMod)
+	public override object GetApi(IModManifest requestingMod)
 		=> new ApiImplementation();
 
 	private void UpdateExeTypesIfNeeded()
@@ -452,9 +452,8 @@ public sealed class ModEntry : SimpleMod
 			return;
 
 		foreach (var deck in NewRunOptions.allChars)
-			if (Helper.Content.Characters.V2.LookupByDeck(deck) is { } character)
-				if (character.Configuration.ExeCardType is { } exeCardType)
-					ExeTypes.Add(exeCardType);
+			if (Helper.Content.Characters.V2.LookupByDeck(deck) is { Configuration.ExeCardType: { } exeCardType })
+				ExeTypes.Add(exeCardType);
 	}
 
 	internal IEnumerable<Type> GetExeCardTypes()
