@@ -17,7 +17,6 @@
 * Changed art of the Red Thirst card.
 * Improved the tooltip of the Blood Tap card.
 * Improved wording of the Dominate card.
-* Improved wording of the Echolocation card.
 * Improved wording of the O Type ship artifact.
 
 ## 1.3.0
