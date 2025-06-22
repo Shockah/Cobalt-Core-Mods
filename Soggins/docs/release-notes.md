@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.8.0
+Released 22 June 2025.
 
 * Added an extra dialogue option after failing to save Soggins in his event.
 
