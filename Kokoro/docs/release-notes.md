@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.11.0
+Released 22 June 2025.
 
 * Added an API to control the priority of turn start/end status handling.
 * Improved visuals of the Fleeting and Limited card traits.
