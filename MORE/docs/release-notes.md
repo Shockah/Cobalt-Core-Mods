@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.7.0
+Released 22 June 2025.
 
 ### Tooth's Emporium of Wonderful Ideas event
 * Changed the Fidget card.
