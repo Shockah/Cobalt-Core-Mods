@@ -49,7 +49,7 @@ internal sealed class DrainEssenceCard : Card, IDraculaCard
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 },
 			],
 			Upgrade.B => [
-				ModEntry.Instance.KokoroApi.VariableHintTargetPlayerTargetPlayer.MakeVariableHint(
+				ModEntry.Instance.KokoroApi.VariableHintTargetPlayer.MakeVariableHint(
 					new AVariableHint { status = ModEntry.Instance.BleedingStatus.Status }
 				).SetTargetPlayer(false).AsCardAction,
 				new AHeal { targetPlayer = true, healAmount = c.otherShip.Get(ModEntry.Instance.BleedingStatus.Status), xHint = 1 },

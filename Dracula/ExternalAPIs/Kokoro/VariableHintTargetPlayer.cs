@@ -1,10 +1,16 @@
-﻿namespace Shockah.Kokoro;
+﻿using System;
+
+namespace Shockah.Kokoro;
 
 public partial interface IKokoroApi
 {
 	public partial interface IV2
 	{
 		/// <inheritdoc cref="IVariableHintTargetPlayerApi"/>
+		IVariableHintTargetPlayerApi VariableHintTargetPlayer { get; }
+		
+		/// <inheritdoc cref="IVariableHintTargetPlayerApi"/>
+		[Obsolete($"Use `{nameof(VariableHintTargetPlayer)}` instead.")]
 		IVariableHintTargetPlayerApi VariableHintTargetPlayerTargetPlayer { get; }
 
 		/// <summary>
