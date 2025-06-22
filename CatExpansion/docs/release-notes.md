@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.2
+Released 22 June 2025.
 
 * Clarified Small Wormhole artifact's tooltip to specify it grants an upgraded EXE card.
 
