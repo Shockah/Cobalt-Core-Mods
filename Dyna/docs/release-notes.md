@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.6.1
+Released 22 June 2025.
 
 * Fixed Stunwave consuming Temp Nitro.
 
