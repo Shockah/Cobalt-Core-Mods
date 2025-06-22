@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.6.0
+Released 22 June 2025.
 
 * Reworked the Energy Condenser (Dizzy-Peri duo) artifact.
 
