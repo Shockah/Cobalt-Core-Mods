@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Shockah.Dracula;
 
-internal sealed class LacerationsArtifact : Artifact, IRegisterable
+internal sealed class BloodyFangArtifact : Artifact, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -17,9 +17,9 @@ internal sealed class LacerationsArtifact : Artifact, IRegisterable
 				owner = ModEntry.Instance.DraculaDeck.Deck,
 				pools = [ArtifactPool.Common]
 			},
-			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Lacerations.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Lacerations", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Lacerations", "description"]).Localize
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/BloodyFang.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "BloodyFang", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "BloodyFang", "description"]).Localize
 		});
 	}
 

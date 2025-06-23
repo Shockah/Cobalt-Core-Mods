@@ -5,7 +5,7 @@
 ## Upcoming release
 
 * Added the Sanguine Path card.
-* Added the Lacerations artifact.
+* Added the Bloody Fang artifact.
 * Removed the Echolocation card.
 * Removed the "The Count" artifact.
 * Changed the Aura of Darkness card.
