@@ -78,11 +78,15 @@ internal sealed class DailyModifiersCustomRunOption : ICustomRunOption
 			),
 			api.MakeList(
 				SortedDailyArtifacts.Value
-					.Select(IModSettingsApi.IModSetting (a) => api.MakeCheckbox(
-						a.GetLocName,
-						() => config.IsDailyModifierSelected(a.Key()),
-						(_, _, value) => config.SetDailyModifierSelected(a.Key(), value)
-					).SetTooltips(a.GetTooltips))
+					.Select(IModSettingsApi.IModSetting (a) => new IconAffixModSetting
+					{
+						Setting = api.MakeCheckbox(
+							a.GetLocName,
+							() => config.IsDailyModifierSelected(a.Key()),
+							(_, _, value) => config.SetDailyModifierSelected(a.Key(), value)
+						).SetTooltips(a.GetTooltips),
+						LeftIcon = new() { Icon = a.GetSprite() },
+					})
 					.ToList()
 			)
 		]);
