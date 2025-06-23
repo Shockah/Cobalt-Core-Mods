@@ -194,9 +194,9 @@ public sealed class ModEntry : SimpleMod
 		});
 		SpellDeck = helper.Content.Decks.RegisterDeck("Spell", new()
 		{
-			Definition = new() { color = DB.decks[Deck.dracula].color, titleColor = Colors.black },
+			Definition = new() { color = DB.decks[Deck.dracula].color.gain(0.9), titleColor = Colors.white },
 			DefaultCardArt = defaultCardArt,
-			BorderSprite = DraculaDeck.Configuration.BorderSprite,
+			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/SpellCardFrame.png")).Sprite,
 			Name = this.AnyLocalizations.Bind(["card", "Secret", "deck"]).Localize
 		});
 		BatmobileDeck = helper.Content.Decks.RegisterDeck("Batmobile", new()
