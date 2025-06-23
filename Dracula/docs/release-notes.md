@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.4.0
+Released 23 June 2025.
 
 * Added the Sanguine Path card.
 * Added the Bloody Fang artifact.
