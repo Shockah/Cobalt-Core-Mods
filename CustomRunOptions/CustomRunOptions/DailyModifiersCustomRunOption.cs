@@ -71,7 +71,7 @@ internal sealed class DailyModifiersCustomRunOption : ICustomRunOption
 		=> api.MakeList([
 			api.MakePadding(
 				api.MakeText(
-					() => "<c=white>Daily run modifiers</c>"
+					() => $"<c=white>{ModEntry.Instance.Localizations.Localize(["options", nameof(DailyModifiersCustomRunOption), "title"])}</c>"
 				).SetFont(DB.thicket),
 				8,
 				4

@@ -1,0 +1,12 @@
+﻿{
+	"options": {
+		"SeedCustomRunOption": {
+			"title": "Seed",
+			"clear": "CLEAR",
+			"paste": "PASTE"
+		},
+		"DailyModifiersCustomRunOption": {
+			"title": "Daily run modifiers"
+		}
+	}
+}

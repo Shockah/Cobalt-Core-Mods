@@ -37,7 +37,12 @@ internal sealed class SeedCustomRunOption : ICustomRunOption
 		=> config.GetSeed() is null ? [] : [new IconNewRunOptionsElement(Icon.Sprite)];
 
 	public IModSettingsApi.IModSetting MakeCustomRunSettings(IPluginPackage<IModManifest> package, IModSettingsApi api, RunConfig config)
-		=> api.MakeList([]);
+		=> new PasteModSetting
+		{
+			Title = () => ModEntry.Instance.Localizations.Localize(["options", nameof(SeedCustomRunOption), "title"]),
+			ValueGetter = () => config.GetSeed()?.ToString(),
+			ValueSetter = value => config.SetSeed(uint.TryParse(value, out var seed) ? seed : null)
+		};
 	
 	private static IEnumerable<CodeInstruction> RunSummaryRoute_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
