@@ -8,4 +8,7 @@
         <ModFiles Include="assets/**" />
     </ItemGroup>
     <Import Project="..\Configuration.Mod.props" />
+    <ItemGroup>
+        <PackageReference Include="TextCopy" Version="6.2.1" />
+    </ItemGroup>
 </Project>

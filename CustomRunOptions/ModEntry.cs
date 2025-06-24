@@ -19,6 +19,7 @@ internal sealed class ModEntry : SimpleMod
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 	
 	private static IReadOnlyList<Type> CustomRunOptionTypes { get; } = [
+		typeof(SeedCustomRunOption),
 		typeof(DailyModifiersCustomRunOption),
 	];
 	
