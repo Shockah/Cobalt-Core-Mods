@@ -6,7 +6,10 @@
 			"paste": "PASTE"
 		},
 		"DailyModifiersCustomRunOption": {
-			"title": "Daily run modifiers"
+			"title": "Daily run modifiers",
+			"hullTitle": "Daily run hull modifiers",
+			"starterDeckTitle": "Daily run starter deck modifiers",
+			"upgradeTitle": "Daily run upgrade modifiers"
 		}
 	}
 }

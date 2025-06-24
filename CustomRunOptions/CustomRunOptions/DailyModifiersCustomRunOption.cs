@@ -39,9 +39,13 @@ internal sealed class DailyModifiersCustomRunOption : ICustomRunOption
 			.ToList()
 	);
 
-	private static readonly Lazy<List<Artifact>> SortedDailyArtifacts = new(() => [
+	private static readonly Lazy<List<Artifact>> GenericDailyArtifacts = new(() => [
 		// DailyArtifacts.Value.First(a => a is DailyModeTracker),
 		.. DailyArtifacts.Value.Where(a => a is not DailyModeTracker && !HullModArtifacts.Value.Contains(a) && !StarterDeckModArtifacts.Value.Contains(a) && !CardUpgradesModArtifacts.Value.Contains(a)),
+	]);
+
+	private static readonly Lazy<List<Artifact>> UngroupedDailyArtifacts = new(() => [
+		.. GenericDailyArtifacts.Value,
 		.. HullModArtifacts.Value,
 		.. StarterDeckModArtifacts.Value,
 		.. CardUpgradesModArtifacts.Value,
@@ -51,7 +55,7 @@ internal sealed class DailyModifiersCustomRunOption : ICustomRunOption
 	internal static readonly Lazy<HashSet<string>> StarterDeckModArtifactKeySet = new(StarterDeckModArtifacts.Value.Select(a => a.Key()).ToHashSet);
 	internal static readonly Lazy<HashSet<string>> CardUpgradesModArtifactKeySet = new(CardUpgradesModArtifacts.Value.Select(a => a.Key()).ToHashSet);
 	
-	internal static readonly Lazy<List<string>> SortedDailyArtifactKeys = new(() => SortedDailyArtifacts.Value.Select(a => a.Key()).ToList());
+	internal static readonly Lazy<List<string>> UngroupedDailyArtifactKeys = new(() => UngroupedDailyArtifacts.Value.Select(a => a.Key()).ToList());
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -62,7 +66,7 @@ internal sealed class DailyModifiersCustomRunOption : ICustomRunOption
 	}
 
 	public IReadOnlyList<ICustomRunOption.INewRunOptionsElement> GetNewRunOptionsElements(G g, RunConfig config)
-		=> SortedDailyArtifacts.Value
+		=> UngroupedDailyArtifacts.Value
 			.Where(a => config.IsDailyModifierSelected(a.Key()))
 			.Select(a => new ArtifactNewRunOptionsElement(a))
 			.ToList();
@@ -76,19 +80,66 @@ internal sealed class DailyModifiersCustomRunOption : ICustomRunOption
 				8,
 				4
 			),
-			api.MakeList(
-				SortedDailyArtifacts.Value
-					.Select(IModSettingsApi.IModSetting (a) => new IconAffixModSetting
-					{
-						Setting = api.MakeCheckbox(
-							a.GetLocName,
-							() => config.IsDailyModifierSelected(a.Key()),
-							(_, _, value) => config.SetDailyModifierSelected(a.Key(), value)
-						).SetTooltips(a.GetTooltips),
-						LeftIcon = new() { Icon = a.GetSprite() },
-					})
-					.ToList()
-			)
+			api.MakeList(GenericDailyArtifacts.Value.Select(IModSettingsApi.IModSetting (a) => new IconAffixModSetting
+			{
+				Setting = api.MakeCheckbox(
+					a.GetLocName,
+					() => config.IsDailyModifierSelected(a.Key()),
+					(_, _, value) => config.SetDailyModifierSelected(a.Key(), value)
+				).SetTooltips(a.GetTooltips),
+				LeftIcon = new() { Icon = a.GetSprite() },
+			}).ToList()),
+			
+			api.MakePadding(
+				api.MakeText(
+					() => $"<c=white>{ModEntry.Instance.Localizations.Localize(["options", nameof(DailyModifiersCustomRunOption), "hullTitle"])}</c>"
+				).SetFont(DB.thicket),
+				8,
+				4
+			),
+			api.MakeList(HullModArtifacts.Value.Select(IModSettingsApi.IModSetting (a) => new IconAffixModSetting
+			{
+				Setting = api.MakeCheckbox(
+					a.GetLocName,
+					() => config.IsDailyModifierSelected(a.Key()),
+					(_, _, value) => config.SetDailyModifierSelected(a.Key(), value)
+				).SetTooltips(a.GetTooltips),
+				LeftIcon = new() { Icon = a.GetSprite() },
+			}).ToList()),
+			
+			api.MakePadding(
+				api.MakeText(
+					() => $"<c=white>{ModEntry.Instance.Localizations.Localize(["options", nameof(DailyModifiersCustomRunOption), "starterDeckTitle"])}</c>"
+				).SetFont(DB.thicket),
+				8,
+				4
+			),
+			api.MakeList(StarterDeckModArtifacts.Value.Select(IModSettingsApi.IModSetting (a) => new IconAffixModSetting
+			{
+				Setting = api.MakeCheckbox(
+					a.GetLocName,
+					() => config.IsDailyModifierSelected(a.Key()),
+					(_, _, value) => config.SetDailyModifierSelected(a.Key(), value)
+				).SetTooltips(a.GetTooltips),
+				LeftIcon = new() { Icon = a.GetSprite() },
+			}).ToList()),
+			
+			api.MakePadding(
+				api.MakeText(
+					() => $"<c=white>{ModEntry.Instance.Localizations.Localize(["options", nameof(DailyModifiersCustomRunOption), "upgradeTitle"])}</c>"
+				).SetFont(DB.thicket),
+				8,
+				4
+			),
+			api.MakeList(CardUpgradesModArtifacts.Value.Select(IModSettingsApi.IModSetting (a) => new IconAffixModSetting
+			{
+				Setting = api.MakeCheckbox(
+					a.GetLocName,
+					() => config.IsDailyModifierSelected(a.Key()),
+					(_, _, value) => config.SetDailyModifierSelected(a.Key(), value)
+				).SetTooltips(a.GetTooltips),
+				LeftIcon = new() { Icon = a.GetSprite() },
+			}).ToList()),
 		]);
 
 	private static void State_PopulateRun_Postfix(State __instance)
@@ -96,7 +147,7 @@ internal sealed class DailyModifiersCustomRunOption : ICustomRunOption
 		if (!StartRunDetector.StartingNormalRun)
 			return;
 		
-		foreach (var artifact in SortedDailyArtifacts.Value)
+		foreach (var artifact in UngroupedDailyArtifacts.Value)
 			if (__instance.runConfig.IsDailyModifierSelected(artifact.Key()))
 				__instance.SendArtifactToChar(Mutil.DeepCopy(artifact));
 	}
@@ -124,7 +175,7 @@ file static class RunConfigExt
 			
 		dailyModifierKeys.Add(key);
 
-		var sorted = dailyModifierKeys.OrderBy(k => DailyModifiersCustomRunOption.SortedDailyArtifactKeys.Value.IndexOf(k)).ToList();
+		var sorted = dailyModifierKeys.OrderBy(k => DailyModifiersCustomRunOption.UngroupedDailyArtifactKeys.Value.IndexOf(k)).ToList();
 		dailyModifierKeys.Clear();
 		dailyModifierKeys.AddRange(sorted);
 	}
