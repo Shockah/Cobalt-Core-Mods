@@ -93,6 +93,9 @@ internal sealed class DailyModifiersCustomRunOption : ICustomRunOption
 
 	private static void State_PopulateRun_Postfix(State __instance)
 	{
+		if (!StartRunDetector.StartingNormalRun)
+			return;
+		
 		foreach (var artifact in SortedDailyArtifacts.Value)
 			if (__instance.runConfig.IsDailyModifierSelected(artifact.Key()))
 				__instance.SendArtifactToChar(Mutil.DeepCopy(artifact));
