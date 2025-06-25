@@ -2,19 +2,20 @@
 	"UniqueName": "Shockah.CustomRunOptions",
 	"Version": "{{ModVersion}}",
 	"DisplayName": "Custom Run Options",
-	"Description": "TBD",
+	"Description": "Provides additional options for runs: seeded runs, daily run modifiers, solo runs.",
 	"Author": "Shockah",
 	"RequiredApiVersion": "1.14.0",
 	"EntryPointAssembly": "CustomRunOptions.dll",
 	"LoadPhase": "AfterDbInit",
 	"Dependencies": [
 		{
-			"UniqueName": "Shockah.Kokoro",
-			"Version": "2.6.0"
-		},
-		{
 			"UniqueName": "Nickel.ModSettings",
 			"Version": "1.14.0"
 		}
-	]
+	],
+	"UpdateChecks": {
+		"NexusMods": {
+			"ID": 60
+		}
+	}
 }
