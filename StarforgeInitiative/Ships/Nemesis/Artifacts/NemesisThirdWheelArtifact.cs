@@ -23,13 +23,13 @@ internal sealed class NemesisThirdWheelArtifact : Artifact, IRegisterable
 		});
 	}
 
-	public override void OnTurnEnd(State state, Combat combat)
+	public override void OnReceiveArtifact(State state)
 	{
-		base.OnTurnEnd(state, combat);
+		base.OnReceiveArtifact(state);
 
 		foreach (var part in state.ship.parts)
 		{
-			if (part.type != PType.wing)
+			if (part.type != PType.comms)
 				continue;
 
 			part.type = PType.cannon;
