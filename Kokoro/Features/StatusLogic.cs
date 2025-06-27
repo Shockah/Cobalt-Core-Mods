@@ -116,6 +116,15 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 
 	internal static void Setup(IHarmony harmony)
 	{
+		// TODO: remove after vanilla fixes these
+		ModEntry.Instance.Helper.Events.OnModLoadPhaseFinished += (_, phase) =>
+		{
+			if (phase != ModLoadPhase.AfterDbInit)
+				return;
+			DB.statuses[Status.timeStop].affectedByTimestop = true;
+			DB.statuses[Status.lockdown].affectedByTimestop = true;
+		};
+
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.OnBeginTurn)),
 			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_OnBeginTurn_Prefix_First)), Priority.First),
