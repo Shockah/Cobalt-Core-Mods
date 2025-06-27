@@ -495,6 +495,9 @@ public sealed class VanillaTimestopStatusLogicHook : IKokoroApi.IV2.IStatusLogic
 
 	private VanillaTimestopStatusLogicHook() { }
 
+	public double ModifyStatusTurnTriggerPriority(IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusTurnTriggerPriorityArgs args)
+		=> args.Status == ModEntry.Instance.Content.OxidationStatus.Status ? -1_000_000 : args.Priority;
+
 	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 		=> args.Status != Status.timeStop && args.Amount != 0 && DB.statuses.TryGetValue(args.Status, out var definition) && definition.affectedByTimestop && args.Ship.Get(Status.timeStop) > 0;
 }

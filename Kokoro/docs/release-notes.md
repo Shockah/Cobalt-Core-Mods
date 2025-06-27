@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Timestop not working when at only 1 stack of it.
+
 ## 2.11.0
 Released 22 June 2025.
 
