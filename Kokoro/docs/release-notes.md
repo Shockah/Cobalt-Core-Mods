@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.11.2
+Released 27 June 2025.
 
 * Fixed Perfect Shield and Engine Lock not being affected by Timestop.
 
