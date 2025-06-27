@@ -2,7 +2,7 @@
 
 # Release notes
 
-## Upcoming release
+## 2.11.1
 
 * Fixed Timestop not working when at only 1 stack of it.
 
