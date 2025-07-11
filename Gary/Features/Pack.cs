@@ -75,6 +75,11 @@ internal sealed class PackManager : IRegisterable
 			original: AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.Update)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(StuffBase_Update_Postfix))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.BeginCardAction)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_BeginCardAction_Prefix)),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_BeginCardAction_Finalizer))
+		);
 	}
 
 	internal static List<StuffBase>? GetPackedObjects(StuffBase @object)
@@ -128,6 +133,34 @@ internal sealed class PackManager : IRegisterable
 		ModEntry.Instance.Helper.ModData.SetOptionalModData(@object, "PackedObjects", packedObjects);
 		combat.stuff[worldX] = @object;
 		return true;
+	}
+
+	internal static bool RemovePackedObject(Combat combat, int worldX, StuffBase toRemove)
+	{
+		if (!combat.stuff.Remove(worldX, out var @object))
+			return false;
+
+		if (@object == toRemove)
+		{
+			if (GetPackedObjects(@object) is { } packedObjects && packedObjects.Count != 0)
+			{
+				ModEntry.Instance.Helper.ModData.RemoveModData(@object, "PackedObjects");
+				@object = packedObjects[^1];
+				
+				packedObjects = packedObjects.Count == 0 ? null : packedObjects.Take(packedObjects.Count - 1).ToList();
+				ModEntry.Instance.Helper.ModData.SetOptionalModData(@object, "PackedObjects", packedObjects);
+				combat.stuff[worldX] = @object;
+
+				return true;
+			}
+			
+			combat.stuff.Remove(worldX);
+			return true;
+		}
+		
+		if (GetPackedObjects(@object) is { } packedObjects2 && packedObjects2.Count != 0)
+			return packedObjects2.Remove(toRemove);
+		return false;
 	}
 
 	private static void UpdatePackedObjectX(StuffBase @object, int? maybeWorldX = null, bool updateXLerped = false)
@@ -275,7 +308,21 @@ internal sealed class PackManager : IRegisterable
 		if (GetPackedObjects(existingThing) is not { } packedObjects || packedObjects.Count == 0)
 			return actions;
 		
-		actions.InsertRange(0, packedObjects.SelectMany(packedObject => packedObject.GetActions(state, combat) ?? []));
+		UpdatePackedObjectX(existingThing, worldX);
+		actions.InsertRange(0, packedObjects.SelectMany(packedObject =>
+		{
+			if (packedObject.GetActions(state, combat) is not { } actions)
+				return [];
+			
+			var packedObjectId = ModEntry.Instance.Helper.ModData.ObtainModData(packedObject, "PackedObjectId", Guid.NewGuid);
+			return actions
+				.Select(a =>
+				{
+					ModEntry.Instance.Helper.ModData.SetModData(a, "ForcePackedObjectId", packedObjectId);
+					ModEntry.Instance.Helper.ModData.SetModData(a, "ForcePackedObjectWorldX", worldX);
+					return a;
+				});
+		}));
 		return actions;
 	}
 	
@@ -286,7 +333,15 @@ internal sealed class PackManager : IRegisterable
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find([
-					ILMatches.Ldloc<StuffBase>(originalMethod).GetLocalIndex(out var objectLocalIndex).ExtractLabels(out var labels),
+					ILMatches.Ldloc<StuffBase>(originalMethod).GetLocalIndex(out var objectLocalIndex),
+					ILMatches.Call("GetGetRect"),
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldloc, objectLocalIndex.Value),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDrones_Transpiler_OffsetMainObject))),
+				])
+				.Find([
+					ILMatches.Ldloc<StuffBase>(originalMethod).ExtractLabels(out var labels),
 					ILMatches.Ldarg(1),
 					ILMatches.Ldloc<Box>(originalMethod).GetLocalIndex(out var boxLocalIndex),
 					ILMatches.Ldflda("rect"),
@@ -308,13 +363,20 @@ internal sealed class PackManager : IRegisterable
 		}
 	}
 
+	private static Rect Combat_RenderDrones_Transpiler_OffsetMainObject(Rect rect, StuffBase @object)
+	{
+		if (GetPackedObjects(@object) is not { } packedObjects || packedObjects.Count == 0)
+			return rect;
+		return new(rect.x, rect.y - packedObjects.Count, rect.w, rect.h);
+	}
+
 	private static void Combat_RenderDrones_Transpiler_RenderPackedObjects(G g, Box box, StuffBase @object)
 	{
 		if (GetPackedObjects(@object) is not { } packedObjects || packedObjects.Count == 0)
 			return;
 
 		for (var i = 0; i < packedObjects.Count; i++)
-			packedObjects[i].Render(g, new Vec(box.rect.x + ((packedObjects.Count - i) % 2 * 2 - 1) * 2, box.rect.y + (packedObjects.Count - i) * 4));
+			packedObjects[i].Render(g, new Vec(box.rect.x + ((packedObjects.Count - i) % 2 * 2 - 1) * 2, box.rect.y - packedObjects.Count + (packedObjects.Count - i) * 4));
 		if (box.rect.x is > 60 and < 464 && box.IsHover())
 			g.tooltips.Add(box.rect.xy + new Vec(16, 24), ((IEnumerable<StuffBase>)packedObjects).Reverse().SelectMany(packedObject => packedObject.GetTooltips()));
 	}
@@ -333,5 +395,34 @@ internal sealed class PackManager : IRegisterable
 		if (GetPackedObjects(__instance) is { } packedObjects)
 			foreach (var packedObject in packedObjects)
 				packedObject.Update(g);
+	}
+
+	private static void Combat_BeginCardAction_Prefix(Combat __instance, CardAction a, out (StuffBase RealObject, StuffBase PackedObject, int WorldX)? __state)
+	{
+		__state = null;
+		if (!ModEntry.Instance.Helper.ModData.TryGetModData<Guid>(a, "ForcePackedObjectId", out var forcePackedObjectId))
+			return;
+		if (!ModEntry.Instance.Helper.ModData.TryGetModData<int>(a, "ForcePackedObjectWorldX", out var forcePackedObjectWorldX))
+			return;
+		if (!__instance.stuff.TryGetValue(forcePackedObjectWorldX, out var @object))
+			return;
+		if (GetPackedObjects(@object) is not { } packedObjects)
+			return;
+		if (packedObjects.FirstOrDefault(packedObject => ModEntry.Instance.Helper.ModData.GetOptionalModData<Guid>(packedObject, "PackedObjectId") == forcePackedObjectId) is not { } packedObject)
+			return;
+
+		__state = (@object, packedObject, forcePackedObjectWorldX);
+		__instance.stuff[forcePackedObjectWorldX] = packedObject;
+	}
+
+	private static void Combat_BeginCardAction_Finalizer(Combat __instance, in (StuffBase RealObject, StuffBase PackedObject, int WorldX)? __state)
+	{
+		if (__state is not { } e)
+			return;
+
+		var existingObject = __instance.stuff.GetValueOrDefault(e.WorldX);
+		__instance.stuff[e.WorldX] = e.RealObject;
+		if (existingObject != e.PackedObject)
+			RemovePackedObject(__instance, e.WorldX, e.PackedObject);
 	}
 }
