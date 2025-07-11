@@ -19,7 +19,9 @@ internal sealed class PackManager : IRegisterable
 	internal static IStatusEntry PackStatus { get; private set; } = null!;
 	internal static IStatusEntry CramStatus { get; private set; } = null!;
 
-	private static StuffBase? ObjectBeingPackedInto;
+	private static StuffBase? ObjectBeingLaunchedInto;
+	private static StuffBase? ObjectToPutLater;
+	private static bool ObjectIsBeingPackedInto;
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -61,6 +63,18 @@ internal sealed class PackManager : IRegisterable
 			original: AccessTools.DeclaredMethod(typeof(ADroneTurn), nameof(ADroneTurn.Begin)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ADroneTurn_Begin_Transpiler))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderDrones)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDrones_Transpiler))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.ResetHilights)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_ResetHilights_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.Update)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(StuffBase_Update_Postfix))
+		);
 	}
 
 	internal static List<StuffBase>? GetPackedObjects(StuffBase @object)
@@ -71,7 +85,7 @@ internal sealed class PackManager : IRegisterable
 		ref var @object = ref CollectionsMarshal.GetValueRefOrAddDefault(combat.stuff, worldX, out var objectExists);
 		if (!objectExists)
 		{
-			@object = pushed;
+			Put();
 			return;
 		}
 
@@ -82,7 +96,18 @@ internal sealed class PackManager : IRegisterable
 		];
 		ModEntry.Instance.Helper.ModData.RemoveModData(@object!, "PackedObjects");
 		ModEntry.Instance.Helper.ModData.SetModData(pushed, "PackedObjects", packedObjects);
-		@object = pushed;
+
+		Put();
+
+		void Put()
+		{
+			if (ObjectBeingLaunchedInto is not null && !ObjectIsBeingPackedInto)
+				ObjectToPutLater = pushed;
+			else
+				combat.stuff[worldX] = pushed;
+
+			UpdatePackedObjectX(pushed, worldX, true);
+		}
 	}
 
 	internal static bool PopPackedObject(Combat combat, int worldX, bool removeLast)
@@ -104,6 +129,24 @@ internal sealed class PackManager : IRegisterable
 		combat.stuff[worldX] = @object;
 		return true;
 	}
+
+	private static void UpdatePackedObjectX(StuffBase @object, int? maybeWorldX = null, bool updateXLerped = false)
+	{
+		var worldX = maybeWorldX ?? @object.x;
+		@object.x = worldX;
+		if (updateXLerped)
+			@object.xLerped = worldX;
+
+		if (GetPackedObjects(@object) is { } packedObjects)
+		{
+			foreach (var packedObject in packedObjects)
+			{
+				packedObject.x = worldX;
+				if (updateXLerped)
+					packedObject.xLerped = worldX;
+			}
+		}
+	}
 	
 	private static void ASpawn_Begin_Prefix(ASpawn __instance, State s, Combat c, bool __runOriginal)
 	{
@@ -113,14 +156,15 @@ internal sealed class PackManager : IRegisterable
 		var ship = __instance.fromPlayer ? s.ship : c.otherShip;
 		if (ship.GetPartTypeCount(PType.missiles) > 1 && !__instance.multiBayVolley)
 			return;
+
+		var worldX = __instance.GetWorldX(s, c);
+		if (!c.stuff.TryGetValue(worldX, out var existingThing))
+			return;
+		ObjectBeingLaunchedInto = existingThing;
 		
 		var packAmount = ship.Get(PackStatus.Status);
 		var cramAmount = ship.Get(CramStatus.Status);
 		if (packAmount <= 0)
-			return;
-
-		var worldX = __instance.GetWorldX(s, c);
-		if (!c.stuff.TryGetValue(worldX, out var existingThing))
 			return;
 
 		var packSize = 1 + (GetPackedObjects(existingThing)?.Count ?? 0);
@@ -130,13 +174,13 @@ internal sealed class PackManager : IRegisterable
 		var packToRemove = packSize - cramAmount;
 		ship.Add(PackStatus.Status, -packToRemove);
 
-		ObjectBeingPackedInto = existingThing;
+		ObjectIsBeingPackedInto = true;
 		c.stuff.Remove(worldX);
 	}
 
 	private static void ASpawn_Begin_Finalizer(ASpawn __instance, State s, Combat c)
 	{
-		if (ObjectBeingPackedInto is null)
+		if (ObjectBeingLaunchedInto is null)
 			return;
 		
 		var ship = __instance.fromPlayer ? s.ship : c.otherShip;
@@ -146,16 +190,29 @@ internal sealed class PackManager : IRegisterable
 		var worldX = __instance.GetWorldX(s, c);
 		var existingObject = c.stuff.GetValueOrDefault(worldX);
 
-		c.stuff.Remove(worldX);
-		PushPackedObject(c, worldX, ObjectBeingPackedInto);
-		if (existingObject is not null)
-			PushPackedObject(c, worldX, existingObject);
+		if (ObjectIsBeingPackedInto)
+		{
+			c.stuff.Remove(worldX);
+			PushPackedObject(c, worldX, ObjectBeingLaunchedInto);
+			if (existingObject is not null)
+				PushPackedObject(c, worldX, existingObject);
+			ObjectIsBeingPackedInto = false;
+		}
+		else if (ObjectToPutLater is not null)
+		{
+			c.stuff[worldX] = ObjectToPutLater;
+			ObjectToPutLater = null;
+		}
 		
-		ObjectBeingPackedInto = null;
+		ObjectBeingLaunchedInto = null;
 	}
 
 	private static void Combat_DestroyDroneAt_Prefix(Combat __instance, int x, out StuffBase? __state)
-		=> __state = __instance.stuff.GetValueOrDefault(x);
+	{
+		__state = __instance.stuff.GetValueOrDefault(x);
+		if (__state is { } @object)
+			UpdatePackedObjectX(@object, x);
+	}
 
 	private static void Combat_DestroyDroneAt_Postfix(Combat __instance, int x, in StuffBase? __state)
 	{
@@ -220,5 +277,61 @@ internal sealed class PackManager : IRegisterable
 		
 		actions.InsertRange(0, packedObjects.SelectMany(packedObject => packedObject.GetActions(state, combat) ?? []));
 		return actions;
+	}
+	
+	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+	private static IEnumerable<CodeInstruction> Combat_RenderDrones_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find([
+					ILMatches.Ldloc<StuffBase>(originalMethod).GetLocalIndex(out var objectLocalIndex).ExtractLabels(out var labels),
+					ILMatches.Ldarg(1),
+					ILMatches.Ldloc<Box>(originalMethod).GetLocalIndex(out var boxLocalIndex),
+					ILMatches.Ldflda("rect"),
+					ILMatches.Call("get_xy"),
+					ILMatches.Call("Render"),
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(labels),
+					new CodeInstruction(OpCodes.Ldloc, boxLocalIndex.Value),
+					new CodeInstruction(OpCodes.Ldloc, objectLocalIndex.Value),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDrones_Transpiler_RenderPackedObjects))),
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.UniqueName, ex);
+			return instructions;
+		}
+	}
+
+	private static void Combat_RenderDrones_Transpiler_RenderPackedObjects(G g, Box box, StuffBase @object)
+	{
+		if (GetPackedObjects(@object) is not { } packedObjects || packedObjects.Count == 0)
+			return;
+
+		for (var i = 0; i < packedObjects.Count; i++)
+			packedObjects[i].Render(g, new Vec(box.rect.x, box.rect.y + (packedObjects.Count - i) * 4));
+		if (box.rect.x is > 60 and < 464 && box.IsHover())
+			g.tooltips.Add(box.rect.xy + new Vec(16, 24), ((IEnumerable<StuffBase>)packedObjects).Reverse().SelectMany(packedObject => packedObject.GetTooltips()));
+	}
+
+	private static void Combat_ResetHilights_Postfix(Combat __instance)
+	{
+		foreach (var @object in __instance.stuff.Values)
+			if (GetPackedObjects(@object) is { } packedObjects)
+				foreach (var packedObject in packedObjects)
+					if (packedObject.hilight > 0)
+						packedObject.hilight--;
+	}
+
+	private static void StuffBase_Update_Postfix(StuffBase __instance, G g)
+	{
+		if (GetPackedObjects(__instance) is { } packedObjects)
+			foreach (var packedObject in packedObjects)
+				packedObject.Update(g);
 	}
 }
