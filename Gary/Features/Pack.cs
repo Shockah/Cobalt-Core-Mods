@@ -314,7 +314,7 @@ internal sealed class PackManager : IRegisterable
 			return;
 
 		for (var i = 0; i < packedObjects.Count; i++)
-			packedObjects[i].Render(g, new Vec(box.rect.x, box.rect.y + (packedObjects.Count - i) * 4));
+			packedObjects[i].Render(g, new Vec(box.rect.x + ((packedObjects.Count - i) % 2 * 2 - 1) * 2, box.rect.y + (packedObjects.Count - i) * 4));
 		if (box.rect.x is > 60 and < 464 && box.IsHover())
 			g.tooltips.Add(box.rect.xy + new Vec(16, 24), ((IEnumerable<StuffBase>)packedObjects).Reverse().SelectMany(packedObject => packedObject.GetTooltips()));
 	}
