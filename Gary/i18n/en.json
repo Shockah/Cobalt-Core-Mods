@@ -7,13 +7,13 @@
 		]
 	},
 	"status": {
-		"Pack": {
-			"name": "PACK",
-			"description": "When <c=action>launching</c> <c=midrow>midrow objects</c>, spend <c=status>PACK</c> for each already existing <c=midrow>object</c> to fit another one."
-		},
 		"Cram": {
 			"name": "CRAM",
-			"description": "You may <c=action>pack</c> while <c=action>launching</c> <c=midrow>midrow objects</c> as if you had {0} more <c=status>PACK</c>."
+			"description": "When <c=action>launching</c> <c=midrow>midrow objects</c>, spend <c=status>CRAM</c> for each already existing <c=midrow>object</c> to fit another one."
+		},
+		"CramHarder": {
+			"name": "CRAM HARDER",
+			"description": "You may <c=action>cram</c> while <c=action>launching</c> <c=midrow>midrow objects</c> as if you had {0} more <c=status>CRAM</c>."
 		}
 	}
 }
