@@ -56,7 +56,7 @@ public sealed class ModEntry : SimpleMod
 			.. AllCardTypes,
 			.. AllArtifactTypes,
 			.. DuoArtifacts,
-			typeof(PackManager),
+			typeof(CramManager),
 		];
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
