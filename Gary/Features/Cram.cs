@@ -102,6 +102,15 @@ internal sealed class CramManager : IRegisterable
 			original: AccessTools.DeclaredMethod(typeof(JupiterDroneHubV2), nameof(JupiterDroneHubV2.OnPlayerSpawnSomething)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(JupiterDroneHubV2_OnPlayerSpawnSomething_Prefix))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AMedusaField), nameof(AMedusaField.Begin)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMedusaField_Begin_Prefix)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMedusaField_Begin_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AMedusaField), nameof(AMedusaField.GetTooltips)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMedusaField_GetTooltips_Postfix))
+		);
 	}
 
 	internal static List<StuffBase>? GetCrammedObjects(StuffBase @object)
@@ -590,5 +599,48 @@ internal sealed class CramManager : IRegisterable
 					return false;
 
 		return true;
+	}
+
+	private static void AMedusaField_Begin_Prefix(Combat c, out Dictionary<int, List<StuffBase>> __state)
+	{
+		__state = [];
+		foreach (var kvp in c.stuff)
+			if (GetCrammedObjects(kvp.Value) is { } crammedObjects)
+				__state[kvp.Key] = crammedObjects;
+	}
+
+	private static void AMedusaField_Begin_Postfix(Combat c, in Dictionary<int, List<StuffBase>> __state)
+	{
+		foreach (var kvp in __state)
+		{
+			var crammedObjects = kvp.Value.Select(StuffBase (crammedObject) => new Geode
+			{
+				x = crammedObject.x,
+				xLerped = crammedObject.xLerped,
+				bubbleShield = crammedObject.bubbleShield,
+				targetPlayer = crammedObject.targetPlayer,
+				age = crammedObject.age,
+			}).ToList();
+
+			if (c.stuff.TryGetValue(kvp.Key, out var @object))
+			{
+				ModEntry.Instance.Helper.ModData.SetModData(@object, "CrammedObjects", crammedObjects);
+			}
+			else
+			{
+				foreach (var crammedObject in crammedObjects)
+					PushCrammedObject(c, kvp.Key, crammedObject);
+			}
+		}
+	}
+
+	private static void AMedusaField_GetTooltips_Postfix(State s)
+	{
+		if (s.route is not Combat combat)
+			return;
+		foreach (var @object in combat.stuff.Values)
+			if (GetCrammedObjects(@object) is { } crammedObjects)
+				foreach (var crammedObject in crammedObjects)
+					crammedObject.hilight = 2;
 	}
 }
