@@ -65,6 +65,10 @@ internal sealed class CramManager : IRegisterable
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ADroneTurn_Begin_Transpiler))
 		);
 		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ADroneTurn), nameof(ADroneTurn.GetTooltips)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ADroneTurn_GetTooltips_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderDrones)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDrones_Transpiler))
 		);
@@ -342,6 +346,17 @@ internal sealed class CramManager : IRegisterable
 				});
 		}));
 		return actions;
+	}
+
+	private static void ADroneTurn_GetTooltips_Postfix(State s)
+	{
+		if (s.route is not Combat combat)
+			return;
+		foreach (var @object in combat.stuff.Values)
+			if (GetCrammedObjects(@object) is { } crammedObjects)
+				foreach (var crammedObject in crammedObjects)
+					if (crammedObject.GetActions(s, combat) is not null)
+						crammedObject.hilight = 2;
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
