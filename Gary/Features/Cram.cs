@@ -14,29 +14,17 @@ using Nickel;
 
 namespace Shockah.Gary;
 
-internal sealed class PackManager : IRegisterable
+internal sealed class CramManager : IRegisterable
 {
-	internal static IStatusEntry PackStatus { get; private set; } = null!;
 	internal static IStatusEntry CramStatus { get; private set; } = null!;
+	internal static IStatusEntry CramHarderStatus { get; private set; } = null!;
 
 	private static StuffBase? ObjectBeingLaunchedInto;
 	private static StuffBase? ObjectToPutLater;
-	private static bool ObjectIsBeingPackedInto;
+	private static bool ObjectIsBeingCrammedInto;
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		PackStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Pack", new()
-		{
-			Definition = new()
-			{
-				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/Pack.png")).Sprite,
-				color = new("23EEB6"),
-				isGood = true,
-			},
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Pack", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Pack", "description"]).Localize
-		});
-		
 		CramStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Cram", new()
 		{
 			Definition = new()
@@ -47,6 +35,18 @@ internal sealed class PackManager : IRegisterable
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Cram", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Cram", "description"]).Localize
+		});
+		
+		CramHarderStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("CramHarder", new()
+		{
+			Definition = new()
+			{
+				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/CramHarder.png")).Sprite,
+				color = new("23EEB6"),
+				isGood = true,
+			},
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "CramHarder", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "CramHarder", "description"]).Localize
 		});
 		
 		ModEntry.Instance.Harmony.Patch(
@@ -82,10 +82,10 @@ internal sealed class PackManager : IRegisterable
 		);
 	}
 
-	internal static List<StuffBase>? GetPackedObjects(StuffBase @object)
-		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<List<StuffBase>>(@object, "PackedObjects");
+	internal static List<StuffBase>? GetCrammedObjects(StuffBase @object)
+		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<List<StuffBase>>(@object, "CrammedObjects");
 
-	internal static void PushPackedObject(Combat combat, int worldX, StuffBase pushed)
+	internal static void PushCrammedObject(Combat combat, int worldX, StuffBase pushed)
 	{
 		ref var @object = ref CollectionsMarshal.GetValueRefOrAddDefault(combat.stuff, worldX, out var objectExists);
 		if (!objectExists)
@@ -94,61 +94,61 @@ internal sealed class PackManager : IRegisterable
 			return;
 		}
 
-		List<StuffBase> packedObjects = [
-			.. GetPackedObjects(pushed) ?? [],
+		List<StuffBase> crammedObjects = [
+			.. GetCrammedObjects(pushed) ?? [],
 			@object!,
-			.. GetPackedObjects(@object!) ?? [],
+			.. GetCrammedObjects(@object!) ?? [],
 		];
-		ModEntry.Instance.Helper.ModData.RemoveModData(@object!, "PackedObjects");
-		ModEntry.Instance.Helper.ModData.SetModData(pushed, "PackedObjects", packedObjects);
+		ModEntry.Instance.Helper.ModData.RemoveModData(@object!, "CrammedObjects");
+		ModEntry.Instance.Helper.ModData.SetModData(pushed, "CrammedObjects", crammedObjects);
 
 		Put();
 
 		void Put()
 		{
-			if (ObjectBeingLaunchedInto is not null && !ObjectIsBeingPackedInto)
+			if (ObjectBeingLaunchedInto is not null && !ObjectIsBeingCrammedInto)
 				ObjectToPutLater = pushed;
 			else
 				combat.stuff[worldX] = pushed;
 
-			UpdatePackedObjectX(pushed, worldX, true);
+			UpdateCrammedObjectX(pushed, worldX, true);
 		}
 	}
 
-	internal static bool PopPackedObject(Combat combat, int worldX, bool removeLast)
+	internal static bool PopCrammedObject(Combat combat, int worldX, bool removeLast)
 	{
 		if (!combat.stuff.Remove(worldX, out var @object))
 			return false;
-		if (GetPackedObjects(@object) is not { } packedObjects || packedObjects.Count == 0)
+		if (GetCrammedObjects(@object) is not { } crammedObjects || crammedObjects.Count == 0)
 		{
 			if (!removeLast)
 				combat.stuff[worldX] = @object;
 			return removeLast;
 		}
 
-		ModEntry.Instance.Helper.ModData.RemoveModData(@object, "PackedObjects");
-		@object = packedObjects[^1];
+		ModEntry.Instance.Helper.ModData.RemoveModData(@object, "CrammedObjects");
+		@object = crammedObjects[^1];
 
-		packedObjects = packedObjects.Count == 0 ? null : packedObjects.Take(packedObjects.Count - 1).ToList();
-		ModEntry.Instance.Helper.ModData.SetOptionalModData(@object, "PackedObjects", packedObjects);
+		crammedObjects = crammedObjects.Count == 0 ? null : crammedObjects.Take(crammedObjects.Count - 1).ToList();
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(@object, "CrammedObjects", crammedObjects);
 		combat.stuff[worldX] = @object;
 		return true;
 	}
 
-	internal static bool RemovePackedObject(Combat combat, int worldX, StuffBase toRemove)
+	internal static bool RemoveCrammedObject(Combat combat, int worldX, StuffBase toRemove)
 	{
 		if (!combat.stuff.Remove(worldX, out var @object))
 			return false;
 
 		if (@object == toRemove)
 		{
-			if (GetPackedObjects(@object) is { } packedObjects && packedObjects.Count != 0)
+			if (GetCrammedObjects(@object) is { } crammedObjects && crammedObjects.Count != 0)
 			{
-				ModEntry.Instance.Helper.ModData.RemoveModData(@object, "PackedObjects");
-				@object = packedObjects[^1];
+				ModEntry.Instance.Helper.ModData.RemoveModData(@object, "CrammedObjects");
+				@object = crammedObjects[^1];
 				
-				packedObjects = packedObjects.Count == 0 ? null : packedObjects.Take(packedObjects.Count - 1).ToList();
-				ModEntry.Instance.Helper.ModData.SetOptionalModData(@object, "PackedObjects", packedObjects);
+				crammedObjects = crammedObjects.Count == 0 ? null : crammedObjects.Take(crammedObjects.Count - 1).ToList();
+				ModEntry.Instance.Helper.ModData.SetOptionalModData(@object, "CrammedObjects", crammedObjects);
 				combat.stuff[worldX] = @object;
 
 				return true;
@@ -158,25 +158,25 @@ internal sealed class PackManager : IRegisterable
 			return true;
 		}
 		
-		if (GetPackedObjects(@object) is { } packedObjects2 && packedObjects2.Count != 0)
-			return packedObjects2.Remove(toRemove);
+		if (GetCrammedObjects(@object) is { } crammedObjects2 && crammedObjects2.Count != 0)
+			return crammedObjects2.Remove(toRemove);
 		return false;
 	}
 
-	private static void UpdatePackedObjectX(StuffBase @object, int? maybeWorldX = null, bool updateXLerped = false)
+	private static void UpdateCrammedObjectX(StuffBase @object, int? maybeWorldX = null, bool updateXLerped = false)
 	{
 		var worldX = maybeWorldX ?? @object.x;
 		@object.x = worldX;
 		if (updateXLerped)
 			@object.xLerped = worldX;
 
-		if (GetPackedObjects(@object) is { } packedObjects)
+		if (GetCrammedObjects(@object) is { } crammedObjects)
 		{
-			foreach (var packedObject in packedObjects)
+			foreach (var crammedObject in crammedObjects)
 			{
-				packedObject.x = worldX;
+				crammedObject.x = worldX;
 				if (updateXLerped)
-					packedObject.xLerped = worldX;
+					crammedObject.xLerped = worldX;
 			}
 		}
 	}
@@ -195,19 +195,19 @@ internal sealed class PackManager : IRegisterable
 			return;
 		ObjectBeingLaunchedInto = existingThing;
 		
-		var packAmount = ship.Get(PackStatus.Status);
 		var cramAmount = ship.Get(CramStatus.Status);
-		if (packAmount <= 0)
+		var cramHarderAmount = ship.Get(CramHarderStatus.Status);
+		if (cramAmount <= 0)
 			return;
 
-		var packSize = 1 + (GetPackedObjects(existingThing)?.Count ?? 0);
-		if (packSize > packAmount + cramAmount)
+		var stackSize = 1 + (GetCrammedObjects(existingThing)?.Count ?? 0);
+		if (stackSize > cramAmount + cramHarderAmount)
 			return;
 		
-		var packToRemove = packSize - cramAmount;
-		ship.Add(PackStatus.Status, -packToRemove);
+		var cramToRemove = stackSize - cramHarderAmount;
+		ship.Add(CramStatus.Status, -cramToRemove);
 
-		ObjectIsBeingPackedInto = true;
+		ObjectIsBeingCrammedInto = true;
 		c.stuff.Remove(worldX);
 	}
 
@@ -223,13 +223,13 @@ internal sealed class PackManager : IRegisterable
 		var worldX = __instance.GetWorldX(s, c);
 		var existingObject = c.stuff.GetValueOrDefault(worldX);
 
-		if (ObjectIsBeingPackedInto)
+		if (ObjectIsBeingCrammedInto)
 		{
 			c.stuff.Remove(worldX);
-			PushPackedObject(c, worldX, ObjectBeingLaunchedInto);
+			PushCrammedObject(c, worldX, ObjectBeingLaunchedInto);
 			if (existingObject is not null)
-				PushPackedObject(c, worldX, existingObject);
-			ObjectIsBeingPackedInto = false;
+				PushCrammedObject(c, worldX, existingObject);
+			ObjectIsBeingCrammedInto = false;
 		}
 		else if (ObjectToPutLater is not null)
 		{
@@ -244,7 +244,7 @@ internal sealed class PackManager : IRegisterable
 	{
 		__state = __instance.stuff.GetValueOrDefault(x);
 		if (__state is { } @object)
-			UpdatePackedObjectX(@object, x);
+			UpdateCrammedObjectX(@object, x);
 	}
 
 	private static void Combat_DestroyDroneAt_Postfix(Combat __instance, int x, in StuffBase? __state)
@@ -254,21 +254,21 @@ internal sealed class PackManager : IRegisterable
 
 		if (__instance.stuff.Remove(x, out var existingThing))
 		{
-			PushPackedObject(__instance, x, __state);
-			PushPackedObject(__instance, x, existingThing);
+			PushCrammedObject(__instance, x, __state);
+			PushCrammedObject(__instance, x, existingThing);
 			return;
 		}
 
-		if (GetPackedObjects(__state) is not { } packedObjects || packedObjects.Count == 0)
+		if (GetCrammedObjects(__state) is not { } crammedObjects || crammedObjects.Count == 0)
 			return;
 		
-		ModEntry.Instance.Helper.ModData.RemoveModData(__state, "PackedObjects");
+		ModEntry.Instance.Helper.ModData.RemoveModData(__state, "CrammedObjects");
 		
-		var newObject = packedObjects[^1];
-		packedObjects = packedObjects.Count == 0 ? null : packedObjects.Take(packedObjects.Count - 1).ToList();
-		ModEntry.Instance.Helper.ModData.SetOptionalModData(newObject, "PackedObjects", packedObjects);
+		var newObject = crammedObjects[^1];
+		crammedObjects = crammedObjects.Count == 0 ? null : crammedObjects.Take(crammedObjects.Count - 1).ToList();
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(newObject, "CrammedObjects", crammedObjects);
 		
-		PushPackedObject(__instance, x, newObject);
+		PushCrammedObject(__instance, x, newObject);
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
@@ -305,21 +305,21 @@ internal sealed class PackManager : IRegisterable
 	{
 		if (!combat.stuff.TryGetValue(worldX, out var existingThing))
 			return actions;
-		if (GetPackedObjects(existingThing) is not { } packedObjects || packedObjects.Count == 0)
+		if (GetCrammedObjects(existingThing) is not { } crammedObjects || crammedObjects.Count == 0)
 			return actions;
 		
-		UpdatePackedObjectX(existingThing, worldX);
-		actions.InsertRange(0, packedObjects.SelectMany(packedObject =>
+		UpdateCrammedObjectX(existingThing, worldX);
+		actions.InsertRange(0, crammedObjects.SelectMany(crammedObject =>
 		{
-			if (packedObject.GetActions(state, combat) is not { } actions)
+			if (crammedObject.GetActions(state, combat) is not { } actions)
 				return [];
 			
-			var packedObjectId = ModEntry.Instance.Helper.ModData.ObtainModData(packedObject, "PackedObjectId", Guid.NewGuid);
+			var crammedObjectId = ModEntry.Instance.Helper.ModData.ObtainModData(crammedObject, "CrammedObjectId", Guid.NewGuid);
 			return actions
 				.Select(a =>
 				{
-					ModEntry.Instance.Helper.ModData.SetModData(a, "ForcePackedObjectId", packedObjectId);
-					ModEntry.Instance.Helper.ModData.SetModData(a, "ForcePackedObjectWorldX", worldX);
+					ModEntry.Instance.Helper.ModData.SetModData(a, "ForceCrammedObjectId", crammedObjectId);
+					ModEntry.Instance.Helper.ModData.SetModData(a, "ForceCrammedObjectWorldX", worldX);
 					return a;
 				});
 		}));
@@ -352,7 +352,7 @@ internal sealed class PackManager : IRegisterable
 					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(labels),
 					new CodeInstruction(OpCodes.Ldloc, boxLocalIndex.Value),
 					new CodeInstruction(OpCodes.Ldloc, objectLocalIndex.Value),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDrones_Transpiler_RenderPackedObjects))),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDrones_Transpiler_RenderCrammedObjects))),
 				])
 				.AllElements();
 		}
@@ -365,64 +365,64 @@ internal sealed class PackManager : IRegisterable
 
 	private static Rect Combat_RenderDrones_Transpiler_OffsetMainObject(Rect rect, StuffBase @object)
 	{
-		if (GetPackedObjects(@object) is not { } packedObjects || packedObjects.Count == 0)
+		if (GetCrammedObjects(@object) is not { } crammedObjects || crammedObjects.Count == 0)
 			return rect;
-		return new(rect.x, rect.y - packedObjects.Count, rect.w, rect.h);
+		return new(rect.x, rect.y - crammedObjects.Count, rect.w, rect.h);
 	}
 
-	private static void Combat_RenderDrones_Transpiler_RenderPackedObjects(G g, Box box, StuffBase @object)
+	private static void Combat_RenderDrones_Transpiler_RenderCrammedObjects(G g, Box box, StuffBase @object)
 	{
-		if (GetPackedObjects(@object) is not { } packedObjects || packedObjects.Count == 0)
+		if (GetCrammedObjects(@object) is not { } crammedObjects || crammedObjects.Count == 0)
 			return;
 
-		for (var i = 0; i < packedObjects.Count; i++)
-			packedObjects[i].Render(g, new Vec(box.rect.x + ((packedObjects.Count - i) % 2 * 2 - 1) * 2, box.rect.y - packedObjects.Count + (packedObjects.Count - i) * 4));
+		for (var i = 0; i < crammedObjects.Count; i++)
+			crammedObjects[i].Render(g, new Vec(box.rect.x + ((crammedObjects.Count - i) % 2 * 2 - 1) * 2, box.rect.y - crammedObjects.Count + (crammedObjects.Count - i) * 4));
 		if (box.rect.x is > 60 and < 464 && box.IsHover())
-			g.tooltips.Add(box.rect.xy + new Vec(16, 24), ((IEnumerable<StuffBase>)packedObjects).Reverse().SelectMany(packedObject => packedObject.GetTooltips()));
+			g.tooltips.Add(box.rect.xy + new Vec(16, 24), ((IEnumerable<StuffBase>)crammedObjects).Reverse().SelectMany(crammedObject => crammedObject.GetTooltips()));
 	}
 
 	private static void Combat_ResetHilights_Postfix(Combat __instance)
 	{
 		foreach (var @object in __instance.stuff.Values)
-			if (GetPackedObjects(@object) is { } packedObjects)
-				foreach (var packedObject in packedObjects)
-					if (packedObject.hilight > 0)
-						packedObject.hilight--;
+			if (GetCrammedObjects(@object) is { } crammedObjects)
+				foreach (var crammedObject in crammedObjects)
+					if (crammedObject.hilight > 0)
+						crammedObject.hilight--;
 	}
 
 	private static void StuffBase_Update_Postfix(StuffBase __instance, G g)
 	{
-		if (GetPackedObjects(__instance) is { } packedObjects)
-			foreach (var packedObject in packedObjects)
-				packedObject.Update(g);
+		if (GetCrammedObjects(__instance) is { } crammedObjects)
+			foreach (var crammedObject in crammedObjects)
+				crammedObject.Update(g);
 	}
 
-	private static void Combat_BeginCardAction_Prefix(Combat __instance, CardAction a, out (StuffBase RealObject, StuffBase PackedObject, int WorldX)? __state)
+	private static void Combat_BeginCardAction_Prefix(Combat __instance, CardAction a, out (StuffBase RealObject, StuffBase CrammedObject, int WorldX)? __state)
 	{
 		__state = null;
-		if (!ModEntry.Instance.Helper.ModData.TryGetModData<Guid>(a, "ForcePackedObjectId", out var forcePackedObjectId))
+		if (!ModEntry.Instance.Helper.ModData.TryGetModData<Guid>(a, "ForceCrammedObjectId", out var forceCrammedObjectId))
 			return;
-		if (!ModEntry.Instance.Helper.ModData.TryGetModData<int>(a, "ForcePackedObjectWorldX", out var forcePackedObjectWorldX))
+		if (!ModEntry.Instance.Helper.ModData.TryGetModData<int>(a, "ForceCrammedObjectWorldX", out var forceCrammedObjectWorldX))
 			return;
-		if (!__instance.stuff.TryGetValue(forcePackedObjectWorldX, out var @object))
+		if (!__instance.stuff.TryGetValue(forceCrammedObjectWorldX, out var @object))
 			return;
-		if (GetPackedObjects(@object) is not { } packedObjects)
+		if (GetCrammedObjects(@object) is not { } crammedObjects)
 			return;
-		if (packedObjects.FirstOrDefault(packedObject => ModEntry.Instance.Helper.ModData.GetOptionalModData<Guid>(packedObject, "PackedObjectId") == forcePackedObjectId) is not { } packedObject)
+		if (crammedObjects.FirstOrDefault(crammedObject => ModEntry.Instance.Helper.ModData.GetOptionalModData<Guid>(crammedObject, "CrammedObjectId") == forceCrammedObjectId) is not { } crammedObject)
 			return;
 
-		__state = (@object, packedObject, forcePackedObjectWorldX);
-		__instance.stuff[forcePackedObjectWorldX] = packedObject;
+		__state = (@object, crammedObject, forceCrammedObjectWorldX);
+		__instance.stuff[forceCrammedObjectWorldX] = crammedObject;
 	}
 
-	private static void Combat_BeginCardAction_Finalizer(Combat __instance, in (StuffBase RealObject, StuffBase PackedObject, int WorldX)? __state)
+	private static void Combat_BeginCardAction_Finalizer(Combat __instance, in (StuffBase RealObject, StuffBase CrammedObject, int WorldX)? __state)
 	{
 		if (__state is not { } e)
 			return;
 
 		var existingObject = __instance.stuff.GetValueOrDefault(e.WorldX);
 		__instance.stuff[e.WorldX] = e.RealObject;
-		if (existingObject != e.PackedObject)
-			RemovePackedObject(__instance, e.WorldX, e.PackedObject);
+		if (existingObject != e.CrammedObject)
+			RemoveCrammedObject(__instance, e.WorldX, e.CrammedObject);
 	}
 }
