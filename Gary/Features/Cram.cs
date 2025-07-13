@@ -111,6 +111,11 @@ internal sealed class CramManager : IRegisterable
 			original: AccessTools.DeclaredMethod(typeof(AMedusaField), nameof(AMedusaField.GetTooltips)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMedusaField_GetTooltips_Postfix))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ASlurpMidrowObject), nameof(ASlurpMidrowObject.Begin)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASlurpMidrowObject_Begin_Prefix)),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASlurpMidrowObject_Begin_Finalizer))
+		);
 	}
 
 	internal static List<StuffBase>? GetCrammedObjects(StuffBase @object)
@@ -642,5 +647,33 @@ internal sealed class CramManager : IRegisterable
 			if (GetCrammedObjects(@object) is { } crammedObjects)
 				foreach (var crammedObject in crammedObjects)
 					crammedObject.hilight = 2;
+	}
+
+	private static void ASlurpMidrowObject_Begin_Prefix(Combat c, out Dictionary<int, List<StuffBase>> __state)
+	{
+		__state = [];
+		foreach (var kvp in c.stuff)
+		{
+			if (GetCrammedObjects(kvp.Value) is not { } crammedObjects)
+				continue;
+			__state[kvp.Key] = crammedObjects;
+			ModEntry.Instance.Helper.ModData.RemoveModData(kvp.Value, "CrammedObjects");
+		}
+	}
+
+	private static void ASlurpMidrowObject_Begin_Finalizer(Combat c, in Dictionary<int, List<StuffBase>> __state)
+	{
+		foreach (var kvp in __state)
+		{
+			if (c.stuff.TryGetValue(kvp.Key, out var @object))
+			{
+				ModEntry.Instance.Helper.ModData.SetModData(@object, "CrammedObjects", kvp.Value);
+			}
+			else
+			{
+				foreach (var crammedObject in kvp.Value)
+					PushCrammedObject(c, kvp.Key, crammedObject);
+			}
+		}
 	}
 }
