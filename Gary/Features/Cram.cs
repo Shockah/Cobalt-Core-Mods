@@ -116,6 +116,14 @@ internal sealed class CramManager : IRegisterable
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASlurpMidrowObject_Begin_Prefix)),
 			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASlurpMidrowObject_Begin_Finalizer))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ABubbleField), nameof(ABubbleField.Begin)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ABubbleField_Begin_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ABubbleField), nameof(ABubbleField.GetTooltips)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ABubbleField_GetTooltips_Postfix))
+		);
 	}
 
 	internal static List<StuffBase>? GetCrammedObjects(StuffBase @object)
@@ -337,7 +345,7 @@ internal sealed class CramManager : IRegisterable
 		}
 	}
 
-	private static List<CardAction> ADroneTurn_Begin_Transpiler_ModifyActions(List<CardAction> actions, State state, Combat combat, int worldX)
+	private static List<CardAction>? ADroneTurn_Begin_Transpiler_ModifyActions(List<CardAction>? actions, State state, Combat combat, int worldX)
 	{
 		if (!combat.stuff.TryGetValue(worldX, out var existingThing))
 			return actions;
@@ -345,6 +353,7 @@ internal sealed class CramManager : IRegisterable
 			return actions;
 		
 		UpdateCrammedObjectX(existingThing, worldX);
+		actions ??= [];
 		actions.InsertRange(0, crammedObjects.SelectMany(crammedObject =>
 		{
 			if (crammedObject.GetActions(state, combat) is not { } actions)
@@ -675,5 +684,23 @@ internal sealed class CramManager : IRegisterable
 					PushCrammedObject(c, kvp.Key, crammedObject);
 			}
 		}
+	}
+
+	private static void ABubbleField_Begin_Postfix(Combat c)
+	{
+		foreach (var @object in c.stuff.Values)
+			if (GetCrammedObjects(@object) is { } crammedObjects)
+				foreach (var crammedObject in crammedObjects)
+					crammedObject.bubbleShield = true;
+	}
+
+	private static void ABubbleField_GetTooltips_Postfix(State s)
+	{
+		if (s.route is not Combat combat)
+			return;
+		foreach (var @object in combat.stuff.Values)
+			if (GetCrammedObjects(@object) is { } crammedObjects)
+				foreach (var crammedObject in crammedObjects)
+					crammedObject.hilight = 2;
 	}
 }
