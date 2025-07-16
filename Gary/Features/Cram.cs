@@ -49,81 +49,17 @@ internal sealed class CramManager : IRegisterable
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "CramHarder", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "CramHarder", "description"]).Localize
 		});
-		
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(ASpawn), nameof(ASpawn.Begin)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASpawn_Begin_Prefix)),
-			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASpawn_Begin_Finalizer))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DestroyDroneAt)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DestroyDroneAt_Prefix)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DestroyDroneAt_Postfix))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(ADroneTurn), nameof(ADroneTurn.Begin)),
-			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ADroneTurn_Begin_Transpiler))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(ADroneTurn), nameof(ADroneTurn.GetTooltips)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ADroneTurn_GetTooltips_Postfix))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderDrones)),
-			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDrones_Transpiler))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.ResetHilights)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_ResetHilights_Postfix))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.Update)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(StuffBase_Update_Postfix))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.BeginCardAction)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_BeginCardAction_Prefix)),
-			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_BeginCardAction_Finalizer))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.GetTooltips)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_GetTooltips_Postfix))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.DoWeHaveCannonsThough)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_DoWeHaveCannonsThough_Postfix))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AJupiterShoot), nameof(AJupiterShoot.Begin)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AJupiterShoot_Begin_Prefix)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AJupiterShoot_Begin_Postfix))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(JupiterDroneHubV2), nameof(JupiterDroneHubV2.OnPlayerSpawnSomething)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(JupiterDroneHubV2_OnPlayerSpawnSomething_Prefix))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AMedusaField), nameof(AMedusaField.Begin)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMedusaField_Begin_Prefix)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMedusaField_Begin_Postfix))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AMedusaField), nameof(AMedusaField.GetTooltips)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMedusaField_GetTooltips_Postfix))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(ASlurpMidrowObject), nameof(ASlurpMidrowObject.Begin)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASlurpMidrowObject_Begin_Prefix)),
-			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASlurpMidrowObject_Begin_Finalizer))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(ABubbleField), nameof(ABubbleField.Begin)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ABubbleField_Begin_Postfix))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(ABubbleField), nameof(ABubbleField.GetTooltips)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ABubbleField_GetTooltips_Postfix))
-		);
+
+		HandleLaunch();
+		HandleDestroy();
+		HandleTurnEnd();
+		HandleRendering();
+		HandleLifecycle();
+		HandleJupiterDrones();
+		HandleMedusaField();
+		HandleCatch();
+		HandleBubbleField();
+		HandleRadioControl();
 	}
 
 	internal static List<StuffBase>? GetCrammedObjects(StuffBase @object)
@@ -255,6 +191,16 @@ internal sealed class CramManager : IRegisterable
 		return false;
 	}
 	
+	#region Launch
+	private static void HandleLaunch()
+	{
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ASpawn), nameof(ASpawn.Begin)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASpawn_Begin_Prefix)),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASpawn_Begin_Finalizer))
+		);
+	}
+	
 	private static void ASpawn_Begin_Prefix(ASpawn __instance, State s, Combat c, bool __runOriginal)
 	{
 		if (!__runOriginal)
@@ -313,7 +259,18 @@ internal sealed class CramManager : IRegisterable
 		
 		ObjectBeingLaunchedInto = null;
 	}
-
+	#endregion
+	
+	#region Destroy
+	private static void HandleDestroy()
+	{
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DestroyDroneAt)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DestroyDroneAt_Prefix)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DestroyDroneAt_Postfix))
+		);
+	}
+	
 	private static void Combat_DestroyDroneAt_Prefix(Combat __instance, int x, out StuffBase? __state)
 	{
 		__state = __instance.stuff.GetValueOrDefault(x);
@@ -343,6 +300,16 @@ internal sealed class CramManager : IRegisterable
 		SetCrammedObjects(newObject, crammedObjects);
 		
 		PushCrammedObject(__instance, x, newObject);
+	}
+	#endregion
+	
+	#region Turn End
+	private static void HandleTurnEnd()
+	{
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ADroneTurn), nameof(ADroneTurn.Begin)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ADroneTurn_Begin_Transpiler))
+		);
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
@@ -400,17 +367,15 @@ internal sealed class CramManager : IRegisterable
 		}));
 		return actions;
 	}
-
-	private static void ADroneTurn_GetTooltips_Postfix(State s)
+	#endregion
+	
+	#region Rendering
+	private static void HandleRendering()
 	{
-		if (s.route is not Combat combat)
-			return;
-		
-		ApplyToAllCrammedObjects(combat, @object =>
-		{
-			if (@object.GetActions(s, combat) is not null)
-				@object.hilight = 2;
-		});
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderDrones)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDrones_Transpiler))
+		);
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
@@ -467,6 +432,32 @@ internal sealed class CramManager : IRegisterable
 		if (box.rect.x is > 60 and < 464 && box.IsHover())
 			g.tooltips.Add(box.rect.xy + new Vec(16, 24), ((IEnumerable<StuffBase>)crammedObjects).Reverse().SelectMany(crammedObject => crammedObject.GetTooltips()));
 	}
+	#endregion
+	
+	#region Lifecycle
+	private static void HandleLifecycle()
+	{
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(StuffBase), nameof(StuffBase.Update)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(StuffBase_Update_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.ResetHilights)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_ResetHilights_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.BeginCardAction)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_BeginCardAction_Prefix)),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_BeginCardAction_Finalizer))
+		);
+	}
+
+	private static void StuffBase_Update_Postfix(StuffBase __instance, G g)
+	{
+		if (GetCrammedObjects(__instance) is { } crammedObjects)
+			foreach (var crammedObject in crammedObjects)
+				crammedObject.Update(g);
+	}
 
 	private static void Combat_ResetHilights_Postfix(Combat __instance)
 	{
@@ -475,13 +466,6 @@ internal sealed class CramManager : IRegisterable
 			if (@object.hilight > 0)
 				@object.hilight--;
 		});
-	}
-
-	private static void StuffBase_Update_Postfix(StuffBase __instance, G g)
-	{
-		if (GetCrammedObjects(__instance) is { } crammedObjects)
-			foreach (var crammedObject in crammedObjects)
-				crammedObject.Update(g);
 	}
 
 	private static void Combat_BeginCardAction_Prefix(Combat __instance, CardAction a, out (StuffBase RealObject, StuffBase CrammedObject, int WorldX)? __state)
@@ -512,7 +496,30 @@ internal sealed class CramManager : IRegisterable
 		if (existingObject != e.CrammedObject)
 			RemoveCrammedObject(__instance, e.WorldX, e.CrammedObject);
 	}
-
+	#endregion
+	
+	#region Jupiter Drones
+	private static void HandleJupiterDrones()
+	{
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.GetTooltips)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_GetTooltips_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.DoWeHaveCannonsThough)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_DoWeHaveCannonsThough_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AJupiterShoot), nameof(AJupiterShoot.Begin)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AJupiterShoot_Begin_Prefix)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AJupiterShoot_Begin_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(JupiterDroneHubV2), nameof(JupiterDroneHubV2.OnPlayerSpawnSomething)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(JupiterDroneHubV2_OnPlayerSpawnSomething_Prefix))
+		);
+	}
+	
 	private static void AAttack_GetTooltips_Postfix(State s)
 	{
 		if (s.route is not Combat combat)
@@ -630,7 +637,22 @@ internal sealed class CramManager : IRegisterable
 
 		return true;
 	}
-
+	#endregion
+	
+	#region Medusa Field
+	private static void HandleMedusaField()
+	{
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AMedusaField), nameof(AMedusaField.Begin)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMedusaField_Begin_Prefix)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMedusaField_Begin_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AMedusaField), nameof(AMedusaField.GetTooltips)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMedusaField_GetTooltips_Postfix))
+		);
+	}
+	
 	private static void AMedusaField_Begin_Prefix(Combat c, out Dictionary<int, List<StuffBase>> __state)
 	{
 		__state = [];
@@ -674,6 +696,17 @@ internal sealed class CramManager : IRegisterable
 			@object.hilight = 2;
 		});
 	}
+	#endregion
+	
+	#region Catch
+	private static void HandleCatch()
+	{
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ASlurpMidrowObject), nameof(ASlurpMidrowObject.Begin)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASlurpMidrowObject_Begin_Prefix)),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASlurpMidrowObject_Begin_Finalizer))
+		);
+	}
 
 	private static void ASlurpMidrowObject_Begin_Prefix(Combat c, out Dictionary<int, List<StuffBase>> __state)
 	{
@@ -702,6 +735,20 @@ internal sealed class CramManager : IRegisterable
 			}
 		}
 	}
+	#endregion
+	
+	#region Bubble Field
+	private static void HandleBubbleField()
+	{
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ABubbleField), nameof(ABubbleField.Begin)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ABubbleField_Begin_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ABubbleField), nameof(ABubbleField.GetTooltips)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ABubbleField_GetTooltips_Postfix))
+		);
+	}
 
 	private static void ABubbleField_Begin_Postfix(Combat c)
 	{
@@ -721,4 +768,27 @@ internal sealed class CramManager : IRegisterable
 			@object.hilight = 2;
 		});
 	}
+	#endregion
+	
+	#region Radio Control
+	private static void HandleRadioControl()
+	{
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ADroneTurn), nameof(ADroneTurn.GetTooltips)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ADroneTurn_GetTooltips_Postfix))
+		);
+	}
+
+	private static void ADroneTurn_GetTooltips_Postfix(State s)
+	{
+		if (s.route is not Combat combat)
+			return;
+		
+		ApplyToAllCrammedObjects(combat, @object =>
+		{
+			if (@object.GetActions(s, combat) is not null)
+				@object.hilight = 2;
+		});
+	}
+	#endregion
 }
