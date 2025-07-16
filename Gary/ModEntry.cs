@@ -5,6 +5,7 @@ using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 
 namespace Shockah.Gary;
@@ -13,19 +14,25 @@ public sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly IHarmony Harmony;
-	// internal readonly IKokoroApi.IV2 KokoroApi;
+	internal readonly IKokoroApi.IV2 KokoroApi;
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
-	internal IDeckEntry BjornDeck { get; }
+	internal IDeckEntry GaryDeck { get; }
 
 	private static readonly IReadOnlyList<Type> CommonCardTypes = [
+		typeof(CardDroneCard),
+		typeof(PrepareResourcesCard),
+		typeof(ScrapDroneCard),
 	];
 
 	private static readonly IReadOnlyList<Type> UncommonCardTypes = [
+		typeof(DoubleTroubleCard),
+		typeof(OverworkingCard),
 	];
 
 	private static readonly IReadOnlyList<Type> RareCardTypes = [
+		typeof(MassProduceCard),
 	];
 
 	private static readonly IEnumerable<Type> AllCardTypes
@@ -56,6 +63,7 @@ public sealed class ModEntry : SimpleMod
 			.. AllCardTypes,
 			.. AllArtifactTypes,
 			.. DuoArtifacts,
+			typeof(CardDroneManager),
 			typeof(CramManager),
 		];
 
@@ -63,7 +71,7 @@ public sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
-		// KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
+		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -73,13 +81,13 @@ public sealed class ModEntry : SimpleMod
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
 		);
 
-		BjornDeck = helper.Content.Decks.RegisterDeck("Gary", new()
+		GaryDeck = helper.Content.Decks.RegisterDeck("Gary", new()
 		{
 			Definition = new() { color = new("23EEB6"), titleColor = Colors.black },
 			DefaultCardArt = StableSpr.cards_colorless,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize,
-			ShineColorOverride = _ => DB.decks[BjornDeck!.Deck].color.normalize().gain(2.5),
+			ShineColorOverride = _ => DB.decks[GaryDeck!.Deck].color.normalize().gain(2.5),
 		});
 
 		foreach (var type in RegisterableTypes)
@@ -87,12 +95,12 @@ public sealed class ModEntry : SimpleMod
 
 		helper.Content.Characters.V2.RegisterPlayableCharacter("Gary", new()
 		{
-			Deck = BjornDeck.Deck,
+			Deck = GaryDeck.Deck,
 			Description = this.AnyLocalizations.Bind(["character", "description"]).Localize,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CharacterFrame.png")).Sprite,
 			NeutralAnimation = new()
 			{
-				CharacterType = BjornDeck.UniqueName,
+				CharacterType = GaryDeck.UniqueName,
 				LoopTag = "neutral",
 				Frames = package.PackageRoot.GetRelativeDirectory("assets/Character/Neutral")
 					.GetSequentialFiles(i => $"{i}.png")
@@ -101,7 +109,7 @@ public sealed class ModEntry : SimpleMod
 			},
 			MiniAnimation = new()
 			{
-				CharacterType = BjornDeck.UniqueName,
+				CharacterType = GaryDeck.UniqueName,
 				LoopTag = "mini",
 				Frames = [
 					helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Character/Mini.png")).Sprite
@@ -110,6 +118,8 @@ public sealed class ModEntry : SimpleMod
 			Starters = new()
 			{
 				cards = [
+					new ScrapDroneCard(),
+					new CardDroneCard(),
 				]
 			},
 			//ExeCardType = typeof(BlochExeCard),
@@ -117,7 +127,7 @@ public sealed class ModEntry : SimpleMod
 		
 		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
-			CharacterType = BjornDeck.UniqueName,
+			CharacterType = GaryDeck.UniqueName,
 			LoopTag = "gameover",
 			Frames = package.PackageRoot.GetRelativeDirectory("assets/Character/GameOver")
 				.GetSequentialFiles(i => $"{i}.png")
@@ -126,7 +136,7 @@ public sealed class ModEntry : SimpleMod
 		});
 		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
-			CharacterType = BjornDeck.UniqueName,
+			CharacterType = GaryDeck.UniqueName,
 			LoopTag = "squint",
 			Frames = package.PackageRoot.GetRelativeDirectory("assets/Character/Squint")
 				.GetSequentialFiles(i => $"{i}.png")
