@@ -8,7 +8,7 @@
         <ModFiles Include="assets/**" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Cards\" />
+      <Folder Include="assets\Midrow\" />
     </ItemGroup>
     <Import Project="..\Configuration.Mod.props" />
 </Project>
