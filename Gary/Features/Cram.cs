@@ -60,6 +60,8 @@ internal sealed class CramManager : IRegisterable
 		HandleCatch();
 		HandleBubbleField();
 		HandleRadioControl();
+		
+		// TODO: handle crammed missiles
 	}
 
 	internal static List<StuffBase>? GetCrammedObjects(StuffBase @object)

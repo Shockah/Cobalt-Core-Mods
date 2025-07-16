@@ -15,5 +15,31 @@
 			"name": "CRAM HARDER",
 			"description": "You may <c=action>cram</c> while <c=action>launching</c> <c=midrow>midrow objects</c> as if you had {0} more <c=status>CRAM</c>."
 		}
+	},
+	"midrow": {
+		"CardDrone": {
+			"name": "CARD DRONE",
+			"description": "Beams a card at you once per turn."
+		}
+	},
+	"card": {
+		"CardDrone": {
+			"name": "Card Drone"
+		},
+		"DoubleTrouble": {
+			"name": "Double Trouble"
+		},
+		"MassProduce": {
+			"name": "Mass Produce"
+		},
+		"Overworking": {
+			"name": "Overworking"
+		},
+		"PrepareResources": {
+			"name": "Prepare Resources"
+		},
+		"ScrapDrone": {
+			"name": "Scrap Drone"
+		}
 	}
 }
