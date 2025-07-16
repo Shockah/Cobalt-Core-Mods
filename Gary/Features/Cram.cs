@@ -129,6 +129,9 @@ internal sealed class CramManager : IRegisterable
 	internal static List<StuffBase>? GetCrammedObjects(StuffBase @object)
 		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<List<StuffBase>>(@object, "CrammedObjects");
 
+	internal static void SetCrammedObjects(StuffBase @object, List<StuffBase>? crammedObjects)
+		=> ModEntry.Instance.Helper.ModData.SetOptionalModData(@object, "CrammedObjects", crammedObjects);
+
 	internal static void PushCrammedObject(Combat combat, int worldX, StuffBase pushed)
 	{
 		ref var @object = ref CollectionsMarshal.GetValueRefOrAddDefault(combat.stuff, worldX, out var objectExists);
@@ -143,8 +146,8 @@ internal sealed class CramManager : IRegisterable
 			@object!,
 			.. GetCrammedObjects(@object!) ?? [],
 		];
-		ModEntry.Instance.Helper.ModData.RemoveModData(@object!, "CrammedObjects");
-		ModEntry.Instance.Helper.ModData.SetModData(pushed, "CrammedObjects", crammedObjects);
+		SetCrammedObjects(@object!, null);
+		SetCrammedObjects(pushed, crammedObjects);
 
 		Put();
 
@@ -169,12 +172,12 @@ internal sealed class CramManager : IRegisterable
 				combat.stuff[worldX] = @object;
 			return removeLast;
 		}
-
-		ModEntry.Instance.Helper.ModData.RemoveModData(@object, "CrammedObjects");
+		
+		SetCrammedObjects(@object, null);
 		@object = crammedObjects[^1];
 
 		crammedObjects = crammedObjects.Count == 0 ? null : crammedObjects.Take(crammedObjects.Count - 1).ToList();
-		ModEntry.Instance.Helper.ModData.SetOptionalModData(@object, "CrammedObjects", crammedObjects);
+		SetCrammedObjects(@object, crammedObjects);
 		combat.stuff[worldX] = @object;
 		return true;
 	}
@@ -188,11 +191,11 @@ internal sealed class CramManager : IRegisterable
 		{
 			if (GetCrammedObjects(@object) is { } crammedObjects && crammedObjects.Count != 0)
 			{
-				ModEntry.Instance.Helper.ModData.RemoveModData(@object, "CrammedObjects");
+				SetCrammedObjects(@object, null);
 				@object = crammedObjects[^1];
 				
 				crammedObjects = crammedObjects.Count == 0 ? null : crammedObjects.Take(crammedObjects.Count - 1).ToList();
-				ModEntry.Instance.Helper.ModData.SetOptionalModData(@object, "CrammedObjects", crammedObjects);
+				SetCrammedObjects(@object, crammedObjects);
 				combat.stuff[worldX] = @object;
 
 				return true;
@@ -223,6 +226,33 @@ internal sealed class CramManager : IRegisterable
 					crammedObject.xLerped = worldX;
 			}
 		}
+	}
+
+	internal static bool ApplyToAllCrammedObjects(Combat combat, Action<StuffBase> @delegate)
+	{
+		var hadAny = false;
+		foreach (var @object in combat.stuff.Values)
+		{
+			if (GetCrammedObjects(@object) is not { } crammedObjects || crammedObjects.Count == 0)
+				continue;
+
+			hadAny = true;
+			foreach (var crammedObject in crammedObjects)
+				@delegate(crammedObject);
+		}
+		return hadAny;
+	}
+
+	internal static bool AnyCrammedObject(Combat combat, Func<StuffBase, bool> @delegate)
+	{
+		foreach (var @object in combat.stuff.Values)
+		{
+			if (GetCrammedObjects(@object) is not { } crammedObjects || crammedObjects.Count == 0)
+				continue;
+			if (crammedObjects.Any(@delegate))
+				return true;
+		}
+		return false;
 	}
 	
 	private static void ASpawn_Begin_Prefix(ASpawn __instance, State s, Combat c, bool __runOriginal)
@@ -306,11 +336,11 @@ internal sealed class CramManager : IRegisterable
 		if (GetCrammedObjects(__state) is not { } crammedObjects || crammedObjects.Count == 0)
 			return;
 		
-		ModEntry.Instance.Helper.ModData.RemoveModData(__state, "CrammedObjects");
+		SetCrammedObjects(__state, null);
 		
 		var newObject = crammedObjects[^1];
 		crammedObjects = crammedObjects.Count == 0 ? null : crammedObjects.Take(crammedObjects.Count - 1).ToList();
-		ModEntry.Instance.Helper.ModData.SetOptionalModData(newObject, "CrammedObjects", crammedObjects);
+		SetCrammedObjects(newObject, crammedObjects);
 		
 		PushCrammedObject(__instance, x, newObject);
 	}
@@ -375,11 +405,12 @@ internal sealed class CramManager : IRegisterable
 	{
 		if (s.route is not Combat combat)
 			return;
-		foreach (var @object in combat.stuff.Values)
-			if (GetCrammedObjects(@object) is { } crammedObjects)
-				foreach (var crammedObject in crammedObjects)
-					if (crammedObject.GetActions(s, combat) is not null)
-						crammedObject.hilight = 2;
+		
+		ApplyToAllCrammedObjects(combat, @object =>
+		{
+			if (@object.GetActions(s, combat) is not null)
+				@object.hilight = 2;
+		});
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
@@ -439,11 +470,11 @@ internal sealed class CramManager : IRegisterable
 
 	private static void Combat_ResetHilights_Postfix(Combat __instance)
 	{
-		foreach (var @object in __instance.stuff.Values)
-			if (GetCrammedObjects(@object) is { } crammedObjects)
-				foreach (var crammedObject in crammedObjects)
-					if (crammedObject.hilight > 0)
-						crammedObject.hilight--;
+		ApplyToAllCrammedObjects(__instance, @object =>
+		{
+			if (@object.hilight > 0)
+				@object.hilight--;
+		});
 	}
 
 	private static void StuffBase_Update_Postfix(StuffBase __instance, G g)
@@ -486,15 +517,12 @@ internal sealed class CramManager : IRegisterable
 	{
 		if (s.route is not Combat combat)
 			return;
-
-		foreach (var @object in combat.stuff.Values)
+		
+		ApplyToAllCrammedObjects(combat, @object =>
 		{
-			if (GetCrammedObjects(@object) is not { } crammedObjects)
-				continue;
-			foreach (var crammedObject in crammedObjects)
-				if (crammedObject is JupiterDrone)
-					crammedObject.hilight = 2;
-		}
+			if (@object is JupiterDrone)
+				@object.hilight = 2;
+		});
 	}
 
 	private static void AAttack_DoWeHaveCannonsThough_Postfix(State s, ref bool __result)
@@ -504,18 +532,8 @@ internal sealed class CramManager : IRegisterable
 		if (s.route is not Combat combat)
 			return;
 		
-		foreach (var @object in combat.stuff.Values)
-		{
-			if (GetCrammedObjects(@object) is not { } crammedObjects)
-				continue;
-			foreach (var crammedObject in crammedObjects)
-			{
-				if (crammedObject is not JupiterDrone)
-					continue;
-				__result = true;
-				return;
-			}
-		}
+		if (AnyCrammedObject(combat, @object => @object is JupiterDrone))
+			__result = true;
 	}
 
 	private static void AJupiterShoot_Begin_Prefix(AJupiterShoot __instance, out Guid __state)
@@ -606,11 +624,9 @@ internal sealed class CramManager : IRegisterable
 	{
 		if (thing is not JupiterDrone)
 			return true;
-		
-		foreach (var @object in combat.stuff.Values)
-			if (GetCrammedObjects(@object) is { } crammedObjects)
-				if (crammedObjects.Any(crammedObject => crammedObject is JupiterDrone))
-					return false;
+
+		if (AnyCrammedObject(combat, @object => @object is JupiterDrone))
+			return false;
 
 		return true;
 	}
@@ -638,7 +654,7 @@ internal sealed class CramManager : IRegisterable
 
 			if (c.stuff.TryGetValue(kvp.Key, out var @object))
 			{
-				ModEntry.Instance.Helper.ModData.SetModData(@object, "CrammedObjects", crammedObjects);
+				SetCrammedObjects(@object, crammedObjects);
 			}
 			else
 			{
@@ -652,10 +668,11 @@ internal sealed class CramManager : IRegisterable
 	{
 		if (s.route is not Combat combat)
 			return;
-		foreach (var @object in combat.stuff.Values)
-			if (GetCrammedObjects(@object) is { } crammedObjects)
-				foreach (var crammedObject in crammedObjects)
-					crammedObject.hilight = 2;
+		
+		ApplyToAllCrammedObjects(combat, @object =>
+		{
+			@object.hilight = 2;
+		});
 	}
 
 	private static void ASlurpMidrowObject_Begin_Prefix(Combat c, out Dictionary<int, List<StuffBase>> __state)
@@ -666,7 +683,7 @@ internal sealed class CramManager : IRegisterable
 			if (GetCrammedObjects(kvp.Value) is not { } crammedObjects)
 				continue;
 			__state[kvp.Key] = crammedObjects;
-			ModEntry.Instance.Helper.ModData.RemoveModData(kvp.Value, "CrammedObjects");
+			SetCrammedObjects(kvp.Value, null);
 		}
 	}
 
@@ -676,7 +693,7 @@ internal sealed class CramManager : IRegisterable
 		{
 			if (c.stuff.TryGetValue(kvp.Key, out var @object))
 			{
-				ModEntry.Instance.Helper.ModData.SetModData(@object, "CrammedObjects", kvp.Value);
+				SetCrammedObjects(@object, kvp.Value);
 			}
 			else
 			{
@@ -688,19 +705,20 @@ internal sealed class CramManager : IRegisterable
 
 	private static void ABubbleField_Begin_Postfix(Combat c)
 	{
-		foreach (var @object in c.stuff.Values)
-			if (GetCrammedObjects(@object) is { } crammedObjects)
-				foreach (var crammedObject in crammedObjects)
-					crammedObject.bubbleShield = true;
+		ApplyToAllCrammedObjects(c, @object =>
+		{
+			@object.bubbleShield = true;
+		});
 	}
 
 	private static void ABubbleField_GetTooltips_Postfix(State s)
 	{
 		if (s.route is not Combat combat)
 			return;
-		foreach (var @object in combat.stuff.Values)
-			if (GetCrammedObjects(@object) is { } crammedObjects)
-				foreach (var crammedObject in crammedObjects)
-					crammedObject.hilight = 2;
+		
+		ApplyToAllCrammedObjects(combat, @object =>
+		{
+			@object.hilight = 2;
+		});
 	}
 }
