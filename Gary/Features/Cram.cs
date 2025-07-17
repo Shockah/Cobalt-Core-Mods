@@ -23,6 +23,7 @@ internal sealed class CramManager : IRegisterable
 	private static StuffBase? ObjectToPutLater;
 	private static bool ObjectIsBeingCrammedInto;
 	private static Guid? NestedJupiterShootBeginId;
+	private static readonly List<(StuffBase RealObject, StuffBase CrammedObject, int WorldX)?> ForceCrammedObjectStack = [];
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -60,8 +61,6 @@ internal sealed class CramManager : IRegisterable
 		HandleCatch();
 		HandleBubbleField();
 		HandleRadioControl();
-		
-		// TODO: handle crammed missiles
 	}
 
 	internal static List<StuffBase>? GetCrammedObjects(StuffBase @object)
@@ -122,11 +121,13 @@ internal sealed class CramManager : IRegisterable
 
 	internal static bool RemoveCrammedObject(Combat combat, int worldX, StuffBase toRemove)
 	{
-		if (!combat.stuff.Remove(worldX, out var @object))
+		if (!combat.stuff.TryGetValue(worldX, out var @object))
 			return false;
 
 		if (@object == toRemove)
 		{
+			combat.stuff.Remove(worldX);
+			
 			if (GetCrammedObjects(@object) is { } crammedObjects && crammedObjects.Count != 0)
 			{
 				SetCrammedObjects(@object, null);
@@ -135,16 +136,14 @@ internal sealed class CramManager : IRegisterable
 				crammedObjects = crammedObjects.Count == 0 ? null : crammedObjects.Take(crammedObjects.Count - 1).ToList();
 				SetCrammedObjects(@object, crammedObjects);
 				combat.stuff[worldX] = @object;
-
-				return true;
 			}
 			
-			combat.stuff.Remove(worldX);
 			return true;
 		}
 		
 		if (GetCrammedObjects(@object) is { } crammedObjects2 && crammedObjects2.Count != 0)
 			return crammedObjects2.Remove(toRemove);
+		
 		return false;
 	}
 
@@ -452,6 +451,56 @@ internal sealed class CramManager : IRegisterable
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_BeginCardAction_Prefix)),
 			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_BeginCardAction_Finalizer))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrainCardActions)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Transpiler))
+		);
+	}
+
+	private static void PushForceCrammedObject(Combat combat, CardAction action)
+	{
+		(StuffBase RealObject, StuffBase CrammedObject, int WorldX)? toPush = null;
+		try
+		{
+			if (!ModEntry.Instance.Helper.ModData.TryGetModData<Guid>(action, "ForceCrammedObjectId", out var forceCrammedObjectId))
+				return;
+			if (!ModEntry.Instance.Helper.ModData.TryGetModData<int>(action, "ForceCrammedObjectWorldX", out var forceCrammedObjectWorldX))
+				return;
+			if (!combat.stuff.TryGetValue(forceCrammedObjectWorldX, out var @object))
+				return;
+			if (GetCrammedObjects(@object) is not { } crammedObjects)
+				return;
+			if (crammedObjects.FirstOrDefault(crammedObject => ModEntry.Instance.Helper.ModData.GetOptionalModData<Guid>(crammedObject, "CrammedObjectId") == forceCrammedObjectId) is not { } crammedObject)
+				return;
+			
+			toPush = (@object, crammedObject, forceCrammedObjectWorldX);
+			combat.stuff[forceCrammedObjectWorldX] = crammedObject;
+		}
+		finally
+		{
+			ForceCrammedObjectStack.Add(toPush);
+		}
+	}
+
+	private static void PopForceCrammedObject(Combat combat)
+	{
+		if (ForceCrammedObjectStack.Count == 0)
+			return;
+
+		var nullableEntry = ForceCrammedObjectStack[^1];
+		ForceCrammedObjectStack.RemoveAt(ForceCrammedObjectStack.Count - 1);
+
+		if (nullableEntry is not { } entry)
+			return;
+		
+		var existingObject = combat.stuff.GetValueOrDefault(entry.WorldX);
+		combat.stuff[entry.WorldX] = entry.RealObject;
+		if (existingObject != entry.CrammedObject)
+		{
+			RemoveCrammedObject(combat, entry.WorldX, entry.CrammedObject);
+			if (existingObject is not null)
+				PushCrammedObject(combat, entry.WorldX, existingObject);
+		}
 	}
 
 	private static void StuffBase_Update_Postfix(StuffBase __instance, G g)
@@ -470,34 +519,53 @@ internal sealed class CramManager : IRegisterable
 		});
 	}
 
-	private static void Combat_BeginCardAction_Prefix(Combat __instance, CardAction a, out (StuffBase RealObject, StuffBase CrammedObject, int WorldX)? __state)
-	{
-		__state = null;
-		if (!ModEntry.Instance.Helper.ModData.TryGetModData<Guid>(a, "ForceCrammedObjectId", out var forceCrammedObjectId))
-			return;
-		if (!ModEntry.Instance.Helper.ModData.TryGetModData<int>(a, "ForceCrammedObjectWorldX", out var forceCrammedObjectWorldX))
-			return;
-		if (!__instance.stuff.TryGetValue(forceCrammedObjectWorldX, out var @object))
-			return;
-		if (GetCrammedObjects(@object) is not { } crammedObjects)
-			return;
-		if (crammedObjects.FirstOrDefault(crammedObject => ModEntry.Instance.Helper.ModData.GetOptionalModData<Guid>(crammedObject, "CrammedObjectId") == forceCrammedObjectId) is not { } crammedObject)
-			return;
+	private static void Combat_BeginCardAction_Prefix(Combat __instance, CardAction a)
+		=> PushForceCrammedObject(__instance, a);
 
-		__state = (@object, crammedObject, forceCrammedObjectWorldX);
-		__instance.stuff[forceCrammedObjectWorldX] = crammedObject;
+	private static void Combat_BeginCardAction_Finalizer(Combat __instance)
+		=> PopForceCrammedObject(__instance);
+	
+	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+	private static IEnumerable<CodeInstruction> Combat_DrainCardActions_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find([
+					ILMatches.Ldarg(0),
+					ILMatches.Ldfld("currentCardAction"),
+					ILMatches.Ldarg(1),
+					ILMatches.Ldarg(1),
+					ILMatches.Ldfld("state"),
+					ILMatches.Ldarg(0),
+					ILMatches.Call("Update"),
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Transpiler_PushForceCrammedObject))),
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Transpiler_PopForceCrammedObject))),
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.UniqueName, ex);
+			return instructions;
+		}
 	}
 
-	private static void Combat_BeginCardAction_Finalizer(Combat __instance, in (StuffBase RealObject, StuffBase CrammedObject, int WorldX)? __state)
+	private static void Combat_DrainCardActions_Transpiler_PushForceCrammedObject(Combat combat)
 	{
-		if (__state is not { } e)
+		if (combat.currentCardAction is not { } action)
 			return;
-
-		var existingObject = __instance.stuff.GetValueOrDefault(e.WorldX);
-		__instance.stuff[e.WorldX] = e.RealObject;
-		if (existingObject != e.CrammedObject)
-			RemoveCrammedObject(__instance, e.WorldX, e.CrammedObject);
+		PushForceCrammedObject(combat, action);
 	}
+
+	private static void Combat_DrainCardActions_Transpiler_PopForceCrammedObject(Combat combat)
+		=> PopForceCrammedObject(combat);
 	#endregion
 	
 	#region Jupiter Drones
