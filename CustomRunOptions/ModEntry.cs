@@ -20,6 +20,7 @@ internal sealed class ModEntry : SimpleMod
 	
 	private static IReadOnlyList<Type> CustomRunOptionTypes { get; } = [
 		typeof(SeedCustomRunOption),
+		typeof(BootSequenceCustomRunOption),
 		typeof(DailyModifiersCustomRunOption),
 	];
 	

@@ -5,6 +5,16 @@
 			"clear": "CLEAR",
 			"paste": "PASTE"
 		},
+		"BootSequenceCustomRunOption": {
+			"title": {
+				"upside": "Boot sequence upside",
+				"downside": "Boot sequence downside"
+			},
+			"enforce": "Enforce choice",
+			"blacklist": "Blacklist choices",
+			"notSelected": "Not selected",
+			"none": "None"
+		},
 		"DailyModifiersCustomRunOption": {
 			"title": "Daily run modifiers",
 			"hullTitle": "Daily run hull modifiers",
