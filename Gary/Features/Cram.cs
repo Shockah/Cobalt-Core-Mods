@@ -140,9 +140,12 @@ internal sealed class CramManager : IRegisterable
 			
 			return true;
 		}
-		
+
 		if (GetCrammedObjects(@object) is { } crammedObjects2 && crammedObjects2.Count != 0)
+		{
+			SetCrammedObjects(@object, null);
 			return crammedObjects2.Remove(toRemove);
+		}
 		
 		return false;
 	}
