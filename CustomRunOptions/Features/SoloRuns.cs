@@ -92,6 +92,6 @@ internal sealed class SoloRuns : IRegisterable
 	{
 		if (state.characters.Count != 1)
 			return;
-		new DailyJustOneCharacter().OnReceiveArtifact(state);
+		state.SendArtifactToChar(new DailyJustOneCharacter());
 	}
 }

@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Added options to force or block any boot sequence options.
+* Starting a solo run now grants the Solo Run daily run modifier artifact.
 * Fixed the mod crashing on controllers.
 
 ## 1.0.0
