@@ -1,14 +1,13 @@
-﻿using FSPRO;
-using Nickel.ModSettings;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using daisyowl.text;
-using Shockah.Shared;
+using FSPRO;
+using Nickel.ModSettings;
 using TextCopy;
 
 namespace Shockah.CustomRunOptions;
 
-internal sealed class PasteModSetting : IModSettingsApi.IModSetting
+internal sealed class PasteModSetting : IModSettingsApi.IModSetting, OnMouseDown
 {
 	public UIKey Key { get; private set; }
 	public event IModSettingsApi.OnMenuOpen? OnMenuOpen;
@@ -68,11 +67,8 @@ internal sealed class PasteModSetting : IModSettingsApi.IModSetting
 				g, new Vec(box.rect.w - 10 - 60, -3),
 				this.ButtonKey,
 				ModEntry.Instance.Localizations.Localize(["options", nameof(SeedCustomRunOption), value is null ? "paste" : "clear"]),
-				onMouseDown: new MouseDownHandler(() =>
-				{
-					Audio.Play(Event.Click);
-					ValueSetter(value is null ? ClipboardService.GetText() : null);
-				})
+				showAsPressed: Input.gamepadIsActiveInput && isHover,
+				onMouseDown: this
 			);
 
 			if ((box.IsHover() || g.hoverKey == this.ButtonKey) && this.Tooltips is { } tooltips)
@@ -80,5 +76,18 @@ internal sealed class PasteModSetting : IModSettingsApi.IModSetting
 		}
 
 		return new(box.rect.w, 20);
+	}
+
+	public void OnMouseDown(G g, Box b)
+	{
+		if ((!Input.gamepadIsActiveInput || b.key != Key) && b.key != ButtonKey)
+			return;
+		
+		var value = ValueGetter();
+		if (string.IsNullOrEmpty(value))
+			value = null;
+		
+		Audio.Play(Event.Click);
+		ValueSetter(value is null ? ClipboardService.GetText() : null);
 	}
 }
