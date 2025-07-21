@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.0
+Released 21 July 2025.
 
 * Added options to force or block any boot sequence options.
 * Starting a solo run now grants the Solo Run daily run modifier artifact.

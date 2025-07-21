@@ -4,13 +4,13 @@
 	"DisplayName": "Custom Run Options",
 	"Description": "Provides additional options for runs: seeded runs, daily run modifiers, solo runs.",
 	"Author": "Shockah",
-	"RequiredApiVersion": "1.14.0",
+	"RequiredApiVersion": "1.17.0",
 	"EntryPointAssembly": "CustomRunOptions.dll",
 	"LoadPhase": "AfterDbInit",
 	"Dependencies": [
 		{
 			"UniqueName": "Nickel.ModSettings",
-			"Version": "1.14.0"
+			"Version": "1.17.0"
 		}
 	],
 	"UpdateChecks": {
