@@ -1,32 +1,28 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework.Input;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Nickel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
 
 namespace Shockah.DuoArtifacts;
 
 internal static class ArtifactBrowsePatches
 {
 	private static ModEntry Instance => ModEntry.Instance;
-	private static readonly Lazy<Func<ArtifactBrowse, Dictionary<UIKey, double>>> ArtifactToScrollYCacheGetter = new(() => AccessTools.DeclaredField(typeof(ArtifactBrowse), "artifactToScrollYCache").EmitInstanceGetter<ArtifactBrowse, Dictionary<UIKey, double>>());
-
-	private static readonly List<Artifact> LastDuos = [];
-	private static ArtifactBrowse? LastRoute;
+	
 	private static Deck? LastDeck;
 
 	public static void Apply(IHarmony harmony)
 	{
 		harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(ArtifactBrowse), nameof(ArtifactBrowse.Render)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ArtifactBrowse_Render_Prefix)),
-			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ArtifactBrowse_Render_Transpiler))
+			original: AccessTools.DeclaredMethod(typeof(ArtifactBrowse), nameof(ArtifactBrowse.GetSections)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ArtifactBrowse_GetSections_Postfix))
 		);
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Artifact), nameof(Artifact.Render)),
@@ -35,70 +31,35 @@ internal static class ArtifactBrowsePatches
 		);
 	}
 	
-	private static void ArtifactBrowse_Render_Prefix()
-		=> Instance.Database.FixArtifactMeta(ProfileSettings.OfferingModeEnum.Extra, null, null);
-
-	private static IEnumerable<CodeInstruction> ArtifactBrowse_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	private static void ArtifactBrowse_GetSections_Postfix(State state, ref IEnumerable<ArtifactBrowse.Section> __result)
 	{
-		// ReSharper disable PossibleMultipleEnumeration
-		try
-		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(ILMatches.Stloc<List<(Deck, List<KeyValuePair<string, Type>>)>>(originalMethod))
-				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
-					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(ArtifactBrowsePatches), nameof(ArtifactBrowse_Render_Transpiler_ModifyArtifacts)))
-				])
+		var sections = __result.ToList();
+		var allDuos = Instance.Database.InstantiateAllDuoArtifacts().ToList();
 
-				.Find(ILMatches.Stloc<(Deck, List<KeyValuePair<string, Type>>)>(originalMethod))
-				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(ArtifactBrowsePatches), nameof(ArtifactBrowse_Render_Transpiler_MarkLastArtifactSection)))
-				])
-
-				.AllElements();
-		}
-		catch (Exception ex)
+		foreach (var section in sections)
 		{
-			Instance.Logger!.LogError("Could not patch method {DeclaringType}::{Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod.DeclaringType, originalMethod, Instance.Name, ex);
-			return instructions;
-		}
-		// ReSharper restore PossibleMultipleEnumeration
-	}
-
-	private static List<(Deck, List<KeyValuePair<string, Type>>)> ArtifactBrowse_Render_Transpiler_ModifyArtifacts(List<(Deck, List<KeyValuePair<string, Type>>)> allArtifacts, ArtifactBrowse route)
-	{
-		if (route != LastRoute)
-		{
-			LastRoute = route;
-			LastDuos.Clear();
-			LastDuos.AddRange(Instance.Database.InstantiateAllDuoArtifacts());
-		}
-
-		foreach (var (deck, artifacts) in allArtifacts)
-		{
-			if (deck == Deck.colorless)
+			if (section.artifacts.Count == 0)
 				continue;
+
+			var deck = section.artifacts[0].GetMeta().owner;
 			if (deck != Deck.catartifact && !NewRunOptions.allChars.Contains(deck))
 				continue;
-
-			artifacts.AddRange(
-				LastDuos
+			if (Character.GetDisplayName(deck, state) != section.title())
+				continue;
+			
+			LastDeck = deck;
+			
+			section.artifacts.AddRange(
+				allDuos
 					.Select(duo => (Duo: duo, Owners: Instance.Database.GetDuoArtifactOwnership(duo)))
 					.Where(e => e.Owners?.Contains(deck == Deck.catartifact ? Deck.colorless : deck) ?? false)
 					.Select(e => (Duo: e.Duo, SecondaryOwners: e.Owners!.Where(owner => owner != deck).OrderBy(owner => NewRunOptions.allChars.IndexOf(owner)).ToList()))
 					.OrderBy(e => e.SecondaryOwners, new DuoByOwnerComparer())
 					.Select(e => e.Duo)
-					.Select(duo => new KeyValuePair<string, Type>(duo.Key(), duo.GetType()))
 			);
 		}
 
-		return allArtifacts;
-	}
-
-	private static (Deck, List<KeyValuePair<string, Type>>) ArtifactBrowse_Render_Transpiler_MarkLastArtifactSection((Deck, List<KeyValuePair<string, Type>>) element)
-	{
-		LastDeck = element.Item1;
-		return element;
+		__result = sections;
 	}
 
 	private static void Artifact_Render_Prefix(Artifact __instance, G g, Vec restingPosition)
@@ -171,9 +132,8 @@ internal static class ArtifactBrowsePatches
 
 		var newKey = new UIKey(baseKey.k, baseKey.v, $"{baseKey.str}__{(int)baseX}__{(int)baseY}");
 
-		var artifactToScrollYCache = ArtifactToScrollYCacheGetter.Value(route);
-		if (artifactToScrollYCache.Remove(baseKey, out var scrollYCache))
-			artifactToScrollYCache[newKey] = scrollYCache;
+		if (route.artifactToScrollYCache.Remove(baseKey, out var scrollYCache))
+			route.artifactToScrollYCache[newKey] = scrollYCache;
 
 		return newKey;
 	}

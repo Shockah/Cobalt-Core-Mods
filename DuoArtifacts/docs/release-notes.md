@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed for Cobalt Core 1.2.5.
+
 ## 1.6.0
 Released 22 June 2025.
 
