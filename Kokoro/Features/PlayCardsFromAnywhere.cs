@@ -117,7 +117,7 @@ internal static class PlaySpecificCardFromAnywhereManager
 		}
 		catch (Exception ex)
 		{
-			ModEntry.Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Name, ex);
+			ModEntry.Instance.Logger!.LogError("Could not patch method {DeclaringType}::{Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod.DeclaringType, originalMethod, ModEntry.Instance.Name, ex);
 			return instructions;
 		}
 		// ReSharper restore PossibleMultipleEnumeration

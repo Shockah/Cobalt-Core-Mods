@@ -45,7 +45,7 @@ internal sealed class BooksDrakeArtifact : DuoArtifact
 		}
 		catch (Exception ex)
 		{
-			Instance.Logger!.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Name, ex);
+			Instance.Logger!.LogError("Could not patch method {DeclaringType}::{Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod.DeclaringType, originalMethod, Instance.Name, ex);
 			return instructions;
 		}
 		// ReSharper restore PossibleMultipleEnumeration

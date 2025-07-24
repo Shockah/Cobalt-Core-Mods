@@ -72,7 +72,7 @@ internal static class HarmonyExt
 		}
 		catch (Exception ex)
 		{
-			logger.Log(problemLogLevel, "Could not patch method {Method} - the mod may not work correctly.\nReason: {Exception}", originalMethod, ex);
+			logger.Log(problemLogLevel, "Could not patch method {DeclaringType}::{Method} - the mod may not work correctly.\nReason: {Exception}", originalMethod.DeclaringType, originalMethod, ex);
 #if DEBUG
 			Debugger.Break();
 #endif
@@ -236,7 +236,7 @@ internal static class HarmonyExt
 		}
 		catch (Exception ex)
 		{
-			logger.Log(problemLogLevel, "Could not patch method {Method} - the mod may not work correctly.\nReason: {Exception}", originalMethod, ex);
+			logger.Log(problemLogLevel, "Could not patch method {DeclaringType}::{Method} - the mod may not work correctly.\nReason: {Exception}", originalMethod.DeclaringType, originalMethod, ex);
 #if DEBUG
 			Debugger.Break();
 #endif
