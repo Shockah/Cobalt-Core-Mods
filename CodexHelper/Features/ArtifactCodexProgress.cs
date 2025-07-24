@@ -237,13 +237,13 @@ internal sealed class ArtifactCodexProgress : IRegisterable
 					ILMatches.Ldfld("state"),
 					ILMatches.Ldfld("persistentStoryVars"),
 					ILMatches.Ldfld("artifactsOwned"),
-					ILMatches.Ldloca<KeyValuePair<string, Type>>(originalMethod).CreateLdlocInstruction(out var ldlocKvp),
-					ILMatches.Call("get_Key"),
+					ILMatches.Ldloc<Artifact>(originalMethod).CreateLdlocInstruction(out var ldlocArtifact),
+					ILMatches.Call("Key"),
 					ILMatches.Call("Contains"),
 				])
 				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_1),
-					ldlocKvp,
+					ldlocArtifact,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ArtifactBrowse_Render_Transpiler_ModifyUnknown))),
 				])
 				.AllElements();
@@ -256,13 +256,13 @@ internal sealed class ArtifactCodexProgress : IRegisterable
 		// ReSharper restore PossibleMultipleEnumeration
 	}
 
-	private static bool ArtifactBrowse_Render_Transpiler_ModifyUnknown(bool isKnown, G g, KeyValuePair<string, Type> kvp)
+	private static bool ArtifactBrowse_Render_Transpiler_ModifyUnknown(bool isKnown, G g, Artifact artifact)
 	{
 		if (isKnown)
 			return true;
 		if (!ModEntry.Instance.Settings.ProfileBased.Current.ShowSeenButNotTakenArtifactsInCodex)
 			return false;
-		if (!g.state.persistentStoryVars.IsArtifactSeen(kvp.Key, null))
+		if (!g.state.persistentStoryVars.IsArtifactSeen(artifact.Key(), null))
 			return false;
 		return true;
 	}
