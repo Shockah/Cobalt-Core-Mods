@@ -7,6 +7,9 @@
 	"RequiredApiVersion": "1.14.0",
 	"EntryPointAssembly": "UISuite.dll",
 	"LoadPhase": "AfterGameAssembly",
+	"MethodsToStopInlining": [
+		{ "TypeName": "Combat", "MethodName": "IsVisible" }
+	],
 	"Dependencies": [
 		{
 			"UniqueName": "Shockah.Kokoro",

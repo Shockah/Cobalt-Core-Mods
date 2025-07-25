@@ -9,15 +9,6 @@
 			}
 		}
 	},
-	"BrowseCardPilesDuringPeek": {
-		"Settings": {
-			"Header": "<c=white>Browse card piles during peek</c>",
-			"IsEnabled": {
-				"Title": "Enabled",
-				"Description": "When enabled, makes it possible to look at the card piles when peeking the game state during other actions."
-			}
-		}
-	},
 	"BrowseCardsInOrder": {
 		"SortModeTitle": "Order"
 	},

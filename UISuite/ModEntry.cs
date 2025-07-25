@@ -27,7 +27,6 @@ public sealed class ModEntry : SimpleMod
 		
 		// the rest
 		typeof(AnchorCardPileOverlay),
-		typeof(BrowseCardPilesDuringPeek),
 		typeof(BrowseCardsInOrder),
 		typeof(CardMarkers),
 		typeof(CardPileIndicatorWhenBrowsing),
@@ -39,7 +38,6 @@ public sealed class ModEntry : SimpleMod
 	
 	private static readonly IEnumerable<Type> SortedRegisterableTypes = [
 		typeof(AnchorCardPileOverlay),
-		typeof(BrowseCardPilesDuringPeek),
 		typeof(BrowseCardsInOrder),
 		typeof(CardMarkers),
 		typeof(CardPileIndicatorWhenBrowsing),
