@@ -6,6 +6,8 @@ using System;
 using HarmonyLib;
 using Shockah.Kokoro;
 using System.Linq;
+using Nickel.Common;
+using Shockah.Destiny;
 using Shockah.Shared;
 
 namespace Shockah.Wade;
@@ -166,21 +168,21 @@ public sealed class ModEntry : SimpleMod
 				.ToList()
 		});
 		
-		// helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>(
-		// 	"TheJazMaster.MoreDifficulties",
-		// 	new SemanticVersion(1, 3, 0),
-		// 	api => api.RegisterAltStarters(
-		// 		deck: WadeDeck.Deck,
-		// 		starterDeck: new StarterDeck
-		// 		{
-		// 			cards = [
-		// 				new PowerWordCard(),
-		// 				new MeditateCard()
-		// 			]
-		// 		}
-		// 	)
-		// );
-		//
+		helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>(
+			"TheJazMaster.MoreDifficulties",
+			new SemanticVersion(1, 3, 0),
+			api => api.RegisterAltStarters(
+				deck: WadeDeck.Deck,
+				starterDeck: new StarterDeck
+				{
+					cards = [
+						new HotStreakCard(),
+						new AllOrNothingCard(),
+					]
+				}
+			)
+		);
+		
 		// helper.Events.OnModLoadPhaseFinished += (_, phase) =>
 		// {
 		// 	if (phase != ModLoadPhase.AfterDbInit)

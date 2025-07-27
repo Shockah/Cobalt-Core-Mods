@@ -34,14 +34,14 @@ internal sealed class DoubleDownCard : Card, IRegisterable
 		{
 			Upgrade.B => [
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 2, disabled = flipped },
-				new AStatus { targetPlayer = true, status = Odds.RedTrendStatus.Status, statusAmount = 1, disabled = flipped },
+				new AStatus { targetPlayer = true, status = Odds.GreenTrendStatus.Status, statusAmount = 1, disabled = flipped },
 				new ADummyAction(),
 				new AAttack { damage = GetDmg(s, 2), disabled = !flipped },
 				new AStatus { targetPlayer = true, status = Odds.RedTrendStatus.Status, statusAmount = 1, disabled = !flipped },
 			],
 			_ => [
 				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1, disabled = flipped },
-				new AStatus { targetPlayer = true, status = Odds.RedTrendStatus.Status, statusAmount = 1, disabled = flipped },
+				new AStatus { targetPlayer = true, status = Odds.GreenTrendStatus.Status, statusAmount = 1, disabled = flipped },
 				new ADummyAction(),
 				new AAttack { damage = GetDmg(s, 1), disabled = !flipped },
 				new AStatus { targetPlayer = true, status = Odds.RedTrendStatus.Status, statusAmount = 1, disabled = !flipped },
