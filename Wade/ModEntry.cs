@@ -45,6 +45,10 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	private static readonly IReadOnlyList<Type> RareCardTypes = [
+		typeof(DoubleDownCard),
+		typeof(DumbLuckCard),
+		typeof(LuckyDriveCard),
+		typeof(TwistFateCard),
 	];
 
 	private static readonly IEnumerable<Type> AllCardTypes

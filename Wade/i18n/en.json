@@ -3,7 +3,7 @@
 		"name": "Wade",
 		"description": [
 			"<c=56DF6A>WADE</c>",
-			"TBD."
+			"Your trend analyst. Manipulates <c=keyword>odds</c> and <c=keyword>probabilities</c> to give himself an edge in battle."
 		]
 	},
 	"condition": {
@@ -16,18 +16,33 @@
 			"description": "you have negative <c=status>ODDS</c>"
 		}
 	},
+	"action": {
+		"Roll": {
+			"name": "Roll",
+			"description": "Randomize the value of your <c=status>ODDS</c>."
+		}
+	},
 	"status": {
 		"Odds": {
 			"name": "Odds",
-			"description": "."
+			"description": [
+				"Randomizes its value every turn.",
+				"Your <c=status>ODDS</c> cannot be 0.",
+				"Maximum <c=boldPink>{{Max}}</c>.",
+				"Minimum <c=boldPink>{{Min}}</c>."
+			]
 		},
 		"GreenTrend": {
 			"name": "Green Trend",
-			"description": "."
+			"description": "Increases your maximum <c=status>ODDS</c> by {0}."
 		},
 		"RedTrend": {
 			"name": "Red Trend",
-			"description": "."
+			"description": "Decreases your minimum <c=status>ODDS</c> by {0}."
+		},
+		"LuckyDrive": {
+			"name": "Lucky Drive",
+			"description": "While you have positive <c=status>ODDS</c>, add {0} damage to all attacks. After playing a card with an attack, randomize the value of your <c=status>ODDS</c>."
 		}
 	},
 	"card": {
@@ -44,7 +59,13 @@
 			"name": "Cheap Trick"
 		},
 		"DefyTheOdds": {
-			"name": "DefyTheOdds"
+			"name": "Defy the Odds"
+		},
+		"DoubleDown": {
+			"name": "Double Down"
+		},
+		"DumbLuck": {
+			"name": "Dumb Luck"
 		},
 		"HedgeYourBets": {
 			"name": "Hedge Your Bets"
@@ -57,6 +78,9 @@
 		},
 		"LuckyBreak": {
 			"name": "Lucky Break"
+		},
+		"LuckyDrive": {
+			"name": "Lucky Drive"
 		},
 		"OddShot": {
 			"name": "Odd Shot"
@@ -72,6 +96,9 @@
 		},
 		"TrendSetting": {
 			"name": "Trend Setting"
+		},
+		"TwistFate": {
+			"name": "Twist Fate"
 		},
 		"UpTheAnte": {
 			"name": "Up the Ante"
