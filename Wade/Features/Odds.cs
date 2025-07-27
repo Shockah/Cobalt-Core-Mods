@@ -109,7 +109,7 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 			return;
 		
-		args.Combat.Queue(new RollAction { TargetPlayer = args.Ship.isPlayerShip });
+		args.Combat.Queue(new RollAction { TargetPlayer = args.Ship.isPlayerShip, IsTurnStart = true });
 	}
 
 	public int ModifyStatusChange(IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusChangeArgs args)
@@ -208,6 +208,7 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 	internal sealed class RollAction : CardAction
 	{
 		public bool TargetPlayer = true;
+		public bool IsTurnStart;
 		
 		public override Icon? GetIcon(State s)
 			=> new(RollIcon.Sprite, null, Colors.textMain);
