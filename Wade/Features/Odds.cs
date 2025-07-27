@@ -25,7 +25,7 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 			Definition = new()
 			{
 				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/Odds.png")).Sprite,
-				color = new Color("7FFFF2"),
+				color = new Color("F2F2F2"),
 				isGood = true,
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Odds", "name"]).Localize,
@@ -37,7 +37,7 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 			Definition = new()
 			{
 				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/GreenTrend.png")).Sprite,
-				color = new Color("7FFFF2"),
+				color = new Color("26CF26"),
 				isGood = true,
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "GreenTrend", "name"]).Localize,
@@ -49,7 +49,7 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 			Definition = new()
 			{
 				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/RedTrend.png")).Sprite,
-				color = new Color("7FFFF2"),
+				color = new Color("C92525"),
 				isGood = false,
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "RedTrend", "name"]).Localize,

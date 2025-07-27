@@ -2,7 +2,7 @@
 	"character": {
 		"name": "Wade",
 		"description": [
-			"<c=CB9077>WADE</c>",
+			"<c=56DF6A>WADE</c>",
 			"TBD."
 		]
 	},
@@ -31,11 +31,32 @@
 		}
 	},
 	"card": {
+		"AllOrNothing": {
+			"name": "All or Nothing"
+		},
+		"CheapTrick": {
+			"name": "Cheap Trick"
+		},
+		"HedgeYourBets": {
+			"name": "Hedge Your Bets"
+		},
+		"HotStreak": {
+			"name": "Hot Streak"
+		},
+		"LuckyBreak": {
+			"name": "Lucky Break"
+		},
 		"OddShot": {
 			"name": "Odd Shot"
 		},
+		"RollTheBones": {
+			"name": "Roll the Bones"
+		},
 		"TrendSetting": {
 			"name": "Trend Setting"
+		},
+		"WeighTheOdds": {
+			"name": "Weigh the Odds"
 		}
 	}
 }

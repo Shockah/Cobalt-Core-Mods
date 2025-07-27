@@ -6,7 +6,7 @@ using Shockah.Shared;
 
 namespace Shockah.Wade;
 
-internal sealed class OddShotCard : Card, IRegisterable
+internal sealed class CheapTrickCard : Card, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -19,13 +19,13 @@ internal sealed class OddShotCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Card/OddShot.png"), StableSpr.cards_colorless).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "OddShot", "name"]).Localize,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Card/CheapTrick.png"), StableSpr.cards_colorless).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "CheapTrick", "name"]).Localize,
 		});
 	}
 
 	public override CardData GetData(State state)
-		=> new() { cost = 1, artTint = "ffffff" };
+		=> new() { cost = 0, artTint = "ffffff" };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
@@ -33,38 +33,32 @@ internal sealed class OddShotCard : Card, IRegisterable
 			Upgrade.B => [
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
-					new AAttack { damage = GetDmg(s, 2) }
+					new AAttack { damage = GetDmg(s, 1) }
 				).SetShowQuestionMark(false).AsCardAction,
-				new AAttack { damage = GetDmg(s, 0) },
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = false },
-					new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 }
+					new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 2 }
 				).SetShowQuestionMark(false).AsCardAction,
-				new Odds.RollAction(),
 			],
 			Upgrade.A => [
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
-					new AAttack { damage = GetDmg(s, 1) }
+					new AAttack { damage = GetDmg(s, 2) }
 				).SetShowQuestionMark(false).AsCardAction,
-				new AAttack { damage = GetDmg(s, 2) },
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = false },
-					new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 1 }
+					new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 }
 				).SetShowQuestionMark(false).AsCardAction,
-				new Odds.RollAction(),
 			],
 			_ => [
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
 					new AAttack { damage = GetDmg(s, 1) }
 				).SetShowQuestionMark(false).AsCardAction,
-				new AAttack { damage = GetDmg(s, 1) },
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = false },
-					new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 1 }
+					new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 }
 				).SetShowQuestionMark(false).AsCardAction,
-				new Odds.RollAction(),
 			],
 		};
 }

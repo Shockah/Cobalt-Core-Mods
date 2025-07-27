@@ -23,8 +23,15 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry WadeDeck { get; }
 
 	private static readonly IReadOnlyList<Type> CommonCardTypes = [
+		typeof(AllOrNothingCard),
+		typeof(CheapTrickCard),
+		typeof(HedgeYourBetsCard),
+		typeof(HotStreakCard),
+		typeof(LuckyBreakCard),
 		typeof(OddShotCard),
+		typeof(RollTheBonesCard),
 		typeof(TrendSettingCard),
+		typeof(WeighTheOddsCard),
 	];
 
 	private static readonly IReadOnlyList<Type> UncommonCardTypes = [
@@ -80,7 +87,7 @@ public sealed class ModEntry : SimpleMod
 
 		WadeDeck = helper.Content.Decks.RegisterDeck("Wade", new()
 		{
-			Definition = new() { color = new("CB9077"), titleColor = Colors.black },
+			Definition = new() { color = new("56DF6A"), titleColor = Colors.white },
 			DefaultCardArt = StableSpr.cards_colorless,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize,

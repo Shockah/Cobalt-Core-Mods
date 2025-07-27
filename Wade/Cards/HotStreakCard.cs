@@ -6,7 +6,7 @@ using Shockah.Shared;
 
 namespace Shockah.Wade;
 
-internal sealed class TrendSettingCard : Card, IRegisterable
+internal sealed class HotStreakCard : Card, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -19,29 +19,27 @@ internal sealed class TrendSettingCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Card/TrendSetting.png"), StableSpr.cards_colorless).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "TrendSetting", "name"]).Localize,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Card/HotStreak.png"), StableSpr.cards_colorless).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "HotStreak", "name"]).Localize,
 		});
 	}
 
 	public override CardData GetData(State state)
 		=> upgrade switch
 		{
-			Upgrade.A => new() { cost = 0, buoyant = true, exhaust = true, artTint = "ffffff" },
-			_ => new() { cost = 1, buoyant = true, exhaust = true, artTint = "ffffff" },
+			Upgrade.A => new() { cost = 1, retain = true, artTint = "ffffff" },
+			_ => new() { cost = 1, artTint = "ffffff" },
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AStatus { targetPlayer = true, status = Odds.GreenTrendStatus.Status, statusAmount = 2 },
-				new AStatus { targetPlayer = true, status = Odds.RedTrendStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 1 },
 				new AStatus { targetPlayer = true, status = Odds.OddsStatus.Status, statusAmount = 2 },
 			],
 			_ => [
-				new AStatus { targetPlayer = true, status = Odds.GreenTrendStatus.Status, statusAmount = 1 },
-				new AStatus { targetPlayer = true, status = Odds.RedTrendStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 1 },
 				new AStatus { targetPlayer = true, status = Odds.OddsStatus.Status, statusAmount = 1 },
 			],
 		};
