@@ -48,6 +48,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(DoubleDownCard),
 		typeof(DumbLuckCard),
 		typeof(LuckyDriveCard),
+		typeof(SelfReflectionCard),
 		typeof(TwistFateCard),
 	];
 

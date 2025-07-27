@@ -94,6 +94,14 @@
 		"SeeingRed": {
 			"name": "Seeing Red"
 		},
+		"SelfReflection": {
+			"name": "Self Reflection",
+			"description": {
+				"None": "Draw 4 <c=56DF6A>Wade</c> cards.",
+				"A": "Draw 4 <c=56DF6A>Wade</c> cards.",
+				"B": "Draw 6 <c=56DF6A>Wade</c> cards."
+			}
+		},
 		"TrendSetting": {
 			"name": "Trend Setting"
 		},
