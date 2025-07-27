@@ -35,6 +35,13 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	private static readonly IReadOnlyList<Type> UncommonCardTypes = [
+		typeof(AllInCard),
+		typeof(AnalyzeCard),
+		typeof(DefyTheOddsCard),
+		typeof(LuckOfTheDrawCard),
+		typeof(RiskyManeuverCard),
+		typeof(SeeingRedCard),
+		typeof(UpTheAnteCard),
 	];
 
 	private static readonly IReadOnlyList<Type> RareCardTypes = [

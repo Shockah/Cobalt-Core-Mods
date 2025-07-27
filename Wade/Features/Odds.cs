@@ -149,9 +149,10 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 	internal sealed class TrendCondition : IKokoroApi.IV2.IConditionalApi.IBoolExpression
 	{
 		public required bool Positive;
+		public bool? OverrideValue;
 
 		public bool GetValue(State state, Combat combat)
-			=> Positive ? state.ship.Get(OddsStatus.Status) > 0 : state.ship.Get(OddsStatus.Status) < 0;
+			=> OverrideValue ?? (Positive ? state.ship.Get(OddsStatus.Status) > 0 : state.ship.Get(OddsStatus.Status) < 0);
 
 		public string GetTooltipDescription(State state, Combat? combat)
 			=> ModEntry.Instance.Localizations.Localize(["condition", Positive ? "Green" : "Red", "description"]);
