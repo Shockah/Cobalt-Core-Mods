@@ -35,7 +35,7 @@ internal sealed class LuckyBreakCard : Card, IRegisterable
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
 			new AVariableHint { status = Odds.OddsStatus.Status },
-			new AMove { targetPlayer = true, dir = s.ship.Get(Odds.OddsStatus.Status), xHint = 1 },
+			new AMove { targetPlayer = true, dir = s.ship.Get(Odds.OddsStatus.Status), preferRightWhenZero = true, xHint = 1 },
 			new Odds.RollAction(),
 		];
 }

@@ -42,7 +42,7 @@
 		},
 		"LuckyDrive": {
 			"name": "Lucky Drive",
-			"description": "While you have positive <c=status>ODDS</c>, add {0} damage to all attacks. After playing a card with an attack, randomize the value of your <c=status>ODDS</c>."
+			"description": "While you have positive <c=status>ODDS</c>, add {0} damage to all attacks. After playing a card with an attack, <c=action>roll</c>."
 		}
 	},
 	"artifact": {
