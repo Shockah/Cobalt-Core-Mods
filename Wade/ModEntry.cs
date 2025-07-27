@@ -14,7 +14,7 @@ public sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly IHarmony Harmony;
-	// internal readonly HookManager<IDestinyApi.IHook> HookManager;
+	internal readonly HookManager<IWadeApi.IHook> HookManager;
 	internal readonly IKokoroApi.IV2 KokoroApi;
 	// internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; }
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
@@ -57,13 +57,19 @@ public sealed class ModEntry : SimpleMod
 			.. CommonCardTypes,
 			.. UncommonCardTypes,
 			.. RareCardTypes,
+			typeof(SpareDiceCard),
 			// typeof(DestinyExeCard),
 		];
 
 	private static readonly IReadOnlyList<Type> CommonArtifacts = [
+		typeof(D4Artifact),
+		typeof(DiceBagArtifact),
+		typeof(FuzzyDiceArtifact),
+		typeof(LuckyPennyArtifact),
 	];
 
 	private static readonly IReadOnlyList<Type> BossArtifacts = [
+		typeof(PressedCloverArtifact),
 	];
 
 	private static readonly IReadOnlyList<Type> DuoArtifacts = [
@@ -86,7 +92,7 @@ public sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
-		// HookManager = new(package.Manifest.UniqueName);
+		HookManager = new(package.Manifest.UniqueName);
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(

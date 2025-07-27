@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
@@ -34,7 +35,7 @@ internal sealed class AnalyzeCard : Card, IRegisterable
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = false },
 					new ADrawCard { count = 3 }
-				).SetShowQuestionMark(false).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
 				new Odds.RollAction(),
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = false },
@@ -46,14 +47,14 @@ internal sealed class AnalyzeCard : Card, IRegisterable
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = false },
 					new ADrawCard { count = 4 }
-				).SetShowQuestionMark(false).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
 				new Odds.RollAction(),
 			],
 			_ => [
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = false },
 					new ADrawCard { count = 3 }
-				).SetShowQuestionMark(false).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
 				new Odds.RollAction(),
 			],
 		};

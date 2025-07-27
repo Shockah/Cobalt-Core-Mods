@@ -20,6 +20,8 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 	public static ISpriteEntry GreenConditionIcon { get; private set; } = null!;
 	public static ISpriteEntry RedConditionIcon { get; private set; } = null!;
 	
+	private static readonly Pool<OnOddsRollsArgs> OnOddsRollsArgsPool = new(() => new());
+	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		OddsStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Odds", new()
@@ -177,7 +179,8 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 			
 			var negativeThreshold = args.Ship.Get(RedTrendStatus.Status) + 1;
 			var positiveThreshold = args.Ship.Get(GreenTrendStatus.Status) + 1;
-			var odds = args.Amount;
+			// TODO: dehardcode artifact
+			int? odds = args.Ship.isPlayerShip && args.State.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact) ? null : args.Amount;
 
 			for (var i = negativeThreshold; i > 0; i--)
 			{
@@ -236,9 +239,23 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 			if (odds >= 0)
 				odds++;
 
+			var oldOdds = ship.Get(OddsStatus.Status);
 			ship.Set(OddsStatus.Status, odds);
 			// TODO: sound
 			// TODO: cool animation
+
+			OnOddsRollsArgsPool.Do(args =>
+			{
+				args.State = s;
+				args.Combat = c;
+				args.Ship = ship;
+				args.IsTurnStart = IsTurnStart;
+				args.OldOdds = oldOdds;
+				args.NewOdds = odds;
+
+				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
+					hook.OnOddsRoll(args);
+			});
 		}
 	}
 	
@@ -275,5 +292,15 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 					Description = defaultTooltipDescription,
 				}
 			];
+	}
+	
+	private sealed class OnOddsRollsArgs : IWadeApi.IHook.IOnOddsRollsArgs
+	{
+		public State State { get; set; } = null!;
+		public Combat Combat { get; set; } = null!;
+		public Ship Ship { get; set; } = null!;
+		public bool IsTurnStart { get; set; }
+		public int OldOdds { get; set; }
+		public int NewOdds { get; set; }
 	}
 }

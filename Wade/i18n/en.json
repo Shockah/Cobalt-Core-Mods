@@ -45,6 +45,28 @@
 			"description": "While you have positive <c=status>ODDS</c>, add {0} damage to all attacks. After playing a card with an attack, randomize the value of your <c=status>ODDS</c>."
 		}
 	},
+	"artifact": {
+		"D4": {
+			"name": "D4",
+			"description": "Every 4 turns gain a <c=card>Spare Dice</c>."
+		},
+		"DiceBag": {
+			"name": "DICE BAG",
+			"description": "At the start of combat, gain 2 <c=card>Spare Dice</c>."
+		},
+		"FuzzyDice": {
+			"name": "FUZZY DICE",
+			"description": "The first time you <c=action>roll</c> each turn, gain 1 <c=status>TEMP SHIELD</c>."
+		},
+		"LuckyPenny": {
+			"name": "LUCKY PENNY",
+			"description": "If you end your turn with negative <c=status>ODDS</c>, gain 1 <c=status>TEMP SHIELD</c>."
+		},
+		"PressedClover": {
+			"name": "PRESSED CLOVER",
+			"description": "The first 2 times you <c=action>roll</c> each turn, gain 1 <c=energy>ENERGY</c>. <c=downside>Your odds are hidden.</c>"
+		}
+	},
 	"card": {
 		"AllIn": {
 			"name": "All In"
@@ -101,6 +123,9 @@
 				"A": "Draw 4 <c=56DF6A>Wade</c> cards.",
 				"B": "Draw 6 <c=56DF6A>Wade</c> cards."
 			}
+		},
+		"SpareDice": {
+			"name": "Spare Dice"
 		},
 		"TrendSetting": {
 			"name": "Trend Setting"

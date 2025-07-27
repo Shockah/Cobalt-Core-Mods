@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
@@ -34,21 +35,21 @@ internal sealed class AllOrNothingCard : Card, IRegisterable
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
 					new AAttack { damage = GetDmg(s, 3), piercing = true }
-				).SetShowQuestionMark(false).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
 				new Odds.RollAction(),
 			],
 			Upgrade.A => [
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
 					new AAttack { damage = GetDmg(s, 4) }
-				).SetShowQuestionMark(false).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
 				new Odds.RollAction(),
 			],
 			_ => [
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
 					new AAttack { damage = GetDmg(s, 3) }
-				).SetShowQuestionMark(false).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
 				new Odds.RollAction(),
 			],
 		};

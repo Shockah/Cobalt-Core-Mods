@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
@@ -44,11 +45,11 @@ internal sealed class LuckOfTheDrawCard : Card, IRegisterable
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
 					new ADrawCard { count = realOdds * 2, xHint = 2 }
-				).SetShowQuestionMark(false).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = false },
 					new AStatus { targetPlayer = true, status = Odds.GreenTrendStatus.Status, statusAmount = 1 }
-				).SetShowQuestionMark(false).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
 				new Odds.RollAction(),
 			],
 			Upgrade.A => [
@@ -58,11 +59,11 @@ internal sealed class LuckOfTheDrawCard : Card, IRegisterable
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = true, OverrideValue = realOdds > 0 },
 						new ADrawCard { count = realOdds * 2, xHint = 2 }
-					).SetShowQuestionMark(false).AsCardAction,
+					).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = true },
 						new ADrawCard { count = realOdds * 2, xHint = 2 }
-					).SetShowQuestionMark(false).AsCardAction
+					).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction
 				).AsCardAction,
 				new Odds.RollAction(),
 			],
@@ -71,7 +72,7 @@ internal sealed class LuckOfTheDrawCard : Card, IRegisterable
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
 					new ADrawCard { count = realOdds * 2, xHint = 2 }
-				).SetShowQuestionMark(false).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
 				new Odds.RollAction(),
 			]
 		};
