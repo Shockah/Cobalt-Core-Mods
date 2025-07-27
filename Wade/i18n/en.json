@@ -1,0 +1,41 @@
+﻿{
+	"character": {
+		"name": "Wade",
+		"description": [
+			"<c=CB9077>WADE</c>",
+			"TBD."
+		]
+	},
+	"condition": {
+		"Green": {
+			"title": "If Green",
+			"description": "you have positive <c=status>ODDS</c>"
+		},
+		"Red": {
+			"title": "If Red",
+			"description": "you have negative <c=status>ODDS</c>"
+		}
+	},
+	"status": {
+		"Odds": {
+			"name": "Odds",
+			"description": "."
+		},
+		"GreenTrend": {
+			"name": "Green Trend",
+			"description": "."
+		},
+		"RedTrend": {
+			"name": "Red Trend",
+			"description": "."
+		}
+	},
+	"card": {
+		"OddShot": {
+			"name": "Odd Shot"
+		},
+		"TrendSetting": {
+			"name": "Trend Setting"
+		}
+	}
+}

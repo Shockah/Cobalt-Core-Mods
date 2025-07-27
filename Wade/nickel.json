@@ -1,0 +1,16 @@
+﻿{
+	"UniqueName": "Shockah.Wade",
+	"Version": "{{ModVersion}}",
+	"DisplayName": "Wade",
+	"Description": "TBD",
+	"Author": "Shockah, Soggoru Waffle",
+	"RequiredApiVersion": "1.17.0",
+	"EntryPointAssembly": "Wade.dll",
+	"LoadPhase": "AfterDbInit",
+	"Dependencies": [
+		{
+			"UniqueName": "Shockah.Kokoro",
+			"Version": "2.11.0"
+		}
+	]
+}
