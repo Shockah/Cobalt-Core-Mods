@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
@@ -44,8 +45,8 @@ internal sealed class LuckOfTheDrawCard : Card, IRegisterable
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
 					ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-						new ADrawCard { count = ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : realOdds * 2, xHint = 2 },
-						new ADrawCard { count = realOdds * 2, xHint = 2 }
+						new ADrawCard { count = ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : Math.Max(realOdds * 2, 0), xHint = 2 },
+						new ADrawCard { count = Math.Max(realOdds * 2, 0), xHint = 2 }
 					).AsCardAction
 				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
@@ -61,15 +62,15 @@ internal sealed class LuckOfTheDrawCard : Card, IRegisterable
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = true, OverrideValue = realOdds > 0 },
 						ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-							new ADrawCard { count = ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : realOdds * 2, xHint = 2 },
-							new ADrawCard { count = realOdds * 2, xHint = 2 }
+							new ADrawCard { count = ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : Math.Max(realOdds * 2, 0), xHint = 2 },
+							new ADrawCard { count = Math.Max(realOdds * 2, 0), xHint = 2 }
 						).AsCardAction
 					).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = true },
 						ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-							new ADrawCard { count = ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : realOdds * 2, xHint = 2 },
-							new ADrawCard { count = realOdds * 2, xHint = 2 }
+							new ADrawCard { count = ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : Math.Max(realOdds * 2, 0), xHint = 2 },
+							new ADrawCard { count = Math.Max(realOdds * 2, 0), xHint = 2 }
 						).AsCardAction
 					).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction
 				).AsCardAction,
@@ -80,8 +81,8 @@ internal sealed class LuckOfTheDrawCard : Card, IRegisterable
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
 					ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-						new ADrawCard { count = ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : realOdds * 2, xHint = 2 },
-						new ADrawCard { count = realOdds * 2, xHint = 2 }
+						new ADrawCard { count = ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : Math.Max(realOdds * 2, 0), xHint = 2 },
+						new ADrawCard { count = Math.Max(realOdds * 2, 0), xHint = 2 }
 					).AsCardAction
 				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
 				new Odds.RollAction(),
