@@ -1,4 +1,5 @@
-﻿using Nickel;
+﻿using System.Linq;
+using Nickel;
 using Shockah.Kokoro;
 
 namespace Shockah.Wade;
@@ -19,6 +20,18 @@ public sealed class ApiImplementation : IWadeApi
 	
 	public IStatusEntry LuckyDriveStatus
 		=> Odds.LuckyDriveStatus;
+
+	public int? GetKnownOdds(State state, Combat combat, bool forPlayer = true)
+	{
+		var ship = forPlayer ? state.ship : combat.otherShip;
+		var odds = ship.Get(Odds.OddsStatus.Status);
+		if (odds == 0)
+			return 0;
+
+		if (forPlayer && state.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact))
+			return null;
+		return odds;
+	}
 
 	public IWadeApi.ITrendCondition MakeTrendCondition(bool positive)
 		=> new Odds.TrendCondition { Positive = true };

@@ -8,6 +8,7 @@ using Nickel;
 using Nickel.Common;
 using Shockah.Kokoro;
 using Shockah.Shared;
+using TheJazMaster.CombatQoL;
 
 namespace Shockah.Wade;
 
@@ -15,8 +16,10 @@ public sealed class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly IHarmony Harmony;
+	internal readonly IWadeApi Api;
 	internal readonly HookManager<IWadeApi.IHook> HookManager;
 	internal readonly IKokoroApi.IV2 KokoroApi;
+	internal ICombatQolApi? CombatQolApi { get; private set; }
 	// internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; }
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
@@ -93,6 +96,7 @@ public sealed class ModEntry : SimpleMod
 	{
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
+		Api = new ApiImplementation();
 		HookManager = new(package.Manifest.UniqueName);
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 
@@ -189,6 +193,8 @@ public sealed class ModEntry : SimpleMod
 				new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 			])
 		);
+		
+		helper.ModRegistry.AwaitApi<ICombatQolApi>("TheJazMaster.CombatQoL", api => this.CombatQolApi = api);
 		
 		// helper.Events.OnModLoadPhaseFinished += (_, phase) =>
 		// {

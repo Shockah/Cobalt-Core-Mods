@@ -6,6 +6,7 @@ using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
+using TheJazMaster.CombatQoL;
 
 namespace Shockah.Wade;
 
@@ -203,8 +204,7 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 			
 			var negativeThreshold = args.Ship.Get(RedTrendStatus.Status) + 1;
 			var positiveThreshold = args.Ship.Get(GreenTrendStatus.Status) + 1;
-			// TODO: dehardcode artifact
-			var areOddsHidden = args.Ship.isPlayerShip && args.State.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact);
+			var areOddsHidden = ModEntry.Instance.Api.GetKnownOdds(args.State, args.Combat, args.Ship.isPlayerShip) is null;
 			
 			var options = negativeThreshold + positiveThreshold;
 			var realOption = args.Amount + negativeThreshold;
@@ -368,7 +368,17 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 		public bool? OverrideValue { get; set; }
 
 		public bool GetValue(State state, Combat combat)
-			=> OverrideValue ?? (Positive ? state.ship.Get(OddsStatus.Status) > 0 : state.ship.Get(OddsStatus.Status) < 0);
+		{
+			if (OverrideValue is not null)
+				return OverrideValue.Value;
+
+			var odds = state.ship.Get(OddsStatus.Status);
+			if (odds == 0)
+				return false;
+			
+			ModEntry.Instance.CombatQolApi?.InvalidateUndos(combat, ICombatQolApi.InvalidationReason.RNG_SEED);
+			return Positive ? odds > 0 : odds < 0;
+		}
 
 		public string GetTooltipDescription(State state, Combat? combat)
 			=> ModEntry.Instance.Localizations.Localize(["condition", Positive ? "Green" : "Red", "description"]);

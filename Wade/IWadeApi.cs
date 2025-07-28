@@ -12,6 +12,8 @@ public interface IWadeApi
 	IStatusEntry GreenTrendStatus { get; }
 	IStatusEntry LuckyDriveStatus { get; }
 
+	int? GetKnownOdds(State state, Combat combat, bool forPlayer = true);
+
 	ITrendCondition MakeTrendCondition(bool positive);
 	ITrendCondition? AsTrendCondition(IKokoroApi.IV2.IConditionalApi.IBoolExpression condition);
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
@@ -35,31 +34,31 @@ internal sealed class CheapTrickCard : Card, IRegisterable
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
 					new AAttack { damage = GetDmg(s, 1) }
-				).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = false },
 					new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 2 }
-				).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
 			],
 			Upgrade.A => [
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
 					new AAttack { damage = GetDmg(s, 2) }
-				).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = false },
 					new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 }
-				).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
 			],
 			_ => [
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
 					new AAttack { damage = GetDmg(s, 1) }
-				).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = false },
 					new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 }
-				).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
 			],
 		};
 }

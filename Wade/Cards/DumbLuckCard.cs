@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
@@ -48,11 +47,11 @@ internal sealed class DumbLuckCard : Card, IRegisterable
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = false, OverrideValue = realOdds < 0 },
 						new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 3 }
-					).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
+					).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = false },
 						new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 3 }
-					).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction
+					).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction
 				).AsCardAction,
 			],
 			Upgrade.A => [
@@ -61,11 +60,11 @@ internal sealed class DumbLuckCard : Card, IRegisterable
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = false, OverrideValue = realOdds < 0 },
 						new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 }
-					).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
+					).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = false },
 						new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 }
-					).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction
+					).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction
 				).AsCardAction,
 				new AStatus { targetPlayer = true, status = Odds.OddsStatus.Status, statusAmount = 1 },
 			],
@@ -75,11 +74,11 @@ internal sealed class DumbLuckCard : Card, IRegisterable
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = false, OverrideValue = realOdds < 0 },
 						new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 }
-					).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction,
+					).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = false },
 						new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 }
-					).SetShowQuestionMark(false).SetFadeUnsatisfied(!s.EnumerateAllArtifacts().Any(a => a is PressedCloverArtifact)).AsCardAction
+					).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction
 				).AsCardAction,
 			]
 		};
