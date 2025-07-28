@@ -107,10 +107,17 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.CanBeNegative)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_CanBeNegative_Postfix))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.Begin)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AStatus_Begin_Prefix))
+		);
 	}
 
-	private static int GetRollTicksForTime(double time)
-		=> time <= 0 ? 0 : (int)Math.Ceiling(Math.Pow(time * 3.5, 2));
+	private static int GetRollTicksForTime(Ship ship, double time)
+	{
+		var options = ship.Get(RedTrendStatus.Status) + ship.Get(GreenTrendStatus.Status) + 2;
+		return time <= 0 ? 0 : (int)Math.Ceiling(Math.Pow(time * (2.5 + options * 0.25), 2));
+	}
 
 	public void OnStatusTurnTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IOnStatusTurnTriggerArgs args)
 	{
@@ -204,7 +211,7 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 			if (args.Amount > 0)
 				realOption--;
 			
-			var rollTicks = GetRollTicksForTime(RollTimeLeft);
+			var rollTicks = GetRollTicksForTime(args.Ship, RollTimeLeft);
 			
 			var animatedOption = realOption - rollTicks;
 			while (animatedOption < 0)
@@ -216,7 +223,7 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 
 			for (var i = negativeThreshold; i > 0; i--)
 			{
-				var showAsActive = areOddsHidden ? (RollTimeLeft > 0 && (rollTicks + i) % 2 == 0) : animatedOdds == -i;
+				var showAsActive = areOddsHidden ? (RollTimeLeft > 0 && (rollTicks + i) % 2 == 0) : animatedOdds == -i && args.Amount != 0;
 				BarRenderer.Segments = [Colors.downside.fadeAlpha(showAsActive ? 1 : 0.4)];
 				BarRenderer.SegmentWidth = 2;
 				newArgs.Position = new(args.Position.x + totalWidth, args.Position.y);
@@ -224,7 +231,7 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 			}
 			for (var i = 1; i <= positiveThreshold; i++)
 			{
-				var showAsActive = areOddsHidden ? (RollTimeLeft > 0 && (rollTicks + i) % 2 == 1) : animatedOdds == i;
+				var showAsActive = areOddsHidden ? (RollTimeLeft > 0 && (rollTicks + i) % 2 == 1) : animatedOdds == i && args.Amount != 0;
 				BarRenderer.Segments = [Colors.heal.fadeAlpha(showAsActive ? 1 : 0.4)];
 				BarRenderer.SegmentWidth = 2;
 				newArgs.Position = new(args.Position.x + totalWidth, args.Position.y);
@@ -240,6 +247,29 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 	{
 		if (status == OddsStatus.Status)
 			__result = true;
+	}
+
+	private static void AStatus_Begin_Prefix(AStatus __instance, State s, Combat c)
+	{
+		if (__instance.status != OddsStatus.Status)
+			return;
+
+		var ship = __instance.targetPlayer ? s.ship : c.otherShip;
+		var currentAmount = ship.Get(__instance.status);
+		var newAmount = __instance.mode switch
+		{
+			AStatusMode.Set => __instance.statusAmount,
+			AStatusMode.Add => currentAmount + __instance.statusAmount,
+			AStatusMode.Mult => currentAmount * __instance.statusAmount,
+			_ => currentAmount
+		};
+
+		if (__instance.mode == AStatusMode.Set || currentAmount == 0 || Math.Sign(currentAmount) == Math.Sign(newAmount))
+			return;
+
+		newAmount += -Math.Sign(currentAmount);
+		__instance.mode = AStatusMode.Set;
+		__instance.statusAmount = newAmount;
 	}
 
 	internal sealed class RollAction : CardAction
@@ -308,9 +338,9 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 			var ship = TargetPlayer ? s.ship : c.otherShip;
 			ship.statusEffectPulses[OddsStatus.Status] = 0.25;
 
-			var oldTicks = GetRollTicksForTime(RollTimeLeft);
+			var oldTicks = GetRollTicksForTime(ship, RollTimeLeft);
 			RollTimeLeft = Math.Max(RollTimeLeft - g.dt, 0);
-			var newTicks = GetRollTicksForTime(RollTimeLeft);
+			var newTicks = GetRollTicksForTime(ship, RollTimeLeft);
 
 			if (oldTicks != newTicks)
 				RollTickSound.CreateInstance();
