@@ -1,13 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using HarmonyLib;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
-using System.Collections.Generic;
-using System;
-using HarmonyLib;
-using Shockah.Kokoro;
-using System.Linq;
 using Nickel.Common;
-using Shockah.Destiny;
+using Shockah.Kokoro;
 using Shockah.Shared;
 
 namespace Shockah.Wade;
@@ -181,6 +180,14 @@ public sealed class ModEntry : SimpleMod
 					]
 				}
 			)
+		);
+		
+		helper.ModRegistry.AwaitApi<IDraculaApi>(
+			"Shockah.Dracula",
+			api => api.RegisterBloodTapOptionProvider(Odds.LuckyDriveStatus.Status, (_, _, status) => [
+				new AHurt { targetPlayer = true, hurtAmount = 1 },
+				new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
+			])
 		);
 		
 		// helper.Events.OnModLoadPhaseFinished += (_, phase) =>

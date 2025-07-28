@@ -1,4 +1,4 @@
-﻿namespace Shockah.Destiny;
+﻿namespace Shockah.Wade;
 
 public interface IMoreDifficultiesApi
 {
