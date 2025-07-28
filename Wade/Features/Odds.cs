@@ -347,6 +347,8 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 				foreach (var hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts()))
 					hook.OnOddsRoll(args);
 			});
+			
+			c.QueueImmediate(new ADummyAction());
 		}
 
 		public override void Update(G g, State s, Combat c)
