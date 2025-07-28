@@ -155,6 +155,11 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
 		if (args.Status == OddsStatus.Status)
+		{
+			var ship = args.Ship;
+			if (MG.inst?.g?.state is { route: Combat combat } state)
+				ship = args.Ship?.isPlayerShip == false ? combat.otherShip : state.ship;
+			
 			return args.Tooltips.Select(tooltip =>
 			{
 				if (tooltip is TTGlossary glossary && glossary.key == $"status.{OddsStatus.Status}")
@@ -165,12 +170,13 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 						Title = OddsStatus.Configuration.Name!(DB.currentLocale.locale),
 						Description = ModEntry.Instance.Localizations.Localize(["status", "Odds", "description"], new
 						{
-							Max = (args.Ship?.Get(GreenTrendStatus.Status) ?? 0) + 1,
-							Min = -(args.Ship?.Get(RedTrendStatus.Status) ?? 0) - 1,
+							Max = (ship?.Get(GreenTrendStatus.Status) ?? 0) + 1,
+							Min = -(ship?.Get(RedTrendStatus.Status) ?? 0) - 1,
 						}),
 					};
 				return tooltip;
 			}).ToList();
+		}
 
 		if (args.Status == LuckyDriveStatus.Status)
 			return [
