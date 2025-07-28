@@ -393,7 +393,8 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 			if (odds == 0)
 				return false;
 			
-			ModEntry.Instance.CombatQolApi?.InvalidateUndos(combat, ICombatQolApi.InvalidationReason.RNG_SEED);
+			if (ModEntry.Instance.Api.GetKnownOdds(state, combat) is null)
+				ModEntry.Instance.CombatQolApi?.InvalidateUndos(combat, ICombatQolApi.InvalidationReason.RNG_SEED);
 			return Positive ? odds > 0 : odds < 0;
 		}
 
