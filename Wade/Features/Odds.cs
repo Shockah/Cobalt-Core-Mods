@@ -227,23 +227,32 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 			if (animatedOdds >= 0)
 				animatedOdds++;
 
+			var slim = options >= 8;
+			var verySlim = options >= 15;
+
 			for (var i = negativeThreshold; i > 0; i--)
 			{
 				var showAsActive = areOddsHidden ? (RollTimeLeft > 0 && (rollTicks + i) % 2 == 0) : animatedOdds == -i && args.Amount != 0;
 				BarRenderer.Segments = [Colors.downside.fadeAlpha(showAsActive ? 1 : 0.4)];
-				BarRenderer.SegmentWidth = 2;
+				BarRenderer.SegmentWidth = slim && (!areOddsHidden || !showAsActive) ? 1 : 2;
 				newArgs.Position = new(args.Position.x + totalWidth, args.Position.y);
 				totalWidth += BarRenderer.Render(newArgs) - 1;
+				if (verySlim)
+					totalWidth -= 1;
 			}
 			for (var i = 1; i <= positiveThreshold; i++)
 			{
 				var showAsActive = areOddsHidden ? (RollTimeLeft > 0 && (rollTicks + i) % 2 == 1) : animatedOdds == i && args.Amount != 0;
 				BarRenderer.Segments = [Colors.heal.fadeAlpha(showAsActive ? 1 : 0.4)];
-				BarRenderer.SegmentWidth = 2;
+				BarRenderer.SegmentWidth = slim && (!areOddsHidden || !showAsActive) ? 1 : 2;
 				newArgs.Position = new(args.Position.x + totalWidth, args.Position.y);
 				totalWidth += BarRenderer.Render(newArgs) - 1;
+				if (verySlim)
+					totalWidth -= 1;
 			}
 
+			if (verySlim)
+				totalWidth += 1;
 			totalWidth += 1;
 			return totalWidth;
 		}
