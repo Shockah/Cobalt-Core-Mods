@@ -40,10 +40,13 @@ internal sealed class AllInCard : Card, IRegisterable
 		return upgrade switch
 		{
 			Upgrade.B => [
-				new AVariableHint { status = Odds.OddsStatus.Status },
+				new Odds.OddsVariableHint(),
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
-					new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
+					ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
+						new AAttack { damage = GetDmg(s, ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : realOdds), xHint = 1 },
+						new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
+					).AsCardAction
 				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = false },
@@ -53,24 +56,33 @@ internal sealed class AllInCard : Card, IRegisterable
 			],
 			Upgrade.A => [
 				new AStatus { targetPlayer = true, status = Odds.OddsStatus.Status, statusAmount = 1 },
-				new AVariableHint { status = Odds.OddsStatus.Status },
+				new Odds.OddsVariableHint(),
 				ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = true, OverrideValue = realOdds > 0 },
-						new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
+						ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
+							new AAttack { damage = GetDmg(s, ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : realOdds), xHint = 1 },
+							new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
+						).AsCardAction
 					).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = true },
-						new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
+						ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
+							new AAttack { damage = GetDmg(s, ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : realOdds), xHint = 1 },
+							new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
+						).AsCardAction
 					).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction
 				).AsCardAction,
 				new Odds.RollAction(),
 			],
 			_ => [
-				new AVariableHint { status = Odds.OddsStatus.Status },
+				new Odds.OddsVariableHint(),
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
-					new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
+					ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
+						new AAttack { damage = GetDmg(s, ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : realOdds), xHint = 1 },
+						new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
+					).AsCardAction
 				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
 				new Odds.RollAction(),
 			]

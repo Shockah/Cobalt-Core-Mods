@@ -33,6 +33,9 @@ public sealed class ApiImplementation : IWadeApi
 		return odds;
 	}
 
+	public AVariableHint MakeOddsVariableHint()
+		=> new Odds.OddsVariableHint();
+
 	public IWadeApi.ITrendCondition MakeTrendCondition(bool positive)
 		=> new Odds.TrendCondition { Positive = true };
 

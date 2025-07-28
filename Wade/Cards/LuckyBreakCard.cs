@@ -34,8 +34,11 @@ internal sealed class LuckyBreakCard : Card, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new AVariableHint { status = Odds.OddsStatus.Status },
-			new AMove { targetPlayer = true, dir = s.ship.Get(Odds.OddsStatus.Status), preferRightWhenZero = true, xHint = 1 },
+			new Odds.OddsVariableHint(),
+			ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
+				new AMove { targetPlayer = true, dir = ModEntry.Instance.Api.GetKnownOdds(s, c) ?? 0, preferRightWhenZero = true, xHint = 1 },
+				new AMove { targetPlayer = true, dir = s.ship.Get(Odds.OddsStatus.Status), preferRightWhenZero = true, xHint = 1 }
+			).AsCardAction,
 			new Odds.RollAction(),
 		];
 }

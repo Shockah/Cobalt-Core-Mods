@@ -14,6 +14,8 @@ public interface IWadeApi
 
 	int? GetKnownOdds(State state, Combat combat, bool forPlayer = true);
 
+	AVariableHint MakeOddsVariableHint();
+
 	ITrendCondition MakeTrendCondition(bool positive);
 	ITrendCondition? AsTrendCondition(IKokoroApi.IV2.IConditionalApi.IBoolExpression condition);
 

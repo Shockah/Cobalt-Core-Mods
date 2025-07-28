@@ -424,6 +424,34 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 			return this;
 		}
 	}
+
+	internal sealed class OddsVariableHint : AVariableHint
+	{
+		public OddsVariableHint()
+		{
+			this.status = OddsStatus.Status;
+		}
+
+		public override List<Tooltip> GetTooltips(State s)
+		{
+			if (ModEntry.Instance.Api.GetKnownOdds(s, s.route as Combat ?? DB.fakeCombat) is not null)
+				return base.GetTooltips(s);
+			
+			var oldOdds = s.ship.Get(OddsStatus.Status);
+			try
+			{
+				s.ship.statusEffects[OddsStatus.Status] = 0;
+				return base.GetTooltips(s);
+			}
+			finally
+			{
+				if (oldOdds == 0)
+					s.ship.statusEffects.Remove(OddsStatus.Status);
+				else
+					s.ship.statusEffects[OddsStatus.Status] = oldOdds;
+			}
+		}
+	}
 	
 	private sealed class OnOddsRollsArgs : IWadeApi.IHook.IOnOddsRollsArgs
 	{

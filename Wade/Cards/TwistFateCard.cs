@@ -35,7 +35,13 @@ internal sealed class TwistFateCard : Card, IRegisterable
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
 			new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 1 },
-			new AVariableHint { status = Odds.OddsStatus.Status },
-			new AStatus { targetPlayer = true, status = Odds.OddsStatus.Status, statusAmount = -s.ship.Get(Odds.OddsStatus.Status) * 2, xHint = -2 },
+			ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
+				new Odds.OddsVariableHint(),
+				new Odds.OddsVariableHint()
+			).AsCardAction,
+			ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
+				new AStatus { targetPlayer = true, status = Odds.OddsStatus.Status, statusAmount = ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : -s.ship.Get(Odds.OddsStatus.Status) * 2, xHint = -2 },
+				new AStatus { targetPlayer = true, status = Odds.OddsStatus.Status, statusAmount = -s.ship.Get(Odds.OddsStatus.Status) * 2, xHint = -2 }
+			).AsCardAction,
 		];
 }
