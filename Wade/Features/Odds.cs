@@ -272,10 +272,13 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 		__instance.statusAmount = newAmount;
 	}
 
-	internal sealed class RollAction : CardAction
+	internal sealed class RollAction : CardAction, IWadeApi.IRollAction
 	{
-		public bool TargetPlayer = true;
-		public bool IsTurnStart;
+		public bool TargetPlayer { get; set; } = true;
+		public bool IsTurnStart { get; set; }
+
+		public CardAction AsCardAction
+			=> this;
 
 		public RollAction()
 		{
@@ -345,12 +348,24 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 			if (oldTicks != newTicks)
 				RollTickSound.CreateInstance();
 		}
+
+		public IWadeApi.IRollAction SetTargetPlayer(bool value)
+		{
+			this.TargetPlayer = value;
+			return this;
+		}
+
+		public IWadeApi.IRollAction SetIsTurnStart(bool value)
+		{
+			this.IsTurnStart = value;
+			return this;
+		}
 	}
 	
-	internal sealed class TrendCondition : IKokoroApi.IV2.IConditionalApi.IBoolExpression
+	internal sealed class TrendCondition : IWadeApi.ITrendCondition
 	{
-		public required bool Positive;
-		public bool? OverrideValue;
+		public required bool Positive { get; set; }
+		public bool? OverrideValue { get; set; }
 
 		public bool GetValue(State state, Combat combat)
 			=> OverrideValue ?? (Positive ? state.ship.Get(OddsStatus.Status) > 0 : state.ship.Get(OddsStatus.Status) < 0);
@@ -380,6 +395,18 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 					Description = defaultTooltipDescription,
 				}
 			];
+		
+		public IWadeApi.ITrendCondition SetPositive(bool value)
+		{
+			this.Positive = value;
+			return this;
+		}
+
+		public IWadeApi.ITrendCondition SetOverrideValue(bool? value)
+		{
+			this.OverrideValue = value;
+			return this;
+		}
 	}
 	
 	private sealed class OnOddsRollsArgs : IWadeApi.IHook.IOnOddsRollsArgs

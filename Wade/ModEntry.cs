@@ -196,8 +196,8 @@ public sealed class ModEntry : SimpleMod
 		// };
 	}
 
-	// public override object GetApi(IModManifest requestingMod)
-	// 	=> new ApiImplementation();
+	public override object GetApi(IModManifest requestingMod)
+		=> new ApiImplementation();
 
 	internal static Rarity GetCardRarity(Type type)
 	{
