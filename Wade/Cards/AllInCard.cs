@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
@@ -35,6 +36,7 @@ internal sealed class AllInCard : Card, IRegisterable
 			realOdds += 1 + s.ship.Get(Status.boost);
 			if (realOdds == 0)
 				realOdds++;
+			realOdds = Math.Clamp(realOdds, -s.ship.Get(Odds.RedTrendStatus.Status) - 1, s.ship.Get(Odds.GreenTrendStatus.Status) + 1);
 		}
 
 		return upgrade switch
