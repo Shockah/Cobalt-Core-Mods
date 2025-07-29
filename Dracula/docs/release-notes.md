@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Soul of Bat (Dracula-Isaac duo) artifact spawning bats in the wrong spot.
+* Fixed the Soul of Bat (Dracula-Isaac duo) detection of Energy and Shield Drones.
+
 ## 1.5.0
 Released 29 July 2025.
 

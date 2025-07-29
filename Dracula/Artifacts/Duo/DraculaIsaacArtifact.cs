@@ -37,7 +37,7 @@ internal sealed class DraculaIsaacArtifact : Artifact, IRegisterable
 		);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> new BatStuff().GetTooltips();
 
 	private static void Combat_DestroyDroneAt_Prefix(Combat __instance, int x, out StuffBase? __state)
@@ -45,14 +45,14 @@ internal sealed class DraculaIsaacArtifact : Artifact, IRegisterable
 
 	private static void Combat_DestroyDroneAt_Postfix(Combat __instance, State s, int x, in StuffBase? __state)
 	{
-		if (__state?.targetPlayer != false)
-			return;
 		if (__state is not (AttackDrone or ShieldDrone or EnergyDrone))
+			return;
+		if (__state.IsHostile() && !__state.IsFriendly())
 			return;
 		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is DraculaIsaacArtifact) is not { } artifact)
 			return;
 
 		artifact.Pulse();
-		__instance.stuff[x] = new BatStuff();
+		__instance.stuff[x] = new BatStuff { x = x, xLerped = x };
 	}
 }
