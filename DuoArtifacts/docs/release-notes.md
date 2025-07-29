@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.8.0
+Released 29 July 2025.
 
 * Added a new Boot Sequence upside option.
 * Fixed the Quantum Sanctuary (CAT-Dizzy duo) artifact not reducing max shield as advertised.
