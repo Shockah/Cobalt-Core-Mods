@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added a new Boot Sequence upside option.
 * Fixed the Quantum Sanctuary (CAT-Dizzy duo) artifact not reducing max shield as advertised.
 * Fixed CAT duo artifacts appearing in the generic artifacts section in the Codex.
 

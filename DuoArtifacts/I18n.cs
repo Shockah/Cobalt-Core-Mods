@@ -23,6 +23,8 @@ internal static class I18n
 	public static readonly string CharacterEligibleForDuoArtifactNoDuos = "Technically eligible for duo artifacts... but there are none for them!";
 	public static readonly string CharacterEligibleForDuoArtifactNoMatchingDuos = "Technically eligible for duo artifacts... but there are none for them you can get with this crew!";
 
+	public static readonly string DuoArtifactBootSequenceOption = "Gain 1 duo artifact, then pick 1 of 3 common cards of its owners {{Times}} times";
+
 	public static string GetDuoArtifactTooltip(IEnumerable<Deck> characters, bool @long = true)
 	{
 		var characterNamesWithColor = characters
@@ -58,6 +60,10 @@ internal static class I18n
 	public static readonly string AnyCardsConditionSettingName = "Crew cards condition";
 	public static readonly string AnyCardsConditionSettingDescription = "If enabled, duo artifacts will become available if the crew members have at least the given amount of cards of any rarity.";
 	public static readonly string MinCardsSettingName = "Minimum cards";
+	public static readonly string BootSequenceUpsideEnabledName = "Boot sequence upside";
+	public static readonly string BootSequenceUpsideEnabledDescription = "When starting a run, randomly offer an option to gain 1 duo artifact and some commons for its owners.";
+	public static readonly string BootSequenceUpsideCardsName = "Boot sequence upside cards";
+	public static readonly string BootSequenceUpsideCardsDescription = "The amount of common cards gained when choosing the boot sequence upside option.";
 
 	public static readonly string FluxAltGlossaryName = "Flux";
 	public static readonly string FluxAltGlossaryDescription = "Whenever this ship attacks, it gains <c=status>TEMP SHIELD</c>. <c=downside>Decreases by 1 at end of turn.</c>";

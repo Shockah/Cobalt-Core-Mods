@@ -55,6 +55,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 		ArtifactBrowsePatches.Apply(Harmony);
 		ArtifactRewardPatches.Apply(Harmony);
 		CharacterPatches.Apply(Harmony);
+		EventsPatches.Apply(Harmony);
 		StatePatches.Apply(Harmony);
 
 		foreach (var definition in DuoArtifactDefinition.Definitions)
@@ -155,6 +156,35 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 						minValue: 1
 					),
 					() => Settings.ProfileBased.Current.AnyCardsCondition
+				),
+				
+				api.MakeCheckbox(
+					() => I18n.BootSequenceUpsideEnabledName,
+					() => Settings.ProfileBased.Current.BootSequenceUpsideEnabled,
+					(_, _, value) => Settings.ProfileBased.Current.BootSequenceUpsideEnabled = value
+				).SetTooltips(() => [
+					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.BootSequenceUpsideEnabled)}")
+					{
+						TitleColor = Colors.textBold,
+						Title = I18n.BootSequenceUpsideEnabledName,
+						Description = I18n.BootSequenceUpsideEnabledDescription
+					}
+				]),
+				api.MakeConditional(
+					api.MakeNumericStepper(
+						() => I18n.BootSequenceUpsideCardsName,
+						() => Settings.ProfileBased.Current.BootSequenceUpsideCards,
+						value => Settings.ProfileBased.Current.BootSequenceUpsideCards = value,
+						minValue: 0
+					).SetTooltips(() => [
+						new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.BootSequenceUpsideCards)}")
+						{
+							TitleColor = Colors.textBold,
+							Title = I18n.BootSequenceUpsideCardsName,
+							Description = I18n.BootSequenceUpsideCardsDescription
+						}
+					]),
+					() => Settings.ProfileBased.Current.BootSequenceUpsideEnabled
 				)
 			]).SubscribeToOnMenuClose(_ =>
 			{

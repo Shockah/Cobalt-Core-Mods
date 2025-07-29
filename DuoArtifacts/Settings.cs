@@ -55,6 +55,9 @@ internal sealed class ProfileSettings
 	public bool AnyCardsCondition = true;
 	public int MinCards = 5;
 
+	public bool BootSequenceUpsideEnabled = true;
+	public int BootSequenceUpsideCards = 6;
+
 	[JsonConverter(typeof(StringEnumConverter))]
 	public enum OfferingModeEnum
 	{
