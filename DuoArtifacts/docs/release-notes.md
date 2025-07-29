@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Fixed the Quantum Sanctuary (CAT-Dizzy duo) artifact not reducing max shield as advertised.
 * Fixed CAT duo artifacts appearing in the generic artifacts section in the Codex.
 
 ## 1.7.0

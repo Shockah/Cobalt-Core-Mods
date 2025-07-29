@@ -62,9 +62,10 @@ internal sealed class CatDizzyArtifact : DuoArtifact
 			return;
 
 		artifact.Pulse();
-		state.ship.Add(Status.perfectShield, state.ship.Get(Status.shield));
+		state.ship.Add(Status.perfectShield, state.ship.Get(Status.shield) + state.ship.Get(Status.boost));
+		state.ship.Set(Status.boost, 0);
 		state.ship.Set(Status.shield, 0);
-		state.ship.Set(Status.maxShield, Math.Max(-state.ship.shieldMaxBase + 1, state.ship.Get(Status.maxShield)));
+		state.ship.Add(Status.maxShield, -state.ship.GetMaxShield() + 1);
 		artifact.TriggeredThisCombat = true;
 	}
 
