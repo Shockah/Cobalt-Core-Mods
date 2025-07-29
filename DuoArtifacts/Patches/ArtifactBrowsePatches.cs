@@ -42,7 +42,11 @@ internal static class ArtifactBrowsePatches
 				continue;
 
 			var deck = section.artifacts[0].GetMeta().owner;
-			if (deck != Deck.catartifact && !NewRunOptions.allChars.Contains(deck))
+			if (deck == Deck.colorless)
+				continue;
+			
+			var playableDeck = deck == Deck.catartifact ? Deck.colorless : deck;
+			if (!NewRunOptions.allChars.Contains(playableDeck))
 				continue;
 			if (Character.GetDisplayName(deck, state) != section.title())
 				continue;
@@ -52,8 +56,8 @@ internal static class ArtifactBrowsePatches
 			section.artifacts.AddRange(
 				allDuos
 					.Select(duo => (Duo: duo, Owners: Instance.Database.GetDuoArtifactOwnership(duo)))
-					.Where(e => e.Owners?.Contains(deck == Deck.catartifact ? Deck.colorless : deck) ?? false)
-					.Select(e => (Duo: e.Duo, SecondaryOwners: e.Owners!.Where(owner => owner != deck).OrderBy(owner => NewRunOptions.allChars.IndexOf(owner)).ToList()))
+					.Where(e => e.Owners?.Contains(playableDeck) ?? false)
+					.Select(e => (Duo: e.Duo, SecondaryOwners: e.Owners!.Where(owner => owner != playableDeck).OrderBy(owner => NewRunOptions.allChars.IndexOf(owner)).ToList()))
 					.OrderBy(e => e.SecondaryOwners, new DuoByOwnerComparer())
 					.Select(e => e.Duo)
 			);

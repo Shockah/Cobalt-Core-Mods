@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed CAT duo artifacts appearing in the generic artifacts section in the Codex.
+
 ## 1.7.0
 Released 29 July 2025.
 

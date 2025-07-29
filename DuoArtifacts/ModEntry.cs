@@ -253,7 +253,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 
 	public void LoadManifest(ICardRegistry registry)
 	{
-		string namePrefix = $"{typeof(ModEntry).Namespace}.Card";
+		var namePrefix = $"{typeof(ModEntry).Namespace}.Card";
 		foreach (var definition in DuoArtifactDefinition.Definitions)
 			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.RegisterCards(registry, namePrefix, definition);
 	}
@@ -267,25 +267,6 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 			? state.runConfig.selectedChars.ToHashSet()
 			: state.characters.Select(c => c.deckType).WhereNotNull().ToHashSet();
 		decks.Add(deck);
-
-		DuoArtifactEligibity CheckDetailedEligibity()
-		{
-			var artifactsForThisCharacter = Database.GetAllDuoArtifactTypes()
-				.Select(t => (Type: t, Ownership: Database.GetDuoArtifactTypeOwnership(t)!))
-				.Where(e => e.Ownership.Any(owner => ArtifactDeckMatches(deck, owner)));
-
-			if (!artifactsForThisCharacter.Any())
-				return DuoArtifactEligibity.NoDuosForThisCharacter;
-
-			var artifactsForThisCharacterInThisCrew = Database.GetMatchingDuoArtifactTypes(decks)
-				.Select(t => (Type: t, Ownership: Database.GetDuoArtifactTypeOwnership(t)!))
-				.Where(e => e.Ownership.Any(owner => ArtifactDeckMatches(deck, owner)));
-
-			if (!artifactsForThisCharacterInThisCrew.Any())
-				return DuoArtifactEligibity.NoDuosForThisCrew;
-
-			return DuoArtifactEligibity.Eligible;
-		}
 
 		if (state.IsOutsideRun())
 			return CheckDetailedEligibity();
@@ -322,6 +303,25 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 			return CheckDetailedEligibity();
 
 		return DuoArtifactEligibity.RequirementsNotSatisfied;
+
+		DuoArtifactEligibity CheckDetailedEligibity()
+		{
+			var artifactsForThisCharacter = Database.GetAllDuoArtifactTypes()
+				.Select(t => (Type: t, Ownership: Database.GetDuoArtifactTypeOwnership(t)!))
+				.Where(e => e.Ownership.Any(owner => ArtifactDeckMatches(deck, owner)));
+
+			if (!artifactsForThisCharacter.Any())
+				return DuoArtifactEligibity.NoDuosForThisCharacter;
+
+			var artifactsForThisCharacterInThisCrew = Database.GetMatchingDuoArtifactTypes(decks)
+				.Select(t => (Type: t, Ownership: Database.GetDuoArtifactTypeOwnership(t)!))
+				.Where(e => e.Ownership.Any(owner => ArtifactDeckMatches(deck, owner)));
+
+			if (!artifactsForThisCharacterInThisCrew.Any())
+				return DuoArtifactEligibity.NoDuosForThisCrew;
+
+			return DuoArtifactEligibity.Eligible;
+		}
 	}
 
 	private static bool ArtifactDeckMatches(Deck characterDeck, Deck? otherDeck)
