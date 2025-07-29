@@ -4,17 +4,20 @@
     "DisplayName": "Duo Artifacts",
     "Description": "Adds a new artifact pool: duo artifacts, which are pretty powerful artifacts, synergizing between two different crew members.",
     "Author": "Shockah",
-    "RequiredApiVersion": "1.6.0",
+    "RequiredApiVersion": "1.18.0",
     "ModType": "Nickel.Legacy",
     "EntryPointAssembly": "DuoArtifacts.dll",
+    "MethodsToStopInlining": [
+        { "TypeName": "AttackDrone", "MethodName": "AttackDamage" }
+    ],
     "Dependencies": [
         {
             "UniqueName": "Nickel.Legacy",
-            "Version": "1.6.0"
+            "Version": "1.18.0"
         },
         {
             "UniqueName": "Shockah.Kokoro",
-            "Version": "2.2.0"
+            "Version": "2.11.0"
         }
     ],
     "UpdateChecks": {

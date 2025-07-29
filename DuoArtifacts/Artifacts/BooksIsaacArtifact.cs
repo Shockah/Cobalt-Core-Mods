@@ -1,13 +1,8 @@
-﻿using HarmonyLib;
-using Microsoft.Extensions.Logging;
-using Nanoray.Shrike;
-using Nanoray.Shrike.Harmony;
-using Nickel;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
+using HarmonyLib;
+using Microsoft.Extensions.Logging;
+using Nickel;
 
 namespace Shockah.DuoArtifacts;
 
@@ -21,14 +16,9 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 	protected internal override void ApplyPatches(IHarmony harmony)
 	{
 		base.ApplyPatches(harmony);
-		// this doesn't work, the method gets inlined; transpile `GetActions` and `GetTooltips` instead
-		//harmony.Patch(
-		//	original: AccessTools.DeclaredMethod(typeof(AttackDrone), "AttackDamage"),
-		//	postfix: new HarmonyMethod(GetType(), nameof(AttackDrone_AttackDamage_Postfix))
-		//);
 		harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AttackDrone), nameof(AttackDrone.GetActions)),
-			transpiler: new HarmonyMethod(GetType(), nameof(AttackDrone_GetActions_Transpiler))
+			original: AccessTools.DeclaredMethod(typeof(AttackDrone), "AttackDamage"),
+			postfix: new HarmonyMethod(GetType(), nameof(AttackDrone_AttackDamage_Postfix))
 		);
 	}
 
@@ -54,8 +44,8 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 		if (shards + shield < BuffCost)
 			return;
 
-		Pulse();
 		var leftToPay = BuffCost;
+		var shouldStillPulse = true;
 
 		var shardsToPay = Math.Min(shards, leftToPay);
 		if (shardsToPay > 0)
@@ -65,8 +55,10 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 				status = Status.shard,
 				statusAmount = -shardsToPay,
 				targetPlayer = true,
+				artifactPulse = shouldStillPulse ? Key() : null,
 			});
 			leftToPay -= shardsToPay;
+			shouldStillPulse = false;
 		}
 
 		var shieldToPay = Math.Min(shield, leftToPay);
@@ -75,11 +67,13 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 			booksDizzyArtifact?.Pulse();
 			combat.QueueImmediate(new AStatus
 			{
-				status = Status.shard,
+				status = Status.shield,
 				statusAmount = -shieldToPay,
 				targetPlayer = true,
+				artifactPulse = shouldStillPulse ? Key() : null,
 			});
 			leftToPay -= shieldToPay;
+			shouldStillPulse = false;
 		}
 
 		if (leftToPay > 0)
@@ -88,40 +82,18 @@ internal sealed class BooksIsaacArtifact : DuoArtifact
 		IsPaidForAndActive = true;
 	}
 
-	private static int GetModifiedAttackDamage(int damage, AttackDrone drone)
+	private static void AttackDrone_AttackDamage_Postfix(AttackDrone __instance, ref int __result)
 	{
 		if (MG.inst.g?.state is not { } state)
-			return damage;
-		if (drone.targetPlayer)
-			return damage;
+			return;
+		if (__instance.targetPlayer)
+			return;
 
-		var artifact = state.EnumerateAllArtifacts().OfType<BooksIsaacArtifact>().FirstOrDefault();
-		if (artifact is null || !artifact.IsPaidForAndActive)
-			return damage;
+		if (state.EnumerateAllArtifacts().OfType<BooksIsaacArtifact>().FirstOrDefault() is not { } artifact)
+			return;
+		if (!artifact.IsPaidForAndActive)
+			return;
 
-		artifact.Pulse();
-		damage += AttackBuff;
-		return damage;
-	}
-
-	private static IEnumerable<CodeInstruction> AttackDrone_GetActions_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
-	{
-		// ReSharper disable PossibleMultipleEnumeration
-		try
-		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(ILMatches.Call("AttackDamage"))
-				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
-					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(BooksIsaacArtifact), nameof(GetModifiedAttackDamage)))
-				])
-				.AllElements();
-		}
-		catch (Exception ex)
-		{
-			Instance.Logger!.LogError("Could not patch method {DeclaringType}::{Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod.DeclaringType, originalMethod, Instance.Name, ex);
-			return instructions;
-		}
-		// ReSharper restore PossibleMultipleEnumeration
+		__result += AttackBuff;
 	}
 }

@@ -1,20 +1,18 @@
-﻿using HarmonyLib;
-using Microsoft.Extensions.Logging;
-using Nanoray.Shrike;
-using Nanoray.Shrike.Harmony;
-using Nickel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using HarmonyLib;
+using Microsoft.Extensions.Logging;
+using Nanoray.Shrike;
+using Nanoray.Shrike.Harmony;
+using Nickel;
 
 namespace Shockah.DuoArtifacts;
 
 internal sealed class IsaacPeriArtifact : DuoArtifact
 {
-	private static State? TooltipState;
-	private static State? ActionState;
 	private static int? LastLibra;
 	private static int? LastOverdrive;
 
@@ -30,30 +28,8 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 			transpiler: new HarmonyMethod(GetType(), nameof(AAttack_DoLibraEffect_Transpiler))
 		);
 		harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
-			prefix: new HarmonyMethod(GetType(), nameof(Card_GetAllTooltips_Prefix)),
-			finalizer: new HarmonyMethod(GetType(), nameof(Card_GetAllTooltips_Finalizer))
-		);
-		harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderDrones)),
-			prefix: new HarmonyMethod(GetType(), nameof(Combat_RenderDrones_Prefix)),
-			finalizer: new HarmonyMethod(GetType(), nameof(Combat_RenderDrones_Finalizer))
-		);
-
-		// this doesn't work, the method gets inlined; transpile `GetActions` and `GetTooltips` instead
-		//harmony.Patch(
-		//	original: AccessTools.DeclaredMethod(typeof(AttackDrone), "AttackDamage"),
-		//	postfix: new HarmonyMethod(GetType(), nameof(AttackDrone_AttackDamage_Postfix))
-		//);
-		harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AttackDrone), nameof(AttackDrone.GetActions)),
-			prefix: new HarmonyMethod(GetType(), nameof(AttackDrone_GetActions_Prefix)),
-			finalizer: new HarmonyMethod(GetType(), nameof(AttackDrone_GetActions_Finalizer)),
-			transpiler: new HarmonyMethod(GetType(), nameof(AttackDrone_GetActions_Transpiler))
-		);
-		harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AttackDrone), nameof(AttackDrone.GetTooltips)),
-			transpiler: new HarmonyMethod(GetType(), nameof(AttackDrone_GetTooltips_Transpiler))
+			original: AccessTools.DeclaredMethod(typeof(AttackDrone), "AttackDamage"),
+			postfix: new HarmonyMethod(GetType(), nameof(AttackDrone_AttackDamage_Postfix))
 		);
 	}
 
@@ -69,22 +45,6 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 		base.OnTurnEnd(state, combat);
 		LastLibra = state.ship.Get(Status.libra);
 		LastOverdrive = state.ship.Get(Status.overdrive);
-	}
-
-	private static int GetModifiedAttackDamage(int damage, AttackDrone drone)
-	{
-		if ((ActionState ?? TooltipState) is not { } state)
-			return damage;
-		if (drone.targetPlayer)
-			return damage;
-		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is IsaacPeriArtifact) is not { } artifact)
-			return damage;
-
-		if (state == ActionState)
-			artifact.Pulse();
-		damage += state.ship.Get(Status.powerdrive);
-		damage += LastOverdrive ?? state.ship.Get(Status.overdrive);
-		return damage;
 	}
 
 	private static IEnumerable<CodeInstruction> AAttack_Begin_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
@@ -166,70 +126,16 @@ internal sealed class IsaacPeriArtifact : DuoArtifact
 		return amount + LastLibra.Value - ship.Get(Status.libra);
 	}
 
-	private static void AttackDrone_GetActions_Prefix(State s)
-		=> ActionState = s;
-
-	private static void AttackDrone_GetActions_Finalizer()
-		=> ActionState = null;
-
-	private static void Card_GetAllTooltips_Prefix(State s)
-		=> TooltipState = s;
-
-	private static void Card_GetAllTooltips_Finalizer()
-		=> TooltipState = null;
-
-	private static void Combat_RenderDrones_Prefix(G g)
-		=> TooltipState = g.state;
-
-	private static void Combat_RenderDrones_Finalizer()
-		=> TooltipState = null;
-
-	private static IEnumerable<CodeInstruction> AttackDrone_GetActions_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	private static void AttackDrone_AttackDamage_Postfix(AttackDrone __instance, ref int __result)
 	{
-		// ReSharper disable PossibleMultipleEnumeration
-		try
-		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find(ILMatches.Call("AttackDamage"))
-				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
-					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(IsaacPeriArtifact), nameof(GetModifiedAttackDamage)))
-				])
-				.AllElements();
-		}
-		catch (Exception ex)
-		{
-			Instance.Logger!.LogError("Could not patch method {DeclaringType}::{Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod.DeclaringType, originalMethod, Instance.Name, ex);
-			return instructions;
-		}
-		// ReSharper restore PossibleMultipleEnumeration
-	}
-
-	private static IEnumerable<CodeInstruction> AttackDrone_GetTooltips_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
-	{
-		// ReSharper disable PossibleMultipleEnumeration
-		try
-		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.ForEach(
-					SequenceMatcherRelativeBounds.WholeSequence,
-					[ILMatches.Call("AttackDamage")],
-					matcher => matcher
-						.Insert(
-							SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
-							new CodeInstruction(OpCodes.Ldarg_0),
-							new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(typeof(IsaacPeriArtifact), nameof(GetModifiedAttackDamage)))
-						),
-					minExpectedOccurences: 2,
-					maxExpectedOccurences: 2
-				)
-				.AllElements();
-		}
-		catch (Exception ex)
-		{
-			Instance.Logger!.LogError("Could not patch method {DeclaringType}::{Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod.DeclaringType, originalMethod, Instance.Name, ex);
-			return instructions;
-		}
-		// ReSharper restore PossibleMultipleEnumeration
+		if (__instance.targetPlayer)
+			return;
+		if (MG.inst?.g?.state is not { } state)
+			return;
+		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is IsaacPeriArtifact) is null)
+			return;
+		
+		__result += state.ship.Get(Status.powerdrive);
+		__result += LastOverdrive ?? state.ship.Get(Status.overdrive);
 	}
 }
