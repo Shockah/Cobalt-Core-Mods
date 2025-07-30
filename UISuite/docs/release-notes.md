@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Temporarily disabled the compact font tooltip feature on Mac due to an issue with internal Nickel libraries.
+
 ## 1.3.0
 Released 29 July 2025.
 

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.InteropServices;
 using daisyowl.text;
 using HarmonyLib;
 using Nanoray.PluginManager;
@@ -22,6 +23,8 @@ internal sealed class CompactTooltipFont : IRegisterable
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		if (ModEntry.Instance.KokoroApi is null)
+			return;
+		if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
 			return;
 		
 		ModEntry.Instance.Harmony.Patch(
