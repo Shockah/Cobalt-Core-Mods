@@ -32,15 +32,15 @@ public sealed class PrepareResourcesCard : Card, IRegisterable
 		{
 			Upgrade.B => [
 				new AStatus { targetPlayer = true, status = Status.droneShift, statusAmount = 2 },
-				new AStatus { targetPlayer = true, status = CramManager.CramStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Cram.CramStatus.Status, statusAmount = 1 },
 			],
 			Upgrade.A => [
 				new AStatus { targetPlayer = true, status = Status.droneShift, statusAmount = 1 },
-				new AStatus { targetPlayer = true, status = CramManager.CramStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = Cram.CramStatus.Status, statusAmount = 2 },
 			],
 			_ => [
 				new AStatus { targetPlayer = true, status = Status.droneShift, statusAmount = 1 },
-				new AStatus { targetPlayer = true, status = CramManager.CramStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Cram.CramStatus.Status, statusAmount = 1 },
 			],
 		};
 }
