@@ -35,14 +35,16 @@ internal sealed class TrendSettingCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
+				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 2 },
 				new AStatus { targetPlayer = true, status = Odds.GreenTrendStatus.Status, statusAmount = 2 },
 				new AStatus { targetPlayer = true, status = Odds.RedTrendStatus.Status, statusAmount = 2 },
-				new AStatus { targetPlayer = true, status = Odds.OddsStatus.Status, statusAmount = 2 },
+				new Odds.RollAction(),
 			],
 			_ => [
+				new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 },
 				new AStatus { targetPlayer = true, status = Odds.GreenTrendStatus.Status, statusAmount = 1 },
 				new AStatus { targetPlayer = true, status = Odds.RedTrendStatus.Status, statusAmount = 1 },
-				new AStatus { targetPlayer = true, status = Odds.OddsStatus.Status, statusAmount = 1 },
+				new Odds.RollAction(),
 			],
 		};
 }
