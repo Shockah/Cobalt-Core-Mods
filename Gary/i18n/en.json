@@ -53,9 +53,9 @@
 		"MissileSalvo": {
 			"name": "Missile Salvo",
 			"description": {
-				"None": "Spend all <c=status>cram</c>. <c=action>Launch</c> that many <c=midrow>crammed missiles</c>.",
-				"A": "Spend all <c=status>cram</c>. <c=action>Launch</c> that many <c=midrow>crammed heavy missiles</c>.",
-				"B": "Spend all <c=status>cram</c>. <c=action>Launch</c> that many <c=midrow>crammed seeker missiles</c>."
+				"None": "Spend all <c=status>cram</c>. <c=action>Launch</c> that many <c=midrow>crammed missiles</c> in front of your ship.",
+				"A": "Spend all <c=status>cram</c>. <c=action>Launch</c> that many <c=midrow>crammed heavy missiles</c> in front of your ship.",
+				"B": "Spend all <c=status>cram</c>. <c=action>Launch</c> that many <c=midrow>crammed seekers</c> in front of your ship."
 			}
 		},
 		"Overworking": {
