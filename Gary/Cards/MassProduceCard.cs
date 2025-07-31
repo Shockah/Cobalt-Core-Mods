@@ -49,7 +49,7 @@ public sealed class MassProduceCard : Card, IRegisterable, IHasCustomCardTraits
 				new ASpawn { thing = new ShieldDrone { targetPlayer = true } },
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					ModEntry.Instance.KokoroApi.Conditional.Equation(
-						ModEntry.Instance.KokoroApi.Conditional.Status(CramManager.CramStatus.Status),
+						ModEntry.Instance.KokoroApi.Conditional.Status(Cram.CramStatus.Status),
 						IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal,
 						ModEntry.Instance.KokoroApi.Conditional.Constant(0),
 						IKokoroApi.IV2.IConditionalApi.EquationStyle.Possession
@@ -61,7 +61,7 @@ public sealed class MassProduceCard : Card, IRegisterable, IHasCustomCardTraits
 				new ASpawn { thing = new AttackDrone { targetPlayer = false } }.Disabled(flipped),
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					ModEntry.Instance.KokoroApi.Conditional.Equation(
-						ModEntry.Instance.KokoroApi.Conditional.Status(CramManager.CramStatus.Status),
+						ModEntry.Instance.KokoroApi.Conditional.Status(Cram.CramStatus.Status),
 						IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal,
 						ModEntry.Instance.KokoroApi.Conditional.Constant(0),
 						IKokoroApi.IV2.IConditionalApi.EquationStyle.Possession
@@ -72,7 +72,7 @@ public sealed class MassProduceCard : Card, IRegisterable, IHasCustomCardTraits
 				new ASpawn { thing = new ShieldDrone { targetPlayer = true } }.Disabled(!flipped),
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					ModEntry.Instance.KokoroApi.Conditional.Equation(
-						ModEntry.Instance.KokoroApi.Conditional.Status(CramManager.CramStatus.Status),
+						ModEntry.Instance.KokoroApi.Conditional.Status(Cram.CramStatus.Status),
 						IKokoroApi.IV2.IConditionalApi.EquationOperator.Equal,
 						ModEntry.Instance.KokoroApi.Conditional.Constant(0),
 						IKokoroApi.IV2.IConditionalApi.EquationStyle.Possession
