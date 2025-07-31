@@ -36,9 +36,8 @@ public sealed class MassProduceCard : Card, IRegisterable, IHasCustomCardTraits
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> upgrade switch
 		{
-			Upgrade.B => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Fleeting.Trait },
 			Upgrade.A => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Fleeting.Trait, ModEntry.Instance.KokoroApi.Heavy.Trait },
-			_ => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Limited.Trait },
+			_ => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Fleeting.Trait },
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)

@@ -27,8 +27,10 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	private static readonly IReadOnlyList<Type> UncommonCardTypes = [
+		typeof(BuildThatWallCard),
 		typeof(DoubleTroubleCard),
 		typeof(MatryoshkaCard),
+		typeof(MissileSalvoCard),
 		typeof(OverworkingCard),
 	];
 

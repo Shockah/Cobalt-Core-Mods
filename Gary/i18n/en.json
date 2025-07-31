@@ -35,6 +35,9 @@
 		}
 	},
 	"card": {
+		"BuildThatWall": {
+			"name": "Build that Wall"
+		},
 		"CardDrone": {
 			"name": "Card Drone"
 		},
@@ -46,6 +49,14 @@
 		},
 		"Matryoshka": {
 			"name": "Matryoshka"
+		},
+		"MissileSalvo": {
+			"name": "Missile Salvo",
+			"description": {
+				"None": "Spend all <c=status>cram</c>. <c=action>Launch</c> that many <c=midrow>crammed missiles</c>.",
+				"A": "Spend all <c=status>cram</c>. <c=action>Launch</c> that many <c=midrow>crammed heavy missiles</c>.",
+				"B": "Spend all <c=status>cram</c>. <c=action>Launch</c> that many <c=midrow>crammed seeker missiles</c>."
+			}
 		},
 		"Overworking": {
 			"name": "Overworking"
