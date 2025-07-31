@@ -69,7 +69,9 @@ public sealed class MissileSalvoCard : Card, IRegisterable
 			if (amount <= 0)
 				return;
 
-			var totalTime = Math.Min(TIMER_DEFAULT + amount * TIMER_DEFAULT / 2, TIMER_DEFAULT * 1.5);
+			var totalTime = TIMER_DEFAULT;
+			for (var i = 1; i < amount; i++)
+				totalTime += Math.Max(TIMER_DEFAULT * (20 - i) / 40, 0.04);
 
 			var thing = Mutil.DeepCopy(Thing);
 			thing.targetPlayer = !FromPlayer;
