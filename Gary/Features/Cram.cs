@@ -278,7 +278,7 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		if (ship.GetPartTypeCount(PType.missiles) > 1 && !__instance.multiBayVolley)
 			return;
 
-		var worldX = __instance.GetWorldX(s, c);
+		var worldX = __instance.GetWorldX(s, c) + __instance.offset;
 		if (!c.stuff.TryGetValue(worldX, out var existingThing))
 			return;
 		ObjectBeingLaunchedInto = existingThing;
@@ -312,7 +312,7 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		if (ship.GetPartTypeCount(PType.missiles) > 1 && !__instance.multiBayVolley)
 			return;
 		
-		var worldX = __instance.GetWorldX(s, c);
+		var worldX = __instance.GetWorldX(s, c) + __instance.offset;
 		var existingObject = c.stuff.GetValueOrDefault(worldX);
 
 		if (ObjectIsBeingCrammedInto)
