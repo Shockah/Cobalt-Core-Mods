@@ -11,13 +11,17 @@ using Nanoray.PluginManager;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Nickel;
+using Shockah.Kokoro;
 
 namespace Shockah.Gary;
 
-internal sealed class CramManager : IRegisterable
+internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static IStatusEntry CramStatus { get; private set; } = null!;
 	internal static IStatusEntry CramHarderStatus { get; private set; } = null!;
+	
+	internal static ISpriteEntry CrammedIcon { get; private set; } = null!;
+	internal static ISpriteEntry CrammedLaunchIcon { get; private set; } = null!;
 
 	private static StuffBase? ObjectBeingLaunchedInto;
 	private static StuffBase? ObjectToPutLater;
@@ -51,6 +55,9 @@ internal sealed class CramManager : IRegisterable
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "CramHarder", "description"]).Localize
 		});
 
+		CrammedIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icon/Crammed.png"));
+		CrammedLaunchIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icon/CrammedLaunch.png"));
+
 		HandleLaunch();
 		HandleDestroy();
 		HandleTurnEnd();
@@ -62,7 +69,46 @@ internal sealed class CramManager : IRegisterable
 		HandleCatch();
 		HandleBubbleField();
 		HandleRadioControl();
+
+		var instance = new Cram();
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(instance);
 	}
+
+	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
+	{
+		if (args.Status == CramStatus.Status)
+			return [
+				.. args.Tooltips,
+				MakeCrammedMidrowAttributeTooltip(),
+			];
+		
+		if (args.Status == CramHarderStatus.Status)
+			return [
+				.. args.Tooltips,
+				.. StatusMeta.GetTooltips(CramStatus.Status, 1),
+				MakeCrammedMidrowAttributeTooltip(),
+			];
+
+		return args.Tooltips;
+	}
+
+	internal static Tooltip MakeCrammedMidrowAttributeTooltip()
+		=> new GlossaryTooltip($"midrow.{ModEntry.Instance.Package.Manifest.UniqueName}::Crammed")
+		{
+			Icon = CrammedIcon.Sprite,
+			TitleColor = Colors.midrow,
+			Title = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Crammed", "name"]),
+			Description = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Crammed", "description"]),
+		};
+
+	internal static Tooltip MakeCrammedLaunchTooltip()
+		=> new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::CrammedLaunch")
+		{
+			Icon = CrammedLaunchIcon.Sprite,
+			TitleColor = Colors.action,
+			Title = ModEntry.Instance.Localizations.Localize(["action", "CrammedLaunch", "name"]),
+			Description = ModEntry.Instance.Localizations.Localize(["action", "CrammedLaunch", "description"]),
+		};
 
 	internal static List<StuffBase>? GetCrammedObjects(StuffBase @object)
 		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<List<StuffBase>>(@object, "CrammedObjects");
@@ -80,9 +126,9 @@ internal sealed class CramManager : IRegisterable
 		}
 
 		List<StuffBase> crammedObjects = [
-			.. GetCrammedObjects(pushed) ?? [],
-			@object!,
 			.. GetCrammedObjects(@object!) ?? [],
+			@object!,
+			.. GetCrammedObjects(pushed) ?? [],
 		];
 		SetCrammedObjects(@object!, null);
 		SetCrammedObjects(pushed, crammedObjects);
@@ -150,6 +196,12 @@ internal sealed class CramManager : IRegisterable
 		
 		return false;
 	}
+
+	internal static bool IsCrammed(ASpawn action)
+		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(action, "IsCrammed");
+
+	internal static void SetCrammed(ASpawn action, bool value = true)
+		=> ModEntry.Instance.Helper.ModData.SetModData(action, "IsCrammed", value);
 	
 	private static Guid ObtainCrammedObjectId(StuffBase @object)
 		=> ModEntry.Instance.Helper.ModData.ObtainModData(@object, "CrammedObjectId", Guid.NewGuid);
@@ -207,6 +259,14 @@ internal sealed class CramManager : IRegisterable
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASpawn_Begin_Prefix)),
 			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASpawn_Begin_Finalizer))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ASpawn), nameof(ASpawn.GetTooltips)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASpawn_GetTooltips_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Transpiler))
+		);
 	}
 	
 	private static void ASpawn_Begin_Prefix(ASpawn __instance, State s, Combat c, bool __runOriginal)
@@ -222,18 +282,22 @@ internal sealed class CramManager : IRegisterable
 		if (!c.stuff.TryGetValue(worldX, out var existingThing))
 			return;
 		ObjectBeingLaunchedInto = existingThing;
-		
+
+		var crammedLaunch = IsCrammed(__instance);
 		var cramAmount = ship.Get(CramStatus.Status);
 		var cramHarderAmount = ship.Get(CramHarderStatus.Status);
-		if (cramAmount <= 0)
+		if (!crammedLaunch && cramAmount + cramHarderAmount <= 0)
 			return;
 
 		var stackSize = 1 + (GetCrammedObjects(existingThing)?.Count ?? 0);
-		if (stackSize > cramAmount + cramHarderAmount)
+		if (!crammedLaunch && stackSize > cramAmount + cramHarderAmount)
 			return;
-		
-		var cramToRemove = stackSize - cramHarderAmount;
-		ship.Add(CramStatus.Status, -cramToRemove);
+
+		if (!crammedLaunch)
+		{
+			var cramToRemove = stackSize - cramHarderAmount;
+			ship.Add(CramStatus.Status, -cramToRemove);
+		}
 
 		ObjectIsBeingCrammedInto = true;
 		c.stuff.Remove(worldX);
@@ -266,6 +330,71 @@ internal sealed class CramManager : IRegisterable
 		}
 		
 		ObjectBeingLaunchedInto = null;
+	}
+
+	private static void ASpawn_GetTooltips_Postfix(ASpawn __instance, ref List<Tooltip> __result)
+	{
+		if (!IsCrammed(__instance))
+			return;
+
+		List<Tooltip> tooltips = [
+			MakeCrammedLaunchTooltip(),
+			MakeCrammedMidrowAttributeTooltip(),
+			.. StatusMeta.GetTooltips(CramStatus.Status, 1),
+		];
+		
+		var index = __result.FindIndex(t => t is TTGlossary { key: "action.spawn" or "action.spawnOffsetLeft" or "action.spawnOffsetRight" });
+		__result.InsertRange(index == -1 ? 0 : (index + 1), tooltips);
+	}
+	
+	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+	private static IEnumerable<CodeInstruction> Card_RenderAction_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find([
+					ILMatches.AnyLdloca,
+					ILMatches.Ldarg(3),
+					ILMatches.Stfld("dontDraw").SelectElement(out var dontDrawField, i => (FieldInfo)i.operand!),
+				])
+				.Find([
+					ILMatches.AnyLdloc.GetLocalIndex(out var capturesLocalIndex),
+					ILMatches.Ldfld("w").SelectElement(out var wField, i => (FieldInfo)i.operand!),
+				])
+				.Find([
+					ILMatches.Ldloc<ASpawn>(originalMethod).GetLocalIndex(out var actionLocalIndex),
+					ILMatches.AnyLdloca,
+					new ElementMatch<CodeInstruction>($"{{(any) call to local method named SpawnIcon}}", i => ILMatches.AnyCall.Matches(i) && (i.operand as MethodBase)?.Name.StartsWith("<RenderAction>g__SpawnIcon") == true),
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldloc, actionLocalIndex.Value),
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldloc, capturesLocalIndex.Value),
+					new CodeInstruction(OpCodes.Ldfld, dontDrawField.Value),
+					new CodeInstruction(OpCodes.Ldloca, capturesLocalIndex.Value),
+					new CodeInstruction(OpCodes.Ldflda, wField.Value),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Transpiler_RenderCrammedLaunch))),
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.UniqueName, ex);
+			return instructions;
+		}
+	}
+
+	private static void Card_RenderAction_Transpiler_RenderCrammedLaunch(ASpawn action, G g, bool dontDraw, ref int width)
+	{
+		if (!IsCrammed(action))
+			return;
+
+		var box = g.Push(rect: new Rect(width));
+		if (!dontDraw)
+			Draw.Sprite(CrammedLaunchIcon.Sprite, box.rect.x, box.rect.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
+		width += 9;
+		g.Pop();
 	}
 	#endregion
 	
@@ -437,8 +566,13 @@ internal sealed class CramManager : IRegisterable
 
 		for (var i = 0; i < crammedObjects.Count; i++)
 			crammedObjects[i].Render(g, new Vec(box.rect.x + ((crammedObjects.Count - i) % 2 * 2 - 1) * 2, box.rect.y - crammedObjects.Count + (crammedObjects.Count - i) * 4));
+		
 		if (box.rect.x is > 60 and < 464 && box.IsHover())
-			g.tooltips.Add(box.rect.xy + new Vec(16, 24), ((IEnumerable<StuffBase>)crammedObjects).Reverse().SelectMany(crammedObject => crammedObject.GetTooltips()));
+		{
+			var tooltipPos = box.rect.xy + new Vec(16, 24);
+			g.tooltips.Add(tooltipPos, MakeCrammedMidrowAttributeTooltip());
+			g.tooltips.Add(tooltipPos, ((IEnumerable<StuffBase>)crammedObjects).Reverse().SelectMany(crammedObject => crammedObject.GetTooltips()));
+		}
 	}
 	#endregion
 	
@@ -931,4 +1065,13 @@ internal sealed class CramManager : IRegisterable
 		});
 	}
 	#endregion
+}
+
+internal static class CramExtensions
+{
+	public static ASpawn SetCrammed(this ASpawn action, bool value = true)
+	{
+		Cram.SetCrammed(action, value);
+		return action;
+	}
 }
