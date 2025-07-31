@@ -62,7 +62,7 @@ public sealed class ModEntry : SimpleMod
 			.. UncommonCardTypes,
 			.. RareCardTypes,
 			typeof(SpareDiceCard),
-			// typeof(DestinyExeCard),
+			typeof(WadeExeCard),
 		];
 
 	private static readonly IReadOnlyList<Type> CommonArtifacts = [
@@ -149,7 +149,7 @@ public sealed class ModEntry : SimpleMod
 					new OddShotCard(),
 				]
 			},
-			// ExeCardType = typeof(DestinyExeCard),
+			ExeCardType = typeof(WadeExeCard),
 		});
 		
 		helper.Content.Characters.V2.RegisterCharacterAnimation(new()

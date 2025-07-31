@@ -136,6 +136,14 @@
 		"UpTheAnte": {
 			"name": "Up the Ante"
 		},
+		"WadeExe": {
+			"name": "Wade.EXE",
+			"description": {
+				"None": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=56DF6A>Wade</c> cards to your hand.",
+				"A": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=56DF6A>Wade</c> cards to your hand.",
+				"B": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=56DF6A>Wade</c> cards to your hand."
+			}
+		},
 		"WeighTheOdds": {
 			"name": "Weigh the Odds"
 		}
