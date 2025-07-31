@@ -23,7 +23,7 @@ internal sealed class CramManager : IRegisterable
 	private static StuffBase? ObjectToPutLater;
 	private static bool ObjectIsBeingCrammedInto;
 	private static Guid? NestedJupiterShootBeginId;
-	private static readonly List<(StuffBase RealObject, StuffBase CrammedObject, int WorldX)?> ForceCrammedObjectStack = [];
+	private static readonly List<(StuffBase RealObject, StuffBase? CrammedObject, int WorldX)?> ForceCrammedObjectStack = [];
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -56,6 +56,7 @@ internal sealed class CramManager : IRegisterable
 		HandleTurnEnd();
 		HandleRendering();
 		HandleLifecycle();
+		HandleMissiles();
 		HandleJupiterDrones();
 		HandleMedusaField();
 		HandleCatch();
@@ -143,12 +144,15 @@ internal sealed class CramManager : IRegisterable
 
 		if (GetCrammedObjects(@object) is { } crammedObjects2 && crammedObjects2.Count != 0)
 		{
-			SetCrammedObjects(@object, null);
+			SetCrammedObjects(toRemove, null);
 			return crammedObjects2.Remove(toRemove);
 		}
 		
 		return false;
 	}
+	
+	private static Guid ObtainCrammedObjectId(StuffBase @object)
+		=> ModEntry.Instance.Helper.ModData.ObtainModData(@object, "CrammedObjectId", Guid.NewGuid);
 
 	private static void UpdateCrammedObjectX(StuffBase @object, int? maybeWorldX = null, bool updateXLerped = false)
 	{
@@ -359,8 +363,8 @@ internal sealed class CramManager : IRegisterable
 		{
 			if (crammedObject.GetActions(state, combat) is not { } actions)
 				return [];
-			
-			var crammedObjectId = ModEntry.Instance.Helper.ModData.ObtainModData(crammedObject, "CrammedObjectId", Guid.NewGuid);
+
+			var crammedObjectId = ObtainCrammedObjectId(crammedObject);
 			return actions
 				.Select(a =>
 				{
@@ -462,7 +466,7 @@ internal sealed class CramManager : IRegisterable
 
 	private static void PushForceCrammedObject(Combat combat, CardAction action)
 	{
-		(StuffBase RealObject, StuffBase CrammedObject, int WorldX)? toPush = null;
+		(StuffBase RealObject, StuffBase? CrammedObject, int WorldX)? toPush = null;
 		try
 		{
 			if (!ModEntry.Instance.Helper.ModData.TryGetModData<Guid>(action, "ForceCrammedObjectId", out var forceCrammedObjectId))
@@ -471,9 +475,16 @@ internal sealed class CramManager : IRegisterable
 				return;
 			if (!combat.stuff.TryGetValue(forceCrammedObjectWorldX, out var @object))
 				return;
+
+			if (ObtainCrammedObjectId(@object) == forceCrammedObjectId)
+			{
+				toPush = (@object, null, forceCrammedObjectWorldX);
+				return;
+			}
+			
 			if (GetCrammedObjects(@object) is not { } crammedObjects)
 				return;
-			if (crammedObjects.FirstOrDefault(crammedObject => ModEntry.Instance.Helper.ModData.GetOptionalModData<Guid>(crammedObject, "CrammedObjectId") == forceCrammedObjectId) is not { } crammedObject)
+			if (crammedObjects.FirstOrDefault(crammedObject => ObtainCrammedObjectId(crammedObject) == forceCrammedObjectId) is not { } crammedObject)
 				return;
 			
 			toPush = (@object, crammedObject, forceCrammedObjectWorldX);
@@ -493,16 +504,19 @@ internal sealed class CramManager : IRegisterable
 		var nullableEntry = ForceCrammedObjectStack[^1];
 		ForceCrammedObjectStack.RemoveAt(ForceCrammedObjectStack.Count - 1);
 
-		if (nullableEntry is not { } entry)
+		if (nullableEntry?.RealObject is not { } realObject)
 			return;
+		var crammedObject = nullableEntry.Value.CrammedObject;
+		var worldX = nullableEntry.Value.WorldX;
 		
-		var existingObject = combat.stuff.GetValueOrDefault(entry.WorldX);
-		combat.stuff[entry.WorldX] = entry.RealObject;
-		if (existingObject != entry.CrammedObject)
+		var existingObject = combat.stuff.GetValueOrDefault(worldX);
+		combat.stuff[worldX] = realObject;
+		if (existingObject != crammedObject)
 		{
-			RemoveCrammedObject(combat, entry.WorldX, entry.CrammedObject);
+			if (crammedObject is not null)
+				RemoveCrammedObject(combat, worldX, crammedObject);
 			if (existingObject is not null)
-				PushCrammedObject(combat, entry.WorldX, existingObject);
+				PushCrammedObject(combat, worldX, existingObject);
 		}
 	}
 
@@ -569,6 +583,59 @@ internal sealed class CramManager : IRegisterable
 
 	private static void Combat_DrainCardActions_Transpiler_PopForceCrammedObject(Combat combat)
 		=> PopForceCrammedObject(combat);
+	#endregion
+	
+	#region Missiles
+	private static void HandleMissiles()
+	{
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AMissileHit), nameof(AMissileHit.Update)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMissileHit_Update_Transpiler))
+		);
+	}
+	
+	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+	private static IEnumerable<CodeInstruction> AMissileHit_Update_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.PointerMatcher(SequenceMatcherRelativeElement.First)
+				.CreateLabel(il, out var label)
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldarg_1),
+					new CodeInstruction(OpCodes.Ldarg_3),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMissileHit_Update_Transpiler_ShouldContinue))),
+					new CodeInstruction(OpCodes.Brtrue, label),
+					new CodeInstruction(OpCodes.Ret),
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.UniqueName, ex);
+			return instructions;
+		}
+	}
+
+	private static bool AMissileHit_Update_Transpiler_ShouldContinue(AMissileHit action, G g, Combat combat)
+	{
+		if (!combat.stuff.TryGetValue(action.worldX, out var @object))
+			return true;
+
+		if (!ModEntry.Instance.Helper.ModData.TryGetModData<Guid>(action, "ChecksForCrammedObjectId", out var checksForCrammedObjectId))
+		{
+			checksForCrammedObjectId = ObtainCrammedObjectId(@object);
+			ModEntry.Instance.Helper.ModData.SetModData(action, "ChecksForCrammedObjectId", checksForCrammedObjectId);
+		}
+
+		if (checksForCrammedObjectId == ObtainCrammedObjectId(@object))
+			return true;
+
+		action.timer -= g.dt;
+		return false;
+	}
 	#endregion
 	
 	#region Jupiter Drones
@@ -677,7 +744,7 @@ internal sealed class CramManager : IRegisterable
 					if (attack.fromDroneX is null || !c.stuff.ContainsKey(attack.fromDroneX.Value))
 						continue;
 
-					var crammedObjectId = ModEntry.Instance.Helper.ModData.ObtainModData(entry.JupiterDrone, "CrammedObjectId", Guid.NewGuid);
+					var crammedObjectId = ObtainCrammedObjectId(entry.JupiterDrone);
 					ModEntry.Instance.Helper.ModData.SetModData(attack, "ForceCrammedObjectId", crammedObjectId);
 					ModEntry.Instance.Helper.ModData.SetModData(attack, "ForceCrammedObjectWorldX", entry.WorldX);
 					
