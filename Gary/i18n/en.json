@@ -16,6 +16,18 @@
 			"description": "You may <c=action>cram</c> while <c=action>launching</c> <c=midrow>midrow objects</c> as if you had {0} more <c=status>CRAM</c>."
 		}
 	},
+	"action": {
+		"CrammedLaunch": {
+			"name": "Cram",
+			"description": "The launched <c=midrow>object</c> will be <c=midrow>crammed</c>, regardless of your <c=status>CRAM</c>."
+		}
+	},
+	"midrowAttribute": {
+		"Crammed": {
+			"name": "Crammed",
+			"description": "All <c=midrow>crammed</c> objects take turns in order. The last <c=midrow>crammed</c> object is the one that takes hits."
+		}
+	},
 	"midrow": {
 		"CardDrone": {
 			"name": "CARD DRONE",
@@ -31,6 +43,9 @@
 		},
 		"MassProduce": {
 			"name": "Mass Produce"
+		},
+		"Matryoshka": {
+			"name": "Matryoshka"
 		},
 		"Overworking": {
 			"name": "Overworking"

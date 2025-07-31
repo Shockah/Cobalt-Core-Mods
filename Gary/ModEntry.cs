@@ -28,6 +28,7 @@ public sealed class ModEntry : SimpleMod
 
 	private static readonly IReadOnlyList<Type> UncommonCardTypes = [
 		typeof(DoubleTroubleCard),
+		typeof(MatryoshkaCard),
 		typeof(OverworkingCard),
 	];
 
@@ -64,7 +65,7 @@ public sealed class ModEntry : SimpleMod
 			.. AllArtifactTypes,
 			.. DuoArtifacts,
 			typeof(CardDroneManager),
-			typeof(CramManager),
+			typeof(Cram),
 		];
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)

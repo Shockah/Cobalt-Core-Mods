@@ -44,7 +44,7 @@ public sealed class ScrapDroneCard : Card, IRegisterable, IHasCustomCardTraits
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new AStatus { targetPlayer = true, status = CramManager.CramStatus.Status, statusAmount = 1 },
+			new AStatus { targetPlayer = true, status = Cram.CramStatus.Status, statusAmount = 1 },
 			new ASpawn { thing = new AttackDrone { targetPlayer = false } },
 		];
 }
