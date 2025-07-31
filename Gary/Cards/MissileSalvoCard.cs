@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using daisyowl.text;
 using Nanoray.PluginManager;
 using Nickel;
+using Shockah.Kokoro;
 using Shockah.Shared;
 
 namespace Shockah.Gary;
@@ -24,10 +26,13 @@ public sealed class MissileSalvoCard : Card, IRegisterable
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/MissileSalvo.png"), StableSpr.cards_goat).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "MissileSalvo", "name"]).Localize,
 		});
+
+		var hook = new Hook();
+		ModEntry.Instance.KokoroApi.CardRendering.RegisterHook(hook);
 	}
 
 	public override CardData GetData(State state)
-		=> new() { cost = 2, description = ModEntry.Instance.Localizations.Localize(["card", "MissileSalvo", "description", upgrade.ToString()]) };
+		=> new() { cost = 3, exhaust = true, description = ModEntry.Instance.Localizations.Localize(["card", "MissileSalvo", "description", upgrade.ToString()]) };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
@@ -58,6 +63,7 @@ public sealed class MissileSalvoCard : Card, IRegisterable
 			timer = 0;
 			
 			var ship = FromPlayer ? s.ship : c.otherShip;
+			var rng = FromPlayer ? s.rngActions : s.rngAi;
 			var amount = ship.Get(Cram.CramStatus.Status);
 
 			if (amount <= 0)
@@ -70,8 +76,14 @@ public sealed class MissileSalvoCard : Card, IRegisterable
 
 			c.QueueImmediate([
 				new AStatus { targetPlayer = FromPlayer, mode = AStatusMode.Set, status = Cram.CramStatus.Status, statusAmount = 0 },
-				.. Enumerable.Range(0, amount).Select(_ => new ASpawn { fromPlayer = FromPlayer, thing = Mutil.DeepCopy(thing), timer = totalTime / amount }.SetCrammed()),
+				.. Enumerable.Range(0, amount).Select(_ => new ASpawn { fromPlayer = FromPlayer, thing = Mutil.DeepCopy(thing), timer = totalTime / amount, fromX = rng.NextInt() % ship.parts.Count }.SetCrammed()),
 			]);
 		}
+	}
+
+	private sealed class Hook : IKokoroApi.IV2.ICardRenderingApi.IHook
+	{
+		public Font? ReplaceTextCardFont(IKokoroApi.IV2.ICardRenderingApi.IHook.IReplaceTextCardFontArgs args)
+			=> args.Card is MissileSalvoCard ? ModEntry.Instance.KokoroApi.Assets.PinchCompactFont : null;
 	}
 }
