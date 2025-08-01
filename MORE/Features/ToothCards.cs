@@ -135,12 +135,15 @@ internal sealed class ToothCards : IRegisterable
 
 		public override Route? BeginWithRoute(G g, State s, Combat c)
 		{
-			var route = ModEntry.Instance.KokoroApi.CustomCardBrowseSource.ModifyCardBrowse(new CardBrowse
+			var route = new CardBrowse
 			{
 				mode = CardBrowse.Mode.Browse,
-				browseAction = new AddCardToDeckAction(),
+				browseAction = new AddCardsToDeckAction(),
 				allowCancel = true,
-			}).SetCustomBrowseSource(new ToothCardsBrowseSource()).AsRoute;
+			};
+			route = ModEntry.Instance.KokoroApi.CustomCardBrowseSource.ModifyCardBrowse(route).SetCustomBrowseSource(new ToothCardsBrowseSource()).AsRoute;
+			route = ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeRoute(route).AsRoute;
+			
 			if (route.GetCardList(g).Count == 0)
 			{
 				timer = 0;
@@ -150,15 +153,18 @@ internal sealed class ToothCards : IRegisterable
 		}
 	}
 	
-	private sealed class AddCardToDeckAction : CardAction
+	private sealed class AddCardsToDeckAction : CardAction
 	{
 		public override void Begin(G g, State s, Combat c)
 		{
-			if (selectedCard is null)
+			if (ModEntry.Instance.KokoroApi.MultiCardBrowse.GetSelectedCards(this) is not { } selectedCards)
 				return;
-			
-			s.RemoveCardFromWhereverItIs(selectedCard.uuid);
-			s.SendCardToDeck(selectedCard);
+
+			foreach (var card in selectedCards)
+			{
+				s.RemoveCardFromWhereverItIs(card.uuid);
+				s.SendCardToDeck(card);
+			}
 		}
 
 		public override string GetCardSelectText(State s)
