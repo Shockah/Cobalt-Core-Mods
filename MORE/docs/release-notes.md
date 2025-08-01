@@ -2,6 +2,12 @@
 
 # Release notes
 
+## Upcoming release
+
+### Tooth's Emporium of Wonderful Ideas event
+* Added the Tooth.EXE card.
+* Changed the UI for picking a Tooth card.
+
 ## 1.7.0
 Released 22 June 2025.
 

@@ -321,17 +321,10 @@
 			}
 		},
 		"ToothCardOffering": {
-			"choices": [
-				"Let's try <c=card>{{Card}}</c>.",
-				"Give me <c=card>{{Card}}</c>.",
-				"How about <c=card>{{Card}}</c>?",
-				"<c=card>{{Card}}</c>, please!"
-			],
-			"nextPageChoice": {
-				"choice": "Anything else?",
-				"title": "Show more",
-				"description": "Show more options. You can return to the current options."
-			},
+			"choice": "Pick a card.",
+			"choiceUiTitle": "Pick a card. Add it to your deck.",
+			"choiceSearchTooltip": "Choose a <c=tooth>Tooth</c> card.",
+			"choiceBrowseSourceTitle": "Tooth's Emporium of Wondrous Ideas: {{Count}} Cards",
 			"card": {
 				"Fiddle": {
 					"name": "Fiddle",
@@ -361,6 +354,10 @@
 				},
 				"Smash": {
 					"name": "Smash"
+				},
+				"ToothExe": {
+					"name": "Tooth.EXE",
+					"description": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=tooth>Tooth</c> cards to your hand."
 				}
 			}
 		},
