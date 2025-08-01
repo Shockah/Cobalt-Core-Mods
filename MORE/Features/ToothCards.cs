@@ -42,7 +42,6 @@ internal sealed class ToothCards : IRegisterable
 		ModdedCardKeys = [
 			FiddleCardEntry.UniqueName, SlipCardEntry.UniqueName, FinalFormCardEntry.UniqueName,
 			SkimCardEntry.UniqueName, SmashCardEntry.UniqueName, FidgetCardEntry.UniqueName,
-			ToothExeCardEntry.UniqueName,
 		];
 
 		AllToothCardKeys = [
@@ -77,6 +76,12 @@ internal sealed class ToothCards : IRegisterable
 				key = "ToothCardOffering_After",
 				actions = [new PickAToothCardAction()],
 			},
+			new Choice
+			{
+				label = ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "choiceExe"]),
+				key = "ToothCardOffering_After",
+				actions = [new AAddCard { card = new ToothExeCard(), callItTheDeckNotTheDrawPile = true }],
+			},
 			noChoice,
 		];
 	}
@@ -95,8 +100,7 @@ internal sealed class ToothCards : IRegisterable
 			() => ModdedCardKeys
 				.Where(key => !ModEntry.Instance.Settings.ProfileBased.Current.DisabledToothCards.Contains(key))
 				.Select(key => (Card)Activator.CreateInstance(DB.cards[key])!)
-				.OrderBy(card => card is ToothExeCard)
-				.ThenBy(card => card.GetFullDisplayName())
+				.OrderBy(card => card.GetFullDisplayName())
 				.ToList()
 		);
 		
@@ -127,6 +131,9 @@ internal sealed class ToothCards : IRegisterable
 
 	private sealed class PickAToothCardAction : CardAction
 	{
+		public override List<Tooltip> GetTooltips(State s)
+			=> new ToothCardsBrowseSource().GetSearchTooltips(s).ToList();
+
 		public override Route? BeginWithRoute(G g, State s, Combat c)
 		{
 			var route = ModEntry.Instance.KokoroApi.CustomCardBrowseSource.ModifyCardBrowse(new CardBrowse
