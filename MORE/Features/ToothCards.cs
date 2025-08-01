@@ -20,7 +20,6 @@ internal sealed class ToothCards : IRegisterable
 	private static ICardEntry SkimCardEntry = null!;
 	private static ICardEntry SmashCardEntry = null!;
 	private static ICardEntry FidgetCardEntry = null!;
-	private static ICardEntry ToothExeCardEntry = null!;
 
 	internal static readonly string[] VanillaCardKeys = [
 		nameof(Buckshot), nameof(WaltzCard), nameof(BruiseCard), nameof(LightningBottle)
@@ -528,7 +527,7 @@ internal sealed class ToothCards : IRegisterable
 	{
 		public static void RegisterCard(IModHelper helper)
 		{
-			ToothExeCardEntry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
+			helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 			{
 				CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 				Meta = new()
@@ -539,7 +538,7 @@ internal sealed class ToothCards : IRegisterable
 					dontOffer = true,
 					extraGlossary = ["cardMisc.toothCardExtraTooltip"],
 				},
-				Art = StableSpr.cards_colorless,
+				Art = StableSpr.cards_ColorlessTrash,
 				Name = ModEntry.Instance.AnyLocalizations.Bind(["event", "ToothCardOffering", "card", "ToothExe", "name"]).Localize
 			});
 		}
