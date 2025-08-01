@@ -78,6 +78,7 @@ partial class ApiImplementation
 				public IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICardSelect SetCustomBrowseSource(IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource? source)
 				{
 					CustomBrowseSource = source;
+					Wrapped.browseSource = source is null ? CardBrowse.Source.Deck : (CardBrowse.Source)(-1);
 					return this;
 				}
 			}
@@ -98,6 +99,7 @@ partial class ApiImplementation
 				public IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICardBrowse SetCustomBrowseSource(IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource? source)
 				{
 					CustomBrowseSource = source;
+					Wrapped.browseSource = source is null ? CardBrowse.Source.Deck : (CardBrowse.Source)(-1);
 					return this;
 				}
 			}
@@ -172,6 +174,7 @@ internal sealed class CustomCardBrowseSourceManager
 			return;
 
 		__result = customCardSource.GetCards(g.state, g.state.route as Combat ?? DB.fakeCombat).ToList();
+		__instance._listCache = __result;
 	}
 
 	private static IEnumerable<CodeInstruction> CardBrowse_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
