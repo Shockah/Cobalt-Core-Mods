@@ -446,6 +446,14 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 			this.status = OddsStatus.Status;
 		}
 
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+			
+			if (ModEntry.Instance.Api.GetKnownOdds(s, c) is null)
+				ModEntry.Instance.CombatQolApi?.InvalidateUndos(c, ICombatQolApi.InvalidationReason.RNG_SEED);
+		}
+
 		public override List<Tooltip> GetTooltips(State s)
 		{
 			if (ModEntry.Instance.Api.GetKnownOdds(s, s.route as Combat ?? DB.fakeCombat) is not null)
