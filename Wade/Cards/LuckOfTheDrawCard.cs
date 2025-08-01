@@ -4,6 +4,7 @@ using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Shared;
+using TheJazMaster.CombatQoL;
 
 namespace Shockah.Wade;
 
@@ -38,6 +39,9 @@ internal sealed class LuckOfTheDrawCard : Card, IRegisterable
 				realOdds++;
 			realOdds = Math.Clamp(realOdds, -s.ship.Get(Odds.RedTrendStatus.Status) - 1, s.ship.Get(Odds.GreenTrendStatus.Status) + 1);
 		}
+		
+		var areOddsHidden = ModEntry.Instance.Api.GetKnownOdds(s, c) is null;
+		var isSimulating = ModEntry.Instance.CombatQolApi?.IsSimulating() ?? false;
 
 		return upgrade switch
 		{
@@ -46,14 +50,14 @@ internal sealed class LuckOfTheDrawCard : Card, IRegisterable
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
 					ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-						new ADrawCard { count = ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : Math.Max(realOdds * 2, 0), xHint = 2 },
-						new ADrawCard { count = Math.Max(realOdds * 2, 0), xHint = 2 }
+						new ADrawCard { count = areOddsHidden ? 0 : Math.Max(realOdds * 2, 0), xHint = 2 },
+						areOddsHidden && isSimulating ? new ADummyAction() : new ADrawCard { count = Math.Max(realOdds * 2, 0), xHint = 2 }
 					).AsCardAction
-				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(!areOddsHidden).AsCardAction,
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = false },
 					new AStatus { targetPlayer = true, status = Odds.GreenTrendStatus.Status, statusAmount = 1 }
-				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(!areOddsHidden).AsCardAction,
 				new Odds.RollAction(),
 			],
 			Upgrade.A => [
@@ -63,17 +67,17 @@ internal sealed class LuckOfTheDrawCard : Card, IRegisterable
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = true, OverrideValue = realOdds > 0 },
 						ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-							new ADrawCard { count = ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : Math.Max(realOdds * 2, 0), xHint = 2 },
-							new ADrawCard { count = Math.Max(realOdds * 2, 0), xHint = 2 }
+							new ADrawCard { count = areOddsHidden ? 0 : Math.Max(realOdds * 2, 0), xHint = 2 },
+							areOddsHidden && isSimulating ? new ADummyAction() : new ADrawCard { count = Math.Max(realOdds * 2, 0), xHint = 2 }
 						).AsCardAction
-					).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
+					).SetShowQuestionMark(false).SetFadeUnsatisfied(!areOddsHidden).AsCardAction,
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = true },
 						ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-							new ADrawCard { count = ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : Math.Max(realOdds * 2, 0), xHint = 2 },
-							new ADrawCard { count = Math.Max(realOdds * 2, 0), xHint = 2 }
+							new ADrawCard { count = areOddsHidden ? 0 : Math.Max(realOdds * 2, 0), xHint = 2 },
+							areOddsHidden && isSimulating ? new ADummyAction() : new ADrawCard { count = Math.Max(realOdds * 2, 0), xHint = 2 }
 						).AsCardAction
-					).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction
+					).SetShowQuestionMark(false).SetFadeUnsatisfied(!areOddsHidden).AsCardAction
 				).AsCardAction,
 				new Odds.RollAction(),
 			],
@@ -82,10 +86,10 @@ internal sealed class LuckOfTheDrawCard : Card, IRegisterable
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
 					ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-						new ADrawCard { count = ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : Math.Max(realOdds * 2, 0), xHint = 2 },
-						new ADrawCard { count = Math.Max(realOdds * 2, 0), xHint = 2 }
+						new ADrawCard { count = areOddsHidden ? 0 : Math.Max(realOdds * 2, 0), xHint = 2 },
+						areOddsHidden && isSimulating ? new ADummyAction() : new ADrawCard { count = Math.Max(realOdds * 2, 0), xHint = 2 }
 					).AsCardAction
-				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(!areOddsHidden).AsCardAction,
 				new Odds.RollAction(),
 			]
 		};

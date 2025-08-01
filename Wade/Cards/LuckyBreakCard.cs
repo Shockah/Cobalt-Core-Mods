@@ -33,12 +33,17 @@ internal sealed class LuckyBreakCard : Card, IRegisterable
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
+	{
+		var areOddsHidden = ModEntry.Instance.Api.GetKnownOdds(s, c) is null;
+		var isSimulating = ModEntry.Instance.CombatQolApi?.IsSimulating() ?? false;
+		
+		return [
 			new Odds.OddsVariableHint(),
 			ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
 				new AMove { targetPlayer = true, dir = ModEntry.Instance.Api.GetKnownOdds(s, c) ?? 0, preferRightWhenZero = true, xHint = 1 },
-				new AMove { targetPlayer = true, dir = s.ship.Get(Odds.OddsStatus.Status), preferRightWhenZero = true, xHint = 1 }
+				areOddsHidden && isSimulating ? new ADummyAction() : new AMove { targetPlayer = true, dir = s.ship.Get(Odds.OddsStatus.Status), preferRightWhenZero = true, xHint = 1 }
 			).AsCardAction,
 			new Odds.RollAction(),
 		];
+	}
 }

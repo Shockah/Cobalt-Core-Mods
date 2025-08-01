@@ -39,6 +39,9 @@ internal sealed class AllInCard : Card, IRegisterable
 			realOdds = Math.Clamp(realOdds, -s.ship.Get(Odds.RedTrendStatus.Status) - 1, s.ship.Get(Odds.GreenTrendStatus.Status) + 1);
 		}
 
+		var areOddsHidden = ModEntry.Instance.Api.GetKnownOdds(s, c) is null;
+		var isSimulating = ModEntry.Instance.CombatQolApi?.IsSimulating() ?? false;
+		
 		return upgrade switch
 		{
 			Upgrade.B => [
@@ -46,14 +49,14 @@ internal sealed class AllInCard : Card, IRegisterable
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
 					ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-						new AAttack { damage = GetDmg(s, ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : realOdds), xHint = 1 },
-						new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
+						new AAttack { damage = GetDmg(s, areOddsHidden ? 0 : realOdds), xHint = 1 },
+						areOddsHidden && isSimulating ? new ADummyAction() : new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
 					).AsCardAction
-				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(!areOddsHidden).AsCardAction,
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = false },
 					new AStatus { targetPlayer = true, status = Odds.GreenTrendStatus.Status, statusAmount = 1 }
-				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(!areOddsHidden).AsCardAction,
 				new Odds.RollAction(),
 			],
 			Upgrade.A => [
@@ -63,17 +66,17 @@ internal sealed class AllInCard : Card, IRegisterable
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = true, OverrideValue = realOdds > 0 },
 						ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-							new AAttack { damage = GetDmg(s, ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : realOdds), xHint = 1 },
-							new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
+							new AAttack { damage = GetDmg(s, areOddsHidden ? 0 : realOdds), xHint = 1 },
+							areOddsHidden && isSimulating ? new ADummyAction() : new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
 						).AsCardAction
-					).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
+					).SetShowQuestionMark(false).SetFadeUnsatisfied(!areOddsHidden).AsCardAction,
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new Odds.TrendCondition { Positive = true },
 						ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-							new AAttack { damage = GetDmg(s, ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : realOdds), xHint = 1 },
-							new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
+							new AAttack { damage = GetDmg(s, areOddsHidden ? 0 : realOdds), xHint = 1 },
+							areOddsHidden && isSimulating ? new ADummyAction() : new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
 						).AsCardAction
-					).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction
+					).SetShowQuestionMark(false).SetFadeUnsatisfied(!areOddsHidden).AsCardAction
 				).AsCardAction,
 				new Odds.RollAction(),
 			],
@@ -82,10 +85,10 @@ internal sealed class AllInCard : Card, IRegisterable
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new Odds.TrendCondition { Positive = true },
 					ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-						new AAttack { damage = GetDmg(s, ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : realOdds), xHint = 1 },
-						new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
+						new AAttack { damage = GetDmg(s, areOddsHidden ? 0 : realOdds), xHint = 1 },
+						areOddsHidden && isSimulating ? new ADummyAction() : new AAttack { damage = GetDmg(s, realOdds), xHint = 1 }
 					).AsCardAction
-				).SetShowQuestionMark(false).SetFadeUnsatisfied(ModEntry.Instance.Api.GetKnownOdds(s, c) is not null).AsCardAction,
+				).SetShowQuestionMark(false).SetFadeUnsatisfied(!areOddsHidden).AsCardAction,
 				new Odds.RollAction(),
 			]
 		};

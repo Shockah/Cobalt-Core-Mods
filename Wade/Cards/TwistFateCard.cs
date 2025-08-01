@@ -33,7 +33,11 @@ internal sealed class TwistFateCard : Card, IRegisterable
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
+	{
+		var areOddsHidden = ModEntry.Instance.Api.GetKnownOdds(s, c) is null;
+		var isSimulating = ModEntry.Instance.CombatQolApi?.IsSimulating() ?? false;
+		
+		return [
 			new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 1 },
 			ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
 				new Odds.OddsVariableHint(),
@@ -41,7 +45,8 @@ internal sealed class TwistFateCard : Card, IRegisterable
 			).AsCardAction,
 			ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
 				new AStatus { targetPlayer = true, status = Odds.OddsStatus.Status, statusAmount = ModEntry.Instance.Api.GetKnownOdds(s, c) is null ? 0 : -s.ship.Get(Odds.OddsStatus.Status) * 2, xHint = -2 },
-				new AStatus { targetPlayer = true, status = Odds.OddsStatus.Status, statusAmount = -s.ship.Get(Odds.OddsStatus.Status) * 2, xHint = -2 }
+				areOddsHidden && isSimulating ? new ADummyAction() : new AStatus { targetPlayer = true, status = Odds.OddsStatus.Status, statusAmount = -s.ship.Get(Odds.OddsStatus.Status) * 2, xHint = -2 }
 			).AsCardAction,
 		];
+	}
 }
