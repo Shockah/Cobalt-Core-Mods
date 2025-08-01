@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.11.3
+Released 1 August 2025.
 
 * Fixed custom card browse sources.
 
