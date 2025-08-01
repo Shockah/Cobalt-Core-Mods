@@ -1,14 +1,15 @@
-﻿using FSPRO;
-using HarmonyLib;
-using Nanoray.PluginManager;
-using Nickel;
-using Shockah.Shared;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FSPRO;
+using HarmonyLib;
 using JetBrains.Annotations;
+using Nanoray.PluginManager;
+using Newtonsoft.Json;
+using Nickel;
 using Shockah.Kokoro;
+using Shockah.Shared;
 
 namespace Shockah.MORE;
 
@@ -26,7 +27,7 @@ internal sealed class ToothCards : IRegisterable
 	];
 
 	internal static string[] ModdedCardKeys = null!;
-	internal static string[] AllToothCardKeys = null!;
+	internal static List<string> AllToothCardKeys = null!;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -87,27 +88,50 @@ internal sealed class ToothCards : IRegisterable
 
 	private sealed class ToothCardsBrowseSource : IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource
 	{
-		private readonly Lazy<List<Card>> SortedVanillaCards = new(
+		private readonly Lazy<List<string>> SortedVanillaCardKeys = new(
 			() => VanillaCardKeys
 				.Where(key => !ModEntry.Instance.Settings.ProfileBased.Current.DisabledToothCards.Contains(key))
 				.Select(key => (Card)Activator.CreateInstance(DB.cards[key])!)
 				.OrderBy(card => card.GetFullDisplayName())
+				.Select(card => card.Key())
 				.ToList()
 		);
 		
-		private readonly Lazy<List<Card>> SortedModdedCards = new(
+		private readonly Lazy<List<string>> SortedModdedCardKeys = new(
 			() => ModdedCardKeys
 				.Where(key => !ModEntry.Instance.Settings.ProfileBased.Current.DisabledToothCards.Contains(key))
 				.Select(key => (Card)Activator.CreateInstance(DB.cards[key])!)
 				.OrderBy(card => card.GetFullDisplayName())
+				.Select(card => card.Key())
 				.ToList()
 		);
 		
-		private readonly Lazy<List<Card>> Cards;
+		private readonly Lazy<List<string>> AllSortedCardKeys;
+
+		[JsonProperty]
+		private List<string>? AvailableCardKeys;
+
+		private List<Card>? AvailableCards;
 
 		public ToothCardsBrowseSource()
 		{
-			this.Cards = new(() => [.. SortedVanillaCards.Value, .. SortedModdedCards.Value]);
+			this.AllSortedCardKeys = new(() => [.. SortedVanillaCardKeys.Value, .. SortedModdedCardKeys.Value]);
+		}
+
+		public ToothCardsBrowseSource(List<string> availableCardKeys) : this()
+		{
+			this.AvailableCardKeys = availableCardKeys;
+		}
+
+		private List<Card> GetAvailableCards()
+		{
+			AvailableCardKeys ??= AllToothCardKeys.ToList();
+			return AvailableCards ??= AvailableCardKeys
+				.OrderBy(key => AllSortedCardKeys.Value.IndexOf(key))
+				.Select(key => DB.cards.GetValueOrDefault(key))
+				.WhereNotNull()
+				.Select(type => (Card)Activator.CreateInstance(type)!)
+				.ToList();
 		}
 		
 		public IReadOnlyList<Tooltip> GetSearchTooltips(State state)
@@ -125,23 +149,27 @@ internal sealed class ToothCards : IRegisterable
 			=> ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "choiceBrowseSourceTitle"], new { Count = cards.Count });
 
 		public IReadOnlyList<Card> GetCards(State state, Combat combat)
-			=> Cards.Value;
+			=> GetAvailableCards();
 	}
 
 	private sealed class PickAToothCardAction : CardAction
 	{
 		public override List<Tooltip> GetTooltips(State s)
-			=> new ToothCardsBrowseSource().GetSearchTooltips(s).ToList();
+			=> new ToothCardsBrowseSource(AllToothCardKeys).GetSearchTooltips(s).ToList();
 
 		public override Route? BeginWithRoute(G g, State s, Combat c)
 		{
+			var availableCardKeys = AllToothCardKeys.ToList();
+			if (s.GetHardEvents())
+				availableCardKeys = availableCardKeys.Shuffle(s.rngCurrentEvent).Take((int)(availableCardKeys.Count * 0.7)).ToList();
+			
 			var route = new CardBrowse
 			{
 				mode = CardBrowse.Mode.Browse,
 				browseAction = new AddCardsToDeckAction(),
 				allowCancel = true,
 			};
-			route = ModEntry.Instance.KokoroApi.CustomCardBrowseSource.ModifyCardBrowse(route).SetCustomBrowseSource(new ToothCardsBrowseSource()).AsRoute;
+			route = ModEntry.Instance.KokoroApi.CustomCardBrowseSource.ModifyCardBrowse(route).SetCustomBrowseSource(new ToothCardsBrowseSource(availableCardKeys)).AsRoute;
 			route = ModEntry.Instance.KokoroApi.MultiCardBrowse.MakeRoute(route).AsRoute;
 			
 			if (route.GetCardList(g).Count == 0)
