@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
+using Shockah.Kokoro;
 
 namespace Shockah.MORE;
 
@@ -19,7 +20,13 @@ internal sealed class ToothCards : IRegisterable
 	private static ICardEntry SkimCardEntry = null!;
 	private static ICardEntry SmashCardEntry = null!;
 	private static ICardEntry FidgetCardEntry = null!;
+	private static ICardEntry ToothExeCardEntry = null!;
 
+	internal static readonly string[] VanillaCardKeys = [
+		nameof(Buckshot), nameof(WaltzCard), nameof(BruiseCard), nameof(LightningBottle)
+	];
+
+	internal static string[] ModdedCardKeys = null!;
 	internal static string[] AllToothCardKeys = null!;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
@@ -30,11 +37,17 @@ internal sealed class ToothCards : IRegisterable
 		SkimCard.RegisterCard(helper);
 		SmashCard.RegisterCard(helper);
 		FidgetCard.RegisterCard(helper);
+		ToothExeCard.RegisterCard(helper);
 
-		AllToothCardKeys = [
-			nameof(Buckshot), nameof(WaltzCard), nameof(BruiseCard), nameof(LightningBottle),
+		ModdedCardKeys = [
 			FiddleCardEntry.UniqueName, SlipCardEntry.UniqueName, FinalFormCardEntry.UniqueName,
 			SkimCardEntry.UniqueName, SmashCardEntry.UniqueName, FidgetCardEntry.UniqueName,
+			ToothExeCardEntry.UniqueName,
+		];
+
+		AllToothCardKeys = [
+			.. VanillaCardKeys,
+			.. ModdedCardKeys,
 		];
 
 		ModEntry.Instance.Harmony.TryPatch(
@@ -52,76 +65,98 @@ internal sealed class ToothCards : IRegisterable
 	private static void MapEvent_MakeRoute_Prefix(State s)
 		=> ModEntry.Instance.Helper.ModData.RemoveModData(s, "ToothChoicesPage");
 
-	private static void Events_ToothCardOffering_Postfix(State s, out List<Choice> __result)
+	private static void Events_ToothCardOffering_Postfix(ref List<Choice> __result)
 	{
-		var rand = new Rand(s.rngCurrentEvent.seed + 4682101);
-		var presentedChoices = AllToothCardKeys
-			.Where(key => !ModEntry.Instance.Settings.ProfileBased.Current.DisabledToothCards.Contains(key))
-			.Shuffle(rand)
-			.Skip(Math.Clamp(s.GetDifficulty(), 0, Math.Max(AllToothCardKeys.Length - (s.GetHardEvents() ? 3 : 4), 0)))
-			.ToList();
+		if (__result.Find(choice => choice.label == Loc.T("ToothCardOffering_No")) is not { } noChoice)
+			return;
 
-		var needsPaging = presentedChoices.Count >= 5;
-		var perPage = needsPaging ? 4 : presentedChoices.Count;
-		var pageCount = (int)Math.Ceiling(1.0 * presentedChoices.Count / perPage);
-		var page = needsPaging ? (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(s, "ToothChoicesPage") % pageCount) : 0;
-		var pageStartIndex = page * perPage;
-
-		var choices = new List<Choice>();
-
-		for (var i = 0; i < perPage; i++)
-		{
-			if (presentedChoices.Count <= pageStartIndex + i)
-				break;
-			if (!DB.cards.TryGetValue(presentedChoices[pageStartIndex + i], out var cardType))
-				continue;
-
-			var card = (Card)Activator.CreateInstance(cardType)!;
-			choices.Add(new Choice
+		__result = [
+			new Choice
 			{
-				label = ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "choices", i.ToString()], new { Card = card.GetLocName() }),
+				label = ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "choice"]),
 				key = "ToothCardOffering_After",
-				actions = [new AAddCard { card = card, callItTheDeckNotTheDrawPile = true }],
-			});
-		}
-
-		if (needsPaging)
-			choices.Add(new Choice
-			{
-				label = ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "nextPageChoice", "choice"]),
-				key = "ToothCardOffering",
-				actions = [new NextPageAction()],
-			});
-
-		choices.Add(new Choice
-		{
-			label = Loc.T("ToothCardOffering_No", "Yeah, no."),
-			key = "ToothCardOffering_After",
-		});
-
-		__result = choices;
+				actions = [new PickAToothCardAction()],
+			},
+			noChoice,
+		];
 	}
 
-	private sealed class NextPageAction : CardAction
+	private sealed class ToothCardsBrowseSource : IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource
 	{
-		public override List<Tooltip> GetTooltips(State s)
+		private readonly Lazy<List<Card>> SortedVanillaCards = new(
+			() => VanillaCardKeys
+				.Where(key => !ModEntry.Instance.Settings.ProfileBased.Current.DisabledToothCards.Contains(key))
+				.Select(key => (Card)Activator.CreateInstance(DB.cards[key])!)
+				.OrderBy(card => card.GetFullDisplayName())
+				.ToList()
+		);
+		
+		private readonly Lazy<List<Card>> SortedModdedCards = new(
+			() => ModdedCardKeys
+				.Where(key => !ModEntry.Instance.Settings.ProfileBased.Current.DisabledToothCards.Contains(key))
+				.Select(key => (Card)Activator.CreateInstance(DB.cards[key])!)
+				.OrderBy(card => card is ToothExeCard)
+				.ThenBy(card => card.GetFullDisplayName())
+				.ToList()
+		);
+		
+		private readonly Lazy<List<Card>> Cards;
+
+		public ToothCardsBrowseSource()
+		{
+			this.Cards = new(() => [.. SortedVanillaCards.Value, .. SortedModdedCards.Value]);
+		}
+		
+		public IReadOnlyList<Tooltip> GetSearchTooltips(State state)
 			=> [
-				new GlossaryTooltip($"event.{ModEntry.Instance.Package.Manifest.UniqueName}::{GetType().Name}::NextPage")
+				new GlossaryTooltip("action.searchCardNew")
 				{
-					TitleColor = Colors.textChoice,
-					Title = ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "nextPageChoice", "title"]),
-					Description = ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "nextPageChoice", "description"]),
+					Icon = StableSpr.icons_searchCardNew,
+					TitleColor = Colors.action,
+					Title = Loc.T("action.searchCardNew.name"),
+					Description = ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "choiceSearchTooltip"]),
 				},
 			];
 
+		public string GetTitle(State state, Combat combat, IReadOnlyList<Card> cards)
+			=> ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "choiceBrowseSourceTitle"], new { Count = cards.Count });
+
+		public IReadOnlyList<Card> GetCards(State state, Combat combat)
+			=> Cards.Value;
+	}
+
+	private sealed class PickAToothCardAction : CardAction
+	{
+		public override Route? BeginWithRoute(G g, State s, Combat c)
+		{
+			var route = ModEntry.Instance.KokoroApi.CustomCardBrowseSource.ModifyCardBrowse(new CardBrowse
+			{
+				mode = CardBrowse.Mode.Browse,
+				browseAction = new AddCardToDeckAction(),
+				allowCancel = true,
+			}).SetCustomBrowseSource(new ToothCardsBrowseSource()).AsRoute;
+			if (route.GetCardList(g).Count == 0)
+			{
+				timer = 0;
+				return null;
+			}
+			return route;
+		}
+	}
+	
+	private sealed class AddCardToDeckAction : CardAction
+	{
 		public override void Begin(G g, State s, Combat c)
 		{
-			base.Begin(g, s, c);
-			timer = 0;
-
-			ModEntry.Instance.Helper.ModData.SetModData(s, "ToothChoicesPage", ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(s, "ToothChoicesPage") + 1);
-			s.GetCurrentQueue().Queue(new ASkipDialogue());
+			if (selectedCard is null)
+				return;
+			
+			s.RemoveCardFromWhereverItIs(selectedCard.uuid);
+			s.SendCardToDeck(selectedCard);
 		}
+
+		public override string GetCardSelectText(State s)
+			=> ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "choiceUiTitle"]);
 	}
 
 	[UsedImplicitly]
@@ -347,15 +382,15 @@ internal sealed class ToothCards : IRegisterable
 			=> upgrade switch
 			{
 				Upgrade.B => [
-					new ADrawCard { count = 5 },
+					new ADrawCard { count = 5, timer = 1.4 },
 					new ADiscard { count = 5 },
 				],
 				Upgrade.A => [
-					new ADrawCard { count = 10 },
+					new ADrawCard { count = 10, timer = 1.4 },
 					new ADiscard(),
 				],
 				_ => [
-					new ADrawCard { count = 5 },
+					new ADrawCard { count = 5, timer = 1.4 },
 					new ADiscard(),
 				]
 			};
@@ -477,6 +512,87 @@ internal sealed class ToothCards : IRegisterable
 				else
 					c.hand.Insert(newIndex, card);
 				Audio.Play(Event.CardHandling);
+			}
+		}
+	}
+	
+	[UsedImplicitly]
+	private sealed class ToothExeCard : Card
+	{
+		public static void RegisterCard(IModHelper helper)
+		{
+			ToothExeCardEntry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
+			{
+				CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
+				Meta = new()
+				{
+					deck = Deck.colorless,
+					rarity = Rarity.rare,
+					upgradesTo = [Upgrade.A, Upgrade.B],
+					dontOffer = true,
+					extraGlossary = ["cardMisc.toothCardExtraTooltip"],
+				},
+				Art = StableSpr.cards_colorless,
+				Name = ModEntry.Instance.AnyLocalizations.Bind(["event", "ToothCardOffering", "card", "ToothExe", "name"]).Localize
+			});
+		}
+
+		private int GetChoiceCount()
+			=> upgrade == Upgrade.B ? 5 : 3;
+
+		public override CardData GetData(State state)
+			=> new()
+			{
+				artTint = DB.decks[Deck.tooth].color.ToString(),
+				cost = upgrade == Upgrade.A ? 0 : 1,
+				exhaust = true,
+				description = ModEntry.Instance.Localizations.Localize(["event", "ToothCardOffering", "card", "ToothExe", "description"], new { Count = GetChoiceCount() }),
+			};
+
+		public override List<CardAction> GetActions(State s, Combat c)
+			=> [
+				new ToothCardOfferingAction
+				{
+					amount = GetChoiceCount(),
+					limitDeck = Deck.tooth,
+					makeAllCardsTemporary = true,
+					overrideUpgradeChances = false,
+					canSkip = false,
+					inCombat = true,
+					discount = -1,
+					dialogueSelector = ".summonTooth"
+				}
+			];
+
+		private sealed class ToothCardOfferingAction : ACardOffering
+		{
+			public override Route? BeginWithRoute(G g, State s, Combat c)
+			{
+				var changed = new HashSet<string>();
+				try
+				{
+					foreach (var key in AllToothCardKeys)
+					{
+						if (!DB.cardMetas.TryGetValue(key, out var meta))
+							continue;
+						if (!meta.dontOffer)
+							continue;
+						
+						changed.Add(key);
+						meta.dontOffer = false;
+					}
+
+					return base.BeginWithRoute(g, s, c);
+				}
+				finally
+				{
+					foreach (var key in changed)
+					{
+						if (!DB.cardMetas.TryGetValue(key, out var meta))
+							continue;
+						meta.dontOffer = true;
+					}
+				}
 			}
 		}
 	}
