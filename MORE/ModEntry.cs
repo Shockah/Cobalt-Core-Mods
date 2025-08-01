@@ -195,7 +195,7 @@ internal sealed class ModEntry : SimpleMod
 						api.MakeBackButton()
 					]).SetSpacing(8)))
 				).SetValueText(
-					() => $"{ToothCards.AllToothCardKeys.Length - Settings.ProfileBased.Current.DisabledToothCards.Count}/{ToothCards.AllToothCardKeys.Length}"
+					() => $"{ToothCards.AllToothCardKeys.Count - Settings.ProfileBased.Current.DisabledToothCards.Count}/{ToothCards.AllToothCardKeys.Count}"
 				).SetTooltips(() => [
 					new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.DisabledToothCards)}")
 					{
