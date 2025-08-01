@@ -321,8 +321,8 @@
 			}
 		},
 		"ToothCardOffering": {
-			"choice": "Pick a card.",
-			"choiceUiTitle": "Pick a card. Add it to your deck.",
+			"choice": "Pick some cards.",
+			"choiceUiTitle": "Pick any amount of cards. Add them to your deck.",
 			"choiceSearchTooltip": "Choose a <c=tooth>Tooth</c> card.",
 			"choiceBrowseSourceTitle": "<c=tooth>Tooth</c>'s Emporium of Wondrous Ideas: {{Count}} Cards",
 			"choiceExe": "Get the \"special\".",
