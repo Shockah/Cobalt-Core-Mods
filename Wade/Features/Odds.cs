@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using Nanoray.PluginManager;
+using Newtonsoft.Json;
 using Nickel;
 using Shockah.Kokoro;
 using TheJazMaster.CombatQoL;
@@ -292,6 +293,7 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 		public bool TargetPlayer { get; set; } = true;
 		public bool IsTurnStart { get; set; }
 
+		[JsonIgnore]
 		public CardAction AsCardAction
 			=> this;
 
