@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the nwe Boot Sequence upside option crashing if no duos are available.
+
 ## 1.8.0
 Released 29 July 2025.
 

@@ -56,6 +56,8 @@ internal static class EventsPatches
 			return;
 		if (!Instance.Settings.ProfileBased.Current.BootSequenceUpsideEnabled)
 			return;
+		if (DuoArtifactOfferingAction.GetMatchingDuoArtifactTypes(state).Count == 0)
+			return;
 		
 		choices.Add(new Choice
 		{
@@ -67,13 +69,18 @@ internal static class EventsPatches
 
 	private sealed class DuoArtifactOfferingAction : CardAction
 	{
+		public static List<Type> GetMatchingDuoArtifactTypes(State s)
+			=> Instance.Database.GetMatchingDuoArtifactTypes(s.characters.Select(character => character.deckType).WhereNotNull()).ToList();
+		
 		public override Route? BeginWithRoute(G g, State s, Combat c)
 		{
 			timer = 0;
 
-			var duoType = Instance.Database.GetMatchingDuoArtifactTypes(s.characters.Select(character => character.deckType).WhereNotNull())
-				.ToList()
-				.Random(s.rngArtifactOfferings);
+			var duoTypes = GetMatchingDuoArtifactTypes(s);
+			if (duoTypes.Count == 0)
+				return null;
+
+			var duoType = duoTypes.Random(s.rngArtifactOfferings);
 			if (Instance.Helper.Content.Artifacts.LookupByArtifactType(duoType) is not { } artifactEntry)
 				return null;
 			
