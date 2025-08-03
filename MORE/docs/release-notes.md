@@ -7,6 +7,9 @@
 ### Abyssal Power event
 * The action of taking a card now says "deck" instead of "draw pile".
 
+### Artifact Swap event
+* New event!
+
 ### Ship Swap event
 * Slightly shortened the dialogue.
 

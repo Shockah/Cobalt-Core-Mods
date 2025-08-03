@@ -36,6 +36,7 @@
 			"name": "Map events",
 			"values": {
 				"AbyssalPower": "Abyssal Power",
+				"ArtifactSwap": "Artifact Swap",
 				"CombatDataCalibration": "Combat Data Calibration",
 				"DraculaDeckTrial": "Dracula's Deck Trial",
 				"ShipSwap": "Ship Swap"
@@ -125,6 +126,20 @@
 			"card": {
 				"name": "Abyssal Power"
 			}
+		},
+		"ArtifactSwap": {
+			"1-Garbogirl": "Hey!!! Let's trade our junk!!!",
+			"Choice-Yes": {
+				"title": "Okay!!!",
+				"description": "Choose an artifact. Lose it, then gain 1 of 3 different common ones."
+			},
+			"Choice-YesSpecial": {
+				"title": "Okay, but give us something special!!!",
+				"description": "Choose an artifact. Lose it, then gain 1 of 3 common ones <c=textBold>for a character outside of your crew</c>."
+			},
+			"Choice-No": "No way!!!",
+			"End-1-Garbogirl": "Ok!!! Bye!!!",
+			"tradeTitle": "TRADE AN ARTIFACT"
 		},
 		"Bomb": {
 			"1-Chunk": "DETECTED HEAT SIGNATURES. ARMING THE PAYLOAD.",

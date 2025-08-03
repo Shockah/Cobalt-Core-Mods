@@ -68,6 +68,7 @@ internal sealed class ModEntry : SimpleMod
 
 	internal static IReadOnlyList<Type> EventTypes { get; } = [
 		typeof(AbyssalPowerEvent),
+		typeof(ArtifactSwapEvent),
 		typeof(CombatDataCalibrationEvent),
 		typeof(DraculaDeckTrialEvent),
 		typeof(ShipSwapEvent),
