@@ -49,30 +49,23 @@ internal sealed class ShipSwapEvent : IRegisterable
 				new CustomSay
 				{
 					who = "selene",
-					loopTag = "squint",
+					loopTag = "explains",
 					flipped = true,
 					Text = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "1-Selene"])
 				},
 				new CustomSay
 				{
 					who = "selene",
-					loopTag = "explains",
+					loopTag = "neutral",
 					flipped = true,
 					Text = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "2-Selene"])
 				},
 				new CustomSay
 				{
 					who = "selene",
-					loopTag = "neutral",
-					flipped = true,
-					Text = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "3-Selene"])
-				},
-				new CustomSay
-				{
-					who = "selene",
 					loopTag = "sly",
 					flipped = true,
-					Text = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "4-Selene"])
+					Text = ModEntry.Instance.Localizations.Localize(["event", "ShipSwap", "3-Selene"])
 				},
 			],
 			choiceFunc = EventName

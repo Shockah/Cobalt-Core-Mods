@@ -260,10 +260,9 @@
 			"TrialEnemy": "???"
 		},
 		"ShipSwap": {
-			"1-Selene": "Hey, could I ask you for a favor?",
-			"2-Selene": "We've got an order for a ship with very specific parts, which we don't have in stock right now...",
-			"3-Selene": "And who would have thought, your ship has exactly the parts we need!",
-			"4-Selene": "We could swap you for another ship.",
+			"1-Selene": "Hey, we've got an order for a ship with very specific parts, which we don't have in stock right now...",
+			"2-Selene": "And who would have thought, your ship has exactly the parts we need!",
+			"3-Selene": "We could swap you for another ship.",
 			"Choice-Yes": [
 				"Sure, we'll take <c=textBold>{{ShipName}}</c>.",
 				"Give us <c=textBold>{{ShipName}}</c>.",

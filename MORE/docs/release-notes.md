@@ -4,6 +4,9 @@
 
 ## Upcoming release
 
+### Ship Swap event
+* Slightly shortened the dialogue.
+
 ### Tooth's Emporium of Wonderful Ideas event
 * Added the Tooth.EXE card.
 * Changed the UI for picking a Tooth card.
