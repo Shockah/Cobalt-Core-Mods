@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.8.0
+Released 3 August 2025.
 
 ### Abyssal Power event
 * The action of taking a card now says "deck" instead of "draw pile".
