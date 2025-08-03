@@ -178,7 +178,8 @@ internal sealed class AbyssalPowerEvent : IRegisterable
 					new AAddCard
 					{
 						destination = CardDestination.Deck,
-						card = new AbyssalPowerCard()
+						card = new AbyssalPowerCard(),
+						callItTheDeckNotTheDrawPile = true,
 					},
 					new ATooltipAction
 					{
