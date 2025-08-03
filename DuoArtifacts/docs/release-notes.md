@@ -5,7 +5,7 @@
 ## 1.8.1
 Released 2 August 2025.
 
-* Fixed the nwe Boot Sequence upside option crashing if no duos are available.
+* Fixed the new Boot Sequence upside option crashing if no duos are available.
 
 ## 1.8.0
 Released 29 July 2025.
