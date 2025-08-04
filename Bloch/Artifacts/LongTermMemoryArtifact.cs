@@ -13,6 +13,8 @@ namespace Shockah.Bloch;
 
 internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 {
+	internal static IArtifactEntry Entry { get; private set; } = null!;
+	
 	[JsonProperty]
 	private int RetainCooldown;
 
@@ -21,7 +23,7 @@ internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Artifacts.RegisterArtifact("LongTermMemory", new()
+		Entry = helper.Content.Artifacts.RegisterArtifact("LongTermMemory", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
@@ -33,7 +35,6 @@ internal sealed class LongTermMemoryArtifact : Artifact, IRegisterable
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "LongTermMemory", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "LongTermMemory", "description", "stateless"]).Localize
 		});
-
 
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Artifact), nameof(GetTooltips)),

@@ -8,6 +8,7 @@ using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Shockah.MORE;
 
 namespace Shockah.Bloch;
 
@@ -275,6 +276,11 @@ public sealed class ModEntry : SimpleMod
 				},
 				new TTText(Localizations.Localize(["integration", "palette"]))
 			)
+		);
+		
+		helper.ModRegistry.AwaitApi<IMoreApi>(
+			"Shockah.MORE",
+			api => api.RegisterAltruisticArtifact(LongTermMemoryArtifact.Entry.UniqueName)
 		);
 
 		_ = new BasicDialogue();
