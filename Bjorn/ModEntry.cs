@@ -7,6 +7,7 @@ using HarmonyLib;
 using Shockah.Kokoro;
 using System.Linq;
 using Nickel.Common;
+using Shockah.MORE;
 using Shockah.Shared;
 using TheJazMaster.MoreDifficulties;
 using TheJazMaster.TyAndSasha;
@@ -193,6 +194,15 @@ public sealed class ModEntry : SimpleMod
 					]
 				}
 			)
+		);
+		
+		helper.ModRegistry.AwaitApi<IMoreApi>(
+			"Shockah.MORE",
+			api =>
+			{
+				api.RegisterAltruisticArtifact(SpecialRelativityArtifact.Entry.UniqueName);
+				api.RegisterAltruisticArtifact(SynchrotronArtifact.Entry.UniqueName);
+			}
 		);
 	}
 

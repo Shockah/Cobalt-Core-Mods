@@ -8,9 +8,11 @@ namespace Shockah.Bjorn;
 
 internal sealed class SynchrotronArtifact : Artifact, IRegisterable
 {
+	internal static IArtifactEntry Entry { get; private set; } = null!;
+	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Artifacts.RegisterArtifact("Synchrotron", new()
+		Entry = helper.Content.Artifacts.RegisterArtifact("Synchrotron", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
