@@ -9,9 +9,11 @@ namespace Shockah.Dyna;
 
 internal sealed class GeligniteArtifact : Artifact, IRegisterable
 {
+	internal static IArtifactEntry Entry { get; private set; } = null!;
+	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Artifacts.RegisterArtifact("Gelignite", new()
+		Entry = helper.Content.Artifacts.RegisterArtifact("Gelignite", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()

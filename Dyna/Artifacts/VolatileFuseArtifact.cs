@@ -10,6 +10,8 @@ namespace Shockah.Dyna;
 
 internal sealed class VolatileFuseArtifact : Artifact, IRegisterable, IDynaHook
 {
+	internal static IArtifactEntry Entry { get; private set; } = null!;
+	
 	private const int Threshold = 8;
 	
 	[JsonProperty]
@@ -17,7 +19,7 @@ internal sealed class VolatileFuseArtifact : Artifact, IRegisterable, IDynaHook
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Artifacts.RegisterArtifact("VolatileFuse", new()
+		Entry = helper.Content.Artifacts.RegisterArtifact("VolatileFuse", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()

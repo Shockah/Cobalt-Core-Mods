@@ -8,6 +8,7 @@ using Shockah.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Shockah.MORE;
 
 namespace Shockah.Dyna;
 
@@ -206,31 +207,41 @@ public sealed class ModEntry : SimpleMod
 				]
 			}
 		);
-
-		helper.Events.OnModLoadPhaseFinished += (_, phase) =>
-		{
-			if (phase != ModLoadPhase.AfterDbInit)
-				return;
-
-			if (helper.ModRegistry.GetApi<IDraculaApi>("Shockah.Dracula") is { } draculaApi)
+		
+		helper.ModRegistry.AwaitApi<IMoreApi>(
+			"Shockah.MORE",
+			api =>
 			{
-				draculaApi.RegisterBloodTapOptionProvider(BastionManager.BastionStatus.Status, (_, _, status) => [
+				api.RegisterAltruisticArtifact(GeligniteArtifact.Entry.UniqueName);
+				api.RegisterAltruisticArtifact(VolatileFuseArtifact.Entry.UniqueName);
+			}
+		);
+		
+		helper.ModRegistry.AwaitApi<IDraculaApi>(
+			"Shockah.Dracula",
+			api =>
+			{
+				api.RegisterBloodTapOptionProvider(BastionManager.BastionStatus.Status, (_, _, status) => [
 					new AHurt { targetPlayer = true, hurtAmount = 1 },
 					new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 					new AStatus { targetPlayer = true, status = Status.shield, statusAmount = 1 }
 				]);
-				draculaApi.RegisterBloodTapOptionProvider(NitroManager.TempNitroStatus.Status, (_, _, status) => [
+				api.RegisterBloodTapOptionProvider(NitroManager.TempNitroStatus.Status, (_, _, status) => [
 					new AHurt { targetPlayer = true, hurtAmount = 1 },
 					new AStatus { targetPlayer = true, status = status, statusAmount = 2 }
 				]);
-				draculaApi.RegisterBloodTapOptionProvider(NitroManager.NitroStatus.Status, (_, _, status) => [
+				api.RegisterBloodTapOptionProvider(NitroManager.NitroStatus.Status, (_, _, status) => [
 					new AHurt { targetPlayer = true, hurtAmount = 1 },
 					new AStatus { targetPlayer = true, status = status, statusAmount = 1 }
 				]);
 			}
-
-			helper.ModRegistry.GetApi<IAppleShipyardApi>("APurpleApple.Shipyard", new SemanticVersion(1, 6, 7))?.RegisterActionLooksForPartType(typeof(FireChargeAction), PType.missiles);
-		};
+		);
+		
+		helper.ModRegistry.AwaitApi<IAppleShipyardApi>(
+			"APurpleApple.Shipyard",
+			new SemanticVersion(1, 6, 7),
+			api => api.RegisterActionLooksForPartType(typeof(FireChargeAction), PType.missiles)
+		);
 	}
 
 	public override object GetApi(IModManifest requestingMod)
