@@ -9,9 +9,11 @@ namespace Shockah.Johnson;
 
 internal sealed class JumpTheCurveArtifact : Artifact, IRegisterable
 {
+	internal static IArtifactEntry Entry { get; private set; } = null!;
+	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Artifacts.RegisterArtifact("JumpTheCurve", new()
+		Entry = helper.Content.Artifacts.RegisterArtifact("JumpTheCurve", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()

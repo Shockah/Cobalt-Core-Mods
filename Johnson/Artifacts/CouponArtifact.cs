@@ -7,9 +7,11 @@ namespace Shockah.Johnson;
 
 internal sealed class CouponArtifact : Artifact, IRegisterable
 {
+	internal static IArtifactEntry Entry { get; private set; } = null!;
+	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Artifacts.RegisterArtifact("Coupon", new()
+		Entry = helper.Content.Artifacts.RegisterArtifact("Coupon", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
