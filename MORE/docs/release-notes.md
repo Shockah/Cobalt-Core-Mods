@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.8.1
+Released 4 August 2025.
 
 ### Artifact Swap event
 * The event no longer offers artifacts you already have.
