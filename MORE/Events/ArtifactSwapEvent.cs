@@ -186,8 +186,11 @@ internal sealed class ArtifactSwapEvent : IRegisterable
 
 			if (Special)
 			{
+				var currentArtifactKeys = s.EnumerateAllArtifacts().Select(a => a.Key()).ToHashSet();
+				
 				artifactKeys = ModEntry.Instance.AltruisticArtifactKeys
 					.Where(key => DB.artifactMetas.TryGetValue(key, out var meta) && meta.pools.Contains(ArtifactPool.Common) && s.characters.All(character => character.deckType != meta.owner))
+					.Where(key => !currentArtifactKeys.Contains(key))
 					.ToHashSet();
 			}
 			else

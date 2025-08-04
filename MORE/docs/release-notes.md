@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming release
+
+### Artifact Swap event
+* The event no longer offers artifacts you already have.
+
 ## 1.8.0
 Released 3 August 2025.
 
