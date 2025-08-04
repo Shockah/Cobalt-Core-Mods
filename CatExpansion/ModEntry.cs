@@ -7,6 +7,7 @@ using Nanoray.PluginManager;
 using Nickel;
 using Nickel.Essentials;
 using Nickel.ModSettings;
+using Shockah.MORE;
 
 namespace Shockah.CatExpansion;
 
@@ -141,6 +142,11 @@ public sealed class ModEntry : SimpleMod
 			{
 				helper.Storage.SaveJson(helper.Storage.GetMainStorageFile("json"), Settings);
 			}))
+		);
+		
+		helper.ModRegistry.AwaitApi<IMoreApi>(
+			"Shockah.MORE",
+			api => api.RegisterAltruisticArtifact(SmallWormholeArtifact.Entry.UniqueName)
 		);
 	}
 

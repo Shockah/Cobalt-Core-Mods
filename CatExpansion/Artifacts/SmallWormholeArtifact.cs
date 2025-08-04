@@ -9,9 +9,11 @@ namespace Shockah.CatExpansion;
 
 internal sealed class SmallWormholeArtifact : Artifact, IRegisterable
 {
+	internal static IArtifactEntry Entry { get; private set; } = null!;
+	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Artifacts.RegisterArtifact("SmallWormhole", new()
+		Entry = helper.Content.Artifacts.RegisterArtifact("SmallWormhole", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
