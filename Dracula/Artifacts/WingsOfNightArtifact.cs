@@ -7,9 +7,11 @@ namespace Shockah.Dracula;
 
 internal sealed class WingsOfNightArtifact : Artifact, IRegisterable
 {
+	internal static IArtifactEntry Entry { get; private set; } = null!;
+	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Artifacts.RegisterArtifact("WingsOfNight", new()
+		Entry = helper.Content.Artifacts.RegisterArtifact("WingsOfNight", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()

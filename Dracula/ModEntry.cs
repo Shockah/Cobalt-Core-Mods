@@ -7,6 +7,7 @@ using Shockah.Kokoro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Shockah.MORE;
 
 namespace Shockah.Dracula;
 
@@ -439,6 +440,15 @@ public sealed class ModEntry : SimpleMod
 					new BatFormCard(),
 					new SummonBatCard(),
 				]
+			}
+		);
+		
+		helper.ModRegistry.AwaitApi<IMoreApi>(
+			"Shockah.MORE",
+			api =>
+			{
+				api.RegisterAltruisticArtifact(BloodyFangArtifact.Entry.UniqueName);
+				api.RegisterAltruisticArtifact(WingsOfNightArtifact.Entry.UniqueName);
 			}
 		);
 	}

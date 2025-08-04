@@ -7,9 +7,11 @@ namespace Shockah.Dracula;
 
 internal sealed class BloodyFangArtifact : Artifact, IRegisterable
 {
+	internal static IArtifactEntry Entry { get; private set; } = null!;
+	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Artifacts.RegisterArtifact("Lacerations", new()
+		Entry = helper.Content.Artifacts.RegisterArtifact("Lacerations", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
