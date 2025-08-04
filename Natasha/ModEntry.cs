@@ -8,6 +8,8 @@ using Shockah.Kokoro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Shockah.MORE;
+
 // using Shockah.DuoArtifacts;
 
 namespace Shockah.Natasha;
@@ -225,6 +227,15 @@ public sealed class ModEntry : SimpleMod
 					new AHurt { targetPlayer = true, hurtAmount = 1 },
 					new AStatus { targetPlayer = true, status = status, statusAmount = 2 },
 				]);
+			}
+		);
+		
+		helper.ModRegistry.AwaitApi<IMoreApi>(
+			"Shockah.MORE",
+			api =>
+			{
+				api.RegisterAltruisticArtifact(DarkWebDataArtifact.Entry.UniqueName);
+				api.RegisterAltruisticArtifact(ForkbombArtifact.Entry.UniqueName);
 			}
 		);
 	}

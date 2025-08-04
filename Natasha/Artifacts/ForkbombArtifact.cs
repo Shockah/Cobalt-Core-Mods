@@ -8,6 +8,8 @@ namespace Shockah.Natasha;
 
 internal sealed class ForkbombArtifact : Artifact, IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 {
+	internal static IArtifactEntry Entry { get; private set; } = null!;
+	
 	private static ISpriteEntry ActiveSprite = null!;
 	private static ISpriteEntry InactiveSprite = null!;
 
@@ -19,7 +21,7 @@ internal sealed class ForkbombArtifact : Artifact, IRegisterable, IKokoroApi.IV2
 		ActiveSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Forkbomb.png"));
 		InactiveSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/ForkbombInactive.png"));
 
-		helper.Content.Artifacts.RegisterArtifact("Forkbomb", new()
+		Entry = helper.Content.Artifacts.RegisterArtifact("Forkbomb", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
