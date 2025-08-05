@@ -1,0 +1,9 @@
+{
+    "UniqueName": "Shockah.BetterCodex",
+    "Version": "{{ModVersion}}",
+    "DisplayName": "Better Codex",
+    "Description": "Asdf asdf",
+    "Author": "Shockah",
+    "RequiredApiVersion": "1.17.0",
+    "EntryPointAssembly": "BetterCodex.dll"
+}
