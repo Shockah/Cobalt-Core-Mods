@@ -2,9 +2,10 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.3
+Released 7 August 2025.
 
-* Added MORE atruistic artifact compatibility.
+* Added MORE altruistic artifact compatibility.
 
 ## 1.0.2
 Released 22 June 2025.
