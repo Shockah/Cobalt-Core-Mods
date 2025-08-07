@@ -3,7 +3,7 @@
 # Release notes
 
 ## 1.1.2
-Released 7 August 2025.F
+Released 7 August 2025.
 
 * Added MORE altruistic artifact compatibility.
 
