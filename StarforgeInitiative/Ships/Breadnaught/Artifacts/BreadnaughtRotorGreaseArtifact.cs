@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
 
@@ -15,14 +14,11 @@ internal sealed class BreadnaughtRotorGreaseArtifact : Artifact, IRegisterable
 			Meta = new()
 			{
 				owner = Deck.colorless,
-				pools = [ArtifactPool.Common],
+				pools = [ArtifactPool.Boss],
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Breadnaught/Artifact/RotorGrease.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["ship", "Breadnaught", "artifact", "RotorGrease", "name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["ship", "Breadnaught", "artifact", "RotorGrease", "description"]).Localize
 		});
 	}
-
-	public override List<Tooltip> GetExtraTooltips()
-		=> StatusMeta.GetTooltips(BreadnaughtBarrelSpin.BarrelSpinStatus.Status, 1);
 }
