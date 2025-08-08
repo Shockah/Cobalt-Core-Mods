@@ -108,19 +108,16 @@ internal sealed class BreadnaughtBarrelSpin : IRegisterable
 			return;
 		if (attack.fromDroneX is not null)
 			return;
+		if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(attack, "BarrelSpin") > 0)
+			return;
 			
 		var sourceShip = attack.targetPlayer ? combat.otherShip : g.state.ship;
 		var totalSpin = sourceShip.Get(BarrelSpinStatus.Status);
-		if (totalSpin <= 0)
-			return;
-		
 		var spin = Math.Max(Math.Min(totalSpin, attack.damage - 1), 0);
-		if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(attack, "BarrelSpin") > 0)
-			return;
 
-		var rotorGreaseArtifact = attack.targetPlayer ? null : g.state.EnumerateAllArtifacts().OfType<BreadnaughtRotorGreaseArtifact>().FirstOrDefault();
-		var extraAttacks = spin + (spin < totalSpin && rotorGreaseArtifact is not null ? 1 : 0);
-		var hasFirstZeroDamageAttack = extraAttacks > spin;
+		var rotorGreaseArtifact = sourceShip.isPlayerShip ? g.state.EnumerateAllArtifacts().OfType<BreadnaughtRotorGreaseArtifact>().FirstOrDefault() : null;
+		var extraAttacks = spin + (rotorGreaseArtifact is not null ? 1 : 0);
+		var hasFirstZeroDamageAttack = rotorGreaseArtifact is not null;
 		if (extraAttacks <= 0)
 			return;
 			
@@ -162,7 +159,7 @@ internal sealed class BreadnaughtBarrelSpin : IRegisterable
 			if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 				return false;
 
-			args.Amount = 0;
+			args.Amount = args.Ship.isPlayerShip && args.State.EnumerateAllArtifacts().Any(a => a is BreadnaughtImprovedCoolantArtifact) ? 1 : 0;
 			return false;
 		}
 
