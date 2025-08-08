@@ -14,11 +14,18 @@
 					"name": "GRANDMA'S MINIGUN",
 					"description": "After spending any <c=energy>ENERGY</c>, gain that much <c=status>BARREL SPIN</c>."
 				},
+				"ImprovedCoolant": {
+					"name": "IMPROVED COOLANT",
+					"description": [
+						"(Breadnaught-exclusive artifact!)",
+						"Start each turn with at least 1 <c=status>BARREL SPIN</c>."
+					]
+				},
 				"RotorGrease": {
 					"name": "ROTOR GREASE",
 					"description": [
 						"(Breadnaught-exclusive artifact!)",
-						"Whenever <c=status>BARREL SPIN</c> fails to reduce attack damage by any amount, first attack once for 0 damage, retaining any effects of the original attack."
+						"Before any attack, first attack once for 0 damage, retaining any effects of the original attack."
 					]
 				}
 			},
