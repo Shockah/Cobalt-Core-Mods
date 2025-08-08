@@ -25,15 +25,11 @@ internal sealed class NemesisPrepareForTroubleArtifact : Artifact, IRegisterable
 	}
 
 	public override List<Tooltip> GetExtraTooltips()
-		=> [
-			.. StatusMeta.GetTooltips(Status.tempPayback, 1),
-			.. StatusMeta.GetTooltips(Status.payback, 1),
-		];
+		=> StatusMeta.GetTooltips(Status.tempPayback, 1);
 
 	public override void OnTurnEnd(State state, Combat combat)
 	{
 		base.OnTurnEnd(state, combat);
-		var amount = combat.otherShip.Get(Status.payback) + combat.otherShip.Get(Status.tempPayback);
-		combat.QueueImmediate(new AStatus { targetPlayer = true, status = Status.tempPayback, statusAmount = amount + 1, artifactPulse = Key() });
+		combat.QueueImmediate(new AStatus { targetPlayer = true, status = Status.tempPayback, statusAmount = 1, artifactPulse = Key() });
 	}
 }
