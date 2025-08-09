@@ -12,6 +12,7 @@ internal sealed class NemesisShip : IRegisterable
 	private static readonly List<Type> ArtifactTypes = [
 		typeof(NemesisPrepareForTroubleArtifact),
 		typeof(NemesisAndMakeItDoubleArtifact),
+		typeof(NemesisReactiveShieldArtifact),
 		typeof(NemesisThirdWheelArtifact),
 	];
 	
