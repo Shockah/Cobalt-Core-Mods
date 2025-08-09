@@ -121,6 +121,13 @@
 					"name": "AND MAKE IT DOUBLE",
 					"description": "At the end of each turn, activate both of your cannons. <c=downside>At the start of each turn, deactivate all but the rightmost cannon.</c>"
 				},
+				"ReactiveShield": {
+					"name": "REACTIVE SHIELD",
+					"description": [
+						"(Nemesis-exclusive artifact!)",
+						"Once per turn, after you get hit, gain 1 <c=status>SHIELD</c>."
+					]
+				},
 				"ThirdWheel": {
 					"name": "THIRD WHEEL",
 					"description": [
