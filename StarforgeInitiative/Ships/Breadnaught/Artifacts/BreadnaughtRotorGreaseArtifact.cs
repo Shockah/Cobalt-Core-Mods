@@ -15,6 +15,7 @@ internal sealed class BreadnaughtRotorGreaseArtifact : Artifact, IRegisterable
 			{
 				owner = Deck.colorless,
 				pools = [ArtifactPool.Boss],
+				unremovable = true,
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Breadnaught/Artifact/RotorGrease.png")).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["ship", "Breadnaught", "artifact", "RotorGrease", "name"]).Localize,
