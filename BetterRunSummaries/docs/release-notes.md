@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Fixed an error on the latest stealth update of the game.
+* Made more space between artifact rows to fit the times each artifact was triggered without overlapping.
 
 ## 1.1.1
 Released 6 December 2024.

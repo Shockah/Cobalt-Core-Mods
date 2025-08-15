@@ -164,6 +164,7 @@ public sealed class ModEntry : SimpleMod
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				// squish Combat turns
 				.Find(ILMatches.Ldstr("runSummary.turnsTaken"))
 				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldfld("y"))
 				.Insert(
@@ -178,6 +179,7 @@ public sealed class ModEntry : SimpleMod
 					new CodeInstruction(OpCodes.Sub)
 				)
 
+				// squish Hull damage taken
 				.Find(ILMatches.Ldstr("runSummary.hullDamageTaken"))
 				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldfld("y"))
 				.Insert(
@@ -192,6 +194,7 @@ public sealed class ModEntry : SimpleMod
 					new CodeInstruction(OpCodes.Sub)
 				)
 
+				// squish Seed
 				.Find(ILMatches.Ldstr("runSummary.seed"))
 				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldfld("y"))
 				.Insert(
@@ -206,6 +209,7 @@ public sealed class ModEntry : SimpleMod
 					new CodeInstruction(OpCodes.Sub)
 				)
 
+				// squish Ship
 				.Find(ILMatches.Ldstr("runSummary.ship"))
 				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldfld("y"))
 				.Insert(
@@ -220,6 +224,7 @@ public sealed class ModEntry : SimpleMod
 					new CodeInstruction(OpCodes.Sub)
 				)
 
+				// squish Difficulty
 				.Find(ILMatches.Ldstr("runSummary.difficulty"))
 				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldfld("y"))
 				.Insert(
@@ -233,10 +238,27 @@ public sealed class ModEntry : SimpleMod
 					new CodeInstruction(OpCodes.Ldc_R8, 5.0),
 					new CodeInstruction(OpCodes.Sub)
 				)
-
+				
+				// bigger rows for artifacts to make space for times they triggered
+				.Find(ILMatches.Ldstr("runSummary.artifacts"))
+				.Find([
+					ILMatches.Ldloc<int>(originalMethod).GetLocalIndex(out var yLocalIndex),
+					ILMatches.LdcI4(16),
+					ILMatches.Instruction(OpCodes.Add),
+					ILMatches.Stloc<int>(originalMethod),
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldloc, yLocalIndex.Value),
+					new CodeInstruction(OpCodes.Ldc_I4_4),
+					new CodeInstruction(OpCodes.Add),
+					new CodeInstruction(OpCodes.Stloc, yLocalIndex.Value),
+				])
+				
+				// render times the artifacts triggered
 				.Find(ILMatches.Call(AccessTools.DeclaredMethod(typeof(Artifact), nameof(Artifact.Render))))
 				.Replace(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(RunSummaryRoute_Render_Transpiler_HijackArtifactRender))))
 
+				// apply extra recorded data to cards
 				.Find(
 					ILMatches.Ldloc<Card>(originalMethod).CreateLdlocaInstruction(out var ldlocaCard),
 					ILMatches.Ldloc<CardSummary>(originalMethod).CreateLdlocInstruction(out var ldlocCardSummary),
@@ -249,6 +271,8 @@ public sealed class ModEntry : SimpleMod
 					ldlocCardSummary,
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(RunSummaryRoute_Render_Transpiler_ApplyExtraCardData)))
 				)
+				
+				// change rendering of cards
 				.Find(
 					ILMatches.Ldloc<Card>(originalMethod).CreateLdlocInstruction(out var ldlocCard),
 					ILMatches.Call("GetFullDisplayName")
