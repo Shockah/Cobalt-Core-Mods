@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.2
+Released 15 August 2025.
 
 * Fixed an error on the latest stealth update of the game.
 * Made more space between artifact rows to fit the times each artifact was triggered without overlapping.
