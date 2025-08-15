@@ -772,7 +772,7 @@ internal sealed class ActionCostMockPaymentEnvironment(IKokoroApi.IV2.IActionCos
 		ref var amount = ref CollectionsMarshal.GetValueRefOrAddDefault(MockResourceAmounts, resource.ResourceKey, out var amountExists);
 		if (!amountExists)
 			amount = @default?.GetAvailableResource(resource) ?? 0;
-		return amount;
+		return Math.Max(amount, 0);
 	}
 
 	public bool TryPayResource(IKokoroApi.IV2.IActionCostsApi.IResource resource, int amount)
@@ -787,7 +787,7 @@ internal sealed class ActionCostMockPaymentEnvironment(IKokoroApi.IV2.IActionCos
 
 	public IKokoroApi.IV2.IActionCostsApi.IMockPaymentEnvironment SetAvailableResource(IKokoroApi.IV2.IActionCostsApi.IResource resource, int amount)
 	{
-		MockResourceAmounts[resource.ResourceKey] = amount;
+		MockResourceAmounts[resource.ResourceKey] = Math.Max(amount, 0);
 		return this;
 	}
 }
@@ -805,7 +805,7 @@ internal sealed class ActionCostStatePaymentEnvironment : IKokoroApi.IV2.IAction
 			args.Combat = Combat;
 			args.Card = Card;
 			args.Resource = resource;
-			return ActionCostsManager.Instance.ResourceProviders.Sum(provider => provider.GetCurrentResourceAmount(args));
+			return Math.Max(ActionCostsManager.Instance.ResourceProviders.Sum(provider => provider.GetCurrentResourceAmount(args)), 0);
 		});
 
 	public bool TryPayResource(IKokoroApi.IV2.IActionCostsApi.IResource resource, int amount)

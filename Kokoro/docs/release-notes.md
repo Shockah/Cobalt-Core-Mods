@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed cost actions crashing the game if you have a negative amount of the required resource.
+
 ## 2.11.3
 Released 1 August 2025.
 
