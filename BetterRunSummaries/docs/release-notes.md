@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed an error on the latest stealth update of the game.
+
 ## 1.1.1
 Released 6 December 2024.
 

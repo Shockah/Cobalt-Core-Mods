@@ -269,9 +269,9 @@ public sealed class ModEntry : SimpleMod
 		// ReSharper restore PossibleMultipleEnumeration
 	}
 
-	private static void RunSummaryRoute_Render_Transpiler_HijackArtifactRender(Artifact artifact, G g, Vec restingPosition, bool showAsUnknown, bool autoFocus, bool showCount)
+	private static void RunSummaryRoute_Render_Transpiler_HijackArtifactRender(Artifact artifact, G g, Vec restingPosition, bool showAsUnknown, bool autoFocus, bool showCount, Rect? overrideRect)
 	{
-		artifact.Render(g, restingPosition, showAsUnknown, autoFocus, showCount);
+		artifact.Render(g, restingPosition, showAsUnknown, autoFocus, showCount, overrideRect);
 
 		if (LastRunSummaryRoute?.runSummary is not { } summary)
 			return;
