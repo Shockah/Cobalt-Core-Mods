@@ -108,7 +108,7 @@ internal static class I18n
 	public static readonly string BooksIsaacArtifactTooltip = "At the end of each turn, spend 2 <c=status>SHARD</c> to make your <c=midrow>Attack Drones</c> deal 1 more damage this turn.";
 
 	public static readonly string BooksMaxArtifactName = "Evaporator";
-	public static readonly string BooksMaxArtifactTooltip = "Whenever you <c=cardtrait>exhaust</c> a card, gain 1 <c=status>SHARD</c>.";
+	public static readonly string BooksMaxArtifactTooltip = "After you <c=cardtrait>exhaust</c> a card, gain 1 <c=status>SHARD</c>.";
 
 	public static readonly string BooksPeriArtifactName = "Shardblade Infuser";
 	public static readonly string BooksPeriArtifactTooltip = "Whenever you play an <c=action>attack</c> card while having 3 <c=status>SHARD</c>, all <c=action>attacks</c> of that card deal 1 more damage.";

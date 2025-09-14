@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Changed when the Evaporator (Books-Max duo) artifact triggers.
 * Fixed duo artifacts being offered right away, if the character has a starter artifact.
 
 ## 1.8.1

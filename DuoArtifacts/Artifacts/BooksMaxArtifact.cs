@@ -20,7 +20,7 @@ internal sealed class BooksMaxArtifact : DuoArtifact
 		if (s.EnumerateAllArtifacts().FirstOrDefault(a => a is BooksMaxArtifact) is not { } artifact)
 			return;
 
-		__instance.QueueImmediate(new AStatus
+		__instance.Queue(new AStatus
 		{
 			status = Status.shard,
 			statusAmount = 1,
