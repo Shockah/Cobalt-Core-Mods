@@ -31,9 +31,11 @@ internal sealed class NemesisThirdWheelArtifact : Artifact, IRegisterable
 		{
 			if (part.type != PType.comms)
 				continue;
+			if (part.skin != NemesisShip.LeftCannonCommsEntry.UniqueName)
+				continue;
 
 			part.type = PType.cannon;
-			part.skin = "wing_ares";
+			part.skin = NemesisShip.LeftCannonEntry.UniqueName;
 			part.active = false;
 			part.damageModifier = PDamMod.none;
 			part.damageModifierOverrideWhileActive = null;

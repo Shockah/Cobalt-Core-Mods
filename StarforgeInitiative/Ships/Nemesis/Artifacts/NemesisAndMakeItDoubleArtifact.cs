@@ -52,7 +52,7 @@ internal sealed class NemesisAndMakeItDoubleArtifact : Artifact, IRegisterable
 
 			var parts = s.ship.parts
 				.Where(p => p.type == PType.cannon)
-				.Where(p => p.skin == "wing_ares")
+				.Where(p => p.skin == NemesisShip.LeftCannonEntry.UniqueName || p.skin == NemesisShip.MidCannonEntry.UniqueName || p.skin == NemesisShip.RightCannonEntry.UniqueName)
 				.ToList();
 
 			foreach (var part in parts)
@@ -78,7 +78,7 @@ internal sealed class NemesisAndMakeItDoubleArtifact : Artifact, IRegisterable
 
 			var parts = s.ship.parts
 				.Where(p => p.type == PType.cannon)
-				.Where(p => p.skin == "wing_ares")
+				.Where(p => p.skin == NemesisShip.LeftCannonEntry.UniqueName || p.skin == NemesisShip.MidCannonEntry.UniqueName || p.skin == NemesisShip.RightCannonEntry.UniqueName)
 				.ToList();
 
 			foreach (var part in parts)
