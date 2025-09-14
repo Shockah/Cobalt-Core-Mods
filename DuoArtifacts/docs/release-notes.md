@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.8.2
+Released 14 September 2025.
 
 * Changed when the Evaporator (Books-Max duo) artifact triggers.
 * Fixed duo artifacts being offered right away, if the character has a starter artifact.
