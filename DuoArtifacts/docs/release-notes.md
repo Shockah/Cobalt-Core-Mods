@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed duo artifacts being offered right away, if the character has a starter artifact.
+
 ## 1.8.1
 Released 2 August 2025.
 

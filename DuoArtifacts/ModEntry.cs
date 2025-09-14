@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TheJazMaster.MoreDifficulties;
 
 namespace Shockah.DuoArtifacts;
 
@@ -29,6 +30,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	internal IPluginPackage<Nickel.IModManifest> Package { get; private set; } = null!;
 
 	internal IKokoroApi.IV2 KokoroApi { get; private set; } = null!;
+	internal IMoreDifficultiesApi? MoreDifficultiesApi { get; private set; }
 	internal readonly DuoArtifactDatabase Database = new();
 	internal ExternalSprite[] DuoGlowSprites { get; } = new ExternalSprite[2];
 	internal ExternalSprite[] TrioGlowSprites { get; } = new ExternalSprite[3];
@@ -60,6 +62,8 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 
 		foreach (var definition in DuoArtifactDefinition.Definitions)
 			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.ApplyPatches(Harmony);
+		
+		helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", api => MoreDifficultiesApi = api);
 
 		helper.ModRegistry.AwaitApi<IModSettingsApi>(
 			"Nickel.ModSettings",
@@ -305,8 +309,14 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 		if (character is null)
 			return DuoArtifactEligibity.InvalidState;
 
+		HashSet<string> starterArtifactKeys = [
+			.. Instance.MoreDifficultiesApi?.AreAltStartersEnabled(state, deck) == true
+				? (Instance.MoreDifficultiesApi!.GetAltStarters(deck) is { } startersAlt ? startersAlt.artifacts.Select(a => a.Key()) : [])
+				: (StarterDeck.starterSets.TryGetValue(deck, out var startersMain) ? startersMain.artifacts.Select(a => a.Key()) : [])
+		];
+
 		var eligibleArtifacts = character.artifacts
-			.Where(a => a.GetMeta().pools.Contains(ArtifactPool.Boss) || !a.GetMeta().unremovable)
+			.Where(a => !starterArtifactKeys.Contains(a.Key()))
 			.ToList();
 
 		if (Settings.ProfileBased.Current.ArtifactsCondition && eligibleArtifacts.Count >= Settings.ProfileBased.Current.MinArtifacts)
