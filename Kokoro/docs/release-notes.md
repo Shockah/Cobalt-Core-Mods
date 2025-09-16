@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming version
+## 2.11.5
+Released 16 September 2025.
 
 * Improved performance by a bit.
 
