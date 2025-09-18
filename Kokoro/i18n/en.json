@@ -31,6 +31,10 @@
 		"Minidrive": {
 			"name": "Minidrive",
 			"description": "Add 1 damage to all attacks. <c=downside>Decreases by 1 at end of turn.</c>"
+		},
+		"TempStrafe": {
+			"name": "Temp Strafe",
+			"description": "Fire for {0} damage immediately after every move you make. <c=downside>Goes away at start of next turn.</c>"
 		}
 	},
 	"cardTrait": {

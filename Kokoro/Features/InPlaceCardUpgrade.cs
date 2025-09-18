@@ -27,7 +27,7 @@ partial class ApiImplementation
 	}
 }
 
-internal sealed class InPlaceCardUpgradeManager
+internal static class InPlaceCardUpgradeManager
 {
 	internal static void Setup(IHarmony harmony)
 	{

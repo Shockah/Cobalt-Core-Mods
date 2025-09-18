@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added the Temp Payback status.
 * Added `GetStatusesToCallTurnTriggerHooksFor` to the `StatusLogic` hooks.
 * Turn trigger hooks now by default only get called for non-zero statuses, instead of all statuses in the game.
 

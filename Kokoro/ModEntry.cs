@@ -95,6 +95,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		StatusLogicManager.Instance.Register(DriveStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(OxidationStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(StatusNextTurnManager.Instance, 0);
+		StatusLogicManager.Instance.Register(TempStrafeStatusManager.Instance, 0);
 		
 		StatusRenderManager.Instance.Register(OxidationStatusManager.Instance, 0);
 		StatusRenderManager.Instance.Register(StatusNextTurnManager.Instance, 0);
@@ -111,9 +112,12 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 
 		SetupSerializationChanges();
 	}
-	
+
 	public void FinalizePreperations(IPrelaunchContactPoint prelaunchManifest)
-		=> ActionCostsManager.SetupLate();
+	{
+		ActionCostsManager.SetupLate();
+		TempStrafeStatusManager.SetupLate(Harmony);
+	}
 
 	public object GetApi(IManifest requestingMod)
 		=> new ApiImplementation(requestingMod);

@@ -70,6 +70,9 @@ internal sealed partial class Content
 	internal ExternalSprite EvadeCostUnsatisfiedSprite { get; private set; } = null!;
 	internal ExternalSprite HeatCostSatisfiedSprite { get; private set; } = null!;
 	internal ExternalSprite HeatCostUnsatisfiedSprite { get; private set; } = null!;
+	
+	internal ExternalSprite TempStrafeSprite { get; private set; } = null!;
+	internal IStatusEntry TempStrafeStatus { get; private set; } = null!;
 
 	internal Font PinchCompactFont { get; private set; } = null!;
 
@@ -187,6 +190,10 @@ internal sealed partial class Content
 			id: $"{typeof(ModEntry).Namespace}.Status.HeatCostUnsatisfied",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "HeatCostUnsatisfied.png"))
 		);
+		TempStrafeSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.TempStrafe",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "TempStrafe.png"))
+		);
 
 		PinchCompactFont = LoadFont(
 			registry: registry,
@@ -218,6 +225,20 @@ internal sealed partial class Content
 				Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Oxidation", "name"]).Localize,
 				Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Oxidation", "description"]).Localize,
 				ShouldFlash = (state, _, ship, status) => ship.Get(status) >= Instance.Api.GetOxidationStatusMaxValue(state, ship)
+			});
+		}
+		{
+			TempStrafeStatus = Instance.Helper.Content.Statuses.RegisterStatus($"{typeof(ModEntry).Namespace}.Status.TempStrafe", new()
+			{
+				Definition = new()
+				{
+					icon = (Spr)TempStrafeSprite.Id!.Value,
+					color = new("C54FF5"),
+					isGood = true,
+					affectedByTimestop = true,
+				},
+				Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "TempStrafe", "name"]).Localize,
+				Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "TempStrafe", "description"]).Localize,
 			});
 		}
 		{
