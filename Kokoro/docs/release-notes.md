@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.12.0
+Released 18 September 2025.
 
 * Added the Temp Payback status.
 * Added `GetStatusesToCallTurnTriggerHooksFor` to the `StatusLogic` hooks.
