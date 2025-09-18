@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using CobaltCoreModding.Definitions.ExternalItems;
 
 namespace Shockah.Kokoro;
@@ -41,6 +43,12 @@ partial class ApiImplementation
 
 internal sealed class StatusNextTurnManager : IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
+	private static readonly Lazy<HashSet<Status>> StatusesToCallTurnTriggerHooksFor = new(() => [
+		(Status)ModEntry.Instance.Content.TempShieldNextTurnStatus.Id!.Value,
+		(Status)ModEntry.Instance.Content.ShieldNextTurnStatus.Id!.Value,
+		(Status)ModEntry.Instance.Content.OverdriveNextTurnStatus.Id!.Value,
+	]);
+	
 	internal static readonly StatusNextTurnManager Instance = new();
 
 	private StatusNextTurnManager()
@@ -66,18 +74,16 @@ internal sealed class StatusNextTurnManager : IKokoroApi.IV2.IStatusLogicApi.IHo
 			];
 		return args.Tooltips;
 	}
+	
+	public IReadOnlySet<Status> GetStatusesToCallTurnTriggerHooksFor(IKokoroApi.IV2.IStatusLogicApi.IHook.IGetStatusesToCallTurnTriggerHooksForArgs args)
+		=> StatusesToCallTurnTriggerHooksFor.Value.Intersect(args.NonZeroStatuses).ToHashSet();
 
 	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
 		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 			return false;
 
-		if (args.Status == (Status)ModEntry.Instance.Content.TempShieldNextTurnStatus.Id!.Value)
-			args.Amount = 0;
-		else if (args.Status == (Status)ModEntry.Instance.Content.ShieldNextTurnStatus.Id!.Value)
-			args.Amount = 0;
-		else if (args.Status == (Status)ModEntry.Instance.Content.OverdriveNextTurnStatus.Id!.Value)
-			args.Amount = 0;
+		args.Amount = 0;
 		return false;
 	}
 
@@ -88,33 +94,30 @@ internal sealed class StatusNextTurnManager : IKokoroApi.IV2.IStatusLogicApi.IHo
 		
 		if (args.Status == (Status)ModEntry.Instance.Content.TempShieldNextTurnStatus.Id!.Value)
 		{
-			if (args.OldAmount != 0)
-				args.Combat.QueueImmediate(new AStatus
-				{
-					targetPlayer = args.Ship.isPlayerShip,
-					status = Status.tempShield,
-					statusAmount = args.OldAmount
-				});
+			args.Combat.QueueImmediate(new AStatus
+			{
+				targetPlayer = args.Ship.isPlayerShip,
+				status = Status.tempShield,
+				statusAmount = args.OldAmount
+			});
 		}
 		else if (args.Status == (Status)ModEntry.Instance.Content.ShieldNextTurnStatus.Id!.Value)
 		{
-			if (args.OldAmount != 0)
-				args.Combat.QueueImmediate(new AStatus
-				{
-					targetPlayer = args.Ship.isPlayerShip,
-					status = Status.shield,
-					statusAmount = args.OldAmount
-				});
+			args.Combat.QueueImmediate(new AStatus
+			{
+				targetPlayer = args.Ship.isPlayerShip,
+				status = Status.shield,
+				statusAmount = args.OldAmount
+			});
 		}
 		else if (args.Status == (Status)ModEntry.Instance.Content.OverdriveNextTurnStatus.Id!.Value)
 		{
-			if (args.OldAmount != 0)
-				args.Combat.QueueImmediate(new AStatus
-				{
-					targetPlayer = args.Ship.isPlayerShip,
-					status = Status.overdrive,
-					statusAmount = args.OldAmount
-				});
+			args.Combat.QueueImmediate(new AStatus
+			{
+				targetPlayer = args.Ship.isPlayerShip,
+				status = Status.overdrive,
+				statusAmount = args.OldAmount
+			});
 		}
 	}
 }

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using CobaltCoreModding.Definitions.ExternalItems;
 using Nickel;
 
@@ -59,6 +61,11 @@ partial class ApiImplementation
 internal sealed class OxidationStatusManager : VariedApiVersionHookManager<IKokoroApi.IV2.IOxidationStatusApi.IHook, IOxidationStatusHook>, IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	private const int BaseOxidationStatusThreshold = 7;
+	
+	private static readonly Lazy<HashSet<Status>> StatusesToCallTurnTriggerHooksFor = new(() => [
+		Status.corrode,
+		ModEntry.Instance.Content.OxidationStatus.Status,
+	]);
 
 	internal static readonly OxidationStatusManager Instance = new();
 
@@ -99,6 +106,9 @@ internal sealed class OxidationStatusManager : VariedApiVersionHookManager<IKoko
 		}
 		return args.Tooltips;
 	}
+	
+	public IReadOnlySet<Status> GetStatusesToCallTurnTriggerHooksFor(IKokoroApi.IV2.IStatusLogicApi.IHook.IGetStatusesToCallTurnTriggerHooksForArgs args)
+		=> StatusesToCallTurnTriggerHooksFor.Value.Intersect(args.NonZeroStatuses).ToHashSet();
 
 	public double ModifyStatusTurnTriggerPriority(IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusTurnTriggerPriorityArgs args)
 		=> args.Status == ModEntry.Instance.Content.OxidationStatus.Status ? args.Priority + 10 : args.Priority;

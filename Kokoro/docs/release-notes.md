@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added `GetStatusesToCallTurnTriggerHooksFor` to the `StatusLogic` hooks.
+* Turn trigger hooks now by default only get called for non-zero statuses, instead of all statuses in the game.
+
 ## 2.11.5
 Released 16 September 2025.
 

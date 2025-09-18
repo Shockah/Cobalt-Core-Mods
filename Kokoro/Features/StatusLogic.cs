@@ -53,6 +53,16 @@ partial class ApiImplementation
 				public Status Status { get; internal set; }
 			}
 			
+			internal sealed class GetStatusesToCallTurnTriggerHooksForArgs : IKokoroApi.IV2.IStatusLogicApi.IHook.IGetStatusesToCallTurnTriggerHooksForArgs
+			{
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming Timing { get; internal set; }
+				public Ship Ship { get; internal set; } = null!;
+				public IReadOnlySet<Status> KnownStatuses { get; internal set; } = null!;
+				public IReadOnlySet<Status> NonZeroStatuses { get; internal set; } = null!;
+			}
+			
 			internal sealed class ModifyStatusTurnTriggerPriorityArgs : IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusTurnTriggerPriorityArgs
 			{
 				public State State { get; internal set; } = null!;
@@ -116,15 +126,6 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 
 	internal static void Setup(IHarmony harmony)
 	{
-		// TODO: remove after vanilla fixes these
-		ModEntry.Instance.Helper.Events.OnModLoadPhaseFinished += (_, phase) =>
-		{
-			if (phase != ModLoadPhase.AfterDbInit)
-				return;
-			DB.statuses[Status.timeStop].affectedByTimestop = true;
-			DB.statuses[Status.lockdown].affectedByTimestop = true;
-		};
-
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.OnBeginTurn)),
 			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_OnBeginTurn_Prefix_First)), Priority.First),
@@ -201,6 +202,20 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 
 	private void OnTurnStartOrEnd(State state, Combat combat, IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming timing, Ship ship)
 	{
+		var knownStatuses = DB.statuses.Keys.ToHashSet();
+		var nonZeroStatuses = ship.statusEffects
+			.Where(kvp => kvp.Value != 0)
+			.Select(kvp => kvp.Key)
+			.ToHashSet();
+		
+		var getStatusesToCallTurnTriggerHooksForArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusLogicApi.GetStatusesToCallTurnTriggerHooksForArgs>();
+		getStatusesToCallTurnTriggerHooksForArgs.State = state;
+		getStatusesToCallTurnTriggerHooksForArgs.Combat = combat;
+		getStatusesToCallTurnTriggerHooksForArgs.Timing = timing;
+		getStatusesToCallTurnTriggerHooksForArgs.Ship = ship;
+		getStatusesToCallTurnTriggerHooksForArgs.KnownStatuses = knownStatuses;
+		getStatusesToCallTurnTriggerHooksForArgs.NonZeroStatuses = nonZeroStatuses;
+		
 		var modifyStatusTurnTriggerPriorityArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusLogicApi.ModifyStatusTurnTriggerPriorityArgs>();
 		modifyStatusTurnTriggerPriorityArgs.State = state;
 		modifyStatusTurnTriggerPriorityArgs.Combat = combat;
@@ -221,7 +236,9 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 		
 		try
 		{
-			var hooks = GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()).ToList();
+			var hooks = GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts())
+				.Select(hook => (Hook: hook, StatusesToCallHooksFor: hook.GetStatusesToCallTurnTriggerHooksFor(getStatusesToCallTurnTriggerHooksForArgs)))
+				.ToList();
 			
 			var oldStatuses = DB.statuses.Keys
 				.Select(status => (Status: status, Amount: ship.Get(status)))
@@ -235,7 +252,8 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 					modifyStatusTurnTriggerPriorityArgs.Priority = 0;
 
 					foreach (var hook in hooks)
-						modifyStatusTurnTriggerPriorityArgs.Priority = hook.ModifyStatusTurnTriggerPriority(modifyStatusTurnTriggerPriorityArgs);
+						if (hook.StatusesToCallHooksFor.Contains(e.Status))
+							modifyStatusTurnTriggerPriorityArgs.Priority = hook.Hook.ModifyStatusTurnTriggerPriority(modifyStatusTurnTriggerPriorityArgs);
 
 					return modifyStatusTurnTriggerPriorityArgs.Priority;
 				});
@@ -250,7 +268,7 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 				handleStatusTurnAutoStepArgs.SetStrategy = setStrategy;
 
 				foreach (var hook in hooks)
-					if (hook.HandleStatusTurnAutoStep(handleStatusTurnAutoStepArgs))
+					if (hook.StatusesToCallHooksFor.Contains(status) && hook.Hook.HandleStatusTurnAutoStep(handleStatusTurnAutoStepArgs))
 						break;
 				newAmount = handleStatusTurnAutoStepArgs.Amount;
 				setStrategy = handleStatusTurnAutoStepArgs.SetStrategy;
@@ -260,7 +278,8 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 				onStatusTurnTriggerArgs.NewAmount = newAmount;
 
 				foreach (var hook in hooks)
-					hook.OnStatusTurnTrigger(onStatusTurnTriggerArgs);
+					if (hook.StatusesToCallHooksFor.Contains(status))
+						hook.Hook.OnStatusTurnTrigger(onStatusTurnTriggerArgs);
 
 				if (newAmount == oldAmount)
 					continue;
@@ -315,6 +334,7 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 		}
 		finally
 		{
+			ModEntry.Instance.ArgsPool.Return(getStatusesToCallTurnTriggerHooksForArgs);
 			ModEntry.Instance.ArgsPool.Return(modifyStatusTurnTriggerPriorityArgs);
 			ModEntry.Instance.ArgsPool.Return(handleStatusTurnAutoStepArgs);
 			ModEntry.Instance.ArgsPool.Return(onStatusTurnTriggerArgs);
@@ -497,21 +517,30 @@ public sealed class VanillaTimestopStatusLogicHook : IKokoroApi.IV2.IStatusLogic
 
 	private VanillaTimestopStatusLogicHook() { }
 
+	public IReadOnlySet<Status> GetStatusesToCallTurnTriggerHooksFor(IKokoroApi.IV2.IStatusLogicApi.IHook.IGetStatusesToCallTurnTriggerHooksForArgs args)
+		=> args.NonZeroStatuses.Where(status => DB.statuses[status].affectedByTimestop).ToHashSet();
+
 	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
-		=> args.Status != Status.timeStop && args.Amount != 0 && DB.statuses.TryGetValue(args.Status, out var definition) && definition.affectedByTimestop && args.Ship.Get(Status.timeStop) > 0;
+		=> args.Ship.Get(Status.timeStop) > 0;
 }
 
 public sealed class VanillaTurnStartStatusAutoStepLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
 {
+	private static readonly HashSet<Status> StatusesToCallTurnTriggerHooksFor = [
+		Status.timeStop, Status.perfectShield,
+		Status.stunCharge, Status.tempShield, Status.tempPayback, Status.autododgeLeft, Status.autododgeRight,
+	];
+	
 	public static VanillaTurnStartStatusAutoStepLogicHook Instance { get; } = new();
 
 	private VanillaTurnStartStatusAutoStepLogicHook() { }
 
+	public IReadOnlySet<Status> GetStatusesToCallTurnTriggerHooksFor(IKokoroApi.IV2.IStatusLogicApi.IHook.IGetStatusesToCallTurnTriggerHooksForArgs args)
+		=> StatusesToCallTurnTriggerHooksFor.Intersect(args.NonZeroStatuses).ToHashSet();
+
 	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
 		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
-			return false;
-		if (args.Amount == 0)
 			return false;
 
 		var shouldDecrement = args.Status is Status.timeStop or Status.perfectShield;
@@ -534,15 +563,21 @@ public sealed class VanillaTurnStartStatusAutoStepLogicHook : IKokoroApi.IV2.ISt
 
 public sealed class VanillaTurnEndStatusAutoStepLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
 {
+	private static readonly HashSet<Status> StatusesToCallTurnTriggerHooksFor = [
+		Status.overdrive, Status.temporaryCheap, Status.libra, Status.lockdown, Status.backwardsMissiles,
+		Status.autopilot, Status.hermes, Status.engineStall,
+	];
+	
 	public static VanillaTurnEndStatusAutoStepLogicHook Instance { get; } = new();
 
 	private VanillaTurnEndStatusAutoStepLogicHook() { }
 
+	public IReadOnlySet<Status> GetStatusesToCallTurnTriggerHooksFor(IKokoroApi.IV2.IStatusLogicApi.IHook.IGetStatusesToCallTurnTriggerHooksForArgs args)
+		=> StatusesToCallTurnTriggerHooksFor.Intersect(args.NonZeroStatuses).ToHashSet();
+
 	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
 		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
-			return false;
-		if (args.Amount == 0)
 			return false;
 
 		var shouldDecrement = args.Status is Status.overdrive or Status.temporaryCheap or Status.libra or Status.lockdown or Status.backwardsMissiles;

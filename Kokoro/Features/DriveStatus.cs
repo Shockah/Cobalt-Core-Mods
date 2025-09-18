@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
@@ -32,6 +33,12 @@ partial class ApiImplementation
 
 internal sealed class DriveStatusManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 {
+	private static readonly Lazy<HashSet<Status>> StatusesToCallTurnTriggerHooksFor = new(() => [
+		(Status)ModEntry.Instance.Content.UnderdriveStatus.Id!.Value,
+		(Status)ModEntry.Instance.Content.MinidriveStatus.Id!.Value,
+		(Status)ModEntry.Instance.Content.PulsedriveStatus.Id!.Value,
+	]);
+	
 	internal static readonly DriveStatusManager Instance = new();
 
 	private DriveStatusManager()
@@ -82,20 +89,19 @@ internal sealed class DriveStatusManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 		if (ship.Get((Status)ModEntry.Instance.Content.MinidriveStatus.Id!.Value) > 0)
 			damage++;
 	}
+	
+	public IReadOnlySet<Status> GetStatusesToCallTurnTriggerHooksFor(IKokoroApi.IV2.IStatusLogicApi.IHook.IGetStatusesToCallTurnTriggerHooksForArgs args)
+		=> StatusesToCallTurnTriggerHooksFor.Value.Intersect(args.NonZeroStatuses).ToHashSet();
 
 	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
 		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
 			return false;
-		if (args.Amount <= 0)
-			return false;
 
-		if (args.Status == (Status)ModEntry.Instance.Content.UnderdriveStatus.Id!.Value)
-			args.Amount--;
-		else if (args.Status == (Status)ModEntry.Instance.Content.MinidriveStatus.Id!.Value)
-			args.Amount--;
-		else if (args.Status == (Status)ModEntry.Instance.Content.PulsedriveStatus.Id!.Value)
+		if (args.Status == (Status)ModEntry.Instance.Content.PulsedriveStatus.Id!.Value)
 			args.Amount = 0;
+		else
+			args.Amount -= Math.Sign(args.Amount);
 		return false;
 	}
 }
