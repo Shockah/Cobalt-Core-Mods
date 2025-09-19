@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.1
+Released 19 September 2025.
 
 * Lucky Drive no longer exposes odds on attack cards when hidden with the Pressed Clover artifact.
 
