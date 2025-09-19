@@ -25,6 +25,7 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 	public static IModSoundEntry RollTickSound { get; private set; } = null!;
 	
 	private static readonly Pool<OnOddsRollsArgs> OnOddsRollsArgsPool = new(() => new());
+	private static bool IsRenderingCard;
 
 	private static double RollTimeLeft;
 	
@@ -90,10 +91,14 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 		
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.ModifyBaseDamage), (State state, Combat? combat, bool fromPlayer) =>
 		{
-			if (!fromPlayer && combat is null)
+			var realState = MG.inst.g?.state ?? state;
+			
+			if (combat is null)
+				return 0;
+			if (fromPlayer && IsRenderingCard && ModEntry.Instance.Api.GetKnownOdds(realState, (realState.route as Combat) ?? combat) is null)
 				return 0;
 
-			var ship = fromPlayer ? state.ship : combat!.otherShip;
+			var ship = fromPlayer ? state.ship : combat.otherShip;
 			return ship.Get(OddsStatus.Status) <= 0 ? 0 : ship.Get(LuckyDriveStatus.Status);
 		});
 		
@@ -112,6 +117,11 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(AStatus), nameof(AStatus.Begin)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AStatus_Begin_Prefix))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Prefix)),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Finalizer))
 		);
 	}
 
@@ -287,6 +297,12 @@ internal sealed class Odds : IRegisterable, IKokoroApi.IV2.IStatusLogicApi.IHook
 		__instance.mode = AStatusMode.Set;
 		__instance.statusAmount = newAmount;
 	}
+
+	private static void Card_Render_Prefix()
+		=> IsRenderingCard = true;
+
+	private static void Card_Render_Finalizer()
+		=> IsRenderingCard = false;
 
 	internal sealed class RollAction : CardAction, IWadeApi.IRollAction
 	{
