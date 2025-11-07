@@ -8,9 +8,8 @@ using Shockah.Kokoro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Shockah.DuoArtifacts;
 using Shockah.MORE;
-
-// using Shockah.DuoArtifacts;
 
 namespace Shockah.Natasha;
 
@@ -19,7 +18,7 @@ public sealed class ModEntry : SimpleMod
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal readonly IHarmony Harmony;
 	internal readonly IKokoroApi.IV2 KokoroApi;
-	// internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; }
+	internal IDuoArtifactsApi? DuoArtifactsApi { get; private set; }
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
@@ -88,14 +87,15 @@ public sealed class ModEntry : SimpleMod
 		typeof(RamDiskArtifact),
 	];
 
-	// internal static readonly IReadOnlyList<Type> DuoArtifacts = [
-	// 	typeof(NatashaBooksArtifact),
-	// 	typeof(NatashaCatArtifact),
-	// 	typeof(NatashaDizzyArtifact),
-	// 	typeof(NatashaIsaacArtifact),
-	// 	typeof(NatashaPeriArtifact),
-	// 	typeof(NatashaRiggsArtifact),
-	// ];
+	internal static readonly IReadOnlyList<Type> DuoArtifacts = [
+		typeof(NatashaBooksArtifact),
+		typeof(NatashaCatArtifact),
+		typeof(NatashaDizzyArtifact),
+		typeof(NatashaIsaacArtifact),
+		typeof(NatashaMaxArtifact),
+		typeof(NatashaPeriArtifact),
+		typeof(NatashaRiggsArtifact),
+	];
 
 	internal static readonly IEnumerable<Type> AllArtifactTypes = [
 		.. CommonArtifacts,
@@ -115,7 +115,7 @@ public sealed class ModEntry : SimpleMod
 		Instance = this;
 		Harmony = helper.Utilities.Harmony;
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
-		// DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
+		DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -139,12 +139,12 @@ public sealed class ModEntry : SimpleMod
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
 		
-		// helper.ModRegistry.AwaitApi<IDuoArtifactsApi>("Shockah.DuoArtifacts", api =>
-		// {
-		// 	DuoArtifactsApi = api;
-		// 	foreach (var type in DuoArtifacts)
-		// 		AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
-		// });
+		helper.ModRegistry.AwaitApi<IDuoArtifactsApi>("Shockah.DuoArtifacts", api =>
+		{
+			DuoArtifactsApi = api;
+			foreach (var type in DuoArtifacts)
+				AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
+		});
 		
 		helper.Content.Characters.V2.RegisterPlayableCharacter("Natasha", new()
 		{
