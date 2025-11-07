@@ -63,10 +63,14 @@
                 "name": "TBD",
                 "description": "Your enemy gains 1 random negative status each turn."
             },
-            "Dizzy": {
-                "name": "TBD",
-                "description": "Each combat, your enemy starts with 2 <c=status>MITOSIS</c>. The first time your enemy's <c=status>SHIELD</c> reduces to 0 each combat, they lose 2 <c=status>MITOSIS</c> and you gain 1."
-            },
+	        "Dizzy": {
+		        "name": "TBD",
+		        "description": "Each combat, your enemy starts with 2 <c=status>MITOSIS</c>. The first time your enemy's <c=status>SHIELD</c> reduces to 0 each combat, they lose 2 <c=status>MITOSIS</c> and you gain 1."
+	        },
+	        "Drake": {
+		        "name": "TBD",
+		        "description": "Your <c=action>piercing</c> and <c=action>stunning</c> attacks apply 1 <c=status>ENGINE LOCK</c> on hit."
+	        },
             "Isaac": {
                 "name": "TBD",
                 "description": "Start each combat with 1 <c=status>REPROGRAMMED</c>."
