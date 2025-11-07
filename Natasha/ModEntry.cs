@@ -91,6 +91,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(NatashaBooksArtifact),
 		typeof(NatashaCatArtifact),
 		typeof(NatashaDizzyArtifact),
+		typeof(NatashaDrakeArtifact),
 		typeof(NatashaIsaacArtifact),
 		typeof(NatashaMaxArtifact),
 		typeof(NatashaPeriArtifact),
