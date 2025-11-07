@@ -71,6 +71,10 @@
                 "name": "TBD",
                 "description": "Start each combat with 1 <c=status>REPROGRAMMED</c>."
             },
+	        "Max": {
+		        "name": "TBD",
+		        "description": "Once per turn, whenever a card is <c=cardtrait>exhausted</c>, swap it with the <c=keyword>leftmost</c> card in hand instead, if possible."
+	        },
             "Peri": {
                 "name": "TBD",
                 "description": "The first time the enemy gains any status during each of your turns, gain 1 <c=status>OVERDRIVE</c>."
