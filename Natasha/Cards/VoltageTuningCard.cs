@@ -22,7 +22,7 @@ internal sealed class VoltageTuningCard : Card, IRegisterable, IHasCustomCardTra
 		});
 
 		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 2);
-		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 2);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
@@ -38,7 +38,7 @@ internal sealed class VoltageTuningCard : Card, IRegisterable, IHasCustomCardTra
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.B => [
+			Upgrade.A => [
 				new AStatus { targetPlayer = false, status = Status.boost, statusAmount = 2, disabled = flipped },
 				new ADummyAction(),
 				new AStatus { targetPlayer = false, status = Status.boost, statusAmount = -2, disabled = !flipped },
