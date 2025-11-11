@@ -23,21 +23,25 @@ internal sealed class BufferCard : Card, IRegisterable, IHasCustomCardTraits
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Buffer", "name"]).Localize
 		});
 
-		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 1);
-		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 3);
-		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 1);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 2);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 2);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Limited.Trait };
 
 	public override CardData GetData(State state)
-		=> new() { cost = 0 };
+		=> upgrade switch
+		{
+			Upgrade.B => new() { cost = 0, recycle = true, retain = true },
+			_ => new() { cost = 0 },
+		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.B => [
+			Upgrade.A => [
 				ModEntry.Instance.KokoroApi.OnTurnEnd.MakeAction(
 					ModEntry.Instance.KokoroApi.Limited.MakeChangeLimitedUsesAction(uuid, 1).AsCardAction
 				).AsCardAction,
