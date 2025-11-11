@@ -5,7 +5,8 @@
 ## Upcoming release
 
 * Added duo artifacts for all vanilla characters.
-* The Voltage Tuning card is now Limited 2 (down from Limited 3), but it no longer decreases its uses on the top action.
+* Nerfed the Remove Limiter card: changed from Limited 2 to Limited 3 and removed Recycle on the Limited trash card it creates.
+* Changed the Voltage Tuning card: changed from Limited 3 to Limited 2, but it no longer decreases its uses on the top action.
 
 ## 1.5.1
 Released 7 August 2025.

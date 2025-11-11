@@ -22,14 +22,14 @@ internal sealed class LimiterCard : Card, IRegisterable, IHasCustomCardTraits
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Limiter", "name"]).Localize
 		});
 
-		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 2);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Limited.Trait };
 
 	public override CardData GetData(State state)
-		=> new() { cost = 0, temporary = true, recycle = true };
+		=> new() { cost = 0, temporary = true };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [];
