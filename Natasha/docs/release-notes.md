@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added duo artifacts for all vanilla characters.
+* The Voltage Tuning card is now Limited 2 (down from Limited 3), but it no longer decreases its uses on the top action.
+
 ## 1.5.1
 Released 7 August 2025.
 
