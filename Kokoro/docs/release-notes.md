@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Updated visuals for Sequence actions.
+
 ## 2.12.0
 Released 18 September 2025.
 

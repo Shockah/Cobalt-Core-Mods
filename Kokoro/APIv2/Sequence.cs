@@ -94,6 +94,11 @@ public partial interface IKokoroApi
 				/// The actual action to run every N-th play of the card.
 				/// </summary>
 				CardAction Action { get; set; }
+				
+				/// <summary>
+				/// The tint of the action icons, or <c>null</c> for default.
+				/// </summary>
+				Color? Tint { get; set; }
 
 				/// <summary>
 				/// Sets <see cref="CardId"/>.
@@ -129,6 +134,13 @@ public partial interface IKokoroApi
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
 				ISequenceAction SetAction(CardAction value);
+
+				/// <summary>
+				/// Sets <see cref="Tint"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				ISequenceAction SetTint(Color? value);
 			}
 		}
 	}

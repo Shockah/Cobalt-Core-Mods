@@ -216,23 +216,32 @@
 	},
 	"sequence": {
 		"Run": {
-			"name": "  Sequence: Run",
+			"name": "Sequence: Run",
 			"description": {
-				"stateful": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this run (currently <c=boldPink>{{Current}}</c>/<c=boldPink>{{Steps}}</c>).",
+				"stateful": {
+					"now": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this run (<c=boldPink>now!</c>).",
+					"other": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this run (in <c=boldPink>{{Plays}}</c> plays)."
+				},
 				"stateless": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this run."
 			}
 		},
 		"Combat": {
-			"name": "  Sequence: Combat",
+			"name": "Sequence: Combat",
 			"description": {
-				"stateful": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this combat (currently <c=boldPink>{{Current}}</c>/<c=boldPink>{{Steps}}</c>).",
+				"stateful": {
+					"now": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this combat (<c=boldPink>now!</c>).",
+					"other": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this combat (in <c=boldPink>{{Plays}}</c> plays)."
+				},
 				"stateless": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this combat."
 			}
 		},
 		"Turn": {
-			"name": "  Sequence: Turn",
+			"name": "Sequence: Turn",
 			"description": {
-				"stateful": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this turn (currently <c=boldPink>{{Current}}</c>/<c=boldPink>{{Steps}}</c>).",
+				"stateful": {
+					"now": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this turn (<c=boldPink>now!</c>).",
+					"other": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this turn (in <c=boldPink>{{Plays}}</c> plays)."
+				},
 				"stateless": "This action triggers every <c=boldPink>{{Step}}</c> of <c=boldPink>{{Steps}}</c> times this card is played this turn."
 			}
 		}
