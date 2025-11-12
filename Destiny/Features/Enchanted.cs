@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using FSPRO;
 using HarmonyLib;
+using Nanoray.Pintail;
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
@@ -376,9 +377,12 @@ internal sealed class Enchanted : IRegisterable
 
 	private static int RenderGate(G g, State state, Card card, EnchantGateAction action, bool dontDraw)
 	{
-		if (GetEnchantLevelCost(card.Key(), card.upgrade, action.Level) is not { } actionCost)
+		if (GetEnchantLevelCost(card.Key(), card.upgrade, action.Level) is not { } proxiedActionCost)
 			return 0;
-		actionCost = ModEntry.Instance.KokoroApi.ActionCosts.ModifyActionCost(Mutil.DeepCopy(actionCost), state, state.route as Combat ?? DB.fakeCombat, card, action);
+		
+		var unproxiedActionCost = ModEntry.Instance.Helper.Utilities.Unproxy(proxiedActionCost);
+		var reproxiedActionCost = ModEntry.Instance.Helper.Utilities.ProxyManager.ObtainProxy<string, IKokoroApi.IV2.IActionCostsApi.ICost>(unproxiedActionCost, "<Unknown>", ModEntry.Instance.Package.Manifest.UniqueName);
+		var modifiedActionCost = ModEntry.Instance.KokoroApi.ActionCosts.ModifyActionCost(Mutil.DeepCopy(reproxiedActionCost), state, state.route as Combat ?? DB.fakeCombat, card, action);
 		
 		var enchantLevel = GetEnchantLevel(card);
 		var gateColor = (action.Level - enchantLevel) switch
@@ -411,14 +415,14 @@ internal sealed class Enchanted : IRegisterable
 
 		if (enchantLevel < action.Level)
 		{
-			var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(actionCost, environment);
+			var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(modifiedActionCost, environment);
 			var transactionPaymentResult = transaction.TestPayment(environment);
 			var transactionPaymentResultKey = TransactionWholePaymentResultDictionaryKey.From(transactionPaymentResult);
 			
 			if (!dontDraw && CostOutlineSprites.TryGetValue(transactionPaymentResultKey, out var costOutlineSprite))
 				Draw.Sprite(costOutlineSprite.Sprite, position.x - 1, position.y - 1, color: gateColor);
 			
-			actionCost.Render(g, ref position, false, dontDraw, transactionPaymentResult);
+			modifiedActionCost.Render(g, ref position, false, dontDraw, transactionPaymentResult);
 			var costWidth = (int)position.x - initialX;
 
 			if (!CostOutlineSprites.ContainsKey(transactionPaymentResultKey))
@@ -426,7 +430,7 @@ internal sealed class Enchanted : IRegisterable
 				var baseTexture = TextureUtils.CreateTexture(costWidth, 10, () =>
 				{
 					var position = Vec.Zero;
-					actionCost.Render(g, ref position, false, false, transactionPaymentResult);
+					modifiedActionCost.Render(g, ref position, false, false, transactionPaymentResult);
 				});
 				CostOutlineSprites[transactionPaymentResultKey] = TextureOutlines.CreateOutlineSprite(baseTexture, true, true, true);
 			}

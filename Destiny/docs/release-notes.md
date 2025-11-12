@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Fixed the mod's API, allowing for proper cross-mod integrations.
+* Fixed an integration with Kokoro, causing further issues down the line with cross-mod integrations.
 
 ## 1.2.1
 Released 2 May 2025.
