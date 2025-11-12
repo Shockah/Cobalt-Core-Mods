@@ -75,17 +75,11 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnTurnStart), (State state, Combat combat) =>
 		{
-			if (!combat.isPlayerTurn)
-				return;
-
 			QueueSpontaneousActions(state, combat, combat.hand);
 		}, -1000);
 
 		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnTurnEnd), (State state, Combat combat) =>
 		{
-			if (combat.isPlayerTurn)
-				return;
-
 			foreach (var card in state.GetAllCards())
 				if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, ImpulsiveTriggeredTrait))
 					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, ImpulsiveTriggeredTrait, null, permanent: false);
