@@ -70,29 +70,19 @@ public sealed class ApiImplementation : IDestinyApi
 		=> action as IDestinyApi.IEnchantedAction;
 
 	public IDestinyApi.IImbueAction? AsImbueAction(CardAction action)
-	{
-		throw new System.NotImplementedException();
-	}
+		=> action as IDestinyApi.IImbueAction;
 
 	public IDestinyApi.IImbueTraitAction MakeImbueTraitAction(int level, ICardTraitEntry trait)
-	{
-		throw new System.NotImplementedException();
-	}
+		=> new ImbueTraitAction { Level = level, Trait = trait };
 
 	public IDestinyApi.IImbueTraitAction? AsImbueTraitAction(CardAction action)
-	{
-		throw new System.NotImplementedException();
-	}
+		=> action as IDestinyApi.IImbueTraitAction;
 
 	public IDestinyApi.IImbueDiscountAction MakeImbueDiscountAction(int level, int discount = -1)
-	{
-		throw new System.NotImplementedException();
-	}
+		=> new ImbueDiscountAction { Level = level, Discount = discount };
 
 	public IDestinyApi.IImbueDiscountAction? AsImbueDiscountAction(CardAction action)
-	{
-		throw new System.NotImplementedException();
-	}
+		=> action as IDestinyApi.IImbueDiscountAction;
 
 	public void RegisterHook(IDestinyApi.IHook hook, double priority = 0)
 		=> ModEntry.Instance.HookManager.Register(hook, priority);
