@@ -96,9 +96,24 @@ public partial interface IKokoroApi
 				CardAction Action { get; set; }
 				
 				/// <summary>
-				/// The tint of the action icons, or <c>null</c> for default.
+				/// The color of an active pip representing an action going off, or <c>null</c> for default.
 				/// </summary>
-				Color? Tint { get; set; }
+				Color? ActionOnColor { get; set; }
+				
+				/// <summary>
+				/// The color of an inactive pip representing an action going off, or <c>null</c> for default.
+				/// </summary>
+				Color? ActionOffColor { get; set; }
+				
+				/// <summary>
+				/// The color of an active pip representing no action, or <c>null</c> for default.
+				/// </summary>
+				Color? InactionOnColor { get; set; }
+				
+				/// <summary>
+				/// The color of an inactive pip representing no action, or <c>null</c> for default.
+				/// </summary>
+				Color? InactionOffColor { get; set; }
 
 				/// <summary>
 				/// Sets <see cref="CardId"/>.
@@ -136,11 +151,32 @@ public partial interface IKokoroApi
 				ISequenceAction SetAction(CardAction value);
 
 				/// <summary>
-				/// Sets <see cref="Tint"/>.
+				/// Sets <see cref="ActionOnColor"/>.
 				/// </summary>
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
-				ISequenceAction SetTint(Color? value);
+				ISequenceAction SetActionOnColor(Color? value);
+
+				/// <summary>
+				/// Sets <see cref="ActionOffColor"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				ISequenceAction SetActionOffColor(Color? value);
+
+				/// <summary>
+				/// Sets <see cref="InactionOnColor"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				ISequenceAction SetInactionOnColor(Color? value);
+
+				/// <summary>
+				/// Sets <see cref="InactionOffColor"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				ISequenceAction SetInactionOffColor(Color? value);
 			}
 		}
 	}

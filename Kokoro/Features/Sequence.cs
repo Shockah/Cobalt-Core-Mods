@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using Newtonsoft.Json;
@@ -21,8 +22,8 @@ partial class ApiImplementation
 
 			public IKokoroApi.IV2.ISequenceApi.ISequenceAction MakeAction(int cardId, IKokoroApi.IV2.ISequenceApi.Interval interval, int sequenceStep, int sequenceLength, CardAction action)
 			{
-				if (sequenceLength > 5)
-					throw new NotSupportedException("Only sequences up to 5-long are supported");
+				if (sequenceLength > 8)
+					throw new NotSupportedException("Only sequences up to 8-long are supported");
 				if (sequenceStep < 1 || sequenceStep > sequenceLength)
 					throw new ArgumentOutOfRangeException(nameof(sequenceStep));
 				return new SequenceAction { CardId = cardId, Interval = interval, SequenceStep = sequenceStep, SequenceLength = sequenceLength, Action = action };
@@ -33,22 +34,57 @@ partial class ApiImplementation
 
 internal sealed class SequenceManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 {
+	private readonly struct IconDescriptor(IKokoroApi.IV2.ISequenceApi.Interval interval, IconDescriptor.PipDescriptor[] pips)
+		: IEquatable<IconDescriptor>
+	{
+		public readonly struct PipDescriptor(bool isOn, Color color) : IEquatable<PipDescriptor>
+		{
+			private readonly bool IsOn = isOn;
+			private readonly Color Color = color;
+
+			public override bool Equals(object? obj)
+				=> obj is PipDescriptor other && Equals(other);
+
+			public bool Equals(PipDescriptor other)
+				=> IsOn == other.IsOn && Color.ToInt().Equals(other.Color.ToInt());
+
+			public override int GetHashCode()
+				=> HashCode.Combine(IsOn, Color.ToInt());
+
+			public override string ToString()
+				=> $"{(IsOn ? "On" : "Off")}{Color.ToString().ToUpperInvariant()}";
+		}
+
+		private readonly IKokoroApi.IV2.ISequenceApi.Interval Interval = interval;
+		private readonly PipDescriptor[] Pips = pips;
+
+		public override bool Equals(object? obj)
+			=> obj is IconDescriptor other && Equals(other);
+
+		public bool Equals(IconDescriptor other)
+			=> Interval == other.Interval && Pips.SequenceEqual(other.Pips);
+
+		public override int GetHashCode()
+		{
+			var hashCode = new HashCode();
+			hashCode.Add(Interval);
+			foreach (var pip in Pips)
+				hashCode.Add(pip);
+			return hashCode.ToHashCode();
+		}
+
+		public override string ToString()
+			=> $"{Interval}::{string.Join("_", Pips)}";
+	}
+	
 	internal static readonly SequenceManager Instance = new();
 
-	private static ISpriteEntry BaseRunIcon = null!;
-	private static ISpriteEntry BaseCombatIcon = null!;
-	private static ISpriteEntry BaseTurnIcon = null!;
-	private static readonly Dictionary<(string, int), Spr> CycleBorderIcons = [];
-	private static readonly Dictionary<(int, int), Spr> CycleIcons = [];
-	private static readonly Dictionary<(string, int, int), Spr> RunIcons = [];
-	private static readonly Dictionary<(string, int, int), Spr> CombatIcons = [];
-	private static readonly Dictionary<(string, int, int), Spr> TurnIcons = [];
+	private static ISpriteEntry Sheet = null!;
+	private static readonly Dictionary<IconDescriptor, Spr> Icons = [];
 
 	internal static void Setup(IHarmony harmony)
 	{
-		BaseRunIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Sequence/TypeRun.png"));
-		BaseCombatIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Sequence/TypeCombat.png"));
-		BaseTurnIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Sequence/TypeTurn.png"));
+		Sheet = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/SequenceSheet.png"));
 
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
@@ -56,72 +92,58 @@ internal sealed class SequenceManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 		);
 	}
 
-	internal static Spr ObtainIcon(IKokoroApi.IV2.ISequenceApi.Interval interval, int sequenceStep, int sequenceLength, Color? tint)
+	internal static Spr ObtainIcon(IKokoroApi.IV2.ISequenceApi.Interval interval, int sequenceStep, int sequenceLength, int sequenceAt, Color? actionOnColor, Color? actionOffColor, Color? inactionOnColor, Color? inactionOffColor)
 	{
-		var icons = GetIcons();
-		var defaultedTint = tint ?? new Color("fc72dc");
-		
 		sequenceLength = Math.Max(sequenceLength, 1);
 		sequenceStep = (sequenceStep - 1) % sequenceLength + 1;
-		if (icons.TryGetValue((defaultedTint.ToString(), sequenceStep, sequenceLength), out var icon))
+		sequenceAt = (sequenceAt - 1) % sequenceLength + 1;
+		
+		if (sequenceLength > 8)
+			throw new NotSupportedException("Only sequences up to 8-long are supported");
+		
+		var defaultedActionOnColor = actionOnColor ?? new Color("fc72dc");
+		var defaultedInactionOnColor = inactionOnColor ?? Colors.disabledIconTint;
+		var defaultedActionOffColor = actionOffColor ?? defaultedActionOnColor.gain(0.4);
+		var defaultedInactionOffColor = inactionOffColor ?? defaultedInactionOnColor.gain(0.4);
+		
+		var iconDescriptor = new IconDescriptor(
+			interval,
+			Enumerable.Range(1, sequenceLength)
+				.Select(i => new IconDescriptor.PipDescriptor(sequenceAt == i, GetPipColor(i)))
+				.ToArray()
+		);
+
+		if (Icons.TryGetValue(iconDescriptor, out var icon))
 			return icon;
 		
-		icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite($"SequenceThis{interval}{sequenceStep}of{sequenceLength}", () =>
+		icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite($"Sequence::{iconDescriptor}", () =>
 		{
-			var baseIcon = SpriteLoader.Get(GetBaseIcon().Sprite)!;
-			return TextureUtils.CreateTexture(baseIcon.Width, baseIcon.Height, () =>
+			return TextureUtils.CreateTexture(9, 9, () =>
 			{
-				Draw.Sprite(baseIcon, 0, 0);
-				Draw.Sprite(GetCycleBorderIcon(sequenceLength), 0, 0, color: defaultedTint.gain(0.75));
+				Draw.Sprite(Sheet.Sprite, 0, 0, pixelRect: GetTypeRegion());
+				Draw.Sprite(Sheet.Sprite, 0, 0, pixelRect: GetBaseRegion());
 
 				for (var i = 1; i <= sequenceLength; i++)
-				{
-					var pipColor = defaultedTint.gain(i == sequenceStep ? 1 : 0.4);
-					Draw.Sprite(GetCycleIcon(i, sequenceLength), 0, 0, color: pipColor);
-				}
+					Draw.Sprite(Sheet.Sprite, 0, 0, pixelRect: GetPipRegion(i, i == sequenceAt), color: GetPipColor(i));
 			});
 		}).Sprite;
 
-		icons[(defaultedTint.ToString(), sequenceStep, sequenceLength)] = icon;
+		Icons[iconDescriptor] = icon;
 		return icon;
-		
-		ISpriteEntry GetBaseIcon()
-			=> interval switch
-			{
-				IKokoroApi.IV2.ISequenceApi.Interval.Run => BaseRunIcon,
-				IKokoroApi.IV2.ISequenceApi.Interval.Combat => BaseCombatIcon,
-				IKokoroApi.IV2.ISequenceApi.Interval.Turn => BaseTurnIcon,
-				_ => throw new ArgumentOutOfRangeException(nameof(interval), interval, null)
-			};
 
-		Spr GetCycleBorderIcon(int length)
-		{
-			if (!CycleBorderIcons.TryGetValue((tint.ToString()!, length), out var cycleBorderIcon))
-			{
-				cycleBorderIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Sequence/CycleBorder{length}.png")).Sprite;
-				CycleBorderIcons[(tint.ToString()!, length)] = cycleBorderIcon;
-			}
-			return cycleBorderIcon;
-		}
+		Color GetPipColor(int step)
+			=> step == sequenceStep
+				? (step == sequenceAt ? defaultedActionOnColor : defaultedActionOffColor)
+				: (step == sequenceAt ? defaultedInactionOnColor : defaultedInactionOffColor);
 
-		Spr GetCycleIcon(int step, int length)
-		{
-			if (!CycleIcons.TryGetValue((step, length), out var cycleIcon))
-			{
-				cycleIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Sequence/Cycle{step}of{length}.png")).Sprite;
-				CycleIcons[(step, length)] = cycleIcon;
-			}
-			return cycleIcon;
-		}
-		
-		Dictionary<(string, int, int), Spr> GetIcons()
-			=> interval switch
-			{
-				IKokoroApi.IV2.ISequenceApi.Interval.Run => RunIcons,
-				IKokoroApi.IV2.ISequenceApi.Interval.Combat => CombatIcons,
-				IKokoroApi.IV2.ISequenceApi.Interval.Turn => TurnIcons,
-				_ => throw new ArgumentOutOfRangeException(nameof(interval), interval, null)
-			};
+		Rect GetTypeRegion()
+			=> new((int)interval * 9, 0, 9, 9);
+
+		Rect GetBaseRegion()
+			=> new(0, (sequenceLength - 1) * 9, 9, 9);
+
+		Rect GetPipRegion(int step, bool isOn)
+			=> new(9 + (step - 1) * 18 + (isOn ? 9 : 0), (sequenceLength - 1) * 9, 9, 9);
 	}
 
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
@@ -131,7 +153,6 @@ internal sealed class SequenceManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 
 		int? nextTimesPlayed = state.FindCard(sequenceAction.CardId) is { } card ? ModEntry.Instance.Api.V2.TimesPlayed.GetTimesPlayed(card, (IKokoroApi.IV2.ITimesPlayedApi.Interval)(int)sequenceAction.Interval) + 1 : null;
 		var step = ((nextTimesPlayed ?? 1) - 1) % sequenceAction.SequenceLength + 1;
-		var iconStep = (sequenceAction.SequenceStep - step + sequenceAction.SequenceLength) % sequenceAction.SequenceLength + 1;
 		var selfDisabled = sequenceAction.disabled || (nextTimesPlayed is not null && step != sequenceAction.SequenceStep);
 		var oldActionDisabled = sequenceAction.Action.disabled;
 		sequenceAction.Action.disabled = selfDisabled;
@@ -140,7 +161,13 @@ internal sealed class SequenceManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 		var initialX = (int)position.x;
 
 		if (!dontDraw)
-			Draw.Sprite(ObtainIcon(sequenceAction.Interval, iconStep, sequenceAction.SequenceLength, sequenceAction.Tint), position.x, position.y, color: sequenceAction.disabled ? Colors.disabledIconTint : Colors.white);
+			Draw.Sprite(
+				ObtainIcon(
+					sequenceAction.Interval, sequenceAction.SequenceStep, sequenceAction.SequenceLength, step,
+					sequenceAction.ActionOnColor, sequenceAction.ActionOffColor, sequenceAction.InactionOnColor, sequenceAction.InactionOffColor
+				),
+				position.x, position.y, color: sequenceAction.disabled ? Colors.disabledIconTint : Colors.white
+			);
 		position.x += 10;
 
 		g.Push(rect: new(position.x - initialX, 0));
@@ -165,20 +192,22 @@ internal sealed class SequenceAction : CardAction, IKokoroApi.IV2.ISequenceApi.I
 	public required CardAction Action { get; set; }
 	public required int SequenceStep { get; set; }
 	public required int SequenceLength { get; set; }
-	public Color? Tint { get; set; }
+	public Color? ActionOnColor { get; set; }
+	public Color? ActionOffColor { get; set; }
+	public Color? InactionOnColor { get; set; }
+	public Color? InactionOffColor { get; set; }
 
 	[JsonIgnore]
 	public CardAction AsCardAction
 		=> this;
 
 	public override Icon? GetIcon(State s)
-		=> new(SequenceManager.ObtainIcon(Interval, SequenceStep, SequenceLength, Tint), null, Colors.textMain);
+		=> new(SequenceManager.ObtainIcon(Interval, SequenceStep, SequenceLength, 1, ActionOnColor, ActionOffColor, InactionOnColor, InactionOffColor), null, Colors.textMain);
 
 	public override List<Tooltip> GetTooltips(State s)
 	{
 		int? nextTimesPlayed = s.FindCard(CardId) is { } card ? ModEntry.Instance.Api.V2.TimesPlayed.GetTimesPlayed(card, (IKokoroApi.IV2.ITimesPlayedApi.Interval)(int)Interval) + 1 : null;
 		var step = ((nextTimesPlayed ?? 1) - 1) % SequenceLength + 1;
-		var iconStep = (SequenceStep - step + SequenceLength) % SequenceLength + 1;
 
 		string description;
 		if (nextTimesPlayed is null)
@@ -191,7 +220,7 @@ internal sealed class SequenceAction : CardAction, IKokoroApi.IV2.ISequenceApi.I
 		return [
 			new GlossaryTooltip($"action.{GetType().Namespace!}::SequenceThis{Interval}{SequenceLength}")
 			{
-				Icon = SequenceManager.ObtainIcon(Interval, iconStep, SequenceLength, Tint),
+				Icon = SequenceManager.ObtainIcon(Interval, SequenceStep, SequenceLength, step, ActionOnColor, ActionOffColor, InactionOnColor, InactionOffColor),
 				TitleColor = Colors.action,
 				Title = ModEntry.Instance.Localizations.Localize(["sequence", Interval.ToString(), "name"]),
 				Description = description,
@@ -246,9 +275,27 @@ internal sealed class SequenceAction : CardAction, IKokoroApi.IV2.ISequenceApi.I
 		return this;
 	}
 
-	public IKokoroApi.IV2.ISequenceApi.ISequenceAction SetTint(Color? value)
+	public IKokoroApi.IV2.ISequenceApi.ISequenceAction SetActionOnColor(Color? value)
 	{
-		Tint = value;
+		ActionOnColor = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.ISequenceApi.ISequenceAction SetActionOffColor(Color? value)
+	{
+		ActionOffColor = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.ISequenceApi.ISequenceAction SetInactionOnColor(Color? value)
+	{
+		InactionOnColor = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.ISequenceApi.ISequenceAction SetInactionOffColor(Color? value)
+	{
+		InactionOffColor = value;
 		return this;
 	}
 }
