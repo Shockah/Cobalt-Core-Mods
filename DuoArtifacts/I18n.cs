@@ -8,15 +8,15 @@ internal static class I18n
 {
 	public static readonly string DuoArtifactDeckName = "Duo";
 	public static readonly string DuoArtifactTooltip = "{0}-{1}";
-	public static readonly string DuoArtifactLongTooltip = $"{DuoArtifactTooltip} Duo Artifact.";
+	public static readonly string DuoArtifactLongTooltip = $"{DuoArtifactTooltip} Duo.";
 
 	public static readonly string TrioArtifactDeckName = "Trio";
 	public static readonly string TrioArtifactTooltip = "{0}-{1}-{2}";
-	public static readonly string TrioArtifactLongTooltip = $"{TrioArtifactTooltip} Trio Artifact.";
+	public static readonly string TrioArtifactLongTooltip = $"{TrioArtifactTooltip} Trio.";
 
 	public static readonly string ComboArtifactDeckName = "Combo";
 	public static readonly string ComboArtifactTooltip = "{0}";
-	public static readonly string ComboArtifactLongTooltip = $"{ComboArtifactTooltip} Combo Artifact.";
+	public static readonly string ComboArtifactLongTooltip = $"{ComboArtifactTooltip} Combo.";
 	public static readonly string ComboArtifactTooltipSeparator = "-";
 
 	public static readonly string CharacterEligibleForDuoArtifact = "Eligible for duo artifacts:";

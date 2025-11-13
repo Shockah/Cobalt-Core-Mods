@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Removed Perfect Shield from the Energy Condenser (Dizzy-Peri duo) artifact's tooltip, as it is no longer relevant.
+* Shortened the tooltip header of duo artifacts, making most (all?) of them fit in one line.
 
 ## 1.8.2
 Released 14 September 2025.
