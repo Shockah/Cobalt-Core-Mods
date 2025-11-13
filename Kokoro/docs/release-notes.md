@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.12.1
+Released 13 November 2025.
 
 * Fixed Oxidation not applying Corrode.
 * Updated visuals for Sequence actions.

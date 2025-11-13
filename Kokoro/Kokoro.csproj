@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Shockah.Kokoro</RootNamespace>
-		<Version>2.12.0</Version>
+		<Version>2.12.1</Version>
 		<IsLegacyMod>True</IsLegacyMod>
 	</PropertyGroup>
 	<ItemGroup>
-		<ModFiles Include="i18n/**" />
-		<ModFiles Include="assets/**" />
+		<ModFiles Include="i18n/**/*.json" />
+		<ModFiles Include="assets/**/*.png" />
 	</ItemGroup>
 	<Import Project="..\Configuration.Mod.props" />
 	<ItemGroup>
