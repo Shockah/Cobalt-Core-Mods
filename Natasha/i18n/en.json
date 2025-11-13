@@ -19,7 +19,7 @@
     "artifact": {
         "Backdoor": {
             "name": "BACKDOOR",
-            "description": "Whenever all uses of a <c=cardtrait>limited</c> card are spent, your enemy gains 1 <c=status>corrode</c>."
+            "description": "Whenever all uses of a <c=cardtrait>limited</c> card are spent, your enemy gains 1 <c=status>CORRODE</c>."
         },
         "DarkWebData": {
             "name": "DARK WEB DATA",
@@ -35,7 +35,7 @@
         },
         "Keylogger": {
             "name": "KEYLOGGER",
-            "description": "After you end your turn with more than 0 <c=energy>energy</c>, give 1 extra use to a random <c=cardtrait>limited</c> card in your hand, or draw pile, or discard pile."
+            "description": "After you end your turn with more than 0 <c=energy>ENERGY</c>, give 1 extra use to a random <c=cardtrait>limited</c> card in your hand, or draw pile, or discard pile."
         },
         "NetworkComputing": {
             "name": "NETWORK COMPUTING",
@@ -52,7 +52,7 @@
         },
         "TraceProtectionLink": {
             "name": "TRACE PROTECTION LINK",
-            "description": "Whenever you play a <c=cardtrait>limited</c> card, gain 1 <c=status>temp shield</c>."
+            "description": "Whenever you play a <c=cardtrait>limited</c> card, gain 1 <c=status>TEMP SHIELD</c>."
         },
         "Duo": {
             "Books": {
