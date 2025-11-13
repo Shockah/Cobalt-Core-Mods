@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.2.0
+Released 13 November 2025.
 
 * Added duo and unmanned runs. Mods can specify the cards and artifacts these runs start with, but all characters and ships have defaults.
 * Added an API for mods to register their own custom boot sequence choices.
