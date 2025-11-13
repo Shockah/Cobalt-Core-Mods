@@ -23,6 +23,10 @@ internal sealed class PartialCrewRuns : IRegisterable
 	{
 		DuoRunArtifact.Register(package, helper);
 		UnmannedRunArtifact.Register(package, helper);
+
+		BlacklistEventDuringUnmannedRun("ChoiceCardRewardOfYourColorChoice");
+		BlacklistEventDuringUnmannedRun("CrystallizedFriendEvent");
+		BlacklistEventDuringUnmannedRun("LoseCharacterCard");
 		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(RunConfig), nameof(RunConfig.IsValid)),
@@ -37,6 +41,14 @@ internal sealed class PartialCrewRuns : IRegisterable
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardReward_GetOffering_Prefix)),
 			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardReward_GetOffering_Finalizer))
 		);
+
+		void BlacklistEventDuringUnmannedRun(string nodeKey)
+		{
+			if (!DB.story.all.TryGetValue(nodeKey, out var node))
+				return;
+			node.doesNotHaveArtifacts ??= [];
+			node.doesNotHaveArtifacts.Add(new UnmannedRunArtifact().Key());
+		}
 	}
 
 	internal static StarterDeck MakeDefaultPartialDuoDeck(Deck deck)
