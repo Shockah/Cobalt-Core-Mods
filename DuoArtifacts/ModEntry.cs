@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Shockah.CustomRunOptions;
 using TheJazMaster.MoreDifficulties;
 
 namespace Shockah.DuoArtifacts;
@@ -64,6 +65,12 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 			(Activator.CreateInstance(definition.Type) as DuoArtifact)?.ApplyPatches(Harmony);
 		
 		helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", api => MoreDifficultiesApi = api);
+		
+		helper.ModRegistry.AwaitApi<ICustomRunOptionsApi>("Shockah.CustomRunOptions", api => api.RegisterBootSequenceUpside(
+			"DuoUpside",
+			() => I18n.DuoArtifactBootSequenceOption.Replace("{{Times}}", Instance.Settings.ProfileBased.Current.BootSequenceUpsideCards.ToString()),
+			choice => choice is DuoUpsideChoice
+		));
 
 		helper.ModRegistry.AwaitApi<IModSettingsApi>(
 			"Nickel.ModSettings",

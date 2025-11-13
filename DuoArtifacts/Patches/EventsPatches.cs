@@ -59,7 +59,7 @@ internal static class EventsPatches
 		if (DuoArtifactOfferingAction.GetMatchingDuoArtifactTypes(state).Count == 0)
 			return;
 		
-		choices.Add(new Choice
+		choices.Add(new DuoUpsideChoice
 		{
 			label = I18n.DuoArtifactBootSequenceOption.Replace("{{Times}}", Instance.Settings.ProfileBased.Current.BootSequenceUpsideCards.ToString()),
 			key = ".zone_first",
