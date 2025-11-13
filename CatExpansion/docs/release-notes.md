@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.0.4
+Released 13 November 2025.
 
 * Fixed the Small Wormhole artifact offering CAT artifacts with CAT in the crew.
 * Fixed the Small Wormhole artifact offering artifacts you already have (normally only possible with the above bug, but with mods I'm sure there are other ways).
