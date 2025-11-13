@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using Nickel.ModSettings;
+using TheJazMaster.MoreDifficulties;
 
 namespace Shockah.CustomRunOptions;
 
@@ -14,6 +15,7 @@ internal sealed class ModEntry : SimpleMod
 	internal static ModEntry Instance { get; private set; } = null!;
 	internal IHarmony Harmony { get; }
 	internal readonly IModSettingsApi ModSettingsApi;
+	internal IMoreDifficultiesApi? MoreDifficultiesApi { get; private set; }
 
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
@@ -27,7 +29,7 @@ internal sealed class ModEntry : SimpleMod
 	private static IReadOnlyList<Type> RegisterableTypes { get; } = [
 		typeof(CopySeedOnRunSummary),
 		typeof(NewRunOptionsButton),
-		typeof(SoloRuns),
+		typeof(PartialCrewRuns),
 		typeof(StartRunDetector),
 		.. CustomRunOptionTypes,
 	];
@@ -49,6 +51,8 @@ internal sealed class ModEntry : SimpleMod
 		this.Localizations = new MissingPlaceholderLocalizationProvider<IReadOnlyList<string>>(
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
 		);
+		
+		helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", api => MoreDifficultiesApi = api);
 
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);

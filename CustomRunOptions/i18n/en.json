@@ -21,5 +21,15 @@
 			"starterDeckTitle": "Daily run starter deck modifiers",
 			"upgradeTitle": "Daily run upgrade modifiers"
 		}
+	},
+	"artifact": {
+		"PartialCrewDuoRun": {
+			"name": "DUO RUN",
+			"description": "Two crewmates only."
+		},
+		"PartialCrewUnmannedRun": {
+			"name": "UNMANNED RUN",
+			"description": "The ship is unmanned."
+		}
 	}
 }

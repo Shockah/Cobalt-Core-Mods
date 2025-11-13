@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added duo and unmanned runs. Mods can specify the cards and artifacts these runs start with, but all characters and ships have defaults.
 * Added an API for mods to register their own custom boot sequence choices.
 
 ## 1.1.0
