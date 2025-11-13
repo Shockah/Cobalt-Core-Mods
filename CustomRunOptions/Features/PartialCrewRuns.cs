@@ -27,6 +27,7 @@ internal sealed class PartialCrewRuns : IRegisterable
 		BlacklistEventDuringUnmannedRun("ChoiceCardRewardOfYourColorChoice");
 		BlacklistEventDuringUnmannedRun("CrystallizedFriendEvent");
 		BlacklistEventDuringUnmannedRun("LoseCharacterCard");
+		BlacklistEventDuringUnmannedRun("WrenTreat");
 		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(RunConfig), nameof(RunConfig.IsValid)),

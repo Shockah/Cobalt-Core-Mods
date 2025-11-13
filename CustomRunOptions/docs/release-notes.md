@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* The Upcycling Program map event can no longer appear in unmanned runs.
+
 ## 1.2.0
 Released 13 November 2025.
 
