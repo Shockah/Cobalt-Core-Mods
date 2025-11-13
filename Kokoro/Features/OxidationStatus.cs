@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CobaltCoreModding.Definitions.ExternalItems;
 using Nickel;
 
@@ -108,7 +107,7 @@ internal sealed class OxidationStatusManager : VariedApiVersionHookManager<IKoko
 	}
 	
 	public IReadOnlySet<Status> GetStatusesToCallTurnTriggerHooksFor(IKokoroApi.IV2.IStatusLogicApi.IHook.IGetStatusesToCallTurnTriggerHooksForArgs args)
-		=> StatusesToCallTurnTriggerHooksFor.Value.Intersect(args.NonZeroStatuses).ToHashSet();
+		=> StatusesToCallTurnTriggerHooksFor.Value;
 
 	public double ModifyStatusTurnTriggerPriority(IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusTurnTriggerPriorityArgs args)
 		=> args.Status == ModEntry.Instance.Content.OxidationStatus.Status ? args.Priority + 10 : args.Priority;

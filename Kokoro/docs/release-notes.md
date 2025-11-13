@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Fixed Oxidation not applying Corrode.
 * Updated visuals for Sequence actions.
 
 ## 2.12.0
