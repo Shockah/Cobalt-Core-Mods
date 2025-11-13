@@ -50,11 +50,12 @@ internal sealed class SmallWormholeArtifact : Artifact, IRegisterable
 
 		private static List<Artifact> GetCustomArtifactOffering(State state)
 		{
+			var currentArtifacts = state.EnumerateAllArtifacts();
 			var blockedArtifactTypes = ArtifactReward.GetBlockedArtifacts(state);
 			var nonCrewCharacterDeckTypes = NewRunOptions.allChars
-				.Select(deckType => deckType == Deck.colorless ? Deck.catartifact : deckType)
 				.Where(deckType => state.characters.All(character => character.deckType != deckType))
-				.Where(deckType => deckType == Deck.catartifact || ModEntry.Instance.EssentialsApi.GetExeCardTypeForDeck(deckType) is not null)
+				.Where(deckType => deckType == Deck.colorless || ModEntry.Instance.EssentialsApi.GetExeCardTypeForDeck(deckType) is not null)
+				.Select(deckType => deckType == Deck.colorless ? Deck.catartifact : deckType)
 				.ToList();
 
 			return DB.artifacts
@@ -62,6 +63,7 @@ internal sealed class SmallWormholeArtifact : Artifact, IRegisterable
 				.Where(e => e.Meta.pools.Contains(ArtifactPool.Common) && !e.Meta.pools.Contains(ArtifactPool.Unreleased) && !e.Meta.pools.Contains(ArtifactPool.EventOnly))
 				.Where(e => nonCrewCharacterDeckTypes.Contains(e.Meta.owner))
 				.Where(e => !blockedArtifactTypes.Contains(e.Type))
+				.Where(e => currentArtifacts.All(a => a.Key() != e.Key))
 				.Where(e => !(ModEntry.Instance.Helper.Content.Characters.V2.LookupByDeck(e.Meta.owner)?.Configuration.Starters.artifacts.Any(starter => starter.GetType() == e.Type) ?? false))
 				.Shuffle(state.rngArtifactOfferings)
 				.Take(4)
