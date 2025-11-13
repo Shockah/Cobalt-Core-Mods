@@ -18,7 +18,12 @@
         {
             "UniqueName": "Shockah.Kokoro",
             "Version": "2.11.0"
-        }
+        },
+	    {
+		    "UniqueName": "Shockah.CustomRunOptions",
+		    "Version": "1.2.0",
+		    "IsRequired": false
+	    }
     ],
     "UpdateChecks": {
         "NexusMods": {
