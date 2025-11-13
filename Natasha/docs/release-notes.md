@@ -8,6 +8,7 @@
 * Buffed the Buffer card: the base card changed from Limited 1 to Limited 2; the old B upgrade became the new A upgrade; the new B upgrade is now the same as the base card, except has Recycle and Retain.
 * Nerfed the Remove Limiter card: changed from Limited 2 to Limited 3 and removed Recycle on the Limited trash card it creates.
 * Changed the Voltage Tuning card: changed from Limited 3 to Limited 2, but it no longer decreases its uses on the top action. Also swapped around the A and B upgrades.
+* Fixed capitalization in artifact tooltips.
 
 ## 1.5.1
 Released 7 August 2025.
