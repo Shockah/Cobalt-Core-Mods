@@ -6,7 +6,8 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<ModFiles Include="i18n/**/*.json" />
-		<ModFiles Include="assets/**/*.png" />
+        <ModFiles Include="assets/**/*.png" />
+        <ModFiles Include="assets/**/*.fnt" />
 	</ItemGroup>
 	<Import Project="..\Configuration.Mod.props" />
 	<ItemGroup>

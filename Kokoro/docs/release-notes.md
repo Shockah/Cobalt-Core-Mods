@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed some asset files not being included in the release.
+
 ## 2.12.1
 Released 13 November 2025.
 
