@@ -53,4 +53,7 @@ internal sealed class ModEntry : SimpleMod
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
 	}
+
+	public override object GetApi(IModManifest requestingMod)
+		=> new ApiImplementation(requestingMod);
 }

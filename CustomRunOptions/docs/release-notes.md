@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added an API for mods to register their own custom boot sequence choices.
+
 ## 1.1.0
 Released 21 July 2025.
 

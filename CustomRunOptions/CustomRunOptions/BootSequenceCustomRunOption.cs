@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
@@ -10,7 +11,34 @@ namespace Shockah.CustomRunOptions;
 
 internal sealed class BootSequenceCustomRunOption : ICustomRunOption
 {
-	private static readonly List<string> UpsideChoiceTitleLocKeys = [
+	public interface IBootChoice
+	{
+		string Key { get; }
+		string Title { get; }
+		
+		bool Matches(Choice choice);
+
+		public readonly record struct Vanilla(string Key) : IBootChoice
+		{
+			public string Title
+				=> Loc.T(Key);
+
+			public bool Matches(Choice choice)
+				=> choice.label == Title;
+		}
+
+		public readonly record struct Modded(string Key, Func<string> TitleProvider, Func<Choice, bool> MatchPredicate) : IBootChoice
+		{
+			public string Title
+				=> TitleProvider();
+			
+			public bool Matches(Choice choice)
+				=> MatchPredicate(choice);
+		}
+	}
+
+	internal static readonly Dictionary<string, IBootChoice> UpsideChoices = new List<string>
+	{
 		"BootSequence_Offer3Uncommon",
 		"BootSequence_Offer3Rare",
 		"BootSequence_CommonArtifact",
@@ -21,13 +49,14 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOption
 		"BootSequence_Upgrade2A",
 		"BootSequence_Upgrade2B",
 		"BootSequence_ReplaceWithBossArtifact",
-	];
+	}.ToDictionary(k => k, k => (IBootChoice)new IBootChoice.Vanilla(k));
 	
-	private static readonly List<string> DownsideChoiceTitleLocKeys = [
+	internal static readonly Dictionary<string, IBootChoice> DownsideChoices = new List<string>
+	{
 		"BootSequenceDownsideDebris",
 		"BootSequenceDownsideMaxHull",
 		"BootSequenceDownsideMaxShield",
-	];
+	}.ToDictionary(k => k, k => (IBootChoice)new IBootChoice.Vanilla(k));
 	
 	private static ISpriteEntry UpsideEnforceIcon = null!;
 	private static ISpriteEntry UpsideBlacklistIcon = null!;
@@ -103,11 +132,11 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOption
 							() => config.GetEnforcedBootSequenceUpside() == "",
 							(_, _, value) => config.SetEnforcedBootSequenceUpside(value ? "" : null)
 						).SetTitleFont(() => DB.pinch).SetHeight(17),
-						.. UpsideChoiceTitleLocKeys
-							.Select(IModSettingsApi.IModSetting (key) => api.MakeCheckbox(
-								() => Loc.T(key),
-								() => config.GetEnforcedBootSequenceUpside() == key,
-								(_, _, value) => config.SetEnforcedBootSequenceUpside(value ? key : null)
+						.. UpsideChoices.Values
+							.Select(IModSettingsApi.IModSetting (choice) => api.MakeCheckbox(
+								() => choice.Title,
+								() => config.GetEnforcedBootSequenceUpside() == choice.Key,
+								(_, _, value) => config.SetEnforcedBootSequenceUpside(value ? choice.Key : null)
 							).SetTitleFont(() => DB.pinch).SetHeight(17))
 					]),
 					api.MakeBackButton()
@@ -125,18 +154,18 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOption
 						() => ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "blacklist"])
 					),
 					api.MakeList(
-						UpsideChoiceTitleLocKeys
-							.Select(IModSettingsApi.IModSetting (key) => api.MakeCheckbox(
-								() => Loc.T(key),
-								() => config.GetBlacklistedBootSequenceUpsides().Contains(key),
+						UpsideChoices.Values
+							.Select(IModSettingsApi.IModSetting (choice) => api.MakeCheckbox(
+								() => choice.Title,
+								() => config.GetBlacklistedBootSequenceUpsides().Contains(choice.Key),
 								(_, _, value) =>
 								{
 									if (config.GetEnforcedBootSequenceUpside() is not null)
 										config.SetEnforcedBootSequenceUpside(null);
 									if (value)
-										config.GetBlacklistedBootSequenceUpsides().Add(key);
+										config.GetBlacklistedBootSequenceUpsides().Add(choice.Key);
 									else
-										config.GetBlacklistedBootSequenceUpsides().Remove(key);
+										config.GetBlacklistedBootSequenceUpsides().Remove(choice.Key);
 								}
 							).SetTitleFont(() => DB.pinch).SetHeight(17))
 							.ToList()
@@ -169,11 +198,11 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOption
 							() => config.GetEnforcedBootSequenceDownside() == "",
 							(_, _, value) => config.SetEnforcedBootSequenceDownside(value ? "" : null)
 						).SetTitleFont(() => DB.pinch).SetHeight(17),
-						.. DownsideChoiceTitleLocKeys
-							.Select(IModSettingsApi.IModSetting (key) => api.MakeCheckbox(
-								() => Loc.T(key),
-								() => config.GetEnforcedBootSequenceDownside() == key,
-								(_, _, value) => config.SetEnforcedBootSequenceDownside(value ? key : null)
+						.. DownsideChoices.Values
+							.Select(IModSettingsApi.IModSetting (choice) => api.MakeCheckbox(
+								() => choice.Title,
+								() => config.GetEnforcedBootSequenceDownside() == choice.Key,
+								(_, _, value) => config.SetEnforcedBootSequenceDownside(value ? choice.Key : null)
 							).SetTitleFont(() => DB.pinch).SetHeight(17))
 					]),
 					api.MakeBackButton()
@@ -191,18 +220,18 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOption
 						() => ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "blacklist"])
 					),
 					api.MakeList(
-						DownsideChoiceTitleLocKeys
-							.Select(IModSettingsApi.IModSetting (key) => api.MakeCheckbox(
-								() => Loc.T(key),
-								() => config.GetBlacklistedBootSequenceDownsides().Contains(key),
+						DownsideChoices.Values
+							.Select(IModSettingsApi.IModSetting (choice) => api.MakeCheckbox(
+								() => choice.Title,
+								() => config.GetBlacklistedBootSequenceDownsides().Contains(choice.Key),
 								(_, _, value) =>
 								{
 									if (config.GetEnforcedBootSequenceDownside() is not null)
 										config.SetEnforcedBootSequenceDownside(null);
 									if (value)
-										config.GetBlacklistedBootSequenceDownsides().Add(key);
+										config.GetBlacklistedBootSequenceDownsides().Add(choice.Key);
 									else
-										config.GetBlacklistedBootSequenceDownsides().Remove(key);
+										config.GetBlacklistedBootSequenceDownsides().Remove(choice.Key);
 								}
 							).SetTitleFont(() => DB.pinch).SetHeight(17))
 							.ToList()
@@ -254,8 +283,9 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOption
 		var isUpside = __instance.ctx.script == "BootSequence";
 		var enforcedKey = isUpside ? g.state.runConfig.GetEnforcedBootSequenceUpside() : g.state.runConfig.GetEnforcedBootSequenceDownside();
 		var blacklistedKeys = isUpside ? g.state.runConfig.GetBlacklistedBootSequenceUpsides() : g.state.runConfig.GetBlacklistedBootSequenceDownsides();
-		var enforcedString = string.IsNullOrEmpty(enforcedKey) ? null : Loc.T(enforcedKey);
-		var blacklistedLabels = blacklistedKeys.Select(Loc.T).ToHashSet();
+
+		var enforcedChoice = (string.IsNullOrEmpty(enforcedKey) ? null : (isUpside ? UpsideChoices : DownsideChoices).GetValueOrDefault(enforcedKey));
+		var blacklistedChoices = blacklistedKeys.Select(k => (isUpside ? UpsideChoices : DownsideChoices).GetValueOrDefault(k)).OfType<IBootChoice>().ToHashSet();
 		
 		try
 		{
@@ -281,15 +311,15 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOption
 			{
 				attempt++;
 
-				if (enforcedKey is not null)
+				if (enforcedKey == "")
 				{
-					if (enforcedKey == "")
-					{
-						QueueFinish();
-						return;
-					}
+					QueueFinish();
+					return;
+				}
 
-					if (choices.FirstOrDefault(choice => choice.label == enforcedString) is not { } choice)
+				if (enforcedChoice is not null)
+				{
+					if (choices.FirstOrDefault(choice => enforcedChoice.Matches(choice)) is not { } choice)
 					{
 						NextChoices();
 						continue;
@@ -322,7 +352,7 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOption
 					startingChoiceCount = newChoices?.Count ?? 0;
 				originalChoices ??= newChoices?.ToList();
 				choices = newChoices ?? choices;
-				choices.RemoveAll(choice => !string.IsNullOrEmpty(choice.label) && blacklistedLabels.Contains(choice.label));
+				choices.RemoveAll(choice => blacklistedChoices.Any(blacklistedChoice => blacklistedChoice.Matches(choice)));
 				foreach (var newChoice in choices)
 					if (allChoices.All(existingChoice => existingChoice.label != newChoice.label))
 						allChoices.Add(newChoice);
