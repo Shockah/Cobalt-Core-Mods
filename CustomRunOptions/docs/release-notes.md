@@ -6,6 +6,7 @@
 
 * Changed how cards in unmanned runs are offered, making the Upcycling Program and some other event or Boot Sequence choices functional.
 * Added proper handling of More Difficulty Options basic cards.
+* Fixed CAT.EXE in unmanned runs.
 
 ## 1.2.0
 Released 13 November 2025.

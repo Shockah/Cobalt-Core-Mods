@@ -236,7 +236,7 @@ internal sealed class PartialCrewRuns : IRegisterable
 		}
 	}
 
-	private static void CardReward_GetOffering_Prefix(State s, Rarity? rarityOverride, out List<(Card Card, bool DontOffer, Deck Deck)>? __state)
+	private static void CardReward_GetOffering_Prefix(State s, Deck? limitDeck, Rarity? rarityOverride, out List<(Card Card, bool DontOffer, Deck Deck)>? __state)
 	{
 		if (s.characters.Count != 0)
 		{
@@ -272,35 +272,52 @@ internal sealed class PartialCrewRuns : IRegisterable
 				starterCardKeys.Add(cardEntry.UniqueName);
 			}
 		}
-		
-		var allowedRarityCardKey = rarityOverride switch
-		{
-			Rarity.common => nameof(DefensiveMode),
-			Rarity.uncommon => nameof(JackOfAllTrades),
-			Rarity.rare => nameof(AdaptabilityCard),
-			_ => null,
-		};
 
-		foreach (var card in DB.releasedCards)
+		if (limitDeck == Deck.colorless)
 		{
-			var meta = card.GetMeta();
-
-			if (starterCardKeys.Contains(card.Key()))
+			// do nothing, normal behavior
+		}
+		else if (rarityOverride is not null)
+		{
+			var allowedRarityCardKey = rarityOverride switch
 			{
-				if (meta.deck != Deck.colorless || meta.dontOffer)
-				{
-					__state.Add((card, meta.dontOffer, meta.deck));
-					meta.deck = Deck.colorless;
-					meta.dontOffer = false;
-				}
+				Rarity.common => nameof(DefensiveMode),
+				Rarity.uncommon => nameof(JackOfAllTrades),
+				Rarity.rare => nameof(AdaptabilityCard),
+				_ => null,
+			};
+
+			foreach (var card in DB.releasedCards)
+			{
+				var meta = card.GetMeta();
+
+				if (meta.deck != Deck.colorless)
+					continue;
+
+				var shouldOffer = card.Key() == allowedRarityCardKey;
+				if (shouldOffer != meta.dontOffer)
+					continue;
+
+				__state.Add((card, meta.dontOffer, meta.deck));
+				meta.dontOffer = !shouldOffer;
 			}
-			else if (meta.deck == Deck.colorless)
+		}
+		else
+		{
+			foreach (var card in DB.releasedCards)
 			{
-				if (!meta.dontOffer && (allowedRarityCardKey is null || card.Key() != allowedRarityCardKey))
-				{
-					__state.Add((card, meta.dontOffer, meta.deck));
-					meta.dontOffer = true;
-				}
+				var meta = card.GetMeta();
+
+				if (meta.deck != Deck.colorless)
+					continue;
+
+				var shouldOffer = starterCardKeys.Contains(card.Key());
+				if (shouldOffer != meta.dontOffer)
+					continue;
+
+				__state.Add((card, meta.dontOffer, meta.deck));
+				meta.deck = Deck.colorless;
+				meta.dontOffer = !shouldOffer;
 			}
 		}
 	}
