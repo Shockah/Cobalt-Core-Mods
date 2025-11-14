@@ -4,7 +4,7 @@
 
 ## Upcoming release
 
-* The Upcycling Program map event can no longer appear in unmanned runs.
+* Changed how cards in unmanned runs are offered, making the Upcycling Program and some other event or Boot Sequence choices functional.
 
 ## 1.2.0
 Released 13 November 2025.

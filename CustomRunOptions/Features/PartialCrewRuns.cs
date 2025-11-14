@@ -27,7 +27,6 @@ internal sealed class PartialCrewRuns : IRegisterable
 		BlacklistEventDuringUnmannedRun("ChoiceCardRewardOfYourColorChoice");
 		BlacklistEventDuringUnmannedRun("CrystallizedFriendEvent");
 		BlacklistEventDuringUnmannedRun("LoseCharacterCard");
-		BlacklistEventDuringUnmannedRun("WrenTreat");
 		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(RunConfig), nameof(RunConfig.IsValid)),
@@ -190,7 +189,7 @@ internal sealed class PartialCrewRuns : IRegisterable
 		}
 	}
 
-	private static void CardReward_GetOffering_Prefix(State s, out List<(Card Card, bool DontOffer, Deck Deck)>? __state)
+	private static void CardReward_GetOffering_Prefix(State s, Rarity? rarityOverride, out List<(Card Card, bool DontOffer, Deck Deck)>? __state)
 	{
 		if (s.characters.Count != 0)
 		{
@@ -205,6 +204,14 @@ internal sealed class PartialCrewRuns : IRegisterable
 			nameof(BasicShieldColorless),
 			nameof(DodgeColorless),
 		];
+		
+		var allowedRarityCardKey = rarityOverride switch
+		{
+			Rarity.common => nameof(DefensiveMode),
+			Rarity.uncommon => nameof(JackOfAllTrades),
+			Rarity.rare => nameof(AdaptabilityCard),
+			_ => null,
+		};
 
 		foreach (var card in DB.releasedCards)
 		{
@@ -221,7 +228,7 @@ internal sealed class PartialCrewRuns : IRegisterable
 			}
 			else if (meta.deck == Deck.colorless)
 			{
-				if (!meta.dontOffer)
+				if (!meta.dontOffer && (allowedRarityCardKey is null || card.Key() != allowedRarityCardKey))
 				{
 					__state.Add((card, meta.dontOffer, meta.deck));
 					meta.dontOffer = true;
