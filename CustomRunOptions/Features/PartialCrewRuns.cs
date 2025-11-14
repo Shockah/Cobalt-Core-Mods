@@ -41,6 +41,10 @@ internal sealed class PartialCrewRuns : IRegisterable
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardReward_GetOffering_Prefix)),
 			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardReward_GetOffering_Finalizer))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(DailyDescriptor), nameof(DailyDescriptor.GetDailyModifierArtifactKeys)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(DailyDescriptor_GetDailyModifierArtifactKeys_Transpiler))
+		);
 
 		void BlacklistEventDuringUnmannedRun(string nodeKey)
 		{
@@ -106,10 +110,53 @@ internal sealed class PartialCrewRuns : IRegisterable
 			result.cards.AddRange(
 				starterShip.cards
 					.Where(card => card.Key() is not (nameof(CannonColorless) or nameof(BasicShieldColorless) or nameof(DodgeColorless)))
+					.Where(
+						card => ModEntry.Instance.MoreDifficultiesApi is { } moreDifficultiesApi
+						        && card.GetType() != moreDifficultiesApi.BasicOffencesCardType
+						        && card.GetType() != moreDifficultiesApi.BasicDefencesCardType
+						        && card.GetType() != moreDifficultiesApi.BasicManeuversCardType
+					)
 					.DistinctBy(card => card.Key())
 			);
 		
 		return result;
+	}
+	
+	private static void RemoveNormalStarters(State state)
+	{
+		var dontRemoveThese = new HashSet<string>
+		{
+			nameof(CannonColorless),
+			nameof(DodgeColorless),
+			nameof(BasicShieldColorless),
+			nameof(DroneshiftColorless),
+			nameof(BasicSpacer),
+			nameof(CorruptedCore),
+		};
+
+		if (ModEntry.Instance.MoreDifficultiesApi is { } moreDifficultiesApi)
+		{
+			var mdoTypes = new[]
+			{
+				moreDifficultiesApi.BasicOffencesCardType,
+				moreDifficultiesApi.BasicDefencesCardType,
+				moreDifficultiesApi.BasicManeuversCardType,
+				moreDifficultiesApi.BasicBroadcastCardType,
+			};
+
+			foreach (var mdoType in mdoTypes)
+			{
+				if (ModEntry.Instance.Helper.Content.Cards.LookupByCardType(mdoType) is not { } cardEntry)
+					continue;
+				dontRemoveThese.Add(cardEntry.UniqueName);
+			}
+		}
+		
+		if (StarterShip.ships.TryGetValue(state.ship.key, out var starterShip))
+			foreach (var card in starterShip.cards)
+				dontRemoveThese.Add(card.Key());
+		
+		state.deck.RemoveAll(card => !dontRemoveThese.Contains(card.Key()));
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
@@ -204,6 +251,27 @@ internal sealed class PartialCrewRuns : IRegisterable
 			nameof(BasicShieldColorless),
 			nameof(DodgeColorless),
 		];
+
+		if (ModEntry.Instance.MoreDifficultiesApi is { } moreDifficultiesApi && s.GetDifficulty() >= moreDifficultiesApi.Difficulty1)
+		{
+			starterCardKeys.Remove(nameof(CannonColorless));
+			starterCardKeys.Remove(nameof(BasicShieldColorless));
+			starterCardKeys.Remove(nameof(DodgeColorless));
+			
+			var mdoTypes = new[]
+			{
+				moreDifficultiesApi.BasicOffencesCardType,
+				moreDifficultiesApi.BasicDefencesCardType,
+				moreDifficultiesApi.BasicManeuversCardType,
+			};
+
+			foreach (var mdoType in mdoTypes)
+			{
+				if (ModEntry.Instance.Helper.Content.Cards.LookupByCardType(mdoType) is not { } cardEntry)
+					continue;
+				starterCardKeys.Add(cardEntry.UniqueName);
+			}
+		}
 		
 		var allowedRarityCardKey = rarityOverride switch
 		{
@@ -251,6 +319,55 @@ internal sealed class PartialCrewRuns : IRegisterable
 		s.characters.RemoveAt(s.characters.Count - 1);
 	}
 
+	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+	private static IEnumerable<CodeInstruction> DailyDescriptor_GetDailyModifierArtifactKeys_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find([
+					ILMatches.Ldarg(0),
+					ILMatches.Call("Next"),
+					ILMatches.LdcR8(0.6).Anchor(out var soloChanceInstruction),
+					ILMatches.Instruction(OpCodes.Clt),
+				])
+				.Anchors().AnchorBlock(out var findBlock)
+				.Find(SequenceBlockMatcherFindOccurence.First, SequenceMatcherRelativeBounds.After, ILMatches.Ldloc<IEnumerable<string>>(originalMethod).GetLocalIndex(out var possibleDailyArtifactKeysLocalIndex))
+				.Anchors().PointerMatcher(soloChanceInstruction)
+				.Replace(new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(DailyDescriptor_GetDailyModifierArtifactKeys_Transpiler_SoloChance))))
+				.Anchors().BlockMatcher(findBlock)
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldloca, possibleDailyArtifactKeysLocalIndex.Value),
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(DailyDescriptor_GetDailyModifierArtifactKeys_Transpiler_ModifyPossibleDailyArtifactKeys))),
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("Could not patch method {DeclaringType}::{Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod.DeclaringType, originalMethod, ModEntry.Instance.Package.Manifest.UniqueName, ex);
+			return instructions;
+		}
+	}
+
+	private static double DailyDescriptor_GetDailyModifierArtifactKeys_Transpiler_SoloChance()
+		=> ModEntry.Instance.Settings.ProfileBased.Current.SoloDailyChance;
+
+	private static void DailyDescriptor_GetDailyModifierArtifactKeys_Transpiler_ModifyPossibleDailyArtifactKeys(ref IEnumerable<string> possibleDailyArtifactKeys, Rand random)
+	{
+		{
+			var chance = ModEntry.Instance.Settings.ProfileBased.Current.DuoDailyChance;
+			if (chance > 0 && chance >= random.Next())
+				possibleDailyArtifactKeys = possibleDailyArtifactKeys.Append(new DuoRunArtifact().Key());
+		}
+		
+		{
+			var chance = ModEntry.Instance.Settings.ProfileBased.Current.UnmannedDailyChance;
+			if (chance > 0 && chance >= random.Next())
+				possibleDailyArtifactKeys = possibleDailyArtifactKeys.Append(new UnmannedRunArtifact().Key());
+		}
+	}
+
 	private sealed class DuoRunArtifact : Artifact, IRegisterable
 	{
 		// ReSharper disable once MemberHidesStaticFromOuterClass
@@ -273,10 +390,16 @@ internal sealed class PartialCrewRuns : IRegisterable
 
 		public override void OnReceiveArtifact(State state)
 		{
-			if (state.characters.Count != 2)
+			if (state.characters.Count < 2)
 				return;
 			if (state.characters.Any(character => character.deckType is null))
 				return;
+
+			if (state.characters.Count > 2)
+			{
+				var shuffleRng = state.rngCurrentEvent.Offshoot();
+				state.characters = state.characters.Shuffle(shuffleRng).Take(2).ToList();
+			}
 			
 			RemoveNormalStarters(state);
 
@@ -301,25 +424,6 @@ internal sealed class PartialCrewRuns : IRegisterable
 				state.SendArtifactToChar(Mutil.DeepCopy(artifact));
 			foreach (var artifact in partialDuoDeck2.artifacts)
 				state.SendArtifactToChar(Mutil.DeepCopy(artifact));
-		}
-		
-		private static void RemoveNormalStarters(State state)
-		{
-			var dontRemoveThese = new HashSet<string>
-			{
-				nameof(CannonColorless),
-				nameof(DodgeColorless),
-				nameof(BasicShieldColorless),
-				nameof(DroneshiftColorless),
-				nameof(BasicSpacer),
-				nameof(CorruptedCore),
-			};
-		
-			if (StarterShip.ships.TryGetValue(state.ship.key, out var starterShip))
-				foreach (var card in starterShip.cards)
-					dontRemoveThese.Add(card.Key());
-		
-			state.deck.RemoveAll(card => !dontRemoveThese.Contains(card.Key()));
 		}
 	}
 
@@ -346,7 +450,10 @@ internal sealed class PartialCrewRuns : IRegisterable
 		public override void OnReceiveArtifact(State state)
 		{
 			if (state.characters.Count != 0)
-				return;
+			{
+				state.characters.Clear();
+				RemoveNormalStarters(state);
+			}
 
 			var unmannedDeck = UnmannedDecks.GetValueOrDefault(state.ship.key) ?? MakeDefaultUnmannedDeck(state.ship.key);
 			foreach (var card in unmannedDeck.cards)

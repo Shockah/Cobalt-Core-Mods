@@ -1,6 +1,15 @@
-﻿namespace TheJazMaster.MoreDifficulties;
+﻿using System;
+
+namespace TheJazMaster.MoreDifficulties;
 
 public interface IMoreDifficultiesApi
 {
-	public StarterDeck? GetAltStarters(Deck deck);
+	StarterDeck? GetAltStarters(Deck deck);
+	
+	int Difficulty1 { get; }
+	
+	Type BasicOffencesCardType { get; }
+	Type BasicDefencesCardType { get; }
+	Type BasicManeuversCardType { get; }
+	Type BasicBroadcastCardType { get; }
 }

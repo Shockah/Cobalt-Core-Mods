@@ -20,6 +20,8 @@ internal sealed class ModEntry : SimpleMod
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 	
+	internal Settings Settings { get; private set; }
+	
 	private static IReadOnlyList<Type> CustomRunOptionTypes { get; } = [
 		typeof(SeedCustomRunOption),
 		typeof(BootSequenceCustomRunOption),
@@ -51,6 +53,8 @@ internal sealed class ModEntry : SimpleMod
 		this.Localizations = new MissingPlaceholderLocalizationProvider<IReadOnlyList<string>>(
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
 		);
+
+		this.Settings = helper.Storage.LoadJson<Settings>(helper.Storage.GetMainStorageFile("json"));
 		
 		helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", api => MoreDifficultiesApi = api);
 
