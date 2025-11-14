@@ -48,8 +48,8 @@ internal sealed class ProfileSettings
 	public double SoloDailyChance = 0.6;
 	
 	[JsonProperty]
-	public double DuoDailyChance = 0.45;
+	public double DuoDailyChance;
 	
 	[JsonProperty]
-	public double UnmannedDailyChance = 0.3;
+	public double UnmannedDailyChance;
 }

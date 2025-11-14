@@ -31,5 +31,31 @@
 			"name": "UNMANNED RUN",
 			"description": "The ship is unmanned."
 		}
+	},
+	"settings": {
+		"UnmannedDailyChance": {
+			"title": "Unmanned Daily Run Weight",
+			"description": [
+				"The weight at which the <c=artifact>UNMANNED RUN</c> modifier will even be possible.",
+				"<c=boldPink>1.0</c> makes it appear as often as other modifiers.",
+				"<c=boldPink>0.0</c> disables it in dailies."
+			]
+		},
+		"SoloDailyChance": {
+			"title": "Solo Daily Run Weight",
+			"description": [
+				"The weight at which the <c=artifact>SOLO RUN</c> modifier will even be possible.",
+				"<c=boldPink>1.0</c> makes it appear as often as other modifiers.",
+				"<c=boldPink>0.0</c> disables it in dailies."
+			]
+		},
+		"DuoDailyChance": {
+			"title": "Duo Daily Run Weight",
+			"description": [
+				"The weight at which the <c=artifact>DUO RUN</c> modifier will even be possible.",
+				"<c=boldPink>1.0</c> makes it appear as often as other modifiers.",
+				"<c=boldPink>0.0</c> disables it in dailies."
+			]
+		}
 	}
 }

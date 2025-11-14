@@ -60,6 +60,61 @@ internal sealed class ModEntry : SimpleMod
 
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
+		
+		ModSettingsApi.RegisterModSettings(ModSettingsApi.MakeList([
+			ModSettingsApi.MakeProfileSelector(
+				() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
+				Settings.ProfileBased
+			),
+			ModSettingsApi.MakeNumericStepper(
+				() => Localizations.Localize(["settings", nameof(ProfileSettings.UnmannedDailyChance), "title"]),
+				() => Settings.ProfileBased.Current.UnmannedDailyChance,
+				value => Settings.ProfileBased.Current.UnmannedDailyChance = Math.Round(value, 2),
+				minValue: 0,
+				maxValue: 1,
+				step: 0.01
+			).SetValueFormatter(value => value.ToString("F2")).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.UnmannedDailyChance)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = Localizations.Localize(["settings", nameof(ProfileSettings.UnmannedDailyChance), "title"]),
+					Description = Localizations.Localize(["settings", nameof(ProfileSettings.UnmannedDailyChance), "description"]),
+				},
+			]),
+			ModSettingsApi.MakeNumericStepper(
+				() => Localizations.Localize(["settings", nameof(ProfileSettings.SoloDailyChance), "title"]),
+				() => Settings.ProfileBased.Current.SoloDailyChance,
+				value => Settings.ProfileBased.Current.SoloDailyChance = Math.Round(value, 2),
+				minValue: 0,
+				maxValue: 1,
+				step: 0.01
+			).SetValueFormatter(value => value.ToString("F2")).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.SoloDailyChance)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = Localizations.Localize(["settings", nameof(ProfileSettings.SoloDailyChance), "title"]),
+					Description = Localizations.Localize(["settings", nameof(ProfileSettings.SoloDailyChance), "description"]),
+				},
+			]),
+			ModSettingsApi.MakeNumericStepper(
+				() => Localizations.Localize(["settings", nameof(ProfileSettings.DuoDailyChance), "title"]),
+				() => Settings.ProfileBased.Current.DuoDailyChance,
+				value => Settings.ProfileBased.Current.DuoDailyChance = Math.Round(value, 2),
+				minValue: 0,
+				maxValue: 1,
+				step: 0.01
+			).SetValueFormatter(value => value.ToString("F2")).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.DuoDailyChance)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = Localizations.Localize(["settings", nameof(ProfileSettings.DuoDailyChance), "title"]),
+					Description = Localizations.Localize(["settings", nameof(ProfileSettings.DuoDailyChance), "description"]),
+				},
+			]),
+		]).SubscribeToOnMenuClose(_ =>
+		{
+			helper.Storage.SaveJson(helper.Storage.GetMainStorageFile("json"), Settings);
+		}));
 	}
 
 	public override object GetApi(IModManifest requestingMod)
