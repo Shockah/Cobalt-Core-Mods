@@ -2,8 +2,10 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.0
+Released 14 November 2025.
 
+* Added options enabling daily runs to be unmanned or duo runs.
 * Changed how cards in unmanned runs are offered, making the Upcycling Program and some other event or Boot Sequence choices functional.
 * Added proper handling of More Difficulty Options basic cards.
 * Fixed CAT.EXE in unmanned runs.
