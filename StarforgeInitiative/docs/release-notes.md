@@ -2,11 +2,12 @@
 
 # Release notes
 
-## Upcoming release
+## 1.2.0
+Released 16 November 2025.
 
 ### Breadnaught
 * Buffed Rotor Grease and it's now a boss artifact.
-* Added the Improved Coolant common artifact. 
+* Added the Improved Coolant common artifact.
 
 ### Nemesis
 * New ship!
