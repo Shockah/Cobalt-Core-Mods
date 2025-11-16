@@ -19,6 +19,7 @@ internal sealed class ModEntry : SimpleMod
 	internal readonly CardRenderer CardRenderer = new();
 	internal readonly ArtifactTooltipRenderer ArtifactTooltipRenderer;
 	internal readonly CardTooltipRenderer CardTooltipRenderer = new();
+	internal readonly ShipRenderer ShipRenderer = new();
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
@@ -184,6 +185,12 @@ internal sealed class ModEntry : SimpleMod
 			QueueDeckArtifactsExportTask(g, withScreenFilter, deck);
 	}
 
+	internal void QueueAllShipsExportTask(bool withScreenFilter)
+	{
+		foreach (var ship in StarterShip.ships.Values)
+			QueueShipExportTask(withScreenFilter, ship.ship);
+	}
+
 	internal void QueueDeckArtifactsExportTask(G g, bool withScreenFilter, Deck deck)
 	{
 		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
@@ -251,6 +258,24 @@ internal sealed class ModEntry : SimpleMod
 		}
 	}
 
+	internal void QueueShipExportTask(bool withScreenFilter, Ship ship)
+	{
+		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
+
+		static string MakeFileSafe(string path)
+		{
+			foreach (var unsafeChar in Path.GetInvalidFileNameChars())
+				path = path.Replace(unsafeChar, '_');
+			return path;
+		}
+
+		var exportableDataPath = Path.Combine(modloaderFolder, "CatDiscordBotDataExport", "ships");
+		Directory.CreateDirectory(exportableDataPath);
+		
+		var imagePath = Path.Combine(exportableDataPath, $"{MakeFileSafe(ship.key)}.png");
+		QueueTask(g => ShipExportTask(g, withScreenFilter, ship, imagePath));
+	}
+
 	private void CardBaseExportTask(G g, bool withScreenFilter, Card card, string path)
 	{
 		using var stream = new FileStream(path, FileMode.Create);
@@ -267,5 +292,11 @@ internal sealed class ModEntry : SimpleMod
 	{
 		using var stream = new FileStream(path, FileMode.Create);
 		ArtifactTooltipRenderer.Render(g, withScreenFilter, artifact, stream);
+	}
+
+	private void ShipExportTask(G g, bool withScreenFilter, Ship ship, string path)
+	{
+		using var stream = new FileStream(path, FileMode.Create);
+		ShipRenderer.Render(g, withScreenFilter, ship, stream);
 	}
 }

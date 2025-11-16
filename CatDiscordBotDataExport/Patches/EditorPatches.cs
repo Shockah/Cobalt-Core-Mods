@@ -27,6 +27,7 @@ internal static class EditorPatches
 
 	private static IEnumerable<CodeInstruction> Editor_PanelTools_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
+		// ReSharper disable PossibleMultipleEnumeration
 		try
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
@@ -48,6 +49,7 @@ internal static class EditorPatches
 			Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, Instance.Package.Manifest.GetDisplayName(@long: false), ex);
 			return instructions;
 		}
+		// ReSharper restore PossibleMultipleEnumeration
 	}
 
 	private static void Editor_PanelTools_Transpiler_AddButtons()
@@ -66,5 +68,12 @@ internal static class EditorPatches
 		ImGui.SameLine();
 		if (ImGui.Button("(bluish2)"))
 			Instance.QueueTask(g => Instance.QueueAllArtifactsExportTask(g, withScreenFilter: true));
+
+		if (ImGui.Button("CAT ship export"))
+			Instance.QueueTask(_ => Instance.QueueAllShipsExportTask(withScreenFilter: false));
+
+		ImGui.SameLine();
+		if (ImGui.Button("(bluish3)"))
+			Instance.QueueTask(_ => Instance.QueueAllShipsExportTask(withScreenFilter: true));
 	}
 }
