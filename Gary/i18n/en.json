@@ -7,25 +7,29 @@
 		]
 	},
 	"status": {
-		"Cram": {
-			"name": "CRAM",
-			"description": "When <c=action>launching</c> <c=midrow>midrow objects</c>, spend <c=status>CRAM</c> for each already existing <c=midrow>object</c> to fit another one."
+		"Tetris": {
+			"name": "Tetris",
+			"description": "When <c=action>launching</c> <c=midrow>midrow objects</c>, spend <c=status>TETRIS</c> for each already existing <c=midrow>object</c> to fit another one."
 		},
-		"CramHarder": {
-			"name": "CRAM HARDER",
-			"description": "You may <c=action>cram</c> while <c=action>launching</c> <c=midrow>midrow objects</c> as if you had {0} more <c=status>CRAM</c>."
+		"Jenga": {
+			"name": "Jenga",
+			"description": "When <c=action>launching</c> <c=midrow>midrow objects</c>, spend 1 <c=status>JENGA</c> to fit another <c=midrow>object</c> into a <c=midrow>stack</c>. <c=downside>It gets <c=wobbly</c></c>."
 		}
 	},
 	"action": {
-		"CrammedLaunch": {
-			"name": "Cram",
-			"description": "The launched <c=midrow>object</c> will be <c=midrow>crammed</c>, regardless of your <c=status>CRAM</c>."
+		"StackedLaunch": {
+			"name": "Stack",
+			"description": "The launched <c=midrow>object</c> will be <c=midrow>stacked</c> with existing <c=midrow>objects</c>, if any."
 		}
 	},
 	"midrowAttribute": {
-		"Crammed": {
-			"name": "Crammed",
-			"description": "All <c=midrow>crammed</c> objects take turns in order. The last <c=midrow>crammed</c> object is the one that takes hits."
+		"Stacked": {
+			"name": "Stacked",
+			"description": "All <c=midrow>stacked</c> objects take turns in order. The last <c=midrow>stacked</c> object is the one that takes hits."
+		},
+		"Wobbly": {
+			"name": "Wobbly",
+			"description": "If any <c=midrow>objects</c> in the <c=midrow>stack</c> are destroyed, the whole <c=midrow>stack</c> also gets destroyed."
 		}
 	},
 	"midrow": {
@@ -35,37 +39,53 @@
 		}
 	},
 	"card": {
+		"AgreeToDisagree": {
+			"name": "Agree to Disagree"
+		},
+		"Attrition": {
+			"name": "Attrition"
+		},
 		"BuildThatWall": {
 			"name": "Build that Wall"
 		},
-		"CardDrone": {
-			"name": "Card Drone"
+		"DefensiveTech": {
+			"name": "Defensive Tech"
 		},
-		"DoubleTrouble": {
-			"name": "Double Trouble"
+		"Engine": {
+			"name": "Engine"
 		},
-		"MassProduce": {
-			"name": "Mass Produce"
+		"Killbox": {
+			"name": "Killbox"
+		},
+		"LeanIn": {
+			"name": "Lean In"
+		},
+		"MapControl": {
+			"name": "Map Control"
 		},
 		"Matryoshka": {
 			"name": "Matryoshka"
 		},
-		"MissileSalvo": {
-			"name": "Missile Salvo",
-			"description": {
-				"None": "Spend all <c=status>cram</c>. <c=action>Launch</c> that many <c=midrow>crammed missiles</c> in front of your ship.",
-				"A": "Spend all <c=status>cram</c>. <c=action>Launch</c> that many <c=midrow>crammed heavy missiles</c> in front of your ship.",
-				"B": "Spend all <c=status>cram</c>. <c=action>Launch</c> that many <c=midrow>crammed seekers</c> in front of your ship."
-			}
+		"RulesLawyering": {
+			"name": "Rules Lawyering"
 		},
-		"Overworking": {
-			"name": "Overworking"
+		"SendRegards": {
+			"name": "Send Regards"
 		},
-		"PrepareResources": {
-			"name": "Prepare Resources"
+		"Steady": {
+			"name": "Steady"
 		},
-		"ScrapDrone": {
-			"name": "Scrap Drone"
+		"Stockpile": {
+			"name": "Stockpile"
+		},
+		"TrapCard": {
+			"name": "Trap Card"
+		},
+		"Turtle": {
+			"name": "Turtle"
+		},
+		"Zerg": {
+			"name": "Zerg"
 		}
 	}
 }
