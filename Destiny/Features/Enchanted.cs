@@ -321,13 +321,15 @@ internal sealed class Enchanted : IRegisterable
 			return false;
 		if (fromUserInteraction && state.CharacterIsMissing(card.GetMeta().deck))
 			return false;
-		if (GetNextEnchantLevelCost(card) is not { } cost)
+		if (GetNextEnchantLevelCost(card) is not { } proxiedActionCost)
 			return false;
 		
-		cost = ModEntry.Instance.KokoroApi.ActionCosts.ModifyActionCost(Mutil.DeepCopy(cost), state, state.route as Combat ?? DB.fakeCombat, card, null);
+		var unproxiedActionCost = ModEntry.Instance.Helper.Utilities.Unproxy(proxiedActionCost);
+		var reproxiedActionCost = ModEntry.Instance.Helper.Utilities.ProxyManager.ObtainProxy<string, IKokoroApi.IV2.IActionCostsApi.ICost>(unproxiedActionCost, "<Unknown>", ModEntry.Instance.Package.Manifest.UniqueName);
+		var modifiedActionCost = ModEntry.Instance.KokoroApi.ActionCosts.ModifyActionCost(Mutil.DeepCopy(reproxiedActionCost), state, state.route as Combat ?? DB.fakeCombat, card, null);
 		
 		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, combat, card);
-		var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(cost, environment);
+		var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(modifiedActionCost, environment);
 		var transactionPaymentResult = transaction.TestPayment(environment);
 
 		if (transactionPaymentResult.UnpaidResources.Count != 0)
@@ -408,8 +410,11 @@ internal sealed class Enchanted : IRegisterable
 
 		foreach (var (_, previousUnpaidEnchantLevelCost) in previousUnpaidEnchantLevelCosts)
 		{
-			var modifiedCost = ModEntry.Instance.KokoroApi.ActionCosts.ModifyActionCost(Mutil.DeepCopy(previousUnpaidEnchantLevelCost), state, state.route as Combat ?? DB.fakeCombat, card, action);
-			var transactionBefore = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(modifiedCost, environment);
+			var unproxieUnpaidActionCost = ModEntry.Instance.Helper.Utilities.Unproxy(previousUnpaidEnchantLevelCost);
+			var reproxiedUnpaidActionCost = ModEntry.Instance.Helper.Utilities.ProxyManager.ObtainProxy<string, IKokoroApi.IV2.IActionCostsApi.ICost>(unproxieUnpaidActionCost, "<Unknown>", ModEntry.Instance.Package.Manifest.UniqueName);
+			var modifiedUnpaidActionCost = ModEntry.Instance.KokoroApi.ActionCosts.ModifyActionCost(Mutil.DeepCopy(reproxiedUnpaidActionCost), state, state.route as Combat ?? DB.fakeCombat, card, action);
+			
+			var transactionBefore = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(modifiedUnpaidActionCost, environment);
 			transactionBefore.Pay(environment);
 		}
 

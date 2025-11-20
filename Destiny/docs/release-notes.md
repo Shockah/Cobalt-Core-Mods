@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed an integration with Kokoro, causing further issues down the line with cross-mod integrations.
+
 ## 1.2.2
 Released 12 November 2025.
 
