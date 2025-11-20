@@ -21,21 +21,28 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry GaryDeck { get; }
 
 	private static readonly IReadOnlyList<Type> CommonCardTypes = [
-		typeof(CardDroneCard),
-		typeof(PrepareResourcesCard),
-		typeof(ScrapDroneCard),
+		typeof(AttritionCard),
+		typeof(DefensiveTechCard),
+		typeof(LeanInCard),
+		typeof(MapControlCard),
+		typeof(SendRegardsCard),
+		typeof(SteadyCard),
+		typeof(TrapCardCard),
+		typeof(TurtleCard),
 	];
 
 	private static readonly IReadOnlyList<Type> UncommonCardTypes = [
 		typeof(BuildThatWallCard),
-		typeof(DoubleTroubleCard),
+		typeof(KillboxCard),
 		typeof(MatryoshkaCard),
-		typeof(MissileSalvoCard),
-		typeof(OverworkingCard),
+		typeof(RulesLawyeringCard),
+		typeof(ZergCard),
 	];
 
 	private static readonly IReadOnlyList<Type> RareCardTypes = [
-		typeof(MassProduceCard),
+		typeof(AgreeToDisagreeCard),
+		typeof(EngineCard),
+		typeof(StockpileCard),
 	];
 
 	private static readonly IEnumerable<Type> AllCardTypes
@@ -66,8 +73,7 @@ public sealed class ModEntry : SimpleMod
 			.. AllCardTypes,
 			.. AllArtifactTypes,
 			.. DuoArtifacts,
-			typeof(CardDroneManager),
-			typeof(Cram),
+			typeof(Stack),
 		];
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
@@ -121,8 +127,8 @@ public sealed class ModEntry : SimpleMod
 			Starters = new()
 			{
 				cards = [
-					new ScrapDroneCard(),
-					new CardDroneCard(),
+					new AttritionCard(),
+					new MapControlCard(),
 				]
 			},
 			//ExeCardType = typeof(BlochExeCard),

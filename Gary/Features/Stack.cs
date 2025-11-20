@@ -15,48 +15,50 @@ using Shockah.Kokoro;
 
 namespace Shockah.Gary;
 
-internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
+internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
-	internal static IStatusEntry CramStatus { get; private set; } = null!;
-	internal static IStatusEntry CramHarderStatus { get; private set; } = null!;
+	internal static IStatusEntry TetrisStatus { get; private set; } = null!;
+	internal static IStatusEntry JengaStatus { get; private set; } = null!;
 	
-	internal static ISpriteEntry CrammedIcon { get; private set; } = null!;
-	internal static ISpriteEntry CrammedLaunchIcon { get; private set; } = null!;
+	internal static ISpriteEntry StackedIcon { get; private set; } = null!;
+	internal static ISpriteEntry WobblyIcon { get; private set; } = null!;
+	internal static ISpriteEntry StackedLaunchIcon { get; private set; } = null!;
 
 	private static StuffBase? ObjectBeingLaunchedInto;
 	private static StuffBase? ObjectToPutLater;
-	private static bool ObjectIsBeingCrammedInto;
+	private static bool ObjectIsBeingStackedInto;
 	private static Guid? NestedJupiterShootBeginId;
-	private static readonly List<(StuffBase RealObject, StuffBase? CrammedObject, int WorldX)?> ForceCrammedObjectStack = [];
+	private static readonly List<(StuffBase RealObject, StuffBase? StackedObject, int WorldX)?> ForceStackedObjectStack = [];
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		CramStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Cram", new()
+		TetrisStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Tetris", new()
 		{
 			Definition = new()
 			{
-				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/Cram.png")).Sprite,
+				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/Tetris.png")).Sprite,
 				color = new("23EEB6"),
 				isGood = true,
 			},
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Cram", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Cram", "description"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Tetris", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Tetris", "description"]).Localize
 		});
 		
-		CramHarderStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("CramHarder", new()
+		JengaStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Jenga", new()
 		{
 			Definition = new()
 			{
-				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/CramHarder.png")).Sprite,
+				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/Jenga.png")).Sprite,
 				color = new("23EEB6"),
 				isGood = true,
 			},
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "CramHarder", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "CramHarder", "description"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Jenga", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Jenga", "description"]).Localize
 		});
 
-		CrammedIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icon/Crammed.png"));
-		CrammedLaunchIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icon/CrammedLaunch.png"));
+		StackedIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icon/Stacked.png"));
+		WobblyIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icon/Wobbly.png"));
+		StackedLaunchIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icon/StackedLaunch.png"));
 
 		HandleLaunch();
 		HandleDestroy();
@@ -70,53 +72,62 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		HandleBubbleField();
 		HandleRadioControl();
 
-		var instance = new Cram();
+		var instance = new Stack();
 		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(instance);
 	}
 
 	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
 	{
-		if (args.Status == CramStatus.Status)
+		if (args.Status == TetrisStatus.Status)
 			return [
 				.. args.Tooltips,
-				MakeCrammedMidrowAttributeTooltip(),
+				MakeStackedMidrowAttributeTooltip(),
 			];
 		
-		if (args.Status == CramHarderStatus.Status)
+		if (args.Status == JengaStatus.Status)
 			return [
 				.. args.Tooltips,
-				.. StatusMeta.GetTooltips(CramStatus.Status, 1),
-				MakeCrammedMidrowAttributeTooltip(),
+				MakeStackedMidrowAttributeTooltip(),
+				MakeWobblyMidrowAttributeTooltip(),
 			];
 
 		return args.Tooltips;
 	}
 
-	internal static Tooltip MakeCrammedMidrowAttributeTooltip()
-		=> new GlossaryTooltip($"midrow.{ModEntry.Instance.Package.Manifest.UniqueName}::Crammed")
+	internal static Tooltip MakeStackedMidrowAttributeTooltip()
+		=> new GlossaryTooltip($"midrow.{ModEntry.Instance.Package.Manifest.UniqueName}::Stacked")
 		{
-			Icon = CrammedIcon.Sprite,
+			Icon = StackedIcon.Sprite,
 			TitleColor = Colors.midrow,
-			Title = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Crammed", "name"]),
-			Description = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Crammed", "description"]),
+			Title = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Stacked", "name"]),
+			Description = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Stacked", "description"]),
 		};
 
-	internal static Tooltip MakeCrammedLaunchTooltip()
-		=> new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::CrammedLaunch")
+	internal static Tooltip MakeWobblyMidrowAttributeTooltip()
+		=> new GlossaryTooltip($"midrow.{ModEntry.Instance.Package.Manifest.UniqueName}::Wobbly")
 		{
-			Icon = CrammedLaunchIcon.Sprite,
-			TitleColor = Colors.action,
-			Title = ModEntry.Instance.Localizations.Localize(["action", "CrammedLaunch", "name"]),
-			Description = ModEntry.Instance.Localizations.Localize(["action", "CrammedLaunch", "description"]),
+			Icon = StackedIcon.Sprite,
+			TitleColor = Colors.midrow,
+			Title = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Wobbly", "name"]),
+			Description = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Wobbly", "description"]),
 		};
 
-	internal static List<StuffBase>? GetCrammedObjects(StuffBase @object)
-		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<List<StuffBase>>(@object, "CrammedObjects");
+	internal static Tooltip MakeStackedLaunchTooltip()
+		=> new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::StackedLaunch")
+		{
+			Icon = StackedLaunchIcon.Sprite,
+			TitleColor = Colors.action,
+			Title = ModEntry.Instance.Localizations.Localize(["action", "StackedLaunch", "name"]),
+			Description = ModEntry.Instance.Localizations.Localize(["action", "StackedLaunch", "description"]),
+		};
 
-	internal static void SetCrammedObjects(StuffBase @object, List<StuffBase>? crammedObjects)
-		=> ModEntry.Instance.Helper.ModData.SetOptionalModData(@object, "CrammedObjects", crammedObjects);
+	internal static List<StuffBase>? GetStackedObjects(StuffBase @object)
+		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<List<StuffBase>>(@object, "StackedObjects");
 
-	internal static void PushCrammedObject(Combat combat, int worldX, StuffBase pushed)
+	internal static void SetStackedObjects(StuffBase @object, List<StuffBase>? stackedObjects)
+		=> ModEntry.Instance.Helper.ModData.SetOptionalModData(@object, "StackedObjects", stackedObjects);
+
+	internal static void PushStackedObject(Combat combat, int worldX, StuffBase pushed)
 	{
 		ref var @object = ref CollectionsMarshal.GetValueRefOrAddDefault(combat.stuff, worldX, out var objectExists);
 		if (!objectExists)
@@ -125,48 +136,48 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 			return;
 		}
 
-		List<StuffBase> crammedObjects = [
-			.. GetCrammedObjects(@object!) ?? [],
+		List<StuffBase> stackedObjects = [
+			.. GetStackedObjects(@object!) ?? [],
 			@object!,
-			.. GetCrammedObjects(pushed) ?? [],
+			.. GetStackedObjects(pushed) ?? [],
 		];
-		SetCrammedObjects(@object!, null);
-		SetCrammedObjects(pushed, crammedObjects);
+		SetStackedObjects(@object!, null);
+		SetStackedObjects(pushed, stackedObjects);
 
 		Put();
 
 		void Put()
 		{
-			if (ObjectBeingLaunchedInto is not null && !ObjectIsBeingCrammedInto)
+			if (ObjectBeingLaunchedInto is not null && !ObjectIsBeingStackedInto)
 				ObjectToPutLater = pushed;
 			else
 				combat.stuff[worldX] = pushed;
 
-			UpdateCrammedObjectX(pushed, worldX, true);
+			UpdateStackedObjectX(pushed, worldX, true);
 		}
 	}
 
-	internal static bool PopCrammedObject(Combat combat, int worldX, bool removeLast)
+	internal static bool PopStackedObject(Combat combat, int worldX, bool removeLast)
 	{
 		if (!combat.stuff.Remove(worldX, out var @object))
 			return false;
-		if (GetCrammedObjects(@object) is not { } crammedObjects || crammedObjects.Count == 0)
+		if (GetStackedObjects(@object) is not { } stackedObjects || stackedObjects.Count == 0)
 		{
 			if (!removeLast)
 				combat.stuff[worldX] = @object;
 			return removeLast;
 		}
 		
-		SetCrammedObjects(@object, null);
-		@object = crammedObjects[^1];
+		SetStackedObjects(@object, null);
+		@object = stackedObjects[^1];
 
-		crammedObjects = crammedObjects.Count == 0 ? null : crammedObjects.Take(crammedObjects.Count - 1).ToList();
-		SetCrammedObjects(@object, crammedObjects);
+		stackedObjects = stackedObjects.Count == 0 ? null : stackedObjects.Take(stackedObjects.Count - 1).ToList();
+		SetStackedObjects(@object, stackedObjects);
 		combat.stuff[worldX] = @object;
 		return true;
 	}
 
-	internal static bool RemoveCrammedObject(Combat combat, int worldX, StuffBase toRemove)
+	internal static bool RemoveStackedObject(Combat combat, int worldX, StuffBase toRemove)
 	{
 		if (!combat.stuff.TryGetValue(worldX, out var @object))
 			return false;
@@ -175,77 +186,77 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		{
 			combat.stuff.Remove(worldX);
 			
-			if (GetCrammedObjects(@object) is { } crammedObjects && crammedObjects.Count != 0)
+			if (GetStackedObjects(@object) is { } stackedObjects && stackedObjects.Count != 0)
 			{
-				SetCrammedObjects(@object, null);
-				@object = crammedObjects[^1];
+				SetStackedObjects(@object, null);
+				@object = stackedObjects[^1];
 				
-				crammedObjects = crammedObjects.Count == 0 ? null : crammedObjects.Take(crammedObjects.Count - 1).ToList();
-				SetCrammedObjects(@object, crammedObjects);
+				stackedObjects = stackedObjects.Count == 0 ? null : stackedObjects.Take(stackedObjects.Count - 1).ToList();
+				SetStackedObjects(@object, stackedObjects);
 				combat.stuff[worldX] = @object;
 			}
 			
 			return true;
 		}
 
-		if (GetCrammedObjects(@object) is { } crammedObjects2 && crammedObjects2.Count != 0)
+		if (GetStackedObjects(@object) is { } stackedObjects2 && stackedObjects2.Count != 0)
 		{
-			SetCrammedObjects(toRemove, null);
-			return crammedObjects2.Remove(toRemove);
+			SetStackedObjects(toRemove, null);
+			return stackedObjects2.Remove(toRemove);
 		}
 		
 		return false;
 	}
 
-	internal static bool IsCrammed(ASpawn action)
-		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(action, "IsCrammed");
+	internal static bool IsStacked(ASpawn action)
+		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(action, "IsStacked");
 
-	internal static void SetCrammed(ASpawn action, bool value = true)
-		=> ModEntry.Instance.Helper.ModData.SetModData(action, "IsCrammed", value);
+	internal static void SetStacked(ASpawn action, bool value = true)
+		=> ModEntry.Instance.Helper.ModData.SetModData(action, "IsStacked", value);
 	
-	private static Guid ObtainCrammedObjectId(StuffBase @object)
-		=> ModEntry.Instance.Helper.ModData.ObtainModData(@object, "CrammedObjectId", Guid.NewGuid);
+	private static Guid ObtainStackedObjectId(StuffBase @object)
+		=> ModEntry.Instance.Helper.ModData.ObtainModData(@object, "StackedObjectId", Guid.NewGuid);
 
-	private static void UpdateCrammedObjectX(StuffBase @object, int? maybeWorldX = null, bool updateXLerped = false)
+	private static void UpdateStackedObjectX(StuffBase @object, int? maybeWorldX = null, bool updateXLerped = false)
 	{
 		var worldX = maybeWorldX ?? @object.x;
 		@object.x = worldX;
 		if (updateXLerped)
 			@object.xLerped = worldX;
 
-		if (GetCrammedObjects(@object) is { } crammedObjects)
+		if (GetStackedObjects(@object) is { } stackedObjects)
 		{
-			foreach (var crammedObject in crammedObjects)
+			foreach (var stackedObject in stackedObjects)
 			{
-				crammedObject.x = worldX;
+				stackedObject.x = worldX;
 				if (updateXLerped)
-					crammedObject.xLerped = worldX;
+					stackedObject.xLerped = worldX;
 			}
 		}
 	}
 
-	internal static bool ApplyToAllCrammedObjects(Combat combat, Action<StuffBase> @delegate)
+	internal static bool ApplyToAllStackedObjects(Combat combat, Action<StuffBase> @delegate)
 	{
 		var hadAny = false;
 		foreach (var @object in combat.stuff.Values)
 		{
-			if (GetCrammedObjects(@object) is not { } crammedObjects || crammedObjects.Count == 0)
+			if (GetStackedObjects(@object) is not { } stackedObjects || stackedObjects.Count == 0)
 				continue;
 
 			hadAny = true;
-			foreach (var crammedObject in crammedObjects)
-				@delegate(crammedObject);
+			foreach (var stackedObject in stackedObjects)
+				@delegate(stackedObject);
 		}
 		return hadAny;
 	}
 
-	internal static bool AnyCrammedObject(Combat combat, Func<StuffBase, bool> @delegate)
+	internal static bool AnyStackedObject(Combat combat, Func<StuffBase, bool> @delegate)
 	{
 		foreach (var @object in combat.stuff.Values)
 		{
-			if (GetCrammedObjects(@object) is not { } crammedObjects || crammedObjects.Count == 0)
+			if (GetStackedObjects(@object) is not { } stackedObjects || stackedObjects.Count == 0)
 				continue;
-			if (crammedObjects.Any(@delegate))
+			if (stackedObjects.Any(@delegate))
 				return true;
 		}
 		return false;
@@ -283,23 +294,29 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 			return;
 		ObjectBeingLaunchedInto = existingThing;
 
-		var crammedLaunch = IsCrammed(__instance);
-		var cramAmount = ship.Get(CramStatus.Status);
-		var cramHarderAmount = ship.Get(CramHarderStatus.Status);
-		if (!crammedLaunch && cramAmount + cramHarderAmount <= 0)
-			return;
+		var willStack = IsStacked(__instance);
 
-		var stackSize = 1 + (GetCrammedObjects(existingThing)?.Count ?? 0);
-		if (!crammedLaunch && stackSize > cramAmount + cramHarderAmount)
-			return;
-
-		if (!crammedLaunch)
+		if (!willStack)
 		{
-			var cramToRemove = stackSize - cramHarderAmount;
-			ship.Add(CramStatus.Status, -cramToRemove);
+			var stackSize = 1 + (GetStackedObjects(existingThing)?.Count ?? 0);
+			if (ship.Get(TetrisStatus.Status) >= stackSize)
+			{
+				willStack = true;
+				ship.Add(TetrisStatus.Status, -stackSize);
+			}
+
+			if (!willStack && ship.Get(JengaStatus.Status) > 0)
+			{
+				willStack = true;
+				ship.Add(JengaStatus.Status, -1);
+				// TODO: mark as wobbly
+			}
 		}
 
-		ObjectIsBeingCrammedInto = true;
+		if (!willStack)
+			return;
+
+		ObjectIsBeingStackedInto = true;
 		c.stuff.Remove(worldX);
 	}
 
@@ -315,13 +332,13 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		var worldX = __instance.GetWorldX(s, c) + __instance.offset;
 		var existingObject = c.stuff.GetValueOrDefault(worldX);
 
-		if (ObjectIsBeingCrammedInto)
+		if (ObjectIsBeingStackedInto)
 		{
 			c.stuff.Remove(worldX);
-			PushCrammedObject(c, worldX, ObjectBeingLaunchedInto);
+			PushStackedObject(c, worldX, ObjectBeingLaunchedInto);
 			if (existingObject is not null)
-				PushCrammedObject(c, worldX, existingObject);
-			ObjectIsBeingCrammedInto = false;
+				PushStackedObject(c, worldX, existingObject);
+			ObjectIsBeingStackedInto = false;
 		}
 		else if (ObjectToPutLater is not null)
 		{
@@ -334,13 +351,13 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 
 	private static void ASpawn_GetTooltips_Postfix(ASpawn __instance, ref List<Tooltip> __result)
 	{
-		if (!IsCrammed(__instance))
+		if (!IsStacked(__instance))
 			return;
 
 		List<Tooltip> tooltips = [
-			MakeCrammedLaunchTooltip(),
-			MakeCrammedMidrowAttributeTooltip(),
-			.. StatusMeta.GetTooltips(CramStatus.Status, 1),
+			MakeStackedLaunchTooltip(),
+			MakeStackedMidrowAttributeTooltip(),
+			.. StatusMeta.GetTooltips(TetrisStatus.Status, 1),
 		];
 		
 		var index = __result.FindIndex(t => t is TTGlossary { key: "action.spawn" or "action.spawnOffsetLeft" or "action.spawnOffsetRight" });
@@ -374,7 +391,7 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 					new CodeInstruction(OpCodes.Ldfld, dontDrawField.Value),
 					new CodeInstruction(OpCodes.Ldloca, capturesLocalIndex.Value),
 					new CodeInstruction(OpCodes.Ldflda, wField.Value),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Transpiler_RenderCrammedLaunch))),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Transpiler_RenderStackedLaunch))),
 				])
 				.AllElements();
 		}
@@ -385,14 +402,14 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		}
 	}
 
-	private static void Card_RenderAction_Transpiler_RenderCrammedLaunch(ASpawn action, G g, bool dontDraw, ref int width)
+	private static void Card_RenderAction_Transpiler_RenderStackedLaunch(ASpawn action, G g, bool dontDraw, ref int width)
 	{
-		if (!IsCrammed(action))
+		if (!IsStacked(action))
 			return;
 
 		var box = g.Push(rect: new Rect(width));
 		if (!dontDraw)
-			Draw.Sprite(CrammedLaunchIcon.Sprite, box.rect.x, box.rect.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
+			Draw.Sprite(StackedLaunchIcon.Sprite, box.rect.x, box.rect.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
 		width += 9;
 		g.Pop();
 	}
@@ -412,7 +429,7 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 	{
 		__state = __instance.stuff.GetValueOrDefault(x);
 		if (__state is { } @object)
-			UpdateCrammedObjectX(@object, x);
+			UpdateStackedObjectX(@object, x);
 	}
 
 	private static void Combat_DestroyDroneAt_Postfix(Combat __instance, int x, in StuffBase? __state)
@@ -422,21 +439,21 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 
 		if (__instance.stuff.Remove(x, out var existingThing))
 		{
-			PushCrammedObject(__instance, x, __state);
-			PushCrammedObject(__instance, x, existingThing);
+			PushStackedObject(__instance, x, __state);
+			PushStackedObject(__instance, x, existingThing);
 			return;
 		}
 
-		if (GetCrammedObjects(__state) is not { } crammedObjects || crammedObjects.Count == 0)
+		if (GetStackedObjects(__state) is not { } stackedObjects || stackedObjects.Count == 0)
 			return;
 		
-		SetCrammedObjects(__state, null);
+		SetStackedObjects(__state, null);
 		
-		var newObject = crammedObjects[^1];
-		crammedObjects = crammedObjects.Count == 0 ? null : crammedObjects.Take(crammedObjects.Count - 1).ToList();
-		SetCrammedObjects(newObject, crammedObjects);
+		var newObject = stackedObjects[^1];
+		stackedObjects = stackedObjects.Count == 0 ? null : stackedObjects.Take(stackedObjects.Count - 1).ToList();
+		SetStackedObjects(newObject, stackedObjects);
 		
-		PushCrammedObject(__instance, x, newObject);
+		PushStackedObject(__instance, x, newObject);
 	}
 	#endregion
 	
@@ -483,22 +500,22 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 	{
 		if (!combat.stuff.TryGetValue(worldX, out var existingThing))
 			return actions;
-		if (GetCrammedObjects(existingThing) is not { } crammedObjects || crammedObjects.Count == 0)
+		if (GetStackedObjects(existingThing) is not { } stackedObjects || stackedObjects.Count == 0)
 			return actions;
 		
-		UpdateCrammedObjectX(existingThing, worldX);
+		UpdateStackedObjectX(existingThing, worldX);
 		actions ??= [];
-		actions.InsertRange(0, crammedObjects.SelectMany(crammedObject =>
+		actions.InsertRange(0, stackedObjects.SelectMany(stackedObject =>
 		{
-			if (crammedObject.GetActions(state, combat) is not { } actions)
+			if (stackedObject.GetActions(state, combat) is not { } actions)
 				return [];
 
-			var crammedObjectId = ObtainCrammedObjectId(crammedObject);
+			var stackedObjectId = ObtainStackedObjectId(stackedObject);
 			return actions
 				.Select(a =>
 				{
-					ModEntry.Instance.Helper.ModData.SetModData(a, "ForceCrammedObjectId", crammedObjectId);
-					ModEntry.Instance.Helper.ModData.SetModData(a, "ForceCrammedObjectWorldX", worldX);
+					ModEntry.Instance.Helper.ModData.SetModData(a, "ForceStackedObjectId", stackedObjectId);
+					ModEntry.Instance.Helper.ModData.SetModData(a, "ForceStackedObjectWorldX", worldX);
 					return a;
 				});
 		}));
@@ -541,7 +558,7 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(labels),
 					new CodeInstruction(OpCodes.Ldloc, boxLocalIndex.Value),
 					new CodeInstruction(OpCodes.Ldloc, objectLocalIndex.Value),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDrones_Transpiler_RenderCrammedObjects))),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDrones_Transpiler_RenderStackedObjects))),
 				])
 				.AllElements();
 		}
@@ -554,24 +571,24 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 
 	private static Rect Combat_RenderDrones_Transpiler_OffsetMainObject(Rect rect, StuffBase @object)
 	{
-		if (GetCrammedObjects(@object) is not { } crammedObjects || crammedObjects.Count == 0)
+		if (GetStackedObjects(@object) is not { } stackedObjects || stackedObjects.Count == 0)
 			return rect;
-		return new(rect.x, rect.y - crammedObjects.Count, rect.w, rect.h);
+		return new(rect.x, rect.y - stackedObjects.Count, rect.w, rect.h);
 	}
 
-	private static void Combat_RenderDrones_Transpiler_RenderCrammedObjects(G g, Box box, StuffBase @object)
+	private static void Combat_RenderDrones_Transpiler_RenderStackedObjects(G g, Box box, StuffBase @object)
 	{
-		if (GetCrammedObjects(@object) is not { } crammedObjects || crammedObjects.Count == 0)
+		if (GetStackedObjects(@object) is not { } stackedObjects || stackedObjects.Count == 0)
 			return;
 
-		for (var i = 0; i < crammedObjects.Count; i++)
-			crammedObjects[i].Render(g, new Vec(box.rect.x + ((crammedObjects.Count - i) % 2 * 2 - 1) * 2, box.rect.y - crammedObjects.Count + (crammedObjects.Count - i) * 4));
+		for (var i = 0; i < stackedObjects.Count; i++)
+			stackedObjects[i].Render(g, new Vec(box.rect.x + ((stackedObjects.Count - i) % 2 * 2 - 1) * 2, box.rect.y - stackedObjects.Count + (stackedObjects.Count - i) * 4));
 		
 		if (box.rect.x is > 60 and < 464 && box.IsHover())
 		{
 			var tooltipPos = box.rect.xy + new Vec(16, 24);
-			g.tooltips.Add(tooltipPos, MakeCrammedMidrowAttributeTooltip());
-			g.tooltips.Add(tooltipPos, ((IEnumerable<StuffBase>)crammedObjects).Reverse().SelectMany(crammedObject => crammedObject.GetTooltips()));
+			g.tooltips.Add(tooltipPos, MakeStackedMidrowAttributeTooltip());
+			g.tooltips.Add(tooltipPos, ((IEnumerable<StuffBase>)stackedObjects).Reverse().SelectMany(stackedObject => stackedObject.GetTooltips()));
 		}
 	}
 	#endregion
@@ -598,72 +615,72 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		);
 	}
 
-	private static void PushForceCrammedObject(Combat combat, CardAction action)
+	private static void PushForceStackedObject(Combat combat, CardAction action)
 	{
-		(StuffBase RealObject, StuffBase? CrammedObject, int WorldX)? toPush = null;
+		(StuffBase RealObject, StuffBase? StackedObject, int WorldX)? toPush = null;
 		try
 		{
-			if (!ModEntry.Instance.Helper.ModData.TryGetModData<Guid>(action, "ForceCrammedObjectId", out var forceCrammedObjectId))
+			if (!ModEntry.Instance.Helper.ModData.TryGetModData<Guid>(action, "ForceStackedObjectId", out var forceStackedObjectId))
 				return;
-			if (!ModEntry.Instance.Helper.ModData.TryGetModData<int>(action, "ForceCrammedObjectWorldX", out var forceCrammedObjectWorldX))
+			if (!ModEntry.Instance.Helper.ModData.TryGetModData<int>(action, "ForceStackedObjectWorldX", out var forceStackedObjectWorldX))
 				return;
-			if (!combat.stuff.TryGetValue(forceCrammedObjectWorldX, out var @object))
+			if (!combat.stuff.TryGetValue(forceStackedObjectWorldX, out var @object))
 				return;
 
-			if (ObtainCrammedObjectId(@object) == forceCrammedObjectId)
+			if (ObtainStackedObjectId(@object) == forceStackedObjectId)
 			{
-				toPush = (@object, null, forceCrammedObjectWorldX);
+				toPush = (@object, null, forceStackedObjectWorldX);
 				return;
 			}
 			
-			if (GetCrammedObjects(@object) is not { } crammedObjects)
+			if (GetStackedObjects(@object) is not { } stackedObjects)
 				return;
-			if (crammedObjects.FirstOrDefault(crammedObject => ObtainCrammedObjectId(crammedObject) == forceCrammedObjectId) is not { } crammedObject)
+			if (stackedObjects.FirstOrDefault(stackedObject => ObtainStackedObjectId(stackedObject) == forceStackedObjectId) is not { } stackedObject)
 				return;
 			
-			toPush = (@object, crammedObject, forceCrammedObjectWorldX);
-			combat.stuff[forceCrammedObjectWorldX] = crammedObject;
+			toPush = (@object, stackedObject, forceStackedObjectWorldX);
+			combat.stuff[forceStackedObjectWorldX] = stackedObject;
 		}
 		finally
 		{
-			ForceCrammedObjectStack.Add(toPush);
+			ForceStackedObjectStack.Add(toPush);
 		}
 	}
 
-	private static void PopForceCrammedObject(Combat combat)
+	private static void PopForceStackedObject(Combat combat)
 	{
-		if (ForceCrammedObjectStack.Count == 0)
+		if (ForceStackedObjectStack.Count == 0)
 			return;
 
-		var nullableEntry = ForceCrammedObjectStack[^1];
-		ForceCrammedObjectStack.RemoveAt(ForceCrammedObjectStack.Count - 1);
+		var nullableEntry = ForceStackedObjectStack[^1];
+		ForceStackedObjectStack.RemoveAt(ForceStackedObjectStack.Count - 1);
 
 		if (nullableEntry?.RealObject is not { } realObject)
 			return;
-		var crammedObject = nullableEntry.Value.CrammedObject;
+		var stackedObject = nullableEntry.Value.StackedObject;
 		var worldX = nullableEntry.Value.WorldX;
 		
 		var existingObject = combat.stuff.GetValueOrDefault(worldX);
 		combat.stuff[worldX] = realObject;
-		if (existingObject != crammedObject)
+		if (existingObject != stackedObject)
 		{
-			if (crammedObject is not null)
-				RemoveCrammedObject(combat, worldX, crammedObject);
+			if (stackedObject is not null)
+				RemoveStackedObject(combat, worldX, stackedObject);
 			if (existingObject is not null)
-				PushCrammedObject(combat, worldX, existingObject);
+				PushStackedObject(combat, worldX, existingObject);
 		}
 	}
 
 	private static void StuffBase_Update_Postfix(StuffBase __instance, G g)
 	{
-		if (GetCrammedObjects(__instance) is { } crammedObjects)
-			foreach (var crammedObject in crammedObjects)
-				crammedObject.Update(g);
+		if (GetStackedObjects(__instance) is { } stackedObjects)
+			foreach (var stackedObject in stackedObjects)
+				stackedObject.Update(g);
 	}
 
 	private static void Combat_ResetHilights_Postfix(Combat __instance)
 	{
-		ApplyToAllCrammedObjects(__instance, @object =>
+		ApplyToAllStackedObjects(__instance, @object =>
 		{
 			if (@object.hilight > 0)
 				@object.hilight--;
@@ -671,10 +688,10 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 	}
 
 	private static void Combat_BeginCardAction_Prefix(Combat __instance, CardAction a)
-		=> PushForceCrammedObject(__instance, a);
+		=> PushForceStackedObject(__instance, a);
 
 	private static void Combat_BeginCardAction_Finalizer(Combat __instance)
-		=> PopForceCrammedObject(__instance);
+		=> PopForceStackedObject(__instance);
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 	private static IEnumerable<CodeInstruction> Combat_DrainCardActions_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
@@ -693,11 +710,11 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 				])
 				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Transpiler_PushForceCrammedObject))),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Transpiler_PushForceStackedObject))),
 				])
 				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Transpiler_PopForceCrammedObject))),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrainCardActions_Transpiler_PopForceStackedObject))),
 				])
 				.AllElements();
 		}
@@ -708,15 +725,15 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		}
 	}
 
-	private static void Combat_DrainCardActions_Transpiler_PushForceCrammedObject(Combat combat)
+	private static void Combat_DrainCardActions_Transpiler_PushForceStackedObject(Combat combat)
 	{
 		if (combat.currentCardAction is not { } action)
 			return;
-		PushForceCrammedObject(combat, action);
+		PushForceStackedObject(combat, action);
 	}
 
-	private static void Combat_DrainCardActions_Transpiler_PopForceCrammedObject(Combat combat)
-		=> PopForceCrammedObject(combat);
+	private static void Combat_DrainCardActions_Transpiler_PopForceStackedObject(Combat combat)
+		=> PopForceStackedObject(combat);
 	#endregion
 	
 	#region Missiles
@@ -758,13 +775,13 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		if (!combat.stuff.TryGetValue(action.worldX, out var @object))
 			return true;
 
-		if (!ModEntry.Instance.Helper.ModData.TryGetModData<Guid>(action, "ChecksForCrammedObjectId", out var checksForCrammedObjectId))
+		if (!ModEntry.Instance.Helper.ModData.TryGetModData<Guid>(action, "ChecksForStackedObjectId", out var checksForStackedObjectId))
 		{
-			checksForCrammedObjectId = ObtainCrammedObjectId(@object);
-			ModEntry.Instance.Helper.ModData.SetModData(action, "ChecksForCrammedObjectId", checksForCrammedObjectId);
+			checksForStackedObjectId = ObtainStackedObjectId(@object);
+			ModEntry.Instance.Helper.ModData.SetModData(action, "ChecksForStackedObjectId", checksForStackedObjectId);
 		}
 
-		if (checksForCrammedObjectId == ObtainCrammedObjectId(@object))
+		if (checksForStackedObjectId == ObtainStackedObjectId(@object))
 			return true;
 
 		action.timer -= g.dt;
@@ -799,7 +816,7 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		if (s.route is not Combat combat)
 			return;
 		
-		ApplyToAllCrammedObjects(combat, @object =>
+		ApplyToAllStackedObjects(combat, @object =>
 		{
 			if (@object is JupiterDrone)
 				@object.hilight = 2;
@@ -813,7 +830,7 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		if (s.route is not Combat combat)
 			return;
 		
-		if (AnyCrammedObject(combat, @object => @object is JupiterDrone))
+		if (AnyStackedObject(combat, @object => @object is JupiterDrone))
 			__result = true;
 	}
 
@@ -828,7 +845,7 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		if (NestedJupiterShootBeginId is not null)
 			return;
 		
-		List<(int WorldX, AAttack Attack, StuffBase TopObject, StuffBase? CrammedObject, int Depth)> attacks = [];
+		List<(int WorldX, AAttack Attack, StuffBase TopObject, StuffBase? StackedObject, int Depth)> attacks = [];
 		for (var i = c.cardActions.Count - 1; i >= 0; i--)
 		{
 			if (c.cardActions[i] is not AAttack attack)
@@ -849,20 +866,20 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		
 		try
 		{
-			List<(int WorldX, StuffBase TopObject, JupiterDrone JupiterDrone, int Depth)> crammedJupitedDrones = [];
+			List<(int WorldX, StuffBase TopObject, JupiterDrone JupiterDrone, int Depth)> stackedJupitedDrones = [];
 
 			foreach (var kvp in c.stuff)
-				if (GetCrammedObjects(kvp.Value) is { } crammedObjects)
-					for (var i = 0; i < crammedObjects.Count; i++)
-						if (crammedObjects[i] is JupiterDrone jupiterDrone)
-							crammedJupitedDrones.Add((kvp.Key, kvp.Value, jupiterDrone, i + 1));
+				if (GetStackedObjects(kvp.Value) is { } stackedObjects)
+					for (var i = 0; i < stackedObjects.Count; i++)
+						if (stackedObjects[i] is JupiterDrone jupiterDrone)
+							stackedJupitedDrones.Add((kvp.Key, kvp.Value, jupiterDrone, i + 1));
 				
 			c.stuff = [];
 
-			while (crammedJupitedDrones.Count != 0)
+			while (stackedJupitedDrones.Count != 0)
 			{
-				var entry = crammedJupitedDrones[^1];
-				crammedJupitedDrones.RemoveAt(crammedJupitedDrones.Count - 1);
+				var entry = stackedJupitedDrones[^1];
+				stackedJupitedDrones.RemoveAt(stackedJupitedDrones.Count - 1);
 				c.stuff[entry.WorldX] = entry.JupiterDrone;
 				
 				__instance.Begin(g, s, c);
@@ -878,9 +895,9 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 					if (attack.fromDroneX is null || !c.stuff.ContainsKey(attack.fromDroneX.Value))
 						continue;
 
-					var crammedObjectId = ObtainCrammedObjectId(entry.JupiterDrone);
-					ModEntry.Instance.Helper.ModData.SetModData(attack, "ForceCrammedObjectId", crammedObjectId);
-					ModEntry.Instance.Helper.ModData.SetModData(attack, "ForceCrammedObjectWorldX", entry.WorldX);
+					var stackedObjectId = ObtainStackedObjectId(entry.JupiterDrone);
+					ModEntry.Instance.Helper.ModData.SetModData(attack, "ForceStackedObjectId", stackedObjectId);
+					ModEntry.Instance.Helper.ModData.SetModData(attack, "ForceStackedObjectWorldX", entry.WorldX);
 					
 					attacks.Add((entry.WorldX, attack, entry.TopObject, entry.JupiterDrone, entry.Depth));
 					c.cardActions.RemoveAt(i);
@@ -906,7 +923,7 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		if (thing is not JupiterDrone)
 			return true;
 
-		if (AnyCrammedObject(combat, @object => @object is JupiterDrone))
+		if (AnyStackedObject(combat, @object => @object is JupiterDrone))
 			return false;
 
 		return true;
@@ -931,31 +948,31 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 	{
 		__state = [];
 		foreach (var kvp in c.stuff)
-			if (GetCrammedObjects(kvp.Value) is { } crammedObjects)
-				__state[kvp.Key] = crammedObjects;
+			if (GetStackedObjects(kvp.Value) is { } stackedObjects)
+				__state[kvp.Key] = stackedObjects;
 	}
 
 	private static void AMedusaField_Begin_Postfix(Combat c, in Dictionary<int, List<StuffBase>> __state)
 	{
 		foreach (var kvp in __state)
 		{
-			var crammedObjects = kvp.Value.Select(StuffBase (crammedObject) => new Geode
+			var stackedObjects = kvp.Value.Select(StuffBase (stackedObject) => new Geode
 			{
-				x = crammedObject.x,
-				xLerped = crammedObject.xLerped,
-				bubbleShield = crammedObject.bubbleShield,
-				targetPlayer = crammedObject.targetPlayer,
-				age = crammedObject.age,
+				x = stackedObject.x,
+				xLerped = stackedObject.xLerped,
+				bubbleShield = stackedObject.bubbleShield,
+				targetPlayer = stackedObject.targetPlayer,
+				age = stackedObject.age,
 			}).ToList();
 
 			if (c.stuff.TryGetValue(kvp.Key, out var @object))
 			{
-				SetCrammedObjects(@object, crammedObjects);
+				SetStackedObjects(@object, stackedObjects);
 			}
 			else
 			{
-				foreach (var crammedObject in crammedObjects)
-					PushCrammedObject(c, kvp.Key, crammedObject);
+				foreach (var stackedObject in stackedObjects)
+					PushStackedObject(c, kvp.Key, stackedObject);
 			}
 		}
 	}
@@ -965,7 +982,7 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		if (s.route is not Combat combat)
 			return;
 		
-		ApplyToAllCrammedObjects(combat, @object =>
+		ApplyToAllStackedObjects(combat, @object =>
 		{
 			@object.hilight = 2;
 		});
@@ -987,10 +1004,10 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		__state = [];
 		foreach (var kvp in c.stuff)
 		{
-			if (GetCrammedObjects(kvp.Value) is not { } crammedObjects)
+			if (GetStackedObjects(kvp.Value) is not { } stackedObjects)
 				continue;
-			__state[kvp.Key] = crammedObjects;
-			SetCrammedObjects(kvp.Value, null);
+			__state[kvp.Key] = stackedObjects;
+			SetStackedObjects(kvp.Value, null);
 		}
 	}
 
@@ -1000,12 +1017,12 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		{
 			if (c.stuff.TryGetValue(kvp.Key, out var @object))
 			{
-				SetCrammedObjects(@object, kvp.Value);
+				SetStackedObjects(@object, kvp.Value);
 			}
 			else
 			{
-				foreach (var crammedObject in kvp.Value)
-					PushCrammedObject(c, kvp.Key, crammedObject);
+				foreach (var stackedObject in kvp.Value)
+					PushStackedObject(c, kvp.Key, stackedObject);
 			}
 		}
 	}
@@ -1026,7 +1043,7 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 
 	private static void ABubbleField_Begin_Postfix(Combat c)
 	{
-		ApplyToAllCrammedObjects(c, @object =>
+		ApplyToAllStackedObjects(c, @object =>
 		{
 			@object.bubbleShield = true;
 		});
@@ -1037,7 +1054,7 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		if (s.route is not Combat combat)
 			return;
 		
-		ApplyToAllCrammedObjects(combat, @object =>
+		ApplyToAllStackedObjects(combat, @object =>
 		{
 			@object.hilight = 2;
 		});
@@ -1058,7 +1075,7 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 		if (s.route is not Combat combat)
 			return;
 		
-		ApplyToAllCrammedObjects(combat, @object =>
+		ApplyToAllStackedObjects(combat, @object =>
 		{
 			if (@object.GetActions(s, combat) is not null)
 				@object.hilight = 2;
@@ -1069,9 +1086,9 @@ internal sealed class Cram : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.I
 
 internal static class CramExtensions
 {
-	public static ASpawn SetCrammed(this ASpawn action, bool value = true)
+	public static ASpawn SetStacked(this ASpawn action, bool value = true)
 	{
-		Cram.SetCrammed(action, value);
+		Stack.SetStacked(action, value);
 		return action;
 	}
 }

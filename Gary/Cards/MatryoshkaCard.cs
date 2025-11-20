@@ -19,7 +19,7 @@ public sealed class MatryoshkaCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Matryoshka.png"), StableSpr.cards_goat).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Matryoshka.png"), StableSpr.cards_GoatDrone).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Matryoshka", "name"]).Localize,
 		});
 	}
@@ -31,18 +31,18 @@ public sealed class MatryoshkaCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new ASpawn { thing = new Asteroid() }.SetCrammed(),
-				new ASpawn { thing = new Asteroid() }.SetCrammed(),
-				new ASpawn { thing = new RepairKit() }.SetCrammed(),
+				new ASpawn { thing = new Asteroid() }.SetStacked(),
+				new ASpawn { thing = new Asteroid() }.SetStacked(),
+				new ASpawn { thing = new RepairKit() }.SetStacked(),
 			],
 			Upgrade.A => [
-				new ASpawn { thing = new RepairKit() }.SetCrammed(),
-				new ASpawn { thing = new Asteroid() }.SetCrammed(),
+				new ASpawn { thing = new RepairKit() }.SetStacked(),
+				new ASpawn { thing = new Asteroid() }.SetStacked(),
 			],
 			_ => [
-				new ASpawn { thing = new RepairKit() }.SetCrammed(),
-				new ASpawn { thing = new Asteroid() }.SetCrammed(),
-				new ASpawn { thing = new Asteroid() }.SetCrammed(),
+				new ASpawn { thing = new RepairKit() }.SetStacked(),
+				new ASpawn { thing = new Asteroid() }.SetStacked(),
+				new ASpawn { thing = new Asteroid() }.SetStacked(),
 			],
 		};
 }

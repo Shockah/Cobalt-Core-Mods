@@ -6,7 +6,7 @@ using Shockah.Shared;
 
 namespace Shockah.Gary;
 
-public sealed class OverworkingCard : Card, IRegisterable, IHasCustomCardTraits
+public sealed class StockpileCard : Card, IRegisterable, IHasCustomCardTraits
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -19,8 +19,8 @@ public sealed class OverworkingCard : Card, IRegisterable, IHasCustomCardTraits
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Overworking.png"), StableSpr.cards_Inverter).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Overworking", "name"]).Localize,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Stockpile.png"), StableSpr.cards_Inverter).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Stockpile", "name"]).Localize,
 		});
 		
 		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 5);
@@ -45,12 +45,12 @@ public sealed class OverworkingCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AStatus { targetPlayer = true, status = Cram.CramStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = Stack.TetrisStatus.Status, statusAmount = 2 },
 				new AStatus { targetPlayer = true, status = Status.droneShift, statusAmount = 1 },
 				new AStatus { targetPlayer = true, status = Status.drawLessNextTurn, statusAmount = 1 },
 			],
 			_ => [
-				new AStatus { targetPlayer = true, status = Cram.CramStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.TetrisStatus.Status, statusAmount = 1 },
 				new AStatus { targetPlayer = true, status = Status.droneShift, statusAmount = 1 },
 				new AStatus { targetPlayer = true, status = Status.drawNextTurn, statusAmount = 1 },
 			],
