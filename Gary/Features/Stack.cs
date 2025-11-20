@@ -15,6 +15,9 @@ using Shockah.Kokoro;
 
 namespace Shockah.Gary;
 
+// FIXME: missile + space mine seemingly removes the mine
+// FIXME: Sporb moving into a stack seemingly removes the entirety of the stack without proper destroy effects
+
 internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static IStatusEntry TetrisStatus { get; private set; } = null!;
@@ -106,7 +109,7 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 	internal static Tooltip MakeWobblyMidrowAttributeTooltip()
 		=> new GlossaryTooltip($"midrow.{ModEntry.Instance.Package.Manifest.UniqueName}::Wobbly")
 		{
-			Icon = StackedIcon.Sprite,
+			Icon = WobblyIcon.Sprite,
 			TitleColor = Colors.midrow,
 			Title = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Wobbly", "name"]),
 			Description = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Wobbly", "description"]),
@@ -126,6 +129,24 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 
 	internal static void SetStackedObjects(StuffBase @object, List<StuffBase>? stackedObjects)
 		=> ModEntry.Instance.Helper.ModData.SetOptionalModData(@object, "StackedObjects", stackedObjects);
+	
+	internal static bool IsWobbly(StuffBase @object)
+		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(@object, "IsWobbly");
+
+	internal static void SetWobbly(StuffBase @object, bool value = true)
+	{
+		if (GetStackedObjects(@object) is { } stackedObjects)
+			foreach (var stackedObject in stackedObjects)
+				SetWobbly(stackedObject, false);
+		
+		if (value)
+			ModEntry.Instance.Helper.ModData.SetModData(@object, "IsWobbly", true);
+		else
+			ModEntry.Instance.Helper.ModData.RemoveModData(@object, "IsWobbly");
+	}
+
+	internal static void UpdateWobbly(StuffBase @object)
+		=> SetWobbly(@object, GetStackedObjects(@object)?.Any(IsWobbly) ?? false);
 
 	internal static void PushStackedObject(Combat combat, int worldX, StuffBase pushed)
 	{
@@ -152,6 +173,7 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 				ObjectToPutLater = pushed;
 			else
 				combat.stuff[worldX] = pushed;
+			UpdateWobbly(pushed);
 
 			UpdateStackedObjectX(pushed, worldX, true);
 		}
@@ -165,15 +187,18 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 		{
 			if (!removeLast)
 				combat.stuff[worldX] = @object;
+			UpdateWobbly(@object);
 			return removeLast;
 		}
 		
 		SetStackedObjects(@object, null);
-		@object = stackedObjects[^1];
+		var newObject = stackedObjects[^1];
 
 		stackedObjects = stackedObjects.Count == 0 ? null : stackedObjects.Take(stackedObjects.Count - 1).ToList();
-		SetStackedObjects(@object, stackedObjects);
-		combat.stuff[worldX] = @object;
+		SetStackedObjects(newObject, stackedObjects);
+		SetWobbly(newObject, IsWobbly(@object));
+		combat.stuff[worldX] = newObject;
+		UpdateWobbly(newObject);
 		return true;
 	}
 
@@ -189,11 +214,13 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 			if (GetStackedObjects(@object) is { } stackedObjects && stackedObjects.Count != 0)
 			{
 				SetStackedObjects(@object, null);
-				@object = stackedObjects[^1];
+				var newObject = stackedObjects[^1];
 				
 				stackedObjects = stackedObjects.Count == 0 ? null : stackedObjects.Take(stackedObjects.Count - 1).ToList();
-				SetStackedObjects(@object, stackedObjects);
-				combat.stuff[worldX] = @object;
+				SetStackedObjects(newObject, stackedObjects);
+				SetWobbly(newObject, IsWobbly(@object));
+				combat.stuff[worldX] = newObject;
+				UpdateWobbly(newObject);
 			}
 			
 			return true;
@@ -309,7 +336,7 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 			{
 				willStack = true;
 				ship.Add(JengaStatus.Status, -1);
-				// TODO: mark as wobbly
+				SetWobbly(__instance.thing);
 			}
 		}
 
@@ -432,7 +459,7 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 			UpdateStackedObjectX(@object, x);
 	}
 
-	private static void Combat_DestroyDroneAt_Postfix(Combat __instance, int x, in StuffBase? __state)
+	private static void Combat_DestroyDroneAt_Postfix(Combat __instance, State s, int x, bool playerDidIt, in StuffBase? __state)
 	{
 		if (__state is null)
 			return;
@@ -448,12 +475,17 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 			return;
 		
 		SetStackedObjects(__state, null);
-		
+
+		var isWobbly = IsWobbly(__state);
 		var newObject = stackedObjects[^1];
 		stackedObjects = stackedObjects.Count == 0 ? null : stackedObjects.Take(stackedObjects.Count - 1).ToList();
 		SetStackedObjects(newObject, stackedObjects);
+		SetWobbly(newObject, isWobbly);
 		
 		PushStackedObject(__instance, x, newObject);
+		
+		if (isWobbly)
+			__instance.DestroyDroneAt(s, x, playerDidIt);
 	}
 	#endregion
 	
@@ -588,6 +620,8 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 		{
 			var tooltipPos = box.rect.xy + new Vec(16, 24);
 			g.tooltips.Add(tooltipPos, MakeStackedMidrowAttributeTooltip());
+			if (IsWobbly(@object))
+				g.tooltips.Add(tooltipPos, MakeWobblyMidrowAttributeTooltip());
 			g.tooltips.Add(tooltipPos, ((IEnumerable<StuffBase>)stackedObjects).Reverse().SelectMany(stackedObject => stackedObject.GetTooltips()));
 		}
 	}
