@@ -19,7 +19,7 @@ public sealed class BuildThatWallCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/BuildThatWall.png"), StableSpr.cards_goat).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/BuildThatWall.png"), StableSpr.cards_GoatDrone).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BuildThatWall", "name"]).Localize,
 		});
 	}
@@ -36,12 +36,12 @@ public sealed class BuildThatWallCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new ASpawn { thing = new Asteroid(), offset = -1 }.SetCrammed(),
-				new ASpawn { thing = new Asteroid() }.SetCrammed(),
-				new ASpawn { thing = new Asteroid(), offset = 1 }.SetCrammed(),
+				new ASpawn { thing = new Asteroid(), offset = -1 }.SetStacked(),
+				new ASpawn { thing = new Asteroid() }.SetStacked(),
+				new ASpawn { thing = new Asteroid(), offset = 1 }.SetStacked(),
 			],
 			_ => [
-				new AStatus { targetPlayer = true, status = Cram.CramStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.TetrisStatus.Status, statusAmount = 3 },
 				new ASpawn { thing = new Asteroid(), offset = -1 },
 				new ASpawn { thing = new Asteroid() },
 				new ASpawn { thing = new Asteroid(), offset = 1 },
