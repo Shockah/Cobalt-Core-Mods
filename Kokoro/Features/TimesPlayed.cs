@@ -2,6 +2,7 @@
 using Nickel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Shockah.Kokoro;
 
@@ -55,7 +56,7 @@ internal sealed class TimesPlayedManager
 
 		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnStart), (State state) =>
 		{
-			foreach (var card in state.deck)
+			foreach (var card in state.GetAllCards())
 				ModEntry.Instance.Api.V2.TimesPlayed.SetTimesPlayed(card, IKokoroApi.IV2.ITimesPlayedApi.Interval.Turn, 0);
 		}, 1000);
 

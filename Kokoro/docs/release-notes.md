@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed "Times Played This Turn" not resetting under some circumstances.
+
 ## 2.12.2
 Released 13 November 2025.
 
