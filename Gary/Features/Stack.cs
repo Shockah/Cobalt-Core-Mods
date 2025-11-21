@@ -734,7 +734,7 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-	private static IEnumerable<CodeInstruction> Combat_DrawIntentLinesForPart_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
+	private static IEnumerable<CodeInstruction> Combat_DrawIntentLinesForPart_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
 		try
 		{
@@ -744,10 +744,6 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 					ILMatches.Isinst<Missile>(),
 					ILMatches.Brfalse.GetBranchTarget(out var renderDroneEndCapLabel),
 				])
-				// .Anchors().AnchorBlock(out var findBlock)
-				// .PointerMatcher(SequenceMatcherRelativeElement.BeforeFirst)
-				// .GetBranchTarget(out var afterRenderDroneEndCapLabel)
-				// .Anchors().BlockMatcher(findBlock)
 				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
 					new CodeInstruction(OpCodes.Ldloc, objectLocalIndex.Value).WithLabels(labels),
 					new CodeInstruction(OpCodes.Ldarg_1),
