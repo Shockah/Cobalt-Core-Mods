@@ -15,8 +15,6 @@ using Shockah.Kokoro;
 
 namespace Shockah.Gary;
 
-// FIXME: enemy targeting line incorrectly goes through missiles with stacked non-missile objects
-
 internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static IStatusEntry JengaStatus { get; private set; } = null!;
@@ -667,6 +665,10 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderDrones)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDrones_Transpiler))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrawIntentLinesForPart)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrawIntentLinesForPart_Transpiler))
+		);
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
@@ -729,6 +731,49 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 				g.tooltips.Add(tooltipPos, MakeWobblyMidrowAttributeTooltip());
 			g.tooltips.Add(tooltipPos, ((IEnumerable<StuffBase>)stackedObjects).Reverse().SelectMany(stackedObject => stackedObject.GetTooltips()));
 		}
+	}
+	
+	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+	private static IEnumerable<CodeInstruction> Combat_DrawIntentLinesForPart_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find([
+					ILMatches.Ldloc<StuffBase>(originalMethod).GetLocalIndex(out var objectLocalIndex).ExtractLabels(out var labels),
+					ILMatches.Isinst<Missile>(),
+					ILMatches.Brfalse.GetBranchTarget(out var renderDroneEndCapLabel),
+				])
+				// .Anchors().AnchorBlock(out var findBlock)
+				// .PointerMatcher(SequenceMatcherRelativeElement.BeforeFirst)
+				// .GetBranchTarget(out var afterRenderDroneEndCapLabel)
+				// .Anchors().BlockMatcher(findBlock)
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldloc, objectLocalIndex.Value).WithLabels(labels),
+					new CodeInstruction(OpCodes.Ldarg_1),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrawIntentLinesForPart_Transpiler_IsStackBlocking))),
+					new CodeInstruction(OpCodes.Brtrue, renderDroneEndCapLabel.Value),
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.UniqueName, ex);
+			return instructions;
+		}
+	}
+
+	private static bool Combat_DrawIntentLinesForPart_Transpiler_IsStackBlocking(StuffBase @object, Ship shipSource)
+	{
+		if (GetStackedObjects(@object) is not { } stackedObjects || stackedObjects.Count == 0)
+			return false;
+		if (shipSource.isPlayerShip)
+			return true;
+		// TODO: Jack compat, if needed
+		foreach (var stackedObject in stackedObjects)
+			if (stackedObject is not Missile)
+				return true;
+		return false;
 	}
 	#endregion
 	
