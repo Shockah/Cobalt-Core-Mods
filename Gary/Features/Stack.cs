@@ -15,6 +15,8 @@ using Shockah.Kokoro;
 
 namespace Shockah.Gary;
 
+// FIXME: launching into wobbly stacks crashes the game
+
 internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static IStatusEntry JengaStatus { get; private set; } = null!;
