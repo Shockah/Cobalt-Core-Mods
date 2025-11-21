@@ -20,7 +20,6 @@ namespace Shockah.Gary;
 
 internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
-	internal static IStatusEntry TetrisStatus { get; private set; } = null!;
 	internal static IStatusEntry JengaStatus { get; private set; } = null!;
 	
 	internal static ISpriteEntry StackedIcon { get; private set; } = null!;
@@ -35,24 +34,12 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		TetrisStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Tetris", new()
-		{
-			Definition = new()
-			{
-				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/Tetris.png")).Sprite,
-				color = new("23EEB6"),
-				isGood = true,
-			},
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Tetris", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Tetris", "description"]).Localize
-		});
-		
 		JengaStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Jenga", new()
 		{
 			Definition = new()
 			{
 				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/Jenga.png")).Sprite,
-				color = new("23EEB6"),
+				color = new("FAE4BE"),
 				isGood = true,
 			},
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Jenga", "name"]).Localize,
@@ -80,22 +67,11 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 	}
 
 	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
-	{
-		if (args.Status == TetrisStatus.Status)
-			return [
-				.. args.Tooltips,
-				MakeStackedMidrowAttributeTooltip(),
-			];
-		
-		if (args.Status == JengaStatus.Status)
-			return [
-				.. args.Tooltips,
-				MakeStackedMidrowAttributeTooltip(),
-				MakeWobblyMidrowAttributeTooltip(),
-			];
-
-		return args.Tooltips;
-	}
+		=> args.Status == JengaStatus.Status ? [
+			.. args.Tooltips,
+			MakeStackedMidrowAttributeTooltip(),
+			MakeWobblyMidrowAttributeTooltip(),
+		] : args.Tooltips;
 
 	internal static Tooltip MakeStackedMidrowAttributeTooltip()
 		=> new GlossaryTooltip($"midrow.{ModEntry.Instance.Package.Manifest.UniqueName}::Stacked")
@@ -145,7 +121,7 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 			ModEntry.Instance.Helper.ModData.RemoveModData(@object, "IsWobbly");
 	}
 
-	internal static void UpdateWobbly(StuffBase @object)
+	private static void UpdateWobbly(StuffBase @object)
 		=> SetWobbly(@object, GetStackedObjects(@object)?.Any(IsWobbly) ?? false);
 
 	internal static void PushStackedObject(Combat combat, int worldX, StuffBase pushed)
@@ -326,17 +302,14 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 		if (!willStack)
 		{
 			var stackSize = 1 + (GetStackedObjects(existingThing)?.Count ?? 0);
-			if (ship.Get(TetrisStatus.Status) >= stackSize)
-			{
-				willStack = true;
-				ship.Add(TetrisStatus.Status, -stackSize);
-			}
+			var jengaAmount = ship.Get(JengaStatus.Status);
 
-			if (!willStack && ship.Get(JengaStatus.Status) > 0)
+			if (jengaAmount > 0)
 			{
 				willStack = true;
-				ship.Add(JengaStatus.Status, -1);
-				SetWobbly(__instance.thing);
+				ship.Add(JengaStatus.Status, -Math.Min(jengaAmount, stackSize));
+				if (stackSize > jengaAmount)
+					SetWobbly(__instance.thing);
 			}
 		}
 
@@ -384,7 +357,6 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 		List<Tooltip> tooltips = [
 			MakeStackedLaunchTooltip(),
 			MakeStackedMidrowAttributeTooltip(),
-			.. StatusMeta.GetTooltips(TetrisStatus.Status, 1),
 		];
 		
 		var index = __result.FindIndex(t => t is TTGlossary { key: "action.spawn" or "action.spawnOffsetLeft" or "action.spawnOffsetRight" });
@@ -431,13 +403,15 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 
 	private static void Card_RenderAction_Transpiler_RenderStackedLaunch(ASpawn action, G g, bool dontDraw, ref int width)
 	{
+		const int leftPad = -2;
+		
 		if (!IsStacked(action))
 			return;
 
-		var box = g.Push(rect: new Rect(width));
+		var box = g.Push(rect: new Rect(width + leftPad));
 		if (!dontDraw)
 			Draw.Sprite(StackedLaunchIcon.Sprite, box.rect.x, box.rect.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
-		width += 9;
+		width += 9 + leftPad;
 		g.Pop();
 	}
 	#endregion
