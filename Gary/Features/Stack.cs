@@ -73,14 +73,26 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 			MakeWobblyMidrowAttributeTooltip(),
 		] : args.Tooltips;
 
-	internal static Tooltip MakeStackedMidrowAttributeTooltip()
-		=> new GlossaryTooltip($"midrow.{ModEntry.Instance.Package.Manifest.UniqueName}::Stacked")
-		{
-			Icon = StackedIcon.Sprite,
-			TitleColor = Colors.midrow,
-			Title = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Stacked", "name"]),
-			Description = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Stacked", "description"]),
-		};
+	internal static Tooltip MakeStackedMidrowAttributeTooltip(int? count = null)
+	{
+		if (count is null)
+			return new GlossaryTooltip($"midrow.{ModEntry.Instance.Package.Manifest.UniqueName}::Stacked")
+			{
+				Icon = StackedIcon.Sprite,
+				TitleColor = Colors.midrow,
+				Title = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Stacked", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Stacked", "description"]),
+			};
+		else
+			return new GlossaryTooltip($"midrow.{ModEntry.Instance.Package.Manifest.UniqueName}::Stacked")
+			{
+				Icon = StackedIcon.Sprite,
+				TitleColor = Colors.midrow,
+				Title = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Stacked", "nameWithCount"]).Replace("{0}", $"<c=boldPink>{count.Value}</c>"),
+				Description = ModEntry.Instance.Localizations.Localize(["midrowAttribute", "Stacked", "description"]),
+				UppercaseTitle = false,
+			};
+	}
 
 	internal static Tooltip MakeWobblyMidrowAttributeTooltip()
 		=> new GlossaryTooltip($"midrow.{ModEntry.Instance.Package.Manifest.UniqueName}::Wobbly")
@@ -616,7 +628,7 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 		if (box.rect.x is > 60 and < 464 && box.IsHover())
 		{
 			var tooltipPos = box.rect.xy + new Vec(16, 24);
-			g.tooltips.Add(tooltipPos, MakeStackedMidrowAttributeTooltip());
+			g.tooltips.Add(tooltipPos, MakeStackedMidrowAttributeTooltip(stackedObjects.Count + 1));
 			if (IsWobbly(@object))
 				g.tooltips.Add(tooltipPos, MakeWobblyMidrowAttributeTooltip());
 			g.tooltips.Add(tooltipPos, ((IEnumerable<StuffBase>)stackedObjects).Reverse().SelectMany(stackedObject => stackedObject.GetTooltips()));
