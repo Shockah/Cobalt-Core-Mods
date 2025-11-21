@@ -672,18 +672,16 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-	private static IEnumerable<CodeInstruction> Combat_RenderDrones_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	private static IEnumerable<CodeInstruction> Combat_RenderDrones_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod, ILGenerator il)
 	{
 		try
 		{
+			var oldRectLocal = il.DeclareLocal(typeof(Rect));
+			
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find([
 					ILMatches.Ldloc<StuffBase>(originalMethod).GetLocalIndex(out var objectLocalIndex),
 					ILMatches.Call("GetGetRect"),
-				])
-				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
-					new CodeInstruction(OpCodes.Ldloc, objectLocalIndex.Value),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDrones_Transpiler_OffsetMainObject))),
 				])
 				.Find([
 					ILMatches.Ldloc<StuffBase>(originalMethod).ExtractLabels(out var labels),
@@ -698,6 +696,20 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 					new CodeInstruction(OpCodes.Ldloc, boxLocalIndex.Value),
 					new CodeInstruction(OpCodes.Ldloc, objectLocalIndex.Value),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDrones_Transpiler_RenderStackedObjects))),
+					
+					new CodeInstruction(OpCodes.Ldloc, boxLocalIndex.Value),
+					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(typeof(Box), nameof(Box.rect))),
+					new CodeInstruction(OpCodes.Stloc, oldRectLocal),
+					
+					new CodeInstruction(OpCodes.Ldarg_1),
+					new CodeInstruction(OpCodes.Ldloc, boxLocalIndex.Value),
+					new CodeInstruction(OpCodes.Ldloc, objectLocalIndex.Value),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDrones_Transpiler_OffsetMainObject))),
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldloc, boxLocalIndex.Value),
+					new CodeInstruction(OpCodes.Ldloc, oldRectLocal),
+					new CodeInstruction(OpCodes.Stfld, AccessTools.DeclaredField(typeof(Box), nameof(Box.rect))),
 				])
 				.AllElements();
 		}
@@ -708,20 +720,20 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 		}
 	}
 
-	private static Rect Combat_RenderDrones_Transpiler_OffsetMainObject(Rect rect, StuffBase @object)
-	{
-		if (GetStackedObjects(@object) is not { } stackedObjects || stackedObjects.Count == 0)
-			return rect;
-		return new(rect.x, rect.y - stackedObjects.Count, rect.w, rect.h);
-	}
+	private static double GetWobbleOffset(G g, int depth)
+		=> Math.Sin((g.state.time + depth) * 1.5) * 2;
 
 	private static void Combat_RenderDrones_Transpiler_RenderStackedObjects(G g, Box box, StuffBase @object)
 	{
 		if (GetStackedObjects(@object) is not { } stackedObjects || stackedObjects.Count == 0)
 			return;
+		var isWobbly = IsWobbly(@object);
 
 		for (var i = 0; i < stackedObjects.Count; i++)
-			stackedObjects[i].Render(g, new Vec(box.rect.x + ((stackedObjects.Count - i) % 2 * 2 - 1) * 2, box.rect.y - stackedObjects.Count + (stackedObjects.Count - i) * 4));
+		{
+			var offset = isWobbly ? GetWobbleOffset(g, i + 1) : 0;
+			stackedObjects[i].Render(g, new Vec(box.rect.x + offset + ((stackedObjects.Count - i) % 2 * 2 - 1) * 2, box.rect.y - stackedObjects.Count + (stackedObjects.Count - i) * 4));
+		}
 		
 		if (box.rect.x is > 60 and < 464 && box.IsHover())
 		{
@@ -731,6 +743,14 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 				g.tooltips.Add(tooltipPos, MakeWobblyMidrowAttributeTooltip());
 			g.tooltips.Add(tooltipPos, ((IEnumerable<StuffBase>)stackedObjects).Reverse().SelectMany(stackedObject => stackedObject.GetTooltips()));
 		}
+	}
+
+	private static void Combat_RenderDrones_Transpiler_OffsetMainObject(G g, Box box, StuffBase @object)
+	{
+		if (GetStackedObjects(@object) is not { } stackedObjects || stackedObjects.Count == 0)
+			return;
+		var offset = IsWobbly(@object) ? GetWobbleOffset(g, 0) : 0;
+		box.rect = new(box.rect.x + offset, box.rect.y - stackedObjects.Count, box.rect.w, box.rect.h);
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
