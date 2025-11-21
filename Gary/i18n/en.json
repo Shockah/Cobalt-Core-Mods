@@ -20,7 +20,8 @@
 	},
 	"midrowAttribute": {
 		"Stacked": {
-			"name": "Stacked",
+			"name": "STACKED",
+			"nameWithCount": "STACKED ({0})",
 			"description": "<c=midrow>Stacked objects</c> take turns in order. The top one takes all hits."
 		},
 		"Wobbly": {
