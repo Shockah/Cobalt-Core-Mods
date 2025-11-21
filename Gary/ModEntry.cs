@@ -35,6 +35,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(KillboxCard),
 		typeof(MatryoshkaCard),
 		typeof(RulesLawyeringCard),
+		typeof(ToppleCard),
 		typeof(ZergCard),
 	];
 
