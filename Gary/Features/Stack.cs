@@ -122,7 +122,7 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 	}
 
 	private static void UpdateWobbly(StuffBase @object)
-		=> SetWobbly(@object, GetStackedObjects(@object)?.Any(IsWobbly) ?? false);
+		=> SetWobbly(@object, IsWobbly(@object) || (GetStackedObjects(@object)?.Any(IsWobbly) ?? false));
 
 	internal static void PushStackedObject(Combat combat, int worldX, StuffBase pushed)
 	{
@@ -351,16 +351,27 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 
 	private static void ASpawn_GetTooltips_Postfix(ASpawn __instance, ref List<Tooltip> __result)
 	{
-		if (!IsStacked(__instance))
-			return;
-
-		List<Tooltip> tooltips = [
-			MakeStackedLaunchTooltip(),
-			MakeStackedMidrowAttributeTooltip(),
-		];
+		if (IsWobbly(__instance.thing))
+		{
+			List<Tooltip> tooltipsToInsert = [
+				MakeStackedLaunchTooltip(),
+				MakeStackedMidrowAttributeTooltip(),
+				MakeWobblyMidrowAttributeTooltip(),
+			];
 		
-		var index = __result.FindIndex(t => t is TTGlossary { key: "action.spawn" or "action.spawnOffsetLeft" or "action.spawnOffsetRight" });
-		__result.InsertRange(index == -1 ? 0 : (index + 1), tooltips);
+			var index = __result.FindIndex(t => t is TTGlossary { key: "action.spawn" or "action.spawnOffsetLeft" or "action.spawnOffsetRight" });
+			__result.InsertRange(index == -1 ? 0 : (index + 1), tooltipsToInsert);
+		}
+		else if (IsStacked(__instance))
+		{
+			List<Tooltip> tooltipsToInsert = [
+				MakeStackedLaunchTooltip(),
+				MakeStackedMidrowAttributeTooltip(),
+			];
+		
+			var index = __result.FindIndex(t => t is TTGlossary { key: "action.spawn" or "action.spawnOffsetLeft" or "action.spawnOffsetRight" });
+			__result.InsertRange(index == -1 ? 0 : (index + 1), tooltipsToInsert);
+		}
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
@@ -404,15 +415,27 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 	private static void Card_RenderAction_Transpiler_RenderStackedLaunch(ASpawn action, G g, bool dontDraw, ref int width)
 	{
 		const int leftPad = -2;
-		
-		if (!IsStacked(action))
-			return;
 
-		var box = g.Push(rect: new Rect(width + leftPad));
-		if (!dontDraw)
-			Draw.Sprite(StackedLaunchIcon.Sprite, box.rect.x, box.rect.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
-		width += 9 + leftPad;
-		g.Pop();
+		var isWobbly = IsWobbly(action.thing);
+		var isStacked = isWobbly || IsStacked(action);
+		
+		if (isStacked)
+		{
+			var stackedBox = g.Push(rect: new Rect(width + leftPad));
+			if (!dontDraw)
+				Draw.Sprite(StackedLaunchIcon.Sprite, stackedBox.rect.x, stackedBox.rect.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
+			width += 9 + leftPad;
+			g.Pop();
+			
+			if (isWobbly)
+			{
+				var wobblyBox = g.Push(rect: new Rect(width + leftPad));
+				if (!dontDraw)
+					Draw.Sprite(WobblyIcon.Sprite, wobblyBox.rect.x, wobblyBox.rect.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
+				width += 8;
+				g.Pop();
+			}
+		}
 	}
 	#endregion
 	
@@ -1092,11 +1115,17 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 	#endregion
 }
 
-internal static class CramExtensions
+internal static class StackExtensions
 {
 	public static ASpawn SetStacked(this ASpawn action, bool value = true)
 	{
 		Stack.SetStacked(action, value);
 		return action;
+	}
+	
+	public static StuffBase SetWobbly(this StuffBase thing, bool value = true)
+	{
+		Stack.SetWobbly(thing, value);
+		return thing;
 	}
 }
