@@ -20,7 +20,7 @@ public sealed class SendRegardsCard : Card, IRegisterable, IHasCustomCardTraits
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/SendRegards.png"), StableSpr.cards_GoatDrone).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/SendRegards.png"), StableSpr.cards_SeekerMissileCard).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "SendRegards", "name"]).Localize,
 		});
 		
