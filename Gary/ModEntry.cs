@@ -25,6 +25,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(DefensiveTechCard),
 		typeof(LeanInCard),
 		typeof(MapControlCard),
+		typeof(RulesLawyeringCard),
 		typeof(SendRegardsCard),
 		typeof(ToppleCard),
 		typeof(TrapCardCard),
@@ -36,7 +37,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(KillboxCard),
 		typeof(MatryoshkaCard),
 		typeof(MissileSalvoCard),
-		typeof(RulesLawyeringCard),
+		typeof(SpeedBuffCard),
 		typeof(StabilizeCard),
 		typeof(ZergCard),
 	];
