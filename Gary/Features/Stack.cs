@@ -15,7 +15,7 @@ using Shockah.Kokoro;
 
 namespace Shockah.Gary;
 
-// FIXME: Sporb moving into a stack seemingly removes the entirety of the stack without proper destroy effects
+// FIXME: Sporb moves its whole stack
 // FIXME: enemy targeting line incorrectly goes through missiles with stacked non-missile objects
 
 internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
@@ -52,6 +52,7 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 
 		HandleLaunch();
 		HandleDestroy();
+		HandleMove();
 		HandleTurnEnd();
 		HandleRendering();
 		HandleLifecycle();
@@ -497,6 +498,53 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 		
 		if (isWobbly)
 			__instance.DestroyDroneAt(s, x, playerDidIt);
+	}
+	#endregion
+	
+	#region Move
+	private static void HandleMove()
+	{
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ADroneMove), nameof(ADroneMove.DoMoveSingleDrone)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ADroneMove_DoMoveSingleDrone_Transpiler))
+		);
+	}
+	
+	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+	private static IEnumerable<CodeInstruction> ADroneMove_DoMoveSingleDrone_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find([
+					ILMatches.Ldloc<StuffBase>(originalMethod).GetLocalIndex(out var objectLocalIndex),
+					ILMatches.Call("Invincible"),
+					ILMatches.Brfalse,
+				])
+				.PointerMatcher(SequenceMatcherRelativeElement.AfterLast)
+				.ExtractLabels(out var labels)
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldloc, objectLocalIndex.Value).WithLabels(labels),
+					new CodeInstruction(OpCodes.Ldarg_1),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ADroneMove_DoMoveSingleDrone_Transpiler_ApplyFakeWobblyIfNeeded))),
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.UniqueName, ex);
+			return instructions;
+		}
+	}
+
+	private static void ADroneMove_DoMoveSingleDrone_Transpiler_ApplyFakeWobblyIfNeeded(StuffBase @object, Combat combat)
+	{
+		if (!combat.stuff.TryGetValue(@object.x, out var existingObject))
+			return;
+		if (!@object.Invincible())
+			return;
+		
+		SetWobbly(existingObject);
 	}
 	#endregion
 	
