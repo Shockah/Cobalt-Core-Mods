@@ -15,7 +15,6 @@ using Shockah.Kokoro;
 
 namespace Shockah.Gary;
 
-// FIXME: Sporb moves its whole stack
 // FIXME: enemy targeting line incorrectly goes through missiles with stacked non-missile objects
 
 internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
@@ -30,6 +29,7 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 	private static StuffBase? ObjectToPutLater;
 	private static bool ObjectIsBeingStackedInto;
 	private static Guid? NestedJupiterShootBeginId;
+	private static bool IsDuringDroneMove;
 	private static readonly List<(StuffBase RealObject, StuffBase? StackedObject, int WorldX)?> ForceStackedObjectStack = [];
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
@@ -169,16 +169,16 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 		}
 	}
 
-	internal static bool PopStackedObject(Combat combat, int worldX, bool removeLast)
+	internal static StuffBase? PopStackedObject(Combat combat, int worldX, bool removeLast)
 	{
 		if (!combat.stuff.Remove(worldX, out var @object))
-			return false;
+			return null;
 		if (GetStackedObjects(@object) is not { } stackedObjects || stackedObjects.Count == 0)
 		{
 			if (!removeLast)
 				combat.stuff[worldX] = @object;
 			UpdateWobbly(@object);
-			return removeLast;
+			return removeLast ? @object : null;
 		}
 		
 		SetStackedObjects(@object, null);
@@ -189,7 +189,7 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 		SetWobbly(newObject, IsWobbly(@object));
 		combat.stuff[worldX] = newObject;
 		UpdateWobbly(newObject);
-		return true;
+		return @object;
 	}
 
 	internal static bool RemoveStackedObject(Combat combat, int worldX, StuffBase toRemove)
@@ -505,9 +505,55 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 	private static void HandleMove()
 	{
 		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ADroneMove), nameof(ADroneMove.Begin)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ADroneMove_Begin_Prefix)),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ADroneMove_Begin_Finalizer))
+		);
+		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(ADroneMove), nameof(ADroneMove.DoMoveSingleDrone)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ADroneMove_DoMoveSingleDrone_Prefix)),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ADroneMove_DoMoveSingleDrone_Finalizer)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ADroneMove_DoMoveSingleDrone_Transpiler))
 		);
+	}
+
+	private static void ADroneMove_Begin_Prefix()
+		=> IsDuringDroneMove = true;
+
+	private static void ADroneMove_Begin_Finalizer()
+		=> IsDuringDroneMove = false;
+
+	private static void ADroneMove_DoMoveSingleDrone_Prefix(Combat c, int x, out StuffBase? __state)
+	{
+		if (IsDuringDroneMove)
+		{
+			__state = null;
+			return;
+		}
+
+		var toMove = PopStackedObject(c, x, true);
+		var leftover = c.stuff.GetValueOrDefault(x);
+		__state = leftover;
+
+		if (toMove is null)
+			c.stuff.Remove(x);
+		else
+			c.stuff[x] = toMove;
+	}
+
+	private static void ADroneMove_DoMoveSingleDrone_Finalizer(Combat c, int x, in StuffBase? __state)
+	{
+		if (IsDuringDroneMove)
+			return;
+		if (__state is null)
+			return;
+		
+		var potentialNewStuff = c.stuff.GetValueOrDefault(x);
+		c.stuff.Remove(x);
+		
+		PushStackedObject(c, x, __state);
+		if (potentialNewStuff is not null)
+			PushStackedObject(c, x, potentialNewStuff);
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
