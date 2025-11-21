@@ -26,24 +26,20 @@ public sealed class TrapCardCard : Card, IRegisterable, IHasCustomCardTraits
 		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 2);
 		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 2);
 		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 4);
-		
-		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, Upgrade.None, 2);
-		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, Upgrade.A, 2);
-		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, Upgrade.B, 4);
 	}
 
 	public override CardData GetData(State state)
 		=> upgrade switch
 		{
-			Upgrade.A => new() { cost = 0, retain = true },
-			_ => new() { cost = 0 },
+			Upgrade.A => new() { cost = 0, retain = true, infinite = true },
+			_ => new() { cost = 0, infinite = true },
 		};
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> upgrade switch
 		{
-			Upgrade.B => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Limited.Trait, ModEntry.Instance.KokoroApi.Finite.Trait, ModEntry.Instance.KokoroApi.Fleeting.Trait },
-			_ => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Limited.Trait, ModEntry.Instance.KokoroApi.Finite.Trait },
+			Upgrade.B => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Limited.Trait, ModEntry.Instance.KokoroApi.Fleeting.Trait },
+			_ => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Limited.Trait },
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)

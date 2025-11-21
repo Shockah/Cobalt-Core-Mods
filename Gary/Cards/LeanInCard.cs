@@ -48,7 +48,7 @@ public sealed class LeanInCard : Card, IRegisterable, IHasCustomCardTraits
 			Upgrade.B => [
 				new AMove { targetPlayer = true, dir = 1 },
 				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 },
-				new AStatus { targetPlayer = true, status = Stack.TetrisStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 2 },
 			],
 			Upgrade.A => [
 				ModEntry.Instance.KokoroApi.Sequence.MakeAction(
@@ -59,11 +59,11 @@ public sealed class LeanInCard : Card, IRegisterable, IHasCustomCardTraits
 					uuid, IKokoroApi.IV2.ISequenceApi.Interval.Turn, 2, 2,
 					new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 1 }
 				).AsCardAction,
-				new AStatus { targetPlayer = true, status = Stack.TetrisStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
 			],
 			_ => [
 				new AMove { targetPlayer = true, dir = 1 },
-				new AStatus { targetPlayer = true, status = Stack.TetrisStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
 			],
 		};
 }
