@@ -36,7 +36,7 @@ public sealed class KillboxCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = Stack.JengaStatus.Status, statusAmount = 1 },
 				new ASpawn { thing = new SpaceMine() },
 			],
 			Upgrade.A => [

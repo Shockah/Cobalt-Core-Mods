@@ -2,34 +2,30 @@
 	"character": {
 		"name": "Gary",
 		"description": [
-			"<c=23EEB6>GARY</c>",
+			"<c=E4AE5D>GARY</c>",
 			"TBD."
 		]
 	},
 	"status": {
-		"Tetris": {
-			"name": "Tetris",
-			"description": "When <c=action>launching</c> <c=midrow>midrow objects</c>, spend <c=status>TETRIS</c> for each already existing <c=midrow>object</c> to fit another one."
-		},
 		"Jenga": {
 			"name": "Jenga",
-			"description": "When <c=action>launching</c> <c=midrow>midrow objects</c>, spend 1 <c=status>JENGA</c> to fit another <c=midrow>object</c> into a <c=midrow>stack</c>. <c=downside>It gets <c=wobbly</c></c>."
+			"description": "When <c=action>launching</c> <c=midrow>objects</c>, <c=midrow>stack</c> them on top and lose <c=status>JENGA</c> for each other object in the <c=midrow>stack</c>. <c=downside>If not enough, the <c=midrow>stack</c> becomes <c=midrow>wobbly</c>.</c>"
 		}
 	},
 	"action": {
 		"StackedLaunch": {
 			"name": "Stack",
-			"description": "The launched <c=midrow>object</c> will be <c=midrow>stacked</c> with existing <c=midrow>objects</c>, if any."
+			"description": "The <c=midrow>object</c> will be <c=midrow>stacked</c> on top of any existing <c=midrow>objects</c>."
 		}
 	},
 	"midrowAttribute": {
 		"Stacked": {
 			"name": "Stacked",
-			"description": "All <c=midrow>stacked</c> objects take turns in order. The last <c=midrow>stacked</c> object is the one that takes hits."
+			"description": "<c=midrow>Stacked objects</c> take turns in order. The top one takes all hits."
 		},
 		"Wobbly": {
 			"name": "Wobbly",
-			"description": "If any <c=midrow>objects</c> in the <c=midrow>stack</c> are destroyed, the whole <c=midrow>stack</c> also gets destroyed."
+			"description": "<c=downside>All <c=midrow>stacked objects</c> get destroyed together.</c>"
 		}
 	},
 	"midrow": {
@@ -71,9 +67,6 @@
 		},
 		"SendRegards": {
 			"name": "Send Regards"
-		},
-		"Steady": {
-			"name": "Steady"
 		},
 		"Stockpile": {
 			"name": "Stockpile"

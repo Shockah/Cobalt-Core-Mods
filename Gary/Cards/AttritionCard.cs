@@ -42,7 +42,7 @@ public sealed class AttritionCard : Card, IRegisterable, IHasCustomCardTraits
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new AStatus { targetPlayer = true, status = Stack.TetrisStatus.Status, statusAmount = 1 },
+			new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
 			new ASpawn { thing = new AttackDrone { targetPlayer = false } },
 		];
 }
