@@ -27,7 +27,11 @@ public sealed class MapControlCard : Card, IRegisterable, IHasCustomCardTraits
 	}
 
 	public override CardData GetData(State state)
-		=> new() { cost = 1 };
+		=> upgrade switch
+		{
+			Upgrade.B => new() { cost = 1 },
+			_ => new() { cost = 1, flippable = true },
+		};
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Finite.Trait };
