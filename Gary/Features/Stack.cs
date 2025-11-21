@@ -17,6 +17,7 @@ namespace Shockah.Gary;
 
 // FIXME: missile + space mine seemingly removes the mine
 // FIXME: Sporb moving into a stack seemingly removes the entirety of the stack without proper destroy effects
+// FIXME: enemy targeting line incorrectly goes through missiles with stacked non-missile objects
 
 internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
