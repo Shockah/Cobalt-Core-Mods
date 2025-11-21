@@ -15,7 +15,6 @@ using Shockah.Kokoro;
 
 namespace Shockah.Gary;
 
-// FIXME: missile + space mine seemingly removes the mine
 // FIXME: Sporb moving into a stack seemingly removes the entirety of the stack without proper destroy effects
 // FIXME: enemy targeting line incorrectly goes through missiles with stacked non-missile objects
 
@@ -113,6 +112,7 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 			Description = ModEntry.Instance.Localizations.Localize(["action", "StackedLaunch", "description"]),
 		};
 
+	#region State methods
 	internal static List<StuffBase>? GetStackedObjects(StuffBase @object)
 		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<List<StuffBase>>(@object, "StackedObjects");
 
@@ -277,6 +277,7 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 		}
 		return false;
 	}
+	#endregion
 	
 	#region Launch
 	private static void HandleLaunch()
@@ -516,7 +517,7 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find([
 					ILMatches.Ldarg(3),
-					ILMatches.Ldfld("stuff"),
+					ILMatches.Ldfld(nameof(Combat.stuff)),
 					ILMatches.Ldloc<int>(originalMethod).GetLocalIndex(out var worldXLocalIndex),
 					ILMatches.Call("get_Item"),
 					ILMatches.Ldarg(2),
@@ -805,6 +806,21 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 					new CodeInstruction(OpCodes.Brtrue, label),
 					new CodeInstruction(OpCodes.Ret),
 				])
+				.Find(ILMatches.Stloc<Missile>(originalMethod).GetLocalIndex(out var missileLocalIndex))
+				.Find([
+					ILMatches.Ldarg(3),
+					ILMatches.Ldfld(nameof(Combat.stuff)),
+					ILMatches.Ldarg(0),
+					ILMatches.Ldfld(nameof(AMissileHit.worldX)),
+					ILMatches.Call("Remove"),
+					ILMatches.Instruction(OpCodes.Pop),
+				])
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldarg_3),
+					new CodeInstruction(OpCodes.Ldloc, missileLocalIndex.Value),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMissileHit_Update_Transpiler_PutStackBack))),
+				])
 				.AllElements();
 		}
 		catch (Exception ex)
@@ -830,6 +846,12 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 
 		action.timer -= g.dt;
 		return false;
+	}
+
+	private static void AMissileHit_Update_Transpiler_PutStackBack(AMissileHit action, Combat combat, Missile missile)
+	{
+		combat.stuff[action.worldX] = missile;
+		RemoveStackedObject(combat, action.worldX, missile);
 	}
 	#endregion
 	
