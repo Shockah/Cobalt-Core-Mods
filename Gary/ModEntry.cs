@@ -40,6 +40,7 @@ public sealed class ModEntry : SimpleMod
 
 	private static readonly IReadOnlyList<Type> RareCardTypes = [
 		typeof(AgreeToDisagreeCard),
+		typeof(BigGunsCard),
 		typeof(EngineCard),
 		typeof(StockpileCard),
 	];
