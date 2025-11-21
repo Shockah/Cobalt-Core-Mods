@@ -19,7 +19,7 @@ public sealed class MapControlCard : Card, IRegisterable, IHasCustomCardTraits
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/MapControl.png"), StableSpr.cards_goat).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/MapControl.png"), StableSpr.cards_GoatDrone).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "MapControl", "name"]).Localize,
 		});
 		

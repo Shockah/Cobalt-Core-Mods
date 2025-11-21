@@ -20,7 +20,7 @@ public sealed class DefensiveTechCard : Card, IRegisterable, IHasCustomCardTrait
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/DefensiveTech.png"), StableSpr.cards_goat).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/DefensiveTech.png"), StableSpr.cards_BubbleField).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "DefensiveTech", "name"]).Localize,
 		});
 		

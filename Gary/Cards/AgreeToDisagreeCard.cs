@@ -19,7 +19,7 @@ public sealed class AgreeToDisagreeCard : Card, IRegisterable, IHasCustomCardTra
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/AgreeToDisagree.png"), StableSpr.cards_goat).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/AgreeToDisagree.png"), StableSpr.cards_Enrage).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "AgreeToDisagree", "name"]).Localize,
 		});
 		

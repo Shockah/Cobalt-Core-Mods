@@ -20,7 +20,7 @@ public sealed class LeanInCard : Card, IRegisterable, IHasCustomCardTraits
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/LeanIn.png"), StableSpr.cards_goat).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/LeanIn.png"), StableSpr.cards_ScootRight).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "LeanIn", "name"]).Localize,
 		});
 		
@@ -29,11 +29,18 @@ public sealed class LeanInCard : Card, IRegisterable, IHasCustomCardTraits
 	}
 
 	public override CardData GetData(State state)
-		=> upgrade switch
+	{
+		var data = new CardData
 		{
-			Upgrade.B => new() { cost = 2, flippable = true },
-			_ => new() { cost = 1, flippable = true },
+			flippable = true,
+			art = flipped ? StableSpr.cards_ScootLeft :  StableSpr.cards_ScootRight,
 		};
+		return upgrade switch
+		{
+			Upgrade.B => data with { cost = 2 },
+			_ => data with { cost = 1 },
+		};
+	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> upgrade switch

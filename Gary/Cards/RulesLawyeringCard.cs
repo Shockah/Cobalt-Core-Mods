@@ -20,7 +20,7 @@ public sealed class RulesLawyeringCard : Card, IRegisterable, IHasCustomCardTrai
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/RulesLawyering.png"), StableSpr.cards_goat).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/RulesLawyering.png"), StableSpr.cards_DrakeCannon).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "RulesLawyering", "name"]).Localize,
 		});
 		

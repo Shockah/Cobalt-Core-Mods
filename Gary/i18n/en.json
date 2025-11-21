@@ -75,6 +75,10 @@
 		"SendRegards": {
 			"name": "Send Regards"
 		},
+		"Stabilize": {
+			"name": "Stabilize",
+			"description": "Remove <c=midrow>Wobbly</c> from the closest <c=midrow>wobbly stack</c> to your <c=part>missile bay</c>."
+		},
 		"Stockpile": {
 			"name": "Stockpile"
 		},

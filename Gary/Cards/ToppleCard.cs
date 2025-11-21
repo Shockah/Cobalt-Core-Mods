@@ -19,7 +19,7 @@ public sealed class ToppleCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Topple.png"), StableSpr.cards_GoatDrone).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Topple.png"), StableSpr.cards_SmallBoulder).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Topple", "name"]).Localize,
 		});
 	}
