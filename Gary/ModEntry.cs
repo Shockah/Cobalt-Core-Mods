@@ -26,7 +26,6 @@ public sealed class ModEntry : SimpleMod
 		typeof(LeanInCard),
 		typeof(MapControlCard),
 		typeof(SendRegardsCard),
-		typeof(SteadyCard),
 		typeof(TrapCardCard),
 		typeof(TurtleCard),
 	];
@@ -92,7 +91,7 @@ public sealed class ModEntry : SimpleMod
 
 		GaryDeck = helper.Content.Decks.RegisterDeck("Gary", new()
 		{
-			Definition = new() { color = new("23EEB6"), titleColor = Colors.black },
+			Definition = new() { color = new("E4AE5D"), titleColor = Colors.black },
 			DefaultCardArt = StableSpr.cards_colorless,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize,

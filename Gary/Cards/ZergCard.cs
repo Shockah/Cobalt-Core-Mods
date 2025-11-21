@@ -31,12 +31,13 @@ public sealed class ZergCard : Card, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = Stack.JengaStatus.Status, statusAmount = 1 },
 				new ASpawn { thing = new AttackDrone { targetPlayer = false } },
+				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = Stack.JengaStatus.Status, statusAmount = 1 },
 				new ASpawn { thing = new AttackDrone { targetPlayer = false } },
 			],
 			Upgrade.A => [
-				new AStatus { targetPlayer = true, status = Stack.TetrisStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
 				new ASpawn { thing = new AttackDrone { targetPlayer = false } },
 				new ASpawn { thing = new AttackDrone { targetPlayer = false } },
 			],
