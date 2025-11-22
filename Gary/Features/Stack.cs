@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.InteropServices;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
@@ -18,10 +17,10 @@ namespace Shockah.Gary;
 internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static IStatusEntry JengaStatus { get; private set; } = null!;
-	
-	internal static ISpriteEntry StackedIcon { get; private set; } = null!;
-	internal static ISpriteEntry WobblyIcon { get; private set; } = null!;
-	internal static ISpriteEntry StackedLaunchIcon { get; private set; } = null!;
+
+	private static ISpriteEntry StackedIcon = null!;
+	private static ISpriteEntry WobblyIcon = null!;
+	private static ISpriteEntry StackedLaunchIcon = null!;
 
 	private static StuffBase? ObjectBeingLaunchedInto;
 	private static StuffBase? ObjectToPutLater;
@@ -139,19 +138,18 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 
 	internal static void PushStackedObject(Combat combat, int worldX, StuffBase pushed)
 	{
-		ref var @object = ref CollectionsMarshal.GetValueRefOrAddDefault(combat.stuff, worldX, out var objectExists);
-		if (!objectExists)
+		if (!combat.stuff.TryGetValue(worldX, out var @object))
 		{
 			Put();
 			return;
 		}
 
 		List<StuffBase> stackedObjects = [
-			.. GetStackedObjects(@object!) ?? [],
-			@object!,
+			.. GetStackedObjects(@object) ?? [],
+			@object,
 			.. GetStackedObjects(pushed) ?? [],
 		];
-		SetStackedObjects(@object!, null);
+		SetStackedObjects(@object, null);
 		SetStackedObjects(pushed, stackedObjects);
 
 		Put();
