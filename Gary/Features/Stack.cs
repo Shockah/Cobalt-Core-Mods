@@ -15,8 +15,6 @@ using Shockah.Kokoro;
 
 namespace Shockah.Gary;
 
-// FIXME: launching into wobbly stacks crashes the game
-
 internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
 	internal static IStatusEntry JengaStatus { get; private set; } = null!;
@@ -30,6 +28,7 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 	private static bool ObjectIsBeingStackedInto;
 	private static Guid? NestedJupiterShootBeginId;
 	private static bool IsDuringDroneMove;
+	private static bool IsDuringWobblyDestroy;
 	private static readonly List<(StuffBase RealObject, StuffBase? StackedObject, int WorldX)?> ForceStackedObjectStack = [];
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
@@ -473,6 +472,8 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 
 	private static void Combat_DestroyDroneAt_Postfix(Combat __instance, State s, int x, bool playerDidIt, in StuffBase? __state)
 	{
+		if (IsDuringWobblyDestroy)
+			return;
 		if (__state is null)
 			return;
 
@@ -488,16 +489,51 @@ internal sealed class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.
 		
 		SetStackedObjects(__state, null);
 
-		var isWobbly = IsWobbly(__state);
-		var newObject = stackedObjects[^1];
-		stackedObjects = stackedObjects.Count == 0 ? null : stackedObjects.Take(stackedObjects.Count - 1).ToList();
-		SetStackedObjects(newObject, stackedObjects);
-		SetWobbly(newObject, isWobbly);
-		
-		PushStackedObject(__instance, x, newObject);
-		
-		if (isWobbly)
-			__instance.DestroyDroneAt(s, x, playerDidIt);
+		if (IsWobbly(__state))
+		{
+			IsDuringWobblyDestroy = true;
+			try
+			{
+				var newObjects = new List<StuffBase>();
+				
+				while (stackedObjects.Count != 0)
+				{
+					var lastStackedObject = stackedObjects[^1];
+					stackedObjects.RemoveAt(stackedObjects.Count - 1);
+					
+					__instance.stuff[x] = lastStackedObject;
+					__instance.DestroyDroneAt(s, x, playerDidIt);
+					
+					if (__instance.stuff.Remove(x, out var existingThing2))
+					{
+						if (GetStackedObjects(existingThing2) is { } stackedObjects2)
+							newObjects.AddRange(stackedObjects2);
+						newObjects.Add(existingThing2);
+					}
+				}
+
+				if (newObjects.Count != 0)
+				{
+					var newObject = newObjects[^1];
+					stackedObjects = newObjects.Count > 1 ? newObjects.Take(newObjects.Count - 1).ToList() : null;
+					SetStackedObjects(newObject, stackedObjects);
+					__instance.stuff[x] = newObject;
+				}
+			}
+			finally
+			{
+				IsDuringWobblyDestroy = false;
+			}
+		}
+		else
+		{
+			var newObject = stackedObjects[^1];
+			stackedObjects = stackedObjects.Count == 0 ? null : stackedObjects.Take(stackedObjects.Count - 1).ToList();
+			SetStackedObjects(newObject, stackedObjects);
+			SetWobbly(newObject, false);
+			
+			PushStackedObject(__instance, x, newObject);
+		}
 	}
 	#endregion
 	
