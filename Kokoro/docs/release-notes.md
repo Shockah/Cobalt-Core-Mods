@@ -4,6 +4,8 @@
 
 ## Upcoming release
 
+* Exhaust no longer appears as a trait for Limited 1 cards.
+* Infinite no longer appears as a trait for Finite 2+ cards.
 * Fixed "Times Played This Turn" not resetting under some circumstances.
 
 ## 2.12.2
