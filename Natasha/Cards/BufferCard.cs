@@ -25,7 +25,7 @@ internal sealed class BufferCard : Card, IRegisterable, IHasCustomCardTraits
 
 		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 2);
 		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.A, 2);
-		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 2);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.B, 1);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
@@ -34,14 +34,14 @@ internal sealed class BufferCard : Card, IRegisterable, IHasCustomCardTraits
 	public override CardData GetData(State state)
 		=> upgrade switch
 		{
-			Upgrade.B => new() { cost = 0, recycle = true, retain = true },
+			Upgrade.A => new() { cost = 0, recycle = true, retain = true },
 			_ => new() { cost = 0 },
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.A => [
+			Upgrade.B => [
 				ModEntry.Instance.KokoroApi.OnTurnEnd.MakeAction(
 					ModEntry.Instance.KokoroApi.Limited.MakeChangeLimitedUsesAction(uuid, 1).AsCardAction
 				).AsCardAction,
