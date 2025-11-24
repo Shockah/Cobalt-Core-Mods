@@ -256,9 +256,9 @@
 	"limited": {
 		"name": "Limited",
 		"description": {
-			"stateful": "This card can be used <c=boldPink>{{Count}}</c> times this combat before it gets <c=cardtrait>exhausted</c>.",
-			"outOfCombat": "This card can be used <c=boldPink>{{Count}}</c> times each combat before it gets <c=cardtrait>exhausted</c>.",
-			"withoutCard": "This card can be used multiple times each combat before it gets <c=cardtrait>exhausted</c>."
+			"stateful": "This card will be <c=cardtrait>exhausted</c> after playing it <c=boldPink>{{Count}}</c> this combat.",
+			"outOfCombat": "This card will be <c=cardtrait>exhausted</c> after playing it <c=boldPink>{{Count}}</c> each combat.",
+			"withoutCard": "This card will be <c=cardtrait>exhausted</c> after playing it multiple times each combat."
 		},
 		"changeLimitedUses": {
 			"Add": {
@@ -280,9 +280,9 @@
 	"finite": {
 		"name": "Finite",
 		"description": {
-			"stateful": "This card can be used <c=boldPink>{{Count}}</c> times this turn before it gets discarded.",
-			"outOfCombat": "This card can be used <c=boldPink>{{Count}}</c> times each turn before it gets discarded.",
-			"withoutCard": "This card can be used multiple times each turn before it gets discarded."
+			"stateful": "This card will be discarded after playing it <c=boldPink>{{Count}}</c> this turn.",
+			"outOfCombat": "This card will be discarded after playing it <c=boldPink>{{Count}}</c> each turn.",
+			"withoutCard": "This card will be discarded after playing it multiple times each turn."
 		},
 		"changeFiniteUses": {
 			"Add": {

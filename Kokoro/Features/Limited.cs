@@ -207,6 +207,10 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Transpiler))
 		);
 		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetAllTooltips_Transpiler))
+		);
+		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
@@ -372,6 +376,38 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 		var state = fakeState ?? g.state;
 		return ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Trait) && GetLimitedUses(state, card) <= 1;
 	}
+
+	private static IEnumerable<CodeInstruction> Card_GetAllTooltips_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		// ReSharper disable PossibleMultipleEnumeration
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find([
+					ILMatches.Ldloc<CardData>(originalMethod),
+					ILMatches.Ldfld(nameof(CardData.exhaust)),
+					ILMatches.Brfalse.GetBranchTarget(out var afterExhaustRenderLabel),
+				])
+				.PointerMatcher(SequenceMatcherRelativeElement.AfterLast)
+				.ExtractLabels(out var labels)
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_2).WithLabels(labels),
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetAllTooltips_Transpiler_ShouldSkipTraitRender))),
+					new CodeInstruction(OpCodes.Brtrue, afterExhaustRenderLabel.Value),
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger!.LogError("Could not patch method {DeclaringType}::{Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod.DeclaringType, originalMethod, ModEntry.Instance.Name, ex);
+			return instructions;
+		}
+		// ReSharper restore PossibleMultipleEnumeration
+	}
+
+	private static bool Card_GetAllTooltips_Transpiler_ShouldSkipTraitRender(State state, Card card)
+		=> ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Trait) && GetLimitedUses(state, card) <= 1;
 
 	private static bool Card_RenderAction_Prefix(G g, CardAction action, bool dontDraw, ref int __result)
 	{
