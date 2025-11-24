@@ -5,8 +5,7 @@
 ## Upcoming release
 
 * Added the `OnExhaust` feature.
-* Exhaust no longer appears as a trait for Limited 1 cards.
-* Infinite no longer appears as a trait for Finite 2+ cards.
+* Partially reimplemented Limited and Finite. They are no longer related to the Exhaust and Infinite traits.
 * Improved the tooltips of Limited and Finite.
 * Fixed "Times Played This Turn" not resetting under some circumstances.
 

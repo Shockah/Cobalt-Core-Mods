@@ -166,7 +166,6 @@ internal sealed class FiniteManager : HookManager<IKokoroApi.IV2.IFiniteApi.IHoo
 						Title = ModEntry.Instance.Localizations.Localize(["finite", "name"]),
 						Description = description,
 					},
-					new TTGlossary("cardtrait.infinite"),
 				];
 			}
 		});
@@ -196,15 +195,9 @@ internal sealed class FiniteManager : HookManager<IKokoroApi.IV2.IFiniteApi.IHoo
 			SetFiniteUses(state, card, GetFiniteUses(state, card) - 1);
 		});
 
-		ModEntry.Instance.Helper.Content.Cards.OnGetFinalDynamicCardTraitOverrides += OnGetFinalDynamicCardTraitOverrides;
-
 		harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Render)),
-			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Transpiler))
-		);
-		harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetAllTooltips)),
-			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetAllTooltips_Transpiler))
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Transpiler))
 		);
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
@@ -218,19 +211,6 @@ internal sealed class FiniteManager : HookManager<IKokoroApi.IV2.IFiniteApi.IHoo
 			original: AccessTools.DeclaredMethod(typeof(CardBrowse), nameof(CardBrowse.GetCardList)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardBrowse_GetCardList_Postfix))
 		);
-	}
-
-	[EventPriority(double.MaxValue)]
-	private static void OnGetFinalDynamicCardTraitOverrides(object? sender, GetFinalDynamicCardTraitOverridesEventArgs args)
-	{
-		if (args.State.route is not Combat)
-			return;
-		if (!args.TraitStates[Trait].IsActive)
-			return;
-		if (GetFiniteUses(args.State, args.Card) <= 1)
-			return;
-
-		args.SetOverride(ModEntry.Instance.Helper.Content.Cards.InfiniteCardTrait, true);
 	}
 
 	public static int GetBaseFiniteUses(string key, Upgrade upgrade)
@@ -313,7 +293,7 @@ internal sealed class FiniteManager : HookManager<IKokoroApi.IV2.IFiniteApi.IHoo
 		return icon;
 	}
 
-	private static IEnumerable<CodeInstruction> Card_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	private static IEnumerable<CodeInstruction> Combat_TryPlayCard_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
 		// ReSharper disable PossibleMultipleEnumeration
 		try
@@ -322,16 +302,20 @@ internal sealed class FiniteManager : HookManager<IKokoroApi.IV2.IFiniteApi.IHoo
 				.Find([
 					ILMatches.Ldloc<CardData>(originalMethod),
 					ILMatches.Ldfld(nameof(CardData.infinite)),
-					ILMatches.Brfalse.GetBranchTarget(out var afterInfiniteRenderLabel),
+					ILMatches.Brfalse,
+					ILMatches.Ldloc<bool>(originalMethod).GetLocalIndex(out var actuallyExhaustLocalIndex),
+					ILMatches.LdcI4(0),
+					ILMatches.Instruction(OpCodes.Ceq),
+					ILMatches.Br,
+					ILMatches.LdcI4(0),
+					ILMatches.Stloc<bool>(originalMethod).GetLocalIndex(out var actuallyInfiniteLocalIndex),
 				])
-				.PointerMatcher(SequenceMatcherRelativeElement.AfterLast)
-				.ExtractLabels(out var labels)
-				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
-					new CodeInstruction(OpCodes.Ldarg_1).WithLabels(labels),
-					new CodeInstruction(OpCodes.Ldarg_3),
-					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Transpiler_ShouldSkipTraitRender))),
-					new CodeInstruction(OpCodes.Brtrue, afterInfiniteRenderLabel.Value),
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_1),
+					new CodeInstruction(OpCodes.Ldarg_2),
+					new CodeInstruction(OpCodes.Ldloca, actuallyInfiniteLocalIndex.Value),
+					new CodeInstruction(OpCodes.Ldloc, actuallyExhaustLocalIndex.Value),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_TryPlayCard_Transpiler_ModifyActuallyExhaust))),
 				])
 				.AllElements();
 		}
@@ -343,43 +327,18 @@ internal sealed class FiniteManager : HookManager<IKokoroApi.IV2.IFiniteApi.IHoo
 		// ReSharper restore PossibleMultipleEnumeration
 	}
 
-	private static bool Card_Render_Transpiler_ShouldSkipTraitRender(G g, State? fakeState, Card card)
+	private static void Combat_TryPlayCard_Transpiler_ModifyActuallyExhaust(State state, Card card, ref bool actuallyInfinite, bool actuallyExhaust)
 	{
-		var state = fakeState ?? g.state;
-		return ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Trait) && GetFiniteUses(state, card) > 1;
+		if (actuallyInfinite)
+			return;
+		if (actuallyExhaust)
+			return;
+		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Trait))
+			return;
+		if (GetFiniteUses(state, card) <= 1)
+			return;
+		actuallyInfinite = true;
 	}
-
-	private static IEnumerable<CodeInstruction> Card_GetAllTooltips_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
-	{
-		// ReSharper disable PossibleMultipleEnumeration
-		try
-		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find([
-					ILMatches.Ldloc<CardData>(originalMethod),
-					ILMatches.Ldfld(nameof(CardData.infinite)),
-					ILMatches.Brfalse.GetBranchTarget(out var afterInfiniteRenderLabel),
-				])
-				.PointerMatcher(SequenceMatcherRelativeElement.AfterLast)
-				.ExtractLabels(out var labels)
-				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
-					new CodeInstruction(OpCodes.Ldarg_2).WithLabels(labels),
-					new CodeInstruction(OpCodes.Ldarg_0),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetAllTooltips_Transpiler_ShouldSkipTraitRender))),
-					new CodeInstruction(OpCodes.Brtrue, afterInfiniteRenderLabel.Value),
-				])
-				.AllElements();
-		}
-		catch (Exception ex)
-		{
-			ModEntry.Instance.Logger!.LogError("Could not patch method {DeclaringType}::{Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod.DeclaringType, originalMethod, ModEntry.Instance.Name, ex);
-			return instructions;
-		}
-		// ReSharper restore PossibleMultipleEnumeration
-	}
-
-	private static bool Card_GetAllTooltips_Transpiler_ShouldSkipTraitRender(State state, Card card)
-		=> ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Trait) && GetFiniteUses(state, card) > 1;
 
 	private static bool Card_RenderAction_Prefix(G g, CardAction action, bool dontDraw, ref int __result)
 	{
