@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added the `OnExhaust` feature.
 * Exhaust no longer appears as a trait for Limited 1 cards.
 * Infinite no longer appears as a trait for Finite 2+ cards.
 * Improved the tooltips of Limited and Finite.

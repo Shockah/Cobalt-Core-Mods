@@ -206,6 +206,10 @@
 		"name": "On Discard",
 		"description": "This action automatically triggers whenever this card is discarded during your turn without playing it. <c=downside>Does nothing otherwise.</c>"
 	},
+	"onExhaust": {
+		"name": "On Exhaust",
+		"description": "This action automatically triggers whenever this card is exhausted. <c=downside>Does nothing otherwise.</c>"
+	},
 	"onTurnEnd": {
 		"name": "On Turn End",
 		"description": "This action automatically triggers when you end your turn with this card in hand. <c=downside>Does nothing otherwise.</c>"

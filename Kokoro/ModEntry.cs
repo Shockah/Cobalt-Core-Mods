@@ -76,6 +76,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		LimitedManager.Setup(Harmony);
 		MultiCardBrowseManager.Setup(Harmony);
 		OnDiscardManager.Setup(Harmony);
+		OnExhaustManager.Setup(Harmony);
 		OnTurnEndManager.Setup(Harmony);
 		PinchCompactFontManager.Setup(Harmony);
 		PlaySpecificCardFromAnywhereManager.Setup(Harmony);
@@ -105,6 +106,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		WrappedActionManager.Instance.Register(ContinueStopActionManager.Instance, 0);
 		WrappedActionManager.Instance.Register(HiddenActionManager.Instance, 0);
 		WrappedActionManager.Instance.Register(OnDiscardManager.Instance, 0);
+		WrappedActionManager.Instance.Register(OnExhaustManager.Instance, 0);
 		WrappedActionManager.Instance.Register(OnTurnEndManager.Instance, 0);
 		WrappedActionManager.Instance.Register(SequenceManager.Instance, 0);
 		WrappedActionManager.Instance.Register(SpontaneousManager.Instance, 0);
