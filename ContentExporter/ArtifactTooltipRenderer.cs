@@ -41,7 +41,7 @@ internal sealed class ArtifactTooltipRenderer
 			tooltips.Add(new Vec(21), artifactTooltips);
 			tooltips.Render(g);
 
-			var margins = 6;
+			const int margins = 6;
 			var tooltipWidth = 0;
 			var tooltipHeight = 0;
 

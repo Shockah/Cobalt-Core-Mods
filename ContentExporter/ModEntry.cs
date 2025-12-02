@@ -201,6 +201,7 @@ internal sealed partial class ModEntry : SimpleMod
 			_ => ObtainDeckNiceName(entry.Deck),
 		});
 		var deckExportPath = Path.Combine(exportableDataPath, fileSafeDeckName);
+		var dailyExportPath = Path.Combine(exportableDataPath, MakeFileSafe("_Daily"));
 
 		foreach (var e in artifacts)
 		{
@@ -209,7 +210,11 @@ internal sealed partial class ModEntry : SimpleMod
 			var tooltipImagePath = e.Configuration.Meta.pools.Contains(ArtifactPool.Unreleased)
 				? $"Unreleased/{fileSafeName}.png"
 				: $"{fileSafeName}.png";
-			QueueTask(g => ArtifactExportTask(g, withScreenFilter, artifact, Path.Combine(deckExportPath, tooltipImagePath)));
+			var finalPath = Path.Combine(
+				e.Configuration.Meta.pools.Contains(ArtifactPool.DailyOnly) ? dailyExportPath : deckExportPath,
+				tooltipImagePath
+			);
+			QueueTask(g => ArtifactExportTask(g, withScreenFilter, artifact, finalPath));
 		}
 	}
 
