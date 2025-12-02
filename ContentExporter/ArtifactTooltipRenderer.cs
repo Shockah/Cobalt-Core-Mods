@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace Shockah.CatDiscordBotDataExport;
+namespace Shockah.ContentExporter;
 
 internal sealed class ArtifactTooltipRenderer
 {
@@ -26,7 +26,7 @@ internal sealed class ArtifactTooltipRenderer
 		var oldScreenLimits = Tooltips.SCREEN_LIMITS;
 		var oldActivateAllActions = CardPatches.ActivateAllActions;
 
-		g.mg.PIX_SCALE = 4;
+		g.mg.PIX_SCALE = ModEntry.Instance.Settings.ArtifactScale;
 		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
 		g.metaRoute = new MainMenu { subRoute = new Codex { subRoute = new ArtifactBrowse() } };
 		Tooltips.SCREEN_LIMITS = new(0, 0, double.PositiveInfinity, double.PositiveInfinity);

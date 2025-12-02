@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Shockah.CatDiscordBotDataExport;
+namespace Shockah.ContentExporter;
 
 internal static class EditorPatches
 {
@@ -19,7 +19,7 @@ internal static class EditorPatches
 	public static void Apply(Harmony harmony)
 	{
 		harmony.TryPatch(
-			logger: Instance.Logger!,
+			logger: Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Editor), "PanelTools"),
 			transpiler: new HarmonyMethod(typeof(EditorPatches), nameof(Editor_PanelTools_Transpiler))
 		);

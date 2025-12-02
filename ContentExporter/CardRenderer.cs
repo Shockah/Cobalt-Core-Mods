@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 
-namespace Shockah.CatDiscordBotDataExport;
+namespace Shockah.ContentExporter;
 
 internal sealed class CardRenderer
 {
@@ -17,7 +17,7 @@ internal sealed class CardRenderer
 		var oldPixScale = g.mg.PIX_SCALE;
 		var oldCameraMatrix = g.mg.cameraMatrix;
 
-		g.mg.PIX_SCALE = 4;
+		g.mg.PIX_SCALE = ModEntry.Instance.Settings.CardScale;
 		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
 
 		try

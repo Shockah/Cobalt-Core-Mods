@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MGColor = Microsoft.Xna.Framework.Color;
 
-namespace Shockah.CatDiscordBotDataExport;
+namespace Shockah.ContentExporter;
 
 internal sealed class ShipRenderer
 {
@@ -16,7 +16,7 @@ internal sealed class ShipRenderer
 		var oldPixScale = g.mg.PIX_SCALE;
 		var oldCameraMatrix = g.mg.cameraMatrix;
 
-		g.mg.PIX_SCALE = 1;
+		g.mg.PIX_SCALE = ModEntry.Instance.Settings.ShipScale;
 		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
 
 		try

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Shockah.CatDiscordBotDataExport;
+namespace Shockah.ContentExporter;
 
 internal sealed class ModEntry : SimpleMod
 {
@@ -21,10 +21,14 @@ internal sealed class ModEntry : SimpleMod
 	internal readonly CardTooltipRenderer CardTooltipRenderer = new();
 	internal readonly ShipRenderer ShipRenderer = new();
 
+	internal Settings Settings { get; private set; }
+
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
 		ArtifactTooltipRenderer = new(helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/ArtifactGlow.png")));
+
+		this.Settings = helper.Storage.LoadJson<Settings>(helper.Storage.GetMainStorageFile("json"));
 
 		var harmony = new Harmony(package.Manifest.UniqueName);
 		CardPatches.Apply(harmony);
@@ -42,9 +46,9 @@ internal sealed class ModEntry : SimpleMod
 		task(g);
 
 		if (QueuedTasks.Count == 0)
-			Logger!.LogInformation("Finished all tasks.");
+			Logger.LogInformation("Finished all tasks.");
 		else if (QueuedTasks.Count % 25 == 0)
-			Logger!.LogInformation("Tasks left in the queue: {TaskCount}", QueuedTasks.Count);
+			Logger.LogInformation("Tasks left in the queue: {TaskCount}", QueuedTasks.Count);
 	}
 
 	internal void QueueSelectedDecksExportTask(G g, bool withScreenFilter)
@@ -70,16 +74,6 @@ internal sealed class ModEntry : SimpleMod
 	internal void QueueDeckCardsExportTask(G g, bool withScreenFilter, Deck deck)
 	{
 		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
-
-		static string MakeFileSafe(string path)
-		{
-			foreach (var unsafeChar in Path.GetInvalidFileNameChars())
-				path = path.Replace(unsafeChar, '_');
-			return path;
-		}
-
-		static string? GetModName(IModOwned? entry)
-			=> entry is null ? null : $"{entry.ModOwner.DisplayName ?? entry.ModOwner.UniqueName}{(string.IsNullOrEmpty(entry.ModOwner.Author) ? "" : $" by {entry.ModOwner.Author}")}";
 
 		var cards = DB.cards
 			.Select(kvp => (Key: kvp.Key, Type: kvp.Value, Meta: DB.cardMetas.GetValueOrDefault(kvp.Key)))
@@ -162,7 +156,7 @@ internal sealed class ModEntry : SimpleMod
 
 		if (exportableData.Cards.Any(m => !m.Released))
 			Directory.CreateDirectory(Path.Combine(deckExportPath, "unreleased"));
-		if (exportableData.Cards.Any(m => m.Released && !m.Offered))
+		if (exportableData.Cards.Any(m => m is { Released: true, Offered: false }))
 			Directory.CreateDirectory(Path.Combine(deckExportPath, "unoffered"));
 
 		foreach (var exportableCard in exportableData.Cards)
@@ -177,6 +171,16 @@ internal sealed class ModEntry : SimpleMod
 				QueueTask(g => CardTooltipExportTask(g, withScreenFilter, cardAtUpgrade, withTheCard: true, Path.Combine(deckExportPath, exportableUpgrade.Value.TooltipImagePath)));
 			}
 		}
+
+		static string MakeFileSafe(string path)
+		{
+			foreach (var unsafeChar in Path.GetInvalidFileNameChars())
+				path = path.Replace(unsafeChar, '_');
+			return path;
+		}
+
+		static string? GetModName(IModOwned? entry)
+			=> entry is null ? null : $"{entry.ModOwner.DisplayName ?? entry.ModOwner.UniqueName}{(string.IsNullOrEmpty(entry.ModOwner.Author) ? "" : $" by {entry.ModOwner.Author}")}";
 	}
 
 	internal void QueueAllArtifactsExportTask(G g, bool withScreenFilter)

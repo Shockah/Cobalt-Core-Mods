@@ -3,7 +3,7 @@ using Shockah.Shared;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Shockah.CatDiscordBotDataExport;
+namespace Shockah.ContentExporter;
 
 internal sealed class CardPatches
 {
@@ -13,13 +13,13 @@ internal sealed class CardPatches
 	public static void Apply(Harmony harmony)
 	{
 		harmony.TryPatch(
-			logger: Instance.Logger!,
+			logger: Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetActionsOverridden_Postfix))
 		);
 	}
 
-	private static void Card_GetActionsOverridden_Postfix(Card __instance, ref List<CardAction> __result)
+	private static void Card_GetActionsOverridden_Postfix(ref List<CardAction> __result)
 	{
 		if (ActivateAllActions)
 			foreach (var action in __result)

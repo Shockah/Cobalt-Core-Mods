@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace Shockah.CatDiscordBotDataExport;
+namespace Shockah.ContentExporter;
 
 internal sealed class CardTooltipRenderer
 {
@@ -18,7 +18,7 @@ internal sealed class CardTooltipRenderer
 		var oldScreenLimits = Tooltips.SCREEN_LIMITS;
 		var oldActivateAllActions = CardPatches.ActivateAllActions;
 
-		g.mg.PIX_SCALE = 4;
+		g.mg.PIX_SCALE = ModEntry.Instance.Settings.CardScale;
 		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
 		Tooltips.SCREEN_LIMITS = new(0, 0, double.PositiveInfinity, double.PositiveInfinity);
 		CardPatches.ActivateAllActions = true;

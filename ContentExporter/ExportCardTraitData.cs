@@ -1,4 +1,4 @@
-﻿namespace Shockah.CatDiscordBotDataExport;
+﻿namespace Shockah.ContentExporter;
 
 internal sealed record class ExportCardTraitData(
 	string Key,

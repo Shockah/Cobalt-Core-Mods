@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Shockah.Shared;
 
-namespace Shockah.CatDiscordBotDataExport;
+namespace Shockah.ContentExporter;
 
 internal sealed class GPatches
 {
@@ -10,7 +10,7 @@ internal sealed class GPatches
 	public static void Apply(Harmony harmony)
 	{
 		harmony.TryPatch(
-			logger: Instance.Logger!,
+			logger: Instance.Logger,
 			original: () => AccessTools.DeclaredMethod(typeof(G), nameof(G.Render)),
 			prefix: new HarmonyMethod(typeof(GPatches), nameof(G_Render_Prefix))
 		);
@@ -18,7 +18,7 @@ internal sealed class GPatches
 
 	private static void G_Render_Prefix(G __instance)
 	{
-		for (int i = 0; i < 2; i++)
+		for (var i = 0; i < 2; i++)
 			Instance.RunNextTask(__instance);
 	}
 }

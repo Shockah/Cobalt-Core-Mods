@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Shockah.CatDiscordBotDataExport;
+namespace Shockah.ContentExporter;
 
 internal sealed record class ExportDeckCardData(
 	string Key,
