@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Re-enabled the compact font tooltip feature on Mac.
+* Slightly reimplemented how the compact font tooltip feature works, hopefully making it more cross-mod compatible.
 
 ## 1.3.1
 Released 30 July 2025.
