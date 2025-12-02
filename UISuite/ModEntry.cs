@@ -20,23 +20,7 @@ public sealed class ModEntry : SimpleMod
 
 	internal Settings Settings { get; private set; }
 	
-	// different order - trying to work around inlining `Combat.IsVisible`/`Combat.Render`
 	private static readonly IEnumerable<Type> RegisterableTypes = [
-		// first
-		typeof(LessIntrusiveHandCardBrowse),
-		
-		// the rest
-		typeof(AnchorCardPileOverlay),
-		typeof(BrowseCardsInOrder),
-		typeof(CardMarkers),
-		typeof(CardPileIndicatorWhenBrowsing),
-		typeof(CompactTooltipFont),
-		typeof(ExtraArtifactCodexCategories),
-		typeof(LaneDisplay),
-		typeof(StatusAsBars),
-	];
-	
-	private static readonly IEnumerable<Type> SortedRegisterableTypes = [
 		typeof(AnchorCardPileOverlay),
 		typeof(BrowseCardsInOrder),
 		typeof(CardMarkers),
@@ -81,7 +65,7 @@ public sealed class ModEntry : SimpleMod
 					() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
 					Settings.ProfileBased
 				),
-				.. SortedRegisterableTypes
+				.. RegisterableTypes
 					.SelectMany(
 						type => AccessTools.DeclaredMethod(type, nameof(IRegisterable.MakeSettings))?.Invoke(null, [package, api]) is IModSettingsApi.IModSetting setting
 							? new List<IModSettingsApi.IModSetting> { setting }

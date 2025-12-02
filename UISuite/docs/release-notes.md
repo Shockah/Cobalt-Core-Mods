@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Re-enabled the compact font tooltip feature on Mac.
+
 ## 1.3.1
 Released 30 July 2025.
 
