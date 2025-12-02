@@ -1,0 +1,7 @@
+{
+    "UniqueName": "Shockah.ContentExporter",
+    "Version": "{{ModVersion}}",
+    "RequiredApiVersion": "0.4.3",
+    "EntryPointAssembly": "ContentExporter.dll",
+    "LoadPhase": "AfterDbInit"
+}

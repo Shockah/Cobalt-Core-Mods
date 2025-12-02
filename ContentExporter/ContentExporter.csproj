@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<RootNamespace>Shockah.CatDiscordBotDataExport</RootNamespace>
+		<RootNamespace>Shockah.ContentExporter</RootNamespace>
 		<Version>0.3.0</Version>
 	</PropertyGroup>
 	<ItemGroup>

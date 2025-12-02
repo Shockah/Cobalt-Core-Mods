@@ -24,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DuoArtifacts", "DuoArtifact
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Soggins", "Soggins\Soggins.csproj", "{E363F17F-C5F1-4594-AD2F-6204FCDDE6C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatDiscordBotDataExport", "CatDiscordBotDataExport\CatDiscordBotDataExport.csproj", "{913C861C-F21E-4A8D-8651-EE96F97BFC60}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContentExporter", "ContentExporter\ContentExporter.csproj", "{913C861C-F21E-4A8D-8651-EE96F97BFC60}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dracula", "Dracula\Dracula.csproj", "{5820F297-795C-414F-9D2D-6B401165828B}"
 EndProject
