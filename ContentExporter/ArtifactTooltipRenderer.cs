@@ -70,7 +70,7 @@ internal sealed class ArtifactTooltipRenderer
 			try
 			{
 				if (artifact.GetMeta().pools.Contains(ArtifactPool.Boss))
-					Draw.Sprite(GlowSprite.Sprite, 12, 11, originRel: new Vec(0.5, 0.5), scale: new Vec(48, 48) / 512.0, color: new Color(0.0, 0.5, 1.0).gain(0.3));
+					Draw.Sprite(GlowSprite.Sprite, 6 + 11 / 2.0, 6 + 11 / 2.0, originRel: new Vec(0.5, 0.5), scale: new Vec(23, 23) / 512.0, color: new Color(0.0, 0.5, 1.0).gain(0.3));
 
 				artifact.Render(g, new Vec(6, 6), showCount: false);
 				Tooltip.RenderMultiple(g, tooltips.pos, Tooltips._tooltipScratch);
