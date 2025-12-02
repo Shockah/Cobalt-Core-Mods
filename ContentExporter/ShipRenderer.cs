@@ -18,6 +18,7 @@ internal sealed class ShipRenderer
 
 		g.mg.PIX_SCALE = ModEntry.Instance.Settings.ShipScale;
 		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
+		DrawPatches.ReplacementSprite = (StableSpr.effects_glow_512_gain15, ModEntry.Instance.PremultipliedGlowSprite.Sprite);
 
 		try
 		{
@@ -106,6 +107,7 @@ internal sealed class ShipRenderer
 		{
 			g.mg.PIX_SCALE = oldPixScale;
 			g.mg.cameraMatrix = oldCameraMatrix;
+			DrawPatches.ReplacementSprite = null;
 		}
 	}
 }

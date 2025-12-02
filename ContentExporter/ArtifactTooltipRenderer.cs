@@ -1,22 +1,15 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Nickel;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Shockah.ContentExporter;
 
 internal sealed class ArtifactTooltipRenderer
 {
-	private readonly ISpriteEntry GlowSprite;
 	private RenderTarget2D? CurrentRenderTarget;
-
-	public ArtifactTooltipRenderer(ISpriteEntry glowSprite)
-	{
-		this.GlowSprite = glowSprite;
-	}
 
 	public void Render(G g, bool withScreenFilter, Artifact artifact, Stream stream)
 	{
@@ -70,7 +63,7 @@ internal sealed class ArtifactTooltipRenderer
 			try
 			{
 				if (artifact.GetMeta().pools.Contains(ArtifactPool.Boss))
-					Draw.Sprite(GlowSprite.Sprite, 6 + 11 / 2.0, 6 + 11 / 2.0, originRel: new Vec(0.5, 0.5), scale: new Vec(23, 23) / 512.0, color: new Color(0.0, 0.5, 1.0).gain(0.3));
+					Draw.Sprite(ModEntry.Instance.BossArtifactGlowSprite.Sprite, 6 + 11 / 2.0, 6 + 11 / 2.0, originRel: new Vec(0.5, 0.5), scale: new Vec(23, 23) / 512.0, color: new Color(0.0, 0.5, 1.0).gain(0.3));
 
 				artifact.Render(g, new Vec(6, 6), showCount: false);
 				Tooltip.RenderMultiple(g, tooltips.pos, Tooltips._tooltipScratch);

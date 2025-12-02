@@ -17,9 +17,12 @@ internal sealed partial class ModEntry : SimpleMod
 
 	private readonly Queue<Action<G>> QueuedTasks = new();
 	internal readonly CardRenderer CardRenderer = new();
-	internal readonly ArtifactTooltipRenderer ArtifactTooltipRenderer;
+	internal readonly ArtifactTooltipRenderer ArtifactTooltipRenderer = new();
 	internal readonly CardTooltipRenderer CardTooltipRenderer = new();
 	internal readonly ShipRenderer ShipRenderer = new();
+	
+	internal readonly ISpriteEntry PremultipliedGlowSprite;
+	internal readonly ISpriteEntry BossArtifactGlowSprite;
 	
 	private static readonly Dictionary<Deck, string> DeckNiceNames = [];
 
@@ -28,12 +31,15 @@ internal sealed partial class ModEntry : SimpleMod
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
-		ArtifactTooltipRenderer = new(helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/ArtifactGlow.png")));
+		
+		PremultipliedGlowSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/PremultipliedGlow.png"));
+		BossArtifactGlowSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/BossArtifactGlow.png"));
 
 		this.Settings = helper.Storage.LoadJson<Settings>(helper.Storage.GetMainStorageFile("json"));
 
 		var harmony = new Harmony(package.Manifest.UniqueName);
 		CardPatches.Apply(harmony);
+		DrawPatches.Apply(harmony);
 		EditorPatches.Apply(harmony);
 		GPatches.Apply(harmony);
 	}
