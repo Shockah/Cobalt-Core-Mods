@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="../Configuration.props" />
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<RootNamespace>Shockah.ContentExporter.Media</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\_MediaCommon\_MediaCommon.csproj"/>
+	</ItemGroup>
+</Project>
