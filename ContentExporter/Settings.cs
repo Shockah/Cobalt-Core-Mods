@@ -28,8 +28,8 @@ internal sealed class Settings
 	[JsonProperty]
 	public int? ArtifactsScale = DEFAULT_SCALE;
 	
-	[JsonProperty]
-	public HashSet<string> FilterToMods = [];
+	[JsonIgnore]
+	public readonly HashSet<string> FilterToMods = [];
 	
 	[JsonProperty]
 	public bool FilterToRun;

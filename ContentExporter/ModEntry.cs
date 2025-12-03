@@ -295,6 +295,7 @@ internal sealed partial class ModEntry : SimpleMod
 		var screenFilter = Settings.ScreenFilter;
 
 		var isOutsideRun = g.state.IsOutsideRun();
+		var uniqueNameCounts = new Dictionary<DeckAndString, int>();
 		var cards = DB.cards.Keys
 			.Select(key => Helper.Content.Cards.LookupByUniqueName(key))
 			.OfType<ICardEntry>()
@@ -318,6 +319,12 @@ internal sealed partial class ModEntry : SimpleMod
 				return true;
 			})
 			.Where(e => DB.currentLocale.strings.ContainsKey($"card.{e.UniqueName}.name"))
+			.Select(e =>
+			{
+				var uniqueNameCountKey = new DeckAndString(e.Configuration.Meta.deck, Loc.T($"card.{e.UniqueName}.name"));
+				uniqueNameCounts[uniqueNameCountKey] = uniqueNameCounts.GetValueOrDefault(uniqueNameCountKey) + 1;
+				return e;
+			})
 			.ToList();
 
 		if (cards.Count == 0)
@@ -340,7 +347,24 @@ internal sealed partial class ModEntry : SimpleMod
 				var cardAtUpgrade = Mutil.DeepCopy(card);
 				cardAtUpgrade.upgrade = upgrade;
 
-				var fileSafeName = MakeFileSafe(cardAtUpgrade.GetFullDisplayName());
+				string fileName;
+				var uniqueNameCountKey = new DeckAndString(e.Configuration.Meta.deck, Loc.T($"card.{e.UniqueName}.name"));
+				if (uniqueNameCounts.GetValueOrDefault(uniqueNameCountKey) >= 2)
+				{
+					fileName = e.UniqueName;
+					if (upgrade != Upgrade.None)
+					{
+						var baseName = card.GetFullDisplayName();
+						var upgradedName = cardAtUpgrade.GetFullDisplayName();
+						fileName = $"{fileName}{upgradedName[baseName.Length..]}";
+					}
+				}
+				else
+				{
+					fileName = cardAtUpgrade.GetFullDisplayName();
+				}
+
+				var fileSafeName = MakeFileSafe(fileName);
 				var imagePath = e.Configuration.Meta.unreleased
 					? $"Unreleased/{fileSafeName}.png"
 					: (
@@ -354,7 +378,9 @@ internal sealed partial class ModEntry : SimpleMod
 			}
 
 			{
-				var fileSafeName = MakeFileSafe(card.GetFullDisplayName());
+				var uniqueNameCountKey = new DeckAndString(e.Configuration.Meta.deck, Loc.T($"card.{e.UniqueName}.name"));
+				var fileName = uniqueNameCounts.GetValueOrDefault(uniqueNameCountKey) >= 2 ? e.UniqueName : card.GetFullDisplayName();
+				var fileSafeName = MakeFileSafe(fileName);
 				var imagePath = e.Configuration.Meta.unreleased
 					? $"Unreleased/{fileSafeName}.png"
 					: (
