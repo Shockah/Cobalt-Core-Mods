@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using daisyowl.text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,7 +8,7 @@ using MGColor = Microsoft.Xna.Framework.Color;
 
 namespace Shockah.ContentExporter;
 
-internal sealed class ShipRenderer
+internal sealed class ShipDescriptionRenderer
 {
 	private RenderTarget2D? RenderTarget;
 
@@ -39,7 +40,10 @@ internal sealed class ShipRenderer
 			try
 			{
 				var shipRect = ship.GetShipRect();
-				ship.DrawShip(g, new(g.mg.PIX_W / 2 - shipRect.w / 2, g.mg.PIX_H / 2 - shipRect.h / 2), Vec.Zero);
+				ship.DrawShip(g, new(g.mg.PIX_W / 2 - shipRect.w / 2, g.mg.PIX_H / 2 - shipRect.h / 2 - 8), Vec.Zero);
+				ship.RenderShipUI(g, new(g.mg.PIX_W / 2 - shipRect.w / 2, g.mg.PIX_H / 2 - shipRect.h / 2 - 8), "content-exporter-ship-description", positionSelf: true, isPreview: false, partsAreFocusable: false);
+				Draw.Text(ship.GetName(), g.mg.PIX_W / 2, g.mg.PIX_H / 2 + shipRect.h / 2, color: Colors.textBold, outline: Colors.black, align: TAlign.Center);
+				Draw.Text(Loc.T("ship.{0}.desc".FF(ship.key)), g.mg.PIX_W / 2, g.mg.PIX_H / 2 + shipRect.h / 2 + 16, color: Colors.textMain, outline: Colors.black, maxWidth: 140, align: TAlign.Center);
 			}
 			catch
 			{

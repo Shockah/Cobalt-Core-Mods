@@ -22,6 +22,7 @@ internal sealed partial class ModEntry : SimpleMod
 	internal readonly CardUpgradesRenderer CardUpgradesRenderer = new();
 	internal readonly ArtifactTooltipRenderer ArtifactTooltipRenderer = new();
 	internal readonly ShipRenderer ShipRenderer = new();
+	internal readonly ShipDescriptionRenderer ShipDescriptionRenderer = new();
 	
 	internal readonly ISpriteEntry PremultipliedGlowSprite;
 	internal readonly ISpriteEntry BossArtifactGlowSprite;
@@ -196,8 +197,13 @@ internal sealed partial class ModEntry : SimpleMod
 	internal void QueueAllShipsExportTask(bool withScreenFilter)
 	{
 		foreach (var key in StarterShip.ships.Keys)
-			if (Helper.Content.Ships.LookupByUniqueName(key) is { } entry)
-				QueueShipExportTask(withScreenFilter, entry);
+		{
+			if (Helper.Content.Ships.LookupByUniqueName(key) is not { } entry)
+				continue;
+			
+			QueueShipExportTask(withScreenFilter, entry);
+			QueueShipDescriptionExportTask(withScreenFilter, entry);
+		}
 	}
 
 	internal void QueueDeckArtifactsExportTask(G g, bool withScreenFilter, Deck deck)
@@ -256,6 +262,17 @@ internal sealed partial class ModEntry : SimpleMod
 		QueueTask(g => ShipExportTask(g, withScreenFilter, entry.Configuration.Ship.ship, imagePath));
 	}
 
+	internal void QueueShipDescriptionExportTask(bool withScreenFilter, IShipEntry entry)
+	{
+		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
+		var exportableDataPath = Path.Combine(modloaderFolder, "ContentExport", "ShipDescriptions");
+		Directory.CreateDirectory(exportableDataPath);
+		
+		var fileSafeName = MakeFileSafe(entry.Configuration.Name?.Invoke(DB.currentLocale.locale) ?? entry.UniqueName);
+		var imagePath = Path.Combine(exportableDataPath, $"{fileSafeName}.png");
+		QueueTask(g => ShipDescriptionExportTask(g, withScreenFilter, entry.Configuration.Ship.ship, imagePath));
+	}
+
 	private void CardBaseExportTask(G g, bool withScreenFilter, Card card, string path)
 	{
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
@@ -289,6 +306,13 @@ internal sealed partial class ModEntry : SimpleMod
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
 		using var stream = new FileStream(path, FileMode.Create);
 		ShipRenderer.Render(g, withScreenFilter, ship, stream);
+	}
+
+	private void ShipDescriptionExportTask(G g, bool withScreenFilter, Ship ship, string path)
+	{
+		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
+		using var stream = new FileStream(path, FileMode.Create);
+		ShipDescriptionRenderer.Render(g, withScreenFilter, ship, stream);
 	}
 
 	[GeneratedRegex("\\w+$")]

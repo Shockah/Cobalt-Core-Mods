@@ -109,8 +109,8 @@ internal static class TextureUtils
 		var textureData = new MGColor[textureWidth * textureHeight];
 			
 		for (var y = 0; y < textureHeight; y++)
-		for (var x = 0; x < textureWidth; x++)
-			textureData[x + y * textureWidth] = colors[(x + left) + (y + top) * texture.Width];
+			for (var x = 0; x < textureWidth; x++)
+				textureData[x + y * textureWidth] = colors[(x + left) + (y + top) * texture.Width];
 			
 		var resultTexture = new Texture2D(texture.GraphicsDevice, textureWidth, textureHeight);
 		resultTexture.SetData(textureData);

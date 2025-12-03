@@ -23,5 +23,11 @@ internal sealed class Settings
 	public int ArtifactScale = 4;
 	
 	[JsonProperty]
+	public bool ExportShip = true;
+	
+	[JsonProperty]
+	public bool ExportShipDescription = true;
+	
+	[JsonProperty]
 	public int ShipScale = 4;
 }
