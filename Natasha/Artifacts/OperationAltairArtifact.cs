@@ -24,7 +24,7 @@ internal sealed class OperationAltairArtifact : Artifact, IRegisterable
 		});
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			.. ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(MG.inst.g.state, null) ?? [],
 			new TTGlossary("cardtrait.exhaust"),
@@ -49,7 +49,7 @@ internal sealed class OperationAltairArtifact : Artifact, IRegisterable
 	{
 		public string? ArtifactPulseLate;
 		
-		public override string? GetCardSelectText(State s)
+		public override string GetCardSelectText(State s)
 			=> ModEntry.Instance.Localizations.Localize(["artifact", "OperationAltair", "chooseUiTitle"]);
 
 		public override void Begin(G g, State s, Combat c)

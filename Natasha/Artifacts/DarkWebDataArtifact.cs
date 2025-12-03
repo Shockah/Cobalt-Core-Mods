@@ -33,7 +33,7 @@ internal sealed class DarkWebDataArtifact : Artifact, IRegisterable
 		);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [.. (ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? [])];
 
 	public override void OnReceiveArtifact(State state)
@@ -72,7 +72,7 @@ internal sealed class DarkWebDataArtifact : Artifact, IRegisterable
 			};
 		}
 
-		public override string? GetCardSelectText(State s)
+		public override string GetCardSelectText(State s)
 			=> ModEntry.Instance.Localizations.Localize(["artifact", "DarkWebData", "ui", "title"]);
 	}
 

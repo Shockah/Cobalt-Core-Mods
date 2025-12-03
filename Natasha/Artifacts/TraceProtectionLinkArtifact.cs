@@ -23,7 +23,7 @@ internal sealed class TraceProtectionLinkArtifact : Artifact, IRegisterable
 		});
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			.. (ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? []),
 			.. StatusMeta.GetTooltips(Status.tempShield, 2),

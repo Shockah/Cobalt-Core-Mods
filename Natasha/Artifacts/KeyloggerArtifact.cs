@@ -25,7 +25,7 @@ internal sealed class KeyloggerArtifact : Artifact, IRegisterable
 		});
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [.. (ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? [])];
 
 	public override void OnTurnEnd(State state, Combat combat)

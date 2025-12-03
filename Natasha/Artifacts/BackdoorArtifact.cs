@@ -24,7 +24,7 @@ internal sealed class BackdoorArtifact : Artifact, IRegisterable
 		});
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			.. ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(MG.inst.g.state, null) ?? [],
 			.. StatusMeta.GetTooltips(Status.corrode, 1),

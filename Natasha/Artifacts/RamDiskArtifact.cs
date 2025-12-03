@@ -32,7 +32,7 @@ internal sealed class RamDiskArtifact : Artifact, IRegisterable, IKokoroApi.IV2.
 		);
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [
 			.. (ModEntry.Instance.KokoroApi.Limited.Trait.Configuration.Tooltips?.Invoke(DB.fakeState, null) ?? []),
 			new TTGlossary("cardtrait.singleUse"),

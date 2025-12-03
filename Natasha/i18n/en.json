@@ -56,35 +56,35 @@
         },
         "Duo": {
             "Books": {
-                "name": "TBD",
+                "name": "CRYSTAL PATCH",
                 "description": "Whenever you gain any amount of <c=status>SHARD</c>, gain 1 more. After you play a card that made you gain <c=status>SHARD</c> or <c=action>launch</c> a <c=midrow>Geode</c>, make it <c=cardtrait>limited 2</c> until end of combat."
             },
             "Cat": {
-                "name": "TBD",
+                "name": "STATUS INJECTOR",
                 "description": "Your enemy gains 1 random negative status each turn."
             },
 	        "Dizzy": {
-		        "name": "TBD",
+		        "name": "SHIELD UNDERFLOW",
 		        "description": "Each combat, your enemy starts with 2 <c=status>MITOSIS</c>. The first time your enemy's <c=status>SHIELD</c> reduces to 0 each combat, they lose 2 <c=status>MITOSIS</c> and you gain 1."
 	        },
 	        "Drake": {
-		        "name": "TBD",
+		        "name": "POWER SPIKE",
 		        "description": "Your <c=action>piercing</c> and <c=action>stunning</c> attacks apply 1 <c=status>ENGINE LOCK</c> on hit."
 	        },
             "Isaac": {
-                "name": "TBD",
+                "name": "PAYLOAD SWAP",
                 "description": "Start each combat with 1 <c=status>REPROGRAMMED</c>."
             },
 	        "Max": {
-		        "name": "TBD",
+		        "name": "SHARED KEYBOARD",
 		        "description": "Once per turn, whenever a card is about to be <c=cardtrait>exhausted</c>, swap it with the <c=keyword>leftmost</c> card in hand instead, if possible."
 	        },
             "Peri": {
-                "name": "TBD",
+                "name": "HOOK INJECTION",
                 "description": "The first time the enemy gains any status during each of your turns, gain 1 <c=status>OVERDRIVE</c>."
             },
             "Riggs": {
-                "name": "TBD",
+                "name": "MACRO RECORDER",
                 "description": "Every time your discard pile is shuffled back into your draw pile, give a random <c=cardtrait>limited</c> card an extra use, preferring cards in your hand."
             }
         }
