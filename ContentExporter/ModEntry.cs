@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -15,7 +16,7 @@ internal sealed partial class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
 
-	private readonly Queue<Action<G>> QueuedTasks = new();
+	internal readonly Queue<Action<G>> QueuedTasks = new();
 	internal readonly CardRenderer CardRenderer = new();
 	internal readonly CardTooltipRenderer CardTooltipRenderer = new();
 	internal readonly CardUpgradesRenderer CardUpgradesRenderer = new();
@@ -44,21 +45,24 @@ internal sealed partial class ModEntry : SimpleMod
 		EditorPatches.Apply(harmony);
 		GPatches.Apply(harmony);
 		SharedArtPatches.Apply(harmony);
+		TutorialPatches.Apply(harmony);
 	}
 
 	internal void QueueTask(Action<G> task)
 		=> QueuedTasks.Enqueue(task);
 
-	internal void RunNextTask(G g)
+	internal void RunTasksReasonably(G g)
 	{
-		if (!QueuedTasks.TryDequeue(out var task))
-			return;
-		task(g);
-
 		if (QueuedTasks.Count == 0)
-			Logger.LogInformation("Finished all tasks.");
-		else if (QueuedTasks.Count % 25 == 0)
-			Logger.LogInformation("Tasks left in the queue: {TaskCount}", QueuedTasks.Count);
+			return;
+
+		var stopwatch = Stopwatch.StartNew();
+		while (QueuedTasks.TryDequeue(out var task))
+		{
+			task(g);
+			if (stopwatch.ElapsedMilliseconds >= 1000.0 / 60.0 * 0.75) // up to 75% of a single 60FPS frame's budget
+				break;
+		}
 	}
 
 	internal void QueueSelectedDecksExportTask(G g, bool withScreenFilter)
