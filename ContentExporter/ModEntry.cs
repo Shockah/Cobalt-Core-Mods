@@ -9,12 +9,17 @@ using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
+using Nickel.ModSettings;
 
 namespace Shockah.ContentExporter;
 
 internal sealed partial class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
+	internal readonly IModSettingsApi ModSettingsApi;
+
+	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
+	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
 	internal readonly Queue<Action<G>> QueuedTasks = new();
 	internal readonly CardRenderer CardRenderer = new();
@@ -34,6 +39,15 @@ internal sealed partial class ModEntry : SimpleMod
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
+		ModSettingsApi = helper.ModRegistry.GetApi<IModSettingsApi>("Nickel.ModSettings")!;
+
+		this.AnyLocalizations = new JsonLocalizationProvider(
+			tokenExtractor: new SimpleLocalizationTokenExtractor(),
+			localeStreamFunction: locale => package.PackageRoot.GetRelativeFile($"i18n/{locale}.json").OpenRead()
+		);
+		this.Localizations = new MissingPlaceholderLocalizationProvider<IReadOnlyList<string>>(
+			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
+		);
 		
 		PremultipliedGlowSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/PremultipliedGlow.png"));
 		BossArtifactGlowSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/BossArtifactGlow.png"));
@@ -43,10 +57,178 @@ internal sealed partial class ModEntry : SimpleMod
 		var harmony = new Harmony(package.Manifest.UniqueName);
 		CardPatches.Apply(harmony);
 		DrawPatches.Apply(harmony);
-		EditorPatches.Apply(harmony);
 		GPatches.Apply(harmony);
 		SharedArtPatches.Apply(harmony);
 		TutorialPatches.Apply(harmony);
+		
+		ModSettingsApi.RegisterModSettings(ModSettingsApi.MakeList([
+			ModSettingsApi.MakeConditional(
+				ModSettingsApi.MakeButton(
+					() => Localizations.Localize(["settings", "export", "title"]),
+					(g, _) =>
+					{
+						QueueCardExportTasks(g);
+						QueueArtifactExportTasks(g);
+						QueueShipExportTasks(g);
+					}
+				),
+				() => QueuedTasks.Count == 0
+			),
+			ModSettingsApi.MakeConditional(
+				ModSettingsApi.MakeButton(
+					() => Localizations.Localize(["settings", "export", "cancel"]),
+					(_, _) => QueuedTasks.Clear()
+				),
+				() => QueuedTasks.Count != 0
+			),
+			ModSettingsApi.MakeCheckbox(
+				() => Localizations.Localize(["settings", "screenFilter", "title"]),
+				() => Settings.ScreenFilter,
+				(_, _, value) => Settings.ScreenFilter = value
+			),
+			
+			ModSettingsApi.MakeCheckbox(
+				() => Localizations.Localize(["settings", "exportCards", "title"]),
+				() => Settings.CardsScale is not null,
+				(_, _, value) => Settings.CardsScale = value ? Settings.DEFAULT_SCALE : null 
+			),
+			ModSettingsApi.MakeConditional(
+				ModSettingsApi.MakeNumericStepper(
+					() => Localizations.Localize(["settings", "scaleSubsetting", "title"]),
+					() => Settings.CardsScale ?? 0,
+					value => Settings.CardsScale = value,
+					minValue: 1, maxValue: 8
+				),
+				() => Settings.CardsScale is not null
+			),
+			
+			ModSettingsApi.MakeCheckbox(
+				() => Localizations.Localize(["settings", "exportCardTooltips", "title"]),
+				() => Settings.CardTooltipsScale is not null,
+				(_, _, value) => Settings.CardTooltipsScale = value ? Settings.DEFAULT_SCALE : null 
+			),
+			ModSettingsApi.MakeConditional(
+				ModSettingsApi.MakeNumericStepper(
+					() => Localizations.Localize(["settings", "scaleSubsetting", "title"]),
+					() => Settings.CardTooltipsScale ?? 0,
+					value => Settings.CardTooltipsScale = value,
+					minValue: 1, maxValue: 8
+				),
+				() => Settings.CardTooltipsScale is not null
+			),
+			
+			ModSettingsApi.MakeCheckbox(
+				() => Localizations.Localize(["settings", "exportCardUpgrades", "title"]),
+				() => Settings.CardUpgradesScale is not null,
+				(_, _, value) => Settings.CardUpgradesScale = value ? Settings.DEFAULT_SCALE : null 
+			),
+			ModSettingsApi.MakeConditional(
+				ModSettingsApi.MakeNumericStepper(
+					() => Localizations.Localize(["settings", "scaleSubsetting", "title"]),
+					() => Settings.CardUpgradesScale ?? 0,
+					value => Settings.CardUpgradesScale = value,
+					minValue: 1, maxValue: 8
+				),
+				() => Settings.CardUpgradesScale is not null
+			),
+			
+			ModSettingsApi.MakeCheckbox(
+				() => Localizations.Localize(["settings", "exportArtifacts", "title"]),
+				() => Settings.ArtifactsScale is not null,
+				(_, _, value) => Settings.ArtifactsScale = value ? Settings.DEFAULT_SCALE : null 
+			),
+			ModSettingsApi.MakeConditional(
+				ModSettingsApi.MakeNumericStepper(
+					() => Localizations.Localize(["settings", "scaleSubsetting", "title"]),
+					() => Settings.ArtifactsScale ?? 0,
+					value => Settings.ArtifactsScale = value,
+					minValue: 1, maxValue: 8
+				),
+				() => Settings.ArtifactsScale is not null
+			),
+			
+			ModSettingsApi.MakeCheckbox(
+				() => Localizations.Localize(["settings", "exportShips", "title"]),
+				() => Settings.ShipsScale is not null,
+				(_, _, value) => Settings.ShipsScale = value ? Settings.DEFAULT_SCALE : null 
+			),
+			ModSettingsApi.MakeConditional(
+				ModSettingsApi.MakeNumericStepper(
+					() => Localizations.Localize(["settings", "scaleSubsetting", "title"]),
+					() => Settings.ShipsScale ?? 0,
+					value => Settings.ShipsScale = value,
+					minValue: 1, maxValue: 8
+				),
+				() => Settings.ShipsScale is not null
+			),
+			
+			ModSettingsApi.MakeCheckbox(
+				() => Localizations.Localize(["settings", "exportShipDescriptions", "title"]),
+				() => Settings.ShipDescriptionsScale is not null,
+				(_, _, value) => Settings.ShipDescriptionsScale = value ? Settings.DEFAULT_SCALE : null 
+			),
+			ModSettingsApi.MakeConditional(
+				ModSettingsApi.MakeNumericStepper(
+					() => Localizations.Localize(["settings", "scaleSubsetting", "title"]),
+					() => Settings.ShipDescriptionsScale ?? 0,
+					value => Settings.ShipDescriptionsScale = value,
+					minValue: 1, maxValue: 8
+				),
+				() => Settings.ShipDescriptionsScale is not null
+			),
+			
+			ModSettingsApi.MakeButton(
+				() => Localizations.Localize(["settings", "filterToMods", "title"]),
+				(g, route) => route.OpenSubroute(g, ModSettingsApi.MakeModSettingsRoute(ModSettingsApi.MakeList([
+					ModSettingsApi.MakeHeader(
+						() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
+						() => Localizations.Localize(["settings", "filterToMods", "title"])
+					),
+					ModSettingsApi.MakeList(
+						helper.ModRegistry.LoadedMods.Values
+							.Where(mod =>
+							{
+								var modHelper = helper.ModRegistry.GetModHelper(mod);
+								return modHelper.Content.Cards.RegisteredCards.Any() || modHelper.Content.Artifacts.RegisteredArtifacts.Any() || modHelper.Content.Ships.RegisteredShips.Any();
+							})
+							.OrderBy(mod => mod.DisplayName ?? mod.UniqueName)
+							.Prepend(helper.ModRegistry.VanillaModManifest)
+							.Select(IModSettingsApi.IModSetting (mod) => ModSettingsApi.MakeCheckbox(
+								() => mod.DisplayName ?? mod.UniqueName,
+								() => Settings.FilterToMods.Contains(mod.UniqueName),
+								(_, _, value) =>
+								{
+									if (value)
+										Settings.FilterToMods.Add(mod.UniqueName);
+									else
+										Settings.FilterToMods.Remove(mod.UniqueName);
+								}
+							).SetTitleFont(() => DB.pinch).SetHeight(17))
+							.ToList()
+					),
+					ModSettingsApi.MakeBackButton()
+				])))
+			).SetValueText(() =>
+			{
+				if (Settings.FilterToMods.Count == 0)
+					return Localizations.Localize(["settings", "filterToMods", "none"]);
+				if (Settings.FilterToMods.Count == 1)
+				{
+					if (Settings.FilterToMods.First() == helper.ModRegistry.VanillaModManifest.UniqueName)
+						return "Cobalt Core";
+					return helper.ModRegistry.LoadedMods.GetValueOrDefault(Settings.FilterToMods.First())?.DisplayName ?? Settings.FilterToMods.First();
+				}
+				return Localizations.Localize(["settings", "filterToMods", "count"], new { Count = Settings.FilterToMods.Count });
+			}).SetValueTextFont(() => DB.pinch),
+			ModSettingsApi.MakeCheckbox(
+				() => Localizations.Localize(["settings", "filterToRun", "title"]),
+				() => Settings.FilterToRun,
+				(_, _, value) => Settings.FilterToRun = value
+			),
+		]).SubscribeToOnMenuClose(_ =>
+		{
+			helper.Storage.SaveJson(helper.Storage.GetMainStorageFile("json"), Settings);
+		}));
 	}
 
 	internal void QueueTask(Action<G> task)
@@ -61,28 +243,8 @@ internal sealed partial class ModEntry : SimpleMod
 		while (QueuedTasks.TryDequeue(out var task))
 		{
 			task(g);
-			if (stopwatch.ElapsedMilliseconds >= 1000.0 / 60.0 * 0.75) // up to 75% of a single 60FPS frame's budget
+			if (stopwatch.ElapsedMilliseconds >= 1000.0 / 60.0 * 0.5) // up to 50% of a single 60FPS frame's budget
 				break;
-		}
-	}
-
-	internal void QueueSelectedDecksExportTask(G g, bool withScreenFilter)
-	{
-		if (g.metaRoute?.subRoute is Codex { subRoute: CardBrowse cardCodex })
-		{
-			foreach (var deck in cardCodex.GetCardList(g).Select(c => c.GetMeta().deck).ToHashSet())
-				QueueDeckCardsExportTask(g, withScreenFilter, deck);
-		}
-		else if (g.state.IsOutsideRun())
-		{
-			foreach (var deck in g.state.runConfig.selectedChars)
-				QueueDeckCardsExportTask(g, withScreenFilter, deck);
-		}
-		else
-		{
-			foreach (var character in g.state.characters)
-				if (character.deckType is { } deck)
-					QueueDeckCardsExportTask(g, withScreenFilter, deck);
 		}
 	}
 
@@ -121,23 +283,40 @@ internal sealed partial class ModEntry : SimpleMod
 		return path;
 	}
 
-	internal void QueueDeckCardsExportTask(G g, bool withScreenFilter, Deck deck)
+	private void QueueCardExportTasks(G g)
 	{
-		if (Helper.Content.Decks.LookupByDeck(deck) is { } entry)
-			QueueDeckCardsExportTask(g, withScreenFilter, entry);
-	}
-
-	internal void QueueDeckCardsExportTask(G g, bool withScreenFilter, IDeckEntry entry)
-	{
-		if (Settings is { ExportCard: false, ExportCardTooltip: false })
+		var cardsScale = Math.Max(Settings.CardsScale ?? 0, 0);
+		var cardTooltipsScale = Math.Max(Settings.CardTooltipsScale ?? 0, 0);
+		var cardUpgradesScale = Math.Max(Settings.CardUpgradesScale ?? 0, 0);
+		if (cardsScale <= 0 && cardTooltipsScale <= 0 && cardUpgradesScale <= 0)
 			return;
 		
 		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
+		var screenFilter = Settings.ScreenFilter;
 
+		var isOutsideRun = g.state.IsOutsideRun();
 		var cards = DB.cards.Keys
 			.Select(key => Helper.Content.Cards.LookupByUniqueName(key))
 			.OfType<ICardEntry>()
-			.Where(e => e.Configuration.Meta.deck == entry.Deck)
+			.Where(e =>
+			{
+				if (Settings.FilterToRun)
+				{
+					if (isOutsideRun)
+					{
+						if (!g.state.runConfig.selectedChars.Contains(e.Configuration.Meta.deck))
+							return false;
+					}
+					else
+					{
+						if (g.state.characters.All(character => character.deckType != e.Configuration.Meta.deck))
+							return false;
+					}
+				}
+				if (Settings.FilterToMods.Count != 0 && !Settings.FilterToMods.Contains(e.ModOwner.UniqueName))
+					return false;
+				return true;
+			})
 			.Where(e => DB.currentLocale.strings.ContainsKey($"card.{e.UniqueName}.name"))
 			.ToList();
 
@@ -147,13 +326,14 @@ internal sealed partial class ModEntry : SimpleMod
 		var exportableCardsDataPath = Path.Combine(modloaderFolder, "ContentExport", "Cards");
 		var exportableTooltipsDataPath = Path.Combine(modloaderFolder, "ContentExport", "CardTooltips");
 		var exportableUpgradesDataPath = Path.Combine(modloaderFolder, "ContentExport", "CardUpgrades");
-		var fileSafeDeckName = MakeFileSafe(ObtainDeckNiceName(entry.Deck));
-		var cardDeckExportPath = Path.Combine(exportableCardsDataPath, fileSafeDeckName);
-		var tooltipDeckExportPath = Path.Combine(exportableTooltipsDataPath, fileSafeDeckName);
-		var upgradesExportPath = Path.Combine(exportableUpgradesDataPath, fileSafeDeckName);
 
 		foreach (var e in cards)
 		{
+			var fileSafeDeckName = MakeFileSafe(ObtainDeckNiceName(e.Configuration.Meta.deck));
+			var cardDeckExportPath = Path.Combine(exportableCardsDataPath, fileSafeDeckName);
+			var tooltipDeckExportPath = Path.Combine(exportableTooltipsDataPath, fileSafeDeckName);
+			var upgradesExportPath = Path.Combine(exportableUpgradesDataPath, fileSafeDeckName);
+			
 			var card = (Card)Activator.CreateInstance(e.Configuration.CardType)!;
 			foreach (var upgrade in new List<Upgrade> { Upgrade.None }.Concat(e.Configuration.Meta.upgradesTo))
 			{
@@ -169,8 +349,8 @@ internal sealed partial class ModEntry : SimpleMod
 							: $"{fileSafeName}.png"
 					);
 
-				QueueTask(g => CardBaseExportTask(g, withScreenFilter, cardAtUpgrade, Path.Combine(cardDeckExportPath, imagePath)));
-				QueueTask(g => CardTooltipExportTask(g, withScreenFilter, cardAtUpgrade, withTheCard: true, Path.Combine(tooltipDeckExportPath, imagePath)));
+				QueueTask(g => CardBaseExportTask(g, cardsScale, screenFilter, cardAtUpgrade, Path.Combine(cardDeckExportPath, imagePath)));
+				QueueTask(g => CardTooltipExportTask(g, cardTooltipsScale, screenFilter, cardAtUpgrade, withTheCard: true, Path.Combine(tooltipDeckExportPath, imagePath)));
 			}
 
 			{
@@ -183,43 +363,81 @@ internal sealed partial class ModEntry : SimpleMod
 							: $"{fileSafeName}.png"
 					);
 				
-				QueueTask(g => CardUpgradesExportTask(g, withScreenFilter, card, Path.Combine(upgradesExportPath, imagePath)));
+				QueueTask(g => CardUpgradesExportTask(g, cardUpgradesScale, screenFilter, card, Path.Combine(upgradesExportPath, imagePath)));
 			}
 		}
 	}
 
-	internal void QueueAllArtifactsExportTask(G g, bool withScreenFilter)
+	private void QueueShipExportTasks(G g)
 	{
-		foreach (var deck in DB.artifactMetas.Values.Select(meta => meta.owner).ToHashSet())
-			QueueDeckArtifactsExportTask(g, withScreenFilter, deck);
-	}
-
-	internal void QueueAllShipsExportTask(bool withScreenFilter)
-	{
+		var shipsScale = Math.Max(Settings.ShipsScale ?? 0, 0);
+		var shipDescriptionsScale = Math.Max(Settings.ShipDescriptionsScale ?? 0, 0);
+		if (shipsScale <= 0 && shipDescriptionsScale <= 0)
+			return;
+		
+		var isOutsideRun = g.state.IsOutsideRun();
+		
 		foreach (var key in StarterShip.ships.Keys)
 		{
 			if (Helper.Content.Ships.LookupByUniqueName(key) is not { } entry)
 				continue;
+			if (Settings.FilterToRun)
+			{
+				if (isOutsideRun)
+				{
+					if (g.state.runConfig.selectedShip != key)
+						continue;
+				}
+				else
+				{
+					if (g.state.ship.key != key)
+						continue;
+				}
+			}
 			
-			QueueShipExportTask(withScreenFilter, entry);
-			QueueShipDescriptionExportTask(withScreenFilter, entry);
+			if (Settings.FilterToRun && !isOutsideRun && g.state.ship.key != key)
+				continue;
+			if (Settings.FilterToMods.Count != 0 && !Settings.FilterToMods.Contains(entry.ModOwner.UniqueName))
+				continue;
+			
+			QueueShipExportTask(shipsScale, Settings.ScreenFilter, entry);
+			QueueShipDescriptionExportTask(shipDescriptionsScale, Settings.ScreenFilter, entry);
 		}
 	}
 
-	internal void QueueDeckArtifactsExportTask(G g, bool withScreenFilter, Deck deck)
+	private void QueueArtifactExportTasks(G g)
 	{
-		if (Helper.Content.Decks.LookupByDeck(deck) is { } entry)
-			QueueDeckArtifactsExportTask(g, withScreenFilter, entry);
-	}
-
-	internal void QueueDeckArtifactsExportTask(G g, bool withScreenFilter, IDeckEntry entry)
-	{
+		if (Settings.ArtifactsScale is not { } scale || scale <= 0)
+			return;
+		
 		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
+		var screenFilter = Settings.ScreenFilter;
 
+		var isOutsideRun = g.state.IsOutsideRun();
 		var artifacts = DB.artifacts.Keys
 			.Select(key => Helper.Content.Artifacts.LookupByUniqueName(key))
 			.OfType<IArtifactEntry>()
-			.Where(e => e.Configuration.Meta.owner == entry.Deck)
+			.Where(e =>
+			{
+				if (Settings.FilterToRun && e.Configuration.Meta.owner != Deck.colorless)
+				{
+					var testedDeck = e.Configuration.Meta.owner == Deck.catartifact ? Deck.colorless : e.Configuration.Meta.owner;
+					
+					if (isOutsideRun)
+					{
+						if (g.state.runConfig.selectedChars.Contains(testedDeck))
+							return false;
+					}
+					else
+					{
+						if (g.state.characters.All(character => character.deckType != testedDeck))
+							return false;
+					}
+				}
+				if (Settings.FilterToMods.Count != 0 && !Settings.FilterToMods.Contains(e.ModOwner.UniqueName))
+					return false;
+				return true;
+			})
 			.Where(e => DB.currentLocale.strings.ContainsKey($"artifact.{e.UniqueName}.name"))
 			.ToList();
 
@@ -227,17 +445,18 @@ internal sealed partial class ModEntry : SimpleMod
 			return;
 		
 		var exportableDataPath = Path.Combine(modloaderFolder, "ContentExport", "Artifacts");
-		var fileSafeDeckName = MakeFileSafe(entry.Deck switch
-		{
-			Deck.colorless => "_Generic",
-			Deck.catartifact => ObtainDeckNiceName(Deck.colorless),
-			_ => ObtainDeckNiceName(entry.Deck),
-		});
-		var deckExportPath = Path.Combine(exportableDataPath, fileSafeDeckName);
 		var dailyExportPath = Path.Combine(exportableDataPath, MakeFileSafe("_Daily"));
 
 		foreach (var e in artifacts)
 		{
+			var fileSafeDeckName = MakeFileSafe(e.Configuration.Meta.owner switch
+			{
+				Deck.colorless => "_Generic",
+				Deck.catartifact => ObtainDeckNiceName(Deck.colorless),
+				_ => ObtainDeckNiceName(e.Configuration.Meta.owner),
+			});
+			var deckExportPath = Path.Combine(exportableDataPath, fileSafeDeckName);
+			
 			var artifact = (Artifact)Activator.CreateInstance(e.Configuration.ArtifactType)!;
 			var fileSafeName = MakeFileSafe(e.Configuration.Name?.Invoke(DB.currentLocale.locale) ?? e.UniqueName);
 			var tooltipImagePath = e.Configuration.Meta.pools.Contains(ArtifactPool.Unreleased)
@@ -247,72 +466,96 @@ internal sealed partial class ModEntry : SimpleMod
 				e.Configuration.Meta.pools.Contains(ArtifactPool.DailyOnly) ? dailyExportPath : deckExportPath,
 				tooltipImagePath
 			);
-			QueueTask(g => ArtifactExportTask(g, withScreenFilter, artifact, finalPath));
+			QueueTask(g => ArtifactExportTask(g, scale, screenFilter, artifact, finalPath));
 		}
 	}
 
-	internal void QueueShipExportTask(bool withScreenFilter, IShipEntry entry)
+	private void QueueShipExportTask(int scale, bool withScreenFilter, IShipEntry entry)
 	{
+		if (scale <= 0)
+			return;
+
 		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
 		var exportableDataPath = Path.Combine(modloaderFolder, "ContentExport", "Ships");
 		Directory.CreateDirectory(exportableDataPath);
 		
 		var fileSafeName = MakeFileSafe(entry.Configuration.Name?.Invoke(DB.currentLocale.locale) ?? entry.UniqueName);
 		var imagePath = Path.Combine(exportableDataPath, $"{fileSafeName}.png");
-		QueueTask(g => ShipExportTask(g, withScreenFilter, entry.Configuration.Ship.ship, imagePath));
+		QueueTask(g => ShipExportTask(g, scale, withScreenFilter, entry.Configuration.Ship.ship, imagePath));
 	}
 
-	internal void QueueShipDescriptionExportTask(bool withScreenFilter, IShipEntry entry)
+	private void QueueShipDescriptionExportTask(int scale, bool withScreenFilter, IShipEntry entry)
 	{
+		if (scale <= 0)
+			return;
+
 		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
 		var exportableDataPath = Path.Combine(modloaderFolder, "ContentExport", "ShipDescriptions");
 		Directory.CreateDirectory(exportableDataPath);
 		
 		var fileSafeName = MakeFileSafe(entry.Configuration.Name?.Invoke(DB.currentLocale.locale) ?? entry.UniqueName);
 		var imagePath = Path.Combine(exportableDataPath, $"{fileSafeName}.png");
-		QueueTask(g => ShipDescriptionExportTask(g, withScreenFilter, entry.Configuration.Ship.ship, imagePath));
+		QueueTask(g => ShipDescriptionExportTask(g, scale, withScreenFilter, entry.Configuration.Ship.ship, imagePath));
 	}
 
-	private void CardBaseExportTask(G g, bool withScreenFilter, Card card, string path)
+	private void CardBaseExportTask(G g, int scale, bool withScreenFilter, Card card, string path)
 	{
+		if (scale <= 0)
+			return;
+
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
 		using var stream = new FileStream(path, FileMode.Create);
-		CardRenderer.Render(g, withScreenFilter, card, stream);
+		CardRenderer.Render(g, scale, withScreenFilter, card, stream);
 	}
 
-	private void CardTooltipExportTask(G g, bool withScreenFilter, Card card, bool withTheCard, string path)
+	private void CardTooltipExportTask(G g, int scale, bool withScreenFilter, Card card, bool withTheCard, string path)
 	{
+		if (scale <= 0)
+			return;
+
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
 		using var stream = new FileStream(path, FileMode.Create);
-		CardTooltipRenderer.Render(g, withScreenFilter, card, withTheCard, stream);
+		CardTooltipRenderer.Render(g, scale, withScreenFilter, card, withTheCard, stream);
 	}
 
-	private void CardUpgradesExportTask(G g, bool withScreenFilter, Card card, string path)
+	private void CardUpgradesExportTask(G g, int scale, bool withScreenFilter, Card card, string path)
 	{
+		if (scale <= 0)
+			return;
+
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
 		using var stream = new FileStream(path, FileMode.Create);
-		CardUpgradesRenderer.Render(g, withScreenFilter, card, stream);
+		CardUpgradesRenderer.Render(g, scale, withScreenFilter, card, stream);
 	}
 
-	private void ArtifactExportTask(G g, bool withScreenFilter, Artifact artifact, string path)
+	private void ArtifactExportTask(G g, int scale, bool withScreenFilter, Artifact artifact, string path)
 	{
+		if (scale <= 0)
+			return;
+		
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
 		using var stream = new FileStream(path, FileMode.Create);
-		ArtifactTooltipRenderer.Render(g, withScreenFilter, artifact, stream);
+		ArtifactTooltipRenderer.Render(g, scale, withScreenFilter, artifact, stream);
 	}
 
-	private void ShipExportTask(G g, bool withScreenFilter, Ship ship, string path)
+	private void ShipExportTask(G g, int scale, bool withScreenFilter, Ship ship, string path)
 	{
+		if (scale <= 0)
+			return;
+		
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
 		using var stream = new FileStream(path, FileMode.Create);
-		ShipRenderer.Render(g, withScreenFilter, ship, stream);
+		ShipRenderer.Render(g, scale, withScreenFilter, ship, stream);
 	}
 
-	private void ShipDescriptionExportTask(G g, bool withScreenFilter, Ship ship, string path)
+	private void ShipDescriptionExportTask(G g, int scale, bool withScreenFilter, Ship ship, string path)
 	{
+		if (scale <= 0)
+			return;
+		
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
 		using var stream = new FileStream(path, FileMode.Create);
-		ShipDescriptionRenderer.Render(g, withScreenFilter, ship, stream);
+		ShipDescriptionRenderer.Render(g, scale, withScreenFilter, ship, stream);
 	}
 
 	[GeneratedRegex("\\w+$")]

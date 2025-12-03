@@ -1,33 +1,36 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Shockah.ContentExporter;
 
 internal sealed class Settings
 {
-	[JsonProperty]
-	public bool ExportBluish = true;
+	internal const int DEFAULT_SCALE = 4;
 	
 	[JsonProperty]
-	public int CardScale = 4;
+	public bool ScreenFilter = true;
 	
 	[JsonProperty]
-	public bool ExportCard = true;
+	public int? CardsScale = DEFAULT_SCALE;
 	
 	[JsonProperty]
-	public bool ExportCardTooltip = true;
+	public int? CardTooltipsScale = DEFAULT_SCALE;
 	
 	[JsonProperty]
-	public bool ExportCardUpgrades = true;
+	public int? CardUpgradesScale = DEFAULT_SCALE;
 	
 	[JsonProperty]
-	public int ArtifactScale = 4;
+	public int? ShipsScale = DEFAULT_SCALE;
 	
 	[JsonProperty]
-	public bool ExportShip = true;
+	public int? ShipDescriptionsScale = DEFAULT_SCALE;
 	
 	[JsonProperty]
-	public bool ExportShipDescription = true;
+	public int? ArtifactsScale = DEFAULT_SCALE;
 	
 	[JsonProperty]
-	public int ShipScale = 4;
+	public HashSet<string> FilterToMods = [];
+	
+	[JsonProperty]
+	public bool FilterToRun;
 }

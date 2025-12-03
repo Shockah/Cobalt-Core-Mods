@@ -1,7 +1,16 @@
 {
     "UniqueName": "Shockah.ContentExporter",
     "Version": "{{ModVersion}}",
-    "RequiredApiVersion": "0.4.3",
+	"DisplayName": "Content Exporter",
+	"Description": "Exports game content as images.",
+	"Author": "Shockah",
+    "RequiredApiVersion": "1.17.0",
     "EntryPointAssembly": "ContentExporter.dll",
-    "LoadPhase": "AfterDbInit"
+    "LoadPhase": "AfterDbInit",
+	"Dependencies": [
+		{
+			"UniqueName": "Nickel.ModSettings",
+			"Version": "1.17.0"
+		}
+	]
 }

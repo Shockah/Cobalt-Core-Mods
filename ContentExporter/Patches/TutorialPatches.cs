@@ -21,7 +21,6 @@ internal sealed class TutorialPatches
 	{
 		if (Instance.QueuedTasks.Count == 0)
 			return;
-
-		Draw.Text($"Exporting content: {Instance.QueuedTasks.Count} left", 4, g.mg.PIX_H - 10, color: Colors.textMain, outline: Colors.black);
+		Draw.Text(Instance.Localizations.Localize(["progress"], new { Count = Instance.QueuedTasks.Count }), 4, g.mg.PIX_H - 10, color: Colors.textMain, outline: Colors.black);
 	}
 }

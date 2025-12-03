@@ -11,7 +11,7 @@ internal sealed class ArtifactTooltipRenderer
 {
 	private RenderTarget2D? CurrentRenderTarget;
 
-	public void Render(G g, bool withScreenFilter, Artifact artifact, Stream stream)
+	public void Render(G g, int scale, bool withScreenFilter, Artifact artifact, Stream stream)
 	{
 		var oldPixScale = g.mg.PIX_SCALE;
 		var oldCameraMatrix = g.mg.cameraMatrix;
@@ -19,7 +19,7 @@ internal sealed class ArtifactTooltipRenderer
 		var oldScreenLimits = Tooltips.SCREEN_LIMITS;
 		var oldActivateAllActions = CardPatches.ActivateAllActions;
 
-		g.mg.PIX_SCALE = ModEntry.Instance.Settings.ArtifactScale;
+		g.mg.PIX_SCALE = scale;
 		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
 		g.metaRoute = new MainMenu { subRoute = new Codex { subRoute = new ArtifactBrowse() } };
 		Tooltips.SCREEN_LIMITS = new(0, 0, double.PositiveInfinity, double.PositiveInfinity);

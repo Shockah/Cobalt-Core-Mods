@@ -11,14 +11,14 @@ internal sealed class CardTooltipRenderer
 {
 	private RenderTarget2D? CurrentRenderTarget;
 
-	public void Render(G g, bool withScreenFilter, Card card, bool withTheCard, Stream stream)
+	public void Render(G g, int scale, bool withScreenFilter, Card card, bool withTheCard, Stream stream)
 	{
 		var oldPixScale = g.mg.PIX_SCALE;
 		var oldCameraMatrix = g.mg.cameraMatrix;
 		var oldScreenLimits = Tooltips.SCREEN_LIMITS;
 		var oldActivateAllActions = CardPatches.ActivateAllActions;
 
-		g.mg.PIX_SCALE = ModEntry.Instance.Settings.CardScale;
+		g.mg.PIX_SCALE = scale;
 		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
 		Tooltips.SCREEN_LIMITS = new(0, 0, double.PositiveInfinity, double.PositiveInfinity);
 		CardPatches.ActivateAllActions = true;

@@ -11,13 +11,13 @@ internal sealed class ShipRenderer
 {
 	private RenderTarget2D? RenderTarget;
 
-	public void Render(G g, bool withScreenFilter, Ship ship, Stream stream)
+	public void Render(G g, int scale, bool withScreenFilter, Ship ship, Stream stream)
 	{
 		var oldPixScale = g.mg.PIX_SCALE;
 		var oldCameraMatrix = g.mg.cameraMatrix;
 		var oldTime = g.state.time;
 
-		g.mg.PIX_SCALE = ModEntry.Instance.Settings.ShipScale;
+		g.mg.PIX_SCALE = scale;
 		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
 		g.state.time = 0;
 		DrawPatches.ReplacementSprite = (StableSpr.effects_glow_512_gain15, ModEntry.Instance.PremultipliedGlowSprite.Sprite);

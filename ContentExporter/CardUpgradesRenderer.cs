@@ -12,13 +12,13 @@ internal sealed class CardUpgradesRenderer
 {
 	private RenderTarget2D? RenderTarget;
 
-	public void Render(G g, bool withScreenFilter, Card card, Stream stream)
+	public void Render(G g, int scale, bool withScreenFilter, Card card, Stream stream)
 	{
 		var oldPixScale = g.mg.PIX_SCALE;
 		var oldCameraMatrix = g.mg.cameraMatrix;
 		var oldTitleString = DB.currentLocale.strings.GetValueOrDefault("cardUpgrade.titlePreview");
 
-		g.mg.PIX_SCALE = ModEntry.Instance.Settings.CardScale;
+		g.mg.PIX_SCALE = scale;
 		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
 		DB.currentLocale.strings["cardUpgrade.titlePreview"] = "";
 		SharedArtPatches.DisableDrawing = true;

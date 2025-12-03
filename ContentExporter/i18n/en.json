@@ -1,0 +1,41 @@
+﻿{
+	"progress": "Exporting content: {{Count}} left",
+	"settings": {
+		"export": {
+			"title": "Export content",
+			"cancel": "Cancel"
+		},
+		"screenFilter": {
+			"title": "Include the game's blue filter"
+		},
+		"exportCards": {
+			"title": "Export cards"
+		},
+		"exportCardTooltips": {
+			"title": "Export card tooltips"
+		},
+		"exportCardUpgrades": {
+			"title": "Export card upgrade trees"
+		},
+		"exportArtifacts": {
+			"title": "Export artifacts"
+		},
+		"exportShips": {
+			"title": "Export ships"
+		},
+		"exportShipDescriptions": {
+			"title": "Export ship descriptions"
+		},
+		"filterToMods": {
+			"title": "Filter to mods",
+			"none": "any",
+			"count": "{{Count}} mods"
+		},
+		"filterToRun": {
+			"title": "Filter to current run"
+		},
+		"scaleSubsetting": {
+			"title": "    Scale"
+		}
+	}
+}
