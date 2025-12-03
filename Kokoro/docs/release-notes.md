@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.13.0
+Released 3 December 2025.
 
 * Added the `OnExhaust` feature.
 * Partially reimplemented Limited and Finite. They are no longer related to the Exhaust and Infinite traits.
