@@ -77,7 +77,7 @@
             },
 	        "Max": {
 		        "name": "TBD",
-		        "description": "Once per turn, whenever a card is <c=cardtrait>exhausted</c>, swap it with the <c=keyword>leftmost</c> card in hand instead, if possible."
+		        "description": "Once per turn, whenever a card is about to be <c=cardtrait>exhausted</c>, swap it with the <c=keyword>leftmost</c> card in hand instead, if possible."
 	        },
             "Peri": {
                 "name": "TBD",

@@ -8,7 +8,8 @@
     "EntryPointAssembly": "Natasha.dll",
     "LoadPhase": "AfterDbInit",
     "MethodsToStopInlining": [
-        { "TypeName": "Combat", "MethodName": "IsVisible" }
+        { "TypeName": "Combat", "MethodName": "IsVisible" },
+        { "TypeName": "Combat", "MethodName": "SendCardToExhaust" }
     ],
     "Dependencies": [
         {
