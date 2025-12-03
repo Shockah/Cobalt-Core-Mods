@@ -17,8 +17,9 @@ internal sealed partial class ModEntry : SimpleMod
 
 	private readonly Queue<Action<G>> QueuedTasks = new();
 	internal readonly CardRenderer CardRenderer = new();
-	internal readonly ArtifactTooltipRenderer ArtifactTooltipRenderer = new();
 	internal readonly CardTooltipRenderer CardTooltipRenderer = new();
+	internal readonly CardUpgradesRenderer CardUpgradesRenderer = new();
+	internal readonly ArtifactTooltipRenderer ArtifactTooltipRenderer = new();
 	internal readonly ShipRenderer ShipRenderer = new();
 	
 	internal readonly ISpriteEntry PremultipliedGlowSprite;
@@ -42,6 +43,7 @@ internal sealed partial class ModEntry : SimpleMod
 		DrawPatches.Apply(harmony);
 		EditorPatches.Apply(harmony);
 		GPatches.Apply(harmony);
+		SharedArtPatches.Apply(harmony);
 	}
 
 	internal void QueueTask(Action<G> task)
@@ -139,9 +141,11 @@ internal sealed partial class ModEntry : SimpleMod
 
 		var exportableCardsDataPath = Path.Combine(modloaderFolder, "ContentExport", "Cards");
 		var exportableTooltipsDataPath = Path.Combine(modloaderFolder, "ContentExport", "CardTooltips");
+		var exportableUpgradesDataPath = Path.Combine(modloaderFolder, "ContentExport", "CardUpgrades");
 		var fileSafeDeckName = MakeFileSafe(ObtainDeckNiceName(entry.Deck));
 		var cardDeckExportPath = Path.Combine(exportableCardsDataPath, fileSafeDeckName);
 		var tooltipDeckExportPath = Path.Combine(exportableTooltipsDataPath, fileSafeDeckName);
+		var upgradesExportPath = Path.Combine(exportableUpgradesDataPath, fileSafeDeckName);
 
 		foreach (var e in cards)
 		{
@@ -162,6 +166,19 @@ internal sealed partial class ModEntry : SimpleMod
 
 				QueueTask(g => CardBaseExportTask(g, withScreenFilter, cardAtUpgrade, Path.Combine(cardDeckExportPath, imagePath)));
 				QueueTask(g => CardTooltipExportTask(g, withScreenFilter, cardAtUpgrade, withTheCard: true, Path.Combine(tooltipDeckExportPath, imagePath)));
+			}
+
+			{
+				var fileSafeName = MakeFileSafe(card.GetFullDisplayName());
+				var imagePath = e.Configuration.Meta.unreleased
+					? $"Unreleased/{fileSafeName}.png"
+					: (
+						e.Configuration.Meta.dontOffer
+							? $"Unoffered/{fileSafeName}.png"
+							: $"{fileSafeName}.png"
+					);
+				
+				QueueTask(g => CardUpgradesExportTask(g, withScreenFilter, card, Path.Combine(upgradesExportPath, imagePath)));
 			}
 		}
 	}
@@ -247,6 +264,13 @@ internal sealed partial class ModEntry : SimpleMod
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
 		using var stream = new FileStream(path, FileMode.Create);
 		CardTooltipRenderer.Render(g, withScreenFilter, card, withTheCard, stream);
+	}
+
+	private void CardUpgradesExportTask(G g, bool withScreenFilter, Card card, string path)
+	{
+		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
+		using var stream = new FileStream(path, FileMode.Create);
+		CardUpgradesRenderer.Render(g, withScreenFilter, card, stream);
 	}
 
 	private void ArtifactExportTask(G g, bool withScreenFilter, Artifact artifact, string path)

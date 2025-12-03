@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,18 +8,20 @@ using MGColor = Microsoft.Xna.Framework.Color;
 
 namespace Shockah.ContentExporter;
 
-internal sealed class ShipRenderer
+internal sealed class CardUpgradesRenderer
 {
 	private RenderTarget2D? RenderTarget;
 
-	public void Render(G g, bool withScreenFilter, Ship ship, Stream stream)
+	public void Render(G g, bool withScreenFilter, Card card, Stream stream)
 	{
 		var oldPixScale = g.mg.PIX_SCALE;
 		var oldCameraMatrix = g.mg.cameraMatrix;
+		var oldTitleString = DB.currentLocale.strings.GetValueOrDefault("cardUpgrade.titlePreview");
 
-		g.mg.PIX_SCALE = ModEntry.Instance.Settings.ShipScale;
+		g.mg.PIX_SCALE = ModEntry.Instance.Settings.CardScale;
 		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
-		DrawPatches.ReplacementSprite = (StableSpr.effects_glow_512_gain15, ModEntry.Instance.PremultipliedGlowSprite.Sprite);
+		DB.currentLocale.strings["cardUpgrade.titlePreview"] = "";
+		SharedArtPatches.DisableDrawing = true;
 
 		try
 		{
@@ -36,12 +39,31 @@ internal sealed class ShipRenderer
 			Draw.StartAutoBatchFrame();
 			try
 			{
-				var shipRect = ship.GetShipRect();
-				ship.DrawShip(g, new(g.mg.PIX_W / 2 - shipRect.w / 2, g.mg.PIX_H / 2 - shipRect.h / 2), Vec.Zero);
+				card = card.CopyWithNewId();
+				card.upgrade = Upgrade.None;
+				card.drawAnim = 1;
+				
+				var route = new CardUpgrade
+				{
+					cardCopy = card,
+					iHavePlayedThePoof = true,
+					isPreview = true,
+					isCodex = true,
+				};
+				
+				var topCard = Mutil.DeepCopy(card);
+				topCard.isForeground = false;
+				topCard.hoverAnim = 0;
+				route.topCard = topCard;
+				
+				for (var i = 0; i < route.particles.gradient.Count; i++)
+					route.particles.gradient[i] = new Color(0f, 0f,  0f, 0f);
+
+				route.Render(g);
 			}
 			catch
 			{
-				ModEntry.Instance.Logger.LogError("There was an error exporting ship {Ship}.", ship.key);
+				ModEntry.Instance.Logger.LogError("There was an error exporting card {Card}.", card.Key());
 			}
 			if (withScreenFilter)
 				Draw.Fill(Colors.screenOverlay, new BlendState
@@ -63,7 +85,12 @@ internal sealed class ShipRenderer
 		{
 			g.mg.PIX_SCALE = oldPixScale;
 			g.mg.cameraMatrix = oldCameraMatrix;
-			DrawPatches.ReplacementSprite = null;
+			SharedArtPatches.DisableDrawing = false;
+
+			if (oldTitleString is null)
+				DB.currentLocale.strings.Remove("cardUpgrade.titlePreview");
+			else
+				DB.currentLocale.strings["cardUpgrade.titlePreview"] = oldTitleString;
 		}
 	}
 }
