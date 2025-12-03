@@ -11,6 +11,9 @@ internal sealed class Settings
 	public bool ScreenFilter = true;
 	
 	[JsonProperty]
+	public ExportBackground Background = ExportBackground.Transparent;
+	
+	[JsonProperty]
 	public int? CardsScale = DEFAULT_SCALE;
 	
 	[JsonProperty]

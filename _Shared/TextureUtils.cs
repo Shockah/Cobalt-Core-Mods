@@ -63,7 +63,7 @@ internal static class TextureUtils
 		}
 	}
 
-	public static Texture2D CropToContent(Texture2D texture)
+	public static Texture2D CropToContent(Texture2D texture, MGColor? backgroundColor = null)
 	{
 		var colors = new MGColor[texture.Width * texture.Height];
 		texture.GetData(colors);
@@ -107,10 +107,17 @@ internal static class TextureUtils
 			return texture;
 		
 		var textureData = new MGColor[textureWidth * textureHeight];
-			
+
 		for (var y = 0; y < textureHeight; y++)
+		{
 			for (var x = 0; x < textureWidth; x++)
-				textureData[x + y * textureWidth] = colors[(x + left) + (y + top) * texture.Width];
+			{
+				var color = colors[(x + left) + (y + top) * texture.Width];
+				if (color.A != 255 && backgroundColor is not null)
+					color = MGColor.Lerp(backgroundColor.Value, new(color.R, color.G, color.B), color.A / 255f);
+				textureData[x + y * textureWidth] = color;
+			}
+		}
 			
 		var resultTexture = new Texture2D(texture.GraphicsDevice, textureWidth, textureHeight);
 		resultTexture.SetData(textureData);

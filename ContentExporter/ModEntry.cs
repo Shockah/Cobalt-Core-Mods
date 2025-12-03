@@ -16,18 +16,17 @@ namespace Shockah.ContentExporter;
 internal sealed partial class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
-	internal readonly IModSettingsApi ModSettingsApi;
 
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
 	internal readonly Queue<Action<G>> QueuedTasks = new();
-	internal readonly CardRenderer CardRenderer = new();
-	internal readonly CardTooltipRenderer CardTooltipRenderer = new();
-	internal readonly CardUpgradesRenderer CardUpgradesRenderer = new();
-	internal readonly ArtifactTooltipRenderer ArtifactTooltipRenderer = new();
-	internal readonly ShipRenderer ShipRenderer = new();
-	internal readonly ShipDescriptionRenderer ShipDescriptionRenderer = new();
+	private readonly CardRenderer CardRenderer = new();
+	private readonly CardTooltipRenderer CardTooltipRenderer = new();
+	private readonly CardUpgradesRenderer CardUpgradesRenderer = new();
+	private readonly ArtifactTooltipRenderer ArtifactTooltipRenderer = new();
+	private readonly ShipRenderer ShipRenderer = new();
+	private readonly ShipDescriptionRenderer ShipDescriptionRenderer = new();
 	
 	internal readonly ISpriteEntry PremultipliedGlowSprite;
 	internal readonly ISpriteEntry BossArtifactGlowSprite;
@@ -39,7 +38,7 @@ internal sealed partial class ModEntry : SimpleMod
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
-		ModSettingsApi = helper.ModRegistry.GetApi<IModSettingsApi>("Nickel.ModSettings")!;
+		var modSettingsApi = helper.ModRegistry.GetApi<IModSettingsApi>("Nickel.ModSettings")!;
 
 		this.AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -61,9 +60,9 @@ internal sealed partial class ModEntry : SimpleMod
 		SharedArtPatches.Apply(harmony);
 		TutorialPatches.Apply(harmony);
 		
-		ModSettingsApi.RegisterModSettings(ModSettingsApi.MakeList([
-			ModSettingsApi.MakeConditional(
-				ModSettingsApi.MakeButton(
+		modSettingsApi.RegisterModSettings(modSettingsApi.MakeList([
+			modSettingsApi.MakeConditional(
+				modSettingsApi.MakeButton(
 					() => Localizations.Localize(["settings", "export", "title"]),
 					(g, _) =>
 					{
@@ -74,26 +73,35 @@ internal sealed partial class ModEntry : SimpleMod
 				),
 				() => QueuedTasks.Count == 0
 			),
-			ModSettingsApi.MakeConditional(
-				ModSettingsApi.MakeButton(
+			modSettingsApi.MakeConditional(
+				modSettingsApi.MakeButton(
 					() => Localizations.Localize(["settings", "export", "cancel"]),
 					(_, _) => QueuedTasks.Clear()
 				),
 				() => QueuedTasks.Count != 0
 			),
-			ModSettingsApi.MakeCheckbox(
+			modSettingsApi.MakeEnumStepper(
+				title: () => Localizations.Localize(["settings", "background", "title"]),
+				getter: () => Settings.Background,
+				setter: value => Settings.Background = value
+			).SetValueFormatter(
+				value => Localizations.Localize(["settings", "background", "value", value.ToString()])
+			).SetValueWidth(
+				_ => 100
+			),
+			modSettingsApi.MakeCheckbox(
 				() => Localizations.Localize(["settings", "screenFilter", "title"]),
 				() => Settings.ScreenFilter,
 				(_, _, value) => Settings.ScreenFilter = value
 			),
 			
-			ModSettingsApi.MakeCheckbox(
+			modSettingsApi.MakeCheckbox(
 				() => Localizations.Localize(["settings", "exportCards", "title"]),
 				() => Settings.CardsScale is not null,
 				(_, _, value) => Settings.CardsScale = value ? Settings.DEFAULT_SCALE : null 
 			),
-			ModSettingsApi.MakeConditional(
-				ModSettingsApi.MakeNumericStepper(
+			modSettingsApi.MakeConditional(
+				modSettingsApi.MakeNumericStepper(
 					() => Localizations.Localize(["settings", "scaleSubsetting", "title"]),
 					() => Settings.CardsScale ?? 0,
 					value => Settings.CardsScale = value,
@@ -102,13 +110,13 @@ internal sealed partial class ModEntry : SimpleMod
 				() => Settings.CardsScale is not null
 			),
 			
-			ModSettingsApi.MakeCheckbox(
+			modSettingsApi.MakeCheckbox(
 				() => Localizations.Localize(["settings", "exportCardTooltips", "title"]),
 				() => Settings.CardTooltipsScale is not null,
 				(_, _, value) => Settings.CardTooltipsScale = value ? Settings.DEFAULT_SCALE : null 
 			),
-			ModSettingsApi.MakeConditional(
-				ModSettingsApi.MakeNumericStepper(
+			modSettingsApi.MakeConditional(
+				modSettingsApi.MakeNumericStepper(
 					() => Localizations.Localize(["settings", "scaleSubsetting", "title"]),
 					() => Settings.CardTooltipsScale ?? 0,
 					value => Settings.CardTooltipsScale = value,
@@ -117,13 +125,13 @@ internal sealed partial class ModEntry : SimpleMod
 				() => Settings.CardTooltipsScale is not null
 			),
 			
-			ModSettingsApi.MakeCheckbox(
+			modSettingsApi.MakeCheckbox(
 				() => Localizations.Localize(["settings", "exportCardUpgrades", "title"]),
 				() => Settings.CardUpgradesScale is not null,
 				(_, _, value) => Settings.CardUpgradesScale = value ? Settings.DEFAULT_SCALE : null 
 			),
-			ModSettingsApi.MakeConditional(
-				ModSettingsApi.MakeNumericStepper(
+			modSettingsApi.MakeConditional(
+				modSettingsApi.MakeNumericStepper(
 					() => Localizations.Localize(["settings", "scaleSubsetting", "title"]),
 					() => Settings.CardUpgradesScale ?? 0,
 					value => Settings.CardUpgradesScale = value,
@@ -132,13 +140,13 @@ internal sealed partial class ModEntry : SimpleMod
 				() => Settings.CardUpgradesScale is not null
 			),
 			
-			ModSettingsApi.MakeCheckbox(
+			modSettingsApi.MakeCheckbox(
 				() => Localizations.Localize(["settings", "exportArtifacts", "title"]),
 				() => Settings.ArtifactsScale is not null,
 				(_, _, value) => Settings.ArtifactsScale = value ? Settings.DEFAULT_SCALE : null 
 			),
-			ModSettingsApi.MakeConditional(
-				ModSettingsApi.MakeNumericStepper(
+			modSettingsApi.MakeConditional(
+				modSettingsApi.MakeNumericStepper(
 					() => Localizations.Localize(["settings", "scaleSubsetting", "title"]),
 					() => Settings.ArtifactsScale ?? 0,
 					value => Settings.ArtifactsScale = value,
@@ -147,13 +155,13 @@ internal sealed partial class ModEntry : SimpleMod
 				() => Settings.ArtifactsScale is not null
 			),
 			
-			ModSettingsApi.MakeCheckbox(
+			modSettingsApi.MakeCheckbox(
 				() => Localizations.Localize(["settings", "exportShips", "title"]),
 				() => Settings.ShipsScale is not null,
 				(_, _, value) => Settings.ShipsScale = value ? Settings.DEFAULT_SCALE : null 
 			),
-			ModSettingsApi.MakeConditional(
-				ModSettingsApi.MakeNumericStepper(
+			modSettingsApi.MakeConditional(
+				modSettingsApi.MakeNumericStepper(
 					() => Localizations.Localize(["settings", "scaleSubsetting", "title"]),
 					() => Settings.ShipsScale ?? 0,
 					value => Settings.ShipsScale = value,
@@ -162,13 +170,13 @@ internal sealed partial class ModEntry : SimpleMod
 				() => Settings.ShipsScale is not null
 			),
 			
-			ModSettingsApi.MakeCheckbox(
+			modSettingsApi.MakeCheckbox(
 				() => Localizations.Localize(["settings", "exportShipDescriptions", "title"]),
 				() => Settings.ShipDescriptionsScale is not null,
 				(_, _, value) => Settings.ShipDescriptionsScale = value ? Settings.DEFAULT_SCALE : null 
 			),
-			ModSettingsApi.MakeConditional(
-				ModSettingsApi.MakeNumericStepper(
+			modSettingsApi.MakeConditional(
+				modSettingsApi.MakeNumericStepper(
 					() => Localizations.Localize(["settings", "scaleSubsetting", "title"]),
 					() => Settings.ShipDescriptionsScale ?? 0,
 					value => Settings.ShipDescriptionsScale = value,
@@ -177,14 +185,14 @@ internal sealed partial class ModEntry : SimpleMod
 				() => Settings.ShipDescriptionsScale is not null
 			),
 			
-			ModSettingsApi.MakeButton(
+			modSettingsApi.MakeButton(
 				() => Localizations.Localize(["settings", "filterToMods", "title"]),
-				(g, route) => route.OpenSubroute(g, ModSettingsApi.MakeModSettingsRoute(ModSettingsApi.MakeList([
-					ModSettingsApi.MakeHeader(
+				(g, route) => route.OpenSubroute(g, modSettingsApi.MakeModSettingsRoute(modSettingsApi.MakeList([
+					modSettingsApi.MakeHeader(
 						() => package.Manifest.DisplayName ?? package.Manifest.UniqueName,
 						() => Localizations.Localize(["settings", "filterToMods", "title"])
 					),
-					ModSettingsApi.MakeList(
+					modSettingsApi.MakeList(
 						helper.ModRegistry.LoadedMods.Values
 							.Where(mod =>
 							{
@@ -193,7 +201,7 @@ internal sealed partial class ModEntry : SimpleMod
 							})
 							.OrderBy(mod => mod.DisplayName ?? mod.UniqueName)
 							.Prepend(helper.ModRegistry.VanillaModManifest)
-							.Select(IModSettingsApi.IModSetting (mod) => ModSettingsApi.MakeCheckbox(
+							.Select(IModSettingsApi.IModSetting (mod) => modSettingsApi.MakeCheckbox(
 								() => mod.DisplayName ?? mod.UniqueName,
 								() => Settings.FilterToMods.Contains(mod.UniqueName),
 								(_, _, value) =>
@@ -206,7 +214,7 @@ internal sealed partial class ModEntry : SimpleMod
 							).SetTitleFont(() => DB.pinch).SetHeight(17))
 							.ToList()
 					),
-					ModSettingsApi.MakeBackButton()
+					modSettingsApi.MakeBackButton()
 				])))
 			).SetValueText(() =>
 			{
@@ -220,7 +228,7 @@ internal sealed partial class ModEntry : SimpleMod
 				}
 				return Localizations.Localize(["settings", "filterToMods", "count"], new { Count = Settings.FilterToMods.Count });
 			}).SetValueTextFont(() => DB.pinch),
-			ModSettingsApi.MakeCheckbox(
+			modSettingsApi.MakeCheckbox(
 				() => Localizations.Localize(["settings", "filterToRun", "title"]),
 				() => Settings.FilterToRun,
 				(_, _, value) => Settings.FilterToRun = value
@@ -293,6 +301,7 @@ internal sealed partial class ModEntry : SimpleMod
 		
 		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
 		var screenFilter = Settings.ScreenFilter;
+		var background = Settings.Background;
 
 		var isOutsideRun = g.state.IsOutsideRun();
 		var uniqueNameCounts = new Dictionary<DeckAndString, int>();
@@ -373,8 +382,8 @@ internal sealed partial class ModEntry : SimpleMod
 							: $"{fileSafeName}.png"
 					);
 
-				QueueTask(g => CardBaseExportTask(g, cardsScale, screenFilter, cardAtUpgrade, Path.Combine(cardDeckExportPath, imagePath)));
-				QueueTask(g => CardTooltipExportTask(g, cardTooltipsScale, screenFilter, cardAtUpgrade, withTheCard: true, Path.Combine(tooltipDeckExportPath, imagePath)));
+				QueueTask(g => CardBaseExportTask(g, cardsScale, screenFilter, background, cardAtUpgrade, Path.Combine(cardDeckExportPath, imagePath)));
+				QueueTask(g => CardTooltipExportTask(g, cardTooltipsScale, screenFilter, background, cardAtUpgrade, withTheCard: true, Path.Combine(tooltipDeckExportPath, imagePath)));
 			}
 
 			{
@@ -389,7 +398,7 @@ internal sealed partial class ModEntry : SimpleMod
 							: $"{fileSafeName}.png"
 					);
 				
-				QueueTask(g => CardUpgradesExportTask(g, cardUpgradesScale, screenFilter, card, Path.Combine(upgradesExportPath, imagePath)));
+				QueueTask(g => CardUpgradesExportTask(g, cardUpgradesScale, screenFilter, background, card, Path.Combine(upgradesExportPath, imagePath)));
 			}
 		}
 	}
@@ -426,8 +435,8 @@ internal sealed partial class ModEntry : SimpleMod
 			if (Settings.FilterToMods.Count != 0 && !Settings.FilterToMods.Contains(entry.ModOwner.UniqueName))
 				continue;
 			
-			QueueShipExportTask(shipsScale, Settings.ScreenFilter, entry);
-			QueueShipDescriptionExportTask(shipDescriptionsScale, Settings.ScreenFilter, entry);
+			QueueShipExportTask(shipsScale, Settings.ScreenFilter, Settings.Background, entry);
+			QueueShipDescriptionExportTask(shipDescriptionsScale, Settings.ScreenFilter, Settings.Background, entry);
 		}
 	}
 
@@ -438,6 +447,7 @@ internal sealed partial class ModEntry : SimpleMod
 		
 		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
 		var screenFilter = Settings.ScreenFilter;
+		var background = Settings.Background;
 
 		var isOutsideRun = g.state.IsOutsideRun();
 		var artifacts = DB.artifacts.Keys
@@ -492,11 +502,11 @@ internal sealed partial class ModEntry : SimpleMod
 				e.Configuration.Meta.pools.Contains(ArtifactPool.DailyOnly) ? dailyExportPath : deckExportPath,
 				tooltipImagePath
 			);
-			QueueTask(g => ArtifactExportTask(g, scale, screenFilter, artifact, finalPath));
+			QueueTask(g => ArtifactExportTask(g, scale, screenFilter, background, artifact, finalPath));
 		}
 	}
 
-	private void QueueShipExportTask(int scale, bool withScreenFilter, IShipEntry entry)
+	private void QueueShipExportTask(int scale, bool withScreenFilter, ExportBackground background, IShipEntry entry)
 	{
 		if (scale <= 0)
 			return;
@@ -507,10 +517,10 @@ internal sealed partial class ModEntry : SimpleMod
 		
 		var fileSafeName = MakeFileSafe(entry.Configuration.Name?.Invoke(DB.currentLocale.locale) ?? entry.UniqueName);
 		var imagePath = Path.Combine(exportableDataPath, $"{fileSafeName}.png");
-		QueueTask(g => ShipExportTask(g, scale, withScreenFilter, entry.Configuration.Ship.ship, imagePath));
+		QueueTask(g => ShipExportTask(g, scale, withScreenFilter, background, entry.Configuration.Ship.ship, imagePath));
 	}
 
-	private void QueueShipDescriptionExportTask(int scale, bool withScreenFilter, IShipEntry entry)
+	private void QueueShipDescriptionExportTask(int scale, bool withScreenFilter, ExportBackground background, IShipEntry entry)
 	{
 		if (scale <= 0)
 			return;
@@ -521,67 +531,67 @@ internal sealed partial class ModEntry : SimpleMod
 		
 		var fileSafeName = MakeFileSafe(entry.Configuration.Name?.Invoke(DB.currentLocale.locale) ?? entry.UniqueName);
 		var imagePath = Path.Combine(exportableDataPath, $"{fileSafeName}.png");
-		QueueTask(g => ShipDescriptionExportTask(g, scale, withScreenFilter, entry.Configuration.Ship.ship, imagePath));
+		QueueTask(g => ShipDescriptionExportTask(g, scale, withScreenFilter, background, entry.Configuration.Ship.ship, imagePath));
 	}
 
-	private void CardBaseExportTask(G g, int scale, bool withScreenFilter, Card card, string path)
+	private void CardBaseExportTask(G g, int scale, bool withScreenFilter, ExportBackground background, Card card, string path)
 	{
 		if (scale <= 0)
 			return;
 
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
 		using var stream = new FileStream(path, FileMode.Create);
-		CardRenderer.Render(g, scale, withScreenFilter, card, stream);
+		CardRenderer.Render(g, scale, withScreenFilter, background, card, stream);
 	}
 
-	private void CardTooltipExportTask(G g, int scale, bool withScreenFilter, Card card, bool withTheCard, string path)
+	private void CardTooltipExportTask(G g, int scale, bool withScreenFilter, ExportBackground background, Card card, bool withTheCard, string path)
 	{
 		if (scale <= 0)
 			return;
 
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
 		using var stream = new FileStream(path, FileMode.Create);
-		CardTooltipRenderer.Render(g, scale, withScreenFilter, card, withTheCard, stream);
+		CardTooltipRenderer.Render(g, scale, withScreenFilter, background, card, withTheCard, stream);
 	}
 
-	private void CardUpgradesExportTask(G g, int scale, bool withScreenFilter, Card card, string path)
+	private void CardUpgradesExportTask(G g, int scale, bool withScreenFilter, ExportBackground background, Card card, string path)
 	{
 		if (scale <= 0)
 			return;
 
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
 		using var stream = new FileStream(path, FileMode.Create);
-		CardUpgradesRenderer.Render(g, scale, withScreenFilter, card, stream);
+		CardUpgradesRenderer.Render(g, scale, withScreenFilter, background, card, stream);
 	}
 
-	private void ArtifactExportTask(G g, int scale, bool withScreenFilter, Artifact artifact, string path)
-	{
-		if (scale <= 0)
-			return;
-		
-		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
-		using var stream = new FileStream(path, FileMode.Create);
-		ArtifactTooltipRenderer.Render(g, scale, withScreenFilter, artifact, stream);
-	}
-
-	private void ShipExportTask(G g, int scale, bool withScreenFilter, Ship ship, string path)
+	private void ArtifactExportTask(G g, int scale, bool withScreenFilter, ExportBackground background, Artifact artifact, string path)
 	{
 		if (scale <= 0)
 			return;
 		
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
 		using var stream = new FileStream(path, FileMode.Create);
-		ShipRenderer.Render(g, scale, withScreenFilter, ship, stream);
+		ArtifactTooltipRenderer.Render(g, scale, withScreenFilter, background, artifact, stream);
 	}
 
-	private void ShipDescriptionExportTask(G g, int scale, bool withScreenFilter, Ship ship, string path)
+	private void ShipExportTask(G g, int scale, bool withScreenFilter, ExportBackground background, Ship ship, string path)
 	{
 		if (scale <= 0)
 			return;
 		
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
 		using var stream = new FileStream(path, FileMode.Create);
-		ShipDescriptionRenderer.Render(g, scale, withScreenFilter, ship, stream);
+		ShipRenderer.Render(g, scale, withScreenFilter, background, ship, stream);
+	}
+
+	private void ShipDescriptionExportTask(G g, int scale, bool withScreenFilter, ExportBackground background, Ship ship, string path)
+	{
+		if (scale <= 0)
+			return;
+		
+		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
+		using var stream = new FileStream(path, FileMode.Create);
+		ShipDescriptionRenderer.Render(g, scale, withScreenFilter, background, ship, stream);
 	}
 
 	[GeneratedRegex("\\w+$")]

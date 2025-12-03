@@ -11,7 +11,7 @@ internal sealed class ArtifactTooltipRenderer
 {
 	private RenderTarget2D? CurrentRenderTarget;
 
-	public void Render(G g, int scale, bool withScreenFilter, Artifact artifact, Stream stream)
+	public void Render(G g, int scale, bool withScreenFilter, ExportBackground background, Artifact artifact, Stream stream)
 	{
 		var oldPixScale = g.mg.PIX_SCALE;
 		var oldCameraMatrix = g.mg.cameraMatrix;
@@ -62,6 +62,16 @@ internal sealed class ArtifactTooltipRenderer
 			Draw.StartAutoBatchFrame();
 			try
 			{
+				switch (background)
+				{
+					case ExportBackground.Black:
+						Draw.Fill(Colors.black);
+						break;
+					case ExportBackground.White:
+						Draw.Fill(Colors.white);
+						break;
+				}
+				
 				if (artifact.GetMeta().pools.Contains(ArtifactPool.Boss))
 					Draw.Sprite(ModEntry.Instance.BossArtifactGlowSprite.Sprite, 6 + 11 / 2.0, 6 + 11 / 2.0, originRel: new Vec(0.5, 0.5), scale: new Vec(23, 23) / 512.0, color: new Color(0.0, 0.5, 1.0).gain(0.3));
 

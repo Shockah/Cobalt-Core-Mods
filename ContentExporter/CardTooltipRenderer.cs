@@ -11,7 +11,7 @@ internal sealed class CardTooltipRenderer
 {
 	private RenderTarget2D? CurrentRenderTarget;
 
-	public void Render(G g, int scale, bool withScreenFilter, Card card, bool withTheCard, Stream stream)
+	public void Render(G g, int scale, bool withScreenFilter, ExportBackground background, Card card, bool withTheCard, Stream stream)
 	{
 		var oldPixScale = g.mg.PIX_SCALE;
 		var oldCameraMatrix = g.mg.cameraMatrix;
@@ -62,6 +62,16 @@ internal sealed class CardTooltipRenderer
 			Draw.StartAutoBatchFrame();
 			try
 			{
+				switch (background)
+				{
+					case ExportBackground.Black:
+						Draw.Fill(Colors.black);
+						break;
+					case ExportBackground.White:
+						Draw.Fill(Colors.white);
+						break;
+				}
+				
 				Tooltip.RenderMultiple(g, tooltips.pos, Tooltips._tooltipScratch);
 			}
 			catch

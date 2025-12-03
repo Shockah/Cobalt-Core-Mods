@@ -12,7 +12,7 @@ internal sealed class CardRenderer
 
 	private RenderTarget2D? CurrentRenderTarget;
 
-	public void Render(G g, int scale, bool withScreenFilter, Card card, Stream stream)
+	public void Render(G g, int scale, bool withScreenFilter, ExportBackground background, Card card, Stream stream)
 	{
 		var oldPixScale = g.mg.PIX_SCALE;
 		var oldCameraMatrix = g.mg.cameraMatrix;
@@ -37,6 +37,16 @@ internal sealed class CardRenderer
 			Draw.StartAutoBatchFrame();
 			try
 			{
+				switch (background)
+				{
+					case ExportBackground.Black:
+						Draw.Fill(Colors.black);
+						break;
+					case ExportBackground.White:
+						Draw.Fill(Colors.white);
+						break;
+				}
+				
 				card.Render(g, posOverride: new((imageSize.x - BaseCardSize.x) / 2 + 1, (imageSize.y - BaseCardSize.y) / 2 + 1), fakeState: DB.fakeState, ignoreAnim: true, ignoreHover: true);
 			}
 			catch

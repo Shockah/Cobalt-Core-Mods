@@ -8,6 +8,14 @@
 		"screenFilter": {
 			"title": "Include the game's blue filter"
 		},
+		"background": {
+			"title": "Background",
+			"value": {
+				"Transparent": "Transparent",
+				"Black": "Black",
+				"White": "White"
+			}
+		},
 		"exportCards": {
 			"title": "Export cards"
 		},

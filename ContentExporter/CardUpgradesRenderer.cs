@@ -12,7 +12,7 @@ internal sealed class CardUpgradesRenderer
 {
 	private RenderTarget2D? RenderTarget;
 
-	public void Render(G g, int scale, bool withScreenFilter, Card card, Stream stream)
+	public void Render(G g, int scale, bool withScreenFilter, ExportBackground background, Card card, Stream stream)
 	{
 		var oldPixScale = g.mg.PIX_SCALE;
 		var oldCameraMatrix = g.mg.cameraMatrix;
@@ -78,7 +78,12 @@ internal sealed class CardUpgradesRenderer
 
 			g.mg.GraphicsDevice.SetRenderTargets(oldRenderTargets);
 
-			var croppedTexture = TextureUtils.CropToContent(RenderTarget);
+			var croppedTexture = TextureUtils.CropToContent(RenderTarget, background switch
+			{
+				ExportBackground.Black => withScreenFilter ? new MGColor(0xFF260306) : MGColor.Black,
+				ExportBackground.White => MGColor.White,
+				_ => null
+			});
 			croppedTexture.SaveAsPng(stream, croppedTexture.Width, croppedTexture.Height);
 		}
 		finally
