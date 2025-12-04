@@ -36,6 +36,9 @@
 		}
 	},
 	"card": {
+		"Ambush": {
+			"name": "Ambush"
+		},
 		"Attrition": {
 			"name": "Attrition"
 		},
@@ -69,8 +72,8 @@
 		"MissileSalvo": {
 			"name": "Missile Salvo"
 		},
-		"RulesLawyering": {
-			"name": "Rules Lawyering"
+		"Poke": {
+			"name": "Poke"
 		},
 		"SendRegards": {
 			"name": "Send Regards"
@@ -87,9 +90,6 @@
 		},
 		"Topple": {
 			"name": "Topple"
-		},
-		"TrapCard": {
-			"name": "Trap Card"
 		},
 		"Turtle": {
 			"name": "Turtle"
