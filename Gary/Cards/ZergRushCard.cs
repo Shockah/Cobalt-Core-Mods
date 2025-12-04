@@ -19,8 +19,8 @@ public sealed class ZergCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Zerg.png"), StableSpr.cards_GoatDrone).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Zerg", "name"]).Localize,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/ZergRush.png"), StableSpr.cards_GoatDrone).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "ZergRush", "name"]).Localize,
 		});
 	}
 
@@ -35,7 +35,7 @@ public sealed class ZergCard : Card, IRegisterable
 				new ASpawn { thing = new AttackDrone { targetPlayer = false }.SetWobbly() }.SetStacked(),
 			],
 			Upgrade.A => [
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.ApmStatus.Status, statusAmount = 1 },
 				new ASpawn { thing = new AttackDrone { targetPlayer = false } },
 				new ASpawn { thing = new AttackDrone { targetPlayer = false } },
 			],

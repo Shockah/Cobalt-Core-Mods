@@ -44,7 +44,7 @@ public sealed class MapControlCard : Card, IRegisterable, IHasCustomCardTraits
 				new AStatus { targetPlayer = true, status = Status.droneShift, statusAmount = 1 },
 			],
 			Upgrade.A => [
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.ApmStatus.Status, statusAmount = 1 },
 				new ASpawn { thing = new Asteroid() },
 				new ADroneMove { dir = 1 },
 			],

@@ -27,7 +27,7 @@ public sealed class ToppleCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> upgrade switch
 		{
-			Upgrade.A => new() { cost = 0, floppable = true, retain = true },
+			Upgrade.A => new() { cost = 0, floppable = true, retain = true, art = flipped ? StableSpr.cards_Adaptability_Bottom : StableSpr.cards_Adaptability_Top },
 			_ => new() { cost = 0 },
 		};
 
@@ -40,7 +40,7 @@ public sealed class ToppleCard : Card, IRegisterable
 			Upgrade.A => [
 				new ASpawn { thing = new Asteroid().SetWobbly(), disabled = flipped }.SetStacked(),
 				new ADummyAction(),
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1, disabled = !flipped },
+				new AStatus { targetPlayer = true, status = Stack.ApmStatus.Status, statusAmount = 1, disabled = !flipped },
 			],
 			_ => [
 				new ASpawn { thing = new Asteroid().SetWobbly() }.SetStacked(),

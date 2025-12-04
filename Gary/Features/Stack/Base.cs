@@ -7,10 +7,8 @@ using Shockah.Kokoro;
 
 namespace Shockah.Gary;
 
-internal sealed partial class Stack : IRegisterable, IKokoroApi.IV2.IStatusRenderingApi.IHook
+internal sealed partial class Stack : IRegisterable
 {
-	internal static IStatusEntry JengaStatus { get; private set; } = null!;
-
 	private static ISpriteEntry StackedIcon = null!;
 	private static ISpriteEntry WobblyIcon = null!;
 	private static ISpriteEntry StackedLaunchIcon = null!;
@@ -21,22 +19,11 @@ internal sealed partial class Stack : IRegisterable, IKokoroApi.IV2.IStatusRende
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		JengaStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Jenga", new()
-		{
-			Definition = new()
-			{
-				icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Status/Jenga.png")).Sprite,
-				color = new("FAE4BE"),
-				isGood = true,
-			},
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "Jenga", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "Jenga", "description"]).Localize
-		});
-
 		StackedIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icon/Stacked.png"));
 		WobblyIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icon/Wobbly.png"));
 		StackedLaunchIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Icon/StackedLaunch.png"));
 
+		HandleStatus();
 		HandleLaunch();
 		HandleDestroy();
 		HandleMove();
@@ -49,17 +36,7 @@ internal sealed partial class Stack : IRegisterable, IKokoroApi.IV2.IStatusRende
 		HandleCatch();
 		HandleBubbleField();
 		HandleRadioControl();
-
-		var instance = new Stack();
-		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(instance);
 	}
-
-	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)
-		=> args.Status == JengaStatus.Status ? [
-			.. args.Tooltips,
-			MakeStackedMidrowAttributeTooltip(),
-			MakeWobblyMidrowAttributeTooltip(),
-		] : args.Tooltips;
 
 	internal static Tooltip MakeStackedMidrowAttributeTooltip(int? count = null)
 	{

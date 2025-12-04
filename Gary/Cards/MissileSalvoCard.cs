@@ -51,7 +51,7 @@ public sealed class MissileSalvoCard : Card, IRegisterable, IHasCustomCardTraits
 				new ASpawn { thing = new Missile { missileType = MissileType.normal, targetPlayer = false }.SetWobbly() }.SetStacked(),
 			],
 			Upgrade.A => [
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.ApmStatus.Status, statusAmount = 1 },
 				ModEntry.Instance.KokoroApi.Sequence.MakeAction(
 					uuid, IKokoroApi.IV2.ISequenceApi.Interval.Turn, 1, 3,
 					new ASpawn { thing = new Missile { missileType = MissileType.normal, targetPlayer = false } }
