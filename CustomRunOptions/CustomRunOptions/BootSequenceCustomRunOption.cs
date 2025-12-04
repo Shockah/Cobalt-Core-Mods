@@ -9,8 +9,10 @@ using Nickel.ModSettings;
 
 namespace Shockah.CustomRunOptions;
 
-internal sealed class BootSequenceCustomRunOption : ICustomRunOption
+internal sealed class BootSequenceCustomRunOption : ICustomRunOptionsApi.ICustomRunOption, IRegisterable
 {
+	public const double PRIORITY = 50;
+	
 	public interface IBootChoice
 	{
 		string Key { get; }
@@ -91,11 +93,13 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOption
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Shout_GetChoices_Prefix)),
 			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Shout_GetChoices_Finalizer))
 		);
+		
+		ModEntry.Instance.CustomRunOptions.Add(new BootSequenceCustomRunOption(), PRIORITY);
 	}
 
-	public IReadOnlyList<ICustomRunOption.INewRunOptionsElement> GetNewRunOptionsElements(G g, RunConfig config)
+	public IReadOnlyList<ICustomRunOptionsApi.INewRunOptionsElement> GetNewRunOptionsElements(G g, RunConfig config)
 	{
-		var elements = new List<ICustomRunOption.INewRunOptionsElement>();
+		var elements = new List<ICustomRunOptionsApi.INewRunOptionsElement>();
 		
 		if (config.GetEnforcedBootSequenceUpside() is not null)
 			elements.Add(new IconNewRunOptionsElement(UpsideEnforceIcon.Sprite));
@@ -110,11 +114,12 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOption
 		return elements;
 	}
 
-	public IModSettingsApi.IModSetting MakeCustomRunSettings(IPluginPackage<IModManifest> package, IModSettingsApi api, RunConfig config)
-		=> api.MakeList([
+	public IModSettingsApi.IModSetting MakeCustomRunSettings(NewRunOptions baseRoute, G g, RunConfig config)
+	{
+		var api = ModEntry.Instance.ModSettingsApi;
+		return api.MakeList([
 			api.MakePadding(
-				api.MakeText(
-					() => $"<c=white>{ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "title", "upside"])}</c>"
+				api.MakeText(() => $"<c=white>{ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "title", "upside"])}</c>"
 				).SetFont(DB.thicket),
 				8,
 				4
@@ -141,10 +146,9 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOption
 					]),
 					api.MakeBackButton()
 				])))
-			).SetValueText(
-				() => config.GetEnforcedBootSequenceUpside() is { } key
-					? (key == "" ? ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "none"]) : Loc.T(key))
-					: $"<c={Colors.textMain.gain(0.5)}>{ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "notSelected"])}</c>"
+			).SetValueText(() => config.GetEnforcedBootSequenceUpside() is { } key
+				? (key == "" ? ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "none"]) : Loc.T(key))
+				: $"<c={Colors.textMain.gain(0.5)}>{ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "notSelected"])}</c>"
 			).SetHeight(12).SetTitleFont(() => DB.pinch).SetValueTextFont(() => DB.pinch),
 			api.MakeButton(
 				() => ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "blacklist"]),
@@ -177,10 +181,9 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOption
 				var count = config.GetBlacklistedBootSequenceUpsides().Count;
 				return count == 0 ? $"<c={Colors.textMain.gain(0.5)}>{ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "notSelected"])}</c>" : count.ToString();
 			}).SetHeight(12).SetTitleFont(() => DB.pinch).SetValueTextFont(() => DB.pinch),
-			
+
 			api.MakePadding(
-				api.MakeText(
-					() => $"<c=white>{ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "title", "downside"])}</c>"
+				api.MakeText(() => $"<c=white>{ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "title", "downside"])}</c>"
 				).SetFont(DB.thicket),
 				8,
 				4
@@ -207,10 +210,9 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOption
 					]),
 					api.MakeBackButton()
 				])))
-			).SetValueText(
-				() => config.GetEnforcedBootSequenceDownside() is { } key
-					? (key == "" ? ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "none"]) : Loc.T(key))
-					: $"<c={Colors.textMain.gain(0.5)}>{ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "notSelected"])}</c>"
+			).SetValueText(() => config.GetEnforcedBootSequenceDownside() is { } key
+				? (key == "" ? ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "none"]) : Loc.T(key))
+				: $"<c={Colors.textMain.gain(0.5)}>{ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "notSelected"])}</c>"
 			).SetHeight(12).SetTitleFont(() => DB.pinch).SetValueTextFont(() => DB.pinch),
 			api.MakeButton(
 				() => ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "blacklist"]),
@@ -244,6 +246,7 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOption
 				return count == 0 ? $"<c={Colors.textMain.gain(0.5)}>{ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "notSelected"])}</c>" : count.ToString();
 			}).SetHeight(12).SetTitleFont(() => DB.pinch).SetValueTextFont(() => DB.pinch)
 		]);
+	}
 
 	private static void State_PopulateRun_Prefix()
 		=> IsMidPopulateRun = true;

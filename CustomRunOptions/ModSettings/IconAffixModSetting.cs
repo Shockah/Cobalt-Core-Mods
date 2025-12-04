@@ -5,16 +5,52 @@ using Nickel.ModSettings;
 
 namespace Shockah.CustomRunOptions;
 
-internal sealed class IconAffixModSetting : IModSettingsApi.IModSetting, OnMouseDown, OnMouseDownRight, OnInputPhase
+internal sealed class IconAffixModSetting : ICustomRunOptionsApi.IIconAffixModSetting, OnMouseDown, OnMouseDownRight, OnInputPhase
 {
-	public struct IconConfiguration()
+	public sealed class IconConfiguration : ICustomRunOptionsApi.IIconAffixModSetting.IIconSetting
 	{
-		public Spr Icon = StableSpr.icons_ace;
-		public int? IconWidth = null;
-		public int? IconHeight = null;
-		public int BoundsSpacing = 10;
-		public int ContentSpacing = -6;
-		public double VerticalAlignment = 0.5;
+		public Spr Icon { get; set; } = StableSpr.icons_ace;
+		public int? IconWidth { get; set; }
+		public int? IconHeight { get; set; }
+		public int BoundsSpacing { get; set; } = 10;
+		public int ContentSpacing { get; set; } = -6;
+		public double VerticalAlignment { get; set; } = 0.5;
+		
+		public ICustomRunOptionsApi.IIconAffixModSetting.IIconSetting SetIcon(Spr value)
+		{
+			this.Icon = value;
+			return this;
+		}
+
+		public ICustomRunOptionsApi.IIconAffixModSetting.IIconSetting SetIconWidth(int? value)
+		{
+			this.IconWidth = value;
+			return this;
+		}
+
+		public ICustomRunOptionsApi.IIconAffixModSetting.IIconSetting SetIconHeight(int? value)
+		{
+			this.IconHeight = value;
+			return this;
+		}
+
+		public ICustomRunOptionsApi.IIconAffixModSetting.IIconSetting SetBoundsSpacing(int value)
+		{
+			this.BoundsSpacing = value;
+			return this;
+		}
+
+		public ICustomRunOptionsApi.IIconAffixModSetting.IIconSetting SetContentSpacing(int value)
+		{
+			this.ContentSpacing = value;
+			return this;
+		}
+
+		public ICustomRunOptionsApi.IIconAffixModSetting.IIconSetting SetVerticalAlignment(double value)
+		{
+			this.VerticalAlignment = value;
+			return this;
+		}
 	}
 	
 	public UIKey Key { get; private set; }
@@ -22,10 +58,10 @@ internal sealed class IconAffixModSetting : IModSettingsApi.IModSetting, OnMouse
 	public event IModSettingsApi.OnMenuOpen? OnMenuOpen;
 	public event IModSettingsApi.OnMenuClose? OnMenuClose;
 
-	public required IModSettingsApi.IModSetting Setting;
-	public IconConfiguration? LeftIcon;
-	public IconConfiguration? RightIcon;
-	public Func<IEnumerable<Tooltip>>? Tooltips;
+	public required IModSettingsApi.IModSetting Setting { get; set; }
+	public ICustomRunOptionsApi.IIconAffixModSetting.IIconSetting? LeftIcon { get; set; }
+	public ICustomRunOptionsApi.IIconAffixModSetting.IIconSetting? RightIcon { get; set; }
+	public Func<IEnumerable<Tooltip>>? Tooltips { get; set; }
 
 	public IconAffixModSetting()
 	{
@@ -188,5 +224,29 @@ internal sealed class IconAffixModSetting : IModSettingsApi.IModSetting, OnMouse
 			g.hoverKey = oldHoverKey;
 			Input.currentGpKey = oldCurrentKey;
 		}
+	}
+	
+	public ICustomRunOptionsApi.IIconAffixModSetting SetSetting(IModSettingsApi.IModSetting value)
+	{
+		this.Setting = value;
+		return this;
+	}
+
+	public ICustomRunOptionsApi.IIconAffixModSetting SetLeftIcon(ICustomRunOptionsApi.IIconAffixModSetting.IIconSetting? value)
+	{
+		this.LeftIcon = value;
+		return this;
+	}
+
+	public ICustomRunOptionsApi.IIconAffixModSetting SetRightIcon(ICustomRunOptionsApi.IIconAffixModSetting.IIconSetting? value)
+	{
+		this.RightIcon = value;
+		return this;
+	}
+
+	public ICustomRunOptionsApi.IIconAffixModSetting SetTooltips(Func<IEnumerable<Tooltip>>? value)
+	{
+		this.Tooltips = value;
+		return this;
 	}
 }

@@ -7,8 +7,10 @@ using Nickel.ModSettings;
 
 namespace Shockah.CustomRunOptions;
 
-internal sealed class SeedCustomRunOption : ICustomRunOption
+internal sealed class SeedCustomRunOption : ICustomRunOptionsApi.ICustomRunOption, IRegisterable
 {
+	public const double PRIORITY = 100;
+	
 	private static ISpriteEntry Icon = null!;
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
@@ -19,12 +21,14 @@ internal sealed class SeedCustomRunOption : ICustomRunOption
 			original: AccessTools.DeclaredMethod(typeof(NewRunOptions), nameof(NewRunOptions.StartRun)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(NewRunOptions_StartRun_Prefix))
 		);
+		
+		ModEntry.Instance.CustomRunOptions.Add(new SeedCustomRunOption(), PRIORITY);
 	}
 
-	public IReadOnlyList<ICustomRunOption.INewRunOptionsElement> GetNewRunOptionsElements(G g, RunConfig config)
+	public IReadOnlyList<ICustomRunOptionsApi.INewRunOptionsElement> GetNewRunOptionsElements(G g, RunConfig config)
 		=> config.GetSeed() is null ? [] : [new IconNewRunOptionsElement(Icon.Sprite)];
 
-	public IModSettingsApi.IModSetting MakeCustomRunSettings(IPluginPackage<IModManifest> package, IModSettingsApi api, RunConfig config)
+	public IModSettingsApi.IModSetting MakeCustomRunSettings(NewRunOptions baseRoute, G g, RunConfig config)
 		=> new IconAffixModSetting
 		{
 			Setting = new PasteModSetting
@@ -33,7 +37,7 @@ internal sealed class SeedCustomRunOption : ICustomRunOption
 				ValueGetter = () => config.GetSeed()?.ToString(),
 				ValueSetter = value => config.SetSeed(uint.TryParse(value, out var seed) ? seed : null)
 			},
-			LeftIcon = new() { Icon = Icon.Sprite },
+			LeftIcon = new IconAffixModSetting.IconConfiguration { Icon = Icon.Sprite },
 		};
 
 	private static void NewRunOptions_StartRun_Prefix(G g, ref uint? seed)

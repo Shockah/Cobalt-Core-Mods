@@ -9,8 +9,10 @@ using Nickel.ModSettings;
 
 namespace Shockah.CustomRunOptions;
 
-internal sealed class DailyModifiersCustomRunOption : ICustomRunOption
+internal sealed class DailyModifiersCustomRunOption : ICustomRunOptionsApi.ICustomRunOption, IRegisterable
 {
+	public const double PRIORITY = 0;
+	
 	private static readonly Lazy<List<Artifact>> DailyArtifacts = new(
 		() => DB.artifacts
 			.Where(kvp => kvp.Value != typeof(DailyJustOneCharacter) && kvp.Value != typeof(DailyModeTracker))
@@ -63,16 +65,20 @@ internal sealed class DailyModifiersCustomRunOption : ICustomRunOption
 			original: AccessTools.DeclaredMethod(typeof(State), nameof(State.PopulateRun)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(State_PopulateRun_Postfix))
 		);
+		
+		ModEntry.Instance.CustomRunOptions.Add(new DailyModifiersCustomRunOption(), PRIORITY);
 	}
 
-	public IReadOnlyList<ICustomRunOption.INewRunOptionsElement> GetNewRunOptionsElements(G g, RunConfig config)
+	public IReadOnlyList<ICustomRunOptionsApi.INewRunOptionsElement> GetNewRunOptionsElements(G g, RunConfig config)
 		=> UngroupedDailyArtifacts.Value
 			.Where(a => config.IsDailyModifierSelected(a.Key()))
 			.Select(a => new ArtifactNewRunOptionsElement(a))
 			.ToList();
 
-	public IModSettingsApi.IModSetting MakeCustomRunSettings(IPluginPackage<IModManifest> package, IModSettingsApi api, RunConfig config)
-		=> api.MakeList([
+	public IModSettingsApi.IModSetting MakeCustomRunSettings(NewRunOptions baseRoute, G g, RunConfig config)
+	{
+		var api = ModEntry.Instance.ModSettingsApi;
+		return api.MakeList([
 			api.MakePadding(
 				api.MakeText(
 					() => $"<c=white>{ModEntry.Instance.Localizations.Localize(["options", nameof(DailyModifiersCustomRunOption), "title"])}</c>"
@@ -87,7 +93,7 @@ internal sealed class DailyModifiersCustomRunOption : ICustomRunOption
 					() => config.IsDailyModifierSelected(a.Key()),
 					(_, _, value) => config.SetDailyModifierSelected(a.Key(), value)
 				).SetTooltips(a.GetTooltips),
-				LeftIcon = new() { Icon = a.GetSprite() },
+				LeftIcon = new IconAffixModSetting.IconConfiguration { Icon = a.GetSprite() },
 			}).ToList()),
 			
 			api.MakePadding(
@@ -104,7 +110,7 @@ internal sealed class DailyModifiersCustomRunOption : ICustomRunOption
 					() => config.IsDailyModifierSelected(a.Key()),
 					(_, _, value) => config.SetDailyModifierSelected(a.Key(), value)
 				).SetTooltips(a.GetTooltips),
-				LeftIcon = new() { Icon = a.GetSprite() },
+				LeftIcon = new IconAffixModSetting.IconConfiguration { Icon = a.GetSprite() },
 			}).ToList()),
 			
 			api.MakePadding(
@@ -121,7 +127,7 @@ internal sealed class DailyModifiersCustomRunOption : ICustomRunOption
 					() => config.IsDailyModifierSelected(a.Key()),
 					(_, _, value) => config.SetDailyModifierSelected(a.Key(), value)
 				).SetTooltips(a.GetTooltips),
-				LeftIcon = new() { Icon = a.GetSprite() },
+				LeftIcon = new IconAffixModSetting.IconConfiguration { Icon = a.GetSprite() },
 			}).ToList()),
 			
 			api.MakePadding(
@@ -138,9 +144,10 @@ internal sealed class DailyModifiersCustomRunOption : ICustomRunOption
 					() => config.IsDailyModifierSelected(a.Key()),
 					(_, _, value) => config.SetDailyModifierSelected(a.Key(), value)
 				).SetTooltips(a.GetTooltips),
-				LeftIcon = new() { Icon = a.GetSprite() },
+				LeftIcon = new IconAffixModSetting.IconConfiguration { Icon = a.GetSprite() },
 			}).ToList()),
 		]);
+	}
 
 	private static void State_PopulateRun_Postfix(State __instance)
 	{

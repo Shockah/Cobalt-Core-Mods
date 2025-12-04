@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
@@ -36,9 +35,7 @@ internal sealed class ModEntry : SimpleMod
 		.. CustomRunOptionTypes,
 	];
 
-	internal static readonly IReadOnlyList<ICustomRunOption> CustomRunOptions = CustomRunOptionTypes
-		.Select(t => (ICustomRunOption)Activator.CreateInstance(t)!)
-		.ToList();
+	internal readonly OrderedList<ICustomRunOptionsApi.ICustomRunOption, double> CustomRunOptions = new(ascending: false);
 	
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{

@@ -28,11 +28,11 @@ internal sealed class NewRunOptionsButton : IRegisterable
 		);
 	}
 
-	private static void OpenModSettings(NewRunOptions options, RunConfig config)
+	private static void OpenModSettings(NewRunOptions options, G g, RunConfig config)
 	{
 		var setting = ModEntry.Instance.ModSettingsApi.MakeList([
 			ModEntry.Instance.ModSettingsApi.MakeHeader(() => "Custom Run Options"),
-			.. ModEntry.CustomRunOptions.Select(o => o.MakeCustomRunSettings(ModEntry.Instance.Package, ModEntry.Instance.ModSettingsApi, config)),
+			.. ModEntry.Instance.CustomRunOptions.Select(o => o.MakeCustomRunSettings(options, g, config)),
 			ModEntry.Instance.ModSettingsApi.MakeBackButton(),
 		]);
 		options.subRoute = ModEntry.Instance.ModSettingsApi.MakeModSettingsRoute(setting);
@@ -43,7 +43,7 @@ internal sealed class NewRunOptionsButton : IRegisterable
 
 	private static void NewRunOptions_DifficultyOptions_Prefix(NewRunOptions __instance, G g, RunConfig runConfig)
 	{
-		var elements = ModEntry.CustomRunOptions.SelectMany(o => o.GetNewRunOptionsElements(g, runConfig)).ToList();
+		var elements = ModEntry.Instance.CustomRunOptions.SelectMany(o => o.GetNewRunOptionsElements(g, runConfig)).ToList();
 		var buttonResult = SharedArt.ButtonText(
 			g,
 			new Vec(301, 70),
@@ -52,7 +52,7 @@ internal sealed class NewRunOptionsButton : IRegisterable
 			onMouseDown: new MouseDownHandler(() =>
 			{
 				Audio.Play(Event.Click);
-				OpenModSettings(__instance, runConfig);
+				OpenModSettings(__instance, g, runConfig);
 			})
 		);
 

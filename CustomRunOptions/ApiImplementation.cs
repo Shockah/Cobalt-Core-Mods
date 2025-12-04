@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Nickel;
+using Nickel.ModSettings;
 
 namespace Shockah.CustomRunOptions;
 
@@ -17,6 +18,33 @@ public sealed class ApiImplementation(IModManifest mod) : ICustomRunOptionsApi
 		var key = $"{mod.UniqueName}::{name}";
 		BootSequenceCustomRunOption.DownsideChoices[key] = new BootSequenceCustomRunOption.IBootChoice.Modded(key, title, matchPredicate);
 	}
+
+	public double SeedCustomRunOptionPriority
+		=> SeedCustomRunOption.PRIORITY;
+	
+	public double BootSequenceCustomRunOptionPriority
+		=> BootSequenceCustomRunOption.PRIORITY;
+	
+	public double DailyModifiersCustomRunOptionPriority
+		=> DailyModifiersCustomRunOption.PRIORITY;
+
+	public void RegisterCustomRunOption(ICustomRunOptionsApi.ICustomRunOption option, double priority = 0)
+		=> ModEntry.Instance.CustomRunOptions.Add(option, priority);
+
+	public void UnregisterCustomRunOption(ICustomRunOptionsApi.ICustomRunOption option)
+		=> ModEntry.Instance.CustomRunOptions.Remove(option);
+
+	public ICustomRunOptionsApi.INewRunOptionsElement.IIcon MakeIconNewRunOptionsElement(Spr icon, int? width = null, int? height = null)
+		=> new IconNewRunOptionsElement(icon, width, height);
+
+	public ICustomRunOptionsApi.INewRunOptionsElement.IArtifact MakeArtifactNewRunOptionsElement(Artifact artifact)
+		=> new ArtifactNewRunOptionsElement(artifact);
+
+	public ICustomRunOptionsApi.IIconAffixModSetting MakeIconAffixModSetting(IModSettingsApi.IModSetting setting)
+		=> new IconAffixModSetting { Setting = setting };
+
+	public ICustomRunOptionsApi.IIconAffixModSetting.IIconSetting MakeIconAffixModSettingIconSetting()
+		=> new IconAffixModSetting.IconConfiguration();
 
 	public void RegisterDuoDeck(Deck deck1, Deck deck2, StarterDeck starterDeck)
 		=> PartialCrewRuns.DuoDecks[new(deck1, deck2)] = starterDeck;
