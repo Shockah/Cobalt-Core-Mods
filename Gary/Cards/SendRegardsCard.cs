@@ -37,7 +37,7 @@ public sealed class SendRegardsCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.ApmStatus.Status, statusAmount = 1 },
 				ModEntry.Instance.KokoroApi.Sequence.MakeAction(
 					uuid, IKokoroApi.IV2.ISequenceApi.Interval.Turn, 1, 2,
 					new ASpawn { thing = new Missile { missileType = MissileType.heavy, targetPlayer = false } }
@@ -48,11 +48,11 @@ public sealed class SendRegardsCard : Card, IRegisterable, IHasCustomCardTraits
 				).AsCardAction,
 			],
 			Upgrade.A => [
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.ApmStatus.Status, statusAmount = 1 },
 				new ASpawn { thing = new Missile { missileType = MissileType.heavy, targetPlayer = false } },
 			],
 			_ => [
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.ApmStatus.Status, statusAmount = 1 },
 				new ASpawn { thing = new Missile { missileType = MissileType.normal, targetPlayer = false } },
 			],
 		};

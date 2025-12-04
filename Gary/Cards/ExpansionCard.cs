@@ -7,7 +7,7 @@ using Shockah.Shared;
 
 namespace Shockah.Gary;
 
-public sealed class LeanInCard : Card, IRegisterable, IHasCustomCardTraits
+public sealed class ExpansionCard : Card, IRegisterable, IHasCustomCardTraits
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -20,8 +20,8 @@ public sealed class LeanInCard : Card, IRegisterable, IHasCustomCardTraits
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/LeanIn.png"), StableSpr.cards_ScootRight).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "LeanIn", "name"]).Localize,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Expansion.png"), StableSpr.cards_ScootRight).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Expansion", "name"]).Localize,
 		});
 		
 		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, Upgrade.None, 2);
@@ -55,9 +55,13 @@ public sealed class LeanInCard : Card, IRegisterable, IHasCustomCardTraits
 			Upgrade.B => [
 				new AMove { targetPlayer = true, dir = 1 },
 				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 2 },
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = Stack.ApmStatus.Status, statusAmount = 2 },
 			],
 			Upgrade.A => [
+				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.ApmStatus.Status, statusAmount = 1 },
+			],
+			_ => [
 				ModEntry.Instance.KokoroApi.Sequence.MakeAction(
 					uuid, IKokoroApi.IV2.ISequenceApi.Interval.Turn, 1, 2,
 					new AMove { targetPlayer = true, dir = 1 }
@@ -66,11 +70,7 @@ public sealed class LeanInCard : Card, IRegisterable, IHasCustomCardTraits
 					uuid, IKokoroApi.IV2.ISequenceApi.Interval.Turn, 2, 2,
 					new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 1 }
 				).AsCardAction,
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
-			],
-			_ => [
-				new AMove { targetPlayer = true, dir = 1 },
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.ApmStatus.Status, statusAmount = 1 },
 			],
 		};
 }

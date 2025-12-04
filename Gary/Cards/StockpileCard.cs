@@ -45,12 +45,12 @@ public sealed class StockpileCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = Stack.ApmStatus.Status, statusAmount = 2 },
 				new AStatus { targetPlayer = true, status = Status.droneShift, statusAmount = 1 },
 				new AStatus { targetPlayer = true, status = Status.drawLessNextTurn, statusAmount = 1 },
 			],
 			_ => [
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.ApmStatus.Status, statusAmount = 1 },
 				new AStatus { targetPlayer = true, status = Status.droneShift, statusAmount = 1 },
 				new AStatus { targetPlayer = true, status = Status.drawNextTurn, statusAmount = 1 },
 			],

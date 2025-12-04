@@ -23,7 +23,7 @@ public sealed class ModEntry : SimpleMod
 	private static readonly IReadOnlyList<Type> CommonCardTypes = [
 		typeof(AttritionCard),
 		typeof(DefensiveTechCard),
-		typeof(LeanInCard),
+		typeof(ExpansionCard),
 		typeof(MapControlCard),
 		typeof(RulesLawyeringCard),
 		typeof(SendRegardsCard),
@@ -43,8 +43,8 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	private static readonly IReadOnlyList<Type> RareCardTypes = [
-		typeof(AgreeToDisagreeCard),
 		typeof(BigGunsCard),
+		typeof(CeasefireCard),
 		typeof(EngineCard),
 		typeof(StockpileCard),
 	];

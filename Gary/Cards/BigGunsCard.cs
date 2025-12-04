@@ -41,13 +41,13 @@ public sealed class BigGunsCard : Card, IRegisterable, IHasCustomCardTraits
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.ApmStatus.Status, statusAmount = 1 },
 				new ASpawn { thing = new AttackDrone { targetPlayer = false, upgraded = true } },
 				new ASpawn { thing = new AttackDrone { targetPlayer = false } },
 				new AStatus { targetPlayer = true, status = Status.energyLessNextTurn, statusAmount = 1 },
 			],
 			Upgrade.A => [
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 1 },
+				new AStatus { targetPlayer = true, status = Stack.ApmStatus.Status, statusAmount = 1 },
 				new ASpawn { thing = new AttackDrone { targetPlayer = false, upgraded = true } },
 				new AStatus { targetPlayer = true, status = Status.energyLessNextTurn, statusAmount = 1 },
 			],
