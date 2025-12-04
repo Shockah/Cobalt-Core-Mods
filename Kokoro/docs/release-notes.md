@@ -24,7 +24,7 @@ Released 13 November 2025.
 ## 2.12.0
 Released 18 September 2025.
 
-* Added the Temp Payback status.
+* Added the Temp Strafe status.
 * Added `GetStatusesToCallTurnTriggerHooksFor` to the `StatusLogic` hooks.
 * Turn trigger hooks now by default only get called for non-zero statuses, instead of all statuses in the game.
 
