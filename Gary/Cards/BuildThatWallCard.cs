@@ -41,7 +41,7 @@ public sealed class BuildThatWallCard : Card, IRegisterable
 				new ASpawn { thing = new Asteroid(), offset = 1 }.SetStacked(),
 			],
 			_ => [
-				new AStatus { targetPlayer = true, status = Stack.JengaStatus.Status, statusAmount = 3 },
+				new AStatus { targetPlayer = true, status = Stack.ApmStatus.Status, statusAmount = 3 },
 				new ASpawn { thing = new Asteroid(), offset = -1 },
 				new ASpawn { thing = new Asteroid() },
 				new ASpawn { thing = new Asteroid(), offset = 1 },

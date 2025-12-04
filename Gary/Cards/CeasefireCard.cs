@@ -6,7 +6,7 @@ using Shockah.Shared;
 
 namespace Shockah.Gary;
 
-public sealed class AgreeToDisagreeCard : Card, IRegisterable, IHasCustomCardTraits
+public sealed class CeasefireCard : Card, IRegisterable, IHasCustomCardTraits
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -19,8 +19,8 @@ public sealed class AgreeToDisagreeCard : Card, IRegisterable, IHasCustomCardTra
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/AgreeToDisagree.png"), StableSpr.cards_Enrage).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "AgreeToDisagree", "name"]).Localize,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Ceasefire.png"), StableSpr.cards_Enrage).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Ceasefire", "name"]).Localize,
 		});
 		
 		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 2);
