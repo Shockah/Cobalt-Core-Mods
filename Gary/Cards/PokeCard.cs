@@ -7,7 +7,7 @@ using Shockah.Shared;
 
 namespace Shockah.Gary;
 
-public sealed class RulesLawyeringCard : Card, IRegisterable, IHasCustomCardTraits
+public sealed class PokeCard : Card, IRegisterable, IHasCustomCardTraits
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -20,8 +20,8 @@ public sealed class RulesLawyeringCard : Card, IRegisterable, IHasCustomCardTrai
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/RulesLawyering.png"), StableSpr.cards_DrakeCannon).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "RulesLawyering", "name"]).Localize,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Poke.png"), StableSpr.cards_DrakeCannon).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Poke", "name"]).Localize,
 		});
 		
 		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, Upgrade.None, 3);

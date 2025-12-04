@@ -20,7 +20,7 @@ public sealed class ExpansionCard : Card, IRegisterable, IHasCustomCardTraits
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Expansion.png"), StableSpr.cards_ScootRight).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Expansion.png"), StableSpr.cards_Dodge).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Expansion", "name"]).Localize,
 		});
 		
@@ -29,18 +29,12 @@ public sealed class ExpansionCard : Card, IRegisterable, IHasCustomCardTraits
 	}
 
 	public override CardData GetData(State state)
-	{
-		var data = new CardData
+		=> upgrade switch
 		{
-			flippable = true,
-			art = flipped ? StableSpr.cards_ScootLeft :  StableSpr.cards_ScootRight,
+			Upgrade.B => new() { cost = 2, flippable = true, art = flipped ? StableSpr.cards_ScootLeft :  StableSpr.cards_ScootRight },
+			Upgrade.A => new() { cost = 1, flippable = false },
+			_ => new() { cost = 1, flippable = true, art = flipped ? StableSpr.cards_ScootLeft :  StableSpr.cards_ScootRight },
 		};
-		return upgrade switch
-		{
-			Upgrade.B => data with { cost = 2 },
-			_ => data with { cost = 1 },
-		};
-	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> upgrade switch
