@@ -21,14 +21,14 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry GaryDeck { get; }
 
 	private static readonly IReadOnlyList<Type> CommonCardTypes = [
+		typeof(AmbushCard),
 		typeof(AttritionCard),
 		typeof(DefensiveTechCard),
 		typeof(ExpansionCard),
 		typeof(MapControlCard),
-		typeof(RulesLawyeringCard),
+		typeof(PokeCard),
 		typeof(SendRegardsCard),
 		typeof(ToppleCard),
-		typeof(TrapCardCard),
 		typeof(TurtleCard),
 	];
 
