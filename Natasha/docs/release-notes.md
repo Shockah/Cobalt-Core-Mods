@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.6.0
+Released 4 December 2025.
 
 * Added duo artifacts for all vanilla characters.
 * Buffed the Buffer card: the base card changed from Limited 1 to Limited 2; the new A upgrade is now the same as the base card, except has Recycle and Retain; the B upgrade starts with Limited 1.
