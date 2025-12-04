@@ -6,6 +6,8 @@ namespace Shockah.CustomRunOptions;
 
 public partial interface ICustomRunOptionsApi
 {
+	bool IsStartingNormalRun { get; }
+	
 	double SeedCustomRunOptionPriority { get; }
 	double BootSequenceCustomRunOptionPriority { get; }
 	double DailyModifiersCustomRunOptionPriority { get; }

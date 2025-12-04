@@ -19,6 +19,9 @@ public sealed class ApiImplementation(IModManifest mod) : ICustomRunOptionsApi
 		BootSequenceCustomRunOption.DownsideChoices[key] = new BootSequenceCustomRunOption.IBootChoice.Modded(key, title, matchPredicate);
 	}
 
+	public bool IsStartingNormalRun
+		=> StartRunDetector.StartingNormalRun;
+
 	public double SeedCustomRunOptionPriority
 		=> SeedCustomRunOption.PRIORITY;
 	
