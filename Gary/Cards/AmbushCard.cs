@@ -6,7 +6,7 @@ using Shockah.Shared;
 
 namespace Shockah.Gary;
 
-public sealed class TrapCardCard : Card, IRegisterable, IHasCustomCardTraits
+public sealed class AmbushCard : Card, IRegisterable, IHasCustomCardTraits
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -19,8 +19,8 @@ public sealed class TrapCardCard : Card, IRegisterable, IHasCustomCardTraits
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/TrapCard.png"), StableSpr.cards_GoatDrone).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "TrapCard", "name"]).Localize,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Ambush.png"), StableSpr.cards_GoatDrone).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Ambush", "name"]).Localize,
 		});
 		
 		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 2);
