@@ -48,12 +48,12 @@ internal partial class Stack
 		if (!willStack)
 		{
 			var stackSize = 1 + (GetStackedObjects(existingThing)?.Count ?? 0);
-			var jengaAmount = ship.Get(JengaStatus.Status);
+			var jengaAmount = ship.Get(ApmStatus.Status);
 
 			if (jengaAmount > 0)
 			{
 				willStack = true;
-				ship.Add(JengaStatus.Status, -Math.Min(jengaAmount, stackSize));
+				ship.Add(ApmStatus.Status, -Math.Min(jengaAmount, stackSize));
 				if (stackSize > jengaAmount)
 					SetWobbly(__instance.thing);
 			}

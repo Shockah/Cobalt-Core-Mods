@@ -7,9 +7,9 @@
 		]
 	},
 	"status": {
-		"Jenga": {
-			"name": "Jenga",
-			"description": "When <c=action>launching</c> <c=midrow>objects</c>, <c=midrow>stack</c> them on top and lose <c=status>JENGA</c> for each other object in the <c=midrow>stack</c>. <c=downside>If not enough, the <c=midrow>stack</c> becomes <c=midrow>wobbly</c>.</c>"
+		"APM": {
+			"name": "APM",
+			"description": "When <c=action>launching</c> <c=midrow>objects</c>, <c=midrow>stack</c> them on top and lose <c=status>APM</c> for each other object in the <c=midrow>stack</c>. <c=downside>If not enough, the <c=midrow>stack</c> becomes <c=midrow>wobbly</c>.</c>"
 		}
 	},
 	"action": {
@@ -36,9 +36,6 @@
 		}
 	},
 	"card": {
-		"AgreeToDisagree": {
-			"name": "Agree to Disagree"
-		},
 		"Attrition": {
 			"name": "Attrition"
 		},
@@ -48,17 +45,20 @@
 		"BuildThatWall": {
 			"name": "Build that Wall"
 		},
+		"Ceasefire": {
+			"name": "Ceasefire"
+		},
 		"DefensiveTech": {
 			"name": "Defensive Tech"
 		},
 		"Engine": {
 			"name": "Engine"
 		},
+		"Expansion": {
+			"name": "Expansion"
+		},
 		"Killbox": {
 			"name": "Killbox"
-		},
-		"LeanIn": {
-			"name": "Lean In"
 		},
 		"MapControl": {
 			"name": "Map Control"
@@ -94,8 +94,8 @@
 		"Turtle": {
 			"name": "Turtle"
 		},
-		"Zerg": {
-			"name": "Zerg"
+		"ZergRush": {
+			"name": "Zerg Rush"
 		}
 	}
 }
