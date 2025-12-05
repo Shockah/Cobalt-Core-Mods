@@ -44,6 +44,8 @@ internal sealed class DestinyTyArtifact : Artifact, IRegisterable, IDestinyApi.I
 
 	public bool? OnEnchant(IDestinyApi.IHook.IOnEnchantArgs args)
 	{
+		if (args.MaxEnchantLevel <= 0)
+			return null;
 		if (args.EnchantLevel < args.MaxEnchantLevel)
 			return null;
 		if (args.FromUserInteraction && args.State.CharacterIsMissing(args.Card.GetMeta().deck))
@@ -68,6 +70,7 @@ internal sealed class DestinyTyArtifact : Artifact, IRegisterable, IDestinyApi.I
 
 		transaction.Pay(environment);
 		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(args.State, args.Card, TyAndSashaApi.WildTrait, true, false);
+		Pulse();
 		
 		if (args.FromUserInteraction)
 		{

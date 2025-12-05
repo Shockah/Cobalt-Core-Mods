@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Removed the latest Kokoro integration fixes, as they are no longer needed with the latest version of Nickel.
+* Fixed the Familiar (Ty & Sasha duo) artifact working on non-Enchanted cards, and made it pulse when activated.
 
 ## 1.2.3
 Released 20 November 2025.
