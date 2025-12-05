@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using FSPRO;
 using HarmonyLib;
-using Nanoray.Pintail;
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
@@ -404,10 +403,7 @@ internal sealed class Enchanted : IRegisterable
 
 		foreach (var (_, previousUnpaidEnchantLevelCost) in previousUnpaidEnchantLevelCosts)
 		{
-			var unproxieUnpaidActionCost = ModEntry.Instance.Helper.Utilities.Unproxy(previousUnpaidEnchantLevelCost);
-			var reproxiedUnpaidActionCost = ModEntry.Instance.Helper.Utilities.ProxyManager.ObtainProxy<string, IKokoroApi.IV2.IActionCostsApi.ICost>(unproxieUnpaidActionCost, "<Unknown>", ModEntry.Instance.Package.Manifest.UniqueName);
-			var modifiedUnpaidActionCost = ModEntry.Instance.KokoroApi.ActionCosts.ModifyActionCost(Mutil.DeepCopy(reproxiedUnpaidActionCost), state, state.route as Combat ?? DB.fakeCombat, card, action);
-			
+			var modifiedUnpaidActionCost = ModEntry.Instance.KokoroApi.ActionCosts.ModifyActionCost(Mutil.DeepCopy(previousUnpaidEnchantLevelCost), state, state.route as Combat ?? DB.fakeCombat, card, action);
 			var transactionBefore = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(modifiedUnpaidActionCost, environment);
 			transactionBefore.Pay(environment);
 		}
