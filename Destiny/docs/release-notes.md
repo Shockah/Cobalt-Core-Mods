@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Removed the latest Kokoro integration fixes, as they are no longer needed with the latest version of Nickel.
+
 ## 1.2.3
 Released 20 November 2025.
 

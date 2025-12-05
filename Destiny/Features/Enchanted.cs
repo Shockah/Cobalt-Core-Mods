@@ -321,13 +321,10 @@ internal sealed class Enchanted : IRegisterable
 			return false;
 		if (fromUserInteraction && state.CharacterIsMissing(card.GetMeta().deck))
 			return false;
-		if (GetNextEnchantLevelCost(card) is not { } proxiedActionCost)
+		if (GetNextEnchantLevelCost(card) is not { } actionCost)
 			return false;
 		
-		var unproxiedActionCost = ModEntry.Instance.Helper.Utilities.Unproxy(proxiedActionCost);
-		var reproxiedActionCost = ModEntry.Instance.Helper.Utilities.ProxyManager.ObtainProxy<string, IKokoroApi.IV2.IActionCostsApi.ICost>(unproxiedActionCost, "<Unknown>", ModEntry.Instance.Package.Manifest.UniqueName);
-		var modifiedActionCost = ModEntry.Instance.KokoroApi.ActionCosts.ModifyActionCost(Mutil.DeepCopy(reproxiedActionCost), state, state.route as Combat ?? DB.fakeCombat, card, null);
-		
+		var modifiedActionCost = ModEntry.Instance.KokoroApi.ActionCosts.ModifyActionCost(Mutil.DeepCopy(actionCost), state, state.route as Combat ?? DB.fakeCombat, card, null);
 		var environment = ModEntry.Instance.KokoroApi.ActionCosts.MakeStatePaymentEnvironment(state, combat, card);
 		var transaction = ModEntry.Instance.KokoroApi.ActionCosts.GetBestTransaction(modifiedActionCost, environment);
 		var transactionPaymentResult = transaction.TestPayment(environment);
@@ -379,12 +376,9 @@ internal sealed class Enchanted : IRegisterable
 
 	private static int RenderGate(G g, State state, Card card, EnchantGateAction action, bool dontDraw)
 	{
-		if (GetEnchantLevelCost(card.Key(), card.upgrade, action.Level) is not { } proxiedActionCost)
+		if (GetEnchantLevelCost(card.Key(), card.upgrade, action.Level) is not { } actionCost)
 			return 0;
-		
-		var unproxiedActionCost = ModEntry.Instance.Helper.Utilities.Unproxy(proxiedActionCost);
-		var reproxiedActionCost = ModEntry.Instance.Helper.Utilities.ProxyManager.ObtainProxy<string, IKokoroApi.IV2.IActionCostsApi.ICost>(unproxiedActionCost, "<Unknown>", ModEntry.Instance.Package.Manifest.UniqueName);
-		var modifiedActionCost = ModEntry.Instance.KokoroApi.ActionCosts.ModifyActionCost(Mutil.DeepCopy(reproxiedActionCost), state, state.route as Combat ?? DB.fakeCombat, card, action);
+		var modifiedActionCost = ModEntry.Instance.KokoroApi.ActionCosts.ModifyActionCost(Mutil.DeepCopy(actionCost), state, state.route as Combat ?? DB.fakeCombat, card, action);
 		
 		var enchantLevel = GetEnchantLevel(card);
 		var gateColor = (action.Level - enchantLevel) switch
