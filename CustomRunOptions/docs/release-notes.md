@@ -2,6 +2,11 @@
 
 # Release notes
 
+## 1.4.0
+Released 5 December 2025.
+
+* Added an API for other mods to add their own options.
+
 ## 1.3.0
 Released 14 November 2025.
 
