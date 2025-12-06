@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the dialogue line when Johnson goes missing.
+
 ## 1.3.1
 Released 7 August 2025.
 

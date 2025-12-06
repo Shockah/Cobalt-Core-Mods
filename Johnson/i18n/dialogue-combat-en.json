@@ -189,7 +189,7 @@
     },
     "GoingMissing": {
         "Basic": [
-            [ "<< Sorry, the number you are trying to reach is not available at this time. >>" ]
+            [ "// Sorry, the number you are trying to reach is not available at this time. //" ]
         ]
     },
     "ReturningFromMissing": {
