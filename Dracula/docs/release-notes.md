@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Nerfed the Blood Tap -> Cheap Fix option from a gain of 3 down to 2.
+* Removed the dependency on More Difficulty Options (the integration still works though!).
 
 ## 1.5.2
 Released 7 August 2025.
