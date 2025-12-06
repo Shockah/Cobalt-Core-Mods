@@ -415,7 +415,6 @@ public sealed class ModEntry : SimpleMod
 		_ = new BloodMirrorManager();
 		_ = new LifestealManager();
 		_ = new TransfusionManager();
-		_ = new NegativeOverdriveManager();
 		_ = new CardScalingManager();
 		BloodTapManager = new();
 		CardSelectFilters.Register(package, helper);

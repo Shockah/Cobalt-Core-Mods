@@ -38,8 +38,8 @@ internal sealed class ScreechCard : Card, IDraculaCard
 				new AStatus
 				{
 					targetPlayer = false,
-					status = Status.overdrive,
-					statusAmount = -1,
+					status = ModEntry.Instance.KokoroApi.DriveStatus.Underdrive,
+					statusAmount = 1,
 				},
 				new AStatus
 				{
@@ -58,8 +58,8 @@ internal sealed class ScreechCard : Card, IDraculaCard
 				new AStatus
 				{
 					targetPlayer = false,
-					status = Status.overdrive,
-					statusAmount = -2,
+					status = ModEntry.Instance.KokoroApi.DriveStatus.Underdrive,
+					statusAmount = 2,
 				},
 				new AStatus
 				{
@@ -78,8 +78,8 @@ internal sealed class ScreechCard : Card, IDraculaCard
 				new AStatus
 				{
 					targetPlayer = false,
-					status = Status.overdrive,
-					statusAmount = -1,
+					status = ModEntry.Instance.KokoroApi.DriveStatus.Underdrive,
+					statusAmount = 1,
 				},
 				new AStatus
 				{
