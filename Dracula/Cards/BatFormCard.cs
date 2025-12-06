@@ -23,7 +23,7 @@ internal sealed class BatFormCard : Card, IDraculaCard, IHasCustomCardTraits
 	public int FlipIndex { get; private set; }
 
 	[JsonProperty]
-	private bool LastFlipped { get; set; }
+	private bool KnownFlipped;
 
 	public Matrix ModifyNonTextCardRenderMatrix(G g, IReadOnlyList<CardAction> actions)
 		=> Matrix.Identity;
@@ -76,12 +76,15 @@ internal sealed class BatFormCard : Card, IDraculaCard, IHasCustomCardTraits
 	}
 
 	public override CardData GetData(State state)
-		=> new()
+	{
+		HandleFlip();
+		return new()
 		{
 			art = QuadArt[FlipIndex % 4].Sprite,
 			cost = upgrade == Upgrade.A ? 0 : 1,
 			floppable = true,
 		};
+	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> (HashSet<ICardTraitEntry>)(upgrade switch
@@ -90,14 +93,19 @@ internal sealed class BatFormCard : Card, IDraculaCard, IHasCustomCardTraits
 			_ => [],
 		});
 
-	public override void ExtraRender(G g, Vec v)
+	public override void OnFlip(G g)
 	{
-		base.ExtraRender(g, v);
-		if (LastFlipped != flipped)
-		{
-			LastFlipped = flipped;
-			FlipIndex = (FlipIndex + 1) % 4;
-		}
+		base.OnFlip(g);
+		HandleFlip();
+	}
+
+	private void HandleFlip()
+	{
+		if (KnownFlipped == flipped)
+			return;
+		
+		FlipIndex = (FlipIndex + 1) % 4;
+		KnownFlipped = flipped;
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)

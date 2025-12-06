@@ -7,6 +7,7 @@
 * Nerfed the Blood Tap -> Cheap Fix option from a gain of 3 down to 2.
 * Switched from using negative Overdrive to positive Underdrive.
 * Removed the dependency on More Difficulty Options (the integration still works though!).
+* Fixed flipping of the Bat Form and Dominate cards in regards to the Card Reward screen.
 
 ## 1.5.2
 Released 7 August 2025.

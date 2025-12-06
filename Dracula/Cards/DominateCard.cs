@@ -24,6 +24,9 @@ internal sealed class DominateCard : Card, IDraculaCard
 	private static ISpriteEntry OptionalOffIcon = null!;
 
 	[JsonProperty]
+	private bool KnownFlipped;
+
+	[JsonProperty]
 	private bool DisabledFlip;
 
 	[JsonProperty]
@@ -63,7 +66,9 @@ internal sealed class DominateCard : Card, IDraculaCard
 	}
 
 	public override CardData GetData(State state)
-		=> new()
+	{
+		HandleFlip();
+		return new()
 		{
 			art = DisabledFlip ? NonFlipArt.Sprite : null,
 			cost = 1,
@@ -75,11 +80,19 @@ internal sealed class DominateCard : Card, IDraculaCard
 				ModEntry.Instance.Localizations.Localize(["card", "Dominate", "description", "Draw"]),
 			]),
 		};
+	}
 
 	public override void OnFlip(G g)
 	{
 		base.OnFlip(g);
+		HandleFlip();
+	}
 
+	private void HandleFlip()
+	{
+		if (KnownFlipped == flipped)
+			return;
+		
 		var sum = (DisabledFlip ? 0 : 1) + (upgrade == Upgrade.None || DisabledSecondaryAction ? 0 : 2);
 		var maxSum = upgrade == Upgrade.None ? 1 : 3;
 		var newSum = sum - 1;
@@ -88,7 +101,7 @@ internal sealed class DominateCard : Card, IDraculaCard
 
 		DisabledFlip = (newSum & 1) == 0;
 		DisabledSecondaryAction = (newSum & 2) == 0;
-		flipped = DisabledFlip || (upgrade != Upgrade.None && DisabledSecondaryAction);
+		KnownFlipped = flipped = DisabledFlip || (upgrade != Upgrade.None && DisabledSecondaryAction);
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
