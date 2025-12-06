@@ -115,7 +115,7 @@ internal sealed class BloodTapManager
 		]);
 		RegisterOptionProvider(Status.temporaryCheap, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
-			new AStatus { targetPlayer = true, status = status, statusAmount = 3 },
+			new AStatus { targetPlayer = true, status = status, statusAmount = 2 },
 		]);
 		RegisterOptionProvider(Status.timeStop, (_, _, status) => [
 			new AHurt { targetPlayer = true, hurtAmount = 1 },

@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Nerfed the Blood Tap -> Cheap Fix option from a gain of 3 down to 2.
+
 ## 1.5.2
 Released 7 August 2025.
 
