@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.5.3
+Released 7 December 2025.
 
 * Nerfed the Blood Tap -> Cheap Fix option from a gain of 3 down to 2.
 * Switched from using negative Overdrive to positive Underdrive.

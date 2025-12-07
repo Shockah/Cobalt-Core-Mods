@@ -13,7 +13,7 @@
     "Dependencies": [
         {
             "UniqueName": "Shockah.Kokoro",
-            "Version": "2.11.0"
+            "Version": "2.14.0"
         }
     ],
     "UpdateChecks": {
