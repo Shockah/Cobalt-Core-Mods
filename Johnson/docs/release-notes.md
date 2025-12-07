@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * The Coupon artifact's card choice screen now tells you what you're choosing the card for.
+* The Coupon artifact can now be clicked to pre-select a card to automatically discount.
 * Fixed the dialogue line when Johnson goes missing.
 
 ## 1.3.1

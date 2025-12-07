@@ -51,7 +51,13 @@
         "Coupon": {
             "name": "COUPON",
             "description": "On your first turn, choose a card in your deck. <c=cardtrait>Discount</c> it.",
-	        "browseAction": "Select a card to <c=cardtrait>discount</c>."
+	        "preselectHint": {
+		        "m&k": "You can <c=keyword>click</c> this artifact to pre-select a card to automatically <c=cardtrait>discount</c> each combat.",
+		        "controller": "You can press {{Button}} on this artifact to pre-select a card to automatically <c=cardtrait>discount</c> each combat."
+	        },
+	        "preselectedCard": "<c=textBold>Pre-selected card:</c>",
+	        "browseAction": "Select a card to <c=cardtrait>discount</c>.",
+	        "preselectAction": "Pre-select a card to <c=cardtrait>discount</c> each combat."
         },
         "EspressoShot": {
             "name": "ESPRESSO SHOT",
