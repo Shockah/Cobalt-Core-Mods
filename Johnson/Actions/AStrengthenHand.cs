@@ -13,6 +13,7 @@ public sealed class AStrengthenHand : DynamicWidthCardAction
 		base.Begin(g, s, c);
 		foreach (var card in c.hand)
 			card.AddStrengthen(Amount);
+		s.storyVars.SetStrengthened(true);
 		Audio.Play(Event.Status_PowerUp);
 	}
 

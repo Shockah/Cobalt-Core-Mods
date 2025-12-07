@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
+using Nickel;
 
 namespace Shockah.Johnson;
 
@@ -23,12 +24,61 @@ internal static class DialogueExt
 
 	public static HashSet<int> GetLastCardIdsInDeck(this Combat combat)
 		=> ModEntry.Instance.Helper.ModData.ObtainModData<HashSet<int>>(combat, "LastCardIdsInDeck");
+	
+	public static bool? GetJustPlayedRecycleCard(this StoryNode node)
+		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(node, "JustPlayedRecycleCard");
+
+	public static StoryNode SetJustPlayedRecycleCard(this StoryNode node, bool? value)
+	{
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(node, "JustPlayedRecycleCard", value);
+		return node;
+	}
+	
+	public static bool GetJustPlayedRecycleCard(this StoryVars vars)
+		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(vars, "JustPlayedRecycleCard");
+
+	public static void SetJustPlayedRecycleCard(this StoryVars vars, bool value)
+		=> ModEntry.Instance.Helper.ModData.SetModData(vars, "JustPlayedRecycleCard", value);
+	
+	public static bool? GetStrengthened(this StoryNode node)
+		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(node, "Strengthened");
+
+	public static StoryNode SetStrengthened(this StoryNode node, bool? value)
+	{
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(node, "Strengthened", value);
+		return node;
+	}
+	
+	public static bool GetStrengthened(this StoryVars vars)
+		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(vars, "Strengthened");
+
+	public static void SetStrengthened(this StoryVars vars, bool value)
+		=> ModEntry.Instance.Helper.ModData.SetModData(vars, "Strengthened", value);
+	
+	public static bool? GetDiscounted(this StoryNode node)
+		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(node, "Discounted");
+
+	public static StoryNode SetDiscounted(this StoryNode node, bool? value)
+	{
+		ModEntry.Instance.Helper.ModData.SetOptionalModData(node, "Discounted", value);
+		return node;
+	}
+	
+	public static bool GetDiscounted(this StoryVars vars)
+		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(vars, "Discounted");
+
+	public static void SetDiscounted(this StoryVars vars, bool value)
+		=> ModEntry.Instance.Helper.ModData.SetModData(vars, "Discounted", value);
 }
 
 internal sealed class DialogueExtensions
 {
 	public DialogueExtensions()
 	{
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(StoryVars), nameof(StoryVars.ResetAfterCombatLine)),
+			postfix: new HarmonyMethod(GetType(), nameof(StoryVars_ResetAfterCombatLine_Postfix))
+		);
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(StoryVars), nameof(StoryVars.ResetAfterEndTurn)),
 			postfix: new HarmonyMethod(GetType(), nameof(StoryVars_ResetAfterEndTurn_Postfix))
@@ -52,16 +102,25 @@ internal sealed class DialogueExtensions
 			postfix: new HarmonyMethod(GetType(), nameof(Combat_Update_Postfix))
 		);
 
-		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (Card card, State state, Combat combat) =>
+		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (Card card, State state) =>
 		{
 			if (!card.GetDataWithOverrides(state).recycle)
 				return;
-			combat.QueueImmediate(new ADummyAction { dialogueSelector = $".{ModEntry.Instance.Package.Manifest.UniqueName}::PlayedRecycle" });
+			state.storyVars.SetJustPlayedRecycleCard(true);
 		}, double.NegativeInfinity);
 	}
 
+	private static void StoryVars_ResetAfterCombatLine_Postfix(StoryVars __instance)
+	{
+		ModEntry.Instance.Helper.ModData.RemoveModData(__instance, "JustPlayedRecycleCard");
+		ModEntry.Instance.Helper.ModData.RemoveModData(__instance, "Strengthened");
+		ModEntry.Instance.Helper.ModData.RemoveModData(__instance, "Discounted");
+	}
+
 	private static void StoryVars_ResetAfterEndTurn_Postfix(StoryVars __instance)
-		=> ModEntry.Instance.Helper.ModData.RemoveModData(__instance, "ShieldLostThisTurn");
+	{
+		ModEntry.Instance.Helper.ModData.RemoveModData(__instance, "ShieldLostThisTurn");
+	}
 
 	private static void StoryNode_Filter_Postfix(StoryNode n, State s, ref bool __result)
 	{
@@ -73,13 +132,27 @@ internal sealed class DialogueExtensions
 			__result = false;
 			return;
 		}
+		if (n.GetJustPlayedRecycleCard() is { } justPlayedRecycleCard && s.storyVars.GetJustPlayedRecycleCard() != justPlayedRecycleCard)
+		{
+			__result = false;
+			return;
+		}
+		if (n.GetStrengthened() is { } strengthened && s.storyVars.GetStrengthened() != strengthened)
+		{
+			__result = false;
+			return;
+		}
+		if (n.GetDiscounted() is { } discounted && s.storyVars.GetDiscounted() != discounted)
+		{
+			__result = false;
+			return;
+		}
 	}
 
-	private static void AStatus_Begin_Prefix(AStatus __instance, State s, ref int __state)
+	private static void AStatus_Begin_Prefix(AStatus __instance, State s, out int __state)
 		=> __state = __instance.targetPlayer ? s.ship.Get(__instance.status) : 0;
 
-
-	private static void AStatus_Begin_Postfix(AStatus __instance, State s, Combat c, ref int __state)
+	private static void AStatus_Begin_Postfix(AStatus __instance, State s, Combat c, in int __state)
 	{
 		if (!__instance.targetPlayer)
 			return;
@@ -88,10 +161,10 @@ internal sealed class DialogueExtensions
 			c.QueueImmediate(new ADummyAction { dialogueSelector = $".{ModEntry.Instance.Package.Manifest.UniqueName}::ReturningFromMissing" });
 	}
 
-	private static void Ship_NormalDamage_Prefix(Ship __instance, ref int __state)
+	private static void Ship_NormalDamage_Prefix(Ship __instance, out int __state)
 		=> __state = __instance.Get(Status.shield) + __instance.Get(Status.tempShield);
 
-	private static void Ship_NormalDamage_Postfix(Ship __instance, State s, ref int __state)
+	private static void Ship_NormalDamage_Postfix(Ship __instance, State s, in int __state)
 	{
 		var newShields = __instance.Get(Status.shield) + __instance.Get(Status.tempShield);
 		if (newShields >= __state)

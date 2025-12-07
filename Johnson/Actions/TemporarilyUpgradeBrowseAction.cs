@@ -26,6 +26,7 @@ public sealed class TemporarilyUpgradeBrowseAction : CardAction
 		
 		selectedCard.discount += Discount;
 		selectedCard.AddStrengthen(Strengthen);
+		s.storyVars.SetStrengthened(true);
 		
 		var action = ModEntry.Instance.KokoroApi.TemporaryUpgrades.MakeChooseTemporaryUpgradeAction(selectedCard.uuid).AsCardAction;
 		action.timer = 0;

@@ -10,5 +10,6 @@ public sealed class StrengthenBrowseAction : CardAction
 		if (selectedCard is null)
 			return;
 		selectedCard.AddStrengthen(Amount);
+		s.storyVars.SetStrengthened(true);
 	}
 }

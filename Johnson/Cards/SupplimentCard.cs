@@ -65,14 +65,20 @@ internal sealed class SupplimentCard : Card, IRegisterable
 				if (Discount)
 					leftmostCard.discount--;
 				if (Strengthen)
+				{
 					leftmostCard.AddStrengthen(1);
+					s.storyVars.SetStrengthened(true);
+				}
 			}
 			if (Rightmost && c.hand.LastOrDefault() is { } rightmostCard)
 			{
 				if (Discount)
 					rightmostCard.discount--;
 				if (Strengthen)
+				{
 					rightmostCard.AddStrengthen(1);
+					s.storyVars.SetStrengthened(true);
+				}
 			}
 		}
 

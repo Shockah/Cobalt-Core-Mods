@@ -16,6 +16,7 @@ public sealed class AStrengthen : CardAction
 		if (s.FindCard(CardId) is not { } card)
 			return;
 		card.AddStrengthen(Amount);
+		s.storyVars.SetStrengthened(true);
 		Audio.Play(Event.Status_PowerUp);
 	}
 

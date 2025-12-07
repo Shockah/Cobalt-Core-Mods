@@ -5,14 +5,18 @@
             [ "That's definitely going to put a dent in our bottom line." ],
             [ "Can we get the IT guys up here to take a look at that?" ]
         ],
-        "Dizzy": [
-            /*Johnson*/ "Alright. Enough is enough. I'm contacting security.",
-            /*Dizzy*/ "I'm security!"
-        ],
+	    "Dizzy": [
+		    /*Johnson*/ "I hope that was insured.",
+		    /*Dizzy*/ "...Do we even have insurance?"
+	    ],
         "Riggs": [
             /*Johnson*/ "Alright. Enough is enough. I'm contacting security.",
             /*Riggs*/ "That was an option?"
         ],
+	    "Peri": [
+		    /*Johnson*/ "Alright. Enough is enough. I'm contacting security.",
+		    /*Peri*/ "I'm security!"
+	    ],
         "Isaac": [
             /*Isaac*/ "Ouch...",
             /*Johnson*/ "I think I'll have to agree on that one."
@@ -212,6 +216,20 @@
             [ "As expected." ]
         ]
     },
+	"Strengthened": {
+		"Basic": [
+			[ "Nothing like upping one's net worth." ],
+			[ "I've got big things planned." ],
+			[ "Business is booming." ]
+		]
+	},
+	"Discounted": {
+		"Basic": [
+			[ "Can't beat those prices." ],
+			[ "With costs this low, who says money doesn't grow on trees?" ],
+			[ "It's just that easy." ]
+		]
+	},
     "StartedBattleAgainstDuncan": [
         /*Johnson*/ "All this senseless violence. Perhaps there is another way we could smooth things over?",
         /*Duncan*/ "I'm not in it for the money, I'm in it for the rocks!"
@@ -223,6 +241,10 @@
     "StartedBattleAgainstBigCrystal": [
         "Meh. I have always found crystals to be tacky."
     ],
+	"StartedBattleAgainstDrake": [
+		/*Johnson*/ "This is incredibly unprofessional, by the way.",
+		/*Drake*/ "Don't care!"
+	],
     "CrabFacts1_Multi_0": "Interesting... Very interesting...",
     "CrabFacts2_Multi_0": "Hold on. I need to speak to some people about this."
 }

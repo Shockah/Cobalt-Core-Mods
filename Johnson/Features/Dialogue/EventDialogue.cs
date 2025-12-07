@@ -119,5 +119,10 @@ internal sealed class EventDialogue : BaseDialogue
 			who = johnsonType,
 			loopTag = "fiddling"
 		};
+		saySwitchNodes[["AbandonedShipyard_Repaired"]] = new()
+		{
+			who = johnsonType,
+			loopTag = "neutral"
+		};
 	}
 }

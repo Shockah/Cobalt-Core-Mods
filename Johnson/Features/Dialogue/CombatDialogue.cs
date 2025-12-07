@@ -51,6 +51,16 @@ internal sealed class CombatDialogue : BaseDialogue
 				new Say { who = Deck.riggs.Key(), loopTag = "neutral" },
 			],
 		};
+		newNodes[["TookDamage", "Peri"]] = new()
+		{
+			enemyShotJustHit = true,
+			minDamageDealtToPlayerThisTurn = 1,
+			allPresent = [johnsonType, Deck.peri.Key()],
+			lines = [
+				new Say { who = johnsonType, loopTag = "squint" },
+				new Say { who = Deck.peri.Key(), loopTag = "squint" },
+			],
+		};
 		newNodes[["TookDamage", "Isaac"]] = new()
 		{
 			enemyShotJustHit = true,
@@ -415,14 +425,14 @@ internal sealed class CombatDialogue : BaseDialogue
 			};
 
 		for (var i = 0; i < 1; i++)
-			newNodes[["PlayedRecycle", "Basic", i.ToString()]] = new()
+			newNodes[["PlayedRecycle", "Basic", i.ToString()]] = new StoryNode
 			{
-				lookup = [$"{ModEntry.Instance.Package.Manifest.UniqueName}::PlayedRecycle"],
 				allPresent = [johnsonType],
+				oncePerCombat = true,
 				lines = [
 					new Say { who = johnsonType, loopTag = "neutral" },
 				],
-			};
+			}.SetJustPlayedRecycleCard(true);
 
 		for (var i = 0; i < 2; i++)
 			newNodes[["NewNonJohnsonNonTrashTempCard", "Basic", i.ToString()]] = new()
@@ -514,7 +524,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				],
 			};
 
-		#region DealtDamage
+		#region GoingToOverheat
 		for (var i = 0; i < 2; i++)
 			newNodes[["GoingToOverheat", "Basic", i.ToString()]] = new()
 			{
@@ -537,6 +547,24 @@ internal sealed class CombatDialogue : BaseDialogue
 			],
 		};
 		#endregion
+		
+		for (var i = 0; i < 3; i++)
+			newNodes[["Strengthened", "Basic", i.ToString()]] = new StoryNode
+			{
+				allPresent = [johnsonType],
+				lines = [
+					new Say { who = johnsonType, loopTag = "flashing" },
+				],
+			}.SetStrengthened(true);
+		
+		for (var i = 0; i < 3; i++)
+			newNodes[["Discounted", "Basic", i.ToString()]] = new StoryNode
+			{
+				allPresent = [johnsonType],
+				lines = [
+					new Say { who = johnsonType, loopTag = "flashing" },
+				],
+			}.SetStrengthened(true);
 
 		for (var i = 0; i < 1; i++)
 			newNodes[["Recalibrator", "Basic", i.ToString()]] = new()
@@ -585,6 +613,19 @@ internal sealed class CombatDialogue : BaseDialogue
 			allPresent = [johnsonType, "crystal"],
 			lines = [
 				new Say { who = johnsonType, loopTag = "fiddling" },
+			],
+		};
+
+		newNodes[["StartedBattleAgainstDrake"]] = new()
+		{
+			priority = true,
+			turnStart = true,
+			maxTurnsThisCombat = 1,
+			oncePerCombat = true,
+			allPresent = [johnsonType, "pirate"],
+			lines = [
+				new Say { who = johnsonType, loopTag = "squint" },
+				new Say { who = "pirate", loopTag = "mad" },
 			],
 		};
 
