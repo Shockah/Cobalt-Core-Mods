@@ -33,6 +33,11 @@ public partial interface IKokoroApi
 				/// A strategy that will be used to apply an upgrade to a card. Defaults to <c>null</c>, which will copy the value of the <see cref="Card.upgrade"/> field.
 				/// </summary>
 				IInPlaceCardUpgradeStrategy? InPlaceCardUpgradeStrategy { get; set; }
+				
+				/// <summary>
+				/// Whether cancelling the upgrade should be possible.
+				/// </summary>
+				bool AllowCancel { get; set; }
 
 				/// <summary>
 				/// Sets <see cref="IsInPlace"/>.
@@ -47,6 +52,13 @@ public partial interface IKokoroApi
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
 				ICardUpgrade SetInPlaceCardUpgradeStrategy(IInPlaceCardUpgradeStrategy? value);
+				
+				/// <summary>
+				/// Sets <see cref="AllowCancel"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				ICardUpgrade SetAllowCancel(bool value);
 			}
 
 			public interface IInPlaceCardUpgradeStrategy

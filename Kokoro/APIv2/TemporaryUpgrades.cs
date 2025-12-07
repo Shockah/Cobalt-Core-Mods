@@ -232,6 +232,11 @@ public partial interface IKokoroApi
 				/// The ID of a card to set the upgrade for.
 				/// </summary>
 				int CardId { get; set; }
+				
+				/// <summary>
+				/// Whether cancelling the upgrade should be possible.
+				/// </summary>
+				bool AllowCancel { get; set; }
 
 				/// <summary>
 				/// Sets <see cref="CardId"/>.
@@ -239,6 +244,13 @@ public partial interface IKokoroApi
 				/// <param name="value">The new value.</param>
 				/// <returns>This object after the change.</returns>
 				IChooseTemporaryUpgradeAction SetCardId(int value);
+				
+				/// <summary>
+				/// Sets <see cref="AllowCancel"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				IChooseTemporaryUpgradeAction SetAllowCancel(bool value);
 			}
 			
 			/// <summary>

@@ -282,6 +282,7 @@ internal sealed class TemporaryUpgradesManager : HookManager<IKokoroApi.IV2.ITem
 	internal sealed class ChooseTemporaryUpgradeAction : CardAction, IKokoroApi.IV2.ITemporaryUpgradesApi.IChooseTemporaryUpgradeAction
 	{
 		public required int CardId { get; set; }
+		public bool AllowCancel { get; set; } = true;
 
 		[JsonIgnore]
 		public CardAction AsCardAction
@@ -300,7 +301,7 @@ internal sealed class TemporaryUpgradesManager : HookManager<IKokoroApi.IV2.ITem
 			}
 
 			var route = new CardUpgrade { cardCopy = Mutil.DeepCopy(card) };
-			route = ModEntry.Instance.Api.V2.InPlaceCardUpgrade.ModifyCardUpgrade(route).SetIsInPlace(true).AsRoute;
+			route = ModEntry.Instance.Api.V2.InPlaceCardUpgrade.ModifyCardUpgrade(route).SetIsInPlace(true).SetAllowCancel(AllowCancel).AsRoute;
 			route = ModEntry.Instance.Api.V2.TemporaryUpgrades.ModifyCardUpgrade(route).SetIsTemporaryUpgrade(true).AsRoute;
 			return route;
 		}
@@ -308,6 +309,12 @@ internal sealed class TemporaryUpgradesManager : HookManager<IKokoroApi.IV2.ITem
 		public IKokoroApi.IV2.ITemporaryUpgradesApi.IChooseTemporaryUpgradeAction SetCardId(int value)
 		{
 			this.CardId = value;
+			return this;
+		}
+
+		public IKokoroApi.IV2.ITemporaryUpgradesApi.IChooseTemporaryUpgradeAction SetAllowCancel(bool value)
+		{
+			this.AllowCancel = value;
 			return this;
 		}
 	}

@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added the `AllowCancel` property for `InPlaceCardUpgrade` and `TemporaryUpgrades` APIs.
+
 ## 2.13.0
 Released 3 December 2025.
 

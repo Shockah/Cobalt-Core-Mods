@@ -1,7 +1,13 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Collections.Generic;
+using HarmonyLib;
 using Newtonsoft.Json;
 using Nickel;
 using System.Reflection;
+using System.Reflection.Emit;
+using Microsoft.Extensions.Logging;
+using Nanoray.Shrike;
+using Nanoray.Shrike.Harmony;
 
 namespace Shockah.Kokoro;
 
@@ -33,11 +39,15 @@ internal static class InPlaceCardUpgradeManager
 	{
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(CardUpgrade), nameof(CardUpgrade.FinallyReallyUpgrade)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(FinallyReallyUpgrade_Prefix))
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardUpgrade_FinallyReallyUpgrade_Prefix))
+		);
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(CardUpgrade), nameof(CardUpgrade.Render)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardUpgrade_Render_Transpiler))
 		);
 	}
 	
-	private static bool FinallyReallyUpgrade_Prefix(CardUpgrade __instance, G g, Card newCard)
+	private static bool CardUpgrade_FinallyReallyUpgrade_Prefix(CardUpgrade __instance, G g, Card newCard)
 	{
 		if (!ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(__instance, "IsInPlace"))
 			return true;
@@ -61,6 +71,39 @@ internal static class InPlaceCardUpgradeManager
 
 		return false;
 	}
+
+	private static IEnumerable<CodeInstruction> CardUpgrade_Render_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		// ReSharper disable PossibleMultipleEnumeration
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find(ILMatches.Ldstr("uiShared.btnCancel"))
+				.Find(SequenceBlockMatcherFindOccurence.Last, SequenceMatcherRelativeBounds.Before, [
+					ILMatches.Ldarg(0),
+					ILMatches.Ldflda(nameof(CardUpgrade.animationTimer)),
+					ILMatches.Call("get_HasValue"),
+					ILMatches.Brtrue.GetBranchTarget(out var afterCancelRenderLabel),
+				])
+				.PointerMatcher(SequenceMatcherRelativeElement.AfterLast)
+				.ExtractLabels(out var labels)
+				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardUpgrade_Render_Transpiler_ShouldAllowCancel))),
+					new CodeInstruction(OpCodes.Brfalse, afterCancelRenderLabel.Value),
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger!.LogError("Could not patch method {DeclaringType}::{Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod.DeclaringType, originalMethod, ModEntry.Instance.Name, ex);
+			return instructions;
+		}
+		// ReSharper restore PossibleMultipleEnumeration
+	}
+
+	private static bool CardUpgrade_Render_Transpiler_ShouldAllowCancel(CardUpgrade route)
+		=> ModEntry.Instance.Api.V2.InPlaceCardUpgrade.ModifyCardUpgrade(route).AllowCancel;
 	
 	internal sealed class CardUpgradeWrapper(CardUpgrade route) : IKokoroApi.IV2.IInPlaceCardUpgradeApi.ICardUpgrade
 	{
@@ -80,6 +123,12 @@ internal static class InPlaceCardUpgradeManager
 			set => ModEntry.Instance.Helper.ModData.SetOptionalModData(route, "InPlaceCardUpgradeStrategy", value);
 		}
 
+		public bool AllowCancel
+		{
+			get => ModEntry.Instance.Helper.ModData.GetModDataOrDefault(route, "AllowCancel", true);
+			set => ModEntry.Instance.Helper.ModData.SetModData(route, "AllowCancel", value);
+		}
+
 		public IKokoroApi.IV2.IInPlaceCardUpgradeApi.ICardUpgrade SetIsInPlace(bool value)
 		{
 			this.IsInPlace = value;
@@ -89,6 +138,12 @@ internal static class InPlaceCardUpgradeManager
 		public IKokoroApi.IV2.IInPlaceCardUpgradeApi.ICardUpgrade SetInPlaceCardUpgradeStrategy(IKokoroApi.IV2.IInPlaceCardUpgradeApi.IInPlaceCardUpgradeStrategy? value)
 		{
 			this.InPlaceCardUpgradeStrategy = value;
+			return this;
+		}
+
+		public IKokoroApi.IV2.IInPlaceCardUpgradeApi.ICardUpgrade SetAllowCancel(bool value)
+		{
+			this.AllowCancel = value;
 			return this;
 		}
 	}
