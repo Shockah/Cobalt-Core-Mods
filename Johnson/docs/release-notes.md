@@ -7,6 +7,7 @@
 * Changed the Coupon artifact's effect.
 * Added more dialogue.
 * Fixed the dialogue line when Johnson goes missing.
+* The Revamp B card no longer lets you cancel an upgrade.
 
 ## 1.3.1
 Released 7 August 2025.

@@ -89,7 +89,7 @@ internal sealed class MintCard : Card, IRegisterable
 			if (selectedCard is null)
 				return baseResult;
 
-			ModEntry.Instance.KokoroApi.TemporaryUpgrades.SetTemporaryUpgrade(selectedCard, null);
+			ModEntry.Instance.KokoroApi.TemporaryUpgrades.SetTemporaryUpgrade(s, selectedCard, null);
 			return new CardUpgrade
 			{
 				cardCopy = Mutil.DeepCopy(selectedCard)
@@ -111,10 +111,10 @@ internal sealed class MintCard : Card, IRegisterable
 			timer = 0;
 			if (selectedCard is null)
 				return;
-			if (ModEntry.Instance.KokoroApi.TemporaryUpgrades.GetTemporaryUpgrade(selectedCard) is not { } temporaryUpgrade)
+			if (ModEntry.Instance.KokoroApi.TemporaryUpgrades.GetTemporaryUpgrade(s, selectedCard) is not { } temporaryUpgrade)
 				return;
-			ModEntry.Instance.KokoroApi.TemporaryUpgrades.SetTemporaryUpgrade(selectedCard, null);
-			ModEntry.Instance.KokoroApi.TemporaryUpgrades.SetPermanentUpgrade(selectedCard, temporaryUpgrade);
+			ModEntry.Instance.KokoroApi.TemporaryUpgrades.SetTemporaryUpgrade(s, selectedCard, null);
+			ModEntry.Instance.KokoroApi.TemporaryUpgrades.SetPermanentUpgrade(s, selectedCard, temporaryUpgrade);
 		}
 	}
 }

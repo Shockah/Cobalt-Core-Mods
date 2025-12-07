@@ -58,19 +58,19 @@ internal sealed class CardSelectFilters
 			ModEntry.Instance.Helper.ModData.SetModData(route, "PermanentlyUpgraded", filterPermanentlyUpgraded);
 	}
 
-	private static void CardBrowse_GetCardList_Postfix(CardBrowse __instance, ref List<Card> __result)
+	private static void CardBrowse_GetCardList_Postfix(CardBrowse __instance, G g, ref List<Card> __result)
 	{
 		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "TemporarilyUpgraded") is { } filterTempUpgraded)
 		{
 			for (var i = __result.Count - 1; i >= 0; i--)
-				if (ModEntry.Instance.KokoroApi.TemporaryUpgrades.GetTemporaryUpgrade(__result[i]) is not null != filterTempUpgraded)
+				if (ModEntry.Instance.KokoroApi.TemporaryUpgrades.GetTemporaryUpgrade(g.state, __result[i]) is not null != filterTempUpgraded)
 					__result.RemoveAt(i);
 		}
 		
 		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(__instance, "PermanentlyUpgraded") is { } filterPermanentlyUpgraded)
 		{
 			for (var i = __result.Count - 1; i >= 0; i--)
-				if ((ModEntry.Instance.KokoroApi.TemporaryUpgrades.GetPermanentUpgrade(__result[i]) != Upgrade.None) != filterPermanentlyUpgraded)
+				if ((ModEntry.Instance.KokoroApi.TemporaryUpgrades.GetPermanentUpgrade(g.state, __result[i]) != Upgrade.None) != filterPermanentlyUpgraded)
 					__result.RemoveAt(i);
 		}
 	}
