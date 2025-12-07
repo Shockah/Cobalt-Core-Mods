@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.4.0
+Released 7 December 2025.
 
 * Changed the Coupon artifact's effect.
 * Added more dialogue.
