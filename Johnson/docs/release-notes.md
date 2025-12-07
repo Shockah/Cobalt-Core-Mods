@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* The Coupon artifact's card choice screen now tells you what you're choosing the card for.
 * Fixed the dialogue line when Johnson goes missing.
 
 ## 1.3.1

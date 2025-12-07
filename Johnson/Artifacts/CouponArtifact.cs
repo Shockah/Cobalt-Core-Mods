@@ -25,7 +25,7 @@ internal sealed class CouponArtifact : Artifact, IRegisterable
 		});
 	}
 
-	public override List<Tooltip>? GetExtraTooltips()
+	public override List<Tooltip> GetExtraTooltips()
 		=> [new TTGlossary("cardtrait.discount", 1)];
 
 	public override void OnTurnStart(State state, Combat combat)
@@ -38,10 +38,26 @@ internal sealed class CouponArtifact : Artifact, IRegisterable
 			new ADelay(),
 			new ACardSelect
 			{
-				browseAction = new DiscountBrowseAction { Amount = -1 },
+				browseAction = new BrowseAction { Amount = -1 },
 				browseSource = CardBrowse.Source.Deck,
-				artifactPulse = Key()
-			}
+				artifactPulse = Key(),
+			},
 		]);
+	}
+	
+	private sealed class BrowseAction : CardAction
+	{
+		public required int Amount;
+
+		public override string GetCardSelectText(State s)
+			=> ModEntry.Instance.Localizations.Localize(["artifact", "Coupon", "browseAction"]);
+
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+			if (selectedCard is null)
+				return;
+			selectedCard.discount += Amount;
+		}
 	}
 }

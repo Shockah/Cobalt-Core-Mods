@@ -50,7 +50,8 @@
         },
         "Coupon": {
             "name": "COUPON",
-            "description": "On your first turn, choose a card in your deck. <c=cardtrait>Discount</c> it."
+            "description": "On your first turn, choose a card in your deck. <c=cardtrait>Discount</c> it.",
+	        "browseAction": "Select a card to <c=cardtrait>discount</c>."
         },
         "EspressoShot": {
             "name": "ESPRESSO SHOT",
