@@ -564,7 +564,7 @@ internal sealed class CombatDialogue : BaseDialogue
 				lines = [
 					new Say { who = johnsonType, loopTag = "flashing" },
 				],
-			}.SetStrengthened(true);
+			}.SetDiscounted(true);
 
 		for (var i = 0; i < 1; i++)
 			newNodes[["Recalibrator", "Basic", i.ToString()]] = new()
