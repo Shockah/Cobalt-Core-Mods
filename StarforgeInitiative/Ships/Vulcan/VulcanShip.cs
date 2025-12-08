@@ -11,6 +11,8 @@ internal sealed class VulcanShip : IRegisterable
 {
 	private static readonly List<Type> ArtifactTypes = [
 		typeof(VulcanGeneratorOverloadArtifact),
+		typeof(VulcanWaterCoolingArtifact),
+		typeof(VulcanUpgradedCapacitorsArtifact),
 	];
 	
 	private static readonly List<Type> CardTypes = [
@@ -19,7 +21,7 @@ internal sealed class VulcanShip : IRegisterable
 	private static readonly List<Type> RegisterableTypes = [
 		.. ArtifactTypes,
 		.. CardTypes,
-		// typeof(KeplerMissileHitHookManager),
+		typeof(VulcanOverload),
 	];
 	
 	internal static IShipEntry ShipEntry { get; private set; } = null!;
