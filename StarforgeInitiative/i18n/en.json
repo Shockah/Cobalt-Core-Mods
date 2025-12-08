@@ -149,8 +149,22 @@
 				"GeneratorOverload": {
 					"name": "GENERATOR OVERLOAD",
 					"description": [
-						"You can play a card even if you can't afford it, as long as you are only missing 1 <c=ENERGY</c>.",
+						"You can play a card even if you can't afford it, as long as you are only missing 1 <c=energy>ENERGY</c>.",
 						"<c=downside>If you do, it becomes <c=cardtrait>unplayable</c> for the rest of combat, does not <c=cardtrait>exhaust</c>, and you end your turn.</c>"
+					]
+				},
+				"WaterCooling": {
+					"name": "WATER COOLING",
+					"description": [
+						"(Vulcan-exclusive artifact!)",
+						"Playing a card you can't afford no longer ends your turn."
+					]
+				},
+				"UpgradedCapacitors": {
+					"name": "UPGRADED CAPACITORS",
+					"description": [
+						"(Vulcan-exclusive artifact!)",
+						"You can play any cards you can't afford, regardless of their <c=energy>ENERGY</c> cost."
 					]
 				}
 			}
