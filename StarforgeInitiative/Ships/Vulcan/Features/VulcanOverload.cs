@@ -106,9 +106,14 @@ internal sealed class VulcanOverload : IRegisterable
 		if (data.singleUse)
 			combat.Queue(new AAddCard { card = new TrashUnplayable(), destination = CardDestination.Discard });
 
-		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is VulcanWaterCoolingArtifact) is { } artifact)
+		if (state.EnumerateAllArtifacts().OfType<VulcanWaterCoolingArtifact>().FirstOrDefault() is { TriggeredThisTurn: false } artifact)
+		{
+			artifact.TriggeredThisTurn = true;
 			artifact.Pulse();
+		}
 		else
+		{
 			combat.Queue(new AEndTurn());
+		}
 	}
 }
