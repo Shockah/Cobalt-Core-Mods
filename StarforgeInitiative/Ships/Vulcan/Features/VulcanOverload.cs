@@ -90,7 +90,7 @@ internal sealed class VulcanOverload : IRegisterable
 				return false;
 		}
 
-		cost = combat.energy;
+		cost = 0;
 		actuallyExhaust = false;
 		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, ModEntry.Instance.Helper.Content.Cards.UnplayableCardTrait, true, false);
 		
