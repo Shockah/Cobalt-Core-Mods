@@ -157,7 +157,7 @@
 					"name": "WATER COOLING",
 					"description": [
 						"(Vulcan-exclusive artifact!)",
-						"Playing a card you can't afford no longer ends your turn."
+						"Once per turn, playing a card you can't afford no longer ends your turn."
 					]
 				},
 				"UpgradedCapacitors": {
