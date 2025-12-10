@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.2.1
+Released 10 December 2025.
 
 * Fixed a crash when launching the game without a save file.
 
