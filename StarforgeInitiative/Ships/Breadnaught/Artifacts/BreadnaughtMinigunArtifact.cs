@@ -84,11 +84,11 @@ internal sealed class BreadnaughtMinigunArtifact : Artifact, IRegisterable
 	}
 
 	private static void G_BubbleEvents_Prefix(G __instance, out int __state)
-		=> __state = (__instance.state.route as Combat)?.energy ?? 0;
+		=> __state = (__instance.state?.route as Combat)?.energy ?? 0;
 
 	private static void G_BubbleEvents_Postfix(G __instance, in int __state)
 	{
-		if (__instance.state.route is not Combat combat)
+		if (__instance.state?.route is not Combat combat)
 			return;
 		if (!combat.isPlayerTurn)
 			return;
