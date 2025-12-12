@@ -1,18 +1,22 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
+using System.Linq;
 
 namespace Shockah.ContentExporter;
 
-internal sealed class CardRenderer
+internal sealed class DeckRenderer
 {
+	private const int CARD_SPACING = 2;
+	
 	private static readonly Vec BaseCardSize = new(59, 82);
 	private static readonly Vec OverborderCardSize = new(67, 90);
 
 	private RenderTarget2D? CurrentRenderTarget;
 
-	public void Render(G g, int scale, bool withScreenFilter, ExportBackground background, Card card, Stream stream)
+	public void Render(G g, int scale, bool withScreenFilter, ExportBackground background, List<List<Card?>> cardGroups, Stream stream)
 	{
 		var oldPixScale = g.mg.PIX_SCALE;
 		var oldCameraMatrix = g.mg.cameraMatrix;
@@ -22,11 +26,15 @@ internal sealed class CardRenderer
 
 		try
 		{
-			var imageSize = GetImageSize(card);
-			if (CurrentRenderTarget is null || CurrentRenderTarget.Width != (int)(imageSize.x * g.mg.PIX_SCALE) || CurrentRenderTarget.Height != (int)(imageSize.y * g.mg.PIX_SCALE))
+			var rows = cardGroups.Count;
+			var columns = cardGroups.Max(g => g.Count);
+			var anyCard = cardGroups.SelectMany(group => group).OfType<Card>().First();
+			var singleCardImageSize = GetImageSize(anyCard);
+			var fullImageSize = new Vec(singleCardImageSize.x * columns + CARD_SPACING * (columns - 1), singleCardImageSize.y * rows + CARD_SPACING * (rows - 1));
+			if (CurrentRenderTarget is null || CurrentRenderTarget.Width != (int)(fullImageSize.x * g.mg.PIX_SCALE) || CurrentRenderTarget.Height != (int)(fullImageSize.y * g.mg.PIX_SCALE))
 			{
 				CurrentRenderTarget?.Dispose();
-				CurrentRenderTarget = new(g.mg.GraphicsDevice, (int)(imageSize.x * g.mg.PIX_SCALE), (int)(imageSize.y * g.mg.PIX_SCALE));
+				CurrentRenderTarget = new(g.mg.GraphicsDevice, (int)(fullImageSize.x * g.mg.PIX_SCALE), (int)(fullImageSize.y * g.mg.PIX_SCALE));
 			}
 
 			var oldRenderTargets = g.mg.GraphicsDevice.GetRenderTargets();
@@ -46,15 +54,23 @@ internal sealed class CardRenderer
 						Draw.Fill(Colors.white);
 						break;
 				}
-				
-				card.Render(g, posOverride: new((imageSize.x - BaseCardSize.x) / 2 + 1, (imageSize.y - BaseCardSize.y) / 2 + 1), fakeState: DB.fakeState, ignoreAnim: true, ignoreHover: true);
+
+				for (var rowIndex = 0; rowIndex < cardGroups.Count; rowIndex++)
+				{
+					var row = cardGroups[rowIndex];
+					for (var columnIndex = 0; columnIndex < row.Count; columnIndex++)
+					{
+						var card = row[columnIndex];
+						card?.Render(g, posOverride: new((singleCardImageSize.x - BaseCardSize.x) / 2 + 1 + columnIndex * (singleCardImageSize.x + CARD_SPACING), (singleCardImageSize.y - BaseCardSize.y) / 2 + 1 + rowIndex * (singleCardImageSize.y + CARD_SPACING)), fakeState: DB.fakeState, ignoreAnim: true, ignoreHover: true);
+					}
+				}
 			}
 			catch
 			{
-				ModEntry.Instance.Logger.LogError("There was an error exporting card {Card} {Upgrade}.", card.Key(), card.upgrade);
+				ModEntry.Instance.Logger.LogError("There was an error exporting cards for deck {Deck}.", anyCard.GetMeta().deck.Key());
 			}
 			if (withScreenFilter)
-				Draw.Rect(0, 0, (int)(imageSize.x * g.mg.PIX_SCALE), (int)(imageSize.y * g.mg.PIX_SCALE), Colors.screenOverlay, new BlendState
+				Draw.Rect(0, 0, (int)(fullImageSize.x * g.mg.PIX_SCALE), (int)(fullImageSize.y * g.mg.PIX_SCALE), Colors.screenOverlay, new BlendState
 				{
 					ColorBlendFunction = BlendFunction.Add,
 					ColorSourceBlend = Blend.One,
@@ -66,7 +82,7 @@ internal sealed class CardRenderer
 
 			g.mg.GraphicsDevice.SetRenderTargets(oldRenderTargets);
 
-			CurrentRenderTarget.SaveAsPng(stream, (int)(imageSize.x * g.mg.PIX_SCALE), (int)(imageSize.y * g.mg.PIX_SCALE));
+			CurrentRenderTarget.SaveAsPng(stream, (int)(fullImageSize.x * g.mg.PIX_SCALE), (int)(fullImageSize.y * g.mg.PIX_SCALE));
 		}
 		finally
 		{
