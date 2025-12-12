@@ -10,17 +10,20 @@ using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using Nickel.ModSettings;
+using TheJazMaster.MoreDifficulties;
 
 namespace Shockah.ContentExporter;
 
 internal sealed partial class ModEntry : SimpleMod
 {
 	internal static ModEntry Instance { get; private set; } = null!;
+	internal IMoreDifficultiesApi? MoreDifficultiesApi { get; private set; }
 
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
 	internal readonly Queue<Action<G>> QueuedTasks = new();
+	private readonly DeckRenderer DeckRenderer = new();
 	private readonly CardRenderer CardRenderer = new();
 	private readonly CardTooltipRenderer CardTooltipRenderer = new();
 	private readonly CardUpgradesRenderer CardUpgradesRenderer = new();
@@ -52,6 +55,8 @@ internal sealed partial class ModEntry : SimpleMod
 		BossArtifactGlowSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/BossArtifactGlow.png"));
 
 		this.Settings = helper.Storage.LoadJson<Settings>(helper.Storage.GetMainStorageFile("json"));
+		
+		helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", api => MoreDifficultiesApi = api);
 
 		var harmony = new Harmony(package.Manifest.UniqueName);
 		CardPatches.Apply(harmony);
@@ -66,6 +71,7 @@ internal sealed partial class ModEntry : SimpleMod
 					() => Localizations.Localize(["settings", "export", "title"]),
 					(g, _) =>
 					{
+						QueueDeckExportTasks(g);
 						QueueCardExportTasks(g);
 						QueueArtifactExportTasks(g);
 						QueueShipExportTasks(g);
@@ -289,6 +295,121 @@ internal sealed partial class ModEntry : SimpleMod
 		foreach (var unsafeChar in Path.GetInvalidFileNameChars())
 			path = path.Replace(unsafeChar, '_');
 		return path;
+	}
+	
+	private void QueueDeckExportTasks(G g)
+	{
+		var cardsScale = Math.Max(Settings.CardsScale ?? 4, 0);
+		if (cardsScale <= 0)
+			return;
+		
+		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
+		var screenFilter = Settings.ScreenFilter;
+		var background = Settings.Background;
+
+		var isOutsideRun = g.state.IsOutsideRun();
+		var decks = StarterDeck.starterSets.Keys
+			.Select(key => Helper.Content.Decks.LookupByDeck(key))
+			.OfType<IDeckEntry>()
+			.Where(e =>
+			{
+				if (Settings.FilterToRun)
+				{
+					if (isOutsideRun)
+					{
+						if (!g.state.runConfig.selectedChars.Contains(e.Deck))
+							return false;
+					}
+					else
+					{
+						if (g.state.characters.All(character => character.deckType != e.Deck))
+							return false;
+					}
+				}
+				if (Settings.FilterToMods.Count != 0 && !Settings.FilterToMods.Contains(e.ModOwner.UniqueName))
+					return false;
+				return true;
+			})
+			.ToList();
+
+		if (decks.Count == 0)
+			return;
+
+		var exportableDecksDataPath = Path.Combine(modloaderFolder, "ContentExport", "Decks");
+
+		foreach (var e in decks)
+		{
+			var fileSafeDeckName = MakeFileSafe(ObtainDeckNiceName(e.Deck));
+			List<string> starters = [
+				.. StarterDeck.starterSets.TryGetValue(e.Deck, out var starterDeck) ? starterDeck.cards.OrderBy(card => card.GetFullDisplayName()).Select(card => card.Key()) : [],
+				.. MoreDifficultiesApi?.GetAltStarters(e.Deck)?.cards.OrderBy(card => card.GetFullDisplayName()).Select(card => card.Key()) ?? [],
+			];
+
+			var cards = DB.releasedCards
+				.Where(card => card.GetMeta().deck == e.Deck)
+				.OrderBy(card => card.GetMeta().rarity)
+				.ThenBy(card =>
+				{
+					var starterIndex = starters.IndexOf(card.Key());
+					return starterIndex < 0 ? int.MaxValue : starterIndex;
+				})
+				.ThenBy(card => card.GetFullDisplayName())
+				.ToList();
+
+			var commonCards = cards
+				.Where(card => card.GetMeta() is { dontOffer: false, rarity: Rarity.common })
+				.Cast<Card?>()
+				.ToList();
+			var uncommonCards = cards
+				.Where(card => card.GetMeta() is { dontOffer: false, rarity: Rarity.uncommon })
+				.Cast<Card?>()
+				.ToList();
+			var rareCards = cards
+				.Where(card => card.GetMeta() is { dontOffer: false, rarity: Rarity.rare })
+				.Cast<Card?>()
+				.ToList();
+			var notOfferedCards = cards
+				.Where(card => card.GetMeta().dontOffer)
+				.Cast<Card?>()
+				.ToList();
+
+			List<List<Card?>> cardGroups = [];
+			if (commonCards.Count != 0)
+				cardGroups.Add(commonCards);
+			if (uncommonCards.Count != 0)
+				cardGroups.Add(uncommonCards);
+			if (rareCards.Count != 0)
+				cardGroups.Add(rareCards);
+			if (notOfferedCards.Count != 0)
+				cardGroups.Add(notOfferedCards);
+
+			if (cardGroups.Count == 0)
+				return;
+
+			var upgradedCards = Enum.GetValues<Upgrade>().Where(upgrade => upgrade != Upgrade.None).ToDictionary(
+				upgrade => Enum.GetName(upgrade)!,
+				upgrade => cardGroups.Select(cardGroup => cardGroup.Select(card =>
+				{
+					if (card is null)
+						return null;
+					if (!card.GetMeta().upgradesTo.Contains(upgrade))
+						return null;
+					
+					var upgradedCard = Mutil.DeepCopy(card);
+					upgradedCard.upgrade = upgrade;
+					return upgradedCard;
+				}).ToList()).ToList()
+			);
+			
+			var imagePath = Path.Combine(exportableDecksDataPath, $"{fileSafeDeckName}.png");
+			QueueTask(g => DeckExportTask(g, cardsScale, screenFilter, background, cardGroups, imagePath));
+
+			foreach (var kvp in upgradedCards)
+			{
+				var upgradedImagePath = Path.Combine(exportableDecksDataPath, $"{fileSafeDeckName} {kvp.Key}.png");
+				QueueTask(g => DeckExportTask(g, cardsScale, screenFilter, background, kvp.Value, upgradedImagePath));
+			}
+		}
 	}
 
 	private void QueueCardExportTasks(G g)
@@ -532,6 +653,18 @@ internal sealed partial class ModEntry : SimpleMod
 		var fileSafeName = MakeFileSafe(entry.Configuration.Name?.Invoke(DB.currentLocale.locale) ?? entry.UniqueName);
 		var imagePath = Path.Combine(exportableDataPath, $"{fileSafeName}.png");
 		QueueTask(g => ShipDescriptionExportTask(g, scale, withScreenFilter, background, entry.Configuration.Ship.ship, imagePath));
+	}
+
+	private void DeckExportTask(G g, int scale, bool withScreenFilter, ExportBackground background, List<List<Card?>> cardGroups, string path)
+	{
+		if (scale <= 0)
+			return;
+		if (cardGroups.Count == 0)
+			return;
+
+		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
+		using var stream = new FileStream(path, FileMode.Create);
+		DeckRenderer.Render(g, scale, withScreenFilter, background, cardGroups, stream);
 	}
 
 	private void CardBaseExportTask(G g, int scale, bool withScreenFilter, ExportBackground background, Card card, string path)
