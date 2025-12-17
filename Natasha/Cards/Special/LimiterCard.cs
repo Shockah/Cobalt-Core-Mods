@@ -22,7 +22,7 @@ internal sealed class LimiterCard : Card, IRegisterable, IHasCustomCardTraits
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Limiter", "name"]).Localize
 		});
 
-		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 3);
+		ModEntry.Instance.KokoroApi.Limited.SetBaseLimitedUses(entry.UniqueName, Upgrade.None, 2);
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)

@@ -4,15 +4,16 @@
 
 ## Upcoming release
 
-* Changed the alt starter deck: replaced Remove Limited with If Else.
+* Changed the alt starter deck: replaced Remove Limiter with If Else.
 * Simplified the Typo card.
+* Buffed the Remove Limiter card: changed from Limited 3 to Limited 2 on the Limiter trash card it creates.
 
 ## 1.6.0
 Released 4 December 2025.
 
 * Added duo artifacts for all vanilla characters.
 * Buffed the Buffer card: the base card changed from Limited 1 to Limited 2; the new A upgrade is now the same as the base card, except has Recycle and Retain; the B upgrade starts with Limited 1.
-* Nerfed the Remove Limiter card: changed from Limited 2 to Limited 3 and removed Recycle on the Limited trash card it creates.
+* Nerfed the Remove Limiter card: changed from Limited 2 to Limited 3 and removed Recycle on the Limiter trash card it creates.
 * Changed the Voltage Tuning card: changed from Limited 3 to Limited 2, but it no longer decreases its uses on the top action. Also swapped around the A and B upgrades.
 * Fixed capitalization in artifact tooltips.
 
