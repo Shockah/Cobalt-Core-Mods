@@ -35,6 +35,10 @@
 		"TempStrafe": {
 			"name": "Temp Strafe",
 			"description": "Fire for {0} damage immediately after every move you make. <c=downside>Goes away at start of next turn.</c>"
+		},
+		"RegainHullLater": {
+			"name": "Regain Hull Later",
+			"description": "Regain {0} hull at the end of combat, or at the end of a turn where you didn't suffer <c=action>temp hull loss</c>. <c=downside>Does not count as healing.</c>"
 		}
 	},
 	"cardTrait": {
@@ -303,6 +307,14 @@
 				"name": "Set Uses",
 				"description": "Set <c=cardtrait>finite</c> uses on this card to <c=boldPink>{{Amount}}</c>."
 			}
+		}
+	},
+	"tempHullLoss": {
+		"name": "Temp Hull Loss",
+		"description": "Lose {0} hull. Regain it at the end of combat, or at the end of a turn where you didn't suffer <c=action>temp hull loss</c>.",
+		"outgoing": {
+			"name": "outgoing",
+			"description": "This effect will be applied to the enemy, wherever they are."
 		}
 	}
 }

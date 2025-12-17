@@ -73,6 +73,10 @@ internal sealed partial class Content
 	
 	internal ExternalSprite TempStrafeSprite { get; private set; } = null!;
 	internal IStatusEntry TempStrafeStatus { get; private set; } = null!;
+	
+	internal ExternalSprite TempHullLossSprite { get; private set; } = null!;
+	internal ExternalSprite RegainHullLaterSprite { get; private set; } = null!;
+	internal IStatusEntry RegainHullLaterStatus { get; private set; } = null!;
 
 	internal Font PinchCompactFont { get; private set; } = null!;
 
@@ -194,6 +198,14 @@ internal sealed partial class Content
 			id: $"{typeof(ModEntry).Namespace}.Status.TempStrafe",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "TempStrafe.png"))
 		);
+		TempHullLossSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.TempHullLoss",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "TempHullLoss.png"))
+		);
+		RegainHullLaterSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.Status.RegainHullLater",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "RegainHullLater.png"))
+		);
 
 		PinchCompactFont = LoadFont(
 			registry: registry,
@@ -239,6 +251,19 @@ internal sealed partial class Content
 				},
 				Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "TempStrafe", "name"]).Localize,
 				Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "TempStrafe", "description"]).Localize,
+			});
+		}
+		{
+			RegainHullLaterStatus = Instance.Helper.Content.Statuses.RegisterStatus($"{typeof(ModEntry).Namespace}.Status.RegainHullLater", new()
+			{
+				Definition = new()
+				{
+					icon = (Spr)RegainHullLaterSprite.Id!.Value,
+					color = new("E6E164"),
+					isGood = true,
+				},
+				Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "RegainHullLater", "name"]).Localize,
+				Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "RegainHullLater", "description"]).Localize,
 			});
 		}
 		{

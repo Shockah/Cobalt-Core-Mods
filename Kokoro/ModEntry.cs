@@ -86,6 +86,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		SpoofedActionManager.Setup(Harmony);
 		StatusLogicManager.Setup(Harmony);
 		StatusRenderManager.Setup(Harmony);
+		TempHullManager.Setup(Harmony);
 		TemporaryUpgradesManager.Setup(Harmony);
 		TimesPlayedManager.Setup(Harmony);
 		VariableHintTargetPlayerManager.Setup(Harmony);
