@@ -209,8 +209,8 @@ public sealed class ModEntry : SimpleMod
 				starterDeck: new StarterDeck
 				{
 					cards = [
-						new RemoveLimiterCard(),
-						new BufferOverflowCard()
+						new BufferOverflowCard(),
+						new IfElseCard(),
 					]
 				}
 			)

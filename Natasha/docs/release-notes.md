@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Changed the alt starter deck: replaced Remove Limited with If Else.
 * Simplified the Typo card.
 
 ## 1.6.0
