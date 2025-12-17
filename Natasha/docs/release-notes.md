@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Simplified the Typo card.
+
 ## 1.6.0
 Released 4 December 2025.
 

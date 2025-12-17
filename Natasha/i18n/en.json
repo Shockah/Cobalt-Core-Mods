@@ -177,11 +177,7 @@
             "name": "Spyware"
         },
         "Typo": {
-            "name": "Typo",
-            "discardSelfAction": {
-                "name": "Discard Self",
-                "description": "Discard this card."
-            }
+            "name": "Typo"
         },
         "VoltageTuning": {
             "name": "Voltage Tuning"
