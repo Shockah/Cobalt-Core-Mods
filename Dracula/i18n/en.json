@@ -6,6 +6,13 @@
 			    "<c=E81B16>DRACULA</c>",
 			    "A so-called \"last living human\". His cards often <c=downside>self-hurt</c>, but they also often <c=heal>heal</c>."
 		    ]
+	    },
+	    "Mavis": {
+		    "name": "Mavis",
+		    "description": [
+			    "<c=E81B16>MAVIS</c>",
+			    "<c=E81B16>Dracula's</c> daughter. She <c=keyword>puts herself into the <c=midrow>midrow</c></c> and <c=keyword>temporarily gains or loses hull</c>."
+		    ]
 	    }
     },
     "ship": {
