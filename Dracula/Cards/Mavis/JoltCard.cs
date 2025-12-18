@@ -5,7 +5,7 @@ using Nickel;
 
 namespace Shockah.Dracula;
 
-internal sealed class JoltCard : Card, IDraculaCard
+internal sealed class JoltCard : Card, IDraculaCard, IHasCustomCardTraits
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -25,6 +25,9 @@ internal sealed class JoltCard : Card, IDraculaCard
 
 	public override CardData GetData(State state)
 		=> new() { cost = 0 };
+
+	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
+		=> new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Independent.Trait };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
