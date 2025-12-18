@@ -90,17 +90,34 @@ internal sealed class IndependentManager
 		{
 			Icon = (_, _) => icon.Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["cardTrait", "Independent", "name"]).Localize,
-			Tooltips = (_, card) => [
-				new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Independent")
+			Tooltips = (_, card) =>
+			{
+				if (card is null || ModEntry.Instance.Helper.Content.Characters.V2.LookupByDeck(card.GetMeta().deck) is not { } characterEntry)
 				{
-					Icon = icon.Sprite,
-					TitleColor = Colors.cardtrait,
-					Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Independent", "name"]),
-					Description = card is null || ModEntry.Instance.Helper.Content.Characters.V2.LookupByDeck(card.GetMeta().deck) is not { } characterEntry
-						? ModEntry.Instance.Localizations.Localize(["cardTrait", "Independent", "description", "generic"])
-						: ModEntry.Instance.Localizations.Localize(["cardTrait", "Independent", "description", "owned"], new { Status = Loc.T($"status.{characterEntry.MissingStatus.Status}") }),
+					return [
+						new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Independent")
+						{
+							Icon = icon.Sprite,
+							TitleColor = Colors.cardtrait,
+							Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Independent", "name"]),
+							Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Independent", "description", "generic"]),
+						},
+					];
 				}
-			]
+				else
+				{
+					return [
+						new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Independent")
+						{
+							Icon = icon.Sprite,
+							TitleColor = Colors.cardtrait,
+							Title = ModEntry.Instance.Localizations.Localize(["cardTrait", "Independent", "name"]),
+							Description = ModEntry.Instance.Localizations.Localize(["cardTrait", "Independent", "description", "owned"], new { Status = Loc.T($"status.{characterEntry.MissingStatus.Status}.name").ToUpper() }),
+						},
+						.. StatusMeta.GetTooltips(characterEntry.MissingStatus.Status, 1),
+					];
+				}
+			}
 		});
 		
 		harmony.Patch(
@@ -147,25 +164,29 @@ internal sealed class IndependentManager
 	private static bool Combat_TryPlayCard_Transpiler_ShouldPlayRegardlessOfOwnerMissing(State state, Card card)
 		=> ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Trait);
 
-	private static void Card_Render_Prefix(Card __instance, G g, State fakeState, out int? __state)
+	private static void Card_Render_Prefix(Card __instance, G g, State? fakeState, out int? __state)
 	{
+		var state = fakeState ?? g.state;
+		
 		__state = null;
 		if (ModEntry.Instance.Helper.Content.Characters.V2.LookupByDeck(__instance.GetMeta().deck) is not { } characterEntry)
 			return;
-		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(fakeState, __instance, Trait))
+		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, __instance, Trait))
 			return;
 		
-		__state = fakeState.ship.Get(characterEntry.MissingStatus.Status);
-		fakeState.ship.Set(characterEntry.MissingStatus.Status, 0);
+		__state = state.ship.Get(characterEntry.MissingStatus.Status);
+		state.ship.Set(characterEntry.MissingStatus.Status, 0);
 	}
 
-	private static void Card_Render_Finalizer(Card __instance, G g, State fakeState, in int? __state)
+	private static void Card_Render_Finalizer(Card __instance, G g, State? fakeState, in int? __state)
 	{
+		var state = fakeState ?? g.state;
+		
 		if (__state is null)
 			return;
 		if (ModEntry.Instance.Helper.Content.Characters.V2.LookupByDeck(__instance.GetMeta().deck) is not { } characterEntry)
 			return;
-		
-		fakeState.ship.Set(characterEntry.MissingStatus.Status, __state.Value);
+
+		state.ship.Set(characterEntry.MissingStatus.Status, __state.Value);
 	}
 }
