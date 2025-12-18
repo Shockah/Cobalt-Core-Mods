@@ -16,17 +16,23 @@ partial class ApiImplementation
 		
 		public sealed class TempHullApi : IKokoroApi.IV2.ITempHullApi
 		{
-			public Status TempHullStatus
-				=> ModEntry.Instance.Content.TempHullStatus.Status;
+			public Status LoseHullLaterStatus
+				=> ModEntry.Instance.Content.LoseHullLaterStatus.Status;
 			
 			public Status RegainHullLaterStatus
 				=> ModEntry.Instance.Content.RegainHullLaterStatus.Status;
 
-			public IKokoroApi.IV2.ITempHullApi.ILoseAction? AsAction(CardAction action)
-				=> action as IKokoroApi.IV2.ITempHullApi.ILoseAction;
+			public IKokoroApi.IV2.ITempHullApi.IGainAction? AsGainAction(CardAction action)
+				=> action as IKokoroApi.IV2.ITempHullApi.IGainAction;
 
-			public IKokoroApi.IV2.ITempHullApi.ILoseAction MakeLoseAction(int amount, bool targetPlayer = true)
-				=> new TempHullManager.LoseAction { TargetPlayer = targetPlayer, Amount = amount };
+			public IKokoroApi.IV2.ITempHullApi.IGainAction MakeGainAction(int amount, bool targetPlayer = true)
+				=> new TempHullManager.GainAction { TargetPlayer = targetPlayer, Amount = amount };
+
+			public IKokoroApi.IV2.ITempHullApi.ILossAction? AsLossAction(CardAction action)
+				=> action as IKokoroApi.IV2.ITempHullApi.ILossAction;
+
+			public IKokoroApi.IV2.ITempHullApi.ILossAction MakeLossAction(int amount, bool targetPlayer = true)
+				=> new TempHullManager.LossAction { TargetPlayer = targetPlayer, Amount = amount };
 		}
 	}
 }
@@ -36,7 +42,7 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 	internal static readonly TempHullManager Instance = new();
 	
 	private static readonly Lazy<HashSet<Status>> StatusesToCallTurnTriggerHooksFor = new(() => [
-		ModEntry.Instance.Content.TempHullStatus.Status,
+		ModEntry.Instance.Content.LoseHullLaterStatus.Status,
 		ModEntry.Instance.Content.RegainHullLaterStatus.Status,
 	]);
 
@@ -66,7 +72,7 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 		);
 	}
 
-	internal void RegainHullNow(State state, Combat combat, int amount, bool targetPlayer)
+	private static void RegainHullNow(State state, Combat combat, int amount, bool targetPlayer)
 	{
 		if (amount <= 0)
 			return;
@@ -80,12 +86,22 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 	{
 		if (__instance.otherShip.hull > 0)
 			return;
-		Instance.RegainHullNow(g.state, __instance, g.state.ship.Get(ModEntry.Instance.Content.RegainHullLaterStatus.Status), true);
+		
+		RegainHullNow(g.state, __instance, g.state.ship.Get(ModEntry.Instance.Content.RegainHullLaterStatus.Status), true);
+		g.state.ship.Set(ModEntry.Instance.Content.RegainHullLaterStatus.Status, 0);
+
+		var hullToLose = g.state.ship.Get(ModEntry.Instance.Content.LoseHullLaterStatus.Status);
+		var realAmount = Math.Min(g.state.ship.hull - 1, hullToLose);
+		if (realAmount <= 0)
+			return;
+
+		g.state.ship.Set(ModEntry.Instance.Content.LoseHullLaterStatus.Status, 0);
+		g.state.ship.DirectHullDamage(g.state, __instance, realAmount);
 	}
 
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
 	{
-		if (action is not LoseAction loseAction)
+		if (action is not LossAction loseAction)
 			return true;
 		if (loseAction.TargetPlayer)
 			return true;
@@ -120,33 +136,52 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 		if (lostAmount <= 0)
 			return;
 
-		var tempHull = __instance.Get(ModEntry.Instance.Content.TempHullStatus.Status);
-		var tempHullToLose = Math.Min(lostAmount, tempHull);
-		if (tempHullToLose < 0)
+		var tempHull = __instance.Get(ModEntry.Instance.Content.LoseHullLaterStatus.Status);
+		var statusToLose = Math.Min(lostAmount, tempHull);
+		if (statusToLose < 0)
 			return;
 
-		__instance.Add(ModEntry.Instance.Content.TempHullStatus.Status, -tempHullToLose);
+		__instance.Add(ModEntry.Instance.Content.LoseHullLaterStatus.Status, -statusToLose);
 	}
 
 	private static void Ship_Heal_Prefix(Ship __instance, out int __state)
 		=> __state = __instance.hull;
 
-	private static void Ship_Heal_Postfix(Ship __instance, in int __state)
+	private static void Ship_Heal_Postfix(Ship __instance, int amount, in int __state)
 	{
 		var healedAmount = __instance.hull - __state;
-		if (healedAmount <= 0)
+		if (healedAmount == amount)
 			return;
 
-		var tempHull = __instance.Get(ModEntry.Instance.Content.TempHullStatus.Status);
-		var tempHullToLose = Math.Min(healedAmount, tempHull);
-		if (tempHullToLose < 0)
+		var remainingHeal = amount - healedAmount;
+		var tempHull = __instance.Get(ModEntry.Instance.Content.LoseHullLaterStatus.Status);
+		var statusToLose = Math.Min(remainingHeal, tempHull);
+		if (statusToLose < 0)
 			return;
 
-		__instance.Add(ModEntry.Instance.Content.TempHullStatus.Status, -tempHullToLose);
+		__instance.Add(ModEntry.Instance.Content.LoseHullLaterStatus.Status, -statusToLose);
 	}
 	
 	public IReadOnlySet<Status> GetStatusesToCallTurnTriggerHooksFor(IKokoroApi.IV2.IStatusLogicApi.IHook.IGetStatusesToCallTurnTriggerHooksForArgs args)
 		=> StatusesToCallTurnTriggerHooksFor.Value.Intersect(args.NonZeroStatuses).ToHashSet();
+
+	public bool? IsAffectedByBoost(IKokoroApi.IV2.IStatusLogicApi.IHook.IIsAffectedByBoostArgs args)
+		=> StatusesToCallTurnTriggerHooksFor.Value.Contains(args.Status) ? false : null;
+
+	public int ModifyStatusChange(IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusChangeArgs args)
+	{
+		if (!StatusesToCallTurnTriggerHooksFor.Value.Contains(args.Status))
+			return args.NewAmount;
+		if (args.NewAmount <= args.OldAmount)
+			return args.NewAmount;
+
+		var opposite = args.Status == ModEntry.Instance.Content.LoseHullLaterStatus.Status ? ModEntry.Instance.Content.RegainHullLaterStatus.Status : ModEntry.Instance.Content.LoseHullLaterStatus.Status;
+		var oppositeAmount = args.Ship.Get(opposite);
+
+		var toRemove = Math.Min(args.NewAmount - args.OldAmount, oppositeAmount);
+		args.Ship.Add(opposite, -toRemove);
+		return args.NewAmount - toRemove;
+	}
 
 	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
@@ -165,7 +200,7 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 			return false;
 		}
 		
-		if (args.Status == ModEntry.Instance.Content.TempHullStatus.Status)
+		if (args.Status == ModEntry.Instance.Content.LoseHullLaterStatus.Status)
 		{
 			if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 				return false;
@@ -192,7 +227,7 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 			return;
 		}
 
-		if (args.Status == ModEntry.Instance.Content.TempHullStatus.Status)
+		if (args.Status == ModEntry.Instance.Content.LoseHullLaterStatus.Status)
 		{
 			if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 				return;
@@ -205,8 +240,62 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 			return;
 		}
 	}
+	
+	internal sealed class GainAction : CardAction, IKokoroApi.IV2.ITempHullApi.IGainAction
+	{
+		[JsonIgnore]
+		public CardAction AsCardAction
+			=> this;
 
-	internal sealed class LoseAction : CardAction, IKokoroApi.IV2.ITempHullApi.ILoseAction
+		public bool TargetPlayer { get; set; } = true;
+		public int Amount { get; set; }
+
+		public override List<Tooltip> GetTooltips(State s)
+			=> [
+				.. TargetPlayer ? Array.Empty<Tooltip>() : [new GlossaryTooltip($"action.{GetType().Namespace!}::Outgoing")
+				{
+					Icon = (Spr)ModEntry.Instance.Content.TempHullLossSprite.Id!.Value,
+					TitleColor = Colors.keyword,
+					Title = ModEntry.Instance.Localizations.Localize(["tempHullLoss", "outgoing", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["tempHullLoss", "outgoing", "description"]),
+				}],
+				new GlossaryTooltip($"action.{GetType().Namespace!}::TempHullGain")
+				{
+					Icon = (Spr)ModEntry.Instance.Content.TempHullGainSprite.Id!.Value,
+					TitleColor = Colors.action,
+					Title = ModEntry.Instance.Localizations.Localize(["tempHullGain", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["tempHullGain", "description"]),
+				}
+			];
+
+		public override void Begin(G g, State s, Combat c)
+		{
+			base.Begin(g, s, c);
+			timer = 0;
+
+			var target = TargetPlayer ? s.ship : c.otherShip;
+			var realAmount = Math.Min(target.hullMax - target.hull, Amount);
+			if (realAmount <= 0)
+				return;
+			
+			target.Heal(realAmount);
+			c.QueueImmediate(new AStatus { targetPlayer = TargetPlayer, status = ModEntry.Instance.Content.LoseHullLaterStatus.Status, statusAmount = realAmount });
+		}
+
+		public IKokoroApi.IV2.ITempHullApi.IGainAction SetTargetPlayer(bool value)
+		{
+			this.TargetPlayer = value;
+			return this;
+		}
+
+		public IKokoroApi.IV2.ITempHullApi.IGainAction SetAmount(int value)
+		{
+			this.Amount = value;
+			return this;
+		}
+	}
+
+	internal sealed class LossAction : CardAction, IKokoroApi.IV2.ITempHullApi.ILossAction
 	{
 		[JsonIgnore]
 		public CardAction AsCardAction
@@ -251,19 +340,19 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 			]);
 		}
 
-		public IKokoroApi.IV2.ITempHullApi.ILoseAction SetTargetPlayer(bool value)
+		public IKokoroApi.IV2.ITempHullApi.ILossAction SetTargetPlayer(bool value)
 		{
 			this.TargetPlayer = value;
 			return this;
 		}
 
-		public IKokoroApi.IV2.ITempHullApi.ILoseAction SetAmount(int value)
+		public IKokoroApi.IV2.ITempHullApi.ILossAction SetAmount(int value)
 		{
 			this.Amount = value;
 			return this;
 		}
 
-		public IKokoroApi.IV2.ITempHullApi.ILoseAction SetCannotKill(bool value)
+		public IKokoroApi.IV2.ITempHullApi.ILossAction SetCannotKill(bool value)
 		{
 			this.CannotKill = value;
 			return this;

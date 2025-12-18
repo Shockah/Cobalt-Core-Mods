@@ -74,8 +74,9 @@ internal sealed partial class Content
 	internal ExternalSprite TempStrafeSprite { get; private set; } = null!;
 	internal IStatusEntry TempStrafeStatus { get; private set; } = null!;
 	
-	internal ExternalSprite TempHullSprite { get; private set; } = null!;
-	internal IStatusEntry TempHullStatus { get; private set; } = null!;
+	internal ExternalSprite TempHullGainSprite { get; private set; } = null!;
+	internal ExternalSprite LoseHullLaterSprite { get; private set; } = null!;
+	internal IStatusEntry LoseHullLaterStatus { get; private set; } = null!;
 	internal ExternalSprite TempHullLossSprite { get; private set; } = null!;
 	internal ExternalSprite RegainHullLaterSprite { get; private set; } = null!;
 	internal IStatusEntry RegainHullLaterStatus { get; private set; } = null!;
@@ -200,9 +201,13 @@ internal sealed partial class Content
 			id: $"{typeof(ModEntry).Namespace}.Status.TempStrafe",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "TempStrafe.png"))
 		);
-		TempHullSprite = registry.RegisterArtOrThrow(
-			id: $"{typeof(ModEntry).Namespace}.TempHull",
-			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "TempHull.png"))
+		TempHullGainSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.TempHullGain",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "TempHullGain.png"))
+		);
+		LoseHullLaterSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.LoseHullLater",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "LoseHullLater.png"))
 		);
 		TempHullLossSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.TempHullLoss",
@@ -260,17 +265,17 @@ internal sealed partial class Content
 			});
 		}
 		{
-			TempHullStatus = Instance.Helper.Content.Statuses.RegisterStatus($"{typeof(ModEntry).Namespace}.Status.TempHull", new()
+			LoseHullLaterStatus = Instance.Helper.Content.Statuses.RegisterStatus($"{typeof(ModEntry).Namespace}.Status.LoseHullLater", new()
 			{
 				Definition = new()
 				{
-					icon = (Spr)TempHullSprite.Id!.Value,
-					color = new("3DC8FF"),
-					isGood = true,
+					icon = (Spr)LoseHullLaterSprite.Id!.Value,
+					color = new("FF3838"),
+					isGood = false,
 					affectedByTimestop = true,
 				},
-				Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "TempHull", "name"]).Localize,
-				Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "TempHull", "description"]).Localize,
+				Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "LoseHullLater", "name"]).Localize,
+				Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "LoseHullLater", "description"]).Localize,
 			});
 		}
 		{
