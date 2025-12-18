@@ -34,7 +34,7 @@ internal sealed class JoltCard : Card, IDraculaCard
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new HullCondition { BelowHalf = false },
 					ModEntry.Instance.KokoroApi.TempHull.MakeLossAction(1).AsCardAction
-				).AsCardAction,
+				).SetShowQuestionMark(false).AsCardAction,
 				new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 1 },
 			],
 			Upgrade.B => [

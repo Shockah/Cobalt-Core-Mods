@@ -77,16 +77,30 @@
     },
     "condition": {
         "hull": {
-            "below": {
-                "title": "Hull Below Half",
-                "stateless": "you are at or below half hull",
-                "stateful": "you are at or below half (<c=boldPink>{{Hull}}</c>) hull"
+            "player": {
+	            "below": {
+		            "title": "Breached",
+		            "stateless": "you are at or below half hull",
+		            "stateful": "you are at or below half (<c=boldPink>{{Hull}}</c>) hull"
+	            },
+	            "above": {
+		            "title": "Stable",
+		            "stateless": "you are above half hull",
+		            "stateful": "you are above half (<c=boldPink>{{Hull}}</c>) hull"
+	            }
             },
-            "above": {
-                "title": "Hull Above Half",
-                "stateless": "you are above half hull",
-                "stateful": "you are above half (<c=boldPink>{{Hull}}</c>) hull"
-            }
+	        "enemy": {
+		        "below": {
+			        "title": "Breached",
+			        "stateless": "your enemy is at or below half hull",
+			        "stateful": "your enemy is at or below half (<c=boldPink>{{Hull}}</c>) hull"
+		        },
+		        "above": {
+			        "title": "Stable",
+			        "stateless": "your enemy is above half hull",
+			        "stateful": "your enemy is above half (<c=boldPink>{{Hull}}</c>) hull"
+		        }
+	        }
         }
     },
     "midrow": {

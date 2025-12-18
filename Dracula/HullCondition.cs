@@ -14,19 +14,28 @@ public sealed class HullCondition : IKokoroApi.IV2.IConditionalApi.IBoolExpressi
 	{
 		if (OverrideValue is not null)
 			return OverrideValue.Value;
-		return BelowHalf ? state.ship.hull <= state.ship.hullMax / 2 : state.ship.hull > state.ship.hullMax / 2;
+
+		var target = TargetPlayer ? state.ship : combat.otherShip;
+		return BelowHalf ? target.hull <= target.hullMax / 2 : target.hull > target.hullMax / 2;
 	}
 
 	public string GetTooltipDescription(State state, Combat? combat)
 	{
 		if (state.IsOutsideRun() || state == DB.fakeState)
-			return ModEntry.Instance.Localizations.Localize(["condition", "hull", BelowHalf ? "below" : "above", "stateless"]);
+			return ModEntry.Instance.Localizations.Localize(["condition", "hull", TargetPlayer ? "player" : "enemy", BelowHalf ? "below" : "above", "stateless"]);
 		else
-			return ModEntry.Instance.Localizations.Localize(["condition", "hull", BelowHalf ? "below" : "above", "stateful"], new { Hull = state.ship.hullMax / 2 });
+			return ModEntry.Instance.Localizations.Localize(["condition", "hull", TargetPlayer ? "player" : "enemy", BelowHalf ? "below" : "above", "stateful"], new { Hull = state.ship.hullMax / 2 });
 	}
 
 	public void Render(G g, ref Vec position, bool isDisabled, bool dontRender)
 	{
+		if (!TargetPlayer)
+		{
+			if (!dontRender)
+				Draw.Sprite(StableSpr.icons_outgoing, position.x - 2, position.y, color: isDisabled ? Colors.disabledIconTint : Colors.white);
+			position.x += 6;
+		}
+		
 		if (!dontRender)
 			Draw.Sprite(
 				(BelowHalf ? ModEntry.Instance.HullBelowHalf : ModEntry.Instance.HullAboveHalf).Sprite,
@@ -39,11 +48,11 @@ public sealed class HullCondition : IKokoroApi.IV2.IConditionalApi.IBoolExpressi
 
 	public IEnumerable<Tooltip> OverrideConditionalTooltip(State state, Combat? combat, Tooltip defaultTooltip, string defaultTooltipDescription)
 		=> [
-			new GlossaryTooltip($"AConditional::{ModEntry.Instance.Package.Manifest.UniqueName}::HullCondition::BelowHalf={BelowHalf}")
+			new GlossaryTooltip($"AConditional::{ModEntry.Instance.Package.Manifest.UniqueName}::HullCondition::TargetPlayer={TargetPlayer}::BelowHalf={BelowHalf}")
 			{
 				Icon = (BelowHalf ? ModEntry.Instance.HullBelowHalf : ModEntry.Instance.HullAboveHalf).Sprite,
 				TitleColor = Colors.action,
-				Title = ModEntry.Instance.Localizations.Localize(["condition", "hull", BelowHalf ? "below" : "above", "title"]),
+				Title = ModEntry.Instance.Localizations.Localize(["condition", "hull", TargetPlayer ? "player" : "enemy", BelowHalf ? "below" : "above", "title"]),
 				Description = defaultTooltipDescription,
 			}
 		];
