@@ -390,6 +390,16 @@
 			    }
 		    }
 	    },
+	    
+	    "Mavis": {
+		    "Brace": {
+			    "name": "Brace"
+		    },
+		    "Tear": {
+			    "name": "Tear"
+		    }
+		    
+	    },
 
         "Secret": {
             "deck": "Spell",
