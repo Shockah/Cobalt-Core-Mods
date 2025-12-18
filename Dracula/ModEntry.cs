@@ -1,12 +1,11 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
-using Nickel.Common;
 using Shockah.Kokoro;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Shockah.MORE;
 
 namespace Shockah.Dracula;
@@ -56,6 +55,7 @@ public sealed class ModEntry : SimpleMod
 	private readonly HashSet<Type> ExeTypes = [];
 
 	internal static IReadOnlyList<Type> CommonCardTypes { get; } = [
+		// Dracula
 		typeof(BatFormCard),
 		typeof(BiteCard),
 		typeof(BloodMirrorCard),
@@ -65,9 +65,14 @@ public sealed class ModEntry : SimpleMod
 		typeof(DrainEssenceCard),
 		typeof(GrimoireOfSecretsCard),
 		typeof(SummonBatCard),
+		
+		// Mavis
+		typeof(BraceCard),
+		typeof(TearCard),
 	];
 
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
+		// Dracula
 		typeof(AuraOfDarknessCard),
 		typeof(BloodScentCard),
 		typeof(DispersionCard),
@@ -81,6 +86,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static IReadOnlyList<Type> RareCardTypes { get; } = [
+		// Dracula
 		typeof(BloodTapCard),
 		typeof(CrimsonWaveCard),
 		typeof(RedThirstCard),
@@ -342,8 +348,8 @@ public sealed class ModEntry : SimpleMod
 			Starters = new()
 			{
 				cards = [
-					new BiteCard(),
-					new BloodShieldCard()
+					new BraceCard(),
+					new TearCard()
 				]
 			},
 			// ExeCardType = typeof(DraculaExeCard)
