@@ -43,6 +43,9 @@ internal sealed class DraculaDizzyArtifact : Artifact, IRegisterable, IKokoroApi
 	public double HookPriority
 		=> 1;
 
+	public IReadOnlySet<Status> GetStatusesToCallTurnTriggerHooksFor(IKokoroApi.IV2.IStatusLogicApi.IHook.IGetStatusesToCallTurnTriggerHooksForArgs args)
+		=> new HashSet<Status> { ModEntry.Instance.KokoroApi.OxidationStatus.Status };
+
 	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
 		if (args.Status != ModEntry.Instance.KokoroApi.OxidationStatus.Status)

@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Unholy Water (Dracula-Dizzy duo) artifact not working unless you had some Oxidation to start with.
+
 ## 1.5.3
 Released 7 December 2025.
 

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace Shockah.Kokoro;
@@ -95,6 +96,21 @@ public partial interface IKokoroApi
 				/// <param name="args">The arguments for the hook method.</param>
 				/// <returns><c>true</c> if the status should be affected by <see cref="Status.boost"/>, <c>false</c> if not, <c>null</c> if this hook does not care. Defaults to <c>null</c>.</returns>
 				bool? IsAffectedByBoost(IIsAffectedByBoostArgs args) => null;
+
+				/// <summary>
+				/// Controls the statuses for which the <see cref="ModifyStatusTurnTriggerPriority"/>, <see cref="OnStatusTurnTrigger"/> and <see cref="HandleStatusTurnAutoStep"/> methods will be called.
+				/// Defaults to <c>args.NonZeroStatuses</c>.
+				/// </summary>
+				/// <param name="args">The arguments for the hook method.</param>
+				/// <returns>The set of statuses other hooks will be called for.</returns>
+				IReadOnlySet<Status> GetStatusesToCallTurnTriggerHooksFor(IGetStatusesToCallTurnTriggerHooksForArgs args) => args.NonZeroStatuses;
+
+				/// <summary>
+				/// Modifies the priority at which a status triggers at the start and end of every turn.
+				/// </summary>
+				/// <param name="args">The arguments for the hook method.</param>
+				/// <returns>The priority. Higher priority statuses are handled before lower priority ones. Defaults to <see cref="IModifyStatusTurnTriggerPriorityArgs.Priority"/>.</returns>
+				double ModifyStatusTurnTriggerPriority(IModifyStatusTurnTriggerPriorityArgs args) => args.Priority;
 				
 				/// <summary>
 				/// An event called for every status at the start and end of every turn.
@@ -170,6 +186,83 @@ public partial interface IKokoroApi
 					/// The status being changed.
 					/// </summary>
 					Status Status { get; }
+				}
+
+				/// <summary>
+				/// The arguments for the <see cref="IHook.GetStatusesToCallTurnTriggerHooksFor"/> hook method.
+				/// </summary>
+				public interface IGetStatusesToCallTurnTriggerHooksForArgs
+				{
+					/// <summary>
+					/// The game state.
+					/// </summary>
+					State State { get; }
+					
+					/// <summary>
+					/// The current combat.
+					/// </summary>
+					Combat Combat { get; }
+
+					/// <summary>
+					/// The current timing of the turn.
+					/// </summary>
+					StatusTurnTriggerTiming Timing { get; }
+
+					/// <summary>
+					/// The ship the status is getting triggered for.
+					/// </summary>
+					Ship Ship { get; }
+					
+					/// <summary>
+					/// All existing statuses in the game.
+					/// </summary>
+					IReadOnlySet<Status> KnownStatuses { get; }
+					
+					/// <summary>
+					/// All statuses the ship currently has a non-zero amount of.
+					/// </summary>
+					IReadOnlySet<Status> NonZeroStatuses { get; }
+				}
+
+				/// <summary>
+				/// The arguments for the <see cref="ModifyStatusTurnTriggerPriority"/> hook method.
+				/// </summary>
+				public interface IModifyStatusTurnTriggerPriorityArgs
+				{
+					/// <summary>
+					/// The game state.
+					/// </summary>
+					State State { get; }
+					
+					/// <summary>
+					/// The current combat.
+					/// </summary>
+					Combat Combat { get; }
+
+					/// <summary>
+					/// The current timing of the turn.
+					/// </summary>
+					StatusTurnTriggerTiming Timing { get; }
+
+					/// <summary>
+					/// The ship the status is getting triggered for.
+					/// </summary>
+					Ship Ship { get; }
+					
+					/// <summary>
+					/// The status being changed.
+					/// </summary>
+					Status Status { get; }
+					
+					/// <summary>
+					/// The current amount of the status.
+					/// </summary>
+					int Amount { get; }
+					
+					/// <summary>
+					/// The current priority. Higher priority statuses are handled before lower priority ones. Defaults to <c>0</c>.
+					/// </summary>
+					double Priority { get; }
 				}
 				
 				/// <summary>
