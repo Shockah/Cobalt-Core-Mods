@@ -29,8 +29,8 @@ internal sealed class AmbushCard : Card, IDraculaCard,  IHasCustomCardTraits
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> upgrade switch
 		{
-			Upgrade.A => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Fleeting.Trait },
-			_ => new HashSet<ICardTraitEntry>(),
+			Upgrade.A => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Independent.Trait, ModEntry.Instance.KokoroApi.Fleeting.Trait },
+			_ => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Independent.Trait },
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
