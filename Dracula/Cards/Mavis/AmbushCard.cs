@@ -38,23 +38,23 @@ internal sealed class AmbushCard : Card, IDraculaCard,  IHasCustomCardTraits
 		{
 			Upgrade.B => [
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
-					new HullCondition { BelowHalf = false },
+					new HullCondition { BelowHalf = false, TargetPlayer = false },
 					new AAttack { damage = GetDmg(s, 3) }
-				).AsCardAction,
+				).SetShowQuestionMark(false).AsCardAction,
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
-					new HullCondition { BelowHalf = true },
+					new HullCondition { BelowHalf = true, TargetPlayer = false },
 					new AAttack { damage = GetDmg(s, 1) }
-				).AsCardAction,
+				).SetShowQuestionMark(false).AsCardAction,
 			],
 			_ => [
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
-					new HullCondition { BelowHalf = false },
+					new HullCondition { BelowHalf = false, TargetPlayer = false },
 					new AAttack { damage = GetDmg(s, 3), piercing = true }
-				).AsCardAction,
+				).SetShowQuestionMark(false).AsCardAction,
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
-					new HullCondition { BelowHalf = true },
+					new HullCondition { BelowHalf = true, TargetPlayer = false },
 					new AAttack { damage = GetDmg(s, 1) }
-				).AsCardAction,
+				).SetShowQuestionMark(false).AsCardAction,
 			]
 		};
 }
