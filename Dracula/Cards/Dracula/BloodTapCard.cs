@@ -19,8 +19,8 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 				rarity = Rarity.rare,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/BloodTap.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BloodTap", "name"]).Localize
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Dracula/BloodTap.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "BloodTap", "name"]).Localize
 		});
 	}
 
@@ -31,7 +31,7 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 			infinite = upgrade == Upgrade.A,
 			recycle = upgrade == Upgrade.B,
 			retain = upgrade == Upgrade.B,
-			description = ModEntry.Instance.Localizations.Localize(["card", "BloodTap", "description", upgrade.ToString()], new { Damage = GetDmg(state, 1) })
+			description = ModEntry.Instance.Localizations.Localize(["card", "Dracula", "BloodTap", "description", upgrade.ToString()], new { Damage = GetDmg(state, 1) })
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
@@ -59,7 +59,7 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 
 		combat.routeOverride = new ActionChoiceRoute
 		{
-			Title = ModEntry.Instance.Localizations.Localize(["card", "BloodTap", "ui", "title"]),
+			Title = ModEntry.Instance.Localizations.Localize(["card", "Dracula", "BloodTap", "ui", "title"]),
 			Choices = ModEntry.Instance.BloodTapManager.MakeChoices(g.state, combat, includeEnemy: upgrade == Upgrade.B).ToList(),
 			IsPreview = true,
 		};
@@ -73,7 +73,7 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 		public override Route BeginWithRoute(G g, State s, Combat c)
 			=> new ActionChoiceRoute
 			{
-				Title = ModEntry.Instance.Localizations.Localize(["card", "BloodTap", "ui", "title"]),
+				Title = ModEntry.Instance.Localizations.Localize(["card", "Dracula", "BloodTap", "ui", "title"]),
 				Choices = ModEntry.Instance.BloodTapManager.MakeChoices(s, c, includeEnemy: IncludeEnemy).ToList()
 			};
 
@@ -90,12 +90,12 @@ internal sealed class BloodTapCard : Card, IDraculaCard
 			if (s == DB.fakeState)
 				return tooltips;
 
-			tooltips.Add(new TTText(ModEntry.Instance.Localizations.Localize(["card", "BloodTap", "tooltip", "title"])));
+			tooltips.Add(new TTText(ModEntry.Instance.Localizations.Localize(["card", "Dracula", "BloodTap", "tooltip", "title"])));
 			
 			var choices = GetChoices(s);
 			if (choices.Count == 0)
 			{
-				tooltips.Add(new TTText(ModEntry.Instance.Localizations.Localize(["card", "BloodTap", "tooltip", "none"])));
+				tooltips.Add(new TTText(ModEntry.Instance.Localizations.Localize(["card", "Dracula", "BloodTap", "tooltip", "none"])));
 			}
 			else
 			{

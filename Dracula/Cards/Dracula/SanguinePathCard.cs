@@ -19,7 +19,7 @@ internal sealed class SanguinePathCard : Card, IDraculaCard
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
 			Art = StableSpr.cards_Ace,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "SanguinePath", "name"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "SanguinePath", "name"]).Localize
 		});
 	}
 

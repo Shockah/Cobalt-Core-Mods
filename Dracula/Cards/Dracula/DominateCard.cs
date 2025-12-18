@@ -34,7 +34,7 @@ internal sealed class DominateCard : Card, IDraculaCard
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		NonFlipArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/DominateNonFlip.png"));
+		NonFlipArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Dracula/DominateNonFlip.png"));
 		OptionalOnIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/OptionalOn.png"));
 		OptionalOffIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/OptionalOff.png"));
 
@@ -47,8 +47,8 @@ internal sealed class DominateCard : Card, IDraculaCard
 				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Dominate.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dominate", "name"]).Localize
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Dracula/Dominate.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "Dominate", "name"]).Localize
 		});
 
 		ModEntry.Instance.Harmony.Patch(
@@ -74,10 +74,10 @@ internal sealed class DominateCard : Card, IDraculaCard
 			cost = 1,
 			floppable = true,
 			description = string.Join(" ", [
-				ModEntry.Instance.Localizations.Localize(["card", "Dominate", "description", "Flip", DisabledFlip ? "inactive" : "active"]),
-				.. (upgrade == Upgrade.A ? [ModEntry.Instance.Localizations.Localize(["card", "Dominate", "description", "Bubble", DisabledSecondaryAction ? "inactive" : "active"])] : Array.Empty<string>()),
-				.. (upgrade == Upgrade.B ? [ModEntry.Instance.Localizations.Localize(["card", "Dominate", "description", "Trigger", DisabledSecondaryAction ? "inactive" : "active"])] : Array.Empty<string>()),
-				ModEntry.Instance.Localizations.Localize(["card", "Dominate", "description", "Draw"]),
+				ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Dominate", "description", "Flip", DisabledFlip ? "inactive" : "active"]),
+				.. (upgrade == Upgrade.A ? [ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Dominate", "description", "Bubble", DisabledSecondaryAction ? "inactive" : "active"])] : Array.Empty<string>()),
+				.. (upgrade == Upgrade.B ? [ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Dominate", "description", "Trigger", DisabledSecondaryAction ? "inactive" : "active"])] : Array.Empty<string>()),
+				ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Dominate", "description", "Draw"]),
 			]),
 		};
 	}
@@ -274,7 +274,7 @@ internal sealed class DominateCard : Card, IDraculaCard
 				g,
 				new Vec(MG.inst.PIX_W - 69, MG.inst.PIX_H - 31),
 				CancelExecutionUK,
-				ModEntry.Instance.Localizations.Localize(["card", "Dominate", "ui", "cancel"]),
+				ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Dominate", "ui", "cancel"]),
 				onMouseDown: new MouseDownHandler(() => g.CloseRoute(this))
 			);
 		}

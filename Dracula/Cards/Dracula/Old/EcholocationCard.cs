@@ -31,7 +31,7 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 				unreleased = true,
 			},
 			Art = StableSpr.cards_ScootRight,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Echolocation", "name"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "Echolocation", "name"]).Localize
 		});
 
 		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnEnd), (State state, Combat combat) =>
@@ -55,7 +55,7 @@ internal sealed class EcholocationCard : Card, IDraculaCard
 		{
 			cost = upgrade == Upgrade.A ? 0 : 1,
 			retain = upgrade == Upgrade.B,
-			description = ModEntry.Instance.Localizations.Localize(["card", "Echolocation", "description", upgrade.ToString()])
+			description = ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Echolocation", "description", upgrade.ToString()])
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)

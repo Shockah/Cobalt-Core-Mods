@@ -26,8 +26,8 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 				rarity = Rarity.rare,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Sacrifice.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Sacrifice", "name"]).Localize
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Dracula/Sacrifice.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "Sacrifice", "name"]).Localize
 		});
 
 		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (Card card, State state, Combat combat) =>
@@ -43,7 +43,7 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 		{
 			cost = upgrade == Upgrade.B ? 1 : 2,
 			exhaust = true,
-			description = ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "description", upgrade.ToString()])
+			description = ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Sacrifice", "description", upgrade.ToString()])
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
@@ -71,8 +71,8 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 						{
 							Icon = StableSpr.icons_singleUse,
 							TitleColor = Colors.cardtrait,
-							Title = ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "removedFromPlay", "name"]),
-							Description = ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "removedFromPlay", "description"])
+							Title = ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Sacrifice", "removedFromPlay", "name"]),
+							Description = ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Sacrifice", "removedFromPlay", "description"])
 						},
 					]
 				}
@@ -180,11 +180,11 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 				Icon = StableSpr.icons_searchCardNew,
 				TitleColor = Colors.action,
 				Title = Loc.T("action.searchCardNew.name"),
-				Description = ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "searchAction", "exhaustOrSingleUse"]),
+				Description = ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Sacrifice", "searchAction", "exhaustOrSingleUse"]),
 			}];
 
 		public string GetTitle(State state, Combat? combat, IReadOnlyList<Card> cards)
-			=> ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "ui", "exhaustOrSingleUse"], new { Count = cards.Count });
+			=> ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Sacrifice", "ui", "exhaustOrSingleUse"], new { Count = cards.Count });
 
 		public IReadOnlyList<Card> GetCards(State state, Combat? combat)
 			=> [
@@ -201,11 +201,11 @@ internal sealed class SacrificeCard : Card, IDraculaCard
 				Icon = StableSpr.icons_searchCardNew,
 				TitleColor = Colors.action,
 				Title = Loc.T("action.searchCardNew.name"),
-				Description = ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "searchAction", "handDrawDiscard"]),
+				Description = ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Sacrifice", "searchAction", "handDrawDiscard"]),
 			}];
 		
 		public string GetTitle(State state, Combat? combat, IReadOnlyList<Card> cards)
-			=> ModEntry.Instance.Localizations.Localize(["card", "Sacrifice", "ui", "handDrawDiscard"], new { Count = cards.Count });
+			=> ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Sacrifice", "ui", "handDrawDiscard"], new { Count = cards.Count });
 
 		public IReadOnlyList<Card> GetCards(State state, Combat? combat)
 			=> [
