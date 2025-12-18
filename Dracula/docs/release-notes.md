@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Blood Tap delay and action order in relation to other effects, like artifacts (most notably Gemini swap).
+
 ## 1.5.4
 Released 18 December 2025.
 
