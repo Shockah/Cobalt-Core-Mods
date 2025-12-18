@@ -1,8 +1,8 @@
-﻿using daisyowl.text;
-using Shockah.Shared;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using daisyowl.text;
+using Shockah.Shared;
 
 namespace Shockah.Dracula;
 
@@ -105,11 +105,8 @@ internal sealed class ActionChoiceRoute : Route
 			return;
 		if (g.state.route is not Combat combat)
 			return;
-
-		combat.Queue(new ADelay());
-		foreach (var action in actions)
-			combat.Queue(action);
-
+		
+		combat.QueueImmediate(actions);
 		g.CloseRoute(this);
 	}
 }
