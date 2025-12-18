@@ -10,7 +10,7 @@
 	    "Mavis": {
 		    "name": "Mavis",
 		    "description": [
-			    "<c=E81B16>MAVIS</c>",
+			    "<c=560E32>MAVIS</c>",
 			    "<c=E81B16>Dracula's</c> daughter. She <c=keyword>puts herself into the <c=midrow>midrow</c></c> and <c=keyword>temporarily gains or loses hull</c>."
 		    ]
 	    }
@@ -392,13 +392,27 @@
 	    },
 	    
 	    "Mavis": {
+		    "Ambush": {
+			    "name": "Ambush"
+		    },
 		    "Brace": {
 			    "name": "Brace"
+		    },
+		    "Exploit": {
+			    "name": "Exploit"
+		    },
+		    "Jolt": {
+			    "name": "Jolt"
+		    },
+		    "Pursuit": {
+			    "name": "Pursuit"
+		    },
+		    "Stabilize": {
+			    "name": "Stabilize"
 		    },
 		    "Tear": {
 			    "name": "Tear"
 		    }
-		    
 	    },
 
         "Secret": {

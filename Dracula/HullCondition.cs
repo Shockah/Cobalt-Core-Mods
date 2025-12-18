@@ -7,9 +7,15 @@ namespace Shockah.Dracula;
 public sealed class HullCondition : IKokoroApi.IV2.IConditionalApi.IBoolExpression
 {
 	public required bool BelowHalf;
+	public bool TargetPlayer = true;
+	public bool? OverrideValue;
 
 	public bool GetValue(State state, Combat combat)
-		=> BelowHalf ? state.ship.hull <= state.ship.hullMax / 2 : state.ship.hull > state.ship.hullMax / 2;
+	{
+		if (OverrideValue is not null)
+			return OverrideValue.Value;
+		return BelowHalf ? state.ship.hull <= state.ship.hullMax / 2 : state.ship.hull > state.ship.hullMax / 2;
+	}
 
 	public string GetTooltipDescription(State state, Combat? combat)
 	{
