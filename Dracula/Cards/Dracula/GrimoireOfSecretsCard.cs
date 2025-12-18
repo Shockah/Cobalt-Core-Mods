@@ -21,8 +21,8 @@ internal sealed class GrimoireOfSecretsCard : Card, IDraculaCard
 				rarity = Rarity.common,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/GrimoireOfSecrets.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "GrimoireOfSecrets", "name"]).Localize
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Dracula/GrimoireOfSecrets.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "GrimoireOfSecrets", "name"]).Localize
 		});
 	}
 	
@@ -37,7 +37,7 @@ internal sealed class GrimoireOfSecretsCard : Card, IDraculaCard
 		{
 			cost = upgrade == Upgrade.B ? 2 : 1,
 			exhaust = true,
-			description = ModEntry.Instance.Localizations.Localize(["card", "GrimoireOfSecrets", "description", upgrade.ToString()], new { Count = CardCount })
+			description = ModEntry.Instance.Localizations.Localize(["card", "Dracula", "GrimoireOfSecrets", "description", upgrade.ToString()], new { Count = CardCount })
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)

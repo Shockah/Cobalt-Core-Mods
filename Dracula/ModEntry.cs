@@ -191,7 +191,7 @@ public sealed class ModEntry : SimpleMod
 			Definition = new() { color = DB.decks[Deck.dracula].color, titleColor = Colors.white },
 			DefaultCardArt = defaultCardArt,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
-			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize
+			Name = this.AnyLocalizations.Bind(["character", "Dracula", "name"]).Localize
 		});
 		SpellDeck = helper.Content.Decks.RegisterDeck("Spell", new()
 		{
@@ -274,7 +274,7 @@ public sealed class ModEntry : SimpleMod
 		helper.Content.Characters.V2.RegisterPlayableCharacter("Dracula", new()
 		{
 			Deck = DraculaDeck.Deck,
-			Description = this.AnyLocalizations.Bind(["character", "description"]).Localize,
+			Description = this.AnyLocalizations.Bind(["character", "Dracula", "description"]).Localize,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CharacterFrame.png")).Sprite,
 			NeutralAnimation = new()
 			{

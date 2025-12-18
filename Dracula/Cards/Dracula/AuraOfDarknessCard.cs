@@ -19,7 +19,7 @@ internal sealed class AuraOfDarknessCard : Card, IDraculaCard
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
 			Art = StableSpr.cards_Corrode,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "AuraOfDarkness", "name"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "AuraOfDarkness", "name"]).Localize
 		});
 	}
 

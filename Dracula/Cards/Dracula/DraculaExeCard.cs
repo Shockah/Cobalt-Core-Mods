@@ -18,8 +18,8 @@ internal sealed class DraculaExeCard : Card, IDraculaCard
 				rarity = Rarity.common,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/DraculaExe.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "DraculaExe", "name"]).Localize
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Dracula/DraculaExe.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "DraculaExe", "name"]).Localize
 		});
 	}
 
@@ -32,7 +32,7 @@ internal sealed class DraculaExeCard : Card, IDraculaCard
 			artTint = ModEntry.Instance.DraculaDeck.Configuration.Definition.color.ToString(),
 			cost = upgrade == Upgrade.A ? 0 : 1,
 			exhaust = true,
-			description = ModEntry.Instance.Localizations.Localize(["card", "DraculaExe", "description", upgrade.ToString()], new { Count = GetChoiceCount() })
+			description = ModEntry.Instance.Localizations.Localize(["card", "Dracula", "DraculaExe", "description", upgrade.ToString()], new { Count = GetChoiceCount() })
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
