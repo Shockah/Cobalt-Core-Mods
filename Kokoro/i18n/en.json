@@ -72,6 +72,13 @@
 				"downgrade": "This card reverts to its original upgrade at the end of combat.",
 				"sidegrade": "This card reverts to its original upgrade at the end of combat."
 			}
+		},
+		"Independent": {
+			"name": "Independent",
+			"description": {
+				"owned": "This card ignores <c=status>{{Status}}</c> and does not decrease it when played.",
+				"generic": "This card ignores its owner's <c=status>IS MISSING</c> status and does not decrease it when played."
+			}
 		}
 	},
 	"x": {
