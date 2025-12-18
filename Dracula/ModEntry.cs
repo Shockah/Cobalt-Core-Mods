@@ -27,6 +27,7 @@ public sealed class ModEntry : SimpleMod
 	internal BloodTapManager BloodTapManager { get; }
 
 	internal IDeckEntry DraculaDeck { get; }
+	internal IDeckEntry MavisDeck { get; }
 	internal IDeckEntry SpellDeck { get; }
 	internal IDeckEntry BatmobileDeck { get; }
 
@@ -193,6 +194,13 @@ public sealed class ModEntry : SimpleMod
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
 			Name = this.AnyLocalizations.Bind(["character", "Dracula", "name"]).Localize
 		});
+		MavisDeck = helper.Content.Decks.RegisterDeck("Mavis", new()
+		{
+			Definition = new() { color = DB.decks[Deck.dracula].color, titleColor = Colors.white },
+			DefaultCardArt = defaultCardArt,
+			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
+			Name = this.AnyLocalizations.Bind(["character", "Mavis", "name"]).Localize
+		});
 		SpellDeck = helper.Content.Decks.RegisterDeck("Spell", new()
 		{
 			Definition = new() { color = DB.decks[Deck.dracula].color.gain(0.9), titleColor = Colors.white },
@@ -305,6 +313,41 @@ public sealed class ModEntry : SimpleMod
 			},
 			ExeCardType = typeof(DraculaExeCard)
 		});
+		
+		helper.Content.Characters.V2.RegisterPlayableCharacter("Mavis", new()
+		{
+			Deck = MavisDeck.Deck,
+			Description = this.AnyLocalizations.Bind(["character", "Mavis", "description"]).Localize,
+			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CharacterFrame.png")).Sprite,
+			NeutralAnimation = new()
+			{
+				CharacterType = MavisDeck.UniqueName,
+				LoopTag = "neutral",
+				Frames = [
+					StableSpr.characters_dracula_dracula_neutral_0,
+					StableSpr.characters_dracula_dracula_neutral_1,
+					StableSpr.characters_dracula_dracula_neutral_2,
+					StableSpr.characters_dracula_dracula_neutral_3,
+					StableSpr.characters_dracula_dracula_neutral_4,
+				]
+			},
+			MiniAnimation = new()
+			{
+				CharacterType = MavisDeck.UniqueName,
+				LoopTag = "mini",
+				Frames = [
+					helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Character/Mini.png")).Sprite
+				]
+			},
+			Starters = new()
+			{
+				cards = [
+					new BiteCard(),
+					new BloodShieldCard()
+				]
+			},
+			// ExeCardType = typeof(DraculaExeCard)
+		});
 
 		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
@@ -317,6 +360,23 @@ public sealed class ModEntry : SimpleMod
 		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
 		{
 			CharacterType = DraculaDeck.UniqueName,
+			LoopTag = "squint",
+			Frames = Enumerable.Range(0, 5)
+				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Squint/{i}.png")).Sprite)
+				.ToList()
+		});
+
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
+		{
+			CharacterType = MavisDeck.UniqueName,
+			LoopTag = "gameover",
+			Frames = Enumerable.Range(0, 1)
+				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/GameOver/{i}.png")).Sprite)
+				.ToList()
+		});
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
+		{
+			CharacterType = MavisDeck.UniqueName,
 			LoopTag = "squint",
 			Frames = Enumerable.Range(0, 5)
 				.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Character/Squint/{i}.png")).Sprite)
@@ -430,15 +490,18 @@ public sealed class ModEntry : SimpleMod
 			new AHurt { targetPlayer = true, hurtAmount = 1 },
 			new AStatus { targetPlayer = true, status = status, statusAmount = 1 },
 		]);
-
-		helper.ModRegistry.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", new SemanticVersion(1, 3, 0))?.RegisterAltStarters(
-			deck: DraculaDeck.Deck,
-			starterDeck: new StarterDeck
+		
+		helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>(
+			"TheJazMaster.MoreDifficulties",
+			api =>
 			{
-				cards = [
-					new BatFormCard(),
-					new SummonBatCard(),
-				]
+				api.RegisterAltStarters(deck: DraculaDeck.Deck, starterDeck: new()
+				{
+					cards = [
+						new BatFormCard(),
+						new SummonBatCard(),
+					],
+				});
 			}
 		);
 		
