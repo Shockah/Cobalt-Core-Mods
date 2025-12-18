@@ -29,6 +29,8 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry MavisDeck { get; }
 	internal IDeckEntry SpellDeck { get; }
 	internal IDeckEntry BatmobileDeck { get; }
+	
+	internal IPlayableCharacterEntryV2 MavisCharacter { get; }
 
 	internal IStatusEntry BleedingStatus { get; }
 	internal IStatusEntry BloodMirrorStatus { get; }
@@ -68,6 +70,8 @@ public sealed class ModEntry : SimpleMod
 		
 		// Mavis
 		typeof(BraceCard),
+		typeof(ExploitCard),
+		typeof(JoltCard),
 		typeof(TearCard),
 	];
 
@@ -80,6 +84,11 @@ public sealed class ModEntry : SimpleMod
 		typeof(HeartbreakCard),
 		typeof(EnshroudCard),
 		typeof(SanguinePathCard),
+		
+		// Mavis
+		typeof(AmbushCard),
+		typeof(PursuitCard),
+		typeof(StabilizeCard),
 		
 		// old
 		typeof(EcholocationCard),
@@ -202,9 +211,9 @@ public sealed class ModEntry : SimpleMod
 		});
 		MavisDeck = helper.Content.Decks.RegisterDeck("Mavis", new()
 		{
-			Definition = new() { color = DB.decks[Deck.dracula].color, titleColor = Colors.white },
+			Definition = new() { color = new("560E32"), titleColor = Colors.white },
 			DefaultCardArt = defaultCardArt,
-			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
+			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/MavisCardFrame.png")).Sprite,
 			Name = this.AnyLocalizations.Bind(["character", "Mavis", "name"]).Localize
 		});
 		SpellDeck = helper.Content.Decks.RegisterDeck("Spell", new()
@@ -320,11 +329,11 @@ public sealed class ModEntry : SimpleMod
 			ExeCardType = typeof(DraculaExeCard)
 		});
 		
-		helper.Content.Characters.V2.RegisterPlayableCharacter("Mavis", new()
+		MavisCharacter = helper.Content.Characters.V2.RegisterPlayableCharacter("Mavis", new()
 		{
 			Deck = MavisDeck.Deck,
 			Description = this.AnyLocalizations.Bind(["character", "Mavis", "description"]).Localize,
-			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CharacterFrame.png")).Sprite,
+			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/MavisCharacterFrame.png")).Sprite,
 			NeutralAnimation = new()
 			{
 				CharacterType = MavisDeck.UniqueName,
