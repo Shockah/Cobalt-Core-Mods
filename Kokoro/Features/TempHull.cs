@@ -250,14 +250,17 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 		public bool TargetPlayer { get; set; } = true;
 		public int Amount { get; set; }
 
+		public override Icon? GetIcon(State s)
+			=> new((Spr)ModEntry.Instance.Content.TempHullGainSprite.Id!.Value, Amount, Colors.textMain);
+
 		public override List<Tooltip> GetTooltips(State s)
 			=> [
 				.. TargetPlayer ? Array.Empty<Tooltip>() : [new GlossaryTooltip($"action.{GetType().Namespace!}::Outgoing")
 				{
-					Icon = (Spr)ModEntry.Instance.Content.TempHullLossSprite.Id!.Value,
+					Icon = StableSpr.icons_outgoing,
 					TitleColor = Colors.keyword,
-					Title = ModEntry.Instance.Localizations.Localize(["tempHullLoss", "outgoing", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["tempHullLoss", "outgoing", "description"]),
+					Title = ModEntry.Instance.Localizations.Localize(["tempHullGain", "outgoing", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["tempHullGain", "outgoing", "description"]),
 				}],
 				new GlossaryTooltip($"action.{GetType().Namespace!}::TempHullGain")
 				{
@@ -265,6 +268,7 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 					TitleColor = Colors.action,
 					Title = ModEntry.Instance.Localizations.Localize(["tempHullGain", "name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["tempHullGain", "description"]),
+					vals = [Amount],
 				}
 			];
 
@@ -305,11 +309,14 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 		public int Amount { get; set; }
 		public bool CannotKill { get; set; }
 
+		public override Icon? GetIcon(State s)
+			=> new((Spr)ModEntry.Instance.Content.TempHullLossSprite.Id!.Value, Amount, Colors.textMain);
+
 		public override List<Tooltip> GetTooltips(State s)
 			=> [
 				.. TargetPlayer ? Array.Empty<Tooltip>() : [new GlossaryTooltip($"action.{GetType().Namespace!}::Outgoing")
 				{
-					Icon = (Spr)ModEntry.Instance.Content.TempHullLossSprite.Id!.Value,
+					Icon = StableSpr.icons_outgoing,
 					TitleColor = Colors.keyword,
 					Title = ModEntry.Instance.Localizations.Localize(["tempHullLoss", "outgoing", "name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["tempHullLoss", "outgoing", "description"]),
@@ -320,6 +327,7 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 					TitleColor = Colors.action,
 					Title = ModEntry.Instance.Localizations.Localize(["tempHullLoss", "name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["tempHullLoss", "description"]),
+					vals = [Amount],
 				}
 			];
 

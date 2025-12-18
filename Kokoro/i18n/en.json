@@ -36,9 +36,9 @@
 			"name": "Temp Strafe",
 			"description": "Fire for {0} damage immediately after every move you make. <c=downside>Goes away at start of next turn.</c>"
 		},
-		"TempHull": {
-			"name": "Temp Hull",
-			"description": "When you gain any, gain that much hull. When you lose any hull, lose that much <c=status>TEMP HULL</c>. Lose all of it and that much hull at turn start."
+		"LoseHullLater": {
+			"name": "Lose Hull Later",
+			"description": "Lose {0} hull at the end of combat, or start of next turn."
 		},
 		"RegainHullLater": {
 			"name": "Regain Hull Later",
@@ -311,6 +311,14 @@
 				"name": "Set Uses",
 				"description": "Set <c=cardtrait>finite</c> uses on this card to <c=boldPink>{{Amount}}</c>."
 			}
+		}
+	},
+	"tempHullGain": {
+		"name": "Temp Hull Gain",
+		"description": "Gain {0} hull. Lose it at the end of combat, or start of next turn.",
+		"outgoing": {
+			"name": "outgoing",
+			"description": "This effect will be applied to the enemy, wherever they are."
 		}
 	},
 	"tempHullLoss": {
