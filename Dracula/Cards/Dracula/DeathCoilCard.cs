@@ -37,7 +37,7 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new HullCondition { BelowHalf = false },
 					new AAttack { damage = GetDmg(s, 3) }
-				).AsCardAction,
+				).SetShowQuestionMark(false).AsCardAction,
 				new AHeal
 				{
 					targetPlayer = true,
@@ -60,7 +60,7 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 						healAmount = 2,
 						canRunAfterKill = true
 					}
-				).AsCardAction.CanRunAfterKill(),
+				).SetShowQuestionMark(false).AsCardAction.CanRunAfterKill(),
 				new AHurt
 				{
 					targetPlayer = true,
@@ -71,7 +71,7 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new HullCondition { BelowHalf = false },
 					new AAttack { damage = GetDmg(s, 3) }
-				).AsCardAction,
+				).SetShowQuestionMark(false).AsCardAction,
 				ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 					new HullCondition { BelowHalf = true },
 					new AHeal
@@ -80,7 +80,7 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 						healAmount = 2,
 						canRunAfterKill = true
 					}
-				).AsCardAction.CanRunAfterKill(),
+				).SetShowQuestionMark(false).AsCardAction.CanRunAfterKill(),
 				new AHurt
 				{
 					targetPlayer = true,

@@ -38,11 +38,11 @@ internal sealed class BraceCard : Card, IDraculaCard
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new HullCondition { BelowHalf = true, OverrideValue = s.ship.hull + 2 <= s.ship.hullMax / 2 },
 						ModEntry.Instance.KokoroApi.TempHull.MakeGainAction(1).AsCardAction
-					).AsCardAction,
+					).SetShowQuestionMark(false).AsCardAction,
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new HullCondition { BelowHalf = true },
 						ModEntry.Instance.KokoroApi.TempHull.MakeGainAction(1).AsCardAction
-					).AsCardAction
+					).SetShowQuestionMark(false).AsCardAction
 				).AsCardAction,
 			],
 			_ => [
@@ -51,11 +51,11 @@ internal sealed class BraceCard : Card, IDraculaCard
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new HullCondition { BelowHalf = true, OverrideValue = s.ship.hull + 1 <= s.ship.hullMax / 2 },
 						ModEntry.Instance.KokoroApi.TempHull.MakeGainAction(1).AsCardAction
-					).AsCardAction,
+					).SetShowQuestionMark(false).AsCardAction,
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
 						new HullCondition { BelowHalf = true },
 						ModEntry.Instance.KokoroApi.TempHull.MakeGainAction(1).AsCardAction
-					).AsCardAction
+					).SetShowQuestionMark(false).AsCardAction
 				).AsCardAction,
 			]
 		};
