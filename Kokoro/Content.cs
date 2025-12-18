@@ -74,6 +74,8 @@ internal sealed partial class Content
 	internal ExternalSprite TempStrafeSprite { get; private set; } = null!;
 	internal IStatusEntry TempStrafeStatus { get; private set; } = null!;
 	
+	internal ExternalSprite TempHullSprite { get; private set; } = null!;
+	internal IStatusEntry TempHullStatus { get; private set; } = null!;
 	internal ExternalSprite TempHullLossSprite { get; private set; } = null!;
 	internal ExternalSprite RegainHullLaterSprite { get; private set; } = null!;
 	internal IStatusEntry RegainHullLaterStatus { get; private set; } = null!;
@@ -198,6 +200,10 @@ internal sealed partial class Content
 			id: $"{typeof(ModEntry).Namespace}.Status.TempStrafe",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "TempStrafe.png"))
 		);
+		TempHullSprite = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.TempHull",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "TempHull.png"))
+		);
 		TempHullLossSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.TempHullLoss",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "TempHullLoss.png"))
@@ -251,6 +257,20 @@ internal sealed partial class Content
 				},
 				Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "TempStrafe", "name"]).Localize,
 				Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "TempStrafe", "description"]).Localize,
+			});
+		}
+		{
+			TempHullStatus = Instance.Helper.Content.Statuses.RegisterStatus($"{typeof(ModEntry).Namespace}.Status.TempHull", new()
+			{
+				Definition = new()
+				{
+					icon = (Spr)TempHullSprite.Id!.Value,
+					color = new("3DC8FF"),
+					isGood = true,
+					affectedByTimestop = true,
+				},
+				Name = ModEntry.Instance.AnyLocalizations.Bind(["status", "TempHull", "name"]).Localize,
+				Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "TempHull", "description"]).Localize,
 			});
 		}
 		{

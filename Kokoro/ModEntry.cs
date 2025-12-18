@@ -97,6 +97,7 @@ public sealed class ModEntry : IModManifest, IApiProviderManifest, ISpriteManife
 		StatusLogicManager.Instance.Register(DriveStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(OxidationStatusManager.Instance, 0);
 		StatusLogicManager.Instance.Register(StatusNextTurnManager.Instance, 0);
+		StatusLogicManager.Instance.Register(TempHullManager.Instance, 0);
 		StatusLogicManager.Instance.Register(TempStrafeStatusManager.Instance, 0);
 		
 		StatusRenderManager.Instance.Register(OxidationStatusManager.Instance, 0);

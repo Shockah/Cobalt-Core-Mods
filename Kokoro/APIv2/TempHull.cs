@@ -8,10 +8,20 @@ public partial interface IKokoroApi
 		ITempHullApi TempHull { get; }
 
 		/// <summary>
-		/// Allows creating actions which temporarily remove or grant hull.
+		/// Allows using actions and statuses which temporarily remove or grant hull.
 		/// </summary>
 		public interface ITempHullApi
 		{
+			/// <summary>
+			/// When you gain any, gain that much hull. When you lose any hull, lose that much TEMP HULL. Lose all of it and that much hull at turn start.
+			/// </summary>
+			Status TempHullStatus { get; }
+			
+			/// <summary>
+			/// Regain {0} hull at the end of combat, or at the end of a turn where you didn't suffer temp hull los. Does not count as healing.
+			/// </summary>
+			Status RegainHullLaterStatus { get; }
+			
 			/// <summary>
 			/// Casts the action as a temp hull loss action, if it is one.
 			/// </summary>

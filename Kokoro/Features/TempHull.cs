@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using Newtonsoft.Json;
@@ -15,6 +16,12 @@ partial class ApiImplementation
 		
 		public sealed class TempHullApi : IKokoroApi.IV2.ITempHullApi
 		{
+			public Status TempHullStatus
+				=> ModEntry.Instance.Content.TempHullStatus.Status;
+			
+			public Status RegainHullLaterStatus
+				=> ModEntry.Instance.Content.RegainHullLaterStatus.Status;
+
 			public IKokoroApi.IV2.ITempHullApi.ILoseAction? AsAction(CardAction action)
 				=> action as IKokoroApi.IV2.ITempHullApi.ILoseAction;
 
@@ -27,6 +34,11 @@ partial class ApiImplementation
 internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 {
 	internal static readonly TempHullManager Instance = new();
+	
+	private static readonly Lazy<HashSet<Status>> StatusesToCallTurnTriggerHooksFor = new(() => [
+		ModEntry.Instance.Content.TempHullStatus.Status,
+		ModEntry.Instance.Content.RegainHullLaterStatus.Status,
+	]);
 
 	private TempHullManager()
 	{
@@ -41,6 +53,16 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 		harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
+		);
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.DirectHullDamage)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_DirectHullDamage_Prefix)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_DirectHullDamage_Postfix))
+		);
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.Heal)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_Heal_Prefix)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_Heal_Postfix))
 		);
 	}
 
@@ -88,35 +110,100 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 
 		return false;
 	}
+
+	private static void Ship_DirectHullDamage_Prefix(Ship __instance, out int __state)
+		=> __state = __instance.hull;
+
+	private static void Ship_DirectHullDamage_Postfix(Ship __instance, in int __state)
+	{
+		var lostAmount = __state - __instance.hull;
+		if (lostAmount <= 0)
+			return;
+
+		var tempHull = __instance.Get(ModEntry.Instance.Content.TempHullStatus.Status);
+		var tempHullToLose = Math.Min(lostAmount, tempHull);
+		if (tempHullToLose < 0)
+			return;
+
+		__instance.Add(ModEntry.Instance.Content.TempHullStatus.Status, -tempHullToLose);
+	}
+
+	private static void Ship_Heal_Prefix(Ship __instance, out int __state)
+		=> __state = __instance.hull;
+
+	private static void Ship_Heal_Postfix(Ship __instance, in int __state)
+	{
+		var healedAmount = __instance.hull - __state;
+		if (healedAmount <= 0)
+			return;
+
+		var tempHull = __instance.Get(ModEntry.Instance.Content.TempHullStatus.Status);
+		var tempHullToLose = Math.Min(healedAmount, tempHull);
+		if (tempHullToLose < 0)
+			return;
+
+		__instance.Add(ModEntry.Instance.Content.TempHullStatus.Status, -tempHullToLose);
+	}
 	
 	public IReadOnlySet<Status> GetStatusesToCallTurnTriggerHooksFor(IKokoroApi.IV2.IStatusLogicApi.IHook.IGetStatusesToCallTurnTriggerHooksForArgs args)
-		=> args.NonZeroStatuses.Contains(ModEntry.Instance.Content.RegainHullLaterStatus.Status) ? new HashSet<Status> { ModEntry.Instance.Content.RegainHullLaterStatus.Status } : [];
+		=> StatusesToCallTurnTriggerHooksFor.Value.Intersect(args.NonZeroStatuses).ToHashSet();
 
 	public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
-		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
-			return false;
-		
-		if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(args.Ship, "TempHullLostThisTurn"))
+		if (args.Status == ModEntry.Instance.Content.RegainHullLaterStatus.Status)
 		{
-			ModEntry.Instance.Helper.ModData.RemoveModData(args.Ship, "TempHullLostThisTurn");
+			if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
+				return false;
+		
+			if (ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(args.Ship, "TempHullLostThisTurn"))
+			{
+				ModEntry.Instance.Helper.ModData.RemoveModData(args.Ship, "TempHullLostThisTurn");
+				return false;
+			}
+
+			args.Amount = 0;
 			return false;
 		}
-
-		args.Amount = 0;
+		
+		if (args.Status == ModEntry.Instance.Content.TempHullStatus.Status)
+		{
+			if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
+				return false;
+			
+			args.Amount = 0;
+			return false;
+		}
+		
 		return false;
 	}
 
 	public void OnStatusTurnTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IOnStatusTurnTriggerArgs args)
 	{
-		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
-			return;
-		if (args.NewAmount != 0)
-			return;
-		if (args.OldAmount == args.NewAmount)
-			return;
+		if (args.Status == ModEntry.Instance.Content.RegainHullLaterStatus.Status)
+		{
+			if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnEnd)
+				return;
+			if (args.NewAmount != 0)
+				return;
+			if (args.OldAmount == args.NewAmount)
+				return;
 		
-		RegainHullNow(args.State, args.Combat, args.OldAmount, args.Ship.isPlayerShip);
+			RegainHullNow(args.State, args.Combat, args.OldAmount, args.Ship.isPlayerShip);
+			return;
+		}
+
+		if (args.Status == ModEntry.Instance.Content.TempHullStatus.Status)
+		{
+			if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
+				return;
+			if (args.NewAmount != 0)
+				return;
+			if (args.OldAmount == args.NewAmount)
+				return;
+			
+			args.Ship.DirectHullDamage(args.State, args.Combat, args.OldAmount - args.NewAmount);
+			return;
+		}
 	}
 
 	internal sealed class LoseAction : CardAction, IKokoroApi.IV2.ITempHullApi.ILoseAction

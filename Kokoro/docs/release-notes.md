@@ -4,7 +4,7 @@
 
 ## Upcoming release
 
-* Added the `TempHull` feature (currently only featuring "Temp Hull Loss").
+* Added the `TempHull` feature.
 
 ## 2.14.0
 Released 7 December 2025.
