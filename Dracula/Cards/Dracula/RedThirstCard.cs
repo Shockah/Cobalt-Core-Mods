@@ -5,65 +5,62 @@ using System.Reflection;
 
 namespace Shockah.Dracula;
 
-internal sealed class BloodMirrorCard : Card, IDraculaCard
+internal sealed class RedThirstCard : Card, IDraculaCard
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Cards.RegisterCard("BloodMirror", new()
+		helper.Content.Cards.RegisterCard("RedThirst", new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
 			{
 				deck = ModEntry.Instance.DraculaDeck.Deck,
-				rarity = Rarity.common,
+				rarity = Rarity.rare,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/BloodMirror.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BloodMirror", "name"]).Localize
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Dracula/RedThirst.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "RedThirst", "name"]).Localize
 		});
 	}
 
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = upgrade == Upgrade.B ? 2 : 1,
-			exhaust = upgrade == Upgrade.B
+			cost = 0,
+			exhaust = true,
+			retain = upgrade == Upgrade.A,
+			buoyant = upgrade == Upgrade.A
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.A => [
-				new AStatus
-				{
-					targetPlayer = true,
-					status = ModEntry.Instance.BloodMirrorStatus.Status,
-					statusAmount = 1
-				},
-				new AHurt
-				{
-					targetPlayer = true,
-					hurtAmount = 1
-				},
-				new AHeal
-				{
-					targetPlayer = true,
-					healAmount = 1,
-					canRunAfterKill = true
-				}
-			],
 			Upgrade.B => [
 				new AStatus
 				{
 					targetPlayer = true,
-					status = ModEntry.Instance.BloodMirrorStatus.Status,
-					statusAmount = 3
-				}
-			],
-			_ => [
+					status = Status.energyNextTurn,
+					statusAmount = 2
+				},
 				new AStatus
 				{
 					targetPlayer = true,
+					status = Status.drawNextTurn,
+					statusAmount = 1
+				},
+				new AStatus
+				{
+					targetPlayer = false,
+					status = ModEntry.Instance.BloodMirrorStatus.Status,
+					statusAmount = 1
+				}
+			],
+			_ => [
+				new AEnergy { changeAmount = 2 },
+				new ADrawCard { count = 1 },
+				new AStatus
+				{
+					targetPlayer = false,
 					status = ModEntry.Instance.BloodMirrorStatus.Status,
 					statusAmount = 1
 				}

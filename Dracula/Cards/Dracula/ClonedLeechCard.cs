@@ -19,7 +19,7 @@ internal sealed class ClonedLeechCard : Card, IDraculaCard
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
 			Art = StableSpr.cards_Cannon,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Leech", "name"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "Leech", "name"]).Localize
 		});
 	}
 

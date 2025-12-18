@@ -18,8 +18,8 @@ internal sealed class ScreechCard : Card, IDraculaCard
 				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Screech.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Screech", "name"]).Localize
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Dracula/Screech.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "Screech", "name"]).Localize
 		});
 	}
 

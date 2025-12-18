@@ -36,7 +36,7 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
 			Art = StableSpr.cards_CloudSave,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Enshroud", "name"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "Enshroud", "name"]).Localize
 		});
 
 		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnStart), (State state, Combat combat) =>
@@ -79,7 +79,7 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 				_ => 2
 			},
 			singleUse = upgrade == Upgrade.B,
-			description = ModEntry.Instance.Localizations.Localize(["card", "Enshroud", "description", upgrade.ToString()])
+			description = ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Enshroud", "description", upgrade.ToString()])
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
@@ -175,8 +175,8 @@ internal sealed class EnshroudCard : Card, IDraculaCard
 				{
 					Icon = StableSpr.icons_armor,
 					TitleColor = Colors.action,
-					Title = ModEntry.Instance.Localizations.Localize(["card", "Enshroud", "UpgradeCockpit", "name"]),
-					Description = ModEntry.Instance.Localizations.Localize(["card", "Enshroud", "UpgradeCockpit", "description"])
+					Title = ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Enshroud", "UpgradeCockpit", "name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["card", "Dracula", "Enshroud", "UpgradeCockpit", "description"])
 				},
 				new TTGlossary("parttrait.brittle"),
 				new TTGlossary("parttrait.weak"),

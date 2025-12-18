@@ -21,7 +21,7 @@ internal sealed class DeathCoilCard : Card, IDraculaCard
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
 			Art = StableSpr.cards_HandCannon,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "DeathCoil", "name"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "DeathCoil", "name"]).Localize
 		});
 	}
 
