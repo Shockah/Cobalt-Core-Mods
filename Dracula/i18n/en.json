@@ -1,10 +1,12 @@
 {
     "character": {
-        "name": "Dracula",
-        "description": [
-            "<c=E81B16>DRACULA</c>",
-            "A so-called \"last living human\". His cards often <c=downside>self-hurt</c>, but they also often <c=heal>heal</c>."
-        ]
+	    "Dracula": {
+		    "name": "Dracula",
+		    "description": [
+			    "<c=E81B16>DRACULA</c>",
+			    "A so-called \"last living human\". His cards often <c=downside>self-hurt</c>, but they also often <c=heal>heal</c>."
+		    ]
+	    }
     },
     "ship": {
         "name": "Batmobile",
@@ -231,154 +233,156 @@
                 "descriptionB": "Add 3 <c=status>blood</c> to the <c=artifact>Blood Bank</c>."
             }
         },
+	    
+	    "Dracula": {
+		    "AuraOfDarkness": {
+			    "name": "Aura of Darkness"
+		    },
+		    "BatForm": {
+			    "name": "Bat Form"
+		    },
+		    "Bite": {
+			    "name": "Bite"
+		    },
+		    "BloodMirror": {
+			    "name": "Blood Mirror"
+		    },
+		    "BloodScent": {
+			    "name": "Blood Scent"
+		    },
+		    "BloodShield": {
+			    "name": "Blood Shield"
+		    },
+		    "BloodTap": {
+			    "name": "Blood Tap",
+			    "description": {
+				    "None": "Choose a status you have or had. Gain it <c=downside>for a hull price</c>.",
+				    "A": "Choose a status you have or had. Gain it <c=downside>for a hull price</c>.",
+				    "B": "Choose a status you or the enemy have or had. Gain it <c=downside>for a hull price</c>."
+			    },
+			    "tooltip": {
+				    "title": "<c=action>Applicable statuses:</c>",
+				    "none": "<c=7f7f7f>-- none --</c>"
+			    },
+			    "ui": {
+				    "title": "PICK A STATUS"
+			    }
+		    },
+		    "CrimsonWave": {
+			    "name": "Crimson Wave",
+			    "description": {
+				    "None": "All your ship parts <c=action>attack</c> for {{Damage}} and <c=action>stun</c>.",
+				    "A": "All your ship parts <c=action>attack</c> for {{Damage}} and <c=action>stun</c>.",
+				    "B": "All your ship parts <c=action>attack</c> for {{Damage}} and <c=action>stun</c>. <c=heal>Heal</c> for damage done."
+			    }
+		    },
+		    "DeathCoil": {
+			    "name": "Death Coil"
+		    },
+		    "Dispersion": {
+			    "name": "Dispersion"
+		    },
+		    "Dominate": {
+			    "name": "Dominate",
+			    "description": {
+				    "Flip": {
+					    "active": "Flip a <c=midrow>midrow object</c>.",
+					    "inactive": "<c=5f5f5f>Flip a midrow object.</c>"
+				    },
+				    "Bubble": {
+					    "active": "Give it <c=midrow>bubble</c>.",
+					    "inactive": "<c=5f5f5f>Give it bubble.</c>"
+				    },
+				    "Trigger": {
+					    "active": "Trigger its actions.",
+					    "inactive": "<c=5f5f5f>Trigger its actions.</c>"
+				    },
+				    "Draw": "Draw a card."
+			    },
+			    "ui": {
+				    "cancel": "CANCEL"
+			    }
+		    },
+		    "DrainEssence": {
+			    "name": "Drain Essence"
+		    },
+		    "Echolocation": {
+			    "name": "Echolocation",
+			    "description": {
+				    "None": "Align your cannon with the <c=parttrait>weakest</c> part.",
+				    "A": "Align your cannon with the <c=parttrait>weakest</c> part.",
+				    "B": "Align your cannon with the <c=parttrait>weakest</c> part. Move back on turn end."
+			    }
+		    },
+		    "Enshroud": {
+			    "name": "Enshroud",
+			    "description": {
+				    "None": "All your ship parts get <c=parttrait>armor</c> until the start of the next turn.",
+				    "A": "All your ship parts get <c=parttrait>armor</c> until the start of the next turn.",
+				    "B": "Permanently upgrade your cockpit's armor. End your turn."
+			    },
+			    "UpgradeCockpit": {
+				    "name": "Upgrade Cockpit",
+				    "description": "Replace <c=parttrait>brittle/weak/nothing</c> on your cockpit with <c=parttrait>weak/nothing/armor</c>."
+			    }
+		    },
+		    "GrimoireOfSecrets": {
+			    "name": "Grimoire of Secrets",
+			    "description": {
+				    "None": "Choose 1 of {{Count}} Spell cards to add to your hand.",
+				    "A": "Choose 1 of {{Count}} Spell cards to add to your hand.",
+				    "B": "Add {{Count}} different random Spell cards to your hand."
+			    }
+		    },
+		    "Heartbreak": {
+			    "name": "Heartbreak"
+		    },
+		    "RedThirst": {
+			    "name": "Red Thirst"
+		    },
+		    "Sacrifice": {
+			    "name": "Sacrifice",
+			    "description": {
+				    "None": "<c=cardtrait>Exhaust</c> card in hand. Play an <c=cardtrait>exhausted</c> card.",
+				    "A": "<c=cardtrait>Exhaust</c> any card. Play an <c=cardtrait>exhausted</c> card.",
+				    "B": "<c=cardtrait>Exhaust</c> card in hand. Add a <c=cardtrait>card removed from play</c> to hand."
+			    },
+			    "removedFromPlay": {
+				    "name": "Card removed from play",
+				    "description": "<c=cardtrait>Exhausted</c> and played this combat <c=cardtrait>single use</c> cards are considered removed from play."
+			    },
+			    "searchAction": {
+				    "exhaustOrSingleUse": "Choose a card from your <c=keyword>exhaust pile</c> or played this combat <c=cardtrait>single use</c> cards.",
+				    "handDrawDiscard": "Choose a card from your <c=keyword>hand, draw pile or discard pile</c>."
+			    },
+			    "ui": {
+				    "exhaustOrSingleUse": "Exhaust Pile and Single Use: {{Count}} Cards",
+				    "handDrawDiscard": "Hand, Draw and Discard Piles: {{Count}} Cards"
+			    }
+		    },
+		    "SanguinePath": {
+			    "name": "Sanguine Path"
+		    },
+		    "Screech": {
+			    "name": "Screech"
+		    },
+		    "SummonBat": {
+			    "name": "Summon Bat"
+		    },
 
-        "AuraOfDarkness": {
-            "name": "Aura of Darkness"
-        },
-        "BatForm": {
-            "name": "Bat Form"
-        },
-        "Bite": {
-            "name": "Bite"
-        },
-        "BloodMirror": {
-            "name": "Blood Mirror"
-        },
-        "BloodScent": {
-            "name": "Blood Scent"
-        },
-        "BloodShield": {
-            "name": "Blood Shield"
-        },
-        "BloodTap": {
-            "name": "Blood Tap",
-            "description": {
-                "None": "Choose a status you have or had. Gain it <c=downside>for a hull price</c>.",
-                "A": "Choose a status you have or had. Gain it <c=downside>for a hull price</c>.",
-                "B": "Choose a status you or the enemy have or had. Gain it <c=downside>for a hull price</c>."
-            },
-            "tooltip": {
-                "title": "<c=action>Applicable statuses:</c>",
-                "none": "<c=7f7f7f>-- none --</c>"
-            },
-            "ui": {
-                "title": "PICK A STATUS"
-            }
-        },
-        "CrimsonWave": {
-            "name": "Crimson Wave",
-            "description": {
-                "None": "All your ship parts <c=action>attack</c> for {{Damage}} and <c=action>stun</c>.",
-                "A": "All your ship parts <c=action>attack</c> for {{Damage}} and <c=action>stun</c>.",
-                "B": "All your ship parts <c=action>attack</c> for {{Damage}} and <c=action>stun</c>. <c=heal>Heal</c> for damage done."
-            }
-        },
-        "DeathCoil": {
-            "name": "Death Coil"
-        },
-        "Dispersion": {
-            "name": "Dispersion"
-        },
-        "Dominate": {
-            "name": "Dominate",
-            "description": {
-                "Flip": {
-                    "active": "Flip a <c=midrow>midrow object</c>.",
-                    "inactive": "<c=5f5f5f>Flip a midrow object.</c>"
-                },
-                "Bubble": {
-                    "active": "Give it <c=midrow>bubble</c>.",
-                    "inactive": "<c=5f5f5f>Give it bubble.</c>"
-                },
-                "Trigger": {
-                    "active": "Trigger its actions.",
-                    "inactive": "<c=5f5f5f>Trigger its actions.</c>"
-                },
-                "Draw": "Draw a card."
-            },
-            "ui": {
-                "cancel": "CANCEL"
-            }
-        },
-        "DrainEssence": {
-            "name": "Drain Essence"
-        },
-        "Echolocation": {
-            "name": "Echolocation",
-            "description": {
-                "None": "Align your cannon with the <c=parttrait>weakest</c> part.",
-                "A": "Align your cannon with the <c=parttrait>weakest</c> part.",
-                "B": "Align your cannon with the <c=parttrait>weakest</c> part. Move back on turn end."
-            }
-        },
-        "Enshroud": {
-            "name": "Enshroud",
-            "description": {
-                "None": "All your ship parts get <c=parttrait>armor</c> until the start of the next turn.",
-                "A": "All your ship parts get <c=parttrait>armor</c> until the start of the next turn.",
-                "B": "Permanently upgrade your cockpit's armor. End your turn."
-            },
-            "UpgradeCockpit": {
-                "name": "Upgrade Cockpit",
-                "description": "Replace <c=parttrait>brittle/weak/nothing</c> on your cockpit with <c=parttrait>weak/nothing/armor</c>."
-            }
-        },
-        "GrimoireOfSecrets": {
-            "name": "Grimoire of Secrets",
-            "description": {
-                "None": "Choose 1 of {{Count}} Spell cards to add to your hand.",
-                "A": "Choose 1 of {{Count}} Spell cards to add to your hand.",
-                "B": "Add {{Count}} different random Spell cards to your hand."
-            }
-        },
-        "Heartbreak": {
-            "name": "Heartbreak"
-        },
-        "RedThirst": {
-            "name": "Red Thirst"
-        },
-        "Sacrifice": {
-            "name": "Sacrifice",
-            "description": {
-                "None": "<c=cardtrait>Exhaust</c> card in hand. Play an <c=cardtrait>exhausted</c> card.",
-                "A": "<c=cardtrait>Exhaust</c> any card. Play an <c=cardtrait>exhausted</c> card.",
-                "B": "<c=cardtrait>Exhaust</c> card in hand. Add a <c=cardtrait>card removed from play</c> to hand."
-            },
-            "removedFromPlay": {
-                "name": "Card removed from play",
-                "description": "<c=cardtrait>Exhausted</c> and played this combat <c=cardtrait>single use</c> cards are considered removed from play."
-            },
-            "searchAction": {
-                "exhaustOrSingleUse": "Choose a card from your <c=keyword>exhaust pile</c> or played this combat <c=cardtrait>single use</c> cards.",
-                "handDrawDiscard": "Choose a card from your <c=keyword>hand, draw pile or discard pile</c>."
-            },
-            "ui": {
-                "exhaustOrSingleUse": "Exhaust Pile and Single Use: {{Count}} Cards",
-                "handDrawDiscard": "Hand, Draw and Discard Piles: {{Count}} Cards"
-            }
-        },
-        "SanguinePath": {
-            "name": "Sanguine Path"
-        },
-        "Screech": {
-            "name": "Screech"
-        },
-        "SummonBat": {
-            "name": "Summon Bat"
-        },
+		    "Leech": {
+			    "name": "Leech"
+		    },
 
-        "Leech": {
-            "name": "Leech"
-        },
-
-        "DraculaExe": {
-            "name": "Dracula.EXE",
-            "description": {
-                "None": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=E81B16>Dracula</c> cards to your hand.",
-                "A": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=E81B16>Dracula</c> cards to your hand.",
-                "B": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=E81B16>Dracula</c> cards to your hand."
-            }
-        },
+		    "DraculaExe": {
+			    "name": "Dracula.EXE",
+			    "description": {
+				    "None": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=E81B16>Dracula</c> cards to your hand.",
+				    "A": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=E81B16>Dracula</c> cards to your hand.",
+				    "B": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=E81B16>Dracula</c> cards to your hand."
+			    }
+		    }
+	    },
 
         "Secret": {
             "deck": "Spell",

@@ -47,7 +47,7 @@ internal sealed class BatFormCard : Card, IDraculaCard, IHasCustomCardTraits
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		QuadArt = Enumerable.Range(0, 4)
-			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Cards/BatFormQuad{i}.png")))
+			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Cards/Dracula/BatFormQuad{i}.png")))
 			.ToList();
 		QuadIcon = Enumerable.Range(0, 4)
 			.Select(i => helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile($"assets/Icons/Quad{i}.png")))
@@ -62,7 +62,7 @@ internal sealed class BatFormCard : Card, IDraculaCard, IHasCustomCardTraits
 				rarity = Rarity.common,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BatForm", "name"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "BatForm", "name"]).Localize
 		});
 
 		ModEntry.Instance.Harmony.Patch(

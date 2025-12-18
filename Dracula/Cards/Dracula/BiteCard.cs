@@ -18,8 +18,8 @@ internal sealed class BiteCard : Card, IDraculaCard
 				rarity = Rarity.common,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Bite.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Bite", "name"]).Localize
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Dracula/Bite.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "Bite", "name"]).Localize
 		});
 	}
 

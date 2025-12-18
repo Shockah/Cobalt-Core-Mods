@@ -20,8 +20,8 @@ internal sealed class BloodScentCard : Card, IDraculaCard
 				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/BloodScent.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BloodScent", "name"]).Localize
+			Art = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Cards/Dracula/BloodScent.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "BloodScent", "name"]).Localize
 		});
 	}
 

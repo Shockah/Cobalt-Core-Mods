@@ -19,7 +19,7 @@ internal sealed class DispersionCard : Card, IDraculaCard
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
 			Art = StableSpr.cards_CloudSave,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dispersion", "name"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "Dispersion", "name"]).Localize
 		});
 	}
 

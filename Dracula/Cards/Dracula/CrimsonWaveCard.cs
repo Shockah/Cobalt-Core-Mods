@@ -19,7 +19,7 @@ internal sealed class CrimsonWaveCard : Card, IDraculaCard
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
 			Art = StableSpr.cards_eunice,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "CrimsonWave", "name"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Dracula", "CrimsonWave", "name"]).Localize
 		});
 	}
 
@@ -30,7 +30,7 @@ internal sealed class CrimsonWaveCard : Card, IDraculaCard
 			retain = upgrade == Upgrade.A,
 			exhaust = upgrade != Upgrade.B,
 			singleUse = upgrade == Upgrade.B,
-			description = ModEntry.Instance.Localizations.Localize(["card", "CrimsonWave", "description", upgrade.ToString()], new { Damage = GetDmg(state, 1) })
+			description = ModEntry.Instance.Localizations.Localize(["card", "Dracula", "CrimsonWave", "description", upgrade.ToString()], new { Damage = GetDmg(state, 1) })
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
