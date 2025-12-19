@@ -18,7 +18,7 @@ internal sealed class StabilizeCard : Card, IDraculaCard, IHasCustomCardTraits
 				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_Corrode,
+			Art = StableSpr.cards_DiceRoll,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Mavis", "Stabilize", "name"]).Localize
 		});
 		

@@ -54,6 +54,6 @@ public sealed class HullCondition : IKokoroApi.IV2.IConditionalApi.IBoolExpressi
 				TitleColor = Colors.action,
 				Title = ModEntry.Instance.Localizations.Localize(["condition", "hull", TargetPlayer ? "player" : "enemy", BelowHalf ? "below" : "above", "title"]),
 				Description = defaultTooltipDescription,
-			}
+			},
 		];
 }
