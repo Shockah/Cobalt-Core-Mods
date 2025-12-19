@@ -18,7 +18,7 @@ internal sealed class TearCard : Card, IDraculaCard, IHasCustomCardTraits
 				rarity = Rarity.common,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_Corrode,
+			Art = StableSpr.cards_WeakenHull,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Mavis", "Tear", "name"]).Localize
 		});
 	}

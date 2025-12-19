@@ -18,7 +18,7 @@ internal sealed class JoltCard : Card, IDraculaCard, IHasCustomCardTraits
 				rarity = Rarity.common,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_Corrode,
+			Art = StableSpr.cards_Dodge,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Mavis", "Jolt", "name"]).Localize
 		});
 	}
