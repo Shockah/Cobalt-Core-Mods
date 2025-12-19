@@ -18,7 +18,7 @@ internal sealed class BraceCard : Card, IDraculaCard, IHasCustomCardTraits
 				rarity = Rarity.common,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_Corrode,
+			Art = StableSpr.cards_Shield,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Mavis", "Brace", "name"]).Localize
 		});
 	}

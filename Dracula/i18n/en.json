@@ -101,7 +101,19 @@
 			        "stateful": "your enemy is above half (<c=boldPink>{{Hull}}</c>) hull"
 		        }
 	        }
-        }
+        },
+	    "missing": {
+		    "missing": {
+			    "title": "Is Missing",
+			    "generic": "the card's owner is missing",
+			    "specific": "<c=status>{{Status}}</c>"
+		    },
+		    "present": {
+			    "title": "Is Present",
+			    "generic": "the card's owner is not missing",
+			    "specific": "{{Character}} is not missing"
+		    }
+	    }
     },
     "midrow": {
         "Bat": {
@@ -412,14 +424,23 @@
 		    "Brace": {
 			    "name": "Brace"
 		    },
+		    "DiveBack": {
+			    "name": "Dive Back"
+		    },
 		    "Exploit": {
 			    "name": "Exploit"
 		    },
 		    "Jolt": {
 			    "name": "Jolt"
 		    },
+		    "Persevere": {
+			    "name": "Persevere"
+		    },
 		    "Pursuit": {
 			    "name": "Pursuit"
+		    },
+		    "Sonar": {
+			    "name": "Sonar"
 		    },
 		    "Stabilize": {
 			    "name": "Stabilize"

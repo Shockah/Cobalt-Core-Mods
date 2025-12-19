@@ -18,7 +18,7 @@ internal sealed class PursuitCard : Card, IDraculaCard, IHasCustomCardTraits
 				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_Corrode,
+			Art = StableSpr.cards_Zoom,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Mavis", "Pursuit", "name"]).Localize
 		});
 	}

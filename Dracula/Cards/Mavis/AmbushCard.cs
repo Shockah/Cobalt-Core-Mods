@@ -5,7 +5,7 @@ using Nickel;
 
 namespace Shockah.Dracula;
 
-internal sealed class AmbushCard : Card, IDraculaCard,  IHasCustomCardTraits
+internal sealed class AmbushCard : Card, IDraculaCard, IHasCustomCardTraits
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -18,7 +18,7 @@ internal sealed class AmbushCard : Card, IDraculaCard,  IHasCustomCardTraits
 				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = StableSpr.cards_Corrode,
+			Art = StableSpr.cards_HandCannon,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Mavis", "Ambush", "name"]).Localize
 		});
 	}
