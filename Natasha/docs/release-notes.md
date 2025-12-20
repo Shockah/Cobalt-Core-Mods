@@ -5,8 +5,9 @@
 ## Upcoming release
 
 * Changed the alt starter deck: replaced Remove Limiter with If Else.
-* Simplified the Typo card.
 * Buffed the Remove Limiter card: changed from Limited 3 to Limited 2 on the Limiter trash card it creates.
+* Changed/Simplified the Concurrency card.
+* Simplified the Typo card.
 
 ## 1.6.0
 Released 4 December 2025.

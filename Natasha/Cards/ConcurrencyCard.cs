@@ -1,9 +1,8 @@
-﻿using Nanoray.PluginManager;
-using Nickel;
-using Shockah.Kokoro;
-using Shockah.Shared;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
+using Nanoray.PluginManager;
+using Nickel;
+using Shockah.Shared;
 
 namespace Shockah.Natasha;
 
@@ -28,28 +27,22 @@ internal sealed class ConcurrencyCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> upgrade switch
 		{
-			Upgrade.B => new() { cost = 1, floppable = true },
-			_ => new() { cost = 2 }
+			Upgrade.B => new() { cost = 1 },
+			Upgrade.A => new() { cost = 2 },
+			_ => new() { cost = 3 },
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AAttack { damage = GetDmg(s, 1), disabled = flipped },
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 2, 2, new AAttack { damage = GetDmg(s, 2) }).AsCardAction.Disabled(flipped),
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 3, 3, new AAttack { damage = GetDmg(s, 3) }).AsCardAction.Disabled(flipped),
-				new ADummyAction(),
-				new AEnergy { changeAmount = 1, disabled = !flipped },
-			],
-			Upgrade.A => [
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 1, 3, new AAttack { damage = GetDmg(s, 1) }).AsCardAction,
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 1, 2, new AAttack { damage = GetDmg(s, 2) }).AsCardAction,
-				new AAttack { damage = GetDmg(s, 3) },
+				new AAttack { damage = GetDmg(s, 0) },
+				new AAttack { damage = GetDmg(s, 1) },
+				new AAttack { damage = GetDmg(s, 2) },
 			],
 			_ => [
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 3, 3, new AAttack { damage = GetDmg(s, 1) }).AsCardAction,
-				ModEntry.Instance.KokoroApi.Sequence.MakeAction(uuid, IKokoroApi.IV2.ISequenceApi.Interval.Combat, 2, 2, new AAttack { damage = GetDmg(s, 2) }).AsCardAction,
+				new AAttack { damage = GetDmg(s, 1) },
+				new AAttack { damage = GetDmg(s, 2) },
 				new AAttack { damage = GetDmg(s, 3) },
 			]
 		};
