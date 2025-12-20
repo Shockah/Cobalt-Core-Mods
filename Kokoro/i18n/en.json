@@ -337,13 +337,13 @@
 		}
 	},
 	"triggerStatus": {
-		"name": "TRIGGER {{Status}}",
+		"name": "TRIGGER STATUS",
 		"description": {
 			"keepAmount": [
-				"Immediately trigger {{Status}}.",
+				"Immediately trigger <c=status>{{Status}}</c>.",
 				"<c=boldText>It doesn't decrease.</c>"
 			],
-			"normal": "Immediately trigger {{Status}}."
+			"normal": "Immediately trigger <c=status>{{Status}}</c>."
 		},
 		"outgoing": {
 			"name": "outgoing",

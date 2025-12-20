@@ -46,9 +46,7 @@ partial class ApiImplementation
 				=> action as IKokoroApi.IV2.IStatusLogicApi.ITriggerStatusAction;
 
 			public IKokoroApi.IV2.IStatusLogicApi.ITriggerStatusAction MakeTriggerStatusAction(bool targetPlayer, Status status)
-			{
-				throw new NotImplementedException();
-			}
+				=> new TriggerStatusAction { TargetPlayer = targetPlayer, Status = status };
 
 			internal sealed class ModifyStatusChangeArgs : IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusChangeArgs
 			{
@@ -197,6 +195,10 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 			original: AccessTools.DeclaredMethod(typeof(RevengeDrive), nameof(RevengeDrive.OnPlayerLoseHull)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(RevengeDrive_OnPlayerLoseHull_Prefix)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(RevengeDrive_OnPlayerLoseHull_Postfix))
+		);
+		harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
 	}
 
@@ -644,6 +646,43 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 				if (action is AAttack { targetPlayer: false, fromDroneX: null } attack)
 					attack.damage -= 1 + state.ship.Get(Status.boost);
 	}
+
+	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
+	{
+		if (action is not TriggerStatusAction triggerStatusAction)
+			return true;
+
+		var position = g.Push(rect: new()).rect.xy;
+		var initialX = (int)position.x;
+
+		if (!dontDraw)
+			Draw.Sprite((Spr)ModEntry.Instance.Content.TriggerStatus.Id!.Value, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
+		position.x += 8;
+
+		if (!triggerStatusAction.TargetPlayer)
+		{
+			if (!dontDraw)
+				Draw.Sprite(StableSpr.icons_outgoing, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
+			position.x += 8;
+		}
+		
+		if (!dontDraw)
+			Draw.Sprite(DB.statuses[triggerStatusAction.Status].icon, position.x, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
+		position.x += 8;
+
+		if (triggerStatusAction.SuccessAction is { } successAction)
+		{
+			position.x += 2;
+			g.Push(rect: new(position.x - initialX, 0));
+			position.x += Card.RenderAction(g, state, successAction, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+			g.Pop();
+		}
+
+		__result = (int)position.x - initialX;
+		g.Pop();
+
+		return false;
+	}
 }
 
 internal sealed class V1ToV2StatusLogicHookWrapper(IStatusLogicHook v1) : IKokoroApi.IV2.IStatusLogicApi.IHook
@@ -965,14 +1004,14 @@ public sealed class TriggerStatusAction : CardAction, IKokoroApi.IV2.IStatusLogi
 		var amount = Math.Max(target?.Get(Status) ?? 1, 1);
 		
 		return [
-			.. TargetPlayer ? Array.Empty<Tooltip>() : [new TTGlossary("actionMisc.outgoing")],
 			new GlossaryTooltip($"action.{GetType().Namespace!}::TriggerStatus::{Status.Key()}")
 			{
 				Icon = (Spr)ModEntry.Instance.Content.TriggerStatus.Id!.Value,
 				TitleColor = Colors.action,
-				Title = ModEntry.Instance.Localizations.Localize(["triggerStatus", "name"], new { Status = Loc.T($"status.{Status}.name") }),
-				Description = ModEntry.Instance.Localizations.Localize(["triggerStatus", "description"], new { Status = Loc.T($"status.{Status}.name") }),
+				Title = ModEntry.Instance.Localizations.Localize(["triggerStatus", "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["triggerStatus", "description", KeepAmount ? "keepAmount" : "normal"], new { Status = Loc.T($"status.{Status}.name").ToUpper() }),
 			},
+			.. TargetPlayer ? Array.Empty<Tooltip>() : [new TTGlossary("actionMisc.outgoing")],
 			.. StatusMeta.GetTooltips(Status, amount)
 		];
 	}
