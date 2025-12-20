@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.15.0
+Released 20 December 2025.
 
 * Added the `TempHull` feature.
 * Added the `Independent` feature.
