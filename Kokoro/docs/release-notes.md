@@ -6,6 +6,7 @@
 
 * Added the `TempHull` feature.
 * Added the `Independent` feature.
+* Added the feature of triggering statuses immediately (part of `StatusLogic`).
 
 ## 2.14.0
 Released 7 December 2025.

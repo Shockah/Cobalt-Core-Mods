@@ -34,7 +34,13 @@ partial class ApiImplementation
 
 			public void UnregisterHook(IKokoroApi.IV2.IStatusLogicApi.IHook hook)
 				=> StatusLogicManager.Instance.Unregister(hook);
-			
+
+			public bool CanImmediatelyTriggerStatus(State state, Combat combat, bool targetPlayer, Status status)
+				=> StatusLogicManager.Instance.CanImmediatelyTriggerStatus(state, combat, targetPlayer, status);
+
+			public bool ImmediatelyTriggerStatus(State state, Combat combat, bool targetPlayer, Status status, bool keepAmount = false)
+				=> StatusLogicManager.Instance.ImmediatelyTriggerStatus(state, combat, targetPlayer, status, keepAmount);
+
 			internal sealed class ModifyStatusChangeArgs : IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusChangeArgs
 			{
 				public State State { get; internal set; } = null!;
@@ -95,6 +101,27 @@ partial class ApiImplementation
 				public int Amount { get; set; }
 				public IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy SetStrategy { get; set; }
 			}
+			
+			internal sealed class CanHandleImmediateStatusTriggerArgs : IKokoroApi.IV2.IStatusLogicApi.IHook.ICanHandleImmediateStatusTriggerArgs
+			{
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public Ship Ship { get; internal set; } = null!;
+				public Status Status { get; internal set; }
+				public int Amount { get; set; }
+			}
+			
+			internal sealed class HandleImmediateStatusTriggerArgs : IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleImmediateStatusTriggerArgs
+			{
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public Ship Ship { get; internal set; } = null!;
+				public Status Status { get; internal set; }
+				public bool KeepAmount { get; internal set; }
+				public int OldAmount { get; internal set; }
+				public int NewAmount { get; set; }
+				public IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy SetStrategy { get; set; }
+			}
 		}
 	}
 }
@@ -122,6 +149,19 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 		Register(VanillaTimestopStatusLogicHook.Instance, 1_000_000);
 		Register(VanillaTurnStartStatusAutoStepLogicHook.Instance, 10);
 		Register(VanillaTurnEndStatusAutoStepLogicHook.Instance, 10);
+
+		Register(CorrodeTriggerStatusLogicHook.Instance, 0);
+		Register(AceTriggerStatusLogicHook.Instance, 0);
+		Register(StrafeTriggerStatusLogicHook.Instance, 0);
+		Register(LoseEvadeNextTurnStatusLogicHook.Instance, 0);
+		Register(DrawNextTurnStatusLogicHook.Instance, 0);
+		Register(EnergyNextTurnStatusLogicHook.Instance, 0);
+		Register(HeatTriggerStatusLogicHook.Instance, 0);
+		Register(EndlessMagazineTriggerStatusLogicHook.Instance, 0);
+		Register(RockFactoryTriggerStatusLogicHook.Instance, 0);
+		Register(MitosisTriggerStatusLogicHook.Instance, 0);
+		Register(QuarryTriggerStatusLogicHook.Instance, 0);
+		Register(StunSourceTriggerStatusLogicHook.Instance, 0);
 	}
 
 	internal static void Setup(IHarmony harmony)
@@ -191,6 +231,124 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 		finally
 		{
 			ModEntry.Instance.ArgsPool.Return(args);
+		}
+	}
+
+	public bool CanImmediatelyTriggerStatus(State state, Combat combat, bool targetPlayer, Status status)
+	{
+		var target = targetPlayer ? state.ship : combat.otherShip;
+		
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusLogicApi.CanHandleImmediateStatusTriggerArgs>();
+		args.State = state;
+		args.Combat = combat;
+		args.Ship = target;
+		args.Status = status;
+		args.Amount = target.Get(status);
+
+		try
+		{
+			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+				if (hook.CanHandleImmediateStatusTrigger(args))
+					return true;
+			return false;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
+	}
+
+	public bool ImmediatelyTriggerStatus(State state, Combat combat, bool targetPlayer, Status status, bool keepAmount)
+	{
+		var target = targetPlayer ? state.ship : combat.otherShip;
+		
+		var canHandleImmediateStatusTriggerArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusLogicApi.CanHandleImmediateStatusTriggerArgs>();
+		canHandleImmediateStatusTriggerArgs.State = state;
+		canHandleImmediateStatusTriggerArgs.Combat = combat;
+		canHandleImmediateStatusTriggerArgs.Ship = target;
+		canHandleImmediateStatusTriggerArgs.Status = status;
+		canHandleImmediateStatusTriggerArgs.Amount = target.Get(status);
+		
+		var handleImmediateStatusTriggerArgs = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.StatusLogicApi.HandleImmediateStatusTriggerArgs>();
+		handleImmediateStatusTriggerArgs.State = state;
+		handleImmediateStatusTriggerArgs.Combat = combat;
+		handleImmediateStatusTriggerArgs.Ship = target;
+		handleImmediateStatusTriggerArgs.Status = status;
+		handleImmediateStatusTriggerArgs.OldAmount = canHandleImmediateStatusTriggerArgs.Amount;
+		handleImmediateStatusTriggerArgs.NewAmount = canHandleImmediateStatusTriggerArgs.Amount;
+		handleImmediateStatusTriggerArgs.SetStrategy = IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.Direct;
+		handleImmediateStatusTriggerArgs.KeepAmount = keepAmount;
+
+		try
+		{
+			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+			{
+				if (!hook.CanHandleImmediateStatusTrigger(canHandleImmediateStatusTriggerArgs))
+					continue;
+				
+				target.PulseStatus(status);
+				hook.HandleImmediateStatusTrigger(handleImmediateStatusTriggerArgs);
+
+				if (keepAmount)
+					return true;
+				if (handleImmediateStatusTriggerArgs.NewAmount == handleImmediateStatusTriggerArgs.OldAmount)
+					return true;
+				if (handleImmediateStatusTriggerArgs.OldAmount <= 0 && handleImmediateStatusTriggerArgs.NewAmount < 0 && !target.CanBeNegative(status))
+					return true;
+
+				switch (handleImmediateStatusTriggerArgs.SetStrategy)
+				{
+					case IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.Direct:
+						target.Set(status, handleImmediateStatusTriggerArgs.NewAmount);
+						break;
+					case IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueSet:
+						combat.Queue(new AStatus
+						{
+							targetPlayer = target.isPlayerShip,
+							status = status,
+							mode = AStatusMode.Set,
+							statusAmount = handleImmediateStatusTriggerArgs.NewAmount,
+						});
+						break;
+					case IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueAdd:
+						combat.Queue(new AStatus
+						{
+							targetPlayer = target.isPlayerShip,
+							status = status,
+							mode = AStatusMode.Add,
+							statusAmount = handleImmediateStatusTriggerArgs.NewAmount - handleImmediateStatusTriggerArgs.OldAmount,
+						});
+						break;
+					case IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueImmediateSet:
+						combat.QueueImmediate(new AStatus
+						{
+							targetPlayer = target.isPlayerShip,
+							status = status,
+							mode = AStatusMode.Set,
+							statusAmount = handleImmediateStatusTriggerArgs.NewAmount,
+						});
+						break;
+					case IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueImmediateAdd:
+						combat.QueueImmediate(new AStatus
+						{
+							targetPlayer = target.isPlayerShip,
+							status = status,
+							mode = AStatusMode.Add,
+							statusAmount = handleImmediateStatusTriggerArgs.NewAmount - handleImmediateStatusTriggerArgs.OldAmount,
+						});
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+				
+				return true;
+			}
+			return false;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(canHandleImmediateStatusTriggerArgs);
+			ModEntry.Instance.ArgsPool.Return(handleImmediateStatusTriggerArgs);
 		}
 	}
 
@@ -596,4 +754,183 @@ public sealed class VanillaTurnEndStatusAutoStepLogicHook : IKokoroApi.IV2.IStat
 
 		return false;
 	}
+}
+
+public sealed class CorrodeTriggerStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
+{
+	public static CorrodeTriggerStatusLogicHook Instance { get; } = new();
+
+	private CorrodeTriggerStatusLogicHook() { }
+	
+	public bool CanHandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.ICanHandleImmediateStatusTriggerArgs args)
+		=> args.Status == Status.corrode && args.Amount > 0;
+
+	public void HandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleImmediateStatusTriggerArgs args)
+		=> args.Combat.QueueImmediate(new ACorrodeDamage { targetPlayer = args.Ship.isPlayerShip });
+}
+
+public sealed class AceTriggerStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
+{
+	public static AceTriggerStatusLogicHook Instance { get; } = new();
+
+	private AceTriggerStatusLogicHook() { }
+
+	public bool CanHandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.ICanHandleImmediateStatusTriggerArgs args)
+		=> args.Status == Status.ace && args.Amount > 0;
+
+	public void HandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleImmediateStatusTriggerArgs args)
+		=> args.Combat.QueueImmediate(new AStatus { status = Status.evade, statusAmount = args.OldAmount, targetPlayer = args.Ship.isPlayerShip });
+}
+
+public sealed class StrafeTriggerStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
+{
+	public static StrafeTriggerStatusLogicHook Instance { get; } = new();
+
+	private StrafeTriggerStatusLogicHook() { }
+
+	public bool CanHandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.ICanHandleImmediateStatusTriggerArgs args)
+		=> (args.Status == Status.strafe || args.Status == ModEntry.Instance.Content.TempStrafeStatus.Status) && args.Amount > 0;
+
+	public void HandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleImmediateStatusTriggerArgs args)
+		=> args.Combat.QueueImmediate(new AAttack { damage = Card.GetActualDamage(args.State, args.OldAmount), targetPlayer = !args.Ship.isPlayerShip, fast = true });
+}
+
+public sealed class LoseEvadeNextTurnStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
+{
+	public static LoseEvadeNextTurnStatusLogicHook Instance { get; } = new();
+
+	private LoseEvadeNextTurnStatusLogicHook() { }
+
+	public bool CanHandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.ICanHandleImmediateStatusTriggerArgs args)
+		=> args.Status == Status.loseEvadeNextTurn && args.Amount > 0;
+
+	public void HandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleImmediateStatusTriggerArgs args)
+	{
+		args.Ship.Set(Status.evade, 0);
+		args.NewAmount = 0;
+	}
+}
+
+public sealed class DrawNextTurnStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
+{
+	public static DrawNextTurnStatusLogicHook Instance { get; } = new();
+
+	private DrawNextTurnStatusLogicHook() { }
+
+	public bool CanHandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.ICanHandleImmediateStatusTriggerArgs args)
+		=> args.Status == Status.drawNextTurn && args.Amount > 0;
+
+	public void HandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleImmediateStatusTriggerArgs args)
+	{
+		args.Combat.QueueImmediate(new ADrawCard { count = args.OldAmount });
+		args.NewAmount = 0;
+	}
+}
+
+public sealed class EnergyNextTurnStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
+{
+	public static EnergyNextTurnStatusLogicHook Instance { get; } = new();
+
+	private EnergyNextTurnStatusLogicHook() { }
+
+	public bool CanHandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.ICanHandleImmediateStatusTriggerArgs args)
+		=> args.Status is (Status.energyNextTurn or Status.energyLessNextTurn) && args.Amount > 0;
+
+	public void HandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleImmediateStatusTriggerArgs args)
+	{
+		args.Combat.QueueImmediate(new AEnergy { changeAmount = args.OldAmount * (args.Status == Status.energyLessNextTurn ? -1 : 1) });
+		args.NewAmount = 0;
+	}
+}
+
+public sealed class HeatTriggerStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
+{
+	public static HeatTriggerStatusLogicHook Instance { get; } = new();
+
+	private HeatTriggerStatusLogicHook() { }
+
+	public bool CanHandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.ICanHandleImmediateStatusTriggerArgs args)
+		=> args.Status == Status.heat && args.Amount >= args.Ship.heatTrigger;
+
+	public void HandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleImmediateStatusTriggerArgs args)
+	{
+		args.Combat.QueueImmediate([
+			new AOverheat { targetPlayer = args.Ship.isPlayerShip, timer = args.KeepAmount ? 0 : CardAction.TIMER_DEFAULT },
+			.. args.KeepAmount ? [new AStatus { targetPlayer = args.Ship.isPlayerShip, mode = AStatusMode.Set, status = args.Status, statusAmount = args.OldAmount }] : Array.Empty<CardAction>()
+		]);
+	}
+}
+
+public sealed class EndlessMagazineTriggerStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
+{
+	public static EndlessMagazineTriggerStatusLogicHook Instance { get; } = new();
+
+	private EndlessMagazineTriggerStatusLogicHook() { }
+
+	public bool CanHandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.ICanHandleImmediateStatusTriggerArgs args)
+		=> args.Status == Status.endlessMagazine && args.Amount > 0;
+
+	public void HandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleImmediateStatusTriggerArgs args)
+		=> args.Combat.QueueImmediate(Enumerable.Range(0, args.OldAmount).Select(_ => new AAddCard { card = new ChipShot(), destination = CardDestination.Hand }));
+}
+
+public sealed class RockFactoryTriggerStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
+{
+	public static RockFactoryTriggerStatusLogicHook Instance { get; } = new();
+
+	private RockFactoryTriggerStatusLogicHook() { }
+
+	public bool CanHandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.ICanHandleImmediateStatusTriggerArgs args)
+		=> args.Status == Status.rockFactory && args.Amount > 0;
+
+	public void HandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleImmediateStatusTriggerArgs args)
+		=> args.Combat.QueueImmediate(Enumerable.Range(0, args.OldAmount).Select(_ => new ASpawn { thing = new Asteroid { yAnimation = 0 } }));
+}
+
+public sealed class MitosisTriggerStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
+{
+	public static MitosisTriggerStatusLogicHook Instance { get; } = new();
+
+	private MitosisTriggerStatusLogicHook() { }
+
+	public bool CanHandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.ICanHandleImmediateStatusTriggerArgs args)
+		=> args.Status == Status.mitosis && args.Amount > 0;
+
+	public void HandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleImmediateStatusTriggerArgs args)
+	{
+		var stacks = Math.Min(args.OldAmount, args.Ship.Get(Status.shield));
+		if (stacks <= 0)
+			return;
+
+		args.Combat.QueueImmediate([
+			new AStatus { status = Status.shield, statusAmount = -stacks, targetPlayer = args.Ship.isPlayerShip },
+			new AStatus { status = Status.tempShield, statusAmount = stacks * 2, targetPlayer = args.Ship.isPlayerShip },
+		]);
+	}
+}
+
+public sealed class QuarryTriggerStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
+{
+	public static QuarryTriggerStatusLogicHook Instance { get; } = new();
+
+	private QuarryTriggerStatusLogicHook() { }
+
+	public bool CanHandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.ICanHandleImmediateStatusTriggerArgs args)
+		=> args.Status == Status.quarry && args.Amount > 0;
+
+	public void HandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleImmediateStatusTriggerArgs args)
+		=> args.Combat.QueueImmediate(new AStatus { status = Status.shard, statusAmount = args.OldAmount, targetPlayer = args.Ship.isPlayerShip });
+}
+
+public sealed class StunSourceTriggerStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
+{
+	public static StunSourceTriggerStatusLogicHook Instance { get; } = new();
+
+	private StunSourceTriggerStatusLogicHook() { }
+
+	public bool CanHandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.ICanHandleImmediateStatusTriggerArgs args)
+		=> args.Status == Status.stunSource && args.Amount > 0;
+
+	public void HandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleImmediateStatusTriggerArgs args)
+		=> args.Combat.QueueImmediate(new AStatus { status = Status.stunCharge, statusAmount = args.OldAmount, targetPlayer = args.Ship.isPlayerShip });
 }

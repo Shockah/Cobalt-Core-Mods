@@ -28,6 +28,30 @@ public partial interface IKokoroApi
 			/// </summary>
 			/// <param name="hook">The hook.</param>
 			void UnregisterHook(IHook hook);
+
+			/// <summary>
+			/// Checks whether a given status can be immediately triggered.
+			/// </summary>
+			/// <param name="state">The game state.</param>
+			/// <param name="combat">The current combat.</param>
+			/// <param name="targetPlayer">Whether the status should be triggered for the player (<c>true</c>) or the enemy (<c>false</c>).</param>
+			/// <param name="status">The status to trigger.</param>
+			/// <returns>Whether the status can be immediately triggered.</returns>
+			bool CanImmediatelyTriggerStatus(State state, Combat combat, bool targetPlayer, Status status);
+
+			/// <summary>
+			/// Immediately triggers a status, if possible.
+			/// </summary>
+			/// <param name="state">The game state.</param>
+			/// <param name="combat">The current combat.</param>
+			/// <param name="targetPlayer">Whether the status should be triggered for the player (<c>true</c>) or the enemy (<c>false</c>).</param>
+			/// <param name="status">The status to trigger.</param>
+			/// <param name="keepAmount">
+			/// Whether the amount of the status should be kept in-tact.
+			/// When <c>true</c>, ignores any changes to <see cref="IHook.IHandleImmediateStatusTriggerArgs.NewAmount"/> or <see cref="IHook.IHandleImmediateStatusTriggerArgs.SetStrategy"/>.
+			/// </param>
+			/// <returns>Whether the status was successfully triggered.</returns>
+			bool ImmediatelyTriggerStatus(State state, Combat combat, bool targetPlayer, Status status, bool keepAmount = false);
 			
 			/// <summary>
 			/// Describes the current timing of the turn.
@@ -125,6 +149,21 @@ public partial interface IKokoroApi
 				/// <param name="args">The arguments for the hook method.</param>
 				/// <returns>Whether this hook handled the given status and no further hooks should be called. Defaults to <c>false</c>.</returns>
 				bool HandleStatusTurnAutoStep(IHandleStatusTurnAutoStepArgs args) => false;
+
+				/// <summary>
+				/// Controls whether the hook can handle an immediate trigger of a given status.
+				/// </summary>
+				/// <param name="args">The arguments for the hook method.</param>
+				/// <returns><c>true</c> if the hook can handle an immediate trigger of the status, <c>false</c> otherwise. Defaults to <c>false</c>.</returns>
+				/// <seealso cref="HandleImmediateStatusTrigger"/>
+				bool CanHandleImmediateStatusTrigger(ICanHandleImmediateStatusTriggerArgs args) => false;
+				
+				/// <summary>
+				/// Allows a hook to handle an immediate trigger of a given status.
+				/// </summary>
+				/// <param name="args">The arguments for the hook method.</param>
+				/// <seealso cref="CanHandleImmediateStatusTrigger"/>
+				void HandleImmediateStatusTrigger(IHandleImmediateStatusTriggerArgs args) { }
 				
 				/// <summary>
 				/// The arguments for the <see cref="ModifyStatusChange"/> hook method.
@@ -341,6 +380,86 @@ public partial interface IKokoroApi
 					/// This value can be modified by the hook.
 					/// </summary>
 					int Amount { get; set; }
+					
+					/// <summary>
+					/// The strategy to use for changing the amount of the status.
+					/// This value can be modified by the hook.
+					/// </summary>
+					StatusTurnAutoStepSetStrategy SetStrategy { get; set; }
+				}
+				
+				/// <summary>
+				/// The arguments for the <see cref="CanHandleImmediateStatusTrigger"/> hook method.
+				/// </summary>
+				public interface ICanHandleImmediateStatusTriggerArgs
+				{
+					/// <summary>
+					/// The game state.
+					/// </summary>
+					State State { get; }
+					
+					/// <summary>
+					/// The current combat.
+					/// </summary>
+					Combat Combat { get; }
+					
+					/// <summary>
+					/// The ship the turn was for.
+					/// </summary>
+					Ship Ship { get; }
+					
+					/// <summary>
+					/// The status currently being handled.
+					/// </summary>
+					Status Status { get; }
+					
+					/// <summary>
+					/// The current amount of the status.
+					/// </summary>
+					int Amount { get; }
+				}
+				
+				/// <summary>
+				/// The arguments for the <see cref="HandleImmediateStatusTrigger"/> hook method.
+				/// </summary>
+				public interface IHandleImmediateStatusTriggerArgs
+				{
+					/// <summary>
+					/// The game state.
+					/// </summary>
+					State State { get; }
+					
+					/// <summary>
+					/// The current combat.
+					/// </summary>
+					Combat Combat { get; }
+					
+					/// <summary>
+					/// The ship the turn was for.
+					/// </summary>
+					Ship Ship { get; }
+					
+					/// <summary>
+					/// The status currently being handled.
+					/// </summary>
+					Status Status { get; }
+					
+					/// <summary>
+					/// Whether it was requested the amount of the status should be kept in-tact.
+					/// When <c>true</c>, ignores any changes to <see cref="NewAmount"/> or <see cref="SetStrategy"/>.
+					/// </summary>
+					bool KeepAmount { get; }
+					
+					/// <summary>
+					/// The old amount of the status.
+					/// </summary>
+					int OldAmount { get; }
+					
+					/// <summary>
+					/// The new amount of the status.
+					/// This value can be modified by the hook.
+					/// </summary>
+					int NewAmount { get; set; }
 					
 					/// <summary>
 					/// The strategy to use for changing the amount of the status.
