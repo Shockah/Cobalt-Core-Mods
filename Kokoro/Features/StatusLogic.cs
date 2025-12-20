@@ -287,7 +287,7 @@ internal sealed class StatusLogicManager : VariedApiVersionHookManager<IKokoroAp
 		handleImmediateStatusTriggerArgs.Status = status;
 		handleImmediateStatusTriggerArgs.OldAmount = canHandleImmediateStatusTriggerArgs.Amount;
 		handleImmediateStatusTriggerArgs.NewAmount = canHandleImmediateStatusTriggerArgs.Amount;
-		handleImmediateStatusTriggerArgs.SetStrategy = IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.Direct;
+		handleImmediateStatusTriggerArgs.SetStrategy = IKokoroApi.IV2.IStatusLogicApi.StatusTurnAutoStepSetStrategy.QueueImmediateAdd;
 		handleImmediateStatusTriggerArgs.KeepAmount = keepAmount;
 
 		try
@@ -1002,6 +1002,9 @@ public sealed class TriggerStatusAction : CardAction, IKokoroApi.IV2.IStatusLogi
 	{
 		var target = TargetPlayer ? s.ship : (s.route as Combat)?.otherShip;
 		var amount = Math.Max(target?.Get(Status) ?? 1, 1);
+
+		if (target is not null)
+			target.statusEffectPulses[Status] = 0.05;
 		
 		return [
 			new GlossaryTooltip($"action.{GetType().Namespace!}::TriggerStatus::{Status.Key()}")
