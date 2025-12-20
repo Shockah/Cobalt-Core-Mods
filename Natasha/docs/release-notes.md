@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.7.0
+Released 20 December 2025.
 
 * Changed the alt starter deck: replaced Remove Limiter with If Else.
 * Buffed the Remove Limiter card: changed from Limited 3 to Limited 2 on the Limiter trash card it creates.
