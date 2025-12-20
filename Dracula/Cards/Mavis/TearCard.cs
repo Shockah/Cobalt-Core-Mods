@@ -37,17 +37,13 @@ internal sealed class TearCard : Card, IDraculaCard, IHasCustomCardTraits
 				new AAttack { damage = GetDmg(s, 0), status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 2 },
 			],
 			Upgrade.B => [
-				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
-					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 1),
+				ModEntry.Instance.KokoroApi.StatusLogic.MakeTriggerStatusAction(false, ModEntry.Instance.BleedingStatus.Status).SetSuccessAction(
 					new AHurt { targetPlayer = false, hurtAmount = 1 }
 				).AsCardAction,
 				new AAttack { damage = GetDmg(s, 0), status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 2 },
 			],
 			_ => [
-				ModEntry.Instance.KokoroApi.ActionCosts.MakeCostAction(
-					ModEntry.Instance.KokoroApi.ActionCosts.MakeResourceCost(ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(ModEntry.Instance.BleedingStatus.Status, false), 1),
-					new AHurt { targetPlayer = false, hurtShieldsFirst = true, hurtAmount = 1 }
-				).AsCardAction,
+				ModEntry.Instance.KokoroApi.StatusLogic.MakeTriggerStatusAction(false, ModEntry.Instance.BleedingStatus.Status).AsCardAction,
 				new AAttack { damage = GetDmg(s, 0), status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 2 },
 			]
 		};
