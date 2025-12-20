@@ -54,6 +54,21 @@ public partial interface IKokoroApi
 			bool ImmediatelyTriggerStatus(State state, Combat combat, bool targetPlayer, Status status, bool keepAmount = false);
 			
 			/// <summary>
+			/// Casts the action as a status trigger action, if it is one.
+			/// </summary>
+			/// <param name="action">The potential status trigger action.</param>
+			/// <returns>The status trigger action, if the given action is one, or <c>null</c> otherwise.</returns>
+			ITriggerStatusAction? AsTriggerStatusAction(CardAction action);
+			
+			/// <summary>
+			/// Creates a new status trigger action.
+			/// </summary>
+			/// <param name="targetPlayer">Whether the status should be triggered for the player (<c>true</c>) or the enemy (<c>false</c>).</param>
+			/// <param name="status">The status to trigger immediately.</param>
+			/// <returns>The new status trigger action.</returns>
+			ITriggerStatusAction MakeTriggerStatusAction(bool targetPlayer, Status status);
+			
+			/// <summary>
 			/// Describes the current timing of the turn.
 			/// </summary>
 			[JsonConverter(typeof(StringEnumConverter))]
@@ -467,6 +482,60 @@ public partial interface IKokoroApi
 					/// </summary>
 					StatusTurnAutoStepSetStrategy SetStrategy { get; set; }
 				}
+			}
+			
+			/// <summary>
+			/// Represents an action which immediately triggers a status.
+			/// </summary>
+			public interface ITriggerStatusAction : ICardAction<CardAction>
+			{
+				/// <summary>
+				/// Whether the status should be triggered for the player (<c>true</c>) or the enemy (<c>false</c>).
+				/// </summary>
+				bool TargetPlayer { get; set; }
+				
+				/// <summary>
+				/// The status to trigger immediately.
+				/// </summary>
+				Status Status { get; set; }
+				
+				/// <summary>
+				/// Whether the status' amount should be kept as-is. Defaults to <c>false</c>.
+				/// </summary>
+				bool KeepAmount { get; set; }
+				
+				/// <summary>
+				/// An optional action to run if the trigger succeeded.
+				/// </summary>
+				CardAction? SuccessAction { get; set; }
+
+				/// <summary>
+				/// Sets <see cref="TargetPlayer"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				ITriggerStatusAction SetTargetPlayer(bool value);
+
+				/// <summary>
+				/// Sets <see cref="Status"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				ITriggerStatusAction SetStatus(Status value);
+
+				/// <summary>
+				/// Sets <see cref="KeepAmount"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				ITriggerStatusAction SetKeepAmount(bool value);
+
+				/// <summary>
+				/// Sets <see cref="SuccessAction"/>.
+				/// </summary>
+				/// <param name="value">The new value.</param>
+				/// <returns>This object after the change.</returns>
+				ITriggerStatusAction SetSuccessAction(CardAction? value);
 			}
 		}
 	}

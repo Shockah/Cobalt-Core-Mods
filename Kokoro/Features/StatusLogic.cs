@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Newtonsoft.Json;
 
 namespace Shockah.Kokoro;
 
@@ -40,6 +41,14 @@ partial class ApiImplementation
 
 			public bool ImmediatelyTriggerStatus(State state, Combat combat, bool targetPlayer, Status status, bool keepAmount = false)
 				=> StatusLogicManager.Instance.ImmediatelyTriggerStatus(state, combat, targetPlayer, status, keepAmount);
+
+			public IKokoroApi.IV2.IStatusLogicApi.ITriggerStatusAction? AsTriggerStatusAction(CardAction action)
+				=> action as IKokoroApi.IV2.IStatusLogicApi.ITriggerStatusAction;
+
+			public IKokoroApi.IV2.IStatusLogicApi.ITriggerStatusAction MakeTriggerStatusAction(bool targetPlayer, Status status)
+			{
+				throw new NotImplementedException();
+			}
 
 			internal sealed class ModifyStatusChangeArgs : IKokoroApi.IV2.IStatusLogicApi.IHook.IModifyStatusChangeArgs
 			{
@@ -808,6 +817,7 @@ public sealed class LoseEvadeNextTurnStatusLogicHook : IKokoroApi.IV2.IStatusLog
 	{
 		args.Ship.Set(Status.evade, 0);
 		args.NewAmount = 0;
+		args.Combat.QueueImmediate(new ADelay());
 	}
 }
 
@@ -933,4 +943,86 @@ public sealed class StunSourceTriggerStatusLogicHook : IKokoroApi.IV2.IStatusLog
 
 	public void HandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleImmediateStatusTriggerArgs args)
 		=> args.Combat.QueueImmediate(new AStatus { status = Status.stunCharge, statusAmount = args.OldAmount, targetPlayer = args.Ship.isPlayerShip });
+}
+
+public sealed class TriggerStatusAction : CardAction, IKokoroApi.IV2.IStatusLogicApi.ITriggerStatusAction
+{
+	public required bool TargetPlayer { get; set; }
+	public required Status Status { get; set; }
+	public bool KeepAmount { get; set; }
+	public CardAction? SuccessAction { get; set; }
+
+	[JsonIgnore]
+	public CardAction AsCardAction
+		=> this;
+
+	public override Icon? GetIcon(State s)
+		=> new((Spr)ModEntry.Instance.Content.TriggerStatus.Id!.Value, null, Colors.textMain);
+
+	public override List<Tooltip> GetTooltips(State s)
+	{
+		var target = TargetPlayer ? s.ship : (s.route as Combat)?.otherShip;
+		var amount = Math.Max(target?.Get(Status) ?? 1, 1);
+		
+		return [
+			.. TargetPlayer ? Array.Empty<Tooltip>() : [new TTGlossary("actionMisc.outgoing")],
+			new GlossaryTooltip($"action.{GetType().Namespace!}::TriggerStatus::{Status.Key()}")
+			{
+				Icon = (Spr)ModEntry.Instance.Content.TriggerStatus.Id!.Value,
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["triggerStatus", "name"], new { Status = Loc.T($"status.{Status}.name") }),
+				Description = ModEntry.Instance.Localizations.Localize(["triggerStatus", "description"], new { Status = Loc.T($"status.{Status}.name") }),
+			},
+			.. StatusMeta.GetTooltips(Status, amount)
+		];
+	}
+
+	public override void Begin(G g, State s, Combat c)
+	{
+		base.Begin(g, s, c);
+		timer = 0;
+
+		var queueCopy = c.cardActions.ToList();
+		if (!StatusLogicManager.Instance.ImmediatelyTriggerStatus(s, c, TargetPlayer, Status, KeepAmount))
+			return;
+		
+		if (SuccessAction is null)
+			return;
+
+		foreach (var queueAction in queueCopy)
+		{
+			var index = c.cardActions.IndexOf(queueAction);
+			if (index < 0)
+				continue;
+			
+			c.cardActions.Insert(index, SuccessAction);
+			return;
+		}
+		
+		c.Queue(SuccessAction);
+	}
+	
+	public IKokoroApi.IV2.IStatusLogicApi.ITriggerStatusAction SetTargetPlayer(bool value)
+	{
+		this.TargetPlayer = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IStatusLogicApi.ITriggerStatusAction SetStatus(Status value)
+	{
+		this.Status = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IStatusLogicApi.ITriggerStatusAction SetKeepAmount(bool value)
+	{
+		this.KeepAmount = value;
+		return this;
+	}
+
+	public IKokoroApi.IV2.IStatusLogicApi.ITriggerStatusAction SetSuccessAction(CardAction? value)
+	{
+		this.SuccessAction = value;
+		return this;
+	}
 }

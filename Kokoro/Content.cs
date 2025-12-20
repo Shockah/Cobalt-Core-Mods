@@ -74,6 +74,8 @@ internal sealed partial class Content
 	internal ExternalSprite TempStrafeSprite { get; private set; } = null!;
 	internal IStatusEntry TempStrafeStatus { get; private set; } = null!;
 	
+	internal ExternalSprite TriggerStatus { get; private set; } = null!;
+	
 	internal ExternalSprite TempHullGainSprite { get; private set; } = null!;
 	internal ExternalSprite LoseHullLaterSprite { get; private set; } = null!;
 	internal IStatusEntry LoseHullLaterStatus { get; private set; } = null!;
@@ -200,6 +202,10 @@ internal sealed partial class Content
 		TempStrafeSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.Status.TempStrafe",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "TempStrafe.png"))
+		);
+		TriggerStatus = registry.RegisterArtOrThrow(
+			id: $"{typeof(ModEntry).Namespace}.TriggerStatus",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "TriggerStatus.png"))
 		);
 		TempHullGainSprite = registry.RegisterArtOrThrow(
 			id: $"{typeof(ModEntry).Namespace}.TempHullGain",

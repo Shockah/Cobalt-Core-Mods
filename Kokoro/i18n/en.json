@@ -335,5 +335,19 @@
 			"name": "outgoing",
 			"description": "This effect will be applied to the enemy, wherever they are."
 		}
+	},
+	"triggerStatus": {
+		"name": "TRIGGER {{Status}}",
+		"description": {
+			"keepAmount": [
+				"Immediately trigger {{Status}}.",
+				"<c=boldText>It doesn't decrease.</c>"
+			],
+			"normal": "Immediately trigger {{Status}}."
+		},
+		"outgoing": {
+			"name": "outgoing",
+			"description": "This effect will be applied to the enemy, wherever they are."
+		}
 	}
 }
