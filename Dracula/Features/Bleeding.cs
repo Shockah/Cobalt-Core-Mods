@@ -50,4 +50,22 @@ internal sealed class BleedingManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 			args.Amount = Math.Max(args.Amount - triggers, 0);
 		return false;
 	}
+
+	public bool CanHandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.ICanHandleImmediateStatusTriggerArgs args)
+		=> args.Status == ModEntry.Instance.BleedingStatus.Status && args.Amount > 0;
+
+	public void HandleImmediateStatusTrigger(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleImmediateStatusTriggerArgs args)
+	{
+		var thinBloodArtifact = args.State.EnumerateAllArtifacts().FirstOrDefault(a => a is ThinBloodArtifact);
+		var triggers = thinBloodArtifact is null ? 1 : Math.Min(2, args.OldAmount);
+		args.NewAmount = Math.Max(args.OldAmount - triggers, 0);
+		
+		args.Combat.QueueImmediate(Enumerable.Range(0, triggers).Select(i => new AHurt
+		{
+			targetPlayer = args.Ship.isPlayerShip,
+			hurtAmount = 1,
+			hurtShieldsFirst = true,
+			artifactPulse = i == 1 ? thinBloodArtifact?.Key() : null
+		}));
+	}
 }
