@@ -138,7 +138,7 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 
 		var tempHull = __instance.Get(ModEntry.Instance.Content.LoseHullLaterStatus.Status);
 		var statusToLose = Math.Min(lostAmount, tempHull);
-		if (statusToLose < 0)
+		if (statusToLose <= 0)
 			return;
 
 		__instance.Add(ModEntry.Instance.Content.LoseHullLaterStatus.Status, -statusToLose);
@@ -156,7 +156,7 @@ internal sealed class TempHullManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 		var remainingHeal = amount - healedAmount;
 		var tempHull = __instance.Get(ModEntry.Instance.Content.LoseHullLaterStatus.Status);
 		var statusToLose = Math.Min(remainingHeal, tempHull);
-		if (statusToLose < 0)
+		if (statusToLose <= 0)
 			return;
 
 		__instance.Add(ModEntry.Instance.Content.LoseHullLaterStatus.Status, -statusToLose);

@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Regain Hull Later and Lose Hull Later appearing seemingly out of nowhere.
+
 ## 2.15.0
 Released 20 December 2025.
 
