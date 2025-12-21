@@ -32,15 +32,15 @@ internal sealed class TearCard : Card, IDraculaCard, IHasCustomCardTraits
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.A => [
-				new AHurt { targetPlayer = false, hurtShieldsFirst = true, hurtAmount = 1 },
+			Upgrade.B => [
+				ModEntry.Instance.KokoroApi.StatusLogic.MakeTriggerStatusAction(false, ModEntry.Instance.BleedingStatus.Status).AsCardAction,
+				ModEntry.Instance.KokoroApi.StatusLogic.MakeTriggerStatusAction(false, ModEntry.Instance.BleedingStatus.Status).AsCardAction,
+				ModEntry.Instance.KokoroApi.StatusLogic.MakeTriggerStatusAction(false, ModEntry.Instance.BleedingStatus.Status).AsCardAction,
 				new AAttack { damage = GetDmg(s, 0), status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 2 },
 			],
-			Upgrade.B => [
-				ModEntry.Instance.KokoroApi.StatusLogic.MakeTriggerStatusAction(false, ModEntry.Instance.BleedingStatus.Status).SetSuccessAction(
-					new AHurt { targetPlayer = false, hurtAmount = 1 }
-				).AsCardAction,
-				new AAttack { damage = GetDmg(s, 0), status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 2 },
+			Upgrade.A => [
+				ModEntry.Instance.KokoroApi.StatusLogic.MakeTriggerStatusAction(false, ModEntry.Instance.BleedingStatus.Status).AsCardAction,
+				new AAttack { damage = GetDmg(s, 0), status = ModEntry.Instance.BleedingStatus.Status, statusAmount = 3 },
 			],
 			_ => [
 				ModEntry.Instance.KokoroApi.StatusLogic.MakeTriggerStatusAction(false, ModEntry.Instance.BleedingStatus.Status).AsCardAction,
