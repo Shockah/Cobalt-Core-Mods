@@ -27,43 +27,29 @@ internal sealed class BraceCard : Card, IDraculaCard, IHasCustomCardTraits
 		=> new() { cost = 1 };
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-		=> upgrade switch
-		{
-			Upgrade.B => new HashSet<ICardTraitEntry>(),
-			_ => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Independent.Trait },
-		};
+		=> new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Independent.Trait };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
 			Upgrade.A => [
-				ModEntry.Instance.KokoroApi.TempHull.MakeGainAction(2).AsCardAction,
+				ModEntry.Instance.KokoroApi.TempHull.MakeGainAction(3).AsCardAction,
 			],
 			Upgrade.B => [
 				ModEntry.Instance.KokoroApi.TempHull.MakeGainAction(2).AsCardAction,
 				ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
-						new HullCondition { BelowHalf = true, OverrideValue = s.ship.hull + 2 <= s.ship.hullMax / 2 },
-						ModEntry.Instance.KokoroApi.TempHull.MakeGainAction(1).AsCardAction
+						new HullCondition { BelowHalf = false, OverrideValue = s.ship.hull + 2 > s.ship.hullMax / 2 },
+						ModEntry.Instance.KokoroApi.TempHull.MakeGainAction(2).AsCardAction
 					).SetShowQuestionMark(false).AsCardAction,
 					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
-						new HullCondition { BelowHalf = true },
-						ModEntry.Instance.KokoroApi.TempHull.MakeGainAction(1).AsCardAction
+						new HullCondition { BelowHalf = false },
+						ModEntry.Instance.KokoroApi.TempHull.MakeGainAction(2).AsCardAction
 					).SetShowQuestionMark(false).AsCardAction
 				).AsCardAction,
 			],
 			_ => [
-				ModEntry.Instance.KokoroApi.TempHull.MakeGainAction(1).AsCardAction,
-				ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
-						new HullCondition { BelowHalf = true, OverrideValue = s.ship.hull + 1 <= s.ship.hullMax / 2 },
-						ModEntry.Instance.KokoroApi.TempHull.MakeGainAction(1).AsCardAction
-					).SetShowQuestionMark(false).AsCardAction,
-					ModEntry.Instance.KokoroApi.Conditional.MakeAction(
-						new HullCondition { BelowHalf = true },
-						ModEntry.Instance.KokoroApi.TempHull.MakeGainAction(1).AsCardAction
-					).SetShowQuestionMark(false).AsCardAction
-				).AsCardAction,
+				ModEntry.Instance.KokoroApi.TempHull.MakeGainAction(2).AsCardAction,
 			]
 		};
 }
