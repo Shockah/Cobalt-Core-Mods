@@ -18,8 +18,8 @@ internal sealed class PurgatoryArtifact : Artifact, IRegisterable
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		ActiveSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Purgatory.png"));
-		InactiveSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/PurgatoryInactive.png"));
+		ActiveSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Dracula/Purgatory.png"));
+		InactiveSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Dracula/PurgatoryInactive.png"));
 
 		helper.Content.Artifacts.RegisterArtifact("Purgatory", new()
 		{
@@ -30,8 +30,8 @@ internal sealed class PurgatoryArtifact : Artifact, IRegisterable
 				pools = [ArtifactPool.Boss]
 			},
 			Sprite = ActiveSprite.Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Purgatory", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Purgatory", "description"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Dracula", "Purgatory", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Dracula", "Purgatory", "description"]).Localize
 		});
 
 		ModEntry.Instance.Harmony.Patch(

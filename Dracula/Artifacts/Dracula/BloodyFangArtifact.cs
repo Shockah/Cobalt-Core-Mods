@@ -19,9 +19,9 @@ internal sealed class BloodyFangArtifact : Artifact, IRegisterable
 				owner = ModEntry.Instance.DraculaDeck.Deck,
 				pools = [ArtifactPool.Common]
 			},
-			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/BloodyFang.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "BloodyFang", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "BloodyFang", "description"]).Localize
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Dracula/BloodyFang.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Dracula", "BloodyFang", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Dracula", "BloodyFang", "description"]).Localize
 		});
 	}
 

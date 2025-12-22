@@ -12,7 +12,7 @@ public sealed class MissingCondition : IKokoroApi.IV2.IConditionalApi.IBoolExpre
 
 	public bool GetValue(State state, Combat combat)
 	{
-		if (state.characters.Any(character => character.deckType != Deck))
+		if (state.characters.All(character => character.deckType != Deck))
 			return Missing;
 		return state.CharacterIsMissing(Deck) == Missing;
 	}
