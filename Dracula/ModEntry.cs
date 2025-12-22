@@ -51,6 +51,10 @@ public sealed class ModEntry : SimpleMod
 	internal ISpriteEntry BatASprite { get; }
 	internal ISpriteEntry BatBSprite { get; }
 	internal ISpriteEntry DroneTriggerIcon { get; }
+	
+	internal ISpriteEntry Swoop { get; }
+	internal ISpriteEntry SweepLeft { get; }
+	internal ISpriteEntry SweepRight { get; }
 
 	internal IShipEntry Ship { get; }
 	internal IPartEntry ShipWing { get; }
@@ -73,8 +77,11 @@ public sealed class ModEntry : SimpleMod
 		// Mavis
 		typeof(BraceCard),
 		typeof(ExploitCard),
+		typeof(FlapCard),
 		typeof(JoltCard),
+		typeof(PlungeCard),
 		typeof(TearCard),
+		typeof(SwoopCard),
 	];
 
 	internal static IReadOnlyList<Type> UncommonCardTypes { get; } = [
@@ -89,7 +96,10 @@ public sealed class ModEntry : SimpleMod
 		
 		// Mavis
 		typeof(AmbushCard),
+		typeof(ComboAttackCard),
+		typeof(DeepBiteCard),
 		typeof(PursuitCard),
+		typeof(ShriekCard),
 		typeof(StabilizeCard),
 		
 		// old
@@ -139,6 +149,11 @@ public sealed class ModEntry : SimpleMod
 		..ShipCards
 	];
 
+	internal static IReadOnlyList<Type> StarterArtifacts { get; } = [
+		// Mavis
+		typeof(CrimsonTetherArtifact),
+	];
+
 	internal static IReadOnlyList<Type> CommonArtifacts { get; } = [
 		typeof(BloodyFangArtifact),
 		typeof(MasochismArtifact),
@@ -162,7 +177,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	internal static IEnumerable<Type> AllArtifactTypes
-		=> CommonArtifacts.Concat(BossArtifacts).Concat(ShipArtifacts);
+		=> StarterArtifacts.Concat(CommonArtifacts).Concat(BossArtifacts).Concat(ShipArtifacts);
 
 	internal static IReadOnlyList<Type> DuoArtifactTypes { get; } = [
 		typeof(DraculaBooksArtifact),
@@ -252,6 +267,10 @@ public sealed class ModEntry : SimpleMod
 		BatASprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/BatA.png"));
 		BatBSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/BatB.png"));
 		DroneTriggerIcon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/DroneTrigger.png"));
+		
+		Swoop = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/Swoop.png"));
+		SweepLeft = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/SweepLeft.png"));
+		SweepRight = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Icons/SweepRight.png"));
 
 		BleedingStatus = helper.Content.Statuses.RegisterStatus("Bleeding", new()
 		{
@@ -365,10 +384,13 @@ public sealed class ModEntry : SimpleMod
 			},
 			Starters = new()
 			{
+				artifacts = [
+					new CrimsonTetherArtifact(),
+				],
 				cards = [
+					new SwoopCard(),
 					new BraceCard(),
-					new TearCard()
-				]
+				],
 			},
 			// ExeCardType = typeof(DraculaExeCard)
 		});
@@ -525,6 +547,16 @@ public sealed class ModEntry : SimpleMod
 					cards = [
 						new BatFormCard(),
 						new SummonBatCard(),
+					],
+				});
+				api.RegisterAltStarters(deck: MavisDeck.Deck, starterDeck: new()
+				{
+					artifacts = [
+						new CrimsonTetherArtifact(),
+					],
+					cards = [
+						new TearCard(),
+						new ExploitCard(),
 					],
 				});
 			}
