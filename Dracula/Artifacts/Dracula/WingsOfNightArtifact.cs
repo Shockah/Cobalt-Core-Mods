@@ -19,9 +19,9 @@ internal sealed class WingsOfNightArtifact : Artifact, IRegisterable
 				owner = ModEntry.Instance.DraculaDeck.Deck,
 				pools = [ArtifactPool.Common]
 			},
-			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/WingsOfNight.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "WingsOfNight", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "WingsOfNight", "description"]).Localize
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Dracula/WingsOfNight.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Dracula", "WingsOfNight", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Dracula", "WingsOfNight", "description"]).Localize
 		});
 	}
 
