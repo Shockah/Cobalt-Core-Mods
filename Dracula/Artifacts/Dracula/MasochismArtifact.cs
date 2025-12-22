@@ -23,9 +23,9 @@ internal sealed class MasochismArtifact : Artifact, IRegisterable
 				owner = ModEntry.Instance.DraculaDeck.Deck,
 				pools = [ArtifactPool.Common]
 			},
-			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Masochism.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Masochism", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Masochism", "description"]).Localize
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Dracula/Masochism.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Dracula", "Masochism", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Dracula", "Masochism", "description"]).Localize
 		});
 
 		ModEntry.Instance.Harmony.Patch(

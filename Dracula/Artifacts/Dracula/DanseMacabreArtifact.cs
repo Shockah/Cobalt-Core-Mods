@@ -19,9 +19,9 @@ internal sealed class DanseMacabreArtifact : Artifact, IRegisterable
 				owner = ModEntry.Instance.DraculaDeck.Deck,
 				pools = [ArtifactPool.Boss]
 			},
-			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/DanseMacabre.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "DanseMacabre", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "DanseMacabre", "description", "stateless"]).Localize
+			Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifacts/Dracula/DanseMacabre.png")).Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Dracula", "DanseMacabre", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Dracula", "DanseMacabre", "description", "stateless"]).Localize
 		});
 		
 		ModEntry.Instance.Harmony.Patch(

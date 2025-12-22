@@ -17,7 +17,7 @@ internal sealed class TheCountArtifact : Artifact, IRegisterable
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		Sprites = Enumerable.Range(0, 4)
-			.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Artifacts/TheCount{i}.png")))
+			.Select(i => helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Artifacts/Dracula/TheCount{i}.png")))
 			.ToList();
 
 		helper.Content.Artifacts.RegisterArtifact("TheCount", new()
@@ -29,8 +29,8 @@ internal sealed class TheCountArtifact : Artifact, IRegisterable
 				pools = [ArtifactPool.Unreleased]
 			},
 			Sprite = Sprites.Last().Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "TheCount", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "TheCount", "description"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Dracula", "TheCount", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Dracula", "TheCount", "description"]).Localize
 		});
 	}
 
@@ -39,8 +39,8 @@ internal sealed class TheCountArtifact : Artifact, IRegisterable
 
 	public override List<Tooltip> GetExtraTooltips()
 		=> [
-			new TTGlossary($"action.stunShip"),
-			new TTGlossary($"action.endTurn"),
+			new TTGlossary("action.stunShip"),
+			new TTGlossary("action.endTurn"),
 		];
 
 	public override void OnCombatStart(State state, Combat combat)

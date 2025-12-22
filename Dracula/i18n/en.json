@@ -23,7 +23,21 @@
         "droneTrigger": {
             "name": "Drone Trigger",
             "description": "<c=midrow>Drones</c> and <c=midrow>missiles</c> in front of your missile bays instantly take a turn."
-        }
+        },
+	    "swoop": {
+		    "name": "Swoop",
+		    "description": "<c=midrow>Mavis</c> attacks for {0} damage."
+	    },
+	    "sweep": {
+		    "left": {
+			    "name": "Sweep Left",
+			    "description": "<c=midrow>Mavis</c> attacks {0} tiles to her left for 1 damage, and stays at that position."
+		    },
+		    "right": {
+			    "name": "Sweep Right",
+			    "description": "<c=midrow>Mavis</c> attacks {0} tiles to her right for 1 damage, and stays at that position."
+		    }
+	    }
     },
     "cardTrait": {
         "quad": {
@@ -129,7 +143,11 @@
                 "name": "Protective Bat",
                 "description": "Applies 1 <c=status>BLEEDING</c> to a ship in front of it, or to the owner. If the enemy was hit, the bat gains <c=midrow>BUBBLE</c>, or if it already has one, the owner gains 1 <c=status>TRANSFUSION</c>."
             }
-        }
+        },
+	    "Mavis": {
+		    "name": "Mavis",
+		    "description": "Stays aligned with the ship. <c=downside>Only one can be out.</c> Attacks for 1 once per turn. If an attack would hit her directly, spends <c=status>MAVIS IS MISSING</c> above 1 to dodge it."
+	    }
     },
     "artifact": {
         "ship": {
@@ -174,39 +192,48 @@
                 ]
             }
         },
-
-        "BloodyFang": {
-            "name": "BLOODY FANG",
-            "description": "Hitting enemy <c=parttrait>weak</c> or <c=parttrait>brittle</c> parts gives them 1 <c=status>BLEEDING</c>."
-        },
-        "DanseMacabre": {
-            "name": "DANSE MACABRE",
-            "description": {
-                "stateless": "Every odd turn gain <c=status>BLOOD MIRROR</c>. Every even turn your enemy gains <c=status>BLOOD MIRROR</c>.",
-                "even": "Every odd turn gain <c=status>BLOOD MIRROR</c>. Every even turn (like this one) your enemy gains <c=status>BLOOD MIRROR</c>.",
-                "odd": "Every odd turn (like this one) gain <c=status>BLOOD MIRROR</c>. Every even turn your enemy gains <c=status>BLOOD MIRROR</c>."
-            }
-        },
-        "Masochism": {
-            "name": "MASOCHISM",
-            "description": "Every 5 hull lost during your turn, add a <c=cardtrait>discounted, temporary</c> <c=card>Blood Tap</c> with <c=cardtrait>exhaust</c> to your hand."
-        },
-        "Purgatory": {
-            "name": "PURGATORY",
-            "description": "Whenever you are about to receive fatal damage, gain 1 <c=status>PERFECT SHIELD</c>. Can only trigger once per combat."
-        },
-        "TheCount": {
-            "name": "THE COUNT",
-            "description": "After you play a 1-cost, then 2-cost, then 3-cost card in a row, <c=action>TOTAL STUN</c> the enemy, then <c=action>END TURN</c>. Can only trigger once per combat."
-        },
-        "ThinBlood": {
-            "name": "THIN BLOOD",
-            "description": "<c=status>BLEEDING</c> and <c=status>TRANSFUSION</c> trigger twice as fast."
-        },
-        "WingsOfNight": {
-            "name": "WINGS OF NIGHT",
-            "description": "Every turn <c=downside>spend 1 <c=status>EVADE</c></c> to add a <c=cardtrait>temporary</c> <c=card>Bat Form A</c> with <c=cardtrait>exhaust</c> to your hand."
-        },
+	    
+	    "Dracula": {
+		    "BloodyFang": {
+			    "name": "BLOODY FANG",
+			    "description": "Hitting enemy <c=parttrait>weak</c> or <c=parttrait>brittle</c> parts gives them 1 <c=status>BLEEDING</c>."
+		    },
+		    "DanseMacabre": {
+			    "name": "DANSE MACABRE",
+			    "description": {
+				    "stateless": "Every odd turn gain <c=status>BLOOD MIRROR</c>. Every even turn your enemy gains <c=status>BLOOD MIRROR</c>.",
+				    "even": "Every odd turn gain <c=status>BLOOD MIRROR</c>. Every even turn (like this one) your enemy gains <c=status>BLOOD MIRROR</c>.",
+				    "odd": "Every odd turn (like this one) gain <c=status>BLOOD MIRROR</c>. Every even turn your enemy gains <c=status>BLOOD MIRROR</c>."
+			    }
+		    },
+		    "Masochism": {
+			    "name": "MASOCHISM",
+			    "description": "Every 5 hull lost during your turn, add a <c=cardtrait>discounted, temporary</c> <c=card>Blood Tap</c> with <c=cardtrait>exhaust</c> to your hand."
+		    },
+		    "Purgatory": {
+			    "name": "PURGATORY",
+			    "description": "Whenever you are about to receive fatal damage, gain 1 <c=status>PERFECT SHIELD</c>. Can only trigger once per combat."
+		    },
+		    "TheCount": {
+			    "name": "THE COUNT",
+			    "description": "After you play a 1-cost, then 2-cost, then 3-cost card in a row, <c=action>TOTAL STUN</c> the enemy, then <c=action>END TURN</c>. Can only trigger once per combat."
+		    },
+		    "ThinBlood": {
+			    "name": "THIN BLOOD",
+			    "description": "<c=status>BLEEDING</c> and <c=status>TRANSFUSION</c> trigger twice as fast."
+		    },
+		    "WingsOfNight": {
+			    "name": "WINGS OF NIGHT",
+			    "description": "Every turn <c=downside>spend 1 <c=status>EVADE</c></c> to add a <c=cardtrait>temporary</c> <c=card>Bat Form A</c> with <c=cardtrait>exhaust</c> to your hand."
+		    }
+	    },
+	    
+	    "Mavis": {
+		    "CrimsonTether": {
+			    "name": "CRIMSON TETHER",
+			    "description": "<c=status>MAVIS IS MISSING</c> is tied to <c=midrow>Mavis</c> being in the <c=midrow>midrow</c>. Gain 1 <c=status>DRONESHIFT</c> whenever <c=midrow>Mavis</c> is <c=action>launched</c> or destroyed."
+		    }
+	    },
 
         "Duo": {
             "DraculaBooks": {
@@ -424,11 +451,20 @@
 		    "Brace": {
 			    "name": "Brace"
 		    },
+		    "ComboAttack": {
+			    "name": "Combo Attack"
+		    },
+		    "DeepBite": {
+			    "name": "Deep Bite"
+		    },
 		    "DiveBack": {
 			    "name": "Dive Back"
 		    },
 		    "Exploit": {
 			    "name": "Exploit"
+		    },
+		    "Flap": {
+			    "name": "Flap"
 		    },
 		    "Jolt": {
 			    "name": "Jolt"
@@ -436,14 +472,23 @@
 		    "Persevere": {
 			    "name": "Persevere"
 		    },
+		    "Plunge": {
+			    "name": "Plunge"
+		    },
 		    "Pursuit": {
 			    "name": "Pursuit"
+		    },
+		    "Shriek": {
+			    "name": "Shriek"
 		    },
 		    "Sonar": {
 			    "name": "Sonar"
 		    },
 		    "Stabilize": {
 			    "name": "Stabilize"
+		    },
+		    "Swoop": {
+			    "name": "Swoop"
 		    },
 		    "Tear": {
 			    "name": "Tear"
