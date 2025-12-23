@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added a debug free reroll option (hold Shift while in Debug mode).
+
 ## 2.1.0
 Released 3 July 2024.
 

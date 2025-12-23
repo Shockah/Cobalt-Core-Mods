@@ -32,15 +32,31 @@ internal sealed class CardRerollManager
 		);
 	}
 
+	private static bool AreRerollsPossible(G g, out RerollArtifact? artifact)
+	{
+		artifact = null;
+		if (FeatureFlags.Debug && Input.shift)
+			return true;
+		if (g.state.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault() is { } existingArtifact && existingArtifact.RerollsLeft > 0)
+		{
+			artifact = existingArtifact;
+			return true;
+		}
+		return false;
+	}
+
 	private static void Reroll(G g, CardReward route)
 	{
-		if (g.state.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault() is not { } artifact || artifact.RerollsLeft <= 0)
+		if (!AreRerollsPossible(g, out var artifact))
 			return;
 		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<ACardOffering>(route, "OriginalAction") is not { } originalAction)
 			return;
 
-		artifact.RerollsLeft--;
-		artifact.Pulse();
+		if (artifact is not null)
+		{
+			artifact.RerollsLeft--;
+			artifact.Pulse();
+		}
 
 		var newAction = Mutil.DeepCopy(originalAction);
 
@@ -84,7 +100,7 @@ internal sealed class CardRerollManager
 	{
 		if (__instance.ugpradePreview is not null)
 			return;
-		if (g.state.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault() is not { } artifact || artifact.RerollsLeft <= 0)
+		if (!AreRerollsPossible(g, out _))
 			return;
 		if (!ModEntry.Instance.Helper.ModData.ContainsModData(__instance, "OriginalAction"))
 			return;
@@ -94,7 +110,6 @@ internal sealed class CardRerollManager
 			new Vec(210, 228),
 			RerollButtonUk,
 			ModEntry.Instance.Localizations.Localize(["button"]),
-			inactive: artifact.RerollsLeft <= 0,
 			onMouseDown: new MouseDownHandler(() => Reroll(g, __instance)),
 			platformButtonHint: Btn.Y
 		);

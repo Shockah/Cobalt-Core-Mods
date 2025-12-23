@@ -1,9 +1,9 @@
-﻿using HarmonyLib;
-using Nickel;
-using Shockah.Shared;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
+using Nickel;
+using Shockah.Shared;
 
 namespace Shockah.Rerolls;
 
@@ -40,9 +40,22 @@ internal sealed class ArtifactRerollManager
 		);
 	}
 
+	private static bool AreRerollsPossible(G g, out RerollArtifact? artifact)
+	{
+		artifact = null;
+		if (FeatureFlags.Debug && Input.shift)
+			return true;
+		if (g.state.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault() is { } existingArtifact && existingArtifact.RerollsLeft > 0)
+		{
+			artifact = existingArtifact;
+			return true;
+		}
+		return false;
+	}
+
 	private static void Reroll(G g, ArtifactReward route)
 	{
-		if (g.state.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault() is not { } artifact || artifact.RerollsLeft <= 0)
+		if (!AreRerollsPossible(g, out var artifact))
 			return;
 
 		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<AArtifactOffering>(route, "OriginalAction") is { } originalAction)
@@ -70,6 +83,9 @@ internal sealed class ArtifactRerollManager
 		{
 			return;
 		}
+
+		if (artifact is null)
+			return;
 
 		artifact.RerollsLeft--;
 		artifact.Pulse();
@@ -131,7 +147,7 @@ internal sealed class ArtifactRerollManager
 
 	private static void ArtifactReward_Render_Postfix(ArtifactReward __instance, G g)
 	{
-		if (g.state.EnumerateAllArtifacts().OfType<RerollArtifact>().FirstOrDefault() is not { } artifact || artifact.RerollsLeft <= 0)
+		if (!AreRerollsPossible(g, out _))
 			return;
 		if (!ModEntry.Instance.Helper.ModData.ContainsModData(__instance, "OriginalAction") && !ModEntry.Instance.Helper.ModData.ContainsModData(__instance, "OriginalMapNode"))
 			return;
@@ -141,7 +157,6 @@ internal sealed class ArtifactRerollManager
 			new Vec(210, 228),
 			RerollButtonUk,
 			ModEntry.Instance.Localizations.Localize(["button"]),
-			inactive: artifact.RerollsLeft <= 0,
 			onMouseDown: new MouseDownHandler(() => Reroll(g, __instance)),
 			platformButtonHint: Btn.Y
 		);
