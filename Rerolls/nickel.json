@@ -1,6 +1,6 @@
 {
     "UniqueName": "Shockah.Rerolls",
-    "Version": "2.1.0",
+    "Version": "{{ModVersion}}",
     "DisplayName": "Rerolls",
     "Description": "Adds a way to reroll artifact and card rewards.",
     "Author": "Shockah",
