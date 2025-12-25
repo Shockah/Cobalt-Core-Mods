@@ -81,6 +81,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(JoltCard),
 		typeof(PlungeCard),
 		typeof(TearCard),
+		typeof(SweepCard),
 		typeof(SwoopCard),
 	];
 
