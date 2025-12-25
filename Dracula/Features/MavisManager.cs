@@ -32,6 +32,21 @@ internal sealed class MavisManager
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Prefix))
 		);
+		
+		ModEntry.Instance.Helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnQueueEmptyDuringPlayerTurn), (State state, Combat combat) =>
+		{
+			if (combat.stuff.FirstOrNull(kvp => kvp.Value is MavisStuff) is not { } kvp)
+				return;
+			
+			var owner = kvp.Value.fromPlayer ? state.ship : combat.otherShip;
+			if (kvp.Key >= owner.x && kvp.Key < owner.x + owner.parts.Count)
+				return;
+			
+			if (kvp.Key < owner.x)
+				ADroneMove.DoMoveSingleDrone(state, combat, kvp.Key, owner.x - kvp.Key, owner.isPlayerShip);
+			else
+				ADroneMove.DoMoveSingleDrone(state, combat, kvp.Key, (owner.x + owner.parts.Count - 1) - kvp.Key, owner.isPlayerShip);
+		});
 	}
 
 	// TODO: no longer needed in next game update
@@ -197,11 +212,10 @@ internal sealed class MavisSwoopAction : CardAction
 	public override void Begin(G g, State s, Combat c)
 	{
 		base.Begin(g, s, c);
+		timer = 0;
+		
 		if (c.stuff.FirstOrNull(kvp => kvp.Value is MavisStuff) is not { } kvp)
-		{
-			timer = 0;
 			return;
-		}
 
 		if (Direction == 0)
 		{
@@ -212,9 +226,47 @@ internal sealed class MavisSwoopAction : CardAction
 		}
 
 		var sign = Math.Sign(Direction);
-		c.QueueImmediate([
-			new AKickMiette { x = kvp.Key, dir = sign },
-			new MavisSwoopAction { Attack = Mutil.DeepCopy(Attack), Direction = Direction - sign },
-		]);
+		var direction = sign;
+		var owner = kvp.Value.fromPlayer ? s.ship : c.otherShip;
+		var alreadyReversed = false;
+
+		if (!alreadyReversed && !IsAlignedOrTryingTo(direction))
+		{
+			direction *= -1;
+			alreadyReversed = true;
+		}
+		if (!alreadyReversed && c.stuff.ContainsKey(kvp.Key + direction))
+		{
+			direction *= -1;
+			alreadyReversed = true;
+		}
+
+		var attackCopy = Mutil.DeepCopy(Attack);
+		attackCopy.timer = 0.2;
+
+		var actions = new List<CardAction>();
+
+		if (IsAlignedOrTryingTo(sign) && !c.stuff.ContainsKey(kvp.Key + sign))
+			actions.Add(new AKickMiette { x = kvp.Key, dir = direction, timer = 0.2 });
+		actions.Add(new MavisSwoopAction { Attack = attackCopy });
+		if (Math.Abs(Direction) > 1)
+			actions.Add(new MavisSwoopAction { Attack = Mutil.DeepCopy(Attack), Direction = Direction - sign });
+		
+		c.QueueImmediate(actions);
+
+		bool IsAlignedOrTryingTo(int dir)
+		{
+			if (dir == 1)
+			{
+				if (kvp.Key + 1 > owner.x + owner.parts.Count - 1)
+					return false;
+			}
+			else if (dir == -1)
+			{
+				if (kvp.Key - 1 < owner.x)
+					return false;
+			}
+			return true;
+		}
 	}
 }
