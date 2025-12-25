@@ -139,9 +139,9 @@
 		"WadeExe": {
 			"name": "Wade.EXE",
 			"description": {
-				"None": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=56DF6A>Wade</c> cards to your hand.",
-				"A": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=56DF6A>Wade</c> cards to your hand.",
-				"B": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=56DF6A>Wade</c> cards to your hand."
+				"None": "<c=action>Roll</c>.\nAdd 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=56DF6A>Wade</c> cards to your hand.",
+				"A": "<c=action>Roll</c>.\nAdd 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=56DF6A>Wade</c> cards to your hand.",
+				"B": "<c=action>Roll</c>.\nAdd 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=56DF6A>Wade</c> cards to your hand."
 			}
 		},
 		"WeighTheOdds": {

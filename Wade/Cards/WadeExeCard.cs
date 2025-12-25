@@ -38,6 +38,7 @@ internal sealed class WadeExeCard : Card, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
+			new Odds.RollAction(),
 			new ACardOffering
 			{
 				amount = GetChoiceCount(),
@@ -48,6 +49,6 @@ internal sealed class WadeExeCard : Card, IRegisterable
 				inCombat = true,
 				discount = -1,
 				dialogueSelector = $".summon{ModEntry.Instance.WadeDeck.UniqueName}"
-			}
+			},
 		];
 }
