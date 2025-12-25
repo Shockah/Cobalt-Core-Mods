@@ -31,11 +31,11 @@
 	    "sweep": {
 		    "left": {
 			    "name": "Sweep Left",
-			    "description": "<c=midrow>Mavis</c> attacks {0} tiles to her left for 1 damage, and stays at that position."
+			    "description": "<c=midrow>Mavis</c> attacks {0} tiles to her left for 1 damage, and stays there."
 		    },
 		    "right": {
 			    "name": "Sweep Right",
-			    "description": "<c=midrow>Mavis</c> attacks {0} tiles to her right for 1 damage, and stays at that position."
+			    "description": "<c=midrow>Mavis</c> attacks {0} tiles to her right for 1 damage, and stays there."
 		    }
 	    }
     },
@@ -486,6 +486,9 @@
 		    },
 		    "Stabilize": {
 			    "name": "Stabilize"
+		    },
+		    "Sweep": {
+			    "name": "Sweep"
 		    },
 		    "Swoop": {
 			    "name": "Swoop"
