@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.1.0
+Released 25 December 2025.
 
 * The Wade.EXE card now makes you Roll.
 
