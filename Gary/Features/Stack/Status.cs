@@ -22,8 +22,7 @@ internal partial class Stack : IKokoroApi.IV2.IStatusRenderingApi.IHook
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["status", "APM", "description"]).Localize
 		});
 
-		var instance = new Stack();
-		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(instance);
+		ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(Instance);
 	}
 
 	public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args)

@@ -9,6 +9,8 @@ namespace Shockah.Gary;
 
 internal sealed partial class Stack : IRegisterable
 {
+	private static readonly Stack Instance = new();
+	
 	private static ISpriteEntry StackedIcon = null!;
 	private static ISpriteEntry WobblyIcon = null!;
 	private static ISpriteEntry StackedLaunchIcon = null!;
