@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Added the `AttackLogic` feature.
+
 ## 2.15.1
 Released 21 December 2025.
 
