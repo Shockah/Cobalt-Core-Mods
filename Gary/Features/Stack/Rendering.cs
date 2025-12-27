@@ -8,10 +8,11 @@ using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
+using Shockah.Kokoro;
 
 namespace Shockah.Gary;
 
-internal partial class Stack
+internal partial class Stack : IKokoroApi.IV2.IAttackLogicApi.IHook
 {
 	private static void HandleRendering()
 	{
@@ -19,10 +20,8 @@ internal partial class Stack
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.RenderDrones)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_RenderDrones_Transpiler))
 		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrawIntentLinesForPart)),
-			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrawIntentLinesForPart_Transpiler))
-		);
+
+		ModEntry.Instance.KokoroApi.AttackLogic.RegisterHook(Instance, 1);
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
@@ -106,43 +105,13 @@ internal partial class Stack
 		var offset = IsWobbly(@object) ? GetWobbleOffset(g, 0) : 0;
 		box.rect = new(box.rect.x + offset, box.rect.y - stackedObjects.Count, box.rect.w, box.rect.h);
 	}
-	
-	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-	private static IEnumerable<CodeInstruction> Combat_DrawIntentLinesForPart_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
-	{
-		try
-		{
-			return new SequenceBlockMatcher<CodeInstruction>(instructions)
-				.Find([
-					ILMatches.Ldloc<StuffBase>(originalMethod).GetLocalIndex(out var objectLocalIndex).ExtractLabels(out var labels),
-					ILMatches.Isinst<Missile>(),
-					ILMatches.Brfalse.GetBranchTarget(out var renderDroneEndCapLabel),
-				])
-				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
-					new CodeInstruction(OpCodes.Ldloc, objectLocalIndex.Value).WithLabels(labels),
-					new CodeInstruction(OpCodes.Ldarg_1),
-					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrawIntentLinesForPart_Transpiler_IsStackBlocking))),
-					new CodeInstruction(OpCodes.Brtrue, renderDroneEndCapLabel.Value),
-				])
-				.AllElements();
-		}
-		catch (Exception ex)
-		{
-			ModEntry.Instance.Logger.LogError("Could not patch method {Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod, ModEntry.Instance.Package.Manifest.UniqueName, ex);
-			return instructions;
-		}
-	}
 
-	private static bool Combat_DrawIntentLinesForPart_Transpiler_IsStackBlocking(StuffBase @object, Ship shipSource)
+	public bool? ModifyMidrowObjectVisuallyStoppingAttacks(IKokoroApi.IV2.IAttackLogicApi.IHook.IModifyMidrowObjectVisuallyStoppingAttacksArgs args)
 	{
-		if (GetStackedObjects(@object) is not { } stackedObjects || stackedObjects.Count == 0)
-			return false;
-		if (shipSource.isPlayerShip)
+		if (GetStackedObjects(args.Object) is not { } stackedObjects || stackedObjects.Count == 0)
+			return null;
+		if (stackedObjects.Any(stackedObject => ModEntry.Instance.KokoroApi.AttackLogic.MidrowObjectVisuallyStopsAttacks(args.State, args.Combat, args.Ship, args.WorldX, stackedObject)))
 			return true;
-		// TODO: Jack compat, if needed
-		foreach (var stackedObject in stackedObjects)
-			if (stackedObject is not Missile)
-				return true;
-		return false;
+		return null;
 	}
 }
