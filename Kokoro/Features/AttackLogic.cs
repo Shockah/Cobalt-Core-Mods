@@ -25,7 +25,10 @@ partial class ApiImplementation
 
 			public void UnregisterHook(IKokoroApi.IV2.IAttackLogicApi.IHook hook)
 				=> AttackLogicManager.Instance.Unregister(hook);
-			
+
+			public bool MidrowObjectVisuallyStopsAttacks(State state, Combat combat, Ship ship, int worldX, StuffBase? @object = null)
+				=> AttackLogicManager.Instance.MidrowObjectVisuallyStopsAttacks(state, combat, ship, worldX, @object);
+
 			internal sealed class ModifyHighlightRenderingArgs : IKokoroApi.IV2.IAttackLogicApi.IHook.IModifyHighlightRenderingArgs
 			{
 				public State State { get; internal set; } = null!;
@@ -37,6 +40,15 @@ partial class ApiImplementation
 				public Color HighlightColor { get; set; }
 				public bool StopsInMidrow { get; set; }
 			}
+
+			internal sealed class ModifyMidrowObjectVisuallyStoppingAttacksArgs : IKokoroApi.IV2.IAttackLogicApi.IHook.IModifyMidrowObjectVisuallyStoppingAttacksArgs
+			{
+				public State State { get; internal set; } = null!;
+				public Combat Combat { get; internal set; } = null!;
+				public Ship Ship { get; internal set; } = null!;
+				public int WorldX { get; internal set; }
+				public StuffBase Object { get; internal set; } = null!;
+			}
 		}
 	}
 }
@@ -47,6 +59,7 @@ internal sealed class AttackLogicManager : HookManager<IKokoroApi.IV2.IAttackLog
 	
 	private AttackLogicManager() : base(ModEntry.Instance.Package.Manifest.UniqueName)
 	{
+		Register(MissileAttackLogicHook.Instance, 0);
 	}
 
 	internal static void Setup(IHarmony harmony)
@@ -55,6 +68,32 @@ internal sealed class AttackLogicManager : HookManager<IKokoroApi.IV2.IAttackLog
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.DrawIntentLinesForPart)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_DrawIntentLinesForPart_Transpiler))
 		);
+	}
+
+	internal bool MidrowObjectVisuallyStopsAttacks(State state, Combat combat, Ship ship, int worldX, StuffBase? @object)
+	{
+		@object ??= combat.stuff.GetValueOrDefault(worldX);
+		if (@object is null)
+			return true;
+		
+		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.AttackLogicApi.ModifyMidrowObjectVisuallyStoppingAttacksArgs>();
+		try
+		{
+			args.State = state;
+			args.Combat = combat;
+			args.Ship = ship;
+			args.WorldX = worldX;
+			args.Object = @object;
+
+			foreach (var hook in GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, MG.inst.g.state.EnumerateAllArtifacts()))
+				if (hook.ModifyMidrowObjectVisuallyStoppingAttacks(args) is { } result)
+					return result;
+			return true;
+		}
+		finally
+		{
+			ModEntry.Instance.ArgsPool.Return(args);
+		}
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
@@ -80,8 +119,26 @@ internal sealed class AttackLogicManager : HookManager<IKokoroApi.IV2.IAttackLog
 				.PointerMatcher(renderDroneEndCapLabel)
 				.Advance(-1)
 				.GetBranchTarget(out var pastRenderDroneEndCapLabel)
-				
-				.BlockMatcher(SequenceMatcherRelativeBounds.WholeSequence)
+				.ForEach(
+					SequenceMatcherRelativeBounds.WholeSequence,
+					[new ElementMatch<CodeInstruction>("{any branch to `renderDroneEndCapLabel`}", i => ILMatches.AnyBranch.Matches(i) && Equals(i.operand, renderDroneEndCapLabel.Value))],
+					matcher => matcher
+						.PointerMatcher(SequenceMatcherRelativeElement.First)
+						.Element(out var instruction)
+						.Replace(new CodeInstruction(instruction.opcode, trueRenderDroneEndCapLabel))
+						.BlockMatcher(),
+					minExpectedOccurences: 1
+				)
+				.ForEach(
+					SequenceMatcherRelativeBounds.WholeSequence,
+					[new ElementMatch<CodeInstruction>("{any branch to `pastRenderDroneEndCapLabel`}", i => ILMatches.AnyBranch.Matches(i) && Equals(i.operand, pastRenderDroneEndCapLabel))],
+					matcher => matcher
+						.PointerMatcher(SequenceMatcherRelativeElement.First)
+						.Element(out var instruction)
+						.Replace(new CodeInstruction(instruction.opcode, falseRenderDroneEndCapLabel))
+						.BlockMatcher(),
+					minExpectedOccurences: 1
+				)
 				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.ExcludingInsertion, [
 					new CodeInstruction(OpCodes.Ldc_I4_1).WithLabels(trueRenderDroneEndCapLabel),
 					new CodeInstruction(OpCodes.Stloc, renderDroneEndCapLocal),
@@ -99,25 +156,6 @@ internal sealed class AttackLogicManager : HookManager<IKokoroApi.IV2.IAttackLog
 					new CodeInstruction(OpCodes.Brtrue, renderDroneEndCapLabel.Value),
 					new CodeInstruction(OpCodes.Br, pastRenderDroneEndCapLabel),
 				])
-				.BlockMatcher(SequenceMatcherRelativeBounds.Before)
-				.ForEach(
-					SequenceMatcherRelativeBounds.Enclosed,
-					[new ElementMatch<CodeInstruction>("{any branch to `renderDroneEndCapLabel`}", i => ILMatches.AnyBranch.Matches(i) && Equals(i.operand, renderDroneEndCapLabel))],
-					matcher => matcher
-						.PointerMatcher(SequenceMatcherRelativeElement.First)
-						.Element(out var instruction)
-						.Replace(new CodeInstruction(instruction.opcode, trueRenderDroneEndCapLabel))
-						.BlockMatcher()
-				)
-				.ForEach(
-					SequenceMatcherRelativeBounds.Enclosed,
-					[new ElementMatch<CodeInstruction>("{any branch to `pastRenderDroneEndCapLabel`}", i => ILMatches.AnyBranch.Matches(i) && Equals(i.operand, pastRenderDroneEndCapLabel))],
-					matcher => matcher
-						.PointerMatcher(SequenceMatcherRelativeElement.First)
-						.Element(out var instruction)
-						.Replace(new CodeInstruction(instruction.opcode, falseRenderDroneEndCapLabel))
-						.BlockMatcher()
-				)
 				.AllElements();
 		}
 		catch (Exception ex)
@@ -132,6 +170,10 @@ internal sealed class AttackLogicManager : HookManager<IKokoroApi.IV2.IAttackLog
 		if (MG.inst.g.state.route != combat)
 			return renderDroneEndCap;
 		
+		var @object = combat.stuff.GetValueOrDefault(shipSource.x + partIndex);
+		if (@object is not null)
+			renderDroneEndCap = Instance.MidrowObjectVisuallyStopsAttacks(MG.inst.g.state, combat, shipSource, shipSource.x + partIndex, @object);
+		
 		var args = ModEntry.Instance.ArgsPool.Get<ApiImplementation.V2Api.AttackLogicApi.ModifyHighlightRenderingArgs>();
 		try
 		{
@@ -140,7 +182,7 @@ internal sealed class AttackLogicManager : HookManager<IKokoroApi.IV2.IAttackLog
 			args.Ship = shipSource;
 			args.Part = part;
 			args.WorldX = shipSource.x + partIndex;
-			args.Object = combat.stuff.GetValueOrDefault(shipSource.x + partIndex);
+			args.Object = @object;
 			args.HighlightColor = highlightColor;
 			args.StopsInMidrow = renderDroneEndCap;
 
@@ -156,4 +198,14 @@ internal sealed class AttackLogicManager : HookManager<IKokoroApi.IV2.IAttackLog
 			ModEntry.Instance.ArgsPool.Return(args);
 		}
 	}
+}
+
+public sealed class MissileAttackLogicHook : IKokoroApi.IV2.IAttackLogicApi.IHook
+{
+	public static MissileAttackLogicHook Instance { get; } = new();
+
+	private MissileAttackLogicHook() { }
+
+	public bool? ModifyMidrowObjectVisuallyStoppingAttacks(IKokoroApi.IV2.IAttackLogicApi.IHook.IModifyMidrowObjectVisuallyStoppingAttacksArgs args)
+		=> args.Object is Missile ? args.Ship.isPlayerShip : null;
 }
