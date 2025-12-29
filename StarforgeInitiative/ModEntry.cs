@@ -20,10 +20,10 @@ internal sealed class ModEntry : SimpleMod
 	// internal Settings Settings { get; private set; }
 
 	internal static readonly List<Type> ShipManagerTypes = [
+		typeof(AgniShip),
 		typeof(BreadnaughtShip),
 		typeof(KeplerShip),
 		typeof(NemesisShip),
-		typeof(VulcanShip),
 	];
 
 	internal static readonly IEnumerable<Type> RegisterableTypes = [

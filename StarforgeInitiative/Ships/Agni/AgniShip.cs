@@ -7,12 +7,12 @@ using Nickel;
 
 namespace Shockah.StarforgeInitiative;
 
-internal sealed class VulcanShip : IRegisterable
+internal sealed class AgniShip : IRegisterable
 {
 	private static readonly List<Type> ArtifactTypes = [
-		typeof(VulcanGeneratorOverloadArtifact),
-		typeof(VulcanWaterCoolingArtifact),
-		typeof(VulcanUpgradedCapacitorsArtifact),
+		typeof(AgniGeneratorOverloadArtifact),
+		typeof(AgniWaterCoolingArtifact),
+		typeof(AgniUpgradedCapacitorsArtifact),
 	];
 	
 	private static readonly List<Type> CardTypes = [
@@ -21,17 +21,17 @@ internal sealed class VulcanShip : IRegisterable
 	private static readonly List<Type> RegisterableTypes = [
 		.. ArtifactTypes,
 		.. CardTypes,
-		typeof(VulcanOverload),
+		typeof(AgniOverload),
 	];
 	
 	internal static IShipEntry ShipEntry { get; private set; } = null!;
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		ShipEntry = helper.Content.Ships.RegisterShip("Vulcan", new()
+		ShipEntry = helper.Content.Ships.RegisterShip("Agni", new()
 		{
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["ship", "Vulcan", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["ship", "Vulcan", "description"]).Localize,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["ship", "Agni", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["ship", "Agni", "description"]).Localize,
 			Ship = new()
 			{
 				ship = new()
@@ -50,7 +50,7 @@ internal sealed class VulcanShip : IRegisterable
 				},
 				artifacts = [
 					new ShieldPrep(),
-					new VulcanGeneratorOverloadArtifact(),
+					new AgniGeneratorOverloadArtifact(),
 				],
 				cards = [
 					new CannonColorless(),
@@ -59,7 +59,7 @@ internal sealed class VulcanShip : IRegisterable
 					new BasicShieldColorless(),
 				],
 			},
-			// UnderChassisSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Vulcan/Ship/Chassis.png")).Sprite,
+			// UnderChassisSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Agni/Ship/Chassis.png")).Sprite,
 			ExclusiveArtifactTypes = ArtifactTypes.ToHashSet(),
 		});
 		

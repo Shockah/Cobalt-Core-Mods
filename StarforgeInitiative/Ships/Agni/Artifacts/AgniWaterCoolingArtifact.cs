@@ -5,7 +5,7 @@ using Nickel;
 
 namespace Shockah.StarforgeInitiative;
 
-internal sealed class VulcanWaterCoolingArtifact : Artifact, IRegisterable
+internal sealed class AgniWaterCoolingArtifact : Artifact, IRegisterable
 {
 	private static ISpriteEntry ActiveSprite = null!;
 	private static ISpriteEntry InactiveSprite = null!;
@@ -15,10 +15,10 @@ internal sealed class VulcanWaterCoolingArtifact : Artifact, IRegisterable
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		ActiveSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Vulcan/Artifact/WaterCooling.png"));
-		InactiveSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Vulcan/Artifact/WaterCoolingInactive.png"));
+		ActiveSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Agni/Artifact/WaterCooling.png"));
+		InactiveSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Agni/Artifact/WaterCoolingInactive.png"));
 		
-		helper.Content.Artifacts.RegisterArtifact("VulcanWaterCooling", new()
+		helper.Content.Artifacts.RegisterArtifact("AgniWaterCooling", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
@@ -28,8 +28,8 @@ internal sealed class VulcanWaterCoolingArtifact : Artifact, IRegisterable
 				unremovable = true,
 			},
 			Sprite = ActiveSprite.Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["ship", "Vulcan", "artifact", "WaterCooling", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["ship", "Vulcan", "artifact", "WaterCooling", "description"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["ship", "Agni", "artifact", "WaterCooling", "name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["ship", "Agni", "artifact", "WaterCooling", "description"]).Localize
 		});
 	}
 

@@ -12,7 +12,7 @@ using Nickel;
 
 namespace Shockah.StarforgeInitiative;
 
-internal sealed class VulcanOverload : IRegisterable
+internal sealed class AgniOverload : IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -78,13 +78,13 @@ internal sealed class VulcanOverload : IRegisterable
 	{
 		if (combat.energy >= cost)
 			return false;
-		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is VulcanGeneratorOverloadArtifact) is not { } artifact)
+		if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is AgniGeneratorOverloadArtifact) is not { } artifact)
 			return false;
 
 		var missingEnergy = cost - combat.energy;
 		if (missingEnergy > 1)
 		{
-			if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is VulcanUpgradedCapacitorsArtifact) is { } capacitorsArtifact)
+			if (state.EnumerateAllArtifacts().FirstOrDefault(a => a is AgniUpgradedCapacitorsArtifact) is { } capacitorsArtifact)
 				capacitorsArtifact.Pulse();
 			else
 				return false;
@@ -106,7 +106,7 @@ internal sealed class VulcanOverload : IRegisterable
 		if (data.singleUse)
 			combat.Queue(new AAddCard { card = new TrashUnplayable(), destination = CardDestination.Discard });
 
-		if (state.EnumerateAllArtifacts().OfType<VulcanWaterCoolingArtifact>().FirstOrDefault() is { TriggeredThisTurn: false } artifact)
+		if (state.EnumerateAllArtifacts().OfType<AgniWaterCoolingArtifact>().FirstOrDefault() is { TriggeredThisTurn: false } artifact)
 		{
 			artifact.TriggeredThisTurn = true;
 			artifact.Pulse();
