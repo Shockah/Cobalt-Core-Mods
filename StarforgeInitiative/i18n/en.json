@@ -1,5 +1,32 @@
 ﻿{
 	"ship": {
+		"Agni": {
+			"name": "Agni",
+			"description": "A forge-born warship that can overheat its systems for impossible maneuvers, at the cost of burning out whatever fuels them.",
+			"artifact": {
+				"GeneratorOverload": {
+					"name": "GENERATOR OVERLOAD",
+					"description": [
+						"You can play a card even if you can't afford it, as long as you are only missing 1 <c=energy>ENERGY</c>.",
+						"<c=downside>If you do, it becomes <c=cardtrait>unplayable</c> for the rest of combat, does not <c=cardtrait>exhaust</c>, and you end your turn.</c>"
+					]
+				},
+				"WaterCooling": {
+					"name": "WATER COOLING",
+					"description": [
+						"(Agni-exclusive artifact!)",
+						"Once per turn, playing a card you can't afford no longer ends your turn."
+					]
+				},
+				"UpgradedCapacitors": {
+					"name": "UPGRADED CAPACITORS",
+					"description": [
+						"(Agni-exclusive artifact!)",
+						"You can play any cards you can't afford, regardless of their <c=energy>ENERGY</c> cost."
+					]
+				}
+			}
+		},
 		"Breadnaught": {
 			"name": "Breadnaught",
 			"description": "When diplomacy fails, Grandma fires up the oven... and the minigun.",
@@ -139,33 +166,6 @@
 			"card": {
 				"BasicDualDrone": {
 					"name": "Basic Dual Drone"
-				}
-			}
-		},
-		"Vulcan": {
-			"name": "Vulcan",
-			"description": "A forge-born warship that can overheat its systems for impossible maneuvers, at the cost of burning out whatever fuels them.",
-			"artifact": {
-				"GeneratorOverload": {
-					"name": "GENERATOR OVERLOAD",
-					"description": [
-						"You can play a card even if you can't afford it, as long as you are only missing 1 <c=energy>ENERGY</c>.",
-						"<c=downside>If you do, it becomes <c=cardtrait>unplayable</c> for the rest of combat, does not <c=cardtrait>exhaust</c>, and you end your turn.</c>"
-					]
-				},
-				"WaterCooling": {
-					"name": "WATER COOLING",
-					"description": [
-						"(Vulcan-exclusive artifact!)",
-						"Once per turn, playing a card you can't afford no longer ends your turn."
-					]
-				},
-				"UpgradedCapacitors": {
-					"name": "UPGRADED CAPACITORS",
-					"description": [
-						"(Vulcan-exclusive artifact!)",
-						"You can play any cards you can't afford, regardless of their <c=energy>ENERGY</c> cost."
-					]
 				}
 			}
 		}
