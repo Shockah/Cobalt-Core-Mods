@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.16.0
+Released 2 January 2026.
 
 * Added the `AttackLogic` feature.
 
