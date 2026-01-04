@@ -36,8 +36,8 @@ internal sealed class AgniShip : IRegisterable
 			{
 				ship = new()
 				{
-					hull = 10,
-					hullMax = 10,
+					hull = 9,
+					hullMax = 9,
 					shieldMaxBase = 4,
 					parts = [
 						new()
@@ -81,7 +81,6 @@ internal sealed class AgniShip : IRegisterable
 							}).UniqueName,
 						},
 					],
-					chassisUnder = null,
 				},
 				artifacts = [
 					new ShieldPrep(),
@@ -94,7 +93,7 @@ internal sealed class AgniShip : IRegisterable
 					new BasicShieldColorless(),
 				],
 			},
-			// UnderChassisSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Agni/Ship/Chassis.png")).Sprite,
+			UnderChassisSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Agni/Ship/Chassis.png")).Sprite,
 			ExclusiveArtifactTypes = ArtifactTypes.ToHashSet(),
 		});
 		

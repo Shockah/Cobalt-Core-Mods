@@ -4,10 +4,14 @@
 
 ## Upcoming release
 
+### Agni
+* New ship!
+
 ### Breadnaught
 * Buffed the Goodie Bag card altogether.
 * Buffed the Basic Weaken B card.
 * Fixed the Basic Kickback A card not being flippable.
+* Changed the looks a tiny bit.
 
 ## 1.2.1
 Released 10 December 2025.

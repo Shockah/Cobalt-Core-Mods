@@ -99,6 +99,7 @@ internal sealed class BreadnaughtShip : IRegisterable
 					new BasicShieldColorless(),
 				],
 			},
+			UnderChassisSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Breadnaught/Ship/Chassis.png")).Sprite,
 			ExclusiveArtifactTypes = ArtifactTypes.ToHashSet(),
 		});
 		
