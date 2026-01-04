@@ -40,13 +40,48 @@ internal sealed class AgniShip : IRegisterable
 					hullMax = 10,
 					shieldMaxBase = 4,
 					parts = [
-						new() { type = PType.wing, skin = "wing" },
-						new() { type = PType.missiles, skin = "missiles" },
-						new() { type = PType.cockpit, skin = "cockpit_artemis" },
-						new() { type = PType.cannon, skin = "cannon_cicada3" },
-						new() { type = PType.wing, skin = "wing", flip = true },
+						new()
+						{
+							type = PType.wing,
+							skin = helper.Content.Ships.RegisterPart("AgniWingLeft", new()
+							{
+								Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Agni/Ship/WingLeft.png")).Sprite
+							}).UniqueName,
+						},
+						new()
+						{
+							type = PType.missiles,
+							skin = helper.Content.Ships.RegisterPart("AgniBay", new()
+							{
+								Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Agni/Ship/Bay.png")).Sprite
+							}).UniqueName,
+						},
+						new()
+						{
+							type = PType.cockpit,
+							skin = helper.Content.Ships.RegisterPart("AgniCockpit", new()
+							{
+								Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Agni/Ship/Cockpit.png")).Sprite
+							}).UniqueName,
+						},
+						new()
+						{
+							type = PType.cannon,
+							skin = helper.Content.Ships.RegisterPart("AgniCannon", new()
+							{
+								Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Agni/Ship/Cannon.png")).Sprite
+							}).UniqueName,
+						},
+						new()
+						{
+							type = PType.wing,
+							skin = helper.Content.Ships.RegisterPart("AgniWingRight", new()
+							{
+								Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Agni/Ship/WingRight.png")).Sprite
+							}).UniqueName,
+						},
 					],
-					chassisUnder = "chassis_goliath",
+					chassisUnder = null,
 				},
 				artifacts = [
 					new ShieldPrep(),

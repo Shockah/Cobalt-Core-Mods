@@ -86,7 +86,7 @@ internal sealed class BreadnaughtShip : IRegisterable
 								Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Breadnaught/Ship/WingRight.png")).Sprite
 							}).UniqueName,
 						},
-					]
+					],
 				},
 				artifacts = [
 					new ShieldPrep(),
