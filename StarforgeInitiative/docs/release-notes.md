@@ -5,6 +5,7 @@
 ## Upcoming release
 
 ### Breadnaught
+* Buffed the Basic Weaken B card.
 * Fixed the Basic Kickback A card not being flippable.
 
 ## 1.2.1

@@ -36,13 +36,9 @@ internal sealed class BreadnaughtBasicWeakenCard : CannonColorless, IRegisterabl
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.A => [
-				new AAttack { damage = GetDmg(s, 0), weaken = true },
-				new AStatus { targetPlayer = true, status = Status.energyLessNextTurn, statusAmount = 1 },
-			],
 			Upgrade.B => [
 				new AAttack { damage = GetDmg(s, 2), weaken = true, moveEnemy = -1 },
-				new AStatus { targetPlayer = true, status = Status.energyLessNextTurn, statusAmount = 2 },
+				new AStatus { targetPlayer = true, status = Status.energyLessNextTurn, statusAmount = 1 },
 			],
 			_ => [
 				new AAttack { damage = GetDmg(s, 0), weaken = true },
