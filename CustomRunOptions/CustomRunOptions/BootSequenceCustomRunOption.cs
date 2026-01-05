@@ -146,8 +146,8 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOptionsApi.ICustom
 					]),
 					api.MakeBackButton()
 				])))
-			).SetValueText(() => config.GetEnforcedBootSequenceUpside() is { } key
-				? (key == "" ? ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "none"]) : Loc.T(key))
+			).SetValueText(() => config.GetEnforcedBootSequenceUpside() is { } key && UpsideChoices.TryGetValue(key, out var choice)
+				? (key == "" ? ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "none"]) : choice.Title)
 				: $"<c={Colors.textMain.gain(0.5)}>{ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "notSelected"])}</c>"
 			).SetHeight(12).SetTitleFont(() => DB.pinch).SetValueTextFont(() => DB.pinch),
 			api.MakeButton(
@@ -210,8 +210,8 @@ internal sealed class BootSequenceCustomRunOption : ICustomRunOptionsApi.ICustom
 					]),
 					api.MakeBackButton()
 				])))
-			).SetValueText(() => config.GetEnforcedBootSequenceDownside() is { } key
-				? (key == "" ? ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "none"]) : Loc.T(key))
+			).SetValueText(() => config.GetEnforcedBootSequenceDownside() is { } key && UpsideChoices.TryGetValue(key, out var choice)
+				? (key == "" ? ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "none"]) : choice.Title)
 				: $"<c={Colors.textMain.gain(0.5)}>{ModEntry.Instance.Localizations.Localize(["options", nameof(BootSequenceCustomRunOption), "notSelected"])}</c>"
 			).SetHeight(12).SetTitleFont(() => DB.pinch).SetValueTextFont(() => DB.pinch),
 			api.MakeButton(
