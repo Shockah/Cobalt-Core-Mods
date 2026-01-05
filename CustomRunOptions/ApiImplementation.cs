@@ -67,8 +67,8 @@ public sealed class ApiImplementation(IModManifest mod) : ICustomRunOptionsApi
 	public StarterDeck? GetUnmannedDuoDeck(string shipKey)
 		=> PartialCrewRuns.UnmannedDecks.GetValueOrDefault(shipKey);
 
-	public StarterDeck MakeDefaultPartialDuoDeck(Deck deck)
-		=> PartialCrewRuns.MakeDefaultPartialDuoDeck(deck);
+	public StarterDeck MakeDefaultPartialDuoDeck(State state, Deck deck)
+		=> PartialCrewRuns.MakeDefaultPartialDuoDeck(state, deck);
 
 	public StarterDeck MakeDefaultUnmannedDeck(string shipKey)
 		=> PartialCrewRuns.MakeDefaultUnmannedDeck(shipKey);

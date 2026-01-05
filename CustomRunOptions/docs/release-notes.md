@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Fixed duo runs with CAT not including any cards for her.
 * Fixed displaying the names of modded boot sequence upsides and downsides.
 * Fixed custom run option icons sometimes rendering misaligned.
 

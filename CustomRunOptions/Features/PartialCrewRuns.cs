@@ -55,9 +55,31 @@ internal sealed class PartialCrewRuns : IRegisterable
 		}
 	}
 
-	internal static StarterDeck MakeDefaultPartialDuoDeck(Deck deck)
+	internal static StarterDeck MakeDefaultPartialDuoDeck(State state, Deck deck)
 	{
 		var result = new StarterDeck();
+
+		if (deck == Deck.colorless)
+		{
+			result.cards.AddRange(
+				NewRunOptions.allChars
+					.Select(deck =>
+					{
+						if (deck == Deck.colorless)
+							return null;
+						if (ModEntry.Instance.EssentialsApi is { } essentialsApi)
+							return essentialsApi.IsBlacklistedExeStarter(deck) ? null : essentialsApi.GetExeCardTypeForDeck(deck);
+						if (ModEntry.Instance.Helper.Content.Characters.V2.LookupByDeck(deck) is not { } characterEntry)
+							return null;
+						return characterEntry.Configuration.ExeCardType;
+					})
+					.OfType<Type>()
+					.Select(exeCardType => (Card)Activator.CreateInstance(exeCardType)!)
+					.Shuffle(state.rngCardOfferings)
+					.Take(3)
+			);
+			return result;
+		}
 
 		if (StarterDeck.starterSets.TryGetValue(deck, out var starterDeck))
 		{
@@ -429,8 +451,8 @@ internal sealed class PartialCrewRuns : IRegisterable
 				return;
 			}
 
-			var partialDuoDeck1 = PartialDuoDecks.GetValueOrDefault(state.characters[0].deckType!.Value) ?? MakeDefaultPartialDuoDeck(state.characters[0].deckType!.Value);
-			var partialDuoDeck2 = PartialDuoDecks.GetValueOrDefault(state.characters[1].deckType!.Value) ?? MakeDefaultPartialDuoDeck(state.characters[1].deckType!.Value);
+			var partialDuoDeck1 = PartialDuoDecks.GetValueOrDefault(state.characters[0].deckType!.Value) ?? MakeDefaultPartialDuoDeck(state, state.characters[0].deckType!.Value);
+			var partialDuoDeck2 = PartialDuoDecks.GetValueOrDefault(state.characters[1].deckType!.Value) ?? MakeDefaultPartialDuoDeck(state, state.characters[1].deckType!.Value);
 			
 			foreach (var card in partialDuoDeck1.cards)
 				state.SendCardToDeck(card.CopyWithNewId());

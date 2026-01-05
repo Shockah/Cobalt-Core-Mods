@@ -4,6 +4,7 @@ using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
+using Nickel.Essentials;
 using Nickel.ModSettings;
 using TheJazMaster.MoreDifficulties;
 
@@ -15,6 +16,7 @@ internal sealed class ModEntry : SimpleMod
 	internal IHarmony Harmony { get; }
 	internal readonly IModSettingsApi ModSettingsApi;
 	internal IMoreDifficultiesApi? MoreDifficultiesApi { get; private set; }
+	internal IEssentialsApi? EssentialsApi { get; private set; }
 
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
@@ -53,6 +55,7 @@ internal sealed class ModEntry : SimpleMod
 
 		this.Settings = helper.Storage.LoadJson<Settings>(helper.Storage.GetMainStorageFile("json"));
 		
+		helper.ModRegistry.AwaitApi<IEssentialsApi>("Nickel.Essentials", api => EssentialsApi = api);
 		helper.ModRegistry.AwaitApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties", api => MoreDifficultiesApi = api);
 
 		foreach (var type in RegisterableTypes)

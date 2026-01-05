@@ -10,6 +10,6 @@ public partial interface ICustomRunOptionsApi
 	StarterDeck? GetPartialDuoDeck(Deck deck);
 	StarterDeck? GetUnmannedDuoDeck(string shipKey);
 
-	StarterDeck MakeDefaultPartialDuoDeck(Deck deck);
+	StarterDeck MakeDefaultPartialDuoDeck(State state, Deck deck);
 	StarterDeck MakeDefaultUnmannedDeck(string shipKey);
 }
