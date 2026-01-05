@@ -147,12 +147,16 @@ internal sealed class IconAffixModSetting : ICustomRunOptionsApi.IIconAffixModSe
 			if (LeftIcon is { } leftIcon2)
 			{
 				var iconHeight = leftIcon2.IconHeight ?? SpriteLoader.Get(leftIcon2.Icon)!.Height;
-				Draw.Sprite(leftIcon2.Icon, containerBox.rect.x + leftIcon2.BoundsSpacing, containerBox.rect.y + (settingSize.y - iconHeight) * leftIcon2.VerticalAlignment);
+				var y = containerBox.rect.y + (settingSize.y - iconHeight) * leftIcon2.VerticalAlignment;
+				y = Math.Round(y * g.mg.PIX_SCALE) / g.mg.PIX_SCALE;
+				Draw.Sprite(leftIcon2.Icon, containerBox.rect.x + leftIcon2.BoundsSpacing, y);
 			}
 			if (RightIcon is { } rightIcon2)
 			{
 				var iconHeight = rightIcon2.IconHeight ?? SpriteLoader.Get(rightIcon2.Icon)!.Height;
-				Draw.Sprite(rightIcon2.Icon, containerBox.rect.x2 - rightWidth + rightIcon2.ContentSpacing, containerBox.rect.y + (settingSize.y - iconHeight) * rightIcon2.VerticalAlignment);
+				var y = containerBox.rect.y + (settingSize.y - iconHeight) * rightIcon2.VerticalAlignment;
+				y = Math.Round(y * g.mg.PIX_SCALE) / g.mg.PIX_SCALE;
+				Draw.Sprite(rightIcon2.Icon, containerBox.rect.x2 - rightWidth + rightIcon2.ContentSpacing, y);
 			}
 			
 			g.Pop();

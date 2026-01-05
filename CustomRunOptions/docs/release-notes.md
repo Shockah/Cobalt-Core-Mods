@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Fixed displaying the names of modded boot sequence upsides and downsides.
+* Fixed custom run option icons sometimes rendering misaligned.
 
 ## 1.4.0
 Released 5 December 2025.
