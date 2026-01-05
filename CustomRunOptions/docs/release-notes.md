@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.4.1
+Released 5 January 2026.
 
 * Fixed duo runs with CAT not including any cards for her.
 * Fixed displaying the names of modded boot sequence upsides and downsides.
