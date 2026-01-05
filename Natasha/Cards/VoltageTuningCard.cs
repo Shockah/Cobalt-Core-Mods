@@ -28,7 +28,7 @@ internal sealed class VoltageTuningCard : Card, IRegisterable, IHasCustomCardTra
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> (HashSet<ICardTraitEntry>)(upgrade switch
 		{
-			Upgrade.A => [],
+			Upgrade.B => [],
 			_ => [ModEntry.Instance.KokoroApi.Limited.Trait],
 		});
 

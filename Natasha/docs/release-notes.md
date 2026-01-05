@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the upgrades on the Voltage Tuning card.
+
 ## 1.7.0
 Released 20 December 2025.
 
