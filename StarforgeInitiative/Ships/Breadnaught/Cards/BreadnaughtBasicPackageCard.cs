@@ -28,32 +28,22 @@ internal sealed class BreadnaughtBasicPackageCard : CannonColorless, IRegisterab
 	public override CardData GetData(State state)
 	{
 		var description = ModEntry.Instance.Localizations.Localize(["ship", "Breadnaught", "card", "BasicPackage", "description", upgrade.ToString()]);
-		return upgrade switch
-		{
-			Upgrade.A => new() { cost = 0, exhaust = true, description = description },
-			Upgrade.B => new() { cost = 2, exhaust = true, description = description },
-			_ => new() { cost = 0, singleUse = true, description = description },
-		};
+		return new() { cost = 0, exhaust = true, description = description };
 	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
-		=> upgrade switch
-		{
-			Upgrade.A => [new Action { Temporary = true }],
-			Upgrade.B => [new Action()],
-			_ => [new Action()],
-		};
+		=> [new Action { Upgrade = upgrade }];
 
 	private sealed class Action : CardAction
 	{
-		public bool Temporary;
+		public Upgrade Upgrade = Upgrade.None;
 		
 		public override List<Tooltip> GetTooltips(State s)
 			=> [
-				new TTCard { card = new BreadnaughtBasicMinigunCard { temporaryOverride = Temporary } },
-				new TTCard { card = new BreadnaughtBasicPushCard { temporaryOverride = Temporary } },
-				new TTCard { card = new BreadnaughtBasicWeakenCard { temporaryOverride = Temporary } },
-				new TTCard { card = new BreadnaughtBasicOverdriveCard { temporaryOverride = Temporary } },
+				new TTCard { card = new BreadnaughtBasicMinigunCard { upgrade = Upgrade } },
+				new TTCard { card = new BreadnaughtBasicPushCard { upgrade = Upgrade } },
+				new TTCard { card = new BreadnaughtBasicOverdriveCard { upgrade = Upgrade } },
+				new TTCard { card = new BreadnaughtBasicWeakenCard { upgrade = Upgrade } },
 			];
 
 		public override Route BeginWithRoute(G g, State s, Combat c)
@@ -63,10 +53,10 @@ internal sealed class BreadnaughtBasicPackageCard : CannonColorless, IRegisterab
 				new CardReward
 				{
 					cards = [
-						new BreadnaughtBasicMinigunCard { drawAnim = 1, flipAnim = 1, temporaryOverride = Temporary },
-						new BreadnaughtBasicPushCard { drawAnim = 1, flipAnim = 1, temporaryOverride = Temporary },
-						new BreadnaughtBasicWeakenCard { drawAnim = 1, flipAnim = 1, temporaryOverride = Temporary },
-						new BreadnaughtBasicOverdriveCard { drawAnim = 1, flipAnim = 1, temporaryOverride = Temporary },
+						new BreadnaughtBasicMinigunCard { drawAnim = 1, flipAnim = 1, upgrade = Upgrade },
+						new BreadnaughtBasicPushCard { drawAnim = 1, flipAnim = 1, upgrade = Upgrade },
+						new BreadnaughtBasicOverdriveCard { drawAnim = 1, flipAnim = 1, upgrade = Upgrade },
+						new BreadnaughtBasicWeakenCard { drawAnim = 1, flipAnim = 1, upgrade = Upgrade },
 					],
 					canSkip = false,
 				}

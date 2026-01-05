@@ -28,9 +28,8 @@ internal sealed class BreadnaughtBasicMinigunCard : CannonColorless, IRegisterab
 	public override CardData GetData(State state)
 		=> upgrade switch
 		{
-			Upgrade.A => new() { cost = 2, artTint = "ff3366" },
-			Upgrade.B => new() { cost = 1, artTint = "ff3366" },
-			_ => new() { cost = 2, artTint = "ff3366" },
+			Upgrade.B => new() { cost = 1, temporary = true, artTint = "ff3366" },
+			_ => new() { cost = 2, temporary = true, artTint = "ff3366" },
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)

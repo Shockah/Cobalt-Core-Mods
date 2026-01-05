@@ -5,6 +5,7 @@
 ## Upcoming release
 
 ### Breadnaught
+* Buffed the Goodie Bag card altogether.
 * Buffed the Basic Weaken B card.
 * Fixed the Basic Kickback A card not being flippable.
 
