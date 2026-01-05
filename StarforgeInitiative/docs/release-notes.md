@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming release
+
+### Breadnaught
+* Fixed the Basic Kickback A card not being flippable.
+
 ## 1.2.1
 Released 10 December 2025.
 

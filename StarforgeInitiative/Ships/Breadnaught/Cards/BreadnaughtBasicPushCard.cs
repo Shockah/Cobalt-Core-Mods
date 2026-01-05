@@ -29,16 +29,12 @@ internal sealed class BreadnaughtBasicPushCard : CannonColorless, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.A => new() { cost = 2, flippable = true, artTint = "ff3366" },
-			Upgrade.B => new() { cost = 2, artTint = "ff3366" },
 			_ => new() { cost = 2, artTint = "ff3366" },
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.A => [
-				new AAttack { damage = GetDmg(s, 2), moveEnemy = flipped ? 1 : -1 },
-			],
 			Upgrade.B => [
 				new AAttack { damage = GetDmg(s, 2), moveEnemy = -2 },
 			],
