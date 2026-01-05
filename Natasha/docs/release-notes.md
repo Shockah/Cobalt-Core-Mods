@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.7.1
+Released 5 January 2026.
 
 * Fixed the upgrades on the Voltage Tuning card.
 * Nerfed the Brute Force B card.
