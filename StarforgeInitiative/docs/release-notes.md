@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.0
+Released 6 January 2026.
 
 ### Agni
 * New ship!

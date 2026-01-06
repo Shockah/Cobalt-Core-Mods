@@ -5,7 +5,7 @@ using SkiaSharp;
 
 // ReSharper disable ConvertToUsingDeclaration
 
-const int shipScale = 8;
+const int shipScale = 6;
 
 var imageInfo = new SKImageInfo(1920, 1080);
 var surface = SKSurface.Create(imageInfo);
@@ -16,6 +16,7 @@ var background = SKImage.FromEncodedData(Path.Combine(GetRootPath(), "assets", "
 var breadnaught = SKImage.FromEncodedData(Path.Combine(GetRootPath(), "assets", "Breadnaught.png"));
 var kepler = SKImage.FromEncodedData(Path.Combine(GetRootPath(), "assets", "Kepler.png"));
 var nemesis = SKImage.FromEncodedData(Path.Combine(GetRootPath(), "assets", "Nemesis.png"));
+var agni = SKImage.FromEncodedData(Path.Combine(GetRootPath(), "assets", "Agni.png"));
 
 canvas.Clear(SKColors.Empty);
 canvas.DrawImage(background, new SKRect(0, 0, imageInfo.Width, imageInfo.Height));
@@ -28,8 +29,8 @@ using (var paint = new SKPaint())
 		var sprite = breadnaught;
 		var width = sprite.Width * shipScale;
 		var height = sprite.Height * shipScale;
-		var originX = imageInfo.Width / 2 - (int)(imageInfo.Width * 0.25);
-		var originY = imageInfo.Height / 2 + (int)(imageInfo.Height * 0.2);
+		var originX = imageInfo.Width / 2 - (int)(imageInfo.Width * 0.31);
+		var originY = imageInfo.Height / 2 + (int)(imageInfo.Height * 0.28);
 		canvas.DrawImage(sprite, new SKRect(originX - width / 2, originY - height / 2, originX + width / 2, originY + height / 2), paint);
 	}
 	
@@ -37,8 +38,17 @@ using (var paint = new SKPaint())
 		var sprite = kepler;
 		var width = sprite.Width * shipScale;
 		var height = sprite.Height * shipScale;
-		var originX = imageInfo.Width / 2 - (int)(imageInfo.Width * 0.25);
-		var originY = imageInfo.Height / 2 - (int)(imageInfo.Height * 0.2);
+		var originX = imageInfo.Width / 2 - (int)(imageInfo.Width * 0.16);
+		var originY = imageInfo.Height / 2 - (int)(imageInfo.Height * 0.01);
+		canvas.DrawImage(sprite, new SKRect(originX - width / 2, originY - height / 2, originX + width / 2, originY + height / 2), paint);
+	}
+	
+	{
+		var sprite = agni;
+		var width = sprite.Width * shipScale;
+		var height = sprite.Height * shipScale;
+		var originX = imageInfo.Width / 2 - (int)(imageInfo.Width * 0.01);
+		var originY = imageInfo.Height / 2 - (int)(imageInfo.Height * 0.30);
 		canvas.DrawImage(sprite, new SKRect(originX - width / 2, originY - height / 2, originX + width / 2, originY + height / 2), paint);
 	}
 	
@@ -46,7 +56,7 @@ using (var paint = new SKPaint())
 		var sprite = nemesis;
 		var width = sprite.Width * shipScale;
 		var height = sprite.Height * shipScale;
-		var originX = imageInfo.Width / 2 + (int)(imageInfo.Width * 0.2);
+		var originX = imageInfo.Width / 2 + (int)(imageInfo.Width * 0.23);
 		var originY = imageInfo.Height / 2 - (int)(imageInfo.Height * 0.0);
 		canvas.DrawImage(sprite, new SKRect(originX - width / 2, originY - height / 2, originX + width / 2, originY + height / 2), paint);
 	}
