@@ -24,6 +24,7 @@ internal sealed partial class ModEntry : SimpleMod
 
 	internal readonly Queue<Action<G>> QueuedTasks = new();
 	private readonly CharacterDeckRenderer CharacterDeckRenderer = new();
+	private readonly CharacterArtifactsRenderer CharacterArtifactsRenderer = new();
 	private readonly CardRenderer CardRenderer = new();
 	private readonly CardTooltipRenderer CardTooltipRenderer = new();
 	private readonly CardUpgradesRenderer CardUpgradesRenderer = new();
@@ -74,6 +75,7 @@ internal sealed partial class ModEntry : SimpleMod
 						QueuedTasks.Enqueue(g =>
 						{
 							QueueCharacterDeckExportTasks(g);
+							QueueCharacterArtifactsExportTasks(g);
 							QueueCardExportTasks(g);
 							QueueArtifactExportTasks(g);
 							QueueShipExportTasks(g);
@@ -102,6 +104,84 @@ internal sealed partial class ModEntry : SimpleMod
 				() => Localizations.Localize(["settings", "screenFilter", "title"]),
 				() => Settings.ScreenFilter,
 				(_, _, value) => Settings.ScreenFilter = value
+			),
+			
+			modSettingsApi.MakeCheckbox(
+				() => Localizations.Localize(["settings", "exportCharacterDecks", "title"]),
+				() => Settings.CharacterDeckScale is not null,
+				(_, _, value) => Settings.CharacterDeckScale = value ? Settings.DEFAULT_SCALE : null 
+			),
+			modSettingsApi.MakeConditional(
+				modSettingsApi.MakeNumericStepper(
+					() => Localizations.Localize(["settings", "scaleSubsetting", "title"]),
+					() => Settings.CharacterDeckScale ?? 0,
+					value => Settings.CharacterDeckScale = value,
+					minValue: 1, maxValue: 8
+				),
+				() => Settings.CharacterDeckScale is not null
+			),
+			modSettingsApi.MakeConditional(
+				modSettingsApi.MakeNumericStepper(
+					() => Localizations.Localize(["settings", "exportCharacterDecks", "columnSpacing"]),
+					() => Settings.CharacterDeckColumnSpacing,
+					value => Settings.CharacterDeckColumnSpacing = value,
+					minValue: -4
+				),
+				() => Settings.CharacterDeckScale is not null
+			),
+			modSettingsApi.MakeConditional(
+				modSettingsApi.MakeNumericStepper(
+					() => Localizations.Localize(["settings", "exportCharacterDecks", "rowSpacing"]),
+					() => Settings.CharacterDeckRowSpacing,
+					value => Settings.CharacterDeckRowSpacing = value,
+					minValue: -4
+				),
+				() => Settings.CharacterDeckScale is not null
+			),
+			
+			modSettingsApi.MakeCheckbox(
+				() => Localizations.Localize(["settings", "exportCharacterArtifacts", "title"]),
+				() => Settings.CharacterArtifactsScale is not null,
+				(_, _, value) => Settings.CharacterArtifactsScale = value ? Settings.DEFAULT_SCALE : null 
+			),
+			modSettingsApi.MakeConditional(
+				modSettingsApi.MakeNumericStepper(
+					() => Localizations.Localize(["settings", "scaleSubsetting", "title"]),
+					() => Settings.CharacterArtifactsScale ?? 0,
+					value => Settings.CharacterArtifactsScale = value,
+					minValue: 1, maxValue: 8
+				),
+				() => Settings.CharacterArtifactsScale is not null
+			),
+			modSettingsApi.MakeConditional(
+				modSettingsApi.MakeNumericStepper(
+					() => Localizations.Localize(["settings", "exportCharacterArtifacts", "horizontalSpacing"]),
+					() => Settings.CharacterArtifactsHorizontalSpacing,
+					value => Settings.CharacterArtifactsHorizontalSpacing = value,
+					minValue: -4
+				),
+				() => Settings.CharacterArtifactsScale is not null
+			),
+			modSettingsApi.MakeConditional(
+				modSettingsApi.MakeNumericStepper(
+					() => Localizations.Localize(["settings", "exportCharacterArtifacts", "verticalSpacing"]),
+					() => Settings.CharacterArtifactsVerticalSpacing,
+					value => Settings.CharacterArtifactsVerticalSpacing = value,
+					minValue: -4
+				),
+				() => Settings.CharacterArtifactsScale is not null
+			),
+			modSettingsApi.MakeConditional(
+				modSettingsApi.MakeEnumStepper(
+					title: () => Localizations.Localize(["settings", "exportCharacterArtifacts", "style", "title"]),
+					getter: () => Settings.CharacterArtifactsStyle,
+					setter: value => Settings.CharacterArtifactsStyle = value
+				).SetValueFormatter(
+					value => Localizations.Localize(["settings", "exportCharacterArtifacts", "style", "value", value.ToString()])
+				).SetValueWidth(
+					_ => 170
+				),
+				() => Settings.CharacterArtifactsScale is not null
 			),
 			
 			modSettingsApi.MakeCheckbox(
@@ -302,7 +382,7 @@ internal sealed partial class ModEntry : SimpleMod
 	
 	private void QueueCharacterDeckExportTasks(G g)
 	{
-		var characterDeckScale = Math.Max(Settings.CharacterDeckScale ?? 4, 0);
+		var characterDeckScale = Math.Max(Settings.CharacterDeckScale ?? 0, 0);
 		if (characterDeckScale <= 0)
 			return;
 		
@@ -311,7 +391,7 @@ internal sealed partial class ModEntry : SimpleMod
 		var background = Settings.Background;
 
 		var isOutsideRun = g.state.IsOutsideRun();
-		var decks = StarterDeck.starterSets.Keys
+		var decks = NewRunOptions.allChars
 			.Select(key => Helper.Content.Decks.LookupByDeck(key))
 			.OfType<IDeckEntry>()
 			.Where(e =>
@@ -338,7 +418,7 @@ internal sealed partial class ModEntry : SimpleMod
 		if (decks.Count == 0)
 			return;
 
-		var exportableDecksDataPath = Path.Combine(modloaderFolder, "ContentExport", "Decks");
+		var exportableDecksDataPath = Path.Combine(modloaderFolder, "ContentExport", "CharacterDecks");
 
 		foreach (var e in decks)
 		{
@@ -387,7 +467,7 @@ internal sealed partial class ModEntry : SimpleMod
 				cardGroups.Add(notOfferedCards);
 
 			if (cardGroups.Count == 0)
-				return;
+				continue;
 
 			var upgradedCards = Enum.GetValues<Upgrade>().Where(upgrade => upgrade != Upgrade.None).ToDictionary(
 				upgrade => Enum.GetName(upgrade)!,
@@ -405,13 +485,73 @@ internal sealed partial class ModEntry : SimpleMod
 			);
 			
 			var imagePath = Path.Combine(exportableDecksDataPath, $"{fileSafeDeckName}.png");
-			QueueTask(g => DeckExportTask(g, characterDeckScale, screenFilter, background, cardGroups, imagePath));
+			QueueTask(g => CharacterDeckExportTask(g, characterDeckScale, screenFilter, background, cardGroups, imagePath));
 
 			foreach (var kvp in upgradedCards)
 			{
 				var upgradedImagePath = Path.Combine(exportableDecksDataPath, $"{fileSafeDeckName} {kvp.Key}.png");
-				QueueTask(g => DeckExportTask(g, characterDeckScale, screenFilter, background, kvp.Value, upgradedImagePath));
+				QueueTask(g => CharacterDeckExportTask(g, characterDeckScale, screenFilter, background, kvp.Value, upgradedImagePath));
 			}
+		}
+	}
+	
+	private void QueueCharacterArtifactsExportTasks(G g)
+	{
+		var characterArtifactsScale = Math.Max(Settings.CharacterArtifactsScale ?? 0, 0);
+		if (characterArtifactsScale <= 0)
+			return;
+		
+		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
+		var screenFilter = Settings.ScreenFilter;
+		var background = Settings.Background;
+
+		var isOutsideRun = g.state.IsOutsideRun();
+		var decks = NewRunOptions.allChars
+			.Select(key => Helper.Content.Decks.LookupByDeck(key))
+			.OfType<IDeckEntry>()
+			.Where(e =>
+			{
+				if (Settings.FilterToRun)
+				{
+					if (isOutsideRun)
+					{
+						if (!g.state.runConfig.selectedChars.Contains(e.Deck))
+							return false;
+					}
+					else
+					{
+						if (g.state.characters.All(character => character.deckType != e.Deck))
+							return false;
+					}
+				}
+				if (Settings.FilterToMods.Count != 0 && !Settings.FilterToMods.Contains(e.ModOwner.UniqueName))
+					return false;
+				return true;
+			})
+			.ToList();
+
+		if (decks.Count == 0)
+			return;
+
+		var exportableDecksDataPath = Path.Combine(modloaderFolder, "ContentExport", "CharacterArtifacts");
+
+		foreach (var e in decks)
+		{
+			var fileSafeDeckName = MakeFileSafe(ObtainDeckNiceName(e.Deck));
+
+			var artifacts = DB.releasedArtifacts
+				.Select(key => (Key: key, Meta: DB.artifactMetas[key], Type: DB.artifacts[key]))
+				.Where(t => t.Meta.owner == (e.Deck == Deck.colorless ? Deck.catartifact : e.Deck))
+				.OrderBy(t => t.Meta.pools.Contains(ArtifactPool.Boss))
+				.ThenBy(t => Loc.T($"artifact.{t.Key}.name"))
+				.Select(t => (Artifact)Activator.CreateInstance(t.Type)!)
+				.ToList();
+
+			if (artifacts.Count == 0)
+				continue;
+			
+			var imagePath = Path.Combine(exportableDecksDataPath, $"{fileSafeDeckName}.png");
+			QueueTask(g => CharacterArtifactsExportTask(g, characterArtifactsScale, screenFilter, background, artifacts, imagePath));
 		}
 	}
 
@@ -658,7 +798,7 @@ internal sealed partial class ModEntry : SimpleMod
 		QueueTask(g => ShipDescriptionExportTask(g, scale, withScreenFilter, background, entry.Configuration.Ship.ship, imagePath));
 	}
 
-	private void DeckExportTask(G g, int scale, bool withScreenFilter, ExportBackground background, List<List<Card?>> cardGroups, string path)
+	private void CharacterDeckExportTask(G g, int scale, bool withScreenFilter, ExportBackground background, List<List<Card?>> cardGroups, string path)
 	{
 		if (scale <= 0)
 			return;
@@ -668,6 +808,18 @@ internal sealed partial class ModEntry : SimpleMod
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
 		using var stream = new FileStream(path, FileMode.Create);
 		CharacterDeckRenderer.Render(g, scale, withScreenFilter, background, cardGroups, stream);
+	}
+
+	private void CharacterArtifactsExportTask(G g, int scale, bool withScreenFilter, ExportBackground background, List<Artifact> artifacts, string path)
+	{
+		if (scale <= 0)
+			return;
+		if (artifacts.Count == 0)
+			return;
+
+		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
+		using var stream = new FileStream(path, FileMode.Create);
+		CharacterArtifactsRenderer.Render(g, scale, withScreenFilter, background, artifacts, stream);
 	}
 
 	private void CardBaseExportTask(G g, int scale, bool withScreenFilter, ExportBackground background, Card card, string path)

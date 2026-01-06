@@ -63,13 +63,13 @@ internal static class TextureUtils
 		}
 	}
 
-	public static Texture2D CropToContent(Texture2D texture, MGColor? backgroundColor = null)
+	public static Texture2D CropToContent(Texture2D texture, MGColor? backgroundColor = null, bool cropLeft = true, bool cropRight = true, bool cropTop = true, bool cropBottom = true)
 	{
 		var colors = new MGColor[texture.Width * texture.Height];
 		texture.GetData(colors);
 
 		var top = 0;
-		while (top < texture.Height - 1)
+		while (cropTop && top < texture.Height - 1)
 		{
 			if (Enumerable.Range(0, texture.Width).Any(x => colors[x + top * texture.Width].A != 0))
 				break;
@@ -77,7 +77,7 @@ internal static class TextureUtils
 		}
 			
 		var bottom = texture.Height - 1;
-		while (bottom > 0)
+		while (cropBottom && bottom > 0)
 		{
 			if (Enumerable.Range(0, texture.Width).Any(x => colors[x + bottom * texture.Width].A != 0))
 				break;
@@ -85,7 +85,7 @@ internal static class TextureUtils
 		}
 
 		var left = 0;
-		while (left < texture.Width - 1)
+		while (cropLeft && left < texture.Width - 1)
 		{
 			if (Enumerable.Range(0, texture.Height).Any(y => colors[left + y * texture.Width].A != 0))
 				break;
@@ -93,7 +93,7 @@ internal static class TextureUtils
 		}
 
 		var right = texture.Width - 1;
-		while (right > 0)
+		while (cropRight && right > 0)
 		{
 			if (Enumerable.Range(0, texture.Height).Any(y => colors[right + y * texture.Width].A != 0))
 				break;

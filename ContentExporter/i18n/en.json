@@ -16,6 +16,28 @@
 				"White": "White"
 			}
 		},
+		"exportCharacterDecks": {
+			"title": "Export character decks",
+			"columnSpacing": "    Column spacing",
+			"rowSpacing": "    Row spacing"
+		},
+		"exportCharacterArtifacts": {
+			"title": "Export character artifacts",
+			"horizontalSpacing": "    Horizontal spacing",
+			"verticalSpacing": "    Vertical spacing",
+			"style": {
+				"title": "    Style",
+				"value": {
+					"Vertical": "Vertical",
+					"HorizontalLeft": "Horizontal + left icon",
+					"HorizontalTop": "Horizontal + top icon",
+					"Split2Rows": "2 split rows",
+					"Merged2Rows": "2 merged rows",
+					"Split2Columns": "2 split columns",
+					"Merged2Columns": "2 merged columns"
+				}
+			}
+		},
 		"exportCards": {
 			"title": "Export cards"
 		},

@@ -12,7 +12,7 @@ namespace Shockah.ContentExporter;
 internal sealed partial class Settings
 {
 	[JsonProperty]
-	public int? CardUpgradesScale = DEFAULT_SCALE;
+	public int? CardUpgradesScale;
 }
 
 internal sealed class CardUpgradesRenderer

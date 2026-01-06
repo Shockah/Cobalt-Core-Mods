@@ -11,7 +11,7 @@ namespace Shockah.ContentExporter;
 internal sealed partial class Settings
 {
 	[JsonProperty]
-	public int? ArtifactsScale = DEFAULT_SCALE;
+	public int? ArtifactsScale;
 }
 
 internal sealed class ArtifactTooltipRenderer

@@ -11,7 +11,7 @@ namespace Shockah.ContentExporter;
 internal sealed partial class Settings
 {
 	[JsonProperty]
-	public int? ShipsScale = DEFAULT_SCALE;
+	public int? ShipsScale;
 }
 
 internal sealed class ShipRenderer

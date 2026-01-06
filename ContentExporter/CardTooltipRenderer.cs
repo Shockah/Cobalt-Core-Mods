@@ -11,7 +11,7 @@ namespace Shockah.ContentExporter;
 internal sealed partial class Settings
 {
 	[JsonProperty]
-	public int? CardTooltipsScale = DEFAULT_SCALE;
+	public int? CardTooltipsScale;
 }
 
 internal sealed class CardTooltipRenderer

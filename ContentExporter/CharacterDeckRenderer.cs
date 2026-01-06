@@ -18,9 +18,6 @@ internal sealed partial class Settings
 	
 	[JsonProperty]
 	public int CharacterDeckRowSpacing = 2;
-	
-	[JsonProperty]
-	public int CharacterDeckMaxInRow = 10;
 }
 
 internal sealed class CharacterDeckRenderer
