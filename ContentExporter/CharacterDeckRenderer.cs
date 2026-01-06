@@ -11,19 +11,19 @@ namespace Shockah.ContentExporter;
 internal sealed partial class Settings
 {
 	[JsonProperty]
-	public int? DeckScale = DEFAULT_SCALE;
+	public int? CharacterDeckScale = DEFAULT_SCALE;
 	
 	[JsonProperty]
-	public int DeckColumnSpacing = 2;
+	public int CharacterDeckColumnSpacing = 2;
 	
 	[JsonProperty]
-	public int DeckRowSpacing = 2;
+	public int CharacterDeckRowSpacing = 2;
 	
 	[JsonProperty]
-	public int DeckMaxInRow = 10;
+	public int CharacterDeckMaxInRow = 10;
 }
 
-internal sealed class DeckRenderer
+internal sealed class CharacterDeckRenderer
 {
 	private static readonly Vec BaseCardSize = new(59, 82);
 	private static readonly Vec OverborderCardSize = new(67, 90);
@@ -45,8 +45,8 @@ internal sealed class DeckRenderer
 			var anyCard = cardGroups.SelectMany(group => group).OfType<Card>().First();
 			var singleCardImageSize = GetImageSize(anyCard);
 			var fullImageSize = new Vec(
-				singleCardImageSize.x * columns + ModEntry.Instance.Settings.DeckColumnSpacing * (columns - 1),
-				singleCardImageSize.y * rows + ModEntry.Instance.Settings.DeckRowSpacing * (rows - 1)
+				singleCardImageSize.x * columns + ModEntry.Instance.Settings.CharacterDeckColumnSpacing * (columns - 1),
+				singleCardImageSize.y * rows + ModEntry.Instance.Settings.CharacterDeckRowSpacing * (rows - 1)
 			);
 			if (CurrentRenderTarget is null || CurrentRenderTarget.Width != (int)(fullImageSize.x * g.mg.PIX_SCALE) || CurrentRenderTarget.Height != (int)(fullImageSize.y * g.mg.PIX_SCALE))
 			{
@@ -81,8 +81,8 @@ internal sealed class DeckRenderer
 						card?.Render(
 							g,
 							posOverride: new(
-								(singleCardImageSize.x - BaseCardSize.x) / 2 + 1 + columnIndex * (singleCardImageSize.x + ModEntry.Instance.Settings.DeckColumnSpacing),
-								(singleCardImageSize.y - BaseCardSize.y) / 2 + 1 + rowIndex * (singleCardImageSize.y + ModEntry.Instance.Settings.DeckRowSpacing)
+								(singleCardImageSize.x - BaseCardSize.x) / 2 + 1 + columnIndex * (singleCardImageSize.x + ModEntry.Instance.Settings.CharacterDeckColumnSpacing),
+								(singleCardImageSize.y - BaseCardSize.y) / 2 + 1 + rowIndex * (singleCardImageSize.y + ModEntry.Instance.Settings.CharacterDeckRowSpacing)
 							),
 							fakeState: DB.fakeState,
 							ignoreAnim: true,

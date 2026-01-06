@@ -23,7 +23,7 @@ internal sealed partial class ModEntry : SimpleMod
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
 	internal readonly Queue<Action<G>> QueuedTasks = new();
-	private readonly DeckRenderer DeckRenderer = new();
+	private readonly CharacterDeckRenderer CharacterDeckRenderer = new();
 	private readonly CardRenderer CardRenderer = new();
 	private readonly CardTooltipRenderer CardTooltipRenderer = new();
 	private readonly CardUpgradesRenderer CardUpgradesRenderer = new();
@@ -69,12 +69,15 @@ internal sealed partial class ModEntry : SimpleMod
 			modSettingsApi.MakeConditional(
 				modSettingsApi.MakeButton(
 					() => Localizations.Localize(["settings", "export", "title"]),
-					(g, _) =>
+					(_, _) =>
 					{
-						QueueDeckExportTasks(g);
-						QueueCardExportTasks(g);
-						QueueArtifactExportTasks(g);
-						QueueShipExportTasks(g);
+						QueuedTasks.Enqueue(g =>
+						{
+							QueueCharacterDeckExportTasks(g);
+							QueueCardExportTasks(g);
+							QueueArtifactExportTasks(g);
+							QueueShipExportTasks(g);
+						});
 					}
 				),
 				() => QueuedTasks.Count == 0
@@ -297,10 +300,10 @@ internal sealed partial class ModEntry : SimpleMod
 		return path;
 	}
 	
-	private void QueueDeckExportTasks(G g)
+	private void QueueCharacterDeckExportTasks(G g)
 	{
-		var cardsScale = Math.Max(Settings.CardsScale ?? 4, 0);
-		if (cardsScale <= 0)
+		var characterDeckScale = Math.Max(Settings.CharacterDeckScale ?? 4, 0);
+		if (characterDeckScale <= 0)
 			return;
 		
 		var modloaderFolder = AppDomain.CurrentDomain.BaseDirectory;
@@ -402,12 +405,12 @@ internal sealed partial class ModEntry : SimpleMod
 			);
 			
 			var imagePath = Path.Combine(exportableDecksDataPath, $"{fileSafeDeckName}.png");
-			QueueTask(g => DeckExportTask(g, cardsScale, screenFilter, background, cardGroups, imagePath));
+			QueueTask(g => DeckExportTask(g, characterDeckScale, screenFilter, background, cardGroups, imagePath));
 
 			foreach (var kvp in upgradedCards)
 			{
 				var upgradedImagePath = Path.Combine(exportableDecksDataPath, $"{fileSafeDeckName} {kvp.Key}.png");
-				QueueTask(g => DeckExportTask(g, cardsScale, screenFilter, background, kvp.Value, upgradedImagePath));
+				QueueTask(g => DeckExportTask(g, characterDeckScale, screenFilter, background, kvp.Value, upgradedImagePath));
 			}
 		}
 	}
@@ -664,7 +667,7 @@ internal sealed partial class ModEntry : SimpleMod
 
 		Directory.CreateDirectory(Directory.GetParent(path)!.FullName);
 		using var stream = new FileStream(path, FileMode.Create);
-		DeckRenderer.Render(g, scale, withScreenFilter, background, cardGroups, stream);
+		CharacterDeckRenderer.Render(g, scale, withScreenFilter, background, cardGroups, stream);
 	}
 
 	private void CardBaseExportTask(G g, int scale, bool withScreenFilter, ExportBackground background, Card card, string path)
