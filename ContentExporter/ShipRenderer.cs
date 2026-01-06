@@ -2,10 +2,17 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using Shockah.Shared;
 using MGColor = Microsoft.Xna.Framework.Color;
 
 namespace Shockah.ContentExporter;
+
+internal sealed partial class Settings
+{
+	[JsonProperty]
+	public int? ShipsScale = DEFAULT_SCALE;
+}
 
 internal sealed class ShipRenderer
 {

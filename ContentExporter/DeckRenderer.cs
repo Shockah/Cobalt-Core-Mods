@@ -1,16 +1,30 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using System.Linq;
+using Newtonsoft.Json;
 
 namespace Shockah.ContentExporter;
 
+internal sealed partial class Settings
+{
+	[JsonProperty]
+	public int? DeckScale = DEFAULT_SCALE;
+	
+	[JsonProperty]
+	public int DeckColumnSpacing = 2;
+	
+	[JsonProperty]
+	public int DeckRowSpacing = 2;
+	
+	[JsonProperty]
+	public int DeckMaxInRow = 10;
+}
+
 internal sealed class DeckRenderer
 {
-	private const int CARD_SPACING = 2;
-	
 	private static readonly Vec BaseCardSize = new(59, 82);
 	private static readonly Vec OverborderCardSize = new(67, 90);
 
@@ -30,7 +44,10 @@ internal sealed class DeckRenderer
 			var columns = cardGroups.Max(g => g.Count);
 			var anyCard = cardGroups.SelectMany(group => group).OfType<Card>().First();
 			var singleCardImageSize = GetImageSize(anyCard);
-			var fullImageSize = new Vec(singleCardImageSize.x * columns + CARD_SPACING * (columns - 1), singleCardImageSize.y * rows + CARD_SPACING * (rows - 1));
+			var fullImageSize = new Vec(
+				singleCardImageSize.x * columns + ModEntry.Instance.Settings.DeckColumnSpacing * (columns - 1),
+				singleCardImageSize.y * rows + ModEntry.Instance.Settings.DeckRowSpacing * (rows - 1)
+			);
 			if (CurrentRenderTarget is null || CurrentRenderTarget.Width != (int)(fullImageSize.x * g.mg.PIX_SCALE) || CurrentRenderTarget.Height != (int)(fullImageSize.y * g.mg.PIX_SCALE))
 			{
 				CurrentRenderTarget?.Dispose();
@@ -61,7 +78,16 @@ internal sealed class DeckRenderer
 					for (var columnIndex = 0; columnIndex < row.Count; columnIndex++)
 					{
 						var card = row[columnIndex];
-						card?.Render(g, posOverride: new((singleCardImageSize.x - BaseCardSize.x) / 2 + 1 + columnIndex * (singleCardImageSize.x + CARD_SPACING), (singleCardImageSize.y - BaseCardSize.y) / 2 + 1 + rowIndex * (singleCardImageSize.y + CARD_SPACING)), fakeState: DB.fakeState, ignoreAnim: true, ignoreHover: true);
+						card?.Render(
+							g,
+							posOverride: new(
+								(singleCardImageSize.x - BaseCardSize.x) / 2 + 1 + columnIndex * (singleCardImageSize.x + ModEntry.Instance.Settings.DeckColumnSpacing),
+								(singleCardImageSize.y - BaseCardSize.y) / 2 + 1 + rowIndex * (singleCardImageSize.y + ModEntry.Instance.Settings.DeckRowSpacing)
+							),
+							fakeState: DB.fakeState,
+							ignoreAnim: true,
+							ignoreHover: true
+						);
 					}
 				}
 			}

@@ -2,8 +2,15 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace Shockah.ContentExporter;
+
+internal sealed partial class Settings
+{
+	[JsonProperty]
+	public int? CardsScale = DEFAULT_SCALE;
+}
 
 internal sealed class CardRenderer
 {

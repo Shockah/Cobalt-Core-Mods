@@ -4,8 +4,15 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 
 namespace Shockah.ContentExporter;
+
+internal sealed partial class Settings
+{
+	[JsonProperty]
+	public int? ArtifactsScale = DEFAULT_SCALE;
+}
 
 internal sealed class ArtifactTooltipRenderer
 {

@@ -4,8 +4,15 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Shockah.ContentExporter;
+
+internal sealed partial class Settings
+{
+	[JsonProperty]
+	public int? CardTooltipsScale = DEFAULT_SCALE;
+}
 
 internal sealed class CardTooltipRenderer
 {
