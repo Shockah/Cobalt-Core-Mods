@@ -538,11 +538,16 @@ internal sealed partial class ModEntry : SimpleMod
 		foreach (var e in decks)
 		{
 			var fileSafeDeckName = MakeFileSafe(ObtainDeckNiceName(e.Deck));
+			HashSet<string> starters = [
+				.. StarterDeck.starterSets.TryGetValue(e.Deck, out var starterDeck) ? starterDeck.artifacts.Select(a => a.Key()) : [],
+				.. MoreDifficultiesApi?.GetAltStarters(e.Deck)?.artifacts.Select(a => a.Key()) ?? [],
+			];
 
 			var artifacts = DB.releasedArtifacts
 				.Select(key => (Key: key, Meta: DB.artifactMetas[key], Type: DB.artifacts[key]))
 				.Where(t => t.Meta.owner == (e.Deck == Deck.colorless ? Deck.catartifact : e.Deck))
-				.OrderBy(t => t.Meta.pools.Contains(ArtifactPool.Boss))
+				.OrderByDescending(t => starters.Contains(t.Key))
+				.ThenBy(t => t.Meta.pools.Contains(ArtifactPool.Boss))
 				.ThenBy(t => Loc.T($"artifact.{t.Key}.name"))
 				.Select(t => (Artifact)Activator.CreateInstance(t.Type)!)
 				.ToList();
