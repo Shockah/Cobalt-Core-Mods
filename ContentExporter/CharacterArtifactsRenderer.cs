@@ -111,7 +111,7 @@ internal sealed class CharacterArtifactsRenderer
 
 			g.mg.GraphicsDevice.SetRenderTarget(RenderTarget);
 
-			g.mg.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Transparent);
+			g.mg.GraphicsDevice.Clear(MGColor.Transparent);
 			Draw.StartAutoBatchFrame();
 			try
 			{
@@ -152,7 +152,7 @@ internal sealed class CharacterArtifactsRenderer
 			}
 			catch
 			{
-				ModEntry.Instance.Logger.LogError("There was an error exporting cards for artifact {Artifact}.", anyArtifact.GetMeta().owner.Key());
+				ModEntry.Instance.Logger.LogError("There was an error exporting artifacts for deck {Deck}.", anyArtifact.GetMeta().owner);
 			}
 			if (withScreenFilter)
 				Draw.Rect(0, 0, RenderTarget.Width / g.mg.PIX_SCALE, RenderTarget.Height / g.mg.PIX_SCALE, Colors.screenOverlay, new BlendState

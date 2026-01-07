@@ -118,13 +118,16 @@ internal sealed class SequenceManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 		
 		icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite($"Sequence::{iconDescriptor}", () =>
 		{
-			return TextureUtils.CreateTexture(9, 9, () =>
+			return TextureUtils.CreateTexture(new(9, 9)
 			{
-				Draw.Sprite(Sheet.Sprite, 0, 0, pixelRect: GetTypeRegion());
-				Draw.Sprite(Sheet.Sprite, 0, 0, pixelRect: GetBaseRegion());
+				Actions = () =>
+				{
+					Draw.Sprite(Sheet.Sprite, 0, 0, pixelRect: GetTypeRegion());
+					Draw.Sprite(Sheet.Sprite, 0, 0, pixelRect: GetBaseRegion());
 
-				for (var i = 1; i <= sequenceLength; i++)
-					Draw.Sprite(Sheet.Sprite, 0, 0, pixelRect: GetPipRegion(i, i == sequenceAt), color: GetPipColor(i));
+					for (var i = 1; i <= sequenceLength; i++)
+						Draw.Sprite(Sheet.Sprite, 0, 0, pixelRect: GetPipRegion(i, i == sequenceAt), color: GetPipColor(i));
+				},
 			});
 		}).Sprite;
 

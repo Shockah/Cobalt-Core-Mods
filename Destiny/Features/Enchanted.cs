@@ -422,10 +422,13 @@ internal sealed class Enchanted : IRegisterable
 
 			if (!CostOutlineSprites.ContainsKey(transactionPaymentResultKey))
 			{
-				var baseTexture = TextureUtils.CreateTexture(costWidth, 10, () =>
+				var baseTexture = TextureUtils.CreateTexture(new(costWidth, 10)
 				{
-					var position = Vec.Zero;
-					modifiedActionCost.Render(g, ref position, false, false, transactionPaymentResult);
+					Actions = () =>
+					{
+						var position = Vec.Zero;
+						modifiedActionCost.Render(g, ref position, false, false, transactionPaymentResult);
+					},
 				});
 				CostOutlineSprites[transactionPaymentResultKey] = TextureOutlines.CreateOutlineSprite(baseTexture, true, true, true);
 			}

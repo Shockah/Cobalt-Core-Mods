@@ -279,13 +279,16 @@ internal sealed class FiniteManager : HookManager<IKokoroApi.IV2.IFiniteApi.IHoo
 		icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite($"Finite{amount}", () =>
 		{
 			var infiniteIcon = SpriteLoader.Get(StableSpr.icons_infinite)!;
-			return TextureUtils.CreateTexture(infiniteIcon.Width, infiniteIcon.Height, () =>
+			return TextureUtils.CreateTexture(new(infiniteIcon.Width, infiniteIcon.Height)
 			{
-				Draw.Sprite(infiniteIcon, 0, 0);
+				Actions = () =>
+				{
+					Draw.Sprite(infiniteIcon, 0, 0);
 
-				var text = amount > 9 ? "+" : amount.ToString();
-				var textRect = Draw.Text(text, 0, 0, outline: Colors.black, dontDraw: true, dontSubstituteLocFont: true);
-				Draw.Text(text, infiniteIcon.Width - textRect.w, infiniteIcon.Height - textRect.h - 1, color: Colors.white, outline: Colors.black, dontSubstituteLocFont: true);
+					var text = amount > 9 ? "+" : amount.ToString();
+					var textRect = Draw.Text(text, 0, 0, outline: Colors.black, dontDraw: true, dontSubstituteLocFont: true);
+					Draw.Text(text, infiniteIcon.Width - textRect.w, infiniteIcon.Height - textRect.h - 1, color: Colors.white, outline: Colors.black, dontSubstituteLocFont: true);
+				},
 			});
 		}).Sprite;
 

@@ -302,14 +302,17 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 			icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite($"Limited{(drawExhaustIcon ? "WithExhaust" : "WithoutExhaust")}{amount}", () =>
 			{
 				var exhaustIcon = SpriteLoader.Get(StableSpr.icons_exhaust)!;
-				return TextureUtils.CreateTexture(exhaustIcon.Width, exhaustIcon.Height, () =>
+				return TextureUtils.CreateTexture(new(exhaustIcon.Width, exhaustIcon.Height)
 				{
-					if (drawExhaustIcon)
-						Draw.Sprite(exhaustIcon, 0, 0);
+					Actions = () =>
+					{
+						if (drawExhaustIcon)
+							Draw.Sprite(exhaustIcon, 0, 0);
 
-					var text = amount > 9 ? "+" : amount.ToString();
-					var textRect = Draw.Text(text, 0, 0, outline: Colors.black, dontDraw: true, dontSubstituteLocFont: true);
-					Draw.Text(text, exhaustIcon.Width - textRect.w, exhaustIcon.Height - textRect.h - 1, color: Colors.white, outline: Colors.black, dontSubstituteLocFont: true);
+						var text = amount > 9 ? "+" : amount.ToString();
+						var textRect = Draw.Text(text, 0, 0, outline: Colors.black, dontDraw: true, dontSubstituteLocFont: true);
+						Draw.Text(text, exhaustIcon.Width - textRect.w, exhaustIcon.Height - textRect.h - 1, color: Colors.white, outline: Colors.black, dontSubstituteLocFont: true);
+					},
 				});
 			}).Sprite;
 		
