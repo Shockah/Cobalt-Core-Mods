@@ -7,6 +7,10 @@
 	"RequiredApiVersion": "1.15.0",
 	"ModType": "Nickel.Legacy",
 	"EntryPointAssembly": "Kokoro.dll",
+	"MethodsToStopInlining": [
+		{ "TypeName": "Combat", "MethodName": "SendCardToDiscard" },
+		{ "TypeName": "Combat", "MethodName": "SendCardToExhaust" }
+	],
 	"Dependencies": [
 		{
 			"UniqueName": "Nickel.Legacy",

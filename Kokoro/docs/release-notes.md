@@ -2,6 +2,12 @@
 
 # Release notes
 
+## 2.16.1
+Released 7 January 2026.
+
+* Fixed On Discard/Exhaust actions not working with some sets of mods.
+* Improved compatibility with other mods creating textures at runtime (most notably [Content Exporter](https://www.nexusmods.com/cobaltcore/mods/72)).
+
 ## 2.16.0
 Released 2 January 2026.
 
