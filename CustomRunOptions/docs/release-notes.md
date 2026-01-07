@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed enforcing boot sequence downsides not displaying correctly in settings.
+
 ## 1.4.1
 Released 5 January 2026.
 
