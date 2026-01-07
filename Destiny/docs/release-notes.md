@@ -2,6 +2,11 @@
 
 # Release notes
 
+## 1.2.6
+Released 7 January 2026.
+
+* Improved compatibility with other mods creating textures at runtime (most notably [Content Exporter](https://www.nexusmods.com/cobaltcore/mods/72)).
+
 ## 1.2.5
 Released 10 December 2025.
 
