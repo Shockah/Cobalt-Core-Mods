@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.5.0
+Released 7 January 2026.
 
 * Added settings to allow randomizing into unmanned/solo/duo runs.
 * Fixed enforcing boot sequence downsides not displaying correctly in settings.
