@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Shockah.Shared;
@@ -39,31 +38,26 @@ internal enum CharacterArtifactsStyle
 
 internal sealed class CharacterArtifactsRenderer
 {
-	private RenderTarget2D? RenderTarget;
-
 	public void Render(G g, int scale, bool withScreenFilter, ExportBackground background, List<Artifact> artifacts, Stream stream)
 	{
-		var oldPixScale = g.mg.PIX_SCALE;
-		var oldCameraMatrix = g.mg.cameraMatrix;
-		var oldMetaRoute = g.metaRoute;
-		var oldScreenLimits = Tooltips.SCREEN_LIMITS;
+		var anyArtifact = artifacts.First();
+		
 		var oldActivateAllActions = CardPatches.ActivateAllActions;
-
-		g.mg.PIX_SCALE = scale;
-		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
-		g.metaRoute = new MainMenu { subRoute = new Codex { subRoute = new ArtifactBrowse() } };
-		Tooltips.SCREEN_LIMITS = new(0, 0, double.PositiveInfinity, double.PositiveInfinity);
-		CardPatches.ActivateAllActions = true;
-		g.Push();
+		var oldScreenLimits = Tooltips.SCREEN_LIMITS;
+		var oldMetaRoute = g.metaRoute;
+		var beginCalled = g.mg.sb.BeginCalled;
 
 		try
 		{
-			
-			Draw.StartAutoBatchFrame();
-			var anyArtifact = artifacts.First();
-			var artifactRects = artifacts.Select(a => RenderOnlyTooltip(g, a, false)).ToList();
-			Draw.EndAutoBatchFrame();
+			g.metaRoute = new MainMenu { subRoute = new Codex { subRoute = new ArtifactBrowse() } };
+			CardPatches.ActivateAllActions = true;
+			Tooltips.SCREEN_LIMITS = new(0, 0, double.PositiveInfinity, double.PositiveInfinity);
 
+			if (!beginCalled)
+				Draw.StartAutoBatchFrame();
+			
+			var artifactRects = artifacts.Select(a => RenderOnlyTooltip(g, a, false)).ToList();
+			
 			var renderTargetWidth = g.mg.PIX_W;
 			var renderTargetHeight = g.mg.PIX_H;
 			var cropLeft = true;
@@ -101,73 +95,60 @@ internal sealed class CharacterArtifactsRenderer
 					break;
 			}
 			
-			if (RenderTarget is null || RenderTarget.Width != renderTargetWidth * g.mg.PIX_SCALE || RenderTarget.Height != renderTargetHeight * g.mg.PIX_SCALE)
+			using var texture = TextureUtils.CreateTexture(new(renderTargetWidth, renderTargetHeight)
 			{
-				RenderTarget?.Dispose();
-				RenderTarget = new(g.mg.GraphicsDevice, renderTargetWidth * g.mg.PIX_SCALE, renderTargetHeight * g.mg.PIX_SCALE);
-			}
-
-			var oldRenderTargets = g.mg.GraphicsDevice.GetRenderTargets();
-
-			g.mg.GraphicsDevice.SetRenderTarget(RenderTarget);
-
-			g.mg.GraphicsDevice.Clear(MGColor.Transparent);
-			Draw.StartAutoBatchFrame();
-			try
-			{
-				switch (background)
+				SkipTexture = true,
+				Scale = scale,
+				Actions = contentSize =>
 				{
-					case ExportBackground.Black:
-						Draw.Rect(0, 0, RenderTarget.Width / g.mg.PIX_SCALE, RenderTarget.Height / g.mg.PIX_SCALE, Colors.black);
-						break;
-					case ExportBackground.White:
-						Draw.Rect(0, 0, RenderTarget.Width / g.mg.PIX_SCALE, RenderTarget.Height / g.mg.PIX_SCALE, Colors.white);
-						break;
-				}
+					switch (background)
+					{
+						case ExportBackground.Black:
+							Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.black);
+							break;
+						case ExportBackground.White:
+							Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.white);
+							break;
+					}
+					
+					switch (ModEntry.Instance.Settings.CharacterArtifactsStyle)
+					{
+						case CharacterArtifactsStyle.Vertical:
+							RenderVerticalStyle(g, artifacts);
+							break;
+						case CharacterArtifactsStyle.HorizontalLeft:
+							RenderHorizontalLeftStyle(g, artifacts);
+							break;
+						case CharacterArtifactsStyle.HorizontalTop:
+							RenderHorizontalTopStyle(g, artifacts);
+							break;
+						case CharacterArtifactsStyle.Split2Rows:
+							RenderSplit2RowsStyle(g, artifacts, artifactRects);
+							break;
+						case CharacterArtifactsStyle.Merged2Rows:
+							RenderMerged2RowsStyle(g, artifacts, artifactRects);
+							break;
+						case CharacterArtifactsStyle.Split2Columns:
+							RenderSplit2ColumnsStyle(g, artifacts, artifactRects);
+							break;
+						case CharacterArtifactsStyle.Merged2Columns:
+							RenderMerged2ColumnsStyle(g, artifacts, artifactRects);
+							break;
+					}
 				
-				switch (ModEntry.Instance.Settings.CharacterArtifactsStyle)
-				{
-					case CharacterArtifactsStyle.Vertical:
-						RenderVerticalStyle(g, artifacts);
-						break;
-					case CharacterArtifactsStyle.HorizontalLeft:
-						RenderHorizontalLeftStyle(g, artifacts);
-						break;
-					case CharacterArtifactsStyle.HorizontalTop:
-						RenderHorizontalTopStyle(g, artifacts);
-						break;
-					case CharacterArtifactsStyle.Split2Rows:
-						RenderSplit2RowsStyle(g, artifacts, artifactRects);
-						break;
-					case CharacterArtifactsStyle.Merged2Rows:
-						RenderMerged2RowsStyle(g, artifacts, artifactRects);
-						break;
-					case CharacterArtifactsStyle.Split2Columns:
-						RenderSplit2ColumnsStyle(g, artifacts, artifactRects);
-						break;
-					case CharacterArtifactsStyle.Merged2Columns:
-						RenderMerged2ColumnsStyle(g, artifacts, artifactRects);
-						break;
-				}
-			}
-			catch
-			{
-				ModEntry.Instance.Logger.LogError("There was an error exporting artifacts for deck {Deck}.", anyArtifact.GetMeta().owner);
-			}
-			if (withScreenFilter)
-				Draw.Rect(0, 0, RenderTarget.Width / g.mg.PIX_SCALE, RenderTarget.Height / g.mg.PIX_SCALE, Colors.screenOverlay, new BlendState
-				{
-					ColorBlendFunction = BlendFunction.Add,
-					ColorSourceBlend = Blend.One,
-					ColorDestinationBlend = Blend.InverseSourceColor,
-					AlphaSourceBlend = Blend.Zero,
-					AlphaDestinationBlend = Blend.One
-				});
-			Draw.EndAutoBatchFrame();
-
-			g.mg.GraphicsDevice.SetRenderTargets(oldRenderTargets);
+					if (withScreenFilter)
+						Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.screenOverlay, new BlendState
+						{
+							ColorBlendFunction = BlendFunction.Add,
+							ColorSourceBlend = Blend.One,
+							ColorDestinationBlend = Blend.InverseSourceColor,
+							AlphaSourceBlend = Blend.Zero,
+							AlphaDestinationBlend = Blend.One
+						});
+				},
+			});
 			
-			var croppedTexture = TextureUtils.CropToContent(RenderTarget, background switch
+			using var croppedTexture = TextureUtils.CropToContent(texture, background switch
 			{
 				ExportBackground.Black => withScreenFilter ? new MGColor(0xFF260306) : MGColor.Black,
 				ExportBackground.White => MGColor.White,
@@ -175,14 +156,18 @@ internal sealed class CharacterArtifactsRenderer
 			}, cropLeft: cropLeft, cropTop: cropTop);
 			croppedTexture.SaveAsPng(stream, croppedTexture.Width, croppedTexture.Height);
 		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("There was an error exporting artifacts for deck {Deck}: {Exception}", anyArtifact.GetMeta().owner.Key(), ex);
+		}
 		finally
 		{
-			g.Pop();
-			g.mg.PIX_SCALE = oldPixScale;
-			g.mg.cameraMatrix = oldCameraMatrix;
+			if (!beginCalled)
+				Draw.EndAutoBatchFrame();
+			
 			g.metaRoute = oldMetaRoute;
-			Tooltips.SCREEN_LIMITS = oldScreenLimits;
 			CardPatches.ActivateAllActions = oldActivateAllActions;
+			Tooltips.SCREEN_LIMITS = oldScreenLimits;
 		}
 	}
 

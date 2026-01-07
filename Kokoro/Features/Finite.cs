@@ -281,7 +281,7 @@ internal sealed class FiniteManager : HookManager<IKokoroApi.IV2.IFiniteApi.IHoo
 			var infiniteIcon = SpriteLoader.Get(StableSpr.icons_infinite)!;
 			return TextureUtils.CreateTexture(new(infiniteIcon.Width, infiniteIcon.Height)
 			{
-				Actions = () =>
+				Actions = _ =>
 				{
 					Draw.Sprite(infiniteIcon, 0, 0);
 

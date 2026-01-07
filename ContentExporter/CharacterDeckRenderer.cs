@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -39,19 +40,19 @@ internal sealed class CharacterDeckRenderer
 				singleCardImageSize.y * rows + ModEntry.Instance.Settings.CharacterDeckRowSpacing * (rows - 1)
 			);
 
-			var texture = TextureUtils.CreateTexture(new(fullImageSize)
+			using var texture = TextureUtils.CreateTexture(new(fullImageSize)
 			{
 				SkipTexture = true,
 				Scale = scale,
-				Actions = () =>
+				Actions = contentSize =>
 				{
 					switch (background)
 					{
 						case ExportBackground.Black:
-							Draw.Fill(Colors.black);
+							Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.black);
 							break;
 						case ExportBackground.White:
-							Draw.Fill(Colors.white);
+							Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.white);
 							break;
 					}
 
@@ -75,7 +76,7 @@ internal sealed class CharacterDeckRenderer
 					}
 			
 					if (withScreenFilter)
-						Draw.Rect(0, 0, fullImageSize.x * g.mg.PIX_SCALE, fullImageSize.y * g.mg.PIX_SCALE, Colors.screenOverlay, new BlendState
+						Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.screenOverlay, new BlendState
 						{
 							ColorBlendFunction = BlendFunction.Add,
 							ColorSourceBlend = Blend.One,
@@ -88,9 +89,9 @@ internal sealed class CharacterDeckRenderer
 		
 			texture.SaveAsPng(stream, texture.Width, texture.Height);
 		}
-		catch
+		catch (Exception ex)
 		{
-			ModEntry.Instance.Logger.LogError("There was an error exporting cards for deck {Deck}.", anyCard.GetMeta().deck.Key());
+			ModEntry.Instance.Logger.LogError("There was an error exporting cards for deck {Deck}: {Exception}", anyCard.GetMeta().deck.Key(), ex);
 		}
 	}
 

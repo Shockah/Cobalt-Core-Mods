@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Shockah.Shared;
@@ -17,75 +17,56 @@ internal sealed partial class Settings
 
 internal sealed class CardUpgradesRenderer
 {
-	private RenderTarget2D? RenderTarget;
-
 	public void Render(G g, int scale, bool withScreenFilter, ExportBackground background, Card card, Stream stream)
 	{
-		var oldPixScale = g.mg.PIX_SCALE;
-		var oldCameraMatrix = g.mg.cameraMatrix;
 		var oldTitleString = DB.currentLocale.strings.GetValueOrDefault("cardUpgrade.titlePreview");
-
-		g.mg.PIX_SCALE = scale;
-		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
-		DB.currentLocale.strings["cardUpgrade.titlePreview"] = "";
-		SharedArtPatches.DisableDrawing = true;
 
 		try
 		{
-			if (RenderTarget is null || RenderTarget.Width != g.mg.PIX_W * g.mg.PIX_SCALE || RenderTarget.Height != g.mg.PIX_H * g.mg.PIX_SCALE)
+			DB.currentLocale.strings["cardUpgrade.titlePreview"] = "";
+			SharedArtPatches.DisableDrawing = true;
+
+			using var texture = TextureUtils.CreateTexture(new(g.mg.PIX_W, g.mg.PIX_H)
 			{
-				RenderTarget?.Dispose();
-				RenderTarget = new(g.mg.GraphicsDevice, g.mg.PIX_W * g.mg.PIX_SCALE, g.mg.PIX_H * g.mg.PIX_SCALE);
-			}
-
-			var oldRenderTargets = g.mg.GraphicsDevice.GetRenderTargets();
-
-			g.mg.GraphicsDevice.SetRenderTarget(RenderTarget);
-
-			g.mg.GraphicsDevice.Clear(MGColor.Transparent);
-			Draw.StartAutoBatchFrame();
-			try
-			{
-				card = card.CopyWithNewId();
-				card.upgrade = Upgrade.None;
-				card.drawAnim = 1;
-				
-				var route = new CardUpgrade
+				SkipTexture = true,
+				Scale = scale,
+				Actions = contentSize =>
 				{
-					cardCopy = card,
-					iHavePlayedThePoof = true,
-					isPreview = true,
-					isCodex = true,
-				};
+					card = card.CopyWithNewId();
+					card.upgrade = Upgrade.None;
+					card.drawAnim = 1;
 				
-				var topCard = Mutil.DeepCopy(card);
-				topCard.isForeground = false;
-				topCard.hoverAnim = 0;
-				route.topCard = topCard;
+					var route = new CardUpgrade
+					{
+						cardCopy = card,
+						iHavePlayedThePoof = true,
+						isPreview = true,
+						isCodex = true,
+					};
 				
-				for (var i = 0; i < route.particles.gradient.Count; i++)
-					route.particles.gradient[i] = new Color(0f, 0f,  0f, 0f);
+					var topCard = Mutil.DeepCopy(card);
+					topCard.isForeground = false;
+					topCard.hoverAnim = 0;
+					route.topCard = topCard;
+				
+					for (var i = 0; i < route.particles.gradient.Count; i++)
+						route.particles.gradient[i] = new Color(0f, 0f,  0f, 0f);
 
-				route.Render(g);
-			}
-			catch
-			{
-				ModEntry.Instance.Logger.LogError("There was an error exporting card {Card}.", card.Key());
-			}
-			if (withScreenFilter)
-				Draw.Fill(Colors.screenOverlay, new BlendState
-				{
-					ColorBlendFunction = BlendFunction.Add,
-					ColorSourceBlend = Blend.One,
-					ColorDestinationBlend = Blend.InverseSourceColor,
-					AlphaSourceBlend = Blend.Zero,
-					AlphaDestinationBlend = Blend.One
-				});
-			Draw.EndAutoBatchFrame();
+					route.Render(g);
 
-			g.mg.GraphicsDevice.SetRenderTargets(oldRenderTargets);
-
-			var croppedTexture = TextureUtils.CropToContent(RenderTarget, background switch
+					if (withScreenFilter)
+						Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.screenOverlay, new BlendState
+						{
+							ColorBlendFunction = BlendFunction.Add,
+							ColorSourceBlend = Blend.One,
+							ColorDestinationBlend = Blend.InverseSourceColor,
+							AlphaSourceBlend = Blend.Zero,
+							AlphaDestinationBlend = Blend.One
+						});
+				},
+			});
+			
+			using var croppedTexture = TextureUtils.CropToContent(texture, background switch
 			{
 				ExportBackground.Black => withScreenFilter ? new MGColor(0xFF260306) : MGColor.Black,
 				ExportBackground.White => MGColor.White,
@@ -93,10 +74,12 @@ internal sealed class CardUpgradesRenderer
 			});
 			croppedTexture.SaveAsPng(stream, croppedTexture.Width, croppedTexture.Height);
 		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("There was an error exporting card {Card} for deck {Deck}: {Exception}", card, card.GetMeta().deck.Key(), ex);
+		}
 		finally
 		{
-			g.mg.PIX_SCALE = oldPixScale;
-			g.mg.cameraMatrix = oldCameraMatrix;
 			SharedArtPatches.DisableDrawing = false;
 
 			if (oldTitleString is null)

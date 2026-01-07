@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
+using Shockah.Shared;
 
 namespace Shockah.ContentExporter;
 
@@ -16,22 +16,16 @@ internal sealed partial class Settings
 
 internal sealed class CardTooltipRenderer
 {
-	private RenderTarget2D? CurrentRenderTarget;
-
 	public void Render(G g, int scale, bool withScreenFilter, ExportBackground background, Card card, bool withTheCard, Stream stream)
 	{
-		var oldPixScale = g.mg.PIX_SCALE;
-		var oldCameraMatrix = g.mg.cameraMatrix;
 		var oldScreenLimits = Tooltips.SCREEN_LIMITS;
 		var oldActivateAllActions = CardPatches.ActivateAllActions;
 
-		g.mg.PIX_SCALE = scale;
-		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
-		Tooltips.SCREEN_LIMITS = new(0, 0, double.PositiveInfinity, double.PositiveInfinity);
-		CardPatches.ActivateAllActions = true;
-
 		try
 		{
+			Tooltips.SCREEN_LIMITS = new(0, 0, double.PositiveInfinity, double.PositiveInfinity);
+			CardPatches.ActivateAllActions = true;
+			
 			var cardTooltips = card.GetAllTooltips(g, DB.fakeState).ToList();
 
 			var tooltips = new Tooltips();
@@ -41,7 +35,7 @@ internal sealed class CardTooltipRenderer
 			if (withTheCard)
 				Tooltips._tooltipScratch.Insert(0, new TTCard { card = card, showCardTraitTooltips = false });
 
-			var margins = 6;
+			const int margins = 6;
 			var tooltipWidth = 0;
 			var tooltipHeight = 0;
 
@@ -55,55 +49,44 @@ internal sealed class CardTooltipRenderer
 			tooltipWidth += margins * 2;
 			tooltipHeight += margins * 2 - 5;
 
-			if (CurrentRenderTarget is null || CurrentRenderTarget.Width != tooltipWidth * g.mg.PIX_SCALE || CurrentRenderTarget.Height != tooltipHeight * g.mg.PIX_SCALE)
+			using var texture = TextureUtils.CreateTexture(new(tooltipWidth, tooltipHeight)
 			{
-				CurrentRenderTarget?.Dispose();
-				CurrentRenderTarget = new(g.mg.GraphicsDevice, tooltipWidth * g.mg.PIX_SCALE, tooltipHeight * g.mg.PIX_SCALE);
-			}
-
-			var oldRenderTargets = g.mg.GraphicsDevice.GetRenderTargets();
-
-			g.mg.GraphicsDevice.SetRenderTarget(CurrentRenderTarget);
-
-			g.mg.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Transparent);
-			Draw.StartAutoBatchFrame();
-			try
-			{
-				switch (background)
+				SkipTexture = true,
+				Scale = scale,
+				Actions = contentSize =>
 				{
-					case ExportBackground.Black:
-						Draw.Fill(Colors.black);
-						break;
-					case ExportBackground.White:
-						Draw.Fill(Colors.white);
-						break;
-				}
-				
-				Tooltip.RenderMultiple(g, tooltips.pos, Tooltips._tooltipScratch);
-			}
-			catch
-			{
-				ModEntry.Instance.Logger.LogError("There was an error exporting card {Card}.", card.Key());
-			}
-			if (withScreenFilter)
-				Draw.Rect(0, 0, tooltipWidth * g.mg.PIX_SCALE, tooltipHeight * g.mg.PIX_SCALE, Colors.screenOverlay, new BlendState
-				{
-					ColorBlendFunction = BlendFunction.Add,
-					ColorSourceBlend = Blend.One,
-					ColorDestinationBlend = Blend.InverseSourceColor,
-					AlphaSourceBlend = Blend.Zero,
-					AlphaDestinationBlend = Blend.One
-				});
-			Draw.EndAutoBatchFrame();
+					switch (background)
+					{
+						case ExportBackground.Black:
+							Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.black);
+							break;
+						case ExportBackground.White:
+							Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.white);
+							break;
+					}
 
-			g.mg.GraphicsDevice.SetRenderTargets(oldRenderTargets);
+					Tooltip.RenderMultiple(g, tooltips.pos, Tooltips._tooltipScratch);
 
-			CurrentRenderTarget.SaveAsPng(stream, tooltipWidth * g.mg.PIX_SCALE, tooltipHeight * g.mg.PIX_SCALE);
+					if (withScreenFilter)
+						Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.screenOverlay, new BlendState
+						{
+							ColorBlendFunction = BlendFunction.Add,
+							ColorSourceBlend = Blend.One,
+							ColorDestinationBlend = Blend.InverseSourceColor,
+							AlphaSourceBlend = Blend.Zero,
+							AlphaDestinationBlend = Blend.One
+						});
+				},
+			});
+
+			texture.SaveAsPng(stream, texture.Width, texture.Height);
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("There was an error exporting card {Card} for deck {Deck}: {Exception}", card, card.GetMeta().deck.Key(), ex);
 		}
 		finally
 		{
-			g.mg.PIX_SCALE = oldPixScale;
-			g.mg.cameraMatrix = oldCameraMatrix;
 			Tooltips.SCREEN_LIMITS = oldScreenLimits;
 			CardPatches.ActivateAllActions = oldActivateAllActions;
 		}

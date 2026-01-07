@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
+using Shockah.Shared;
 
 namespace Shockah.ContentExporter;
 
@@ -16,25 +16,18 @@ internal sealed partial class Settings
 
 internal sealed class ArtifactTooltipRenderer
 {
-	private RenderTarget2D? CurrentRenderTarget;
-
 	public void Render(G g, int scale, bool withScreenFilter, ExportBackground background, Artifact artifact, Stream stream)
 	{
-		var oldPixScale = g.mg.PIX_SCALE;
-		var oldCameraMatrix = g.mg.cameraMatrix;
 		var oldMetaRoute = g.metaRoute;
 		var oldScreenLimits = Tooltips.SCREEN_LIMITS;
 		var oldActivateAllActions = CardPatches.ActivateAllActions;
-
-		g.mg.PIX_SCALE = scale;
-		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
-		g.metaRoute = new MainMenu { subRoute = new Codex { subRoute = new ArtifactBrowse() } };
-		Tooltips.SCREEN_LIMITS = new(0, 0, double.PositiveInfinity, double.PositiveInfinity);
-		CardPatches.ActivateAllActions = true;
-		g.Push();
-
+		
 		try
 		{
+			g.metaRoute = new MainMenu { subRoute = new Codex { subRoute = new ArtifactBrowse() } };
+			Tooltips.SCREEN_LIMITS = new(0, 0, double.PositiveInfinity, double.PositiveInfinity);
+			CardPatches.ActivateAllActions = true;
+			
 			var artifactTooltips = artifact.GetTooltips();
 
 			var tooltips = new Tooltips();
@@ -55,60 +48,48 @@ internal sealed class ArtifactTooltipRenderer
 			tooltipWidth += margins * 2;
 			tooltipHeight += margins * 2 - 5;
 
-			if (CurrentRenderTarget is null || CurrentRenderTarget.Width != (tooltipWidth + 20) * g.mg.PIX_SCALE || CurrentRenderTarget.Height != tooltipHeight * g.mg.PIX_SCALE)
+			using var texture = TextureUtils.CreateTexture(new(tooltipWidth + 20, tooltipHeight)
 			{
-				CurrentRenderTarget?.Dispose();
-				CurrentRenderTarget = new(g.mg.GraphicsDevice, (tooltipWidth + 20) * g.mg.PIX_SCALE, tooltipHeight * g.mg.PIX_SCALE);
-			}
-
-			var oldRenderTargets = g.mg.GraphicsDevice.GetRenderTargets();
-
-			g.mg.GraphicsDevice.SetRenderTarget(CurrentRenderTarget);
-
-			g.mg.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Transparent);
-			Draw.StartAutoBatchFrame();
-			try
-			{
-				switch (background)
+				SkipTexture = true,
+				Scale = scale,
+				Actions = contentSize =>
 				{
-					case ExportBackground.Black:
-						Draw.Fill(Colors.black);
-						break;
-					case ExportBackground.White:
-						Draw.Fill(Colors.white);
-						break;
-				}
-				
-				if (artifact.GetMeta().pools.Contains(ArtifactPool.Boss))
-					Draw.Sprite(ModEntry.Instance.BossArtifactGlowSprite.Sprite, 6 + 11 / 2.0, 6 + 11 / 2.0, originRel: new Vec(0.5, 0.5), scale: new Vec(23, 23) / 512.0, color: new Color(0.0, 0.5, 1.0).gain(0.3));
+					switch (background)
+					{
+						case ExportBackground.Black:
+							Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.black);
+							break;
+						case ExportBackground.White:
+							Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.white);
+							break;
+					}
 
-				artifact.Render(g, new Vec(6, 6), showCount: false);
-				Tooltip.RenderMultiple(g, tooltips.pos, Tooltips._tooltipScratch);
-			}
-			catch
-			{
-				ModEntry.Instance.Logger.LogError("There was an error exporting artifact {Artifact}.", artifact.Key());
-			}
-			if (withScreenFilter)
-				Draw.Rect(0, 0, (tooltipWidth + 20) * g.mg.PIX_SCALE, tooltipHeight * g.mg.PIX_SCALE, Colors.screenOverlay, new BlendState
-				{
-					ColorBlendFunction = BlendFunction.Add,
-					ColorSourceBlend = Blend.One,
-					ColorDestinationBlend = Blend.InverseSourceColor,
-					AlphaSourceBlend = Blend.Zero,
-					AlphaDestinationBlend = Blend.One
-				});
-			Draw.EndAutoBatchFrame();
+					if (artifact.GetMeta().pools.Contains(ArtifactPool.Boss))
+						Draw.Sprite(ModEntry.Instance.BossArtifactGlowSprite.Sprite, 6 + 11 / 2.0, 6 + 11 / 2.0, originRel: new Vec(0.5, 0.5), scale: new Vec(23, 23) / 512.0, color: new Color(0.0, 0.5, 1.0).gain(0.3));
 
-			g.mg.GraphicsDevice.SetRenderTargets(oldRenderTargets);
+					artifact.Render(g, new Vec(6, 6), showCount: false);
+					Tooltip.RenderMultiple(g, tooltips.pos, Tooltips._tooltipScratch);
 
-			CurrentRenderTarget.SaveAsPng(stream, (tooltipWidth + 20) * g.mg.PIX_SCALE, tooltipHeight * g.mg.PIX_SCALE);
+					if (withScreenFilter)
+						Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.screenOverlay, new BlendState
+						{
+							ColorBlendFunction = BlendFunction.Add,
+							ColorSourceBlend = Blend.One,
+							ColorDestinationBlend = Blend.InverseSourceColor,
+							AlphaSourceBlend = Blend.Zero,
+							AlphaDestinationBlend = Blend.One
+						});
+				},
+			});
+
+			texture.SaveAsPng(stream, texture.Width, texture.Height);
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("There was an error exporting artifact {Artifact} for deck {Deck}: {Exception}", artifact, artifact.GetMeta().owner.Key(), ex);
 		}
 		finally
 		{
-			g.Pop();
-			g.mg.PIX_SCALE = oldPixScale;
-			g.mg.cameraMatrix = oldCameraMatrix;
 			g.metaRoute = oldMetaRoute;
 			Tooltips.SCREEN_LIMITS = oldScreenLimits;
 			CardPatches.ActivateAllActions = oldActivateAllActions;

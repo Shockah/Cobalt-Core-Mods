@@ -424,7 +424,7 @@ internal sealed class Enchanted : IRegisterable
 			{
 				var baseTexture = TextureUtils.CreateTexture(new(costWidth, 10)
 				{
-					Actions = () =>
+					Actions = _ =>
 					{
 						var position = Vec.Zero;
 						modifiedActionCost.Render(g, ref position, false, false, transactionPaymentResult);

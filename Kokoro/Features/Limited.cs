@@ -304,7 +304,7 @@ internal sealed class LimitedManager : HookManager<IKokoroApi.IV2.ILimitedApi.IH
 				var exhaustIcon = SpriteLoader.Get(StableSpr.icons_exhaust)!;
 				return TextureUtils.CreateTexture(new(exhaustIcon.Width, exhaustIcon.Height)
 				{
-					Actions = () =>
+					Actions = _ =>
 					{
 						if (drawExhaustIcon)
 							Draw.Sprite(exhaustIcon, 0, 0);

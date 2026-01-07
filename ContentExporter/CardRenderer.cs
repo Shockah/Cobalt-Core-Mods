@@ -1,8 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using System;
 using System.IO;
+using Microsoft.Extensions.Logging;
+using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
+using Shockah.Shared;
 
 namespace Shockah.ContentExporter;
 
@@ -17,68 +18,53 @@ internal sealed class CardRenderer
 	private static readonly Vec BaseCardSize = new(59, 82);
 	private static readonly Vec OverborderCardSize = new(67, 90);
 
-	private RenderTarget2D? CurrentRenderTarget;
-
 	public void Render(G g, int scale, bool withScreenFilter, ExportBackground background, Card card, Stream stream)
 	{
-		var oldPixScale = g.mg.PIX_SCALE;
-		var oldCameraMatrix = g.mg.cameraMatrix;
-
-		g.mg.PIX_SCALE = scale;
-		g.mg.cameraMatrix = g.GetMatrix() * Matrix.CreateScale(g.mg.PIX_SCALE, g.mg.PIX_SCALE, 1f);
-
 		try
 		{
 			var imageSize = GetImageSize(card);
-			if (CurrentRenderTarget is null || CurrentRenderTarget.Width != (int)(imageSize.x * g.mg.PIX_SCALE) || CurrentRenderTarget.Height != (int)(imageSize.y * g.mg.PIX_SCALE))
+			
+			using var texture = TextureUtils.CreateTexture(new(imageSize)
 			{
-				CurrentRenderTarget?.Dispose();
-				CurrentRenderTarget = new(g.mg.GraphicsDevice, (int)(imageSize.x * g.mg.PIX_SCALE), (int)(imageSize.y * g.mg.PIX_SCALE));
-			}
-
-			var oldRenderTargets = g.mg.GraphicsDevice.GetRenderTargets();
-
-			g.mg.GraphicsDevice.SetRenderTarget(CurrentRenderTarget);
-
-			g.mg.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Transparent);
-			Draw.StartAutoBatchFrame();
-			try
-			{
-				switch (background)
+				SkipTexture = true,
+				Scale = scale,
+				Actions = contentSize =>
 				{
-					case ExportBackground.Black:
-						Draw.Fill(Colors.black);
-						break;
-					case ExportBackground.White:
-						Draw.Fill(Colors.white);
-						break;
-				}
-				
-				card.Render(g, posOverride: new((imageSize.x - BaseCardSize.x) / 2 + 1, (imageSize.y - BaseCardSize.y) / 2 + 1), fakeState: DB.fakeState, ignoreAnim: true, ignoreHover: true);
-			}
-			catch
-			{
-				ModEntry.Instance.Logger.LogError("There was an error exporting card {Card} {Upgrade}.", card.Key(), card.upgrade);
-			}
-			if (withScreenFilter)
-				Draw.Rect(0, 0, (int)(imageSize.x * g.mg.PIX_SCALE), (int)(imageSize.y * g.mg.PIX_SCALE), Colors.screenOverlay, new BlendState
-				{
-					ColorBlendFunction = BlendFunction.Add,
-					ColorSourceBlend = Blend.One,
-					ColorDestinationBlend = Blend.InverseSourceColor,
-					AlphaSourceBlend = Blend.Zero,
-					AlphaDestinationBlend = Blend.One
-				});
-			Draw.EndAutoBatchFrame();
+					switch (background)
+					{
+						case ExportBackground.Black:
+							Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.black);
+							break;
+						case ExportBackground.White:
+							Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.white);
+							break;
+					}
 
-			g.mg.GraphicsDevice.SetRenderTargets(oldRenderTargets);
-
-			CurrentRenderTarget.SaveAsPng(stream, (int)(imageSize.x * g.mg.PIX_SCALE), (int)(imageSize.y * g.mg.PIX_SCALE));
+					card.Render(
+						g,
+						posOverride: new((imageSize.x - BaseCardSize.x) / 2 + 1, (imageSize.y - BaseCardSize.y) / 2 + 1),
+						fakeState: DB.fakeState,
+						ignoreAnim: true,
+						ignoreHover: true
+					);
+			
+					if (withScreenFilter)
+						Draw.Rect(0, 0, contentSize.x, contentSize.y, Colors.screenOverlay, new BlendState
+						{
+							ColorBlendFunction = BlendFunction.Add,
+							ColorSourceBlend = Blend.One,
+							ColorDestinationBlend = Blend.InverseSourceColor,
+							AlphaSourceBlend = Blend.Zero,
+							AlphaDestinationBlend = Blend.One
+						});
+				},
+			});
+			
+			texture.SaveAsPng(stream, texture.Width, texture.Height);
 		}
-		finally
+		catch (Exception ex)
 		{
-			g.mg.PIX_SCALE = oldPixScale;
-			g.mg.cameraMatrix = oldCameraMatrix;
+			ModEntry.Instance.Logger.LogError("There was an error exporting card {Card} for deck {Deck}: {Exception}", card, card.GetMeta().deck.Key(), ex);
 		}
 	}
 

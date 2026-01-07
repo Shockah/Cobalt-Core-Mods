@@ -14,7 +14,7 @@ internal static class TextureUtils
 	{
 		public readonly int Width = width;
 		public readonly int Height = height;
-		public required Action Actions { get; init; }
+		public required Action<Vec> Actions { get; init; }
 		public int? Scale { get; init; }
 		public bool SkipTexture { get; init; }
 
@@ -36,7 +36,7 @@ internal static class TextureUtils
 
 	extension(SpriteBatch batch)
 	{
-		public bool BeganCalled
+		public bool BeginCalled
 			=> SpriteBatchBeginCalledGetter.Value(batch);
 	}
 	
@@ -47,7 +47,7 @@ internal static class TextureUtils
 			throw new InvalidOperationException("Cannot create texture - no render target");
 		var oldRenderTarget = (oldRenderTargets.Length == 0 ? MG.inst.renderTarget : oldRenderTargets[0].RenderTarget as RenderTarget2D) ?? MG.inst.renderTarget;
 
-		var beganCalled = MG.inst.sb.BeganCalled;
+		var beganCalled = MG.inst.sb.BeginCalled;
 		if (beganCalled)
 			Draw.EndAutoBatchFrame();
 
@@ -56,21 +56,24 @@ internal static class TextureUtils
 		var oldCamera = MG.inst.cameraMatrix;
 		var oldBatch = MG.inst.sb;
 
-		using var backupTarget = new RenderTarget2D(MG.inst.GraphicsDevice, oldRenderTarget.Width, oldRenderTarget.Height, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-		MG.inst.GraphicsDevice.SetRenderTargets(backupTarget);
-		MG.inst.GraphicsDevice.Clear(MGColor.Black);
-		
-		MG.inst.sb = new SpriteBatch(MG.inst.GraphicsDevice);
-		MG.inst.sb.Begin();
-		MG.inst.sb.Draw(oldRenderTarget, Vector2.Zero, MGColor.White);
-		MG.inst.sb.End();
-
+		RenderTarget2D? backupTarget = null;
 		RenderTarget2D? resultTarget = null;
 
 		try
 		{
-			var realScale = args.Scale ?? 1;
+			if (oldRenderTarget.RenderTargetUsage != RenderTargetUsage.PreserveContents)
+			{
+				backupTarget = new RenderTarget2D(MG.inst.GraphicsDevice, oldRenderTarget.Width, oldRenderTarget.Height, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+				MG.inst.GraphicsDevice.SetRenderTargets(backupTarget);
+				MG.inst.GraphicsDevice.Clear(MGColor.Black);
+			
+				MG.inst.sb = new SpriteBatch(MG.inst.GraphicsDevice);
+				MG.inst.sb.Begin();
+				MG.inst.sb.Draw(oldRenderTarget, Vector2.Zero, MGColor.White);
+				MG.inst.sb.End();
+			}
 
+			var realScale = args.Scale ?? 1;
 			resultTarget = new RenderTarget2D(MG.inst.GraphicsDevice, args.Width * realScale, args.Height * realScale, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
 			MG.inst.GraphicsDevice.SetRenderTargets(resultTarget);
 			MG.inst.GraphicsDevice.Clear(MGColor.Transparent);
@@ -82,7 +85,7 @@ internal static class TextureUtils
 			MG.inst.sb = resultBatch;
 
 			Draw.StartAutoBatchFrame();
-			args.Actions();
+			args.Actions(new(args.Width, args.Height));
 			Draw.EndAutoBatchFrame();
 
 			if (args.SkipTexture)
@@ -109,9 +112,14 @@ internal static class TextureUtils
 			MG.inst.g.state.shake = oldShake;
 			MG.inst.cameraMatrix = oldCamera;
 			MG.inst.sb = oldBatch;
-			oldBatch.Begin();
-			oldBatch.Draw(backupTarget, Vector2.Zero, MGColor.White);
-			oldBatch.End();
+
+			if (backupTarget is not null && !backupTarget.IsDisposed)
+			{
+				oldBatch.Begin();
+				oldBatch.Draw(backupTarget, Vector2.Zero, MGColor.White);
+				oldBatch.End();
+				backupTarget.Dispose();
+			}
 			
 			if (beganCalled)
 				Draw.StartAutoBatchFrame();

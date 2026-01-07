@@ -120,7 +120,7 @@ internal sealed class SequenceManager : IKokoroApi.IV2.IWrappedActionsApi.IHook
 		{
 			return TextureUtils.CreateTexture(new(9, 9)
 			{
-				Actions = () =>
+				Actions = _ =>
 				{
 					Draw.Sprite(Sheet.Sprite, 0, 0, pixelRect: GetTypeRegion());
 					Draw.Sprite(Sheet.Sprite, 0, 0, pixelRect: GetBaseRegion());
