@@ -45,6 +45,10 @@ internal sealed class PartialCrewRuns : IRegisterable
 			original: AccessTools.DeclaredMethod(typeof(DailyDescriptor), nameof(DailyDescriptor.GetDailyModifierArtifactKeys)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(DailyDescriptor_GetDailyModifierArtifactKeys_Transpiler))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(NewRunOptions), nameof(NewRunOptions.Randomize)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(NewRunOptions_Randomize_Postfix))
+		);
 
 		void BlacklistEventDuringUnmannedRun(string nodeKey)
 		{
@@ -405,6 +409,47 @@ internal sealed class PartialCrewRuns : IRegisterable
 			if (chance > 0 && chance >= random.Next())
 				possibleDailyArtifactKeys = possibleDailyArtifactKeys.Append(new UnmannedRunArtifact().Key());
 		}
+	}
+
+	private static void NewRunOptions_Randomize_Postfix(State s, Rand rng)
+	{
+		var settings = ModEntry.Instance.Settings.ProfileBased.Current;
+		if (settings is { UnmannedRandomizeChance: <= 0, SoloRandomizeChance: <= 0, DuoRandomizeChance: <= 0 })
+			return;
+
+		var roll = rng.Next();
+
+		if (settings.UnmannedRandomizeChance > 0 && roll < settings.UnmannedRandomizeChance)
+		{
+			s.runConfig.selectedChars.Clear();
+			return;
+		}
+
+		roll -= settings.UnmannedRandomizeChance;
+
+		if (settings.SoloRandomizeChance > 0 && roll < settings.SoloRandomizeChance)
+		{
+			s.runConfig.selectedChars = s.runConfig.selectedChars
+				.OrderBy(deck => NewRunOptions.allChars.IndexOf(deck))
+				.Shuffle(rng)
+				.Take(1)
+				.ToHashSet();
+			return;
+		}
+
+		roll -= settings.SoloRandomizeChance;
+
+		if (settings.DuoRandomizeChance > 0 && roll < settings.DuoRandomizeChance)
+		{
+			s.runConfig.selectedChars = s.runConfig.selectedChars
+				.OrderBy(deck => NewRunOptions.allChars.IndexOf(deck))
+				.Shuffle(rng)
+				.Take(2)
+				.ToHashSet();
+			return;
+		}
+
+		// roll -= settings.DuoRandomizeChance;
 	}
 
 	private sealed class DuoRunArtifact : Artifact, IRegisterable

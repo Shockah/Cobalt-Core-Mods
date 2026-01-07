@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Added settings to allow randomizing into unmanned/solo/duo runs.
 * Fixed enforcing boot sequence downsides not displaying correctly in settings.
 
 ## 1.4.1

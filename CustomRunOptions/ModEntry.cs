@@ -111,6 +111,51 @@ internal sealed class ModEntry : SimpleMod
 					Description = Localizations.Localize(["settings", nameof(ProfileSettings.DuoDailyChance), "description"]),
 				},
 			]),
+			ModSettingsApi.MakeNumericStepper(
+				() => Localizations.Localize(["settings", nameof(ProfileSettings.UnmannedRandomizeChance), "title"]),
+				() => Settings.ProfileBased.Current.UnmannedRandomizeChance,
+				value => Settings.ProfileBased.Current.UnmannedRandomizeChance = Math.Round(value, 2),
+				minValue: 0,
+				maxValue: 1,
+				step: 0.01
+			).SetValueFormatter(value => value.ToString("F2")).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.UnmannedRandomizeChance)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = Localizations.Localize(["settings", nameof(ProfileSettings.UnmannedRandomizeChance), "title"]),
+					Description = Localizations.Localize(["settings", nameof(ProfileSettings.UnmannedRandomizeChance), "description"]),
+				},
+			]),
+			ModSettingsApi.MakeNumericStepper(
+				() => Localizations.Localize(["settings", nameof(ProfileSettings.SoloRandomizeChance), "title"]),
+				() => Settings.ProfileBased.Current.SoloRandomizeChance,
+				value => Settings.ProfileBased.Current.SoloRandomizeChance = Math.Round(value, 2),
+				minValue: 0,
+				maxValue: 1,
+				step: 0.01
+			).SetValueFormatter(value => value.ToString("F2")).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.SoloRandomizeChance)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = Localizations.Localize(["settings", nameof(ProfileSettings.SoloRandomizeChance), "title"]),
+					Description = Localizations.Localize(["settings", nameof(ProfileSettings.SoloRandomizeChance), "description"]),
+				},
+			]),
+			ModSettingsApi.MakeNumericStepper(
+				() => Localizations.Localize(["settings", nameof(ProfileSettings.DuoRandomizeChance), "title"]),
+				() => Settings.ProfileBased.Current.DuoRandomizeChance,
+				value => Settings.ProfileBased.Current.DuoRandomizeChance = Math.Round(value, 2),
+				minValue: 0,
+				maxValue: 1,
+				step: 0.01
+			).SetValueFormatter(value => value.ToString("F2")).SetTooltips(() => [
+				new GlossaryTooltip($"settings.{package.Manifest.UniqueName}::{nameof(ProfileSettings.DuoRandomizeChance)}")
+				{
+					TitleColor = Colors.textBold,
+					Title = Localizations.Localize(["settings", nameof(ProfileSettings.DuoRandomizeChance), "title"]),
+					Description = Localizations.Localize(["settings", nameof(ProfileSettings.DuoRandomizeChance), "description"]),
+				},
+			]),
 		]).SubscribeToOnMenuClose(_ =>
 		{
 			helper.Storage.SaveJson(helper.Storage.GetMainStorageFile("json"), Settings);

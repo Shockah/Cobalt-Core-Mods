@@ -52,4 +52,13 @@ internal sealed class ProfileSettings
 	
 	[JsonProperty]
 	public double UnmannedDailyChance;
+	
+	[JsonProperty]
+	public double SoloRandomizeChance;
+	
+	[JsonProperty]
+	public double DuoRandomizeChance;
+	
+	[JsonProperty]
+	public double UnmannedRandomizeChance;
 }

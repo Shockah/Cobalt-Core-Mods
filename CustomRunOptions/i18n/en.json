@@ -56,6 +56,30 @@
 				"<c=boldPink>1.0</c> makes it appear as often as other modifiers.",
 				"<c=boldPink>0.0</c> disables it in dailies."
 			]
+		},
+		"UnmannedRandomizeChance": {
+			"title": "Unmanned Randomize Chance",
+			"description": [
+				"The chance to randomize into an <c=artifact>UNMANNED RUN</c>.",
+				"<c=boldPink>1.0</c> makes it always.",
+				"<c=boldPink>0.0</c> makes it never."
+			]
+		},
+		"SoloRandomizeChance": {
+			"title": "Solo Randomize Chance",
+			"description": [
+				"The chance to randomize into an <c=artifact>SOLO RUN</c>.",
+				"<c=boldPink>1.0</c> makes it always.",
+				"<c=boldPink>0.0</c> makes it never."
+			]
+		},
+		"DuoRandomizeChance": {
+			"title": "Duo Randomize Chance",
+			"description": [
+				"The chance to randomize into an <c=artifact>DUO RUN</c>.",
+				"<c=boldPink>1.0</c> makes it always.",
+				"<c=boldPink>0.0</c> makes it never."
+			]
 		}
 	}
 }
