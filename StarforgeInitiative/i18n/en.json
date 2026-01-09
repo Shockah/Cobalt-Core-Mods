@@ -89,6 +89,26 @@
 				}
 			}
 		},
+		"Flicker": {
+			"name": "Flicker",
+			"description": "Tiny and hard to hit, this ship survives where larger ships would be torn apart.",
+			"status": {
+				"Afterflick": {
+					"name": "Afterflick",
+					"description": "<c=downside>You can't <c=action>borrow</c> <c=energy>energy</c>.</c> Goes away at end of turn, if you have no <c=status>LESS ENERGY NEXT TURN</c>."
+				}
+			},
+			"artifact": {
+				"FleetingCore": {
+					"name": "FLEETING CORE",
+					"description": [
+						"<c=downside>Gain 1 less <c=energy>energy</c> each turn.</c>",
+						"You can play a card even if you can't afford it, <c=action>borrowing</c> up to 2 <c=energy>energy</c> from the next turn.",
+						"<c=downside>If you end your turn with any <c=status>LESS ENERGY NEXT TURN</c>, gain <c=status>AFTERFLICK</c>.</c>"
+					]
+				}
+			}
+		},
 		"Kepler": {
 			"name": "Kepler",
 			"description": "An old war ship with two missile bays and a missile defense system.",

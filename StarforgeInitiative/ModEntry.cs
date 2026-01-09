@@ -22,6 +22,7 @@ internal sealed class ModEntry : SimpleMod
 	internal static readonly List<Type> ShipManagerTypes = [
 		typeof(AgniShip),
 		typeof(BreadnaughtShip),
+		typeof(FlickerShip),
 		typeof(KeplerShip),
 		typeof(NemesisShip),
 	];
