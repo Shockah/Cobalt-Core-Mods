@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Fixed Impulsive actions being triggered twice, if their card is put into hand during turn start via any other way than a normal turn draw.
+* Changed the icons for Times Played This Turn/Combat/Run.
 
 ## 2.16.1
 Released 7 January 2026.
