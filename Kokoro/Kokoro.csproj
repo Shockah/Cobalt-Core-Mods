@@ -10,7 +10,4 @@
         <ModFiles Include="assets/**/*.fnt" />
 	</ItemGroup>
 	<Import Project="..\Configuration.Mod.props" />
-	<ItemGroup>
-		<PackageReference Include="ImGui.NET" Version="1.89.5.0" IncludeAssets="compile" PrivateAssets="all" />
-	</ItemGroup>
 </Project>
