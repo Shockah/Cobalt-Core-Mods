@@ -78,7 +78,7 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 			QueueSpontaneousActions(state, combat, combat.hand);
 		}, -1000);
 
-		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnTurnEnd), (State state, Combat combat) =>
+		ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnTurnEnd), (State state) =>
 		{
 			foreach (var card in state.GetAllCards())
 				if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, ImpulsiveTriggeredTrait))
@@ -101,17 +101,20 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 				.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, ImpulsiveTriggeredTrait))
 				.Select(card => (Card: card, Actions: card.GetActionsOverridden(state, combat).Where(action => !action.disabled).OfType<TriggerAction>().Select(triggerAction => triggerAction.Action).ToList()))
 				.Where(e => e.Actions.Count != 0)
+				.Select(e =>
+				{
+					ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, e.Card, ImpulsiveTriggeredTrait, true, permanent: false);
+					return e;
+				})
 				.SelectMany(e =>
 				{
 					var meta = e.Card.GetMeta();
-					return e.Actions
-						.Prepend(new MarkCardAsTriggeredAction { CardId = e.Card.uuid })
-						.Select(action =>
-						{
-							action.whoDidThis = meta.deck;
-							ModEntry.Instance.Helper.ModData.SetModData(action, "Impulsive", true);
-							return action;
-						});
+					return e.Actions.Select(action =>
+					{
+						action.whoDidThis = meta.deck;
+						ModEntry.Instance.Helper.ModData.SetModData(action, "Impulsive", true);
+						return action;
+					});
 				})
 		);
 	}
@@ -206,21 +209,6 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 		{
 			this.ShowImpulsiveTooltip = value;
 			return this;
-		}
-	}
-
-	private sealed class MarkCardAsTriggeredAction : CardAction
-	{
-		public required int CardId;
-
-		public override void Begin(G g, State s, Combat c)
-		{
-			base.Begin(g, s, c);
-			timer = 0;
-
-			if (s.FindCard(CardId) is not { } card)
-				return;
-			ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(s, card, ImpulsiveTriggeredTrait, true, permanent: false);
 		}
 	}
 
