@@ -186,10 +186,13 @@ internal static class MultiCardBrowseManager
 				}
 
 				Audio.Play(Event.Click);
-				if (SelectedCards.Contains(uuid))
-					SelectedCards.Remove(uuid);
-				else
+				if (!SelectedCards.Remove(uuid))
+				{
+					var allActions = GetAllActions();
+					if (allActions.All(a => a.MaxSelected == 1))
+						SelectedCards.Clear();
 					SelectedCards.Add(uuid);
+				}
 			}
 			else if (b.key?.k == (UIKey)ChooseUk)
 			{

@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* `MultiCardBrowse` now automatically unchecks other cards if all actions define a max of 1 card.
+
 ## 2.16.2
 Released 11 January 2026.
 
