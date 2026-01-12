@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming release
+
+### Kepler
+* Fixed for the latest game update.
+
 ## 1.3.0
 Released 6 January 2026.
 

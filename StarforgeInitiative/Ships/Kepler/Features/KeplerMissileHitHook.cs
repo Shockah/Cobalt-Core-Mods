@@ -73,7 +73,7 @@ internal sealed class KeplerMissileHitHookManager : IRegisterable
 
 	private static bool AMissileHit_Update_Transpiler_ModifyHit(G g, State state, Combat combat, Missile missile, AMissileHit action, RaycastResult ray, ref int damage)
 	{
-		var ship = action.targetPlayer ? state.ship : combat.otherShip;
+		var ship = missile.targetPlayer ? state.ship : combat.otherShip;
 		var @continue = true;
 		
 		foreach (var artifact in state.EnumerateAllArtifacts())
@@ -88,7 +88,7 @@ internal sealed class KeplerMissileHitHookManager : IRegisterable
 		{
 			state.AddShake(1.0);
 			Input.Rumble(0.5);
-			EffectSpawner.NonCannonHit(g, action.targetPlayer, ray, new() { hitShield = true });
+			EffectSpawner.NonCannonHit(g, missile.targetPlayer, ray, new() { hitShield = true });
 			
 			foreach (var artifact in state.EnumerateAllArtifacts())
 				artifact.OnPlayerDestroyDrone(state, combat);
