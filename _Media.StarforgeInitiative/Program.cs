@@ -62,7 +62,7 @@ using (var paint = new SKPaint())
 	}
 }
 
-canvas.DrawModHeader(font, "Starforge Initiative", "by Arin, Shockah", SKTextAlign.Right);
+canvas.DrawModHeader(font, "Starforge Initiative", "by Arin, Hatter, Shockah", SKTextAlign.Right);
 
 using var image = surface.Snapshot();
 using var data = image.Encode(SKEncodedImageFormat.Png, 100);
