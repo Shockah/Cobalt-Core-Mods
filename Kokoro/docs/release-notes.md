@@ -2,7 +2,7 @@
 
 # Release notes
 
-## Upcoming release
+## 2.16.3
 
 * `MultiCardBrowse` now automatically unchecks other cards if all actions define a max of 1 card.
 
