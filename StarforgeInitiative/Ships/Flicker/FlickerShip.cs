@@ -11,6 +11,7 @@ internal sealed class FlickerShip : IRegisterable
 {
 	private static readonly List<Type> ArtifactTypes = [
 		typeof(FlickerFleetingCoreArtifact),
+		typeof(FlickerResidualEnergyArtifact),
 	];
 	
 	private static readonly List<Type> CardTypes = [

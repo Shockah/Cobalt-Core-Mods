@@ -7,8 +7,5 @@
         <ModFiles Include="i18n/**" />
         <ModFiles Include="assets/**" />
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="assets\Flicker\Artifact\" />
-    </ItemGroup>
     <Import Project="..\Configuration.Mod.props" />
 </Project>

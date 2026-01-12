@@ -106,6 +106,13 @@
 						"If you're missing 1 <c=energy>energy</c> to afford playing a card, you can <c=action>borrow</c> it from the next turn.",
 						"<c=downside>If you end your turn with any <c=status>LESS ENERGY NEXT TURN</c>, gain <c=status>AFTERFLICK</c>.</c>"
 					]
+				},
+				"ResidualEnergy": {
+					"name": "RESIDUAL ENERGY",
+					"description": [
+						"(Flicker-exclusive artifact!)",
+						"If you end your turn with any <c=status>LESS ENERGY NEXT TURN</c>, gain 1 <c=status>TEMP SHIELD NEXT TURN</c>."
+					]
 				}
 			}
 		},
