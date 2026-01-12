@@ -103,7 +103,7 @@
 					"name": "FLEETING CORE",
 					"description": [
 						"<c=downside>Gain 1 less <c=energy>energy</c> each turn.</c>",
-						"You can play a card even if you can't afford it, <c=action>borrowing</c> up to 2 <c=energy>energy</c> from the next turn.",
+						"If you're missing 1 <c=energy>energy</c> to afford playing a card, you can <c=action>borrow</c> it from the next turn.",
 						"<c=downside>If you end your turn with any <c=status>LESS ENERGY NEXT TURN</c>, gain <c=status>AFTERFLICK</c>.</c>"
 					]
 				}

@@ -78,7 +78,7 @@ internal sealed class FlickerBorrow : IRegisterable
 			return;
 
 		var missingEnergy = cost - combat.energy;
-		var allowedToBorrow = 2 - state.ship.Get(Status.energyLessNextTurn);
+		var allowedToBorrow = 1 - state.ship.Get(Status.energyLessNextTurn);
 
 		if (missingEnergy > allowedToBorrow)
 			return;
