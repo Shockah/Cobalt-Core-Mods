@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.5.1
+Released 13 January 2026.
 
 * Fixed the music being played in the Custom settings menu, if the last run was a victory.
 * Fixed characters locked via [More Difficulty Options](https://www.nexusmods.com/cobaltcore/mods/15) being removed when randomizing into unmanned/solo/duo runs.
