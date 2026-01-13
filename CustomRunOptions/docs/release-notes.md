@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the music being played in the Custom settings menu, if the last run was a victory.
+
 ## 1.5.0
 Released 7 January 2026.
 
