@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <RootNamespace>Shockah.EnemyPromotion</RootNamespace>
+        <Version>0.1.0</Version>
+    </PropertyGroup>
+    <ItemGroup>
+        <ModFiles Include="i18n/**" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Features\Zone2\" />
+      <Folder Include="Features\Zone3\" />
+    </ItemGroup>
+    <Import Project="..\Configuration.Mod.props" />
+</Project>

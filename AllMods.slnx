@@ -17,6 +17,7 @@
   <Project Path="Dracula/Dracula.csproj" />
   <Project Path="DuoArtifacts/DuoArtifacts.csproj" />
   <Project Path="Dyna/Dyna.csproj" />
+  <Project Path="EnemyPromotion/EnemyPromotion.csproj" />
   <Project Path="Johnson/Johnson.csproj" />
   <Project Path="Kokoro/Kokoro.csproj" />
   <Project Path="MORE/MORE.csproj" />

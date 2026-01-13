@@ -1,0 +1,16 @@
+﻿{
+	"UniqueName": "Shockah.EnemyPromotion",
+	"Version": "{{ModVersion}}",
+	"DisplayName": "Enemy Promotion",
+	"Description": "Adds a chance to fight against promoted normal enemies as elites.",
+	"Author": "Shockah",
+	"RequiredApiVersion": "1.20.0",
+	"EntryPointAssembly": "EnemyPromotion.dll",
+	"LoadPhase": "AfterDbInit",
+	"Dependencies": [
+		{
+			"UniqueName": "Nickel.ModSettings",
+			"Version": "1.20.0"
+		}
+	]
+}
