@@ -12,4 +12,6 @@ public interface IMoreDifficultiesApi
 	Type BasicDefencesCardType { get; }
 	Type BasicManeuversCardType { get; }
 	Type BasicBroadcastCardType { get; }
+
+	bool IsLocked(State state, Deck deck);
 }

@@ -114,7 +114,7 @@ internal sealed class PartialCrewRuns : IRegisterable
 					.Where(card =>
 					{
 						var meta = card.GetMeta();
-						return meta.deck == deck && !meta.unreleased && !meta.dontOffer;
+						return meta.deck == deck && meta is { unreleased: false, dontOffer: false };
 					})
 					.Where(card => result.cards.All(resultCard => resultCard.Key() != card.Key()))
 					.Take(Math.Max(result.cards.Count / 2, 1))
@@ -417,39 +417,54 @@ internal sealed class PartialCrewRuns : IRegisterable
 		if (settings is { UnmannedRandomizeChance: <= 0, SoloRandomizeChance: <= 0, DuoRandomizeChance: <= 0 })
 			return;
 
-		var roll = rng.Next();
+		var lockedSelectedChars = s.runConfig.selectedChars
+			.Where(deck => ModEntry.Instance.MoreDifficultiesApi?.IsLocked(s, deck) == true)
+			.ToHashSet();
 
-		if (settings.UnmannedRandomizeChance > 0 && roll < settings.UnmannedRandomizeChance)
+		double? roll = null;
+		
+		if (lockedSelectedChars.Count == 0 && settings.UnmannedRandomizeChance > 0)
 		{
-			s.runConfig.selectedChars.Clear();
-			return;
+			roll ??= rng.Next();
+			if (roll < settings.UnmannedRandomizeChance)
+			{
+				s.runConfig.selectedChars.Clear();
+				return;
+			}
+			roll -= settings.UnmannedRandomizeChance;
 		}
-
-		roll -= settings.UnmannedRandomizeChance;
-
-		if (settings.SoloRandomizeChance > 0 && roll < settings.SoloRandomizeChance)
+		
+		if (lockedSelectedChars.Count <= 1 && settings.SoloRandomizeChance > 0)
 		{
-			s.runConfig.selectedChars = s.runConfig.selectedChars
-				.OrderBy(deck => NewRunOptions.allChars.IndexOf(deck))
-				.Shuffle(rng)
-				.Take(1)
-				.ToHashSet();
-			return;
+			roll ??= rng.Next();
+			if (roll < settings.SoloRandomizeChance)
+			{
+				s.runConfig.selectedChars = s.runConfig.selectedChars
+					.OrderBy(deck => NewRunOptions.allChars.IndexOf(deck))
+					.Shuffle(rng)
+					.Take(1 - lockedSelectedChars.Count)
+					.Concat(lockedSelectedChars)
+					.ToHashSet();
+				return;
+			}
+			roll -= settings.SoloRandomizeChance;
 		}
-
-		roll -= settings.SoloRandomizeChance;
-
-		if (settings.DuoRandomizeChance > 0 && roll < settings.DuoRandomizeChance)
+		
+		if (lockedSelectedChars.Count <= 2 && settings.DuoRandomizeChance > 0)
 		{
-			s.runConfig.selectedChars = s.runConfig.selectedChars
-				.OrderBy(deck => NewRunOptions.allChars.IndexOf(deck))
-				.Shuffle(rng)
-				.Take(2)
-				.ToHashSet();
-			return;
+			roll ??= rng.Next();
+			if (roll < settings.DuoRandomizeChance)
+			{
+				s.runConfig.selectedChars = s.runConfig.selectedChars
+					.OrderBy(deck => NewRunOptions.allChars.IndexOf(deck))
+					.Shuffle(rng)
+					.Take(2 - lockedSelectedChars.Count)
+					.Concat(lockedSelectedChars)
+					.ToHashSet();
+				// return;
+			}
+			// roll -= settings.DuoRandomizeChance;
 		}
-
-		// roll -= settings.DuoRandomizeChance;
 	}
 
 	private sealed class DuoRunArtifact : Artifact, IRegisterable
