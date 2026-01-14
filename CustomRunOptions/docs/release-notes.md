@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed a crash related to the Custom settings menu.
+
 ## 1.5.1
 Released 13 January 2026.
 

@@ -35,7 +35,7 @@ internal sealed class NewRunOptionsButton : IRegisterable
 			.. ModEntry.Instance.CustomRunOptions.Select(o => o.MakeCustomRunSettings(options, g, config)),
 			ModEntry.Instance.ModSettingsApi.MakeBackButton(),
 		]);
-		options.subRoute = new WrapperRoute(ModEntry.Instance.ModSettingsApi.MakeModSettingsRoute(setting));
+		options.subRoute = new WrapperRoute { Wrapped = ModEntry.Instance.ModSettingsApi.MakeModSettingsRoute(setting) };
 	}
 
 	private static void NewRunOptions_RenderWarning_Prefix_First()
@@ -113,17 +113,26 @@ internal sealed class NewRunOptionsButton : IRegisterable
 		}
 	}
 
-	private sealed class WrapperRoute(Route route) : Route
+	private sealed class WrapperRoute : Route
 	{
+		public required Route? Wrapped;
+		
 		public override MusicState? GetMusic(G g)
 			=> Music.@void;
 
 		public override void Render(G g)
-			=> route.Render(g);
+		{
+			if (Wrapped is null)
+			{
+				g.CloseRoute(this);
+				return;
+			}
+			Wrapped.Render(g);
+		}
 
 		public override bool TryCloseSubRoute(G g, Route r, object? arg)
 		{
-			if (r != route)
+			if (r != Wrapped)
 				return base.TryCloseSubRoute(g, r, arg);
 
 			r.OnExit(g.state);
