@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.5.3
+Released 14 January 2026.
 
 * Fixed the submenus of the Custom settings menu keeping you captive.
 
