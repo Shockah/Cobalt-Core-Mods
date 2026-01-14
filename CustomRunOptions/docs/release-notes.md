@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the submenus of the Custom settings menu keeping you captive.
+
 ## 1.5.2
 Released 14 January 2026.
 

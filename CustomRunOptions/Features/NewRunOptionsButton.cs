@@ -132,12 +132,17 @@ internal sealed class NewRunOptionsButton : IRegisterable
 
 		public override bool TryCloseSubRoute(G g, Route r, object? arg)
 		{
-			if (r != Wrapped)
-				return base.TryCloseSubRoute(g, r, arg);
+			if (r == Wrapped)
+			{
+				r.OnExit(g.state);
+				g.CloseRoute(this, arg);
+				return true;
+			}
 
-			r.OnExit(g.state);
-			g.CloseRoute(this, arg);
-			return true;
+			if (Wrapped?.TryCloseSubRoute(g, r, arg) == true)
+				return true;
+			
+			return base.TryCloseSubRoute(g, r, arg);
 		}
 	}
 }
