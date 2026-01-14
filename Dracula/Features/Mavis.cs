@@ -21,6 +21,10 @@ internal sealed class MavisManager
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Transpiler))
 		);
 		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.ApplyAutododge)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_ApplyAutododge_Prefix))
+		);
+		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.GetIcon)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_GetIcon_Postfix))
 		);
@@ -83,6 +87,24 @@ internal sealed class MavisManager
 	{
 		if (@object is MavisStuff)
 			@object.pulse = 1;
+	}
+
+	private static bool AAttack_ApplyAutododge_Prefix(AAttack __instance, Combat c, Ship target, RaycastResult ray, ref bool __result)
+	{
+		if (ray.fromDrone)
+			return true;
+		if (!ray.hitDrone)
+			return true;
+		if (!c.stuff.TryGetValue(ray.worldX, out var @object))
+			return true;
+		if (@object is not MavisStuff mavis)
+			return true;
+
+		var owner = mavis.fromPlayer ? MG.inst.g.state.ship : c.otherShip;
+		var isMissing = owner.Get(ModEntry.Instance.MavisCharacter.MissingStatus.Status);
+
+		if (isMissing <= 1)
+			return true;
 	}
 
 	private static void AAttack_GetIcon_Postfix(AAttack __instance, ref Icon? __result)
