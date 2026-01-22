@@ -1,14 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <RootNamespace>Shockah.Wade</RootNamespace>
-        <Version>1.1.0</Version>
+        <RootNamespace>Shockah.Johanna</RootNamespace>
+        <Version>2.0.0-alpha1</Version>
     </PropertyGroup>
     <ItemGroup>
         <ModFiles Include="i18n/**" />
         <ModFiles Include="assets/**" />
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="assets\" />
     </ItemGroup>
     <Import Project="..\Configuration.Mod.props" />
 </Project>
