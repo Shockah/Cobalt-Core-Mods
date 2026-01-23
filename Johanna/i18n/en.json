@@ -1,3 +1,14 @@
 ﻿{
-	"": ""
+	"character": {
+		"name": "Johanna",
+		"description": [
+			"<c=56DF6A>JOHANNA</c>",
+			"Blah blah"
+		]
+	},
+	"card": {
+		"ShiftCluster": {
+			"name": "Shift Cluster"
+		}
+	}
 }
