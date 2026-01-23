@@ -41,6 +41,11 @@ internal sealed class ClusterMissile : Missile, IRegisterable
 	public int Count = 1;
 
 	private readonly List<Vec> StationaryPositionCache = [];
+
+	public ClusterMissile()
+	{
+		missileType = NormalType;
+	}
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -84,26 +89,26 @@ internal sealed class ClusterMissile : Missile, IRegisterable
 		StationaryPositionCache.Clear();
 		for (var i = 0; i < missilesToRender; i++)
 		{
-			var fi = 1.0 * i / (missilesToRender + 1);
-			var fx = (age / 2 + fi) % 1;
-			var fy = (age / 4 + fi) % 1;
-			var xx = Math.Sin(fx / Math.PI);
-			var yy = Math.Sin(fy / Math.PI);
+			var fi = 1.0 * i / missilesToRender;
+			var fx = (age + fi) / 1.5;
+			var fy = (age + fi) / 3;
+			var xx = Math.Cos(fx * Math.PI + Math.PI / 2) * 6;
+			var yy = Math.Cos(fy * Math.PI) * 12;
 			StationaryPositionCache.Add(new(xx, yy));
 		}
 		StationaryPositionCache.Sort((lhs, rhs) => lhs.y.CompareTo(rhs.y));
 		
-		// draw missiles
-		var mp = v + GetOffset(g, doRound: true);
-		foreach (var position in StationaryPositionCache)
-			DrawWithHilight(g, DB.missiles[missileType], mp + position);
-		
 		// draw exhausts
+		var mp = v + GetOffset(g, doRound: true);
 		var exhaustOffset = targetPlayer ? Vec.Zero : new Vec(0, 21);
 		var exhaustSprite = exhaustSprites.GetModulo((int)(g.state.time * 36 + x * 10));
-		var exhaustSpriteOrigin = mp + exhaustOffset + new Vec(7, 8);
+		var exhaustSpriteOrigin = exhaustOffset + new Vec(1, 4);
 		foreach (var position in StationaryPositionCache)
-			Draw.Sprite(exhaustSprite, mp.x + position.x, mp.y + position.y + exhaustSpriteOrigin.y + (targetPlayer ? 0 : 14), flipY: !targetPlayer, originRel: new(0, 1), color: missileData[missileType].exhaustColor);
+			Draw.Sprite(exhaustSprite, position.x + mp.x + exhaustSpriteOrigin.x, position.y + mp.y + exhaustSpriteOrigin.y + (targetPlayer ? 0 : 14), flipY: !targetPlayer, originRel: new(0, 1), color: missileData[missileType].exhaustColor);
+		
+		// draw missiles
+		foreach (var position in StationaryPositionCache)
+			DrawWithHilight(g, DB.missiles[missileType], mp + position);
 	}
 
 	public List<CardAction> GetActionsOnSpent(State state, Combat combat, int hitWorldX)

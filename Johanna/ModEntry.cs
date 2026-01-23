@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
+using Shockah.Shared;
 
 namespace Shockah.Johanna;
 
@@ -16,9 +18,13 @@ public sealed class ModEntry : SimpleMod
 	internal readonly ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations;
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
-	internal IDeckEntry WadeDeck { get; }
+	internal readonly ISpriteEntry CommonCardFrame;
+	internal readonly ISpriteEntry UncommonCardFrame;
+	internal readonly ISpriteEntry RareCardFrame;
+	internal readonly IDeckEntry JohannaDeck;
 
 	private static readonly IReadOnlyList<Type> CommonCardTypes = [
+		typeof(ShiftClusterCard),
 	];
 
 	private static readonly IReadOnlyList<Type> UncommonCardTypes = [
@@ -70,17 +76,70 @@ public sealed class ModEntry : SimpleMod
 		this.Localizations = new MissingPlaceholderLocalizationProvider<IReadOnlyList<string>>(
 			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
 		);
-		
-		WadeDeck = helper.Content.Decks.RegisterDeck("Wade", new()
+
+		CommonCardFrame = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png"));
+		UncommonCardFrame = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrameUncommon.png"));
+		RareCardFrame = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrameRare.png"));
+		JohannaDeck = helper.Content.Decks.RegisterDeck("Wade", new()
 		{
 			Definition = new() { color = new("56DF6A"), titleColor = Colors.white },
 			DefaultCardArt = StableSpr.cards_colorless,
-			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
+			BorderSprite = CommonCardFrame.Sprite,
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize,
 			ShineColorOverride = args => DB.decks[args.Card.GetMeta().deck].color.normalize().gain(0.5),
 		});
 
 		foreach (var type in RegisterableTypes)
 			AccessTools.DeclaredMethod(type, nameof(IRegisterable.Register))?.Invoke(null, [package, helper]);
+		
+		helper.Content.Characters.V2.RegisterPlayableCharacter("Wade", new()
+		{
+			Deck = JohannaDeck.Deck,
+			Description = this.AnyLocalizations.Bind(["character", "description"]).Localize,
+			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CharacterFrame.png")).Sprite,
+			NeutralAnimation = new()
+			{
+				CharacterType = JohannaDeck.UniqueName,
+				LoopTag = "neutral",
+				Frames = package.PackageRoot.GetRelativeDirectory("assets/Character/Neutral")
+					.GetSequentialFiles(i => $"{i}.png")
+					.Select(f => helper.Content.Sprites.RegisterSprite(f).Sprite)
+					.ToList()
+			},
+			MiniAnimation = new()
+			{
+				CharacterType = JohannaDeck.UniqueName,
+				LoopTag = "mini",
+				Frames = [
+					helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Character/Mini.png")).Sprite
+				]
+			},
+			Starters = new()
+			{
+				cards = [
+					new ShiftClusterCard(),
+				],
+			},
+			// ExeCardType = typeof(WadeExeCard),
+		});
+		
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
+		{
+			CharacterType = JohannaDeck.UniqueName,
+			LoopTag = "gameover",
+			Frames = package.PackageRoot.GetRelativeDirectory("assets/Character/GameOver")
+				.GetSequentialFiles(i => $"{i}.png")
+				.Select(f => helper.Content.Sprites.RegisterSprite(f).Sprite)
+				.ToList()
+		});
+	}
+
+	internal static Rarity GetCardRarity(Type type)
+	{
+		if (RareCardTypes.Contains(type))
+			return Rarity.rare;
+		if (UncommonCardTypes.Contains(type))
+			return Rarity.uncommon;
+		return Rarity.common;
 	}
 }
