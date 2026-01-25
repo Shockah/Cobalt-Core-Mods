@@ -109,6 +109,12 @@ internal sealed class CardMarkers : IRegisterable
 		[UsedImplicitly] Cross,
 		[UsedImplicitly] Star,
 		[UsedImplicitly] Triangle,
+		[UsedImplicitly] ParallelogramV,
+		[UsedImplicitly] Heart,
+		[UsedImplicitly] Lightning,
+		[UsedImplicitly] RotatedHourglass,
+		[UsedImplicitly] Teardrop,
+		[UsedImplicitly] ParallelogramH,
 		[UsedImplicitly] Rhombus,
 		[UsedImplicitly] RotatedSquare,
 		[UsedImplicitly] Square,
@@ -281,9 +287,10 @@ internal sealed class CardMarkers : IRegisterable
 			var markerColor = i < MarkerColors.Length ? MarkerColors[i] : DB.decks[g.state.characters[i - MarkerColors.Length].deckType ?? Deck.colorless].color;
 			var isSelected = selectedColorIndex == i;
 			
-			var colorBox = g.Push(new UIKey(CardMarkerColorUk, i), new Rect(87, 54 + i * 9, 8, 8), onMouseDown: __instance);
+			var colorBox = g.Push(new UIKey(CardMarkerColorUk, i), new Rect(87, 54 + i * 9, 9, 9), onMouseDown: __instance);
 			
-			Draw.Rect(colorBox.rect.x, colorBox.rect.y, colorBox.rect.w, colorBox.rect.h, markerColor.fadeAlpha(isSelected ? 1 : 0.5));
+			Draw.Rect(colorBox.rect.x, colorBox.rect.y, colorBox.rect.w, colorBox.rect.h, Colors.black);
+			Draw.Rect(colorBox.rect.x + 1, colorBox.rect.y + 1, colorBox.rect.w - 2, colorBox.rect.h - 2, markerColor.fadeAlpha(isSelected ? 1 : 0.5));
 
 			if (colorBox.IsHover())
 				g.tooltips.Add(new Vec(colorBox.rect.x2 + 4, colorBox.rect.y), new GlossaryTooltip($"{ModEntry.Instance.Package.Manifest.UniqueName}::{MethodBase.GetCurrentMethod()!.DeclaringType!.Name}")
@@ -303,7 +310,7 @@ internal sealed class CardMarkers : IRegisterable
 		{
 			var isSelected = selectedMarkerType == markerType;
 			
-			var markerBox = g.Push(new UIKey(CardMarkerTypeUk, (int)markerType), new Rect(96, 54 + index * 11, 9, 9), onMouseDown: __instance);
+			var markerBox = g.Push(new UIKey(CardMarkerTypeUk, (int)markerType), new Rect(96, 54 + index * 9, 9, 9), onMouseDown: __instance);
 			
 			Draw.Sprite(MarkerIcons[markerType].Sprite, markerBox.rect.x, markerBox.rect.y, color: selectedColor.fadeAlpha(isSelected ? 1 : 0.5));
 			
