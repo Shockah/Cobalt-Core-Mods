@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Card markers no longer render on cards which are currently animating in or out.
 * The card markers feature is now disabled by default.
 * The lane dividers feature is now disabled by default.
 

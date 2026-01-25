@@ -406,6 +406,8 @@ internal sealed class CardMarkers : IRegisterable
 
 	private static void Card_Render_Postfix(Card __instance, G g, Vec? posOverride)
 	{
+		if (__instance.drawAnim < 1)
+			return;
 		if (!ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.IsEnabled && !ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.AutoMarkCharacterCards)
 			return;
 		if (__instance.GetMarkers(true) is not { } markers)
