@@ -21,7 +21,7 @@ internal sealed partial class ProfileSettings
 	internal sealed class CardMarkerSettings
 	{
 		[JsonProperty]
-		public bool IsEnabled = true;
+		public bool IsEnabled;
 		
 		[JsonProperty]
 		public bool AutoMarkCharacterCards;
@@ -30,69 +30,75 @@ internal sealed partial class ProfileSettings
 
 file static class CardBrowseExt
 {
-	public static CardMarkers.MarkerType? GetSelectedMarkerType(this CardBrowse route)
-		=> ModEntry.Instance.Helper.ModData.GetOptionalModData<CardMarkers.MarkerType>(route, "SelectedMarkerType");
-	
-	public static void SetSelectedMarkerType(this CardBrowse route, CardMarkers.MarkerType? markerType)
-		=> ModEntry.Instance.Helper.ModData.SetOptionalModData(route, "SelectedMarkerType", markerType);
+	extension(CardBrowse route)
+	{
+		public CardMarkers.MarkerType? GetSelectedMarkerType()
+			=> ModEntry.Instance.Helper.ModData.GetOptionalModData<CardMarkers.MarkerType>(route, "SelectedMarkerType");
 
-	public static int GetSelectedColorIndex(this CardBrowse route)
-		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(route, "SelectedColorIndex");
-	
-	public static void SetSelectedColorIndex(this CardBrowse route, int colorIndex)
-		=> ModEntry.Instance.Helper.ModData.SetModData(route, "SelectedColorIndex", colorIndex);
+		public void SetSelectedMarkerType(CardMarkers.MarkerType? markerType)
+			=> ModEntry.Instance.Helper.ModData.SetOptionalModData(route, "SelectedMarkerType", markerType);
 
-	public static bool IsClearMarkersSelected(this CardBrowse route)
-		=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(route, "IsClearMarkersSelected");
+		public int GetSelectedColorIndex()
+			=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(route, "SelectedColorIndex");
 
-	public static void ToggleClearMarkersSelected(this CardBrowse route)
-		=> ModEntry.Instance.Helper.ModData.SetModData(route, "IsClearMarkersSelected", !route.IsClearMarkersSelected());
+		public void SetSelectedColorIndex(int colorIndex)
+			=> ModEntry.Instance.Helper.ModData.SetModData(route, "SelectedColorIndex", colorIndex);
+
+		public bool IsClearMarkersSelected()
+			=> ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(route, "IsClearMarkersSelected");
+
+		public void ToggleClearMarkersSelected()
+			=> ModEntry.Instance.Helper.ModData.SetModData(route, "IsClearMarkersSelected", !route.IsClearMarkersSelected());
+	}
 }
 
 file static class CardExt
 {
-	public static List<CardMarkers.Marker>? GetMarkers(this Card card, bool withAutoMarkers)
+	extension(Card card)
 	{
-		var markers = ModEntry.Instance.Helper.ModData.GetOptionalModData<List<CardMarkers.Marker>>(card, "Markers");
-		
-		if (withAutoMarkers && ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.AutoMarkCharacterCards)
+		public List<CardMarkers.Marker>? GetMarkers(bool withAutoMarkers)
 		{
-			var cardDeck = card.GetMeta().deck;
-			var index = MG.inst.g.state.characters.FindIndex(character => character.deckType == cardDeck);
-			if (index != -1)
+			var markers = ModEntry.Instance.Helper.ModData.GetOptionalModData<List<CardMarkers.Marker>>(card, "Markers");
+		
+			if (withAutoMarkers && ModEntry.Instance.Settings.ProfileBased.Current.CardMarkers.AutoMarkCharacterCards)
 			{
-				var marker = new CardMarkers.Marker(Enum.GetValues<CardMarkers.MarkerType>()[index], DB.decks[cardDeck].color.ToString());
-				if (markers is null || !markers.Contains(marker))
-					markers = [.. markers ?? [], marker];
+				var cardDeck = card.GetMeta().deck;
+				var index = MG.inst.g.state.characters.FindIndex(character => character.deckType == cardDeck);
+				if (index != -1)
+				{
+					var marker = new CardMarkers.Marker(Enum.GetValues<CardMarkers.MarkerType>()[index], DB.decks[cardDeck].color.ToString());
+					if (markers is null || !markers.Contains(marker))
+						markers = [.. markers ?? [], marker];
+				}
+			}
+
+			return markers;
+		}
+
+		public void ToggleMarker(CardMarkers.MarkerType markerType, Color color)
+		{
+			var marker = new CardMarkers.Marker(markerType, color.ToString());
+		
+			if (ModEntry.Instance.Helper.ModData.GetOptionalModData<List<CardMarkers.Marker>>(card, "Markers") is { } markers)
+			{
+				var index = markers.IndexOf(marker);
+				if (index == -1)
+					markers.Add(marker);
+				else
+					markers.RemoveAt(index);
+			
+				while (markers.Count > CardMarkers.MaxMarkers)
+					markers.RemoveAt(0);
+			}
+			else
+			{
+				ModEntry.Instance.Helper.ModData.SetOptionalModData<List<CardMarkers.Marker>>(card, "Markers", [marker]);
 			}
 		}
 
-		return markers;
+		public void ClearMarkers()
+			=> ModEntry.Instance.Helper.ModData.RemoveModData(card, "Markers");
 	}
-
-	public static void ToggleMarker(this Card card, CardMarkers.MarkerType markerType, Color color)
-	{
-		var marker = new CardMarkers.Marker(markerType, color.ToString());
-		
-		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<List<CardMarkers.Marker>>(card, "Markers") is { } markers)
-		{
-			var index = markers.IndexOf(marker);
-			if (index == -1)
-				markers.Add(marker);
-			else
-				markers.RemoveAt(index);
-			
-			while (markers.Count > CardMarkers.MaxMarkers)
-				markers.RemoveAt(0);
-		}
-		else
-		{
-			ModEntry.Instance.Helper.ModData.SetOptionalModData<List<CardMarkers.Marker>>(card, "Markers", [marker]);
-		}
-	}
-
-	public static void ClearMarkers(this Card card)
-		=> ModEntry.Instance.Helper.ModData.RemoveModData(card, "Markers");
 }
 
 internal sealed class CardMarkers : IRegisterable

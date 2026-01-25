@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* The card markers feature is now disabled by default.
+
 ## 1.3.2
 Released 3 December 2025.
 
