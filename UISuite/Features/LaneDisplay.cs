@@ -20,7 +20,7 @@ internal sealed partial class ProfileSettings
 	internal sealed class LaneDisplaySettings
 	{
 		[JsonProperty]
-		public bool IsEnabled = true;
+		public bool IsEnabled;
 		
 		[JsonProperty]
 		public LaneDisplayStyle InactiveDisplayStyle = LaneDisplayStyle.SoftStriped;
