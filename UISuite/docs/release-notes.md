@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.4.0
+Released 25 January 2026.
 
 * Added more card marker symbols.
 * Card markers no longer render on cards which are currently animating in or out.
