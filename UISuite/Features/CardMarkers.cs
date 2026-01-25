@@ -469,7 +469,8 @@ internal sealed class CardMarkers : IRegisterable
 		if (g.boxes.FirstOrDefault(b => b.key == uiKey) is not { } box)
 			return;
 
-		var marker = new Marker(Enum.GetValues<MarkerType>()[index], DB.decks[deckType].color.ToString());
+		var allMarkerTypes = Enum.GetValues<MarkerType>();
+		var marker = new Marker(allMarkerTypes[index % allMarkerTypes.Length], DB.decks[deckType].color.ToString());
 		RenderMarker(marker, new Vec(box.rect.x + (mini ? 4 : 6), box.rect.y2 - 2 - 9));
 	}
 }

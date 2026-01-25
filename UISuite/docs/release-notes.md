@@ -8,6 +8,7 @@
 * Card markers no longer render on cards which are currently animating in or out.
 * The card markers feature is now disabled by default.
 * The lane dividers feature is now disabled by default.
+* Fixed a crash when the "auto mark character cards" setting was enabled with too many characters on the ship (the finale, or particular modded ships).
 
 ## 1.3.2
 Released 3 December 2025.
