@@ -2,6 +2,11 @@
 
 # Release notes
 
+## Upcoming release
+
+### Agni
+* Added a visual effect to cards that can still be played with Agni's artifact.
+
 ## 1.3.1
 Released 12 January 2026.
 
