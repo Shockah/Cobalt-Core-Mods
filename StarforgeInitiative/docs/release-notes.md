@@ -5,6 +5,7 @@
 ## Upcoming release
 
 ### Agni
+* Overloading a card now sets you down to 0 energy, instead of making the play free.
 * Added a visual effect to cards that can still be played with Agni's artifact.
 
 ## 1.3.1

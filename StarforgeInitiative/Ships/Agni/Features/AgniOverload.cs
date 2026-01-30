@@ -223,7 +223,7 @@ internal sealed class AgniOverload : IRegisterable
 				return false;
 		}
 
-		cost = 0;
+		cost = combat.energy;
 		actuallyExhaust = false;
 		ModEntry.Instance.Helper.Content.Cards.SetCardTraitOverride(state, card, ModEntry.Instance.Helper.Content.Cards.UnplayableCardTrait, true, false);
 		
