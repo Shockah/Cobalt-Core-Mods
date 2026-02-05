@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed the Perspective Change card's UI missing some text.
+
 ## 1.3.5
 Released 7 August 2025.
 

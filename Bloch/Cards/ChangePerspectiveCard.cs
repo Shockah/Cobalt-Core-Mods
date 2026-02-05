@@ -12,6 +12,9 @@ namespace Shockah.Bloch;
 
 internal sealed class ChangePerspectiveCard : Card, IRegisterable
 {
+	private static readonly UK ConvertChoiceUK = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
+	private static readonly UK ConvertDoneUK = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
+	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
@@ -58,15 +61,13 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 
 	private sealed class CardRoute : Route
 	{
-		private const UK ChoiceKey = (UK)2137521;
-
-		public List<(Status Status, int Amount)> ConvertFrom = [
+		private static readonly List<(Status Status, int Amount)> ConvertFrom = [
 			(AuraManager.VeilingStatus.Status, 1),
 			(AuraManager.FeedbackStatus.Status, 1),
 			(AuraManager.InsightStatus.Status, 1),
 		];
 
-		public List<(Status Status, int Amount)> ConvertTo = [
+		private static readonly List<(Status Status, int Amount)> ConvertTo = [
 			(AuraManager.IntensifyStatus.Status, 2),
 			(AuraManager.VeilingStatus.Status, 3),
 			(AuraManager.FeedbackStatus.Status, 3),
@@ -94,19 +95,38 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 				return;
 			}
 
-			int centerX = 240;
-			int topY = 80;
+			const int centerX = 240;
+			const int topY = 80;
 
-			int choiceWidth = 56;
-			int choiceHeight = 24;
-			int choiceSpacing = 4;
-			int actionSpacing = 4;
-			int actionYOffset = 7;
-			int actionHoverYOffset = 1;
+			const int choiceWidth = 56;
+			const int choiceHeight = 24;
+			const int choiceSpacing = 4;
+			const int actionSpacing = 4;
+			const int actionYOffset = 7;
+			const int actionHoverYOffset = 1;
 
 			SharedArt.DrawEngineering(g);
 
 			Draw.Text(ModEntry.Instance.Localizations.Localize((["card", "ChangePerspective", "uiTitle"])), centerX, topY, font: DB.stapler, color: Colors.textMain, align: TAlign.Center);
+
+			RenderChoices(ConvertFrom, () => ConvertFromSelected, i => g.state.ship.Get(ConvertFrom[i].Status) < ConvertFrom[i].Amount, i => ConvertFromSelected = i, 0);
+			RenderChoices(ConvertTo, () => ConvertToSelected, _ => false, i => ConvertToSelected = i, 60);
+
+			{
+				var rect = new Rect(centerX - 14, topY + 55, 33, 24);
+				RotatedButtonSprite(g, rect, StableUK.btn_move_right, StableSpr.buttons_move, StableSpr.buttons_move_on, flipX: false, noHover: true);
+			}
+
+			var inactive = ConvertFromSelected is not { } convertFrom || ConvertToSelected is not { } convertTo || g.state.ship.Get(ConvertFrom[convertFrom].Status) < ConvertFrom[convertFrom].Amount || ConvertFrom[convertFrom].Status == ConvertTo[convertTo].Status;
+			SharedArt.ButtonText(
+				g,
+				new Vec(210, 205),
+				ConvertDoneUK,
+				ModEntry.Instance.Localizations.Localize(["card", "ChangePerspective", "doneButton"]),
+				boxColor: inactive ? Colors.buttonInactive : null,
+				inactive: inactive,
+				onMouseDown: new MouseDownHandler(() => OnFinishChoosing(g))
+			);
 
 			void RenderChoices(List<(Status Status, int Amount)> choices, Func<int?> isSelected, Func<int, bool> inactiveGetter, Action<int> choiceSetter, int y)
 			{
@@ -124,14 +144,14 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 
 					var buttonRect = new Rect(choiceStartX, choiceTopY + y, choiceWidth, choiceHeight);
 					var buttonResult = SharedArt.ButtonText(
-						g, Vec.Zero, new UIKey(ChoiceKey, y * 10 + i), "", rect: buttonRect,
+						g, Vec.Zero, new UIKey(ConvertChoiceUK, y * 10 + i), "", rect: buttonRect,
 						inactive: inactive,
 						onMouseDown: new MouseDownHandler(() => choiceSetter(ii)),
 						boxColor: inactive ? Colors.buttonInactive : Colors.buttonBoxNormal,
 						showAsPressed: selected
 					);
 
-					var isHover = g.boxes.FirstOrDefault(b => b.key == new UIKey(ChoiceKey, y * 10 + i))?.IsHover() == true;
+					var isHover = g.boxes.FirstOrDefault(b => b.key == new UIKey(ConvertChoiceUK, y * 10 + i))?.IsHover() == true;
 					if (isHover)
 						g.tooltips.Add(new Vec(buttonRect.x + buttonRect.w, buttonRect.y + buttonRect.h), StatusMeta.GetTooltips(choice.Status, choice.Amount));
 
@@ -144,25 +164,6 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 					g.Pop();
 				}
 			}
-
-			RenderChoices(ConvertFrom, () => ConvertFromSelected, i => g.state.ship.Get(ConvertFrom[i].Status) < ConvertFrom[i].Amount, i => ConvertFromSelected = i, 0);
-			RenderChoices(ConvertTo, () => ConvertToSelected, _ => false, i => ConvertToSelected = i, 60);
-
-			{
-				var rect = new Rect(centerX - 14, topY + 55, 33, 24);
-				RotatedButtonSprite(g, rect, StableUK.btn_move_right, StableSpr.buttons_move, StableSpr.buttons_move_on, flipX: false, noHover: true);
-			}
-
-			var inactive = ConvertFromSelected is not { } convertFrom || ConvertToSelected is not { } convertTo || g.state.ship.Get(ConvertFrom[convertFrom].Status) < ConvertFrom[convertFrom].Amount || ConvertFrom[convertFrom].Status == ConvertTo[convertTo].Status;
-			SharedArt.ButtonText(
-				g,
-				new Vec(210, 205),
-				(UIKey)(UK)21375001,
-				ModEntry.Instance.Localizations.Localize(["route", "MultiCardBrowse", "doneButton"]),
-				boxColor: inactive ? Colors.buttonInactive : null,
-				inactive: inactive,
-				onMouseDown: new MouseDownHandler(() => OnFinishChoosing(g))
-			);
 		}
 
 		private void OnFinishChoosing(G g)
