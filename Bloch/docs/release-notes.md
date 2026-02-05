@@ -4,6 +4,11 @@
 
 ## Upcoming release
 
+* Buffed the Focus card.
+* Technically buffed the Reality Bending card by making it Scry first.
+* Changed the Feedback B card: grants more Veiling Aura, grants Intensify, but no longer grants Temp Shield.
+* Reduced the cost of the Intrusive Thought and Intrusive Thought A cards - although the card is still unplayable, so it is unlikely to matter much.
+* Replaced Infinite with Finite 3 on the Focus, Focus A and Perspective Change B cards to make sure they cannot win the game by themselves.
 * Fixed the Perspective Change card's UI missing some text.
 
 ## 1.3.5

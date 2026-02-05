@@ -38,7 +38,7 @@ internal sealed class FeedbackCard : Card, IRegisterable
 				{
 					targetPlayer = true,
 					status = AuraManager.FeedbackStatus.Status,
-					statusAmount = 2
+					statusAmount = 3
 				},
 				new AStatus
 				{
@@ -49,8 +49,8 @@ internal sealed class FeedbackCard : Card, IRegisterable
 				new AStatus
 				{
 					targetPlayer = true,
-					status = Status.tempShield,
-					statusAmount = 2
+					status = AuraManager.IntensifyStatus.Status,
+					statusAmount = 1
 				}
 			],
 			Upgrade.A => [

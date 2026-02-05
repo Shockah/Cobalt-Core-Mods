@@ -25,26 +25,23 @@ internal sealed class RealityBendingCard : Card, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> new()
-		{
-			cost = upgrade == Upgrade.A ? 0 : 1
-		};
+		=> new() { cost = upgrade == Upgrade.A ? 0 : 1 };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			ModEntry.Instance.Api.MakeChooseAura(
-				card: this,
-				amount: upgrade == Upgrade.B ? 2 : 1
-			),
+			new ScryAction
+			{
+				Amount = upgrade == Upgrade.B ? 3 : 2
+			},
 			new AStatus
 			{
 				targetPlayer = true,
 				status = AuraManager.IntensifyStatus.Status,
 				statusAmount = 1
 			},
-			new ScryAction
-			{
-				Amount = upgrade == Upgrade.B ? 3 : 2
-			}
+			ModEntry.Instance.Api.MakeChooseAura(
+				card: this,
+				amount: upgrade == Upgrade.B ? 2 : 1
+			)
 		];
 }

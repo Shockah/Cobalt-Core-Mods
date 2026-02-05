@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace Shockah.Bloch;
 
-internal sealed class ChangePerspectiveCard : Card, IRegisterable
+internal sealed class ChangePerspectiveCard : Card, IRegisterable, IHasCustomCardTraits
 {
 	private static readonly UK ConvertChoiceUK = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
 	private static readonly UK ConvertDoneUK = ModEntry.Instance.Helper.Utilities.ObtainEnumCase<UK>();
@@ -35,8 +35,14 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable
 		=> new()
 		{
 			cost = upgrade == Upgrade.A ? 0 : 1,
-			infinite = upgrade == Upgrade.B,
 			description = ModEntry.Instance.Localizations.Localize(["card", "ChangePerspective", "description"], new { ConvertToAuraAmount = 3, ConvertToIntensifyAmount = 2 }),
+		};
+
+	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
+		=> upgrade switch
+		{
+			Upgrade.B => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Finite.Trait },
+			_ => new HashSet<ICardTraitEntry>(),
 		};
 
 	public override List<CardAction> GetActions(State s, Combat c)

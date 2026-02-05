@@ -27,7 +27,7 @@ internal sealed class IntrusiveThoughtCard : Card, IRegisterable
 	public override CardData GetData(State state)
 		=> new()
 		{
-			cost = upgrade == Upgrade.B ? 0 : 1,
+			cost = 0,
 			retain = true,
 			recycle = upgrade == Upgrade.B,
 			unplayable = upgrade != Upgrade.B
