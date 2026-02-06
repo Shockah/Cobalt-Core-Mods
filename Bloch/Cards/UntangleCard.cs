@@ -20,7 +20,7 @@ internal sealed class UntangleCard : Card, IRegisterable
 				rarity = ModEntry.GetCardRarity(MethodBase.GetCurrentMethod()!.DeclaringType!),
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Untangle.png"), StableSpr.cards_FumeCannon).Sprite,
+			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Untangle.png"), StableSpr.cards_ColorlessTrash).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Untangle", "name"]).Localize
 		});
 	}
