@@ -31,9 +31,9 @@ public sealed class ModEntry : SimpleMod
 		typeof(FocusCard),
 		typeof(InsightCard),
 		typeof(OptCard),
-		typeof(PsionicShieldCard),
 		typeof(PrismaticAuraCard),
 		typeof(PsychicDamageCard),
+		typeof(UnlockedPotentialCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> UncommonCardTypes = [
