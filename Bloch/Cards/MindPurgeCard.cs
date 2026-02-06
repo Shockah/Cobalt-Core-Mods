@@ -77,7 +77,7 @@ internal sealed class MindPurgeCard : Card, IRegisterable
 	{
 		public int ExtraCards;
 
-		public override string? GetCardSelectText(State s)
+		public override string GetCardSelectText(State s)
 			=> ModEntry.Instance.Localizations.Localize(["card", "MindPurge", "browseText"]);
 
 		public override void Begin(G g, State s, Combat c)

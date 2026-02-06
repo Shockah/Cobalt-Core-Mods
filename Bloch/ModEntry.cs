@@ -52,6 +52,7 @@ public sealed class ModEntry : SimpleMod
 		typeof(IntrusiveThoughtCard),
 		typeof(MindMapCard),
 		typeof(SplitPersonalityCard),
+		typeof(UntangleCard),
 	];
 
 	internal static readonly IEnumerable<Type> AllCardTypes
@@ -60,6 +61,7 @@ public sealed class ModEntry : SimpleMod
 			.. UncommonCardTypes,
 			.. RareCardTypes,
 			typeof(BlochExeCard),
+			typeof(ThoughtCard),
 		];
 
 	internal static readonly IReadOnlyList<Type> CommonArtifacts = [

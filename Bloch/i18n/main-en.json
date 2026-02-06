@@ -191,6 +191,27 @@
 	    "UnlockedPotential": {
 		    "name": "Unlocked Potential"
 	    },
+	    "Untangle": {
+		    "name": "Untangle",
+		    "description": {
+			    "None": {
+				    "normal": "<c=action>Scry 2</c> <c=5f5f5f>/ Discard a card</c>. <c=action>On Discard</c>, put a <c=card>Thought</c> in your hand.",
+				    "flipped": "<c=5f5f5f>Scry 2 /</c> Discard a card. <c=action>On Discard</c>, put a <c=card>Thought</c> in your hand."
+			    },
+			    "A": {
+				    "normal": "<c=action>Scry 2</c> <c=5f5f5f>/ Discard a card</c>. <c=action>On Discard</c>, put a <c=card>Thought A</c> in your hand.",
+				    "flipped": "<c=5f5f5f>Scry 2 /</c> Discard a card. <c=action>On Discard</c>, put a <c=card>Thought A</c> in your hand."
+			    },
+			    "B": {
+				    "normal": "<c=action>Scry 3</c> <c=5f5f5f>/ Discard 2 cards</c>. <c=action>On Discard</c>, put a <c=card>Thought</c> in your hand.",
+				    "flipped": "<c=5f5f5f>Scry 3 /</c> Discard 2 cards. <c=action>On Discard</c>, put a <c=card>Thought</c> in your hand."
+			    }
+		    },
+		    "browseText": {
+			    "single": "Choose a card to discard.",
+			    "multiple": "Choose {{Count}} cards to discard.",
+		    }
+	    },
 
 
         "BlochExe": {
@@ -200,7 +221,10 @@
                 "A": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=C2FF60>Bloch</c> cards to your hand.",
                 "B": "Add 1 of {{Count}} <c=cardtrait>discount, temp</c> <c=C2FF60>Bloch</c> cards to your hand."
             }
-        }
+        },
+	    "Thought": {
+		    "name": "Thought"
+	    }
     },
     "integration": {
         "palette": [
