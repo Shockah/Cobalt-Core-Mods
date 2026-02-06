@@ -74,9 +74,12 @@ internal sealed class DigressionCard : Card, IRegisterable
 			for (var i = c.hand.Count - 1; i >= 0; i--)
 			{
 				var card = c.hand[i];
+				var pos = card.pos;
+				c.hand.RemoveAt(i);
 				card.waitBeforeMoving = i * 0.05;
 				card.OnDiscard(s, c);
 				s.SendCardToDeck(card);
+				card.pos = pos;
 			}
 		}
 	}
