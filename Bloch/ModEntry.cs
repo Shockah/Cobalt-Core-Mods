@@ -26,7 +26,6 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry BlochDeck { get; }
 
 	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
-		typeof(AttentionSpanCard),
 		typeof(DistressCard),
 		typeof(FeedbackCard),
 		typeof(FocusCard),
@@ -43,15 +42,12 @@ public sealed class ModEntry : SimpleMod
 		typeof(MindBlastCard),
 		typeof(MindPurgeCard),
 		typeof(OutburstCard),
-		typeof(OverstimulationCard),
 		typeof(RealityBendingCard),
 	];
 
 	internal static readonly IReadOnlyList<Type> RareCardTypes = [
-		typeof(CalmCard),
 		typeof(IntrusiveThoughtCard),
 		typeof(MindMapCard),
-		typeof(EmotionalDamageCard),
 		typeof(SplitPersonalityCard),
 	];
 
@@ -68,7 +64,6 @@ public sealed class ModEntry : SimpleMod
 		typeof(LastingInsightArtifact),
 		typeof(LongTermMemoryArtifact),
 		typeof(MuscleMemoryArtifact),
-		typeof(UnlockedPotentialArtifact),
 		//typeof(VainMemoriesArtifact),
 	];
 

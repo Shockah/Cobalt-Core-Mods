@@ -107,22 +107,12 @@
             "name": "MUSCLE MEMORY",
             "description": "<c=action>On Discard</c> effects trigger twice."
         },
-        "UnlockedPotential": {
-            "name": "UNLOCKED POTENTIAL",
-            "description": "<c=action>Impulsive</c> effects now also trigger when a card is played."
-        },
         "VainMemories": {
             "name": "VAIN MEMORIES",
             "description": "Gain 1 <c=status>ENERGY FRAGMENT</c> whenever you discard a card during your turn without playing it."
         }
     },
     "card": {
-        "AttentionSpan": {
-            "name": "Attention Span"
-        },
-        "Calm": {
-            "name": "Calm"
-        },
         "ChangePerspective": {
             "name": "Perspective Change",
             "description": "Convert any <c=C2FF60>Aura</c> into {{ConvertToIntensifyAmount}} <c=status>intensify</c> or {{ConvertToAuraAmount}} of a different <c=C2FF60>Aura</c>.",
@@ -134,9 +124,6 @@
         },
         "Distress": {
             "name": "Distress"
-        },
-        "EmotionalDamage": {
-            "name": "Emotional Damage"
         },
         "Feedback": {
             "name": "Feedback"
@@ -175,9 +162,6 @@
         },
         "Outburst": {
             "name": "Outburst"
-        },
-        "Overstimulation": {
-            "name": "Over-stimulation"
         },
         "PrismaticAura": {
             "name": "Prismatic Aura",
