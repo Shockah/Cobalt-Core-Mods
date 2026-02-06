@@ -26,6 +26,7 @@ public sealed class ModEntry : SimpleMod
 	internal IDeckEntry BlochDeck { get; }
 
 	internal static readonly IReadOnlyList<Type> CommonCardTypes = [
+		typeof(ApproachShiftCard),
 		typeof(DistressCard),
 		typeof(FeedbackCard),
 		typeof(FocusCard),

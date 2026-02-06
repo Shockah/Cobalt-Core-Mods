@@ -17,7 +17,7 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable, IHasCustomCar
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
+		var entry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
@@ -29,6 +29,8 @@ internal sealed class ChangePerspectiveCard : Card, IRegisterable, IHasCustomCar
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/ChangePerspective.png"), StableSpr.cards_CloudSave).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "ChangePerspective", "name"]).Localize
 		});
+		
+		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, Upgrade.B, 3);
 	}
 
 	public override CardData GetData(State state)
