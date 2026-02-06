@@ -160,6 +160,9 @@
             },
             "browseText": "Choose cards to discard."
         },
+	    "OnYourMind": {
+		    "name": "On Your Mind"
+	    },
         "Opt": {
             "name": "Opt"
         },
