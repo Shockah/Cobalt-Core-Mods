@@ -16,7 +16,7 @@ internal sealed class ApproachShiftCard : Card, IRegisterable, IHasCustomCardTra
 		LeftSprite = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/ApproachShiftLeft.png"), StableSpr.cards_ScootLeft).Sprite;
 		RightSprite = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/ApproachShiftRight.png"), StableSpr.cards_ScootRight).Sprite;
 		
-		var entry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
+		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
@@ -28,8 +28,6 @@ internal sealed class ApproachShiftCard : Card, IRegisterable, IHasCustomCardTra
 			Art = RightSprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "ApproachShift", "name"]).Localize
 		});
-		
-		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, Upgrade.B, 2);
 	}
 
 	public override CardData GetData(State state)
@@ -37,15 +35,16 @@ internal sealed class ApproachShiftCard : Card, IRegisterable, IHasCustomCardTra
 		var data = new CardData { cost = 0, flippable = true, art = flipped ? LeftSprite : RightSprite };
 		return upgrade switch
 		{
-			Upgrade.A => data with { retain = true },
-			_ => data,
+			Upgrade.B => data,
+			Upgrade.A => data with { exhaust = true, retain = true },
+			_ => data with { exhaust = true },
 		};
 	}
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> upgrade switch
 		{
-			Upgrade.B => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Finite.Trait },
+			Upgrade.B => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Fleeting.Trait },
 			_ => new HashSet<ICardTraitEntry>(),
 		};
 
