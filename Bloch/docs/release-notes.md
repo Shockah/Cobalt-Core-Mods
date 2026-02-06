@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Reworked the Outburst card.
 * Buffed the Focus card.
 * Technically buffed the Reality Bending card by making it Scry first.
 * Changed the Feedback B card: grants more Veiling Aura, grants Intensify, but no longer grants Temp Shield.

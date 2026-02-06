@@ -116,6 +116,7 @@ public sealed class ModEntry : SimpleMod
 		);
 
 		_ = new AuraManager();
+		_ = new DiscardedVariableHintManager();
 		_ = new DiscardSideManager();
 		_ = new InfiniteCharacterAnimationManager();
 		_ = new IntuitionManager();

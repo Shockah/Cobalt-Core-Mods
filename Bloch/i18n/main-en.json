@@ -39,7 +39,11 @@
                 "Left": "Discard <c=boldPink>{{Amount}}</c> leftmost cards.",
                 "Right": "Discard <c=boldPink>{{Amount}}</c> rightmost cards."
             }
-        }
+        },
+	    "DiscardedVariableHint": {
+		    "stateful": "<c=action>X</c> = The amount of cards you have discarded this combat (<c=boldPink>{{Count}}</c>).",
+		    "stateless": "<c=action>X</c> = The amount of cards you have discarded this combat."
+	    }
     },
     "status": {
         "Veiling": {
@@ -170,19 +174,7 @@
             "name": "Opt"
         },
         "Outburst": {
-            "name": "Outburst",
-            "description": {
-                "stateless": {
-                    "None": "Discard hand. Attack for the energy cost sum.",
-                    "A": "Discard hand. Attack for the energy cost sum.",
-                    "B": "Discard hand. Attack for the energy cost sum."
-                },
-                "stateful": {
-                    "None": "Discard hand. Attack for the energy cost sum: <c=hurt>{{Damage}}</c>.",
-                    "A": "Discard hand. Attack for the energy cost sum: <c=hurt>{{Damage}}</c>.",
-                    "B": "Discard hand. Attack for the energy cost sum: <c=hurt>{{Damage}}</c>."
-                }
-            }
+            "name": "Outburst"
         },
         "Overstimulation": {
             "name": "Over-stimulation"
