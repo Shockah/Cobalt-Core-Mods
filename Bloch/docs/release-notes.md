@@ -6,7 +6,7 @@
 
 * Removed the Attention Span, Calm, Emotional Damage, Over-stimulation and Psionic Shield cards.
 * Removed the Unlocked Potential artifact.
-* Added the Approach Shift, On Your Mind and Unlocked Potential cards.
+* Added the Approach Shift, Digression, On Your Mind and Unlocked Potential cards.
 * Reworked the Outburst card.
 * Buffed the Focus card.
 * Technically buffed the Reality Bending card by making it Scry first.

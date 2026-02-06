@@ -125,6 +125,10 @@
         "DelveDeep": {
             "name": "Delve Deep"
         },
+	    "Digression": {
+		    "name": "Digression",
+		    "description": "Put your hand on top of the <c=keyword>draw pile</c>. <c=action>Scry</c> and draw as many cards."
+	    },
         "Distress": {
             "name": "Distress"
         },
