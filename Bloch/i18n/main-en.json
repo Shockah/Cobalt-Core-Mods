@@ -125,10 +125,6 @@
         "DelveDeep": {
             "name": "Delve Deep"
         },
-	    "Digression": {
-		    "name": "Digression",
-		    "description": "Put your hand on top of the <c=keyword>draw pile</c>. <c=action>Scry</c> and draw as many cards."
-	    },
         "Distress": {
             "name": "Distress"
         },
@@ -138,6 +134,14 @@
         "Focus": {
             "name": "Focus"
         },
+	    "Harmonize": {
+		    "name": "Harmonize",
+		    "description": {
+			    "None": "Gain 1 <c=status>intensify</c>. Gain 2 of the <c=C2FF60>Auras</c> you have the least of.",
+			    "A": "Gain 1 <c=status>intensify</c>. Gain 1 of the <c=C2FF60>Aura</c> you have the least of and 1 of each <c=C2FF60>Aura</c>.",
+			    "B": "Gain 1 <c=status>intensify</c>. Set your <c=C2FF60>Auras</c> to the amount of the one you have the most."
+		    }
+	    },
         "Insight": {
             "name": "Insight"
         },
@@ -209,7 +213,7 @@
 		    },
 		    "browseText": {
 			    "single": "Choose a card to discard.",
-			    "multiple": "Choose {{Count}} cards to discard.",
+			    "multiple": "Choose {{Count}} cards to discard."
 		    }
 	    },
 
