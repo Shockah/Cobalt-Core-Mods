@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.3.2
+Released 12 February 2026.
 
 ### Agni
 * Overloading a card now sets you down to 0 energy, instead of making the play free.
