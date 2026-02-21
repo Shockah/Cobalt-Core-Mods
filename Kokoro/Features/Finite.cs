@@ -79,6 +79,7 @@ partial class ApiImplementation
 			{
 				public required ACardSelect Wrapped { get; init; }
 
+				[JsonIgnore]
 				public bool? FilterFinite
 				{
 					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(Wrapped, "FilterFinite");
@@ -100,12 +101,14 @@ partial class ApiImplementation
 			{
 				public required CardBrowse Wrapped { get; init; }
 
+				[JsonIgnore]
 				public bool? FilterFinite
 				{
 					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(Wrapped, "FilterFinite");
 					set => ModEntry.Instance.Helper.ModData.SetOptionalModData(Wrapped, "FilterFinite", value);
 				}
 
+				[JsonIgnore]
 				public CardBrowse AsRoute
 					=> Wrapped;
 				

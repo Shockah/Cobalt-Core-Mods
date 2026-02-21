@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace Shockah.Kokoro;
 
@@ -143,6 +144,7 @@ internal static class MultiCardBrowseManager
 			mode = Mode.Browse;
 		}
 		
+		[JsonIgnore]
 		public CardBrowse AsRoute
 			=> this;
 		

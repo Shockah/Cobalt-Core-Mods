@@ -65,6 +65,7 @@ partial class ApiImplementation
 			{
 				public required ACardSelect Wrapped { get; init; }
 
+				[JsonIgnore]
 				public IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource? CustomBrowseSource
 				{
 					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource>(Wrapped, "CustomCardBrowseSource");
@@ -87,12 +88,14 @@ partial class ApiImplementation
 			{
 				public required CardBrowse Wrapped { get; init; }
 
+				[JsonIgnore]
 				public IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource? CustomBrowseSource
 				{
 					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource>(Wrapped, "CustomCardBrowseSource");
 					set => ModEntry.Instance.Helper.ModData.SetOptionalModData(Wrapped, "CustomCardBrowseSource", value);
 				}
 
+				[JsonIgnore]
 				public CardBrowse AsRoute
 					=> Wrapped;
 				

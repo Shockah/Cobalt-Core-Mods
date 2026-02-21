@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed crashes when saving the game on some specific Kokoro-modified screens, or when using the undo functionality of the Combat QoL mod.
+
 ## 2.16.3
 
 * `MultiCardBrowse` now automatically unchecks other cards if all actions define a max of 1 card.

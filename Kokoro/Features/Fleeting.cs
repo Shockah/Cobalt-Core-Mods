@@ -45,6 +45,7 @@ partial class ApiImplementation
 			{
 				public required ACardSelect Wrapped { get; init; }
 
+				[JsonIgnore]
 				public bool? FilterFleeting
 				{
 					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(Wrapped, "FilterFleeting");
@@ -66,12 +67,14 @@ partial class ApiImplementation
 			{
 				public required CardBrowse Wrapped { get; init; }
 
+				[JsonIgnore]
 				public bool? FilterFleeting
 				{
 					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(Wrapped, "FilterFleeting");
 					set => ModEntry.Instance.Helper.ModData.SetOptionalModData(Wrapped, "FilterFleeting", value);
 				}
 
+				[JsonIgnore]
 				public CardBrowse AsRoute
 					=> Wrapped;
 				

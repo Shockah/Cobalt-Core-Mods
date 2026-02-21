@@ -32,6 +32,7 @@ partial class ApiImplementation
 			{
 				public required ACardSelect Wrapped { get; init; }
 
+				[JsonIgnore]
 				public bool? FilterIndependent
 				{
 					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(Wrapped, "FilterIndependent");
@@ -53,12 +54,14 @@ partial class ApiImplementation
 			{
 				public required CardBrowse Wrapped { get; init; }
 
+				[JsonIgnore]
 				public bool? FilterIndependent
 				{
 					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(Wrapped, "FilterIndependent");
 					set => ModEntry.Instance.Helper.ModData.SetOptionalModData(Wrapped, "FilterIndependent", value);
 				}
 
+				[JsonIgnore]
 				public CardBrowse AsRoute
 					=> Wrapped;
 				

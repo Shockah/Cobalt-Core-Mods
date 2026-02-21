@@ -39,6 +39,7 @@ partial class ApiImplementation
 			{
 				public required ACardSelect Wrapped { get; init; }
 
+				[JsonIgnore]
 				public bool? FilterHeavy
 				{
 					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(Wrapped, "FilterHeavy");
@@ -60,12 +61,14 @@ partial class ApiImplementation
 			{
 				public required CardBrowse Wrapped { get; init; }
 
+				[JsonIgnore]
 				public bool? FilterHeavy
 				{
 					get => ModEntry.Instance.Helper.ModData.GetOptionalModData<bool>(Wrapped, "FilterHeavy");
 					set => ModEntry.Instance.Helper.ModData.SetOptionalModData(Wrapped, "FilterHeavy", value);
 				}
 
+				[JsonIgnore]
 				public CardBrowse AsRoute
 					=> Wrapped;
 				
