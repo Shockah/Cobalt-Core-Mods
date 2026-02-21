@@ -40,8 +40,11 @@ internal static class I18n
 	public static string CatDuoArtifactName => "Cryptolocker";
 	public static string CatDuoArtifactDescription => "Whenever you <c=downside>botch</c> a card, gain 1 <c=status>ENERGY</c> and 1 <c=status>CAT IS MISSING</c>.\nOnly triggers if you have at least 7 <c=comp>CAT</c> cards in your deck.";
 
-	public static string FrogproofCardTraitName => $"Frogproof";
-	public static string FrogproofCardTraitText => $"This card ignores <c=status>SMUG</c>.";
+	public static string FrogproofCardTraitName => "Frogproof";
+	public static string FrogproofCardTraitText => "This card ignores <c=status>SMUG</c>.";
+	
+	public static string GainApologiesActionName => "Add Apologies";
+	public static string GainApologiesActionText => "Add {0} <c=card>Halfhearted Apologies</c> to your hand.";
 
 	public static string SmugStatusName => "Smug";
 	public static string SmugStatusShortDescription => "Affects the chance to <c=downside>botch</c> or <c=cheevoGold>double</c> cards.";

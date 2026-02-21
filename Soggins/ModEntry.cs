@@ -58,6 +58,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 
 	internal ExternalSprite SmugStatusSprite { get; private set; } = null!;
 	internal ExternalSprite FrogproofSprite { get; private set; } = null!;
+	internal ExternalSprite GainApologySprite { get; private set; } = null!;
 	internal ExternalSprite BotchesStatusSprite { get; private set; } = null!;
 	internal ExternalSprite ExtraApologiesStatusSprite { get; private set; } = null!;
 	internal ExternalSprite ConstantApologiesStatusSprite { get; private set; } = null!;
@@ -252,19 +253,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 				"APurpleApple.GenericArtifacts",
 				api => api.SetPaletteAction(
 					(Deck)SogginsDeck.Id!.Value,
-					_ => Instance.KokoroApi.SpoofedActions.MakeAction(
-						new AAddCard
-						{
-							card = new RandomPlaceholderApologyCard(),
-							destination = CardDestination.Hand,
-							amount = 1
-						},
-						new AAddApologyCard
-						{
-							Destination = CardDestination.Hand,
-							Amount = 1
-						}
-					).AsCardAction,
+					_ => new AAddApologyCard(),
 					new TTText(I18n.PaletteTooltip)
 				)
 			);
@@ -371,6 +360,10 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 		FrogproofSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Icon.Frogproof",
 			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "FrogproofIcon.png"))
+		);
+		GainApologySprite = registry.RegisterArtOrThrow(
+			id: $"{GetType().Namespace}.Icon.GainApology",
+			file: new FileInfo(Path.Combine(Instance.ModRootFolder!.FullName, "assets", "GainApologyIcon.png"))
 		);
 		BotchesStatusSprite = registry.RegisterArtOrThrow(
 			id: $"{GetType().Namespace}.Status.Botches",

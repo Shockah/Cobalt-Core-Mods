@@ -43,47 +43,17 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
 		List<CardAction> actions = [
-			new AVariableHint
-			{
-				status = (Status)Instance.BotchesStatus.Id!.Value
-			}
+			new AVariableHint { status = (Status)Instance.BotchesStatus.Id!.Value },
 		];
 
 		var amount = Instance.Api.GetTimesBotchedThisCombat(s, c);
 		if (upgrade == Upgrade.B)
 			amount *= 2;
 
-		actions.Add(ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-			new AAddCard
-			{
-				card = new RandomPlaceholderApologyCard(),
-				destination = CardDestination.Hand,
-				amount = amount,
-				xHint = upgrade == Upgrade.B ? 2 : 1
-			},
-			new AAddApologyCard
-			{
-				Destination = CardDestination.Hand,
-				Amount = amount
-			}
-		).AsCardAction);
+		actions.Add(new AAddApologyCard { Amount = amount, xHint = upgrade == Upgrade.B ? 2 : 1 });
 
 		if (upgrade == Upgrade.A)
-			actions.Add(ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-				new AAddCard
-				{
-					card = new RandomPlaceholderApologyCard(),
-					destination = CardDestination.Hand,
-					amount = 2,
-					omitFromTooltips = true
-				},
-				new AAddApologyCard
-				{
-					Destination = CardDestination.Hand,
-					Amount = 2,
-					omitFromTooltips = true
-				}
-			).AsCardAction);
+			actions.Add(new AAddApologyCard { Amount = 2, omitFromTooltips = true });
 
 		while (actions.Count < 5)
 			actions.Add(new ADummyAction());

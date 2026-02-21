@@ -59,19 +59,7 @@ public sealed class ThoughtsAndPrayersCard : Card, IRegisterableCard, IFrogproof
 				statusAmount = 1,
 				targetPlayer = true
 			},
-			ModEntry.Instance.KokoroApi.SpoofedActions.MakeAction(
-				new AAddCard
-				{
-					card = new RandomPlaceholderApologyCard(),
-					destination = CardDestination.Hand,
-					amount = this.GetAmount()
-				},
-				new AAddApologyCard
-				{
-					Destination = CardDestination.Hand,
-					Amount = this.GetAmount()
-				}
-			).AsCardAction,
+			new AAddApologyCard { Amount = this.GetAmount() },
 			new ADummyAction(),
 			new ADummyAction(),
 		];
