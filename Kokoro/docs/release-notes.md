@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 2.16.4
+Released 21 February 2026.
 
 * Fixed a crash when saving the game on some specific Kokoro-modified screens, or when using the undo functionality of the Combat QoL mod.
 * Fixed Impulsive actions triggering on turn 0, potentially causing some side-effects.
