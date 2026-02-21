@@ -90,12 +90,7 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 		=> args.Action is TriggerAction triggerAction ? [triggerAction.Action] : null;
 
 	private static void QueueSpontaneousActions(State state, Combat combat, IEnumerable<Card> cards)
-	{
-		var firstNonSpontanenousIndex = combat.cardActions.FindIndex(action => !ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(action, "Impulsive"));
-		var indexToInsertAt = firstNonSpontanenousIndex < 0 ? 0 : firstNonSpontanenousIndex;
-
-		combat.cardActions.InsertRange(
-			indexToInsertAt,
+		=> combat.Queue(
 			cards
 				.Where(card => !state.CharacterIsMissing(card.GetMeta().deck))
 				.Where(card => !ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, ImpulsiveTriggeredTrait))
@@ -117,11 +112,12 @@ internal sealed class SpontaneousManager : IKokoroApi.IV2.IWrappedActionsApi.IHo
 					});
 				})
 		);
-	}
 
 	private static void Combat_SendCardToHand_Postfix(Combat __instance, State s, Card card)
 	{
 		if (!__instance.hand.Contains(card))
+			return;
+		if (__instance.turn < 1)
 			return;
 
 		QueueSpontaneousActions(s, __instance, [card]);

@@ -4,7 +4,8 @@
 
 ## Upcoming release
 
-* Fixed crashes when saving the game on some specific Kokoro-modified screens, or when using the undo functionality of the Combat QoL mod.
+* Fixed a crash when saving the game on some specific Kokoro-modified screens, or when using the undo functionality of the Combat QoL mod.
+* Fixed Impulsive actions triggering on turn 0, potentially causing some side-effects.
 
 ## 2.16.3
 
