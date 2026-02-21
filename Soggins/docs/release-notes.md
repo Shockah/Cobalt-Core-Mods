@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Smug-related dialogue not being properly serialized, which normally wouldn't really be noticeable, unless you're playing with the Combat QoL mod.
+
 ## 1.8.0
 Released 22 June 2025.
 

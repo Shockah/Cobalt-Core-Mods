@@ -10,13 +10,33 @@ using System;
 
 namespace Shockah.Soggins;
 
+internal static class StoryVarsExt
+{
+	extension(StoryVars vars)
+	{
+		public bool DidBotchCard
+		{
+			get => ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(vars, "DidBotchCard");
+			set => ModEntry.Instance.Helper.ModData.SetModData(vars, "DidBotchCard", value);
+		}
+		
+		public bool DidDoubleCard
+		{
+			get => ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(vars, "DidDoubleCard");
+			set => ModEntry.Instance.Helper.ModData.SetModData(vars, "DidDoubleCard", value);
+		}
+		
+		public bool DidDoubleLaunchAction
+		{
+			get => ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(vars, "DidDoubleLaunchAction");
+			set => ModEntry.Instance.Helper.ModData.SetModData(vars, "DidDoubleLaunchAction", value);
+		}
+	}
+}
+
 internal sealed class NarrativeManager
 {
 	private static ModEntry Instance => ModEntry.Instance;
-
-	public bool DidBotchCard;
-	public bool DidDoubleCard;
-	public bool DidDoubleLaunchAction;
 
 	internal static void ApplyPatches(Harmony harmony)
 	{
@@ -32,12 +52,11 @@ internal sealed class NarrativeManager
 		);
 	}
 
-	private static void StoryVars_ResetAfterCombatLine_Postfix()
+	private static void StoryVars_ResetAfterCombatLine_Postfix(StoryVars __instance)
 	{
-		var manager = Instance.NarrativeManager;
-		manager.DidBotchCard = false;
-		manager.DidDoubleCard = false;
-		manager.DidDoubleLaunchAction = false;
+		__instance.DidBotchCard = false;
+		__instance.DidDoubleCard = false;
+		__instance.DidDoubleLaunchAction = false;
 	}
 
 	private static IEnumerable<CodeInstruction> Narrative_PickWhenActionsAreDone_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
@@ -77,11 +96,10 @@ internal sealed class NarrativeManager
 		if (combat.lowPriorityCooldown > 0)
 			return false;
 		
-		var manager = Instance.NarrativeManager;
 		var deck = g.state.storyVars.whoDidThat ?? Deck.colorless;
 		var deckKey = deck == Deck.colorless ? "comp" : deck.Key();
 
-		if (manager.DidBotchCard)
+		if (g.state.storyVars.DidBotchCard)
 		{
 			double? responseDelay = DB.story.QuickLookup(g.state, $".{Instance.SogginsDeck.GlobalName}_Botch") is null ? null : 1.25;
 			Narrative.SpeakBecauseOfAction(g, combat, $".{Instance.SogginsDeck.GlobalName}_Botch");
@@ -92,9 +110,9 @@ internal sealed class NarrativeManager
 			});
 			return true;
 		}
-		if (manager.DidDoubleCard)
+		if (g.state.storyVars.DidDoubleCard)
 		{
-			var wasLaunchAction = manager.DidDoubleLaunchAction;
+			var wasLaunchAction = g.state.storyVars.DidDoubleLaunchAction;
 			double? responseDelay = DB.story.QuickLookup(g.state, $".{Instance.SogginsDeck.GlobalName}_Double") is null ? null : 1.25;
 			Narrative.SpeakBecauseOfAction(g, combat, $".{Instance.SogginsDeck.GlobalName}_Double");
 			QueuedAction.Queue(new QueuedAction

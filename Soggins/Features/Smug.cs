@@ -311,7 +311,7 @@ internal sealed class SmugStatusManager : HookManager<ISmugHook>
 
 				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 					hook.OnCardBotchedBySmug(state, combat, card);
-				Instance.NarrativeManager.DidBotchCard = true;
+				state.storyVars.DidBotchCard = true;
 				break;
 			case SmugResult.Double:
 				var toAdd = card.GetActionsOverridden(state, combat);
@@ -337,8 +337,8 @@ internal sealed class SmugStatusManager : HookManager<ISmugHook>
 
 				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 					hook.OnCardDoubledBySmug(state, combat, card);
-				Instance.NarrativeManager.DidDoubleCard = true;
-				Instance.NarrativeManager.DidDoubleLaunchAction = spawnActions.Count != 0;
+				state.storyVars.DidDoubleCard = true;
+				state.storyVars.DidDoubleLaunchAction = spawnActions.Count != 0;
 				break;
 		}
 		return actions;
