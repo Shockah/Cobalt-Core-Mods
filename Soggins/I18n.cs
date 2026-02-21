@@ -8,6 +8,10 @@ internal static class I18n
 
 	public static string SmugArtifactName => "Smug";
 	public static string SmugArtifactDescription => "Start each combat with <c=status>SMUG</c>.";
+	public static string BotchTrackerArtifactName => "Memory of Mistakes";
+	public static string BotchTrackerArtifactDescription => "Tracks how many times <c=status>SMUG</c> <c=downside>botched</c> a card each combat.";
+	public static string BotchesVariableHintDescriptionStateful => "<c=action>X</c> = Times <c=status>SMUG</c> <c=downside>botched</c> a card this combat ({0}).";
+	public static string BotchesVariableHintDescriptionStateless => "<c=action>X</c> = Times <c=status>SMUG</c> <c=downside>botched</c> a card this combat.";
 
 	public static string VideoWillArtifactName => "Video Will";
 	public static string VideoWillArtifactDescription => "Start each combat with 3 <c=status>FROGPROOFING</c>.";

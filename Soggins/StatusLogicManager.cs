@@ -12,5 +12,5 @@ internal sealed class StatusLogicManager : IKokoroApi.IV2.IStatusLogicApi.IHook
 	}
 
 	public bool? IsAffectedByBoost(IKokoroApi.IV2.IStatusLogicApi.IHook.IIsAffectedByBoostArgs args)
-		=> args.Status == (Status)Instance.DoubleTimeStatus.Id!.Value || args.Status == (Status)Instance.BotchesStatus.Id!.Value || args.Status == (Status)Instance.SmugStatus.Id!.Value ? false : null;
+		=> args.Status == (Status)Instance.DoubleTimeStatus.Id!.Value || args.Status == (Status)Instance.SmugStatus.Id!.Value ? false : null;
 }

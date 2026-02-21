@@ -42,9 +42,7 @@ public sealed class SoSorryCard : Card, IRegisterableCard, IFrogproofCard
 
 	public override List<CardAction> GetActions(State s, Combat c)
 	{
-		List<CardAction> actions = [
-			new AVariableHint { status = (Status)Instance.BotchesStatus.Id!.Value },
-		];
+		List<CardAction> actions = [new ABotchesVariableHint()];
 
 		var amount = Instance.Api.GetTimesBotchedThisCombat(s, c);
 		if (upgrade == Upgrade.B)

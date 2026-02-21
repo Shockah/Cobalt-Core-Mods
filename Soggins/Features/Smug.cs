@@ -282,13 +282,13 @@ internal sealed class SmugStatusManager : HookManager<ISmugHook>
 					Instance.Helper.ModData.SetModData(card, "FiniteUsesToRestoreAfterBotching", Instance.KokoroApi.Finite.GetFiniteUses(state, card));
 
 				actions.Clear();
-				actions.Add(new AStatus
+				if (state.EnumerateAllArtifacts().OfType<BotchTrackerArtifact>().FirstOrDefault() is not { } trackerArtifact)
 				{
-					status = (Status)Instance.BotchesStatus.Id!.Value,
-					statusAmount = 1,
-					targetPlayer = true,
-					whoDidThis = card.GetMeta().deck
-				});
+					trackerArtifact = new();
+					state.SendArtifactToChar(trackerArtifact);
+				}
+				trackerArtifact.Botches++;
+				trackerArtifact.Pulse();
 
 				var isOversmug = Instance.Api.IsOversmug(state, state.ship);
 				actions.Add(new AStatus

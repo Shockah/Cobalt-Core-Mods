@@ -68,7 +68,6 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 
 	internal ExternalStatus SmugStatus { get; private set; } = null!;
 	internal ExternalStatus FrogproofingStatus { get; private set; } = null!;
-	internal ExternalStatus BotchesStatus { get; private set; } = null!;
 	internal ExternalStatus ExtraApologiesStatus { get; private set; } = null!;
 	internal ExternalStatus ConstantApologiesStatus { get; private set; } = null!;
 	internal ExternalStatus BidingTimeStatus { get; private set; } = null!;
@@ -158,7 +157,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	];
 
 	internal static IEnumerable<Type> AllArtifacts
-		=> StarterArtifacts.Concat(CommonArtifacts).Concat(BossArtifacts).Concat(DuoArtifacts);
+		=> StarterArtifacts.Append(typeof(BotchTrackerArtifact)).Concat(CommonArtifacts).Concat(BossArtifacts).Concat(DuoArtifacts);
 
 	public void BootMod(IModLoaderContact contact)
 	{
@@ -454,18 +453,6 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 			);
 			FrogproofingStatus.AddLocalisation(I18n.FrogproofingStatusName, I18n.FrogproofingStatusDescription);
 			registry.RegisterStatus(FrogproofingStatus);
-		}
-		{
-			BotchesStatus = new(
-				$"{typeof(ModEntry).Namespace}.Status.Botches",
-				isGood: true,
-				mainColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF7E503C)),
-				borderColor: System.Drawing.Color.FromArgb(unchecked((int)0xFF7E503C)),
-				BotchesStatusSprite,
-				affectedByTimestop: false
-			);
-			BotchesStatus.AddLocalisation(I18n.BotchesStatusName, I18n.BotchesStatusDescription);
-			registry.RegisterStatus(BotchesStatus);
 		}
 		{
 			ExtraApologiesStatus = new(

@@ -1,4 +1,5 @@
-﻿using CobaltCoreModding.Definitions.ExternalItems;
+﻿using System.Linq;
+using CobaltCoreModding.Definitions.ExternalItems;
 using Microsoft.Extensions.Logging;
 using Nickel;
 
@@ -89,7 +90,7 @@ public sealed class ApiImplementation : ISogginsApi
 		=> Instance.SmugStatusManager.GetSmugDoubleChance(state, ship, card);
 
 	public int GetTimesBotchedThisCombat(State state, Combat combat)
-		=> state.ship.Get((Status)Instance.BotchesStatus.Id!.Value);
+		=> state.EnumerateAllArtifacts().OfType<BotchTrackerArtifact>().FirstOrDefault()?.Botches ?? 0;
 
 	public SmugResult RollSmugResult(State state, Ship ship, Rand rng, Card? card)
 	{
