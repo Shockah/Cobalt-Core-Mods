@@ -33,44 +33,27 @@ public sealed class StopItCard : Card, IRegisterableCard, IFrogproofCard
 		registry.RegisterCard(card);
 	}
 
-	private int GetFrogproofing()
-		=> upgrade switch
-		{
-			Upgrade.A => 2,
-			Upgrade.B => 3,
-			_ => 1,
-		};
-
 	public override CardData GetData(State state)
-	{
-		var data = base.GetData(state);
-		data.cost = 0;
-		data.retain = true;
-		data.exhaust = upgrade == Upgrade.B;
-		return data;
-	}
+		=> new() { cost = 0, retain = true, exhaust = true };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new ADrawCard { count = 2 },
-				new AStatus
-				{
-					status = (Status)Instance.FrogproofingStatus.Id!.Value,
-					statusAmount = GetFrogproofing(),
-					targetPlayer = true
-				},
+				new AStatus { targetPlayer = true, status = (Status)Instance.FrogproofingStatus.Id!.Value, statusAmount = 1 },
+				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = (Status)Instance.SmugStatus.Id!.Value, statusAmount = 1 },
+				new ADummyAction(),
+				new ADummyAction()
+			],
+			Upgrade.A => [
+				new AStatus { targetPlayer = true, status = (Status)Instance.FrogproofingStatus.Id!.Value, statusAmount = 3 },
+				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = (Status)Instance.SmugStatus.Id!.Value, statusAmount = 0 },
 				new ADummyAction(),
 				new ADummyAction()
 			],
 			_ => [
-				new AStatus
-				{
-					status = (Status)Instance.FrogproofingStatus.Id!.Value,
-					statusAmount = GetFrogproofing(),
-					targetPlayer = true
-				},
+				new AStatus { targetPlayer = true, status = (Status)Instance.FrogproofingStatus.Id!.Value, statusAmount = 1 },
+				new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = (Status)Instance.SmugStatus.Id!.Value, statusAmount = 0 },
 				new ADummyAction(),
 				new ADummyAction()
 			]

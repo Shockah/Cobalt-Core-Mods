@@ -4,6 +4,7 @@
 
 ## Upcoming release
 
+* Changed the Stop It! card, effectively merging it with Zen.
 * Fixed Smug-related dialogue not being properly serialized, which normally wouldn't really be noticeable, unless you're playing with the Combat QoL mod.
 * Apology-generating cards now use their own unique action.
 
