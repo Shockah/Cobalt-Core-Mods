@@ -97,16 +97,15 @@ internal sealed class NarrativeManager
 			return false;
 		
 		var deck = g.state.storyVars.whoDidThat ?? Deck.colorless;
-		var deckKey = deck == Deck.colorless ? "comp" : deck.Key();
 
 		if (g.state.storyVars.DidBotchCard)
 		{
 			double? responseDelay = DB.story.QuickLookup(g.state, $".{Instance.SogginsDeck.GlobalName}_Botch") is null ? null : 1.25;
 			Narrative.SpeakBecauseOfAction(g, combat, $".{Instance.SogginsDeck.GlobalName}_Botch");
-			QueuedAction.Queue(new QueuedAction
+			QueuedAction.Queue(combat, new BotchCardResponseQueuedAction
 			{
 				WaitForTotalGameTime = responseDelay is null ? null : MG.inst.g.time + responseDelay.Value,
-				Action = () => Narrative.SpeakBecauseOfAction(g, combat, $".{Instance.SogginsDeck.GlobalName}_BotchResponse_{deckKey}")
+				Deck = deck,
 			});
 			return true;
 		}
@@ -115,20 +114,41 @@ internal sealed class NarrativeManager
 			var wasLaunchAction = g.state.storyVars.DidDoubleLaunchAction;
 			double? responseDelay = DB.story.QuickLookup(g.state, $".{Instance.SogginsDeck.GlobalName}_Double") is null ? null : 1.25;
 			Narrative.SpeakBecauseOfAction(g, combat, $".{Instance.SogginsDeck.GlobalName}_Double");
-			QueuedAction.Queue(new QueuedAction
-			{
-				WaitForTotalGameTime = responseDelay is null ? null : MG.inst.g.time + responseDelay.Value,
-				Action = () =>
-				{
-					var storyKey = $".{Instance.SogginsDeck.GlobalName}_Double{(wasLaunchAction ? "Launch" : "")}Response";
-					if (wasLaunchAction && DB.story.QuickLookup(g.state, storyKey) is null)
-						storyKey = $".{Instance.SogginsDeck.GlobalName}_DoubleResponse";
-					Narrative.SpeakBecauseOfAction(g, combat, storyKey);
-				}
-			});
+
+			QueuedAction queuedAction = wasLaunchAction ? new DoubleLaunchResponseQueuedAction() : new DoubleResponseQueuedAction();
+			queuedAction.WaitForTotalGameTime = responseDelay is null ? null : MG.inst.g.time + responseDelay.Value;
+			QueuedAction.Queue(combat, queuedAction);
 			return true;
 		}
 
 		return false;
+	}
+
+	private sealed class BotchCardResponseQueuedAction : QueuedAction
+	{
+		public required Deck Deck;
+
+		protected override void Begin(G g, State state, Combat combat)
+		{
+			var deckKey = Deck == Deck.colorless ? "comp" : Deck.Key();
+			Narrative.SpeakBecauseOfAction(g, combat, $".{Instance.SogginsDeck.GlobalName}_BotchResponse_{deckKey}");
+		}
+	}
+
+	private sealed class DoubleResponseQueuedAction : QueuedAction
+	{
+		protected override void Begin(G g, State state, Combat combat)
+			=> Narrative.SpeakBecauseOfAction(g, combat, $".{Instance.SogginsDeck.GlobalName}_DoubleResponse");
+	}
+
+	private sealed class DoubleLaunchResponseQueuedAction : QueuedAction
+	{
+		protected override void Begin(G g, State state, Combat combat)
+		{
+			var storyKey = $".{Instance.SogginsDeck.GlobalName}_DoubleLaunchResponse";
+			if (DB.story.QuickLookup(g.state, storyKey) is null)
+				storyKey = $".{Instance.SogginsDeck.GlobalName}_DoubleResponse";
+			Narrative.SpeakBecauseOfAction(g, combat, storyKey);
+		}
 	}
 }

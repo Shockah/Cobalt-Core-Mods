@@ -35,7 +35,7 @@ internal static class SmugPortraitManager
 
 	private static void Combat_Update_Postfix(Combat __instance, G g)
 	{
-		QueuedAction.Tick(__instance);
+		QueuedAction.Tick(g, g.state, __instance);
 
 		var character = g.state.characters.FirstOrDefault(c => c.deckType == (Deck)Instance.SogginsDeck.Id!.Value);
 		if (character is null)
