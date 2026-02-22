@@ -104,6 +104,8 @@ internal sealed class MissileCluster : Missile, IRegisterable
 
 	public override void Render(G g, Vec v)
 	{
+		// TODO: fix missing animation getting cut off
+		
 		// render the hitting missile from the cluster
 		if (isHitting)
 			base.Render(g, v);

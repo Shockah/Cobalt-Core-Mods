@@ -27,6 +27,9 @@
 		}
 	},
 	"card": {
+		"SeekingCluster": {
+			"name": "Seeking Cluster"
+		},
 		"ShiftCluster": {
 			"name": "Shift Cluster"
 		}

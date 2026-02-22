@@ -24,6 +24,7 @@ public sealed class ModEntry : SimpleMod
 	internal readonly IDeckEntry JohannaDeck;
 
 	private static readonly IReadOnlyList<Type> CommonCardTypes = [
+		typeof(SeekingClusterCard),
 		typeof(ShiftClusterCard),
 	];
 
