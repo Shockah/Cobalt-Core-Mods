@@ -4,7 +4,7 @@
 	"DisplayName": "Johanna",
 	"Description": "TBD",
 	"Author": "Arin, Shockah",
-	"RequiredApiVersion": "1.20.0",
+	"RequiredApiVersion": "1.21.0",
 	"EntryPointAssembly": "Johanna.dll",
 	"LoadPhase": "AfterDbInit",
 	"Dependencies": [

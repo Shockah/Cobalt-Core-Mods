@@ -39,6 +39,9 @@
 		"HECluster": {
 			"name": "HE-Cluster"
 		},
+		"MissileSpam": {
+			"name": "Missile Spam"
+		},
 		"Omnishift": {
 			"name": "Omnishift"
 		},

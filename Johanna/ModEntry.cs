@@ -33,6 +33,7 @@ public sealed class ModEntry : SimpleMod
 	];
 
 	private static readonly IReadOnlyList<Type> UncommonCardTypes = [
+		typeof(MissileSpamCard),
 		typeof(OmnishiftCard),
 		typeof(ReplicatorCard),
 	];
@@ -93,7 +94,13 @@ public sealed class ModEntry : SimpleMod
 			DefaultCardArt = StableSpr.cards_colorless,
 			BorderSprite = CommonCardFrame.Sprite,
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize,
-			ShineColorOverride = args => DB.decks[args.Card.GetMeta().deck].color.normalize().gain(0.5),
+			ShineColorOverride = _ => Colors.black.fadeAlpha(0),
+			CardFrameOverride = args => GetCardRarity(args.Card.GetType()) switch
+			{
+				Rarity.rare => RareCardFrame.Sprite,
+				Rarity.uncommon => UncommonCardFrame.Sprite,
+				_ => CommonCardFrame.Sprite,
+			}
 		});
 
 		foreach (var type in RegisterableTypes)
