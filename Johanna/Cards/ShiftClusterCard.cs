@@ -30,8 +30,8 @@ internal sealed class ShiftClusterCard : JohannaCard, IRegisterable
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.B => [new ASpawn { offset = 6, thing = new ClusterMissile { Count = 2 } }],
-			Upgrade.A => [new ASpawn { offset = 4, thing = new ClusterMissile { Count = 4 } }],
-			_ => [new ASpawn { offset = 3, thing = new ClusterMissile { Count = 3 } }],
+			Upgrade.B => [new ASpawn { offset = 6, thing = new MissileCluster { Count = 2 } }],
+			Upgrade.A => [new ASpawn { offset = 4, thing = new MissileCluster { Count = 4 } }],
+			_ => [new ASpawn { offset = 3, thing = new MissileCluster { Count = 3 } }],
 		};
 }

@@ -6,6 +6,26 @@
 			"Blah blah"
 		]
 	},
+	"midrow": {
+		"Cluster": {
+			"Normal": {
+				"name": "Missile Cluster",
+				"description": "A swarm of <c=boldPink>{{Count}}</c> rockets. On their turn, one flies forward, dealing 1 damage on hit. The entire cluster is destroyed in one hit."
+			},
+			"HE": {
+				"name": "Heavy Cluster",
+				"description": "A swarm of <c=boldPink>{{Count}}</c> heavy rockets. On their turn, one flies forward, dealing 2 damage on hit. The entire cluster is destroyed in one hit."
+			},
+			"Seeker": {
+				"name": "Seeker Cluster",
+				"description": "A swarm of <c=boldPink>{{Count}}</c> seeker rockets. On their turn, one flies toward the opposing ship, dealing 1 damage. The entire cluster is destroyed in one hit."
+			},
+			"HESeeker": {
+				"name": "Heavy Seeker Cluster",
+				"description": "A swarm of <c=boldPink>{{Count}}</c> heavy seeker rockets. On their turn, one flies toward the opposing ship, dealing 2 damage. The entire cluster is destroyed in one hit."
+			}
+		}
+	},
 	"card": {
 		"ShiftCluster": {
 			"name": "Shift Cluster"

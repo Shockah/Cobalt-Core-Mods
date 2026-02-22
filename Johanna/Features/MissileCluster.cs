@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
@@ -13,7 +14,7 @@ using Shockah.Kokoro;
 
 namespace Shockah.Johanna;
 
-internal sealed class ClusterMissile : Missile, IRegisterable
+internal sealed class MissileCluster : Missile, IRegisterable
 {
 	private record ClusterTypeDefinition(
 		string SpritePath,
@@ -42,7 +43,7 @@ internal sealed class ClusterMissile : Missile, IRegisterable
 
 	private readonly List<Vec> StationaryPositionCache = [];
 
-	public ClusterMissile()
+	public MissileCluster()
 	{
 		missileType = NormalType;
 	}
@@ -64,15 +65,37 @@ internal sealed class ClusterMissile : Missile, IRegisterable
 			original: AccessTools.DeclaredMethod(typeof(AMissileHit), nameof(AMissileHit.Update)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMissileHit_Update_Transpiler))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
+			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Transpiler))
+		);
 		
 		ModEntry.Instance.KokoroApi.AttackLogic.RegisterHook(new AttackLogicHook());
 	}
 
+	private string LocalizationKey
+		=> missileType switch
+		{
+			NormalType => "Normal",
+			HEType => "HE",
+			SeekerType => "Seeker",
+			SeekerHEType => "SeekerHE",
+			_ => throw new ArgumentOutOfRangeException()
+		};
+
 	public override List<Tooltip> GetTooltips()
-		=> [
-			.. base.GetTooltips(),
-			// TODO: add real tooltips for clusters
-		];
+		=> base.GetTooltips().Select(tooltip =>
+		{
+			if (tooltip is not TTGlossary glossary || glossary.key != MKGlossary(missileData[missileType].key))
+				return tooltip;
+			return new GlossaryTooltip($"midrow.{ModEntry.Instance.Package.Manifest.UniqueName}::Cluster::{missileData[missileType].key}")
+			{
+				Icon = GetIcon(),
+				TitleColor = Colors.midrow,
+				Title = ModEntry.Instance.Localizations.Localize(["midrow", "Cluster", LocalizationKey, "name"]),
+				Description = ModEntry.Instance.Localizations.Localize(["midrow", "Cluster", LocalizationKey, "description"], new { Count = Count }),
+			};
+		}).ToList();
 
 	public override void Render(G g, Vec v)
 	{
@@ -156,7 +179,7 @@ internal sealed class ClusterMissile : Missile, IRegisterable
 
 	private static bool AMissileHit_Update_Transpiler_HandleCluster(State state, Combat combat, Missile missile, RaycastResult ray)
 	{
-		if (missile is not ClusterMissile cluster)
+		if (missile is not MissileCluster cluster)
 			return false;
 
 		cluster.Count--;
@@ -166,11 +189,59 @@ internal sealed class ClusterMissile : Missile, IRegisterable
 		return cluster.Count > 0;
 	}
 
+	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+	private static IEnumerable<CodeInstruction> Card_RenderAction_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
+	{
+		try
+		{
+			return new SequenceBlockMatcher<CodeInstruction>(instructions)
+				.Find([
+					ILMatches.AnyLdloca.GetLocalIndex(out var capturesLocalIndex),
+					ILMatches.Ldarg(3),
+					ILMatches.Stfld("dontDraw"),
+				])
+				.Find(new ElementMatch<CodeInstruction>("call to the `IconAndOrNumber` local method", i => ILMatches.AnyCall.Matches(i) && ((MethodInfo)i.operand).Name.StartsWith("<RenderAction>g__IconAndOrNumber")))
+				.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
+					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldarg_2),
+					new CodeInstruction(OpCodes.Ldloca, capturesLocalIndex.Value),
+					new CodeInstruction(OpCodes.Ldflda, AccessTools.DeclaredField(originalMethod.GetMethodBody()!.LocalVariables[capturesLocalIndex].LocalType, "w")),
+					new CodeInstruction(OpCodes.Ldloca, capturesLocalIndex.Value),
+					new CodeInstruction(OpCodes.Ldfld, AccessTools.DeclaredField(originalMethod.GetMethodBody()!.LocalVariables[capturesLocalIndex].LocalType, "dontDraw")),
+					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Transpiler_RenderClusterCount))),
+				])
+				.AllElements();
+		}
+		catch (Exception ex)
+		{
+			ModEntry.Instance.Logger.LogError("Could not patch method {DeclaringType}::{Method} - {Mod} probably won't work.\nReason: {Exception}", originalMethod.DeclaringType, originalMethod, ModEntry.Instance.Package.Manifest.GetDisplayName(@long: false), ex);
+			return instructions;
+		}
+	}
+
+	private static void Card_RenderAction_Transpiler_RenderClusterCount(G g, CardAction action, ref int w, bool dontDraw)
+	{
+		if (action is not ASpawn launchAction)
+			return;
+		if (launchAction.thing is not MissileCluster missileCluster)
+			return;
+
+		w += 1;
+		if (!dontDraw)
+		{
+			var box = g.Push(rect: new Rect(w));
+			BigNumbers.Render(missileCluster.Count, box.rect.x, box.rect.y, action.disabled ? Colors.disabledText : Colors.textMain);
+			g.Pop();
+		}
+		w += DB.IntStringCache(missileCluster.Count).Length * 6; // numberWidth
+		w += 1;
+	}
+
 	private sealed class AttackLogicHook : IKokoroApi.IV2.IAttackLogicApi.IHook
 	{
 		public bool? ModifyMidrowObjectVisuallyStoppingAttacks(IKokoroApi.IV2.IAttackLogicApi.IHook.IModifyMidrowObjectVisuallyStoppingAttacksArgs args)
 		{
-			if (args.Object is not ClusterMissile cluster)
+			if (args.Object is not MissileCluster cluster)
 				return null;
 			if (cluster.targetPlayer)
 				return true;

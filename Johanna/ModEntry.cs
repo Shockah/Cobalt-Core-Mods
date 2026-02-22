@@ -60,7 +60,7 @@ public sealed class ModEntry : SimpleMod
 		= [
 			.. AllCardTypes,
 			.. AllArtifactTypes,
-			typeof(ClusterMissile),
+			typeof(MissileCluster),
 		];
 
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
