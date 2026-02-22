@@ -5,6 +5,7 @@ internal abstract class JohannaCard : Card
 	public override CardData GetData(State state)
 		=> new()
 		{
+			// TODO: use the new Nickel functionality instead
 			artOverlay = ModEntry.GetCardRarity(GetType()) switch
 			{
 				Rarity.rare => ModEntry.Instance.RareCardFrame.Sprite,

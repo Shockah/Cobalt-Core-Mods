@@ -27,6 +27,24 @@
 		}
 	},
 	"card": {
+		"ClusterRocket": {
+			"name": "Cluster Rocket"
+		},
+		"CustomPayload": {
+			"name": "Custom Payload"
+		},
+		"EngineStall": {
+			"name": "Engine Stall"
+		},
+		"HECluster": {
+			"name": "HE-Cluster"
+		},
+		"Omnishift": {
+			"name": "Omnishift"
+		},
+		"Replicator": {
+			"name": "Replicator"
+		},
 		"SeekingCluster": {
 			"name": "Seeking Cluster"
 		},
