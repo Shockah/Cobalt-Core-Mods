@@ -281,7 +281,13 @@ internal sealed class SmugStatusManager : HookManager<ISmugHook>
 				if (Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Instance.KokoroApi.Finite.Trait))
 					Instance.Helper.ModData.SetModData(card, "FiniteUsesToRestoreAfterBotching", Instance.KokoroApi.Finite.GetFiniteUses(state, card));
 
+				var botchSound = Instance.BotchSound;
+				if (Mutil.NextRand() < 0.1)
+					botchSound = Instance.AltBotchSounds[Mutil.NextRandInt() % Instance.AltBotchSounds.Count];
+				botchSound.Entry.CreateInstance();
+
 				actions.Clear();
+				actions.Add(new ADelay { timer = botchSound.ActionDelay });
 				if (state.EnumerateAllArtifacts().OfType<BotchTrackerArtifact>().FirstOrDefault() is not { } trackerArtifact)
 				{
 					trackerArtifact = new();

@@ -8,6 +8,7 @@
 * Replaced the Botches fake status with a dedicated botch tracker artifact.
 * Fixed Smug-related dialogue not being properly serialized, which normally wouldn't really be noticeable, unless you're playing with the Combat QoL mod.
 * Apology-generating cards now use their own unique action.
+* Added custom sounds for botches.
 
 ## 1.8.0
 Released 22 June 2025.

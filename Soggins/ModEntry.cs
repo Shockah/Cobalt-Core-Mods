@@ -81,6 +81,9 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 	internal ExternalAnimation MadPortraitAnimation { get; private set; } = null!;
 	internal ExternalAnimation GameOverPortraitAnimation { get; private set; } = null!;
 	internal ExternalAnimation MiniPortraitAnimation { get; private set; } = null!;
+	
+	internal BotchSoundInfo BotchSound { get; private set; }
+	internal List<BotchSoundInfo> AltBotchSounds { get; private set; } = [];
 
 	internal static readonly Type[] ApologyCards = [
 		typeof(RandomPlaceholderApologyCard),
@@ -178,6 +181,24 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 			Name = _ => I18n.FrogproofCardTraitName,
 			Tooltips = (_, _) => [Api.FrogproofCardTraitTooltip]
 		});
+
+		BotchSound = new(
+			helper.Content.Audio.RegisterSound(
+				VariableSoundEntryFactory.Instance,
+				new(helper.Content.Audio.RegisterSound(package.PackageRoot.GetRelativeFile("assets/BotchSound/Main.wav")))
+				{
+					MinPitch = 0.8f,
+					MaxPitch = 1.2f,
+				}
+			)
+		);
+		AltBotchSounds = [
+			new(helper.Content.Audio.RegisterSound(package.PackageRoot.GetRelativeFile("assets/BotchSound/Alt/SadTrombone.wav")), 3.3),
+			new(helper.Content.Audio.RegisterSound(package.PackageRoot.GetRelativeFile("assets/BotchSound/Alt/Engineer.wav")), 0.2),
+			new(helper.Content.Audio.RegisterSound(package.PackageRoot.GetRelativeFile("assets/BotchSound/Alt/Error.wav")), 0.8),
+			new(helper.Content.Audio.RegisterSound(package.PackageRoot.GetRelativeFile("assets/BotchSound/Alt/Buzzer.wav")), 1),
+			new(helper.Content.Audio.RegisterSound(package.PackageRoot.GetRelativeFile("assets/BotchSound/Alt/Cricket.wav")), 4.3),
+		];
 
 		helper.Content.Cards.OnGetDynamicInnateCardTraitOverrides += (_, e) =>
 		{
