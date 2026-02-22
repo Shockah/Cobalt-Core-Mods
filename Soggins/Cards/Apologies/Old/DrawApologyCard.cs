@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Shockah.Soggins;
 
-[CardMeta(rarity = Rarity.common, upgradesTo = [Upgrade.A, Upgrade.B])]
+[CardMeta(rarity = Rarity.common, unreleased = true, upgradesTo = [Upgrade.A, Upgrade.B])]
 public sealed class DrawApologyCard : ApologyCard, IRegisterableCard
 {
 	public void RegisterCard(ICardRegistry registry)
@@ -18,6 +18,9 @@ public sealed class DrawApologyCard : ApologyCard, IRegisterableCard
 		card.AddLocalisation(I18n.ApologyCardName);
 		registry.RegisterCard(card);
 	}
+
+	public override double GetApologyWeight(State state, Combat combat, int timesGiven)
+		=> 0;
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
