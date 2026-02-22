@@ -120,18 +120,27 @@ internal sealed class MissileCluster : Missile, IRegisterable
 			StationaryPositionCache.Add(new(xx, yy));
 		}
 		StationaryPositionCache.Sort((lhs, rhs) => lhs.y.CompareTo(rhs.y));
-		
-		// draw exhausts
-		var mp = v + GetOffset(g, doRound: true);
-		var exhaustOffset = targetPlayer ? Vec.Zero : new Vec(0, 21);
-		var exhaustSprite = exhaustSprites.GetModulo((int)(g.state.time * 36 + x * 10));
-		var exhaustSpriteOrigin = exhaustOffset + new Vec(1, 4);
-		foreach (var position in StationaryPositionCache)
-			Draw.Sprite(exhaustSprite, position.x + mp.x + exhaustSpriteOrigin.x, position.y + mp.y + exhaustSpriteOrigin.y + (targetPlayer ? 0 : 14), flipY: !targetPlayer, originRel: new(0, 1), color: missileData[missileType].exhaustColor);
-		
-		// draw missiles
-		foreach (var position in StationaryPositionCache)
-			DrawWithHilight(g, DB.missiles[missileType], mp + position);
+
+		var oldYAnimation = yAnimation;
+		yAnimation = 0;
+		try
+		{
+			// draw exhausts
+			var mp = v + GetOffset(g, doRound: true);
+			var exhaustOffset = targetPlayer ? Vec.Zero : new Vec(0, 21);
+			var exhaustSprite = exhaustSprites.GetModulo((int)(g.state.time * 36 + x * 10));
+			var exhaustSpriteOrigin = exhaustOffset + new Vec(1, 4);
+			foreach (var position in StationaryPositionCache)
+				Draw.Sprite(exhaustSprite, position.x + mp.x + exhaustSpriteOrigin.x, position.y + mp.y + exhaustSpriteOrigin.y + (targetPlayer ? 0 : 14), flipY: !targetPlayer, originRel: new(0, 1), color: missileData[missileType].exhaustColor);
+
+			// draw missiles
+			foreach (var position in StationaryPositionCache)
+				DrawWithHilight(g, DB.missiles[missileType], mp + position);
+		}
+		finally
+		{
+			yAnimation = oldYAnimation;
+		}
 	}
 
 	public List<CardAction> GetActionsOnSpent(State state, Combat combat, int hitWorldX)
@@ -164,6 +173,7 @@ internal sealed class MissileCluster : Missile, IRegisterable
 					new CodeInstruction(OpCodes.Ldarg_2).WithLabels(labels),
 					new CodeInstruction(OpCodes.Ldarg_3),
 					new CodeInstruction(OpCodes.Ldloc, missileLocalIndex.Value),
+					new CodeInstruction(OpCodes.Ldarg_0),
 					new CodeInstruction(OpCodes.Ldloc, rayLocalIndex.Value),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AMissileHit_Update_Transpiler_HandleCluster))),
 					new CodeInstruction(OpCodes.Brtrue, finalRetLabel)
@@ -177,7 +187,7 @@ internal sealed class MissileCluster : Missile, IRegisterable
 		}
 	}
 
-	private static bool AMissileHit_Update_Transpiler_HandleCluster(State state, Combat combat, Missile missile, RaycastResult ray)
+	private static bool AMissileHit_Update_Transpiler_HandleCluster(State state, Combat combat, Missile missile, AMissileHit action, RaycastResult ray)
 	{
 		if (missile is not MissileCluster cluster)
 			return false;
@@ -185,7 +195,10 @@ internal sealed class MissileCluster : Missile, IRegisterable
 		cluster.Count--;
 		if (cluster.Count <= 0)
 			combat.QueueImmediate(cluster.GetActionsOnSpent(state, combat, ray.worldX));
-		
+
+		missile.isHitting = false;
+		missile.yAnimation = 0;
+		action.timer = 0;
 		return cluster.Count > 0;
 	}
 
