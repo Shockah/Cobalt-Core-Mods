@@ -69,6 +69,11 @@ internal sealed class MissileCluster : Missile, IRegisterable
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.RenderAction)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_RenderAction_Transpiler))
 		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(ASpawn), nameof(ASpawn.Begin)),
+			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASpawn_Begin_Prefix)), priority: Priority.VeryLow),
+			finalizer: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ASpawn_Begin_Finalizer)), priority: Priority.VeryHigh)
+		);
 		
 		ModEntry.Instance.KokoroApi.AttackLogic.RegisterHook(new AttackLogicHook());
 	}
@@ -119,10 +124,9 @@ internal sealed class MissileCluster : Missile, IRegisterable
 			var yy = Math.Cos(fy * Math.PI) * 12;
 			StationaryPositionCache.Add(new(xx, yy));
 		}
-		StationaryPositionCache.Sort((lhs, rhs) => lhs.y.CompareTo(rhs.y));
 
 		var oldYAnimation = yAnimation;
-		yAnimation = 0;
+		yAnimation = 1;
 		try
 		{
 			// draw exhausts
@@ -140,6 +144,42 @@ internal sealed class MissileCluster : Missile, IRegisterable
 		finally
 		{
 			yAnimation = oldYAnimation;
+		}
+	}
+
+	public bool IsSeeker
+	{
+		get => missileType is SeekerType or SeekerHEType;
+		set
+		{
+			if (IsSeeker == value)
+				return;
+			missileType = missileType switch
+			{
+				NormalType => SeekerType,
+				SeekerType => NormalType,
+				HEType => SeekerHEType,
+				SeekerHEType => HEType,
+				_ => throw new ArgumentOutOfRangeException()
+			};
+		}
+	}
+
+	public bool IsHeavy
+	{
+		get => missileType is HEType or SeekerHEType;
+		set
+		{
+			if (IsHeavy == value)
+				return;
+			missileType = missileType switch
+			{
+				NormalType => HEType,
+				HEType => NormalType,
+				SeekerType => SeekerHEType,
+				SeekerHEType => SeekerType,
+				_ => throw new ArgumentOutOfRangeException()
+			};
 		}
 	}
 
@@ -248,6 +288,38 @@ internal sealed class MissileCluster : Missile, IRegisterable
 		}
 		w += DB.IntStringCache(missileCluster.Count).Length * 6; // numberWidth
 		w += 1;
+	}
+
+	private static void ASpawn_Begin_Prefix(ASpawn __instance, State s, Combat c, out MissileCluster? __state)
+	{
+		__state = null;
+		
+		var ship = __instance.fromPlayer ? s.ship : c.otherShip;
+		if (ship.GetPartTypeCount(PType.missiles) > 1 && !__instance.multiBayVolley)
+			return;
+		
+		var worldX = __instance.GetWorldX(s, c) + __instance.offset;
+		var @object = c.stuff.GetValueOrDefault(worldX);
+		if (@object is not MissileCluster cluster)
+			return;
+		
+		__state = cluster;
+		c.stuff.Remove(worldX);
+	}
+
+	private static void ASpawn_Begin_Finalizer(ASpawn __instance, State s, Combat c, in MissileCluster? __state)
+	{
+		if (__state is null)
+			return;
+		
+		var worldX = __instance.GetWorldX(s, c) + __instance.offset;
+		if (c.stuff.GetValueOrDefault(worldX) is not MissileCluster cluster)
+			return;
+
+		cluster.age = __state.age;
+		cluster.Count += __state.Count;
+		cluster.IsSeeker |= __state.IsSeeker;
+		cluster.IsHeavy |= __state.IsHeavy;
 	}
 
 	private sealed class AttackLogicHook : IKokoroApi.IV2.IAttackLogicApi.IHook
