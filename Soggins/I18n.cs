@@ -84,6 +84,7 @@ internal static class I18n
 	public static string BetterSpaceMineCardName => "Better Space Mine";
 	public static string ThoughtsAndPrayersCardName => "Thoughts & Prayers";
 	public static string HumiliatingAttackCardName => "Humiliating Attack";
+	public static string MoodSwingCardName => "Mood Swing";
 
 	// uncommon cards
 	public static string HarnessingSmugnessCardName => "Harnessing Smugness";

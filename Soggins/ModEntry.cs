@@ -114,6 +114,7 @@ public sealed class ModEntry : CobaltCoreModding.Definitions.ModManifests.IModMa
 		typeof(BetterSpaceMineCard),
 		typeof(ThoughtsAndPrayersCard),
 		typeof(HumiliatingAttackCard),
+		typeof(MoodSwingCard),
 	];
 	internal static readonly Type[] UncommonCards = [
 		typeof(HarnessingSmugnessCard),

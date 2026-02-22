@@ -28,6 +28,18 @@ internal sealed class SmugStatusManager : HookManager<ISmugHook>
 		public double ModifySmugDoubleChance(State state, Ship ship, Card? card, double chance)
 			=> chance * (ship.Get((Status)Instance.DoublersLuckStatus.Id!.Value) + 1);
 	}
+	
+	private sealed class PerCardSmugSwingHook : ISmugHook
+	{
+		public int ModifySmugSwing(State state, Combat combat, Card card, int amount)
+			=> (card as IRegisterableCard)?.ModifySmugSwing(state, combat, amount) ?? amount;
+
+		public int ModifyApologyAmountForBotchingBySmug(State state, Combat combat, Card card, int amount)
+		{
+			var extraApologies = state.ship.Get((Status)Instance.ExtraApologiesStatus.Id!.Value);
+			return Math.Max(amount + extraApologies, 1);
+		}
+	}
 
 	private sealed class SmugClampStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
 	{
@@ -45,6 +57,7 @@ internal sealed class SmugStatusManager : HookManager<ISmugHook>
 	{
 		Register(new ExtraApologiesSmugHook(), 0);
 		Register(new DoublersLuckSmugHook(), -100);
+		Register(new PerCardSmugSwingHook(), -1_000_000);
 		Instance.KokoroApi.StatusLogic.RegisterHook(new SmugClampStatusLogicHook(), double.MinValue);
 		
 		// bump Limited stacks up after botching a card
@@ -268,6 +281,9 @@ internal sealed class SmugStatusManager : HookManager<ISmugHook>
 		var doubleChance = Instance.Api.GetSmugDoubleChance(state, state.ship, card);
 		var result = GetSmugResult(state.rngActions, botchChance, doubleChance);
 		var swing = Math.Max(card.GetCurrentCost(state), 1);
+		foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
+			swing = hook.ModifySmugSwing(state, combat, card, swing);
+		
 		switch (result)
 		{
 			case SmugResult.Botch:

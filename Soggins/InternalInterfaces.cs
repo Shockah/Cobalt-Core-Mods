@@ -19,6 +19,7 @@ internal interface IRegisterableCard
 	void RegisterCard(ICardRegistry registry);
 	void ApplyPatches(Harmony harmony) { }
 	void InjectDialogue() { }
+	int ModifySmugSwing(State state, Combat combat, int amount) => amount;
 }
 
 internal interface IFrogproofCard : IHasCustomCardTraits

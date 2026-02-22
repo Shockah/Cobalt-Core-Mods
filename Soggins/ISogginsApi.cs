@@ -54,6 +54,7 @@ public interface ISmugHook
 
 	double ModifySmugBotchChance(State state, Ship ship, Card? card, double chance) => chance;
 	double ModifySmugDoubleChance(State state, Ship ship, Card? card, double chance) => chance;
+	int ModifySmugSwing(State state, Combat combat, Card card, int amount) => amount;
 	int ModifyApologyAmountForBotchingBySmug(State state, Combat combat, Card card, int amount) => amount;
 }
 
