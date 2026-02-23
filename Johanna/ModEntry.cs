@@ -77,12 +77,12 @@ public sealed class ModEntry : SimpleMod
 		Harmony = helper.Utilities.Harmony;
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 
-		this.AnyLocalizations = new JsonLocalizationProvider(
+		AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
 			localeStreamFunction: locale => package.PackageRoot.GetRelativeFile($"i18n/{locale}.json").OpenRead()
 		);
-		this.Localizations = new MissingPlaceholderLocalizationProvider<IReadOnlyList<string>>(
-			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(this.AnyLocalizations)
+		Localizations = new MissingPlaceholderLocalizationProvider<IReadOnlyList<string>>(
+			new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(AnyLocalizations)
 		);
 
 		CommonCardFrame = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png"));
@@ -93,7 +93,7 @@ public sealed class ModEntry : SimpleMod
 			Definition = new() { color = new("56DF6A"), titleColor = Colors.white },
 			DefaultCardArt = StableSpr.cards_colorless,
 			BorderSprite = CommonCardFrame.Sprite,
-			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize,
+			Name = AnyLocalizations.Bind(["character", "name"]).Localize,
 			ShineColorOverride = _ => Colors.black.fadeAlpha(0),
 			CardFrameOverride = args => GetCardRarity(args.Card.GetType()) switch
 			{
@@ -109,7 +109,7 @@ public sealed class ModEntry : SimpleMod
 		helper.Content.Characters.V2.RegisterPlayableCharacter("Wade", new()
 		{
 			Deck = JohannaDeck.Deck,
-			Description = this.AnyLocalizations.Bind(["character", "description"]).Localize,
+			Description = AnyLocalizations.Bind(["character", "description"]).Localize,
 			BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CharacterFrame.png")).Sprite,
 			NeutralAnimation = new()
 			{
