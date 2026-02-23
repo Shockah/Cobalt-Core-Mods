@@ -6,6 +6,7 @@
 
 * Changed the Stop It! card, effectively merging it with Zen.
 * Replaced the Zen card with the Mood Swing card.
+* The Mysterious Ammo card now sets the Missile Malfunction status, instead of adding it.
 * Removed the draw Apology.
 * Replaced the Botches fake status with a dedicated botch tracker artifact.
 * Fixed Smug-related dialogue not being properly serialized, which normally wouldn't really be noticeable, unless you're playing with the Combat QoL mod.

@@ -51,7 +51,7 @@ public sealed class MysteriousAmmoCard : Card, IRegisterableCard
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
 			new ASpawn { thing = GetPayload() },
-			new AStatus { targetPlayer = true, status = Status.backwardsMissiles, statusAmount = 2 },
+			new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = Status.backwardsMissiles, statusAmount = 2 },
 			new ADummyAction(),
 			new ADummyAction(),
 		];
