@@ -15,7 +15,12 @@
         {
             "UniqueName": "Shockah.Kokoro",
             "Version": "2.0.0"
-        }
+        },
+	    {
+		    "UniqueName": "Shockah.DuoArtifacts",
+		    "Version": "1.8.0",
+		    "IsRequired": false
+	    }
     ],
     "UpdateChecks": {
         "NexusMods": {

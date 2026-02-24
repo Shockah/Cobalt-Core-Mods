@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Soggins' duo artifacts not appearing in-game.
+
 ## 1.9.1
 Released 23 February 2026.
 
