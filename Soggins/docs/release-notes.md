@@ -2,12 +2,13 @@
 
 # Release notes
 
-## Upcoming release
+## 1.9.1
+Released 23 February 2026.
 
 * Fixed how the new Mood Swing card behaves when doubled.
 
 ## 1.9.0
-Released 23 February 2026.
+Released 22 February 2026.
 
 * Changed the Stop It! card, effectively merging it with Zen.
 * Replaced the Zen card with the Mood Swing card.
