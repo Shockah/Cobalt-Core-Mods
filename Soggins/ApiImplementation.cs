@@ -99,6 +99,9 @@ public sealed class ApiImplementation : ISogginsApi
 		return SmugStatusManager.GetSmugResult(rng, botchChance, doubleChance);
 	}
 
+	public bool IsCurrentlyDoubling(State state, Combat combat)
+		=> Instance.SmugStatusManager.IsDoubling;
+
 	public Card GenerateAndTrackApology(State state, Combat combat, Rand rng)
 		=> SmugStatusManager.GenerateAndTrackApology(state, combat, rng);
 

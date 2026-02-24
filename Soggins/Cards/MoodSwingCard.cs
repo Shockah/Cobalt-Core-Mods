@@ -52,7 +52,7 @@ public sealed class MoodSwingCard : Card, IRegisterableCard, IFrogproofCard
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
 			new AVariableHint { status = (Status)Instance.SmugStatus.Id!.Value },
-			new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = (Status)Instance.SmugStatus.Id!.Value, statusAmount = -s.ship.Get((Status)Instance.SmugStatus.Id!.Value), xHint = -1 },
+			new AStatus { targetPlayer = true, mode = AStatusMode.Set, status = (Status)Instance.SmugStatus.Id!.Value, statusAmount = s.ship.Get((Status)Instance.SmugStatus.Id!.Value) * (Instance.Api.IsCurrentlyDoubling(s, c) ? 1 : -1), xHint = -1 },
 			new AStatus { targetPlayer = true, status = Status.evade, statusAmount = 1 },
 			new ADummyAction(),
 			new ADummyAction(),

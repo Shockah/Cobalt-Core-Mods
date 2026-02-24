@@ -52,6 +52,7 @@ internal sealed class SmugStatusManager : HookManager<ISmugHook>
 	}
 
 	private static ModEntry Instance => ModEntry.Instance;
+	internal bool IsDoubling;
 
 	internal SmugStatusManager() : base(Instance.Package.Manifest.UniqueName)
 	{
@@ -336,14 +337,23 @@ internal sealed class SmugStatusManager : HookManager<ISmugHook>
 				state.storyVars.DidBotchCard = true;
 				break;
 			case SmugResult.Double:
-				var toAdd = card.GetActionsOverridden(state, combat);
+				Instance.SmugStatusManager.IsDoubling = true;
+				List<CardAction> toAdd;
+				try
+				{
+					toAdd = card.GetActionsOverridden(state, combat);
+				}
+				finally
+				{
+					Instance.SmugStatusManager.IsDoubling = false;
+				}
 
 				var spawnActions = actions.SelectMany(Instance.KokoroApi.WrappedActions.GetWrappedCardActionsRecursively).OfType<ASpawn>().ToList();
 				if (spawnActions.Count != 0)
-					toAdd.Add(new ADroneMove { dir = spawnActions.Max(a => a.offset) - spawnActions.Min(a => a.offset) + 1 });
+					actions.Add(new ADroneMove { dir = spawnActions.Max(a => a.offset) - spawnActions.Min(a => a.offset) + 1 });
 
 				var hasDoubleTime = state.ship.Get((Status)Instance.DoubleTimeStatus.Id!.Value) > 0;
-				toAdd.Insert(0, new AShakeShip
+				actions.Insert(0, new AShakeShip
 				{
 					statusPulse = hasDoubleTime ? (Status)Instance.DoubleTimeStatus.Id!.Value : (Status)Instance.SmugStatus.Id!.Value
 				});
@@ -355,7 +365,7 @@ internal sealed class SmugStatusManager : HookManager<ISmugHook>
 						targetPlayer = true
 					});
 
-				actions.InsertRange(0, toAdd);
+				actions.AddRange(toAdd);
 
 				foreach (var hook in Instance.SmugStatusManager.GetHooksWithProxies(Instance.Helper.Utilities.ProxyManager, state.EnumerateAllArtifacts()))
 					hook.OnCardDoubledBySmug(state, combat, card);

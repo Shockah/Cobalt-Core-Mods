@@ -30,6 +30,7 @@ public interface ISogginsApi
 	double GetSmugDoubleChance(State state, Ship ship, Card? card);
 	int GetTimesBotchedThisCombat(State state, Combat combat);
 	SmugResult RollSmugResult(State state, Ship ship, Rand rng, Card? card);
+	bool IsCurrentlyDoubling(State state, Combat combat);
 
 	void RegisterSmugHook(ISmugHook hook, double priority);
 	void UnregisterSmugHook(ISmugHook hook);

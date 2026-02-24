@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed how the new Mood Swing card behaves when doubled.
+
 ## 1.9.0
 Released 23 February 2026.
 
