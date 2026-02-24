@@ -2,7 +2,8 @@
 
 # Release notes
 
-## Upcoming release
+## 1.9.2
+Released 24 February 2026.
 
 * Fixed Soggins' duo artifacts not appearing in-game.
 
