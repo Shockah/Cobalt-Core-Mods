@@ -2,6 +2,10 @@
 
 # Release notes
 
+## Upcoming release
+
+* Fixed Extra Apologies granting twice as many apologies.
+
 ## 1.9.2
 Released 24 February 2026.
 

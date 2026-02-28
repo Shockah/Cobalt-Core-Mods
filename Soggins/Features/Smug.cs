@@ -33,12 +33,6 @@ internal sealed class SmugStatusManager : HookManager<ISmugHook>
 	{
 		public int ModifySmugSwing(State state, Combat combat, Card card, int amount)
 			=> (card as IRegisterableCard)?.ModifySmugSwing(state, combat, amount) ?? amount;
-
-		public int ModifyApologyAmountForBotchingBySmug(State state, Combat combat, Card card, int amount)
-		{
-			var extraApologies = state.ship.Get((Status)Instance.ExtraApologiesStatus.Id!.Value);
-			return Math.Max(amount + extraApologies, 1);
-		}
 	}
 
 	private sealed class SmugClampStatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook
