@@ -5,6 +5,7 @@
 ## Upcoming release
 
 * Fixed Extra Apologies granting twice as many apologies.
+* Fixed the Mood Swing card not granting apologies when botched.
 
 ## 1.9.2
 Released 24 February 2026.
