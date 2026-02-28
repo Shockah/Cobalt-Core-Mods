@@ -42,9 +42,6 @@ public sealed class HumiliatingAttackCard : Card, IRegisterableCard, IFrogproofC
 		return data;
 	}
 
-	public bool IsFrogproof(State state, Combat? combat)
-		=> upgrade != Upgrade.B;
-
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
