@@ -1,0 +1,16 @@
+﻿{
+  "UniqueName": "Shockah.NewLight",
+  "Version": "{{ModVersion}}",
+  "DisplayName": "New Light - the Destiny mod",
+  "Description": "TBD",
+  "Author": "Shockah",
+  "RequiredApiVersion": "1.21.0",
+  "EntryPointAssembly": "NewLight.dll",
+  "LoadPhase": "AfterDbInit",
+  "Dependencies": [
+    {
+      "UniqueName": "Shockah.Kokoro",
+      "Version": "2.0.0"
+    }
+  ]
+}

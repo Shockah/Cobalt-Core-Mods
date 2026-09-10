@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <RootNamespace>Shockah.NewLight</RootNamespace>
+        <Version>0.1.0</Version>
+    </PropertyGroup>
+    <ItemGroup>
+        <ModFiles Include="i18n/**" />
+        <ModFiles Include="assets/**" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="assets\CardTraits\WeaponPerks\" />
+    </ItemGroup>
+    <Import Project="..\Configuration.Mod.props" />
+</Project>

@@ -21,6 +21,7 @@
   <Project Path="Kokoro/Kokoro.csproj" />
   <Project Path="MORE/MORE.csproj" />
   <Project Path="Natasha/Natasha.csproj" />
+  <Project Path="NewLight/NewLight.csproj" />
   <Project Path="Rerolls/Rerolls.csproj" />
   <Project Path="Soggins/Soggins.csproj" />
   <Project Path="StarforgeInitiative/StarforgeInitiative.csproj" />
