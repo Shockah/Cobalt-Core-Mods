@@ -20,9 +20,11 @@ internal sealed class ModEntry : SimpleMod
 	
 	private static readonly IEnumerable<Type> LegendaryWeaponTypes = [
 		typeof(AdaptiveSidearmCard),
+		typeof(AutoRifleCard),
 		typeof(BurstSidearmCard),
 		typeof(HandCannonCard),
 		typeof(PulseRifleCard),
+		typeof(SubmachineGunCard),
 	];
 	
 	private static readonly IEnumerable<Type> WeaponPerkTypes = [
@@ -32,6 +34,7 @@ internal sealed class ModEntry : SimpleMod
 	];
 	
 	private static readonly IEnumerable<Type> CardTraitTypes = [
+		typeof(FullAutoCardTrait),
 		.. WeaponPerkTypes,
 	];
 	

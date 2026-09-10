@@ -17,6 +17,13 @@ internal class HandCannonCard : LegendaryWeaponCard, IRegisterable
 		{ WeaponElement.Stasis, "Eyasluna" },
 		{ WeaponElement.Strand, "Better Devils" },
 	};
+
+	protected override List<string> AllowedPerkUniqueNames { get; } = [
+		.. GlobalAllowedPerkUniqueNames,
+		ModEntry.Instance.Helper.Content.Cards.RetainCardTrait.UniqueName,
+		ModEntry.Instance.Helper.Content.Cards.RecycleCardTrait.UniqueName,
+		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
+	];
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -35,7 +42,7 @@ internal class HandCannonCard : LegendaryWeaponCard, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> new() { cost = 1 };
+		=> base.GetData(state) with { cost = 1 };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [

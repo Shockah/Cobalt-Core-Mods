@@ -6,16 +6,16 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class AdaptiveSidearmCard : LegendaryWeaponCard, IRegisterable
+internal class AutoRifleCard : LegendaryWeaponCard, IRegisterable
 {
 	protected override Dictionary<WeaponElement, string> WeaponNames { get; } = new()
 	{
-		{ WeaponElement.Kinetic, "Spoiler Alert" },
-		{ WeaponElement.Arc, "Anonymous Autumn" },
-		{ WeaponElement.Solar, "Drang" },
-		{ WeaponElement.Void, "Seventh Seraph SI-2" },
-		{ WeaponElement.Stasis, "Faustus Decline" },
-		{ WeaponElement.Strand, "Mykel's Reverence" },
+		{ WeaponElement.Kinetic, "Breakneck" },
+		{ WeaponElement.Arc, "Shadow Price" },
+		{ WeaponElement.Solar, "The Ringing Nail" },
+		{ WeaponElement.Void, "Gnawing Hunger" },
+		{ WeaponElement.Stasis, "Horror Story" },
+		{ WeaponElement.Strand, "Rufus's Fury" },
 	};
 
 	protected override List<string> AllowedPerkUniqueNames { get; } = [
@@ -24,10 +24,10 @@ internal class AdaptiveSidearmCard : LegendaryWeaponCard, IRegisterable
 		ModEntry.Instance.Helper.Content.Cards.RecycleCardTrait.UniqueName,
 		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
 	];
-
+	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
+		var entry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
@@ -39,10 +39,21 @@ internal class AdaptiveSidearmCard : LegendaryWeaponCard, IRegisterable
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Weapon.png"), StableSpr.cards_Cannon).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Weapon", "name"]).Localize,
 		});
+		
+		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, 3);
 	}
 
 	public override CardData GetData(State state)
-		=> base.GetData(state) with { cost = 0 };
+		=> base.GetData(state) with { cost = 1 };
+
+	public override IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
+	{
+		var baseResults = base.GetInnateTraits(state);
+		var results = (baseResults as HashSet<ICardTraitEntry>) ?? new HashSet<ICardTraitEntry>(baseResults);
+		results.Add(FullAutoCardTrait.Trait);
+		results.Add(ModEntry.Instance.KokoroApi.Finite.Trait);
+		return results;
+	}
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [

@@ -17,6 +17,13 @@ internal class BurstSidearmCard : LegendaryWeaponCard, IRegisterable
 		{ WeaponElement.Stasis, "Peacebond" },
 		{ WeaponElement.Strand, "Breachlight" },
 	};
+
+	protected override List<string> AllowedPerkUniqueNames { get; } = [
+		.. GlobalAllowedPerkUniqueNames,
+		ModEntry.Instance.Helper.Content.Cards.RetainCardTrait.UniqueName,
+		ModEntry.Instance.Helper.Content.Cards.RecycleCardTrait.UniqueName,
+		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
+	];
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -35,7 +42,7 @@ internal class BurstSidearmCard : LegendaryWeaponCard, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> new() { cost = 0 };
+		=> base.GetData(state) with { cost = 0 };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [

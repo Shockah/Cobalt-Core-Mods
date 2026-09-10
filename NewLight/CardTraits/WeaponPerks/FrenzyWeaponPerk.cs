@@ -36,14 +36,16 @@ internal sealed class FrenzyWeaponPerk : IRegisterable
 			]
 		});
 		
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AAfterPlayerTurn), nameof(AAfterPlayerTurn.Begin)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAfterPlayerTurn_Begin_Postfix))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AStartPlayerTurn), nameof(AStartPlayerTurn.Begin)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AStartPlayerTurn_Begin_Postfix))
-		);
+		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnStart), (Combat combat) =>
+		{
+			combat.PlayerDidDamageThisTurn = false;
+		});
+		
+		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnEnd), (State state, Combat combat) =>
+		{
+			combat.PlayerDidDamageLastTurn = combat.PlayerDidDamageThisTurn;
+		});
+		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
 			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_NormalDamage_Prefix)),
@@ -59,12 +61,6 @@ internal sealed class FrenzyWeaponPerk : IRegisterable
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetActualDamage_Transpiler))
 		);
 	}
-
-	private static void AAfterPlayerTurn_Begin_Postfix(Combat c)
-		=> c.PlayerDidDamageLastTurn = c.PlayerDidDamageThisTurn;
-
-	private static void AStartPlayerTurn_Begin_Postfix(Combat c)
-		=> c.PlayerDidDamageThisTurn = false;
 	
 	private static void Ship_NormalDamage_Prefix(Ship __instance, out (int Hull, int Shield, int TempShield) __state)
 		=> __state = (__instance.hull, __instance.Get(Status.shield), __instance.Get(Status.tempShield));
@@ -135,7 +131,7 @@ internal sealed class FrenzyWeaponPerk : IRegisterable
 	}
 }
 
-file static class FrenzyCardTraitExt
+file static class FrenzyWeaponPerkExt
 {
 	extension(Combat combat)
 	{

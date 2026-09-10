@@ -10,7 +10,7 @@ internal abstract class LegendaryWeaponCard : Card, IHasCustomCardTraits
 {
 	protected const Rarity Rarity = global::Rarity.common;
 	
-	private static readonly List<string> GlobalAllowedPerkUniqueNames = [
+	protected static readonly List<string> GlobalAllowedPerkUniqueNames = [
 		FrenzyWeaponPerk.Trait.UniqueName,
 		SurroundedWeaponPerk.Trait.UniqueName,
 		VorpalWeaponWeaponPerk.Trait.UniqueName,
@@ -61,7 +61,18 @@ internal abstract class LegendaryWeaponCard : Card, IHasCustomCardTraits
 		return ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(BPerkUniqueName);
 	}
 
-	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
+	public override CardData GetData(State state)
+	{
+		var innateTraits = GetInnateTraits(state);
+		return new()
+		{
+			retain = innateTraits.Contains(ModEntry.Instance.Helper.Content.Cards.RetainCardTrait),
+			recycle = innateTraits.Contains(ModEntry.Instance.Helper.Content.Cards.RecycleCardTrait),
+			buoyant = innateTraits.Contains(ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait),
+		};
+	}
+
+	public virtual IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 	{
 		var results = new HashSet<ICardTraitEntry>();
 		
