@@ -4,6 +4,13 @@
 			"Name": "Full Auto",
 			"Description": "After playing this card for the first time each turn, it gets <c=cardtrait>discounted</c> by 1."
 		},
+		"Tension": {
+			"Name": "Tension",
+			"Description": {
+				"WithoutCard": "Deals more damage if retained last turn.",
+				"WithCard": "Deals {{Amount}} more damage if retained last turn."
+			}
+		},
 		"WeaponPerk": {
 			"AutoLoadingHolster": {
 				"Name": "Auto-Loading Holster",
