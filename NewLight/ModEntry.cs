@@ -30,7 +30,9 @@ internal sealed class ModEntry : SimpleMod
 	];
 	
 	private static readonly IEnumerable<Type> WeaponPerkTypes = [
+		typeof(EnviousArsenalWeaponPerk),
 		typeof(FrenzyWeaponPerk),
+		typeof(HealClipWeaponPerk),
 		typeof(SurroundedWeaponPerk),
 		typeof(VorpalWeaponWeaponPerk),
 	];
@@ -38,8 +40,8 @@ internal sealed class ModEntry : SimpleMod
 	private static readonly IEnumerable<Type> FeatureTypes = [
 		typeof(Ammo),
 		typeof(FullAutoCardTrait),
-		.. WeaponPerkTypes,
 		typeof(LegendaryWeaponCard),
+		.. WeaponPerkTypes,
 	];
 	
 	private static readonly IEnumerable<Type> RegisterableTypes = [

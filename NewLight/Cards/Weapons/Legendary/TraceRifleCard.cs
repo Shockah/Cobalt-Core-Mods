@@ -18,7 +18,7 @@ internal class TraceRifleCard : LegendaryWeaponCard, IRegisterable
 	};
 
 	protected override List<string> AllowedPerkUniqueNames { get; } = [
-		.. GlobalAllowedPerkUniqueNames,
+		.. GlobalAllowedPerkUniqueNames.Value,
 		ModEntry.Instance.Helper.Content.Cards.RetainCardTrait.UniqueName,
 		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
 	];

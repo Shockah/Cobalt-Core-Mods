@@ -18,9 +18,10 @@ internal class MachineGunCard : LegendaryWeaponCard, IRegisterable
 	};
 
 	protected override List<string> AllowedPerkUniqueNames { get; } = [
-		.. GlobalAllowedPerkUniqueNames,
+		.. GlobalAllowedPerkUniqueNames.Value,
 		ModEntry.Instance.Helper.Content.Cards.RetainCardTrait.UniqueName,
 		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
+		EnviousArsenalWeaponPerk.Trait.UniqueName,
 	];
 
 	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)

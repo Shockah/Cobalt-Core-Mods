@@ -10,22 +10,24 @@ using Nickel;
 
 namespace Shockah.NewLight;
 
-internal abstract class LegendaryWeaponCard : Card, IHasCustomCardTraits, IRegisterable
+internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, IRegisterable
 {
 	protected const Rarity RARITY = Rarity.common;
 	
-	protected static readonly List<string> GlobalAllowedPerkUniqueNames = [
+	protected static readonly Lazy<List<string>> GlobalAllowedPerkUniqueNames = new(() => [
 		FrenzyWeaponPerk.Trait.UniqueName,
+		HealClipWeaponPerk.Trait.UniqueName,
 		SurroundedWeaponPerk.Trait.UniqueName,
 		VorpalWeaponWeaponPerk.Trait.UniqueName,
-	];
+	]);
 
 	private static readonly Dictionary<WeaponElement, ISpriteEntry> ElementCardFrames = [];
+	internal static readonly Dictionary<string, WeaponElement> WeaponPerkElementAssignments = [];
 	
 	[JsonProperty] private string? BasePerkUniqueName, APerkUniqueName, BPerkUniqueName;
 	[JsonProperty] private WeaponElement? WeaponElement;
 
-	protected virtual List<string> AllowedPerkUniqueNames => GlobalAllowedPerkUniqueNames;
+	protected virtual List<string> AllowedPerkUniqueNames => GlobalAllowedPerkUniqueNames.Value;
 
 	protected abstract Dictionary<WeaponElement, string> ElementWeaponNames { get; }
 
@@ -48,7 +50,9 @@ internal abstract class LegendaryWeaponCard : Card, IHasCustomCardTraits, IRegis
 
 		WeaponElement = ElementWeaponNames.Keys.Skip(state.rngCardOfferings.NextInt() % ElementWeaponNames.Count).First();
 		
-		var perks = AllowedPerkUniqueNames.ToList();
+		var perks = AllowedPerkUniqueNames
+			.Where(name => !WeaponPerkElementAssignments.TryGetValue(name, out var element) || element == WeaponElement)
+			.ToList();
 		
 		var perkIndex = state.rngCardOfferings.NextInt() % perks.Count;
 		BasePerkUniqueName = perks[perkIndex];
