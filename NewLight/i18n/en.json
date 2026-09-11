@@ -5,6 +5,10 @@
 			"Description": "After playing this card for the first time each turn, it gets <c=cardtrait>discounted</c> by 1."
 		},
 		"WeaponPerk": {
+			"AutoLoadingHolster": {
+				"Name": "Auto-Loading Holster",
+				"Description": "When drawn, gain 1 <c=status>ammo</c> of this card's cost."
+			},
 			"EnviousArsenal": {
 				"Name": "Envious Arsenal",
 				"Description": "While in hand, playing another <c=cardtrait>Weapon</c> <c=cardtrait>discounts</c> this card by 1."

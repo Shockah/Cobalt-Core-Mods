@@ -21,6 +21,7 @@ internal class TraceRifleCard : LegendaryWeaponCard, IRegisterable
 		.. GlobalAllowedPerkUniqueNames.Value,
 		ModEntry.Instance.Helper.Content.Cards.RetainCardTrait.UniqueName,
 		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
+		AutoLoadingHolsterWeaponPerk.Trait.UniqueName,
 	];
 
 	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)

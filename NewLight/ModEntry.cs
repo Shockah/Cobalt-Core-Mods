@@ -30,6 +30,7 @@ internal sealed class ModEntry : SimpleMod
 	];
 	
 	private static readonly IEnumerable<Type> WeaponPerkTypes = [
+		typeof(AutoLoadingHolsterWeaponPerk),
 		typeof(EnviousArsenalWeaponPerk),
 		typeof(FrenzyWeaponPerk),
 		typeof(HealClipWeaponPerk),
