@@ -29,6 +29,10 @@
 				"Name": "Quickdraw",
 				"Description": "Costs 1 less energy if played first in a turn."
 			},
+			"Rampage": {
+				"Name": "Rampage",
+				"Description": "Deals 1 more damage for each time this card was played this turn."
+			},
 			"RepulsorBrace": {
 				"Name": "Repulsor Brace",
 				"Description": "Once per turn, playing this card gives you 1 <c=status>temp shield</c>."

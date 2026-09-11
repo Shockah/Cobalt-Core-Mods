@@ -27,9 +27,9 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 	private static readonly Dictionary<WeaponElement, ISpriteEntry> ElementCardFrames = [];
 	internal static readonly Dictionary<string, WeaponElement> WeaponPerkElementAssignments = [];
 	internal static readonly HashSet<string> DamageWeaponPerks = [];
-	
-	[JsonProperty] private string? BasePerkUniqueName, APerkUniqueName, BPerkUniqueName;
+
 	[JsonProperty] private WeaponElement? WeaponElement;
+	[JsonProperty] private Dictionary<Upgrade, string> PerkUniqueNames = [];
 
 	protected virtual List<string> AllowedPerkUniqueNames => GlobalAllowedPerkUniqueNames.Value;
 
@@ -46,10 +46,10 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 		);
 	}
 
-	[MemberNotNull(nameof(BasePerkUniqueName), nameof(APerkUniqueName), nameof(BPerkUniqueName), nameof(WeaponElement))]
+	[MemberNotNull(nameof(WeaponElement))]
 	private void InitializeIfNeeded(State state)
 	{
-		if (WeaponElement is not null && BasePerkUniqueName is not null && APerkUniqueName is not null && BPerkUniqueName is not null)
+		if (WeaponElement is not null && PerkUniqueNames.Count != 0)
 			return;
 
 		WeaponElement = ElementWeaponNames.Keys.Skip(state.rngCardOfferings.NextInt() % ElementWeaponNames.Count).First();
@@ -57,24 +57,31 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 		var perks = AllowedPerkUniqueNames
 			.Where(name => !WeaponPerkElementAssignments.TryGetValue(name, out var element) || element == WeaponElement)
 			.ToList();
-		
-		var perkIndex = state.rngCardOfferings.NextInt() % perks.Count;
-		BasePerkUniqueName = perks[perkIndex];
-		perks.RemoveAt(perkIndex);
 
-		if (DamageWeaponPerks.Contains(BasePerkUniqueName))
-			perks = perks.Where(perk => !DamageWeaponPerks.Contains(perk)).ToList();
+		var elementUniquePerks = perks
+			.Where(name => WeaponPerkElementAssignments.TryGetValue(name, out var element) && element == WeaponElement)
+			.ToList();
 		
-		perkIndex = state.rngCardOfferings.NextInt() % perks.Count;
-		APerkUniqueName = perks[perkIndex];
-		perks.RemoveAt(perkIndex);
+		var upgradesLeft = GetMeta().upgradesTo.Prepend(Upgrade.None).ToList();
 
-		if (DamageWeaponPerks.Contains(APerkUniqueName))
-			perks = perks.Where(perk => !DamageWeaponPerks.Contains(perk)).ToList();
-		
-		perkIndex = state.rngCardOfferings.NextInt() % perks.Count;
-		BPerkUniqueName = perks[perkIndex];
-		perks.RemoveAt(perkIndex);
+		if (elementUniquePerks.Count != 0 && state.rngCardOfferings.Next() < 0.5)
+		{
+			var upgrade = upgradesLeft[state.rngCardOfferings.NextInt() % upgradesLeft.Count];
+			var elementUniquePerk = elementUniquePerks[state.rngCardOfferings.NextInt() % elementUniquePerks.Count];
+			PerkUniqueNames[upgrade] = elementUniquePerk;
+			perks.Remove(elementUniquePerk);
+			upgradesLeft.Remove(upgrade);
+		}
+
+		foreach (var upgrade in upgradesLeft)
+		{
+			IEnumerable<Upgrade> toCheck = upgrade == Upgrade.None ? PerkUniqueNames.Keys : [Upgrade.None];
+			var hasDamagePerk = toCheck.Any(otherUpgrade => PerkUniqueNames.TryGetValue(otherUpgrade, out var perk) && DamageWeaponPerks.Contains(perk));
+			var possiblePerks = hasDamagePerk ? perks.Where(perk => !DamageWeaponPerks.Contains(perk)).ToList() : perks;
+			var perk = possiblePerks[state.rngCardOfferings.NextInt() % possiblePerks.Count];
+			PerkUniqueNames[upgrade] = perk;
+			perks.Remove(perk);
+		}
 	}
 
 	public override CardData GetData(State state)
@@ -93,20 +100,10 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 		var results = new HashSet<ICardTraitEntry>();
 		InitializeIfNeeded(state);
 		
-		if (ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(BasePerkUniqueName) is { } basePerk)
+		if (PerkUniqueNames.TryGetValue(Upgrade.None, out var basePerkUniqueName) && ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(basePerkUniqueName) is { } basePerk)
 			results.Add(basePerk);
-
-		switch (upgrade)
-		{
-			case Upgrade.A:
-				if (ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(APerkUniqueName) is { } aPerk)
-					results.Add(aPerk);
-				break;
-			case Upgrade.B:
-				if (ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(BPerkUniqueName) is { } bPerk)
-					results.Add(bPerk);
-				break;
-		}
+		if (upgrade != Upgrade.None && PerkUniqueNames.TryGetValue(upgrade, out var otherPerkUniqueName) && ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(otherPerkUniqueName) is { } otherPerk)
+			results.Add(otherPerk);
 		
 		return results;
 	}

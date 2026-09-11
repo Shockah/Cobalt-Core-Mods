@@ -71,9 +71,11 @@ internal sealed class HeadstoneWeaponPerk : IRegisterable
 			return;
 		if (part.GetDamageModifier() is not (PDamMod.brittle or PDamMod.weak))
 			return;
-		if (ModEntry.Instance.KokoroApi.ActionInfo.GetSourceCardId(AttackContext) is not { } sourceCardId)
+		if (ModEntry.Instance.KokoroApi.ActionInfo.GetSourceCard(s, AttackContext) is not { } sourceCard)
 			return;
-		if (!c.HeadstoneTriggersThisTurn.Add(sourceCardId))
+		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, sourceCard, Trait))
+			return;
+		if (!c.HeadstoneTriggersThisTurn.Add(sourceCard.uuid))
 			return;
 
 		c.Queue(new ASpawn { fromPlayer = true, fromX = worldGridX - s.ship.x, thing = new Geode { yAnimation = 0 } });
