@@ -23,8 +23,10 @@ internal sealed class ModEntry : SimpleMod
 		typeof(AutoRifleCard),
 		typeof(BurstSidearmCard),
 		typeof(HandCannonCard),
+		typeof(MachineGunCard),
 		typeof(PulseRifleCard),
 		typeof(SubmachineGunCard),
+		typeof(TraceRifleCard),
 	];
 	
 	private static readonly IEnumerable<Type> WeaponPerkTypes = [
@@ -33,14 +35,15 @@ internal sealed class ModEntry : SimpleMod
 		typeof(VorpalWeaponWeaponPerk),
 	];
 	
-	private static readonly IEnumerable<Type> CardTraitTypes = [
+	private static readonly IEnumerable<Type> FeatureTypes = [
+		typeof(Ammo),
 		typeof(FullAutoCardTrait),
 		.. WeaponPerkTypes,
 	];
 	
 	private static readonly IEnumerable<Type> RegisterableTypes = [
 		typeof(GhostArtifact),
-		.. CardTraitTypes,
+		.. FeatureTypes,
 		.. LegendaryWeaponTypes,
 	];
 	

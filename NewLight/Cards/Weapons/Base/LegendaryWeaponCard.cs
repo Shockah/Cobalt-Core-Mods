@@ -8,7 +8,7 @@ namespace Shockah.NewLight;
 
 internal abstract class LegendaryWeaponCard : Card, IHasCustomCardTraits
 {
-	protected const Rarity Rarity = global::Rarity.common;
+	protected const Rarity RARITY = Rarity.common;
 	
 	protected static readonly List<string> GlobalAllowedPerkUniqueNames = [
 		FrenzyWeaponPerk.Trait.UniqueName,
@@ -43,24 +43,6 @@ internal abstract class LegendaryWeaponCard : Card, IHasCustomCardTraits
 		perks.RemoveAt(perkIndex);
 	}
 
-	public ICardTraitEntry? ObtainBasePerk(State state)
-	{
-		InitializeIfNeeded(state);
-		return ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(BasePerkUniqueName);
-	}
-	
-	public ICardTraitEntry? ObtainAPerk(State state)
-	{
-		InitializeIfNeeded(state);
-		return ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(APerkUniqueName);
-	}
-	
-	public ICardTraitEntry? ObtainBPerk(State state)
-	{
-		InitializeIfNeeded(state);
-		return ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(BPerkUniqueName);
-	}
-
 	public override CardData GetData(State state)
 	{
 		var innateTraits = GetInnateTraits(state);
@@ -75,18 +57,19 @@ internal abstract class LegendaryWeaponCard : Card, IHasCustomCardTraits
 	public virtual IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 	{
 		var results = new HashSet<ICardTraitEntry>();
+		InitializeIfNeeded(state);
 		
-		if (ObtainBasePerk(state) is { } basePerk)
+		if (ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(BasePerkUniqueName) is { } basePerk)
 			results.Add(basePerk);
 
 		switch (upgrade)
 		{
 			case Upgrade.A:
-				if (ObtainAPerk(state) is { } aPerk)
+				if (ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(APerkUniqueName) is { } aPerk)
 					results.Add(aPerk);
 				break;
 			case Upgrade.B:
-				if (ObtainBPerk(state) is { } bPerk)
+				if (ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(BPerkUniqueName) is { } bPerk)
 					results.Add(bPerk);
 				break;
 		}

@@ -54,7 +54,13 @@ file static class FullAutoCardTraitExt
 		public bool FullAutoActivatedThisTurn
 		{
 			get => ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(card, "FullAutoActivatedThisTurn");
-			set => ModEntry.Instance.Helper.ModData.SetModData(card, "FullAutoActivatedThisTurn", value);
+			set
+			{
+				if (value)
+					ModEntry.Instance.Helper.ModData.SetModData(card, "FullAutoActivatedThisTurn", true);
+				else
+					ModEntry.Instance.Helper.ModData.RemoveModData(card, "FullAutoActivatedThisTurn");
+			}
 		}
 	}
 }

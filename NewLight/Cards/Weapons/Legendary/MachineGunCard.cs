@@ -6,25 +6,23 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class SubmachineGunCard : LegendaryWeaponCard, IRegisterable
+internal class MachineGunCard : LegendaryWeaponCard, IRegisterable
 {
 	protected override Dictionary<WeaponElement, string> WeaponNames { get; } = new()
 	{
-		{ WeaponElement.Kinetic, "Submission" },
-		{ WeaponElement.Arc, "IKELOS SMG v1.0.3" },
-		{ WeaponElement.Solar, "MIDA Mini-Tool" },
-		{ WeaponElement.Void, "The Recluse" },
-		{ WeaponElement.Stasis, "Forensic Nightmare" },
-		{ WeaponElement.Strand, "The Immortal" },
+		{ WeaponElement.Arc, "21% Delirium" },
+		{ WeaponElement.Solar, "Fixed Odds" },
+		{ WeaponElement.Void, "Hammerhead" },
+		{ WeaponElement.Stasis, "Chain of Command" },
+		{ WeaponElement.Strand, "DIABLERETS 06" },
 	};
 
 	protected override List<string> AllowedPerkUniqueNames { get; } = [
 		.. GlobalAllowedPerkUniqueNames,
 		ModEntry.Instance.Helper.Content.Cards.RetainCardTrait.UniqueName,
-		ModEntry.Instance.Helper.Content.Cards.RecycleCardTrait.UniqueName,
 		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
 	];
-	
+
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		var entry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
@@ -40,11 +38,12 @@ internal class SubmachineGunCard : LegendaryWeaponCard, IRegisterable
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Weapon", "name"]).Localize,
 		});
 		
-		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, 2);
+		Ammo.SetBaseHeavyCost(entry.UniqueName, 1);
+		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, 3);
 	}
 
 	public override CardData GetData(State state)
-		=> base.GetData(state) with { cost = 1 };
+		=> base.GetData(state) with { cost = 0 };
 
 	public override IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 	{
@@ -57,7 +56,6 @@ internal class SubmachineGunCard : LegendaryWeaponCard, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new AAttack { damage = GetDmg(s, 0) },
-			new AAttack { damage = GetDmg(s, 1) },
+			new AAttack { damage = GetDmg(s, 3) },
 		];
 }

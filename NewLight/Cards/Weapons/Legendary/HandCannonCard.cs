@@ -33,7 +33,7 @@ internal class HandCannonCard : LegendaryWeaponCard, IRegisterable
 			Meta = new()
 			{
 				deck = ModEntry.Instance.GuardianDeck.Deck,
-				rarity = Rarity,
+				rarity = RARITY,
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Weapon.png"), StableSpr.cards_Cannon).Sprite,
