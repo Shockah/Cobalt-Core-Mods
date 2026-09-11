@@ -35,6 +35,8 @@ internal sealed class FrenzyWeaponPerk : IRegisterable
 				}
 			]
 		});
+
+		LegendaryWeaponCard.DamageWeaponPerks.Add(Trait.UniqueName);
 		
 		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnStart), (Combat combat) =>
 		{

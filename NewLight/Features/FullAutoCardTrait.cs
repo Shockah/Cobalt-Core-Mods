@@ -16,11 +16,11 @@ internal sealed class FullAutoCardTrait : IRegisterable
 		{
 			Icon = (_, card) => card?.FullAutoActivatedThisTurn == true ? inactiveIcon.Sprite : activeIcon.Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["CardTrait", "FullAuto", "Name"]).Localize,
-			Tooltips = (_, card) =>
+			Tooltips = (_, _) =>
 			[
 				new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::FullAuto")
 				{
-					Icon = card?.FullAutoActivatedThisTurn == true ? inactiveIcon.Sprite : activeIcon.Sprite,
+					Icon = activeIcon.Sprite,
 					TitleColor = Colors.cardtrait,
 					Title = ModEntry.Instance.Localizations.Localize(["CardTrait", "FullAuto", "Name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["CardTrait", "FullAuto", "Description"]),

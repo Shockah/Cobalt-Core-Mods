@@ -23,6 +23,7 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 
 	private static readonly Dictionary<WeaponElement, ISpriteEntry> ElementCardFrames = [];
 	internal static readonly Dictionary<string, WeaponElement> WeaponPerkElementAssignments = [];
+	internal static readonly HashSet<string> DamageWeaponPerks = [];
 	
 	[JsonProperty] private string? BasePerkUniqueName, APerkUniqueName, BPerkUniqueName;
 	[JsonProperty] private WeaponElement? WeaponElement;
@@ -57,10 +58,16 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 		var perkIndex = state.rngCardOfferings.NextInt() % perks.Count;
 		BasePerkUniqueName = perks[perkIndex];
 		perks.RemoveAt(perkIndex);
+
+		if (DamageWeaponPerks.Contains(BasePerkUniqueName))
+			perks = perks.Where(perk => !DamageWeaponPerks.Contains(perk)).ToList();
 		
 		perkIndex = state.rngCardOfferings.NextInt() % perks.Count;
 		APerkUniqueName = perks[perkIndex];
 		perks.RemoveAt(perkIndex);
+
+		if (DamageWeaponPerks.Contains(APerkUniqueName))
+			perks = perks.Where(perk => !DamageWeaponPerks.Contains(perk)).ToList();
 		
 		perkIndex = state.rngCardOfferings.NextInt() % perks.Count;
 		BPerkUniqueName = perks[perkIndex];

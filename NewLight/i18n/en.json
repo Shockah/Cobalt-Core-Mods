@@ -1,0 +1,30 @@
+{
+	"CardTrait": {
+		"FullAuto": {
+			"Name": "Full Auto",
+			"Description": "After playing this card for the first time each turn, it gets <c=cardtrait>discounted</c> by 1."
+		},
+		"WeaponPerk": {
+			"EnviousArsenal": {
+				"Name": "Envious Arsenal",
+				"Description": "While in hand, playing another <c=cardtrait>Weapon</c> <c=cardtrait>discounts</c> this card by 1."
+			},
+			"Frenzy": {
+				"Name": "Frenzy",
+				"Description": "Deals 1 more damage if you dealt any damage last turn."
+			},
+			"HealClip": {
+				"Name": "Heal Clip",
+				"Description": "If you end your turn with more than 0 energy after playing this card this turn, <c=heal>heal</c> 1."
+			},
+			"Surrounded": {
+				"Name": "Surrounded",
+				"Description": "Deals 1 more damage while the ships fully overlap."
+			},
+			"VorpalWeapon": {
+				"Name": "Vorpal Weapon",
+				"Description": "Deals 1 more damage against bosses."
+			}
+		}
+	}
+}

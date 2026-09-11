@@ -35,6 +35,8 @@ internal sealed class VorpalWeaponWeaponPerk : IRegisterable
 				}
 			]
 		});
+
+		LegendaryWeaponCard.DamageWeaponPerks.Add(Trait.UniqueName);
 		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActualDamage)),
