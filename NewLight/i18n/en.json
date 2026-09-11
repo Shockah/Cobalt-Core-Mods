@@ -25,6 +25,10 @@
 				"Name": "Quickdraw",
 				"Description": "Costs 1 less energy if played first in a turn."
 			},
+			"RepulsorBrace": {
+				"Name": "Repulsor Brace",
+				"Description": "Once per turn, playing this card gives you 1 <c=status>temp shield</c>."
+			},
 			"Surrounded": {
 				"Name": "Surrounded",
 				"Description": "Deals 1 more damage while the ships fully overlap."

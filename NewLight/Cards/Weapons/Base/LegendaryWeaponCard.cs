@@ -17,6 +17,7 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 	protected static readonly Lazy<List<string>> GlobalAllowedPerkUniqueNames = new(() => [
 		FrenzyWeaponPerk.Trait.UniqueName,
 		HealClipWeaponPerk.Trait.UniqueName,
+		RepulsorBraceWeaponPerk.Trait.UniqueName,
 		SurroundedWeaponPerk.Trait.UniqueName,
 		VorpalWeaponWeaponPerk.Trait.UniqueName,
 	]);
