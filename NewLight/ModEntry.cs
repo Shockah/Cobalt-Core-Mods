@@ -33,6 +33,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(AutoLoadingHolsterWeaponPerk),
 		typeof(EnviousArsenalWeaponPerk),
 		typeof(FrenzyWeaponPerk),
+		typeof(HeadstoneWeaponPerk),
 		typeof(HealClipWeaponPerk),
 		typeof(QuickdrawWeaponPerk),
 		typeof(RepulsorBraceWeaponPerk),

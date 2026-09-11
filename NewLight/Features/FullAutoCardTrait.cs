@@ -1,4 +1,5 @@
-﻿using Nanoray.PluginManager;
+﻿using System.Collections.Generic;
+using Nanoray.PluginManager;
 using Nickel;
 
 namespace Shockah.NewLight;
@@ -14,7 +15,7 @@ internal sealed class FullAutoCardTrait : IRegisterable
 		
 		Trait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("FullAuto", new()
 		{
-			Icon = (_, card) => card?.FullAutoActivatedThisTurn == true ? inactiveIcon.Sprite : activeIcon.Sprite,
+			Icon = (state, card) => card is not null && (MG.inst.g.state ?? state).route is Combat combat && combat.FullAutoCardsPlayedThisTurn.Contains(card.uuid) ? inactiveIcon.Sprite : activeIcon.Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["CardTrait", "FullAuto", "Name"]).Localize,
 			Tooltips = (_, _) =>
 			[
@@ -28,39 +29,28 @@ internal sealed class FullAutoCardTrait : IRegisterable
 			]
 		});
 		
-		helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (State state, Card card) =>
+		helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (Card card, State state, Combat combat) =>
 		{
-			if (card.FullAutoActivatedThisTurn)
-				return;
 			if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Trait))
+				return;
+			if (!combat.FullAutoCardsPlayedThisTurn.Add(card.uuid))
 				return;
 			
 			card.discount--;
-			card.FullAutoActivatedThisTurn = true;
 		});
 
-		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatEnd), (State state) =>
+		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnStart), (Combat combat) =>
 		{
-			foreach (var card in state.deck)
-				card.FullAutoActivatedThisTurn = false;
+			combat.FullAutoCardsPlayedThisTurn.Clear();
 		});
 	}
 }
 
 file static class FullAutoCardTraitExt
 {
-	extension(Card card)
+	extension(Combat combat)
 	{
-		public bool FullAutoActivatedThisTurn
-		{
-			get => ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(card, "FullAutoActivatedThisTurn");
-			set
-			{
-				if (value)
-					ModEntry.Instance.Helper.ModData.SetModData(card, "FullAutoActivatedThisTurn", true);
-				else
-					ModEntry.Instance.Helper.ModData.RemoveModData(card, "FullAutoActivatedThisTurn");
-			}
-		}
+		public HashSet<int> FullAutoCardsPlayedThisTurn
+			=> ModEntry.Instance.Helper.ModData.ObtainModData<HashSet<int>>(combat, "FullAutoCardsPlayedThisTurn");
 	}
 }

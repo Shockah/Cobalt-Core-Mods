@@ -15,7 +15,7 @@ internal sealed class RepulsorBraceWeaponPerk : IRegisterable
 		
 		Trait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("RepulsorBrace", new()
 		{
-			Icon = (state, card) => card is not null && state.route is Combat combat && combat.RepulsorBraceCardsPlayedThisTurn.Contains(card.uuid) ? inactiveIcon.Sprite : activeIcon.Sprite,
+			Icon = (state, card) => card is not null && (MG.inst.g.state ?? state).route is Combat combat && combat.RepulsorBraceCardsPlayedThisTurn.Contains(card.uuid) ? inactiveIcon.Sprite : activeIcon.Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["CardTrait", "WeaponPerk", "RepulsorBrace", "Name"]).Localize,
 			Tooltips = (_, _) =>
 			[
@@ -41,7 +41,7 @@ internal sealed class RepulsorBraceWeaponPerk : IRegisterable
 			combat.Queue(new AStatus { targetPlayer = true, status = Status.tempShield, statusAmount = 1 });
 		});
 		
-		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnEnd), (Combat combat) =>
+		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnStart), (Combat combat) =>
 		{
 			combat.RepulsorBraceCardsPlayedThisTurn.Clear();
 		});

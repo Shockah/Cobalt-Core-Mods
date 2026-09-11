@@ -17,6 +17,10 @@
 				"Name": "Frenzy",
 				"Description": "Deals 1 more damage if you dealt any damage last turn."
 			},
+			"Headstone": {
+				"Name": "Headstone",
+				"Description": "Once per turn, after hitting a <c=parttrait>weak</c> or <c=parttrait>brittle</c> part, create a <c=midrow>Geode</c> in front of it."
+			},
 			"HealClip": {
 				"Name": "Heal Clip",
 				"Description": "If you end your turn with more than 0 energy after playing this card this turn, <c=heal>heal</c> 1."
