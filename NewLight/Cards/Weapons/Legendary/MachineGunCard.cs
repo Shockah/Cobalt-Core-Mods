@@ -22,6 +22,7 @@ internal class MachineGunCard : LegendaryWeaponCard, IRegisterable
 		ModEntry.Instance.Helper.Content.Cards.RetainCardTrait.UniqueName,
 		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
 		EnviousArsenalWeaponPerk.Trait.UniqueName,
+		QuickdrawWeaponPerk.Trait.UniqueName,
 	];
 
 	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)

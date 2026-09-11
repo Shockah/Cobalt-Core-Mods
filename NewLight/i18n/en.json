@@ -21,6 +21,10 @@
 				"Name": "Heal Clip",
 				"Description": "If you end your turn with more than 0 energy after playing this card this turn, <c=heal>heal</c> 1."
 			},
+			"Quickdraw": {
+				"Name": "Quickdraw",
+				"Description": "Costs 1 less energy if played first in a turn."
+			},
 			"Surrounded": {
 				"Name": "Surrounded",
 				"Description": "Deals 1 more damage while the ships fully overlap."
