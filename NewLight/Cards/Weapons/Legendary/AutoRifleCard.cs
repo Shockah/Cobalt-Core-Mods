@@ -8,7 +8,7 @@ namespace Shockah.NewLight;
 
 internal class AutoRifleCard : LegendaryWeaponCard, IRegisterable
 {
-	protected override Dictionary<WeaponElement, string> WeaponNames { get; } = new()
+	protected override Dictionary<WeaponElement, string> ElementWeaponNames { get; } = new()
 	{
 		{ WeaponElement.Kinetic, "Breakneck" },
 		{ WeaponElement.Arc, "Shadow Price" },
@@ -25,7 +25,7 @@ internal class AutoRifleCard : LegendaryWeaponCard, IRegisterable
 		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
 	];
 	
-	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		var entry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 		{

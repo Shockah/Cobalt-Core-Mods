@@ -39,6 +39,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(Ammo),
 		typeof(FullAutoCardTrait),
 		.. WeaponPerkTypes,
+		typeof(LegendaryWeaponCard),
 	];
 	
 	private static readonly IEnumerable<Type> RegisterableTypes = [
@@ -63,11 +64,17 @@ internal sealed class ModEntry : SimpleMod
 		
 		GuardianDeck = helper.Content.Decks.RegisterDeck("Guardian", new()
 		{
-			Definition = new() { color = new("C2FF60"), titleColor = Colors.black },
+			Definition = new() { color = new("C2FF60"), titleColor = Colors.white },
 			DefaultCardArt = StableSpr.cards_colorless,
 			// BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
 			BorderSprite = StableSpr.cardShared_border_ephemeral,
-			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize
+			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize,
+			CardFrameOverride = args =>
+			{
+				if (args.Card is LegendaryWeaponCard legendary)
+					return legendary.OverrideCardFrame(args);
+				return args.DefaultFrameSprite;
+			},
 		});
 
 		foreach (var type in RegisterableTypes)

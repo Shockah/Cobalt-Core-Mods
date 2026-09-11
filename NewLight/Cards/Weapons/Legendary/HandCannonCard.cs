@@ -8,7 +8,7 @@ namespace Shockah.NewLight;
 
 internal class HandCannonCard : LegendaryWeaponCard, IRegisterable
 {
-	protected override Dictionary<WeaponElement, string> WeaponNames { get; } = new()
+	protected override Dictionary<WeaponElement, string> ElementWeaponNames { get; } = new()
 	{
 		{ WeaponElement.Kinetic, "Fatebringer" },
 		{ WeaponElement.Arc, "Nation of Beasts" },
@@ -25,7 +25,7 @@ internal class HandCannonCard : LegendaryWeaponCard, IRegisterable
 		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
 	];
 	
-	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 		{

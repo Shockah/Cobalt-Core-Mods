@@ -8,12 +8,12 @@ namespace Shockah.NewLight;
 
 internal class AdaptiveSidearmCard : LegendaryWeaponCard, IRegisterable
 {
-	protected override Dictionary<WeaponElement, string> WeaponNames { get; } = new()
+	protected override Dictionary<WeaponElement, string> ElementWeaponNames { get; } = new()
 	{
 		{ WeaponElement.Kinetic, "Spoiler Alert" },
 		{ WeaponElement.Arc, "Anonymous Autumn" },
 		{ WeaponElement.Solar, "Drang" },
-		{ WeaponElement.Void, "Seventh Seraph SI-2" },
+		{ WeaponElement.Void, "Compact Defender" },
 		{ WeaponElement.Stasis, "Faustus Decline" },
 		{ WeaponElement.Strand, "Mykel's Reverence" },
 	};
@@ -25,7 +25,7 @@ internal class AdaptiveSidearmCard : LegendaryWeaponCard, IRegisterable
 		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
 	];
 
-	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 		{

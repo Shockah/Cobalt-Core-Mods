@@ -8,13 +8,13 @@ namespace Shockah.NewLight;
 
 internal class MachineGunCard : LegendaryWeaponCard, IRegisterable
 {
-	protected override Dictionary<WeaponElement, string> WeaponNames { get; } = new()
+	protected override Dictionary<WeaponElement, string> ElementWeaponNames { get; } = new()
 	{
 		{ WeaponElement.Arc, "21% Delirium" },
 		{ WeaponElement.Solar, "Fixed Odds" },
 		{ WeaponElement.Void, "Hammerhead" },
 		{ WeaponElement.Stasis, "Chain of Command" },
-		{ WeaponElement.Strand, "DIABLERETS 06" },
+		{ WeaponElement.Strand, "Qua Vinctus IV" },
 	};
 
 	protected override List<string> AllowedPerkUniqueNames { get; } = [
@@ -23,7 +23,7 @@ internal class MachineGunCard : LegendaryWeaponCard, IRegisterable
 		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
 	];
 
-	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		var entry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
 		{
@@ -43,7 +43,7 @@ internal class MachineGunCard : LegendaryWeaponCard, IRegisterable
 	}
 
 	public override CardData GetData(State state)
-		=> base.GetData(state) with { cost = 0 };
+		=> base.GetData(state) with { cost = 1 };
 
 	public override IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 	{
