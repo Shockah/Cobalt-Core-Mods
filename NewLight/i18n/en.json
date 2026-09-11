@@ -33,6 +33,10 @@
 				"Name": "Repulsor Brace",
 				"Description": "Once per turn, playing this card gives you 1 <c=status>temp shield</c>."
 			},
+			"Rimestealer": {
+				"Name": "Rimestealer",
+				"Description": "Gain 1 <c=status>temp shield</c> when a <c=midrow>Geode</c> is destroyed with this card."
+			},
 			"Surrounded": {
 				"Name": "Surrounded",
 				"Description": "Deals 1 more damage while the ships fully overlap."

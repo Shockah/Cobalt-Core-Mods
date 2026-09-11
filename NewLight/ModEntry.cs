@@ -37,6 +37,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(HealClipWeaponPerk),
 		typeof(QuickdrawWeaponPerk),
 		typeof(RepulsorBraceWeaponPerk),
+		typeof(RimestealerWeaponPerk),
 		typeof(SurroundedWeaponPerk),
 		typeof(VorpalWeaponWeaponPerk),
 	];
