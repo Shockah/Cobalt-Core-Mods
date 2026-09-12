@@ -38,7 +38,7 @@ internal class AdaptiveSidearmCard : LegendaryWeaponCard, IRegisterable
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Weapon.png"), StableSpr.cards_Cannon).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Weapon", "name"]).Localize,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Weapon", "Legendary", "AdaptiveSidearm"]).Localize,
 		});
 	}
 

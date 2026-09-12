@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
@@ -26,6 +25,9 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 	private static readonly Dictionary<WeaponElement, ISpriteEntry> ElementCardFrames = [];
 	internal static readonly Dictionary<string, WeaponElement> WeaponPerkElementAssignments = [];
 	internal static readonly HashSet<string> DamageWeaponPerks = [];
+	
+	private static ICardTraitEntry RandomBaseWeaponPerkTrait = null!;
+	private static ICardTraitEntry RandomUpgradedWeaponPerkTrait = null!;
 
 	[JsonProperty] private WeaponElement? WeaponElement;
 	[JsonProperty] private Dictionary<Upgrade, string> PerkUniqueNames = [];
@@ -39,16 +41,56 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 		foreach (var element in Enum.GetValues<WeaponElement>())
 			ElementCardFrames[element] = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/CardFrames/LegendaryWeapons/{Enum.GetName(element)}.png"));
 		
+		var randomBaseWeaponPerkIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardTraits/RandomBaseWeaponPerk.png"));
+		var randomUpgradedWeaponPerkIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardTraits/RandomUpgradedWeaponPerk.png"));
+		
+		// reversed order for tooltip ordering reasons
+		RandomUpgradedWeaponPerkTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("RandomUpgradedWeaponPerk", new()
+		{
+			Icon = (_, _) => randomUpgradedWeaponPerkIcon.Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["CardTrait", "RandomUpgradedWeaponPerk", "Name"]).Localize,
+			Tooltips = (_, _) =>
+			[
+				new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::RandomUpgradedWeaponPerk")
+				{
+					Icon = randomUpgradedWeaponPerkIcon.Sprite,
+					TitleColor = Colors.cardtrait,
+					Title = ModEntry.Instance.Localizations.Localize(["CardTrait", "RandomUpgradedWeaponPerk", "Name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["CardTrait", "RandomUpgradedWeaponPerk", "Description"]),
+				}
+			]
+		});
+		RandomBaseWeaponPerkTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("RandomBaseWeaponPerk", new()
+		{
+			Icon = (_, _) => randomBaseWeaponPerkIcon.Sprite,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["CardTrait", "RandomBaseWeaponPerk", "Name"]).Localize,
+			Tooltips = (_, _) =>
+			[
+				new GlossaryTooltip($"cardtrait.{ModEntry.Instance.Package.Manifest.UniqueName}::RandomBaseWeaponPerk")
+				{
+					Icon = randomBaseWeaponPerkIcon.Sprite,
+					TitleColor = Colors.cardtrait,
+					Title = ModEntry.Instance.Localizations.Localize(["CardTrait", "RandomBaseWeaponPerk", "Name"]),
+					Description = ModEntry.Instance.Localizations.Localize(["CardTrait", "RandomBaseWeaponPerk", "Description"]),
+				}
+			]
+		});
+		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(GetLocName)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetLocName_Postfix))
 		);
 	}
 
-	[MemberNotNull(nameof(WeaponElement))]
 	private void InitializeIfNeeded(State state)
 	{
 		if (WeaponElement is not null && PerkUniqueNames.Count != 0)
+			return;
+
+		// ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+		if (MG.inst.g.state is not null)
+			state = MG.inst.g.state;
+		if (MG.inst.g.state?.FindCard(uuid) != this)
 			return;
 
 		WeaponElement = ElementWeaponNames.Keys.Skip(state.rngCardOfferings.NextInt() % ElementWeaponNames.Count).First();
@@ -98,11 +140,10 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 	{
 		var results = new HashSet<ICardTraitEntry>();
 		InitializeIfNeeded(state);
-		
-		if (PerkUniqueNames.TryGetValue(Upgrade.None, out var basePerkUniqueName) && ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(basePerkUniqueName) is { } basePerk)
-			results.Add(basePerk);
-		if (upgrade != Upgrade.None && PerkUniqueNames.TryGetValue(upgrade, out var otherPerkUniqueName) && ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(otherPerkUniqueName) is { } otherPerk)
-			results.Add(otherPerk);
+
+		results.Add((PerkUniqueNames.TryGetValue(Upgrade.None, out var basePerkUniqueName) ? ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(basePerkUniqueName) : null) ?? RandomBaseWeaponPerkTrait);
+		if (upgrade != Upgrade.None)
+			results.Add((PerkUniqueNames.TryGetValue(upgrade, out var upgradedPerkUniqueName) ? ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(upgradedPerkUniqueName) : null) ?? RandomUpgradedWeaponPerkTrait);
 		
 		return results;
 	}
@@ -111,22 +152,22 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 	{
 		if (__instance is not LegendaryWeaponCard legendary)
 			return;
+		
+		if (MG.inst.g?.state is { } state)
+			legendary.InitializeIfNeeded(state);
+		
+		if (legendary.WeaponElement is not { } element)
+			return;
 
-		if (legendary.WeaponElement is null)
-		{
-			if (MG.inst.g?.state is { } state)
-				legendary.InitializeIfNeeded(state);
-			else
-				return;
-		}
-
-		__result = legendary.ElementWeaponNames[legendary.WeaponElement.Value];
+		__result = legendary.ElementWeaponNames[element];
 	}
 
 	internal Spr OverrideCardFrame(DeckConfiguration.CardFrameOverrideArgs args)
 	{
-		var state = args.State == DB.fakeState ? MG.inst.g.state : args.State;
-		InitializeIfNeeded(state);
-		return ElementCardFrames[WeaponElement.Value].Sprite;
+		InitializeIfNeeded(args.State);
+
+		if (WeaponElement is { } element)
+			return ElementCardFrames[element].Sprite;
+		return ElementCardFrames[NewLight.WeaponElement.Kinetic].Sprite;
 	}
 }

@@ -6,7 +6,7 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class BowCard : LegendaryWeaponCard, IRegisterable
+internal class CombatBowCard : LegendaryWeaponCard, IRegisterable
 {
 	protected override Dictionary<WeaponElement, string> ElementWeaponNames { get; } = new()
 	{
@@ -40,7 +40,7 @@ internal class BowCard : LegendaryWeaponCard, IRegisterable
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Weapon.png"), StableSpr.cards_Cannon).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "Weapon", "name"]).Localize,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Weapon", "Legendary", "CombatBow"]).Localize,
 		});
 		
 		TensionCardTrait.SetTension(entry.UniqueName, 2);

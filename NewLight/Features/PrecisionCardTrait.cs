@@ -87,7 +87,7 @@ internal sealed class PrecisionCardTrait : IRegisterable
 		if (Icons.TryGetValue(amount, out var icon))
 			return icon;
 
-		icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite($"Tension{amount}", () =>
+		icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite($"Precision{amount}", () =>
 		{
 			var baseIcon = SpriteLoader.Get(BaseIcon.Sprite)!;
 			return TextureUtils.CreateTexture(new(baseIcon.Width, baseIcon.Height)

@@ -22,8 +22,8 @@ internal sealed class ModEntry : SimpleMod
 		typeof(AdaptiveSniperRifleCard),
 		typeof(AdaptiveSidearmCard),
 		typeof(AutoRifleCard),
-		typeof(BowCard),
 		typeof(BurstSidearmCard),
+		typeof(CombatBowCard),
 		typeof(HandCannonCard),
 		typeof(HighImpactSniperRifleCard),
 		typeof(LinearFusionRifleCard),
@@ -79,7 +79,7 @@ internal sealed class ModEntry : SimpleMod
 		
 		GuardianDeck = helper.Content.Decks.RegisterDeck("Guardian", new()
 		{
-			Definition = new() { color = new("C2FF60"), titleColor = Colors.white },
+			Definition = new() { color = new("FFFFFF"), titleColor = Colors.white },
 			DefaultCardArt = StableSpr.cards_colorless,
 			// BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
 			BorderSprite = StableSpr.cardShared_border_ephemeral,

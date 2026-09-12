@@ -11,6 +11,14 @@
 				"WithCard": "Deals <c=boldPink>{{Amount}}</c> more damage to <c=parttrait>weak</c>/<c=parttrait>brittle</c> parts."
 			}
 		},
+		"RandomBaseWeaponPerk": {
+			"Name": "Weapon Perk",
+			"Description": "A random weapon perk."
+		},
+		"RandomUpgradedWeaponPerk": {
+			"Name": "Weapon Perk",
+			"Description": "Another random weapon perk."
+		},
 		"Tension": {
 			"Name": "Tension",
 			"Description": {
@@ -62,6 +70,25 @@
 			"VorpalWeapon": {
 				"Name": "Vorpal Weapon",
 				"Description": "Deals 1 more damage against bosses."
+			}
+		}
+	},
+	"Card": {
+		"Weapon": {
+			"Legendary": {
+				"AdaptiveSidearm": "Adaptive Sidearm",
+				"AdaptiveSniperRifle": "Adaptive SniperRifle",
+				"AutoRifle": "Auto Rifle",
+				"BurstSidearm": "Burst Sidearm",
+				"CombatBow": "Combat Bow",
+				"HandCannon": "Hand Cannon",
+				"HighImpactSniperRifle": "Hi-Impact SniperRifle",
+				"LinearFusionRifle": "Linear FusionRifle",
+				"MachineGun": "Machine Gun",
+				"PulseRifle": "Pulse Rifle",
+				"ScoutRifle": "Scout Rifle",
+				"SubmachineGun": "Submachine Gun",
+				"TraceRifle": "Trace Rifle"
 			}
 		}
 	}
