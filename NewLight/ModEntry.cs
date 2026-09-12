@@ -37,6 +37,7 @@ internal sealed class ModEntry : SimpleMod
 	private static readonly IEnumerable<Type> ExoticWeaponTypes = [
 		typeof(FafnirCard),
 		typeof(IzanagisBurdenCard),
+		typeof(OutbreakPerfectedCard),
 	];
 	
 	private static readonly IEnumerable<Type> WeaponPerkTypes = [
