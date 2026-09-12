@@ -19,7 +19,6 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 		HeadstoneWeaponPerk.Trait.UniqueName,
 		HealClipWeaponPerk.Trait.UniqueName,
 		RepulsorBraceWeaponPerk.Trait.UniqueName,
-		RimestealerWeaponPerk.Trait.UniqueName,
 		SurroundedWeaponPerk.Trait.UniqueName,
 		VorpalWeaponWeaponPerk.Trait.UniqueName,
 	]);

@@ -25,6 +25,7 @@ internal class HandCannonCard : LegendaryWeaponCard, IRegisterable
 		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
 		EnviousArsenalWeaponPerk.Trait.UniqueName,
 		QuickdrawWeaponPerk.Trait.UniqueName,
+		RimestealerWeaponPerk.Trait.UniqueName,
 	];
 	
 	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)

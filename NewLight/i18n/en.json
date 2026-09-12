@@ -4,11 +4,18 @@
 			"Name": "Full Auto",
 			"Description": "After playing this card for the first time each turn, it gets <c=cardtrait>discounted</c> by 1."
 		},
+		"Precision": {
+			"Name": "Precision",
+			"Description": {
+				"WithoutCard": "Deals more damage to <c=parttrait>weak</c>/<c=parttrait>brittle</c> parts.",
+				"WithCard": "Deals <c=boldPink>{{Amount}}</c> more damage to <c=parttrait>weak</c>/<c=parttrait>brittle</c> parts."
+			}
+		},
 		"Tension": {
 			"Name": "Tension",
 			"Description": {
 				"WithoutCard": "Deals more damage if retained last turn.",
-				"WithCard": "Deals {{Amount}} more damage if retained last turn."
+				"WithCard": "Deals <c=boldPink>{{Amount}}</c> more damage if retained last turn."
 			}
 		},
 		"WeaponPerk": {
@@ -26,7 +33,7 @@
 			},
 			"Headstone": {
 				"Name": "Headstone",
-				"Description": "Once per turn, after hitting a <c=parttrait>weak</c> or <c=parttrait>brittle</c> part, create a <c=midrow>Geode</c> in front of it."
+				"Description": "Once per turn, after hitting a <c=parttrait>weak</c>/<c=parttrait>brittle</c> part, create a <c=midrow>Geode</c> in front of it."
 			},
 			"HealClip": {
 				"Name": "Heal Clip",

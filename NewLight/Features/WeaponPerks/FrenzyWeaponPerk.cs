@@ -43,7 +43,7 @@ internal sealed class FrenzyWeaponPerk : IRegisterable
 			combat.PlayerDidDamageThisTurn = false;
 		});
 		
-		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnEnd), (State state, Combat combat) =>
+		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnEnd), (Combat combat) =>
 		{
 			combat.PlayerDidDamageLastTurn = combat.PlayerDidDamageThisTurn;
 		});

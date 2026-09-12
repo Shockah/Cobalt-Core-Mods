@@ -26,6 +26,7 @@ internal class SubmachineGunCard : LegendaryWeaponCard, IRegisterable
 		EnviousArsenalWeaponPerk.Trait.UniqueName,
 		QuickdrawWeaponPerk.Trait.UniqueName,
 		RampageWeaponPerk.Trait.UniqueName,
+		RimestealerWeaponPerk.Trait.UniqueName,
 	];
 	
 	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
