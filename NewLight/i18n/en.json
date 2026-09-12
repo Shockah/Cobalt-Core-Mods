@@ -89,6 +89,11 @@
 				"ScoutRifle": "Scout Rifle",
 				"SubmachineGun": "Submachine Gun",
 				"TraceRifle": "Trace Rifle"
+			},
+			"Exotic": {
+				"IzanagisBurden": {
+					"Name": "Izanagi's Burden"
+				}
 			}
 		}
 	}

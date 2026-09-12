@@ -22,25 +22,24 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 		VorpalWeaponWeaponPerk.Trait.UniqueName,
 	]);
 
-	private static readonly Dictionary<WeaponElement, ISpriteEntry> ElementCardFrames = [];
 	internal static readonly Dictionary<string, WeaponElement> WeaponPerkElementAssignments = [];
 	internal static readonly HashSet<string> DamageWeaponPerks = [];
 	
 	private static ICardTraitEntry RandomBaseWeaponPerkTrait = null!;
 	private static ICardTraitEntry RandomUpgradedWeaponPerkTrait = null!;
 
-	[JsonProperty] private WeaponElement? WeaponElement;
+	[JsonProperty("WeaponElement")] private WeaponElement? MaybeWeaponElement;
 	[JsonProperty] private Dictionary<Upgrade, string> PerkUniqueNames = [];
 
 	protected virtual List<string> AllowedPerkUniqueNames => GlobalAllowedPerkUniqueNames.Value;
 
 	protected abstract Dictionary<WeaponElement, string> ElementWeaponNames { get; }
 
+	protected override WeaponElement WeaponElement
+		=> MaybeWeaponElement ?? WeaponElement.Kinetic;
+
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		foreach (var element in Enum.GetValues<WeaponElement>())
-			ElementCardFrames[element] = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/CardFrames/LegendaryWeapons/{Enum.GetName(element)}.png"));
-		
 		var randomBaseWeaponPerkIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardTraits/RandomBaseWeaponPerk.png"));
 		var randomUpgradedWeaponPerkIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardTraits/RandomUpgradedWeaponPerk.png"));
 		
@@ -84,7 +83,7 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 
 	private void InitializeIfNeeded(State state)
 	{
-		if (WeaponElement is not null && PerkUniqueNames.Count != 0)
+		if (MaybeWeaponElement is not null && PerkUniqueNames.Count != 0)
 			return;
 
 		// ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
@@ -93,7 +92,7 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 		if (MG.inst.g.state?.FindCard(uuid) != this)
 			return;
 
-		WeaponElement = ElementWeaponNames.Keys.Skip(state.rngCardOfferings.NextInt() % ElementWeaponNames.Count).First();
+		MaybeWeaponElement = ElementWeaponNames.Keys.Skip(state.rngCardOfferings.NextInt() % ElementWeaponNames.Count).First();
 		
 		var perks = AllowedPerkUniqueNames
 			.Where(name => !WeaponPerkElementAssignments.TryGetValue(name, out var element) || element == WeaponElement)
@@ -156,18 +155,15 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 		if (MG.inst.g?.state is { } state)
 			legendary.InitializeIfNeeded(state);
 		
-		if (legendary.WeaponElement is not { } element)
+		if (legendary.MaybeWeaponElement is not { } element)
 			return;
 
 		__result = legendary.ElementWeaponNames[element];
 	}
 
-	internal Spr OverrideCardFrame(DeckConfiguration.CardFrameOverrideArgs args)
+	internal override Spr OverrideCardFrame(DeckConfiguration.CardFrameOverrideArgs args)
 	{
 		InitializeIfNeeded(args.State);
-
-		if (WeaponElement is { } element)
-			return ElementCardFrames[element].Sprite;
-		return ElementCardFrames[NewLight.WeaponElement.Kinetic].Sprite;
+		return base.OverrideCardFrame(args);
 	}
 }

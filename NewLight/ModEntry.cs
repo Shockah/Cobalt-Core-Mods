@@ -34,6 +34,10 @@ internal sealed class ModEntry : SimpleMod
 		typeof(TraceRifleCard),
 	];
 	
+	private static readonly IEnumerable<Type> ExoticWeaponTypes = [
+		typeof(IzanagisBurdenCard),
+	];
+	
 	private static readonly IEnumerable<Type> WeaponPerkTypes = [
 		typeof(AutoLoadingHolsterWeaponPerk),
 		typeof(EnviousArsenalWeaponPerk),
@@ -53,14 +57,16 @@ internal sealed class ModEntry : SimpleMod
 		typeof(FullAutoCardTrait),
 		typeof(PrecisionCardTrait),
 		typeof(TensionCardTrait),
+		typeof(WeaponCard),
 		.. WeaponPerkTypes,
-		typeof(LegendaryWeaponCard), // last on purpose
+		typeof(LegendaryWeaponCard), // last for dependency purposes
 	];
 	
 	private static readonly IEnumerable<Type> RegisterableTypes = [
 		typeof(GhostArtifact),
 		.. FeatureTypes,
 		.. LegendaryWeaponTypes,
+		.. ExoticWeaponTypes,
 	];
 	
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
@@ -84,10 +90,11 @@ internal sealed class ModEntry : SimpleMod
 			// BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
 			BorderSprite = StableSpr.cardShared_border_ephemeral,
 			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize,
+			ShineColorOverride = args => DB.decks[args.Card.GetMeta().deck].color.normalize().gain(0.5),
 			CardFrameOverride = args =>
 			{
-				if (args.Card is LegendaryWeaponCard legendary)
-					return legendary.OverrideCardFrame(args);
+				if (args.Card is WeaponCard weapon)
+					return weapon.OverrideCardFrame(args);
 				return args.DefaultFrameSprite;
 			},
 		});
