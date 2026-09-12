@@ -26,6 +26,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(BurstSidearmCard),
 		typeof(HandCannonCard),
 		typeof(HighImpactSniperRifleCard),
+		typeof(LinearFusionRifleCard),
 		typeof(MachineGunCard),
 		typeof(PulseRifleCard),
 		typeof(ScoutRifleCard),
