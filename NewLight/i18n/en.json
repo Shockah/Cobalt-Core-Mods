@@ -1,4 +1,14 @@
 {
+	"Status": {
+		"SpecialAmmo": {
+			"Name": "Special Ammo",
+			"Description": "Required for some <c=cardtrait>weapons</c>. Max 5."
+		},
+		"HeavyAmmo": {
+			"Name": "Heavy Ammo",
+			"Description": "Required for some <c=cardtrait>weapons</c>. Max 5."
+		}
+	},
 	"CardTrait": {
 		"FullAuto": {
 			"Name": "Full Auto",
@@ -91,6 +101,9 @@
 				"TraceRifle": "Trace Rifle"
 			},
 			"Exotic": {
+				"Fafnir": {
+					"Name": "Fafnir"
+				},
 				"IzanagisBurden": {
 					"Name": "Izanagi's Burden"
 				}

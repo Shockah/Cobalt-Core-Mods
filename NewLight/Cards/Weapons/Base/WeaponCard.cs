@@ -18,5 +18,5 @@ internal abstract class WeaponCard : Card, IRegisterable
 	}
 
 	internal virtual Spr OverrideCardFrame(DeckConfiguration.CardFrameOverrideArgs args)
-		=> ElementCardFrames[WeaponElement.Kinetic].Sprite;
+		=> ElementCardFrames[WeaponElement].Sprite;
 }
