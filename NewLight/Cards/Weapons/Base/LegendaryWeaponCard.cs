@@ -38,7 +38,7 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 	protected override WeaponElement WeaponElement
 		=> MaybeWeaponElement ?? WeaponElement.Kinetic;
 
-	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		var randomBaseWeaponPerkIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardTraits/RandomBaseWeaponPerk.png"));
 		var randomUpgradedWeaponPerkIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardTraits/RandomUpgradedWeaponPerk.png"));

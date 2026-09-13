@@ -47,7 +47,7 @@ internal class BurstSidearmCard : LegendaryWeaponCard, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new AAttack { damage = GetDmg(s, 0) },
-			new AAttack { damage = GetDmg(s, 0) },
+			new AAttack { damage = GetDmg(s, 0), fast = true },
+			new AAttack { damage = GetDmg(s, 0), fast = true },
 		];
 }

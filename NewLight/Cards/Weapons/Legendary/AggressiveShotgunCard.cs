@@ -6,29 +6,28 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class SubmachineGunCard : LegendaryWeaponCard, IRegisterable
+internal class AggressiveShotgunCard : LegendaryWeaponCard, IRegisterable
 {
 	protected override Dictionary<WeaponElement, string> ElementWeaponNames { get; } = new()
 	{
-		{ WeaponElement.Kinetic, "Submission" },
-		{ WeaponElement.Arc, "IKELOS SMG v1.0.3" },
-		{ WeaponElement.Solar, "MIDA Mini-Tool" },
-		{ WeaponElement.Void, "The Recluse" },
-		{ WeaponElement.Stasis, "Forensic Nightmare" },
-		{ WeaponElement.Strand, "The Immortal" },
+		{ WeaponElement.Kinetic, "Astral Horizon" },
+		{ WeaponElement.Arc, "Found Verdict" },
+		{ WeaponElement.Solar, "Compass Rose" },
+		{ WeaponElement.Void, "A Sudden Death" },
+		{ WeaponElement.Stasis, "Fractethyst" },
+		{ WeaponElement.Strand, "Supercluster" },
 	};
 
 	protected override List<string> AllowedPerkUniqueNames { get; } = [
 		.. GlobalAllowedPerkUniqueNames.Value,
 		ModEntry.Instance.Helper.Content.Cards.RetainCardTrait.UniqueName,
-		ModEntry.Instance.Helper.Content.Cards.RecycleCardTrait.UniqueName,
 		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
+		AutoLoadingHolsterWeaponPerk.Trait.UniqueName,
 		EnviousArsenalWeaponPerk.Trait.UniqueName,
 		QuickdrawWeaponPerk.Trait.UniqueName,
-		RampageWeaponPerk.Trait.UniqueName,
 		RimestealerWeaponPerk.Trait.UniqueName,
 	];
-	
+
 	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		var entry = helper.Content.Cards.RegisterCard(MethodBase.GetCurrentMethod()!.DeclaringType!.Name, new()
@@ -41,27 +40,18 @@ internal class SubmachineGunCard : LegendaryWeaponCard, IRegisterable
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Weapon.png"), StableSpr.cards_Cannon).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Weapon", "Legendary", "SubmachineGun"]).Localize,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Weapon", "Legendary", "AggressiveShotgun"]).Localize,
 		});
 		
-		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, 2);
+		Ammo.SetBaseSpecialCost(entry.UniqueName, 1);
 	}
 
 	public override CardData GetData(State state)
-		=> base.GetData(state) with { cost = 1 };
-
-	public override IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-	{
-		var baseResults = base.GetInnateTraits(state);
-		var results = (baseResults as HashSet<ICardTraitEntry>) ?? new HashSet<ICardTraitEntry>(baseResults);
-		results.Add(FullAutoCardTrait.Trait);
-		results.Add(ModEntry.Instance.KokoroApi.Finite.Trait);
-		return results;
-	}
+		=> base.GetData(state) with { cost = 2, flippable = true };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new AAttack { damage = GetDmg(s, 0), fast = true },
-			new AAttack { damage = GetDmg(s, 1), fast = true },
+			new AMove { targetPlayer = true, dir = 1 },
+			new ScatterAction { damage = GetDmg(s, 4) },
 		];
 }

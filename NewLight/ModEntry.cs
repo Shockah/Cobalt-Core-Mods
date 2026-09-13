@@ -21,6 +21,7 @@ internal sealed class ModEntry : SimpleMod
 	private static readonly IEnumerable<Type> LegendaryWeaponTypes = [
 		typeof(AdaptiveSniperRifleCard),
 		typeof(AdaptiveSidearmCard),
+		typeof(AggressiveShotgunCard),
 		typeof(AutoRifleCard),
 		typeof(BurstSidearmCard),
 		typeof(CombatBowCard),
@@ -29,6 +30,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(LinearFusionRifleCard),
 		typeof(MachineGunCard),
 		typeof(PulseRifleCard),
+		typeof(RapidFireShotgunCard),
 		typeof(ScoutRifleCard),
 		typeof(SubmachineGunCard),
 		typeof(TraceRifleCard),
@@ -36,6 +38,7 @@ internal sealed class ModEntry : SimpleMod
 	
 	private static readonly IEnumerable<Type> ExoticWeaponTypes = [
 		typeof(FafnirCard),
+		typeof(FourthHorsemanCard),
 		typeof(IzanagisBurdenCard),
 		typeof(OutbreakPerfectedCard),
 	];
@@ -58,6 +61,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(Ammo),
 		typeof(FullAutoCardTrait),
 		typeof(PrecisionCardTrait),
+		typeof(ScatterAction),
 		typeof(TensionCardTrait),
 		typeof(WeaponCard),
 		.. WeaponPerkTypes,

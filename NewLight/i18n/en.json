@@ -88,6 +88,7 @@
 			"Legendary": {
 				"AdaptiveSidearm": "Adaptive Sidearm",
 				"AdaptiveSniperRifle": "Adaptive SniperRifle",
+				"AggressiveShotgun": "Aggressive Shotgun",
 				"AutoRifle": "Auto Rifle",
 				"BurstSidearm": "Burst Sidearm",
 				"CombatBow": "Combat Bow",
@@ -96,6 +97,7 @@
 				"LinearFusionRifle": "Linear FusionRifle",
 				"MachineGun": "Machine Gun",
 				"PulseRifle": "Pulse Rifle",
+				"RapidFireShotgun": "Rapid-Fire Shotgun",
 				"ScoutRifle": "Scout Rifle",
 				"SubmachineGun": "Submachine Gun",
 				"TraceRifle": "Trace Rifle"
@@ -103,6 +105,9 @@
 			"Exotic": {
 				"Fafnir": {
 					"Name": "Fafnir"
+				},
+				"FourthHorseman": {
+					"Name": "The Fourth Horseman"
 				},
 				"IzanagisBurden": {
 					"Name": "Izanagi's Burden"

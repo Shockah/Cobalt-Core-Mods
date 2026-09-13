@@ -49,7 +49,7 @@ internal class PulseRifleCard : LegendaryWeaponCard, IRegisterable
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new AAttack { damage = GetDmg(s, 1) },
-			new AAttack { damage = GetDmg(s, 2) },
+			new AAttack { damage = GetDmg(s, 1), fast = true },
+			new AAttack { damage = GetDmg(s, 2), fast = true },
 		];
 }
