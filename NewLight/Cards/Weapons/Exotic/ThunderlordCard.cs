@@ -6,7 +6,7 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class FourthHorsemanCard : ExoticWeaponCard, IHasCustomCardTraits, IRegisterable
+internal class ThunderlordCard : ExoticWeaponCard, IHasCustomCardTraits, IRegisterable
 {
 	protected override WeaponElement WeaponElement => WeaponElement.Arc;
 
@@ -22,17 +22,15 @@ internal class FourthHorsemanCard : ExoticWeaponCard, IHasCustomCardTraits, IReg
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Weapon.png"), StableSpr.cards_Cannon).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Weapon", "Exotic", "FourthHorseman", "Name"]).Localize,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Weapon", "Exotic", "Thunderlord", "Name"]).Localize,
 		});
 		
-		Ammo.SetBaseSpecialCost(entry.UniqueName, 1);
-		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, Upgrade.None, 3);
-		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, Upgrade.A, 4);
-		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, Upgrade.B, 3);
+		Ammo.SetBaseHeavyCost(entry.UniqueName, 1);
+		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, 3);
 	}
 
 	public override CardData GetData(State state)
-		=> base.GetData(state) with { cost = 1, flippable = true };
+		=> base.GetData(state) with { cost = 1 };
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> new HashSet<ICardTraitEntry>
@@ -45,12 +43,16 @@ internal class FourthHorsemanCard : ExoticWeaponCard, IHasCustomCardTraits, IReg
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AMove { targetPlayer = true, dir = 1 },
+				new AAttack { damage = GetDmg(s, 0), stunEnemy = true },
 				new ScatterAction { damage = GetDmg(s, 3) },
 			],
+			Upgrade.A => [
+				new AAttack { damage = GetDmg(s, 1) },
+				new ScatterAction { damage = GetDmg(s, 4) },
+			],
 			_ => [
-				new AMove { targetPlayer = true, dir = 1 },
-				new ScatterAction { damage = GetDmg(s, 2), Direction = flipped ? 1 : -1 },
+				new AAttack { damage = GetDmg(s, 1) },
+				new ScatterAction { damage = GetDmg(s, 3) },
 			],
 		};
 }
