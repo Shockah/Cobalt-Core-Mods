@@ -19,6 +19,7 @@ internal sealed class ModEntry : SimpleMod
 	internal readonly IDeckEntry GuardianDeck;
 	
 	private static readonly IEnumerable<Type> LegendaryWeaponTypes = [
+		typeof(AdaptiveGrenadeLauncherCard),
 		typeof(AdaptiveSniperRifleCard),
 		typeof(AdaptiveSidearmCard),
 		typeof(AggressiveShotgunCard),
@@ -28,12 +29,15 @@ internal sealed class ModEntry : SimpleMod
 		typeof(HandCannonCard),
 		typeof(HighImpactFusionRifleCard),
 		typeof(HighImpactSniperRifleCard),
+		typeof(LightweightGrenadeLauncherCard),
 		typeof(LightweightSwordCard),
 		typeof(LinearFusionRifleCard),
 		typeof(MachineGunCard),
+		typeof(MissilePulseRifleCard),
 		typeof(PulseRifleCard),
 		typeof(RapidFireFusionRifleCard),
 		typeof(RapidFireShotgunCard),
+		typeof(RocketLauncherCard),
 		typeof(ScoutRifleCard),
 		typeof(SubmachineGunCard),
 		typeof(TraceRifleCard),
@@ -65,6 +69,7 @@ internal sealed class ModEntry : SimpleMod
 	
 	private static readonly IEnumerable<Type> FeatureTypes = [
 		typeof(Ammo),
+		typeof(BlastAction),
 		typeof(FullAutoCardTrait),
 		typeof(PrecisionCardTrait),
 		typeof(ScatterAction),

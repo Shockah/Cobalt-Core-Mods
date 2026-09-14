@@ -6,15 +6,15 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class WaveGrenadeLauncherCard : LegendaryWeaponCard, IRegisterable
+internal class RocketLauncherCard : LegendaryWeaponCard, IRegisterable
 {
 	protected override Dictionary<WeaponElement, string> ElementWeaponNames { get; } = new()
 	{
-		{ WeaponElement.Arc, "Forbearance" },
-		{ WeaponElement.Solar, "Explosive Personality" },
-		{ WeaponElement.Void, "Romantic Death" },
-		{ WeaponElement.Stasis, "New Pacific Epitaph" },
-		{ WeaponElement.Strand, "Tusk of the Boar" },
+		{ WeaponElement.Arc, "The Hothead" },
+		{ WeaponElement.Solar, "Hezen Vengeance" },
+		{ WeaponElement.Void, "Tomorrow's Answer" },
+		{ WeaponElement.Stasis, "The When and Where" },
+		{ WeaponElement.Strand, "Cynosure" },
 	};
 
 	protected override List<string> AllowedPerkUniqueNames { get; } = [
@@ -39,17 +39,17 @@ internal class WaveGrenadeLauncherCard : LegendaryWeaponCard, IRegisterable
 				upgradesTo = [Upgrade.A, Upgrade.B],
 			},
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Weapon.png"), StableSpr.cards_Cannon).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Weapon", "Legendary", "WaveGrenadeLauncher"]).Localize,
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Weapon", "Legendary", "RocketLauncher"]).Localize,
 		});
 		
-		Ammo.SetBaseSpecialCost(entry.UniqueName, 2);
+		Ammo.SetBaseHeavyCost(entry.UniqueName, 3);
 	}
 
 	public override CardData GetData(State state)
-		=> base.GetData(state) with { cost = 0, flippable = true };
+		=> base.GetData(state) with { cost = 2 };
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new BlastAction { damage = GetDmg(s, 3), Range = 2, Direction = flipped ? -2 : 2 },
+			new BlastAction { damage = GetDmg(s, 10), Range = 2 },
 		];
 }
