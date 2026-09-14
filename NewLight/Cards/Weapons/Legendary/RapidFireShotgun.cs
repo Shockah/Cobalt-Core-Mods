@@ -6,7 +6,7 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class RapidFireShotgunCard : LegendaryWeaponCard, WeaponCard.IUsesAmmo, WeaponCard.IRepeatable, IRegisterable
+internal class RapidFireShotgunCard : LegendaryWeaponCard, WeaponCard.IUsesAmmo.IOnlyOne, WeaponCard.IRepeatable, IRegisterable
 {
 	protected override Dictionary<WeaponElement, string> ElementWeaponNames { get; } = new()
 	{

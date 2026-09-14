@@ -12,15 +12,6 @@ namespace Shockah.NewLight;
 internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, IRegisterable
 {
 	protected const Rarity RARITY = Rarity.common;
-	
-	protected static readonly Lazy<List<string>> GlobalAllowedPerkUniqueNames = new(() => [
-		FrenzyWeaponPerk.Trait.UniqueName,
-		HeadstoneWeaponPerk.Trait.UniqueName,
-		HealClipWeaponPerk.Trait.UniqueName,
-		RepulsorBraceWeaponPerk.Trait.UniqueName,
-		SurroundedWeaponPerk.Trait.UniqueName,
-		VorpalWeaponWeaponPerk.Trait.UniqueName,
-	]);
 
 	internal static readonly Dictionary<string, Func<WeaponCard, bool>> WeaponPerkConditions = [];
 	internal static readonly Dictionary<string, WeaponElement> WeaponPerkElementAssignments = [];

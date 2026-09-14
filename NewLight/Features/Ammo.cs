@@ -11,11 +11,24 @@ using Nanoray.PluginManager;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Nickel;
+using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal sealed class Ammo : IRegisterable
+internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 {
+	public interface IHook
+	{
+		void ModifySpecialAmmoCost(State state, Combat combat, Card card, ref int cost) { }
+		void ModifyHeavyAmmoCost(State state, Combat combat, Card card, ref int cost) { }
+	}
+
+	private Ammo() : base(ModEntry.Instance.Package.Manifest.UniqueName)
+	{
+	}
+	
+	internal static readonly Ammo Instance = new();
+
 	internal static IStatusEntry SpecialStatus { get; private set; } = null!;
 	internal static IStatusEntry HeavyStatus { get; private set; } = null!;
 	
@@ -63,6 +76,12 @@ internal sealed class Ammo : IRegisterable
 		);
 	}
 
+	public static int GetBaseSpecialCost(Card card)
+		=> GetBaseSpecialCost(card.Key(), card.upgrade);
+
+	public static int GetBaseHeavyCost(Card card)
+		=> GetBaseHeavyCost(card.Key(), card.upgrade);
+
 	public static int GetBaseSpecialCost(string key, Upgrade upgrade)
 		=> BaseSpecialCost.TryGetValue(key, out var perUpgrade) ? perUpgrade.GetValueOrDefault(upgrade) : 0;
 
@@ -70,10 +89,24 @@ internal sealed class Ammo : IRegisterable
 		=> BaseHeavyCost.TryGetValue(key, out var perUpgrade) ? perUpgrade.GetValueOrDefault(upgrade) : 0;
 
 	public static int GetSpecialCost(State state, Combat combat, Card card)
-		=> GetBaseSpecialCost(card.Key(), card.upgrade);
+	{
+		var cost = GetBaseSpecialCost(card.Key(), card.upgrade);
+		
+		foreach (var hook in Instance)
+			hook.ModifySpecialAmmoCost(state, combat, card, ref cost);
+
+		return cost;
+	}
 
 	public static int GetHeavyCost(State state, Combat combat, Card card)
-		=> GetBaseHeavyCost(card.Key(), card.upgrade);
+	{
+		var cost = GetBaseHeavyCost(card.Key(), card.upgrade);
+		
+		foreach (var hook in Instance)
+			hook.ModifyHeavyAmmoCost(state, combat, card, ref cost);
+
+		return cost;
+	}
 
 	public static void SetBaseHeavyCost(string key, int value)
 	{

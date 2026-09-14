@@ -6,7 +6,7 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class AggressiveShotgunCard : LegendaryWeaponCard, WeaponCard.IUsesAmmo, IRegisterable
+internal class AggressiveShotgunCard : LegendaryWeaponCard, WeaponCard.IUsesAmmo.IOnlyOne, IRegisterable
 {
 	protected override Dictionary<WeaponElement, string> ElementWeaponNames { get; } = new()
 	{

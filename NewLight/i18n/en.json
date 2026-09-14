@@ -39,7 +39,19 @@
 		"WeaponPerk": {
 			"AutoLoadingHolster": {
 				"Name": "Auto-Loading Holster",
-				"Description": "When drawn, gain 1 <c=status>ammo</c> of this card's cost."
+				"Description": "When drawn, gain 1 <c=status>AMMO</c> of this card's cost."
+			},
+			"ClownCartridge": {
+				"Name": "Clown Cartridge",
+				"Description": {
+					"Stateless": "Costs 1 less <c=status>AMMO</c> or <c=energy>ENERGY</c>, <c=downside>but deals 1 less damage</c>.",
+					"Ammo": "Costs 1 less <c=status>AMMO</c>, <c=downside>but deals 1 less damage</c>.",
+					"Energy": "Costs 1 less <c=energy>ENERGY</c>, <c=downside>but deals 1 less damage</c>."
+				}
+			},
+			"CompulsiveReloader": {
+				"Name": "Compulsive Reloader",
+				"Description": "Costs 1 less <c=energy>ENERGY</c> if its <c=status>AMMO</c> is full."
 			},
 			"EnviousArsenal": {
 				"Name": "Envious Arsenal",

@@ -204,7 +204,7 @@ internal sealed class BlastAction : AAttack, IRegisterable
 					if (targetShip.GetPartAtWorldX(bitWorldX) is not { } part || part.type == PType.empty)
 						return;
 
-					if (part.stunModifier == PStunMod.stunnable)
+					if (part.stunModifier == PStunMod.stunnable || Source?.stunEnemy == true)
 						new AStunPart { worldX = bitWorldX }.FullyRun(g, state, combat);
 					
 					var damageDone = targetShip.NormalDamage(state, combat, Damage, bitWorldX);

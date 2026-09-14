@@ -26,6 +26,7 @@ internal abstract class WeaponCard : Card, IRegisterable
 
 	public interface IUsesAmmo
 	{
+		public interface IOnlyOne : IUsesAmmo;
 		public interface IOverHalf : IUsesAmmo;
 	}
 }
