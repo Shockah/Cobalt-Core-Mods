@@ -6,7 +6,7 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class RapidFireShotgunCard : LegendaryWeaponCard, IRegisterable
+internal class RapidFireShotgunCard : LegendaryWeaponCard, WeaponCard.IUsesAmmo, WeaponCard.IRepeatable, IRegisterable
 {
 	protected override Dictionary<WeaponElement, string> ElementWeaponNames { get; } = new()
 	{
@@ -17,16 +17,6 @@ internal class RapidFireShotgunCard : LegendaryWeaponCard, IRegisterable
 		{ WeaponElement.Stasis, "One Small Step" },
 		{ WeaponElement.Strand, "Until Its Return" },
 	};
-
-	protected override List<string> AllowedPerkUniqueNames { get; } = [
-		.. GlobalAllowedPerkUniqueNames.Value,
-		ModEntry.Instance.Helper.Content.Cards.RetainCardTrait.UniqueName,
-		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
-		AutoLoadingHolsterWeaponPerk.Trait.UniqueName,
-		EnviousArsenalWeaponPerk.Trait.UniqueName,
-		QuickdrawWeaponPerk.Trait.UniqueName,
-		RimestealerWeaponPerk.Trait.UniqueName,
-	];
 
 	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{

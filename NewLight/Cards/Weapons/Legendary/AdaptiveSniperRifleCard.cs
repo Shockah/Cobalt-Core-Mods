@@ -6,7 +6,7 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class AdaptiveSniperRifleCard : LegendaryWeaponCard, IRegisterable
+internal class AdaptiveSniperRifleCard : LegendaryWeaponCard, WeaponCard.IUsesAmmo, IRegisterable
 {
 	protected override Dictionary<WeaponElement, string> ElementWeaponNames { get; } = new()
 	{
@@ -17,16 +17,6 @@ internal class AdaptiveSniperRifleCard : LegendaryWeaponCard, IRegisterable
 		{ WeaponElement.Stasis, "Locus Locutus" },
 		{ WeaponElement.Strand, "ALLEN 05" },
 	};
-
-	protected override List<string> AllowedPerkUniqueNames { get; } = [
-		.. GlobalAllowedPerkUniqueNames.Value,
-		ModEntry.Instance.Helper.Content.Cards.RetainCardTrait.UniqueName,
-		ModEntry.Instance.Helper.Content.Cards.RecycleCardTrait.UniqueName,
-		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
-		AutoLoadingHolsterWeaponPerk.Trait.UniqueName,
-		EnviousArsenalWeaponPerk.Trait.UniqueName,
-		QuickdrawWeaponPerk.Trait.UniqueName,
-	];
 	
 	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{

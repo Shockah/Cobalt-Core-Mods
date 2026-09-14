@@ -22,6 +22,7 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 		VorpalWeaponWeaponPerk.Trait.UniqueName,
 	]);
 
+	internal static readonly Dictionary<string, Func<WeaponCard, bool>> WeaponPerkConditions = [];
 	internal static readonly Dictionary<string, WeaponElement> WeaponPerkElementAssignments = [];
 	internal static readonly HashSet<string> DamageWeaponPerks = [];
 	
@@ -30,8 +31,6 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 
 	[JsonProperty("WeaponElement")] private WeaponElement? MaybeWeaponElement;
 	[JsonProperty] private Dictionary<Upgrade, string> PerkUniqueNames = [];
-
-	protected virtual List<string> AllowedPerkUniqueNames => GlobalAllowedPerkUniqueNames.Value;
 
 	protected abstract Dictionary<WeaponElement, string> ElementWeaponNames { get; }
 
@@ -74,6 +73,10 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 				}
 			]
 		});
+
+		WeaponPerkConditions[ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName] = _ => true;
+		WeaponPerkConditions[ModEntry.Instance.Helper.Content.Cards.RetainCardTrait.UniqueName] = _ => true;
+		WeaponPerkConditions[ModEntry.Instance.Helper.Content.Cards.RecycleCardTrait.UniqueName] = weapon => weapon is not (IUsesAmmo and IRepeatable) && weapon is not IUsesAmmo.IOverHalf;
 		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(GetLocName)),
@@ -94,7 +97,9 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 
 		MaybeWeaponElement = ElementWeaponNames.Keys.Skip(state.rngCardOfferings.NextInt() % ElementWeaponNames.Count).First();
 		
-		var perks = AllowedPerkUniqueNames
+		var perks = WeaponPerkConditions
+			.Where(kvp => kvp.Value(this))
+			.Select(kvp => kvp.Key)
 			.Where(name => !WeaponPerkElementAssignments.TryGetValue(name, out var element) || element == WeaponElement)
 			.ToList();
 

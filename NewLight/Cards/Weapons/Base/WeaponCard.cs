@@ -19,4 +19,13 @@ internal abstract class WeaponCard : Card, IRegisterable
 
 	internal virtual Spr OverrideCardFrame(DeckConfiguration.CardFrameOverrideArgs args)
 		=> ElementCardFrames[WeaponElement].Sprite;
+
+	public interface ICannotCrit;
+	public interface IEnergyFree;
+	public interface IRepeatable;
+
+	public interface IUsesAmmo
+	{
+		public interface IOverHalf : IUsesAmmo;
+	}
 }

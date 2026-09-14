@@ -27,6 +27,8 @@ internal sealed class EnviousArsenalWeaponPerk : IRegisterable
 			]
 		});
 		
+		LegendaryWeaponCard.WeaponPerkConditions[Trait.UniqueName] = weapon => weapon is not WeaponCard.IEnergyFree;
+		
 		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (Card card, State state, Combat combat) =>
 		{
 			if (card is not WeaponCard)

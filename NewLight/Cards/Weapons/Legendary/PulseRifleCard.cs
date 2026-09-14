@@ -17,16 +17,6 @@ internal class PulseRifleCard : LegendaryWeaponCard, IRegisterable
 		{ WeaponElement.Stasis, "Syncopation -53" },
 		{ WeaponElement.Strand, "Relentless" },
 	};
-
-	protected override List<string> AllowedPerkUniqueNames { get; } = [
-		.. GlobalAllowedPerkUniqueNames.Value,
-		ModEntry.Instance.Helper.Content.Cards.RetainCardTrait.UniqueName,
-		ModEntry.Instance.Helper.Content.Cards.RecycleCardTrait.UniqueName,
-		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
-		EnviousArsenalWeaponPerk.Trait.UniqueName,
-		QuickdrawWeaponPerk.Trait.UniqueName,
-		RimestealerWeaponPerk.Trait.UniqueName,
-	];
 	
 	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{

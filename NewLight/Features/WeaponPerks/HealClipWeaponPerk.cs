@@ -28,6 +28,7 @@ internal sealed class HealClipWeaponPerk : IRegisterable
 			]
 		});
 
+		LegendaryWeaponCard.WeaponPerkConditions[Trait.UniqueName] = _ => true;
 		LegendaryWeaponCard.WeaponPerkElementAssignments[Trait.UniqueName] = WeaponElement.Solar;
 		
 		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnPlayerPlayCard), (Card card, State state, Combat combat) =>

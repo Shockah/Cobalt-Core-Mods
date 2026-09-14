@@ -37,6 +37,7 @@ internal sealed class RampageWeaponPerk : IRegisterable
 			]
 		});
 
+		LegendaryWeaponCard.WeaponPerkConditions[Trait.UniqueName] = _ => true;
 		LegendaryWeaponCard.DamageWeaponPerks.Add(Trait.UniqueName);
 		
 		ModEntry.Instance.Harmony.Patch(

@@ -32,6 +32,7 @@ internal sealed class RimestealerWeaponPerk : IRegisterable
 			]
 		});
 
+		LegendaryWeaponCard.WeaponPerkConditions[Trait.UniqueName] = weapon => weapon is not (AdaptiveSniperRifleCard or HighImpactSniperRifleCard or LinearFusionRifleCard);
 		LegendaryWeaponCard.WeaponPerkElementAssignments[Trait.UniqueName] = WeaponElement.Stasis;
 		
 		ModEntry.Instance.Harmony.Patch(

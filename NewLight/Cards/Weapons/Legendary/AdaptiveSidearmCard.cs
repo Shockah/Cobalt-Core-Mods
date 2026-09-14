@@ -6,7 +6,7 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class AdaptiveSidearmCard : LegendaryWeaponCard, IRegisterable
+internal class AdaptiveSidearmCard : LegendaryWeaponCard, WeaponCard.IEnergyFree, IRegisterable
 {
 	protected override Dictionary<WeaponElement, string> ElementWeaponNames { get; } = new()
 	{
@@ -17,14 +17,6 @@ internal class AdaptiveSidearmCard : LegendaryWeaponCard, IRegisterable
 		{ WeaponElement.Stasis, "Faustus Decline" },
 		{ WeaponElement.Strand, "Mykel's Reverence" },
 	};
-
-	protected override List<string> AllowedPerkUniqueNames { get; } = [
-		.. GlobalAllowedPerkUniqueNames.Value,
-		ModEntry.Instance.Helper.Content.Cards.RetainCardTrait.UniqueName,
-		ModEntry.Instance.Helper.Content.Cards.RecycleCardTrait.UniqueName,
-		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
-		RimestealerWeaponPerk.Trait.UniqueName,
-	];
 
 	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{

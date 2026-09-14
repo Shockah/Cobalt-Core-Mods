@@ -6,7 +6,7 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class SubmachineGunCard : LegendaryWeaponCard, IRegisterable
+internal class SubmachineGunCard : LegendaryWeaponCard, WeaponCard.IRepeatable, IRegisterable
 {
 	protected override Dictionary<WeaponElement, string> ElementWeaponNames { get; } = new()
 	{
@@ -17,17 +17,6 @@ internal class SubmachineGunCard : LegendaryWeaponCard, IRegisterable
 		{ WeaponElement.Stasis, "Forensic Nightmare" },
 		{ WeaponElement.Strand, "The Immortal" },
 	};
-
-	protected override List<string> AllowedPerkUniqueNames { get; } = [
-		.. GlobalAllowedPerkUniqueNames.Value,
-		ModEntry.Instance.Helper.Content.Cards.RetainCardTrait.UniqueName,
-		ModEntry.Instance.Helper.Content.Cards.RecycleCardTrait.UniqueName,
-		ModEntry.Instance.Helper.Content.Cards.BuoyantCardTrait.UniqueName,
-		EnviousArsenalWeaponPerk.Trait.UniqueName,
-		QuickdrawWeaponPerk.Trait.UniqueName,
-		RampageWeaponPerk.Trait.UniqueName,
-		RimestealerWeaponPerk.Trait.UniqueName,
-	];
 	
 	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{

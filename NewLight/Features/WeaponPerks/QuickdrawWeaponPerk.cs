@@ -30,6 +30,8 @@ internal sealed class QuickdrawWeaponPerk : IRegisterable
 			]
 		});
 		
+		LegendaryWeaponCard.WeaponPerkConditions[Trait.UniqueName] = weapon => weapon is not WeaponCard.IEnergyFree;
+		
 		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnTurnStart), (Combat combat) =>
 		{
 			combat.PlayedAnythingThisTurn = false;

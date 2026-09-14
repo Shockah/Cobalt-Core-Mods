@@ -29,6 +29,8 @@ internal sealed class AutoLoadingHolsterWeaponPerk : IRegisterable
 			]
 		});
 		
+		LegendaryWeaponCard.WeaponPerkConditions[Trait.UniqueName] = weapon => weapon is WeaponCard.IUsesAmmo;
+		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.SendCardToHand)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_SendCardToHand_Postfix))

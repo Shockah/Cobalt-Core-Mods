@@ -55,11 +55,11 @@
 			},
 			"HealClip": {
 				"Name": "Heal Clip",
-				"Description": "If you end your turn with more than 0 energy after playing this card this turn, <c=heal>heal</c> 1."
+				"Description": "If you end your turn with more than 0 <c=energy>ENERGY</c> after playing this card this turn, <c=heal>heal</c> 1."
 			},
 			"Quickdraw": {
 				"Name": "Quickdraw",
-				"Description": "Costs 1 less energy if played first in a turn."
+				"Description": "Costs 1 less <c=energy>ENERGY</c> if played first in a turn."
 			},
 			"Rampage": {
 				"Name": "Rampage",
