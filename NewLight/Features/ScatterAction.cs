@@ -1,4 +1,7 @@
-﻿using Nanoray.PluginManager;
+﻿using System;
+using System.Reflection;
+using HarmonyLib;
+using Nanoray.PluginManager;
 using Newtonsoft.Json;
 using Nickel;
 
@@ -32,44 +35,42 @@ internal sealed class ScatterAction : AAttack, IRegisterable
 
 		if (Direction == 0)
 		{
-			var splitDamage = damage / 3;
-			var leftoverDamage = damage % 3;
-		
 			var midAttack = Mutil.DeepCopy(this);
 			midAttack.Scattered = true;
-		
 			var leftAttack = Mutil.DeepCopy(midAttack);
 			var rightAttack = Mutil.DeepCopy(midAttack);
 
-			midAttack.damage = splitDamage + leftoverDamage;
-			leftAttack.damage = splitDamage;
-			rightAttack.damage = splitDamage;
+			var splitDamage = damage / 3;
+			var leftoverDamage = damage % 3;
 
+			midAttack.damage = splitDamage + leftoverDamage;
 			midAttack.timer *= 0.5;
-			leftAttack.timer *= 0.25;
-			rightAttack.timer *= 0.25;
 			
-			// TODO: offset attacks
+			leftAttack.damage = splitDamage;
+			leftAttack.Direction = -1;
+			leftAttack.timer *= 0.25;
+			
+			rightAttack.damage = splitDamage;
+			rightAttack.Direction = 1;
+			rightAttack.timer *= 0.25;
 		
 			c.QueueImmediate([leftAttack, rightAttack, midAttack]);
 		}
 		else
 		{
-			var splitDamage = damage / 2;
-			var leftoverDamage = damage % 2;
-		
 			var midAttack = Mutil.DeepCopy(this);
 			midAttack.Scattered = true;
-			
 			var sideAttack = Mutil.DeepCopy(midAttack);
 			
+			var splitDamage = damage / 2;
+			var leftoverDamage = damage % 2;
+			
 			midAttack.damage = splitDamage + leftoverDamage;
-			sideAttack.damage = splitDamage;
-			
 			midAttack.timer *= 0.75;
-			sideAttack.timer *= 0.25;
 			
-			// TODO: offset attack
+			sideAttack.damage = splitDamage;
+			sideAttack.Direction = Math.Sign(Direction);
+			sideAttack.timer *= 0.25;
 		
 			c.QueueImmediate([sideAttack, midAttack]);
 		}
@@ -80,5 +81,22 @@ internal sealed class ScatterAction : AAttack, IRegisterable
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		Icon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Actions/Scatter.png"));
+		
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(GetFromX)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_GetFromX_Postfix))
+		);
+	}
+
+	private static void AAttack_GetFromX_Postfix(AAttack __instance, ref int? __result)
+	{
+		if (__instance is not ScatterAction scatterAction)
+			return;
+		if (!scatterAction.Scattered)
+			return;
+		if (__result is not { } result)
+			return;
+
+		__result = result + scatterAction.Direction;
 	}
 }
