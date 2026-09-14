@@ -43,15 +43,15 @@ internal class ThunderlordCard : ExoticWeaponCard, IHasCustomCardTraits, IRegist
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AAttack { damage = GetDmg(s, 0), stunEnemy = true },
+				new AAttack { damage = GetDmg(s, 0), stunEnemy = true, fast = true },
 				new ScatterAction { damage = GetDmg(s, 3) },
 			],
 			Upgrade.A => [
-				new AAttack { damage = GetDmg(s, 1) },
+				new AAttack { damage = GetDmg(s, 1), fast = true },
 				new ScatterAction { damage = GetDmg(s, 4) },
 			],
 			_ => [
-				new AAttack { damage = GetDmg(s, 1) },
+				new AAttack { damage = GetDmg(s, 1), fast = true },
 				new ScatterAction { damage = GetDmg(s, 3) },
 			],
 		};

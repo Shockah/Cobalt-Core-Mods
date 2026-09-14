@@ -93,14 +93,19 @@
 				"BurstSidearm": "Burst Sidearm",
 				"CombatBow": "Combat Bow",
 				"HandCannon": "Hand Cannon",
+				"HighImpactFusionRifle": "Hi-Impact FusionRifle",
 				"HighImpactSniperRifle": "Hi-Impact SniperRifle",
+				"LightweightSword": "Lightweight Sword",
 				"LinearFusionRifle": "Linear FusionRifle",
 				"MachineGun": "Machine Gun",
 				"PulseRifle": "Pulse Rifle",
+				"RapidFireFusionRifle": "Rapid-Fire FusionRifle",
 				"RapidFireShotgun": "Rapid-Fire Shotgun",
 				"ScoutRifle": "Scout Rifle",
 				"SubmachineGun": "Submachine Gun",
-				"TraceRifle": "Trace Rifle"
+				"TraceRifle": "Trace Rifle",
+				"VortexSword": "Vortex Sword",
+				"WaveGrenadeLauncher": "Wave Grenade Launcher"
 			},
 			"Exotic": {
 				"Fafnir": {
