@@ -53,6 +53,10 @@
 				"Name": "Compulsive Reloader",
 				"Description": "Costs 1 less <c=energy>ENERGY</c> if its <c=status>AMMO</c> is full."
 			},
+			"Demoralize": {
+				"Name": "Demoralize",
+				"Description": "Once per combat, hitting a <c=parttrait>weak</c>/<c=parttrait>brittle</c> part makes a part next to it also <c=parttrait>weak</c>/<c=parttrait>brittle</c>, preferring left."
+			},
 			"EnviousArsenal": {
 				"Name": "Envious Arsenal",
 				"Description": "While in hand, playing another <c=cardtrait>Weapon</c> <c=cardtrait>discounts</c> this card by 1."
