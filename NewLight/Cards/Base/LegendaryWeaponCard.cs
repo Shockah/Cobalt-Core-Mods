@@ -11,12 +11,13 @@ namespace Shockah.NewLight;
 
 internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, IRegisterable
 {
-	protected const Rarity RARITY = Rarity.common;
+	public const Rarity RARITY = Rarity.common;
 
 	internal static readonly Dictionary<string, Func<WeaponCard, bool>> WeaponPerkConditions = [];
 	internal static readonly Dictionary<string, WeaponElement> WeaponPerkElementAssignments = [];
 	internal static readonly HashSet<string> DamageWeaponPerks = [];
-	
+
+	private static HashSet<Card>? CachedReleasedCardSet;
 	private static ICardTraitEntry RandomBaseWeaponPerkTrait = null!;
 	private static ICardTraitEntry RandomUpgradedWeaponPerkTrait = null!;
 
@@ -75,16 +76,27 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 		);
 	}
 
+	private static bool IsDbCard(Card card)
+	{
+		if (CachedReleasedCardSet is not null)
+			return CachedReleasedCardSet.Contains(card);
+		if (ModEntry.Instance.Helper.Events.ModLoadPhaseState is not { Phase: ModLoadPhase.AfterDbInit, IsDone: true })
+			return DB.releasedCards.Contains(card);
+
+		CachedReleasedCardSet = DB.releasedCards.ToHashSet();
+		return CachedReleasedCardSet.Contains(card);
+	}
+
 	private void InitializeIfNeeded(State state)
 	{
 		if (MaybeWeaponElement is not null && PerkUniqueNames.Count != 0)
+			return;
+		if (IsDbCard(this))
 			return;
 
 		// ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 		if (MG.inst.g.state is not null)
 			state = MG.inst.g.state;
-		if (MG.inst.g.state?.FindCard(uuid) != this)
-			return;
 
 		MaybeWeaponElement = ElementWeaponNames.Keys.Skip(state.rngCardOfferings.NextInt() % ElementWeaponNames.Count).First();
 		

@@ -8,7 +8,7 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class NeverFeltBetterCard : GenericCard, IRegisterable
+internal class NeverFeltBetterCard : GuardianCard, IRegisterable
 {
 	private bool DuringSafelyGetDataWithOverrides;
 	

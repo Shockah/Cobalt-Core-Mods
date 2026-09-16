@@ -8,7 +8,7 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class RallyBannerCard : GenericCard, IHasCustomCardTraits, IRegisterable
+internal class RallyBannerCard : GuardianCard, IHasCustomCardTraits, IRegisterable
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{

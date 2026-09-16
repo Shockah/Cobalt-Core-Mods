@@ -11,7 +11,7 @@ internal class WaveGrenadeLauncherCard : LegendaryWeaponCard, WeaponCard.IEnergy
 	protected override Dictionary<WeaponElement, string> ElementWeaponNames { get; } = new()
 	{
 		{ WeaponElement.Arc, "Forbearance" },
-		{ WeaponElement.Solar, "Explosive Personality" },
+		{ WeaponElement.Solar, "Explosive Temper" },
 		{ WeaponElement.Void, "Romantic Death" },
 		{ WeaponElement.Stasis, "New Pacific Epitaph" },
 		{ WeaponElement.Strand, "Tusk of the Boar" },

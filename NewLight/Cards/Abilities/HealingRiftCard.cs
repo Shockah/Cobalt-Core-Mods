@@ -9,7 +9,7 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class HealingRiftCard : AbilityCard, IRegisterable
+internal class HealingRiftCard : GuardianCard, IRegisterable
 {
 	public static IStatusEntry Status { get; private set; } = null!;
 	

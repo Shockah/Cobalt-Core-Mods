@@ -6,7 +6,7 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class TripleJumpCard : AbilityCard, IRegisterable, IHasCustomCardTraits
+internal class TripleJumpCard : GuardianCard, IRegisterable, IHasCustomCardTraits
 {
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{

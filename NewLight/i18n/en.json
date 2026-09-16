@@ -85,7 +85,7 @@
 			},
 			"HealClip": {
 				"Name": "Heal Clip",
-				"Description": "If you end your turn with more than 0 <c=energy>ENERGY</c> after playing this card this turn, <c=heal>heal</c> 1."
+				"Description": "If you end your turn with more than 0 <c=energy>ENERGY</c> after playing this card this turn, <c=heal>heal 1</c>."
 			},
 			"Quickdraw": {
 				"Name": "Quickdraw",
@@ -126,6 +126,30 @@
 			}
 		},
 		"Generic": {
+			"ExoticEngram": {
+				"Name": "Exotic Engram",
+				"Description": {
+					"None": "Gain 1 of 3 <c=ffffff>exotic weapon</c> cards.",
+					"A": "Gain 1 of 5 <c=ffffff>exotic weapon</c> cards.",
+					"B": "Gain 1 of 3 <c=cardtrait>temp</c> <c=ffffff>exotic weapon</c> cards."
+				}
+			},
+			"LegendaryEngram": {
+				"Name": "Legendary Engram",
+				"Description": {
+					"None": "Gain 1 of 3 <c=ffffff>legendary weapon</c> cards.",
+					"A": "Gain 1 of 5 <c=ffffff>legendary weapon</c> cards.",
+					"B": "Gain 1 of 3 <c=cardtrait>temp</c> <c=ffffff>legendary weapon</c> cards."
+				}
+			},
+			"MakeYourOwnFate": {
+				"Name": "Make Your Own Fate",
+				"Description": {
+					"None": "Gain 1 of 3 <c=ffffff>Guardian</c> cards.",
+					"A": "Gain 1 of 5 <c=ffffff>Guardian</c> cards.",
+					"B": "Gain 1 of 3 <c=cardtrait>temp</c> <c=ffffff>Guardian</c> cards."
+				}
+			},
 			"NeverFeltBetter": {
 				"Name": "Never Felt Better"
 			},

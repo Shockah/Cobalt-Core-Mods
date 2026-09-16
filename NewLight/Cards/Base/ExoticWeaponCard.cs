@@ -2,5 +2,5 @@
 
 internal abstract class ExoticWeaponCard : WeaponCard
 {
-	protected const Rarity RARITY = Rarity.rare;
+	public const Rarity RARITY = Rarity.rare;
 }

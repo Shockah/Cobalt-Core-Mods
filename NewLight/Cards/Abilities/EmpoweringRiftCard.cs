@@ -14,7 +14,7 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class EmpoweringRiftCard : AbilityCard, IRegisterable
+internal class EmpoweringRiftCard : GuardianCard, IRegisterable
 {
 	public static IStatusEntry Status { get; private set; } = null!;
 	
