@@ -18,6 +18,7 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 	internal static readonly HashSet<string> DamageWeaponPerks = [];
 
 	private static HashSet<Card>? CachedReleasedCardSet;
+	private static Dictionary<int, Card>? CachedReleasedCardIdMap;
 	private static ICardTraitEntry RandomBaseWeaponPerkTrait = null!;
 	private static ICardTraitEntry RandomUpgradedWeaponPerkTrait = null!;
 
@@ -78,12 +79,25 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 
 	private static bool IsDbCard(Card card)
 	{
-		if (CachedReleasedCardSet is not null)
-			return CachedReleasedCardSet.Contains(card);
+		if (CachedReleasedCardSet is not null && CachedReleasedCardSet.Contains(card))
+			return true;
+		if (CachedReleasedCardIdMap is not null)
+			return CachedReleasedCardIdMap.TryGetValue(card.uuid, out var cachedCard) && cachedCard.GetType() == card.GetType();
+		
 		if (ModEntry.Instance.Helper.Events.ModLoadPhaseState is not { Phase: ModLoadPhase.AfterDbInit, IsDone: true })
-			return DB.releasedCards.Contains(card);
+		{
+			var cardType = card.GetType();
+			foreach (var releasedCard in DB.releasedCards)
+			{
+				if (releasedCard == card)
+					return true;
+				if (releasedCard.GetType() == cardType && releasedCard.uuid == card.uuid)
+					return true;
+			}
+		}
 
 		CachedReleasedCardSet = DB.releasedCards.ToHashSet();
+		CachedReleasedCardIdMap = DB.releasedCards.ToDictionary(releasedCard => releasedCard.uuid, releasedCard => releasedCard);
 		return CachedReleasedCardSet.Contains(card);
 	}
 
