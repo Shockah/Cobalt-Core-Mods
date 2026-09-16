@@ -18,6 +18,14 @@ internal sealed class ModEntry : SimpleMod
 
 	internal readonly IDeckEntry GuardianDeck;
 	
+	private static readonly IEnumerable<Type> SpecialCardTypes = [
+		typeof(AbilitiesCard),
+	];
+	
+	private static readonly IEnumerable<Type> AbilityTypes = [
+		typeof(TripleJumpCard),
+	];
+	
 	private static readonly IEnumerable<Type> LegendaryWeaponTypes = [
 		typeof(AdaptiveGrenadeLauncherCard),
 		typeof(AdaptiveSniperRifleCard),
@@ -71,6 +79,7 @@ internal sealed class ModEntry : SimpleMod
 	];
 	
 	private static readonly IEnumerable<Type> FeatureTypes = [
+		typeof(Abilities),
 		typeof(Ammo),
 		typeof(BlastAction),
 		typeof(FullAutoCardTrait),
@@ -88,6 +97,8 @@ internal sealed class ModEntry : SimpleMod
 		.. FeatureTypes,
 		.. LegendaryWeaponTypes,
 		.. ExoticWeaponTypes,
+		.. AbilityTypes,
+		.. SpecialCardTypes,
 	];
 	
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)

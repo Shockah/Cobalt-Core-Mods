@@ -90,7 +90,7 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 
 	public static int GetSpecialCost(State state, Combat combat, Card card)
 	{
-		var cost = GetBaseSpecialCost(card.Key(), card.upgrade);
+		var cost = GetBaseSpecialCost(card);
 		
 		foreach (var hook in Instance)
 			hook.ModifySpecialAmmoCost(state, combat, card, ref cost);
@@ -100,7 +100,7 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 
 	public static int GetHeavyCost(State state, Combat combat, Card card)
 	{
-		var cost = GetBaseHeavyCost(card.Key(), card.upgrade);
+		var cost = GetBaseHeavyCost(card);
 		
 		foreach (var hook in Instance)
 			hook.ModifyHeavyAmmoCost(state, combat, card, ref cost);

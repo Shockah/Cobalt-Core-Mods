@@ -10,6 +10,20 @@
 		}
 	},
 	"CardTrait": {
+		"Ability": {
+			"Name": "Ability",
+			"Description": {
+				"WithoutCard": "When combat starts or this card gets discarded, it gets put into the <c=keyword>ability pile</c> and gains <c=cardtrait>Cooldown</c>.",
+				"WithCard": "When combat starts or this card gets discarded, it gets put into the <c=keyword>ability pile</c> and gains <c=cardtrait>Cooldown {{Amount}}</c>."
+			}
+		},
+		"Cooldown": {
+			"Name": "Cooldown",
+			"Description": {
+				"WithoutCard": "Decreases each turn by 1. When any Ability reaches <c=cardtrait>Cooldown 0</c>, put <c=card>Abilities</c> in your hand.",
+				"WithCard": "Decreases each turn by 1. When any Ability reaches <c=cardtrait>Cooldown 0</c>, put <c=card>Abilities</c> in your hand."
+			}
+		},
 		"FullAuto": {
 			"Name": "Full Auto",
 			"Description": "After playing this card for the first time each turn, it gets <c=cardtrait>discounted</c> by 1."
@@ -100,6 +114,21 @@
 		}
 	},
 	"Card": {
+		"Special": {
+			"Abilities": {
+				"Name": "Abilities",
+				"Description": "Choose a card from the <c=keyword>ability pile</c>. Put it in your hand.",
+				"SearchAction": {
+					"Title": "Ability Pile: {{Count}} Cards",
+					"Description": "Choose a card from your <c=keyword>ability pile</c>."
+				}
+			}
+		},
+		"Ability": {
+			"TripleJump": {
+				"Name": "Triple Jump"
+			}
+		},
 		"Weapon": {
 			"Legendary": {
 				"AdaptiveGrenadeLauncher": "Adaptive Launcher",
