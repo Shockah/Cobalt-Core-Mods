@@ -109,13 +109,12 @@ internal sealed class Abilities : IRegisterable
 		{
 			var currentCooldown = combat.CurrentCooldown;
 			foreach (var card in combat.Abilities)
-				currentCooldown[card.uuid] = Math.Max(currentCooldown.GetValueOrDefault(card.uuid) - 1, 0);
+				currentCooldown[card.uuid] = currentCooldown.GetValueOrDefault(card.uuid) + 1;
 		});
 		
 		helper.Events.RegisterBeforeArtifactsHook(nameof(Artifact.OnCombatStart), (State state, Combat combat) =>
 		{
 			var abilities = combat.Abilities;
-			var currentCooldown = combat.CurrentCooldown;
 			
 			for (var i = state.deck.Count - 1; i >= 0; i--)
 			{
@@ -124,7 +123,6 @@ internal sealed class Abilities : IRegisterable
 					continue;
 				state.deck.RemoveAt(i);
 				abilities.Add(card);
-				currentCooldown[card.uuid] = GetCooldown(state, combat, card);
 			}
 		}, 1_000_000);
 		
@@ -178,7 +176,7 @@ internal sealed class Abilities : IRegisterable
 	}
 
 	public static int GetCurrentCooldown(State state, Combat combat, Card card)
-		=> combat.CurrentCooldown.GetValueOrDefault(card.uuid);
+		=> Math.Max(GetCooldown(state, combat, card) - combat.CurrentCooldown.GetValueOrDefault(card.uuid), 0);
 
 	private static Spr ObtainAbilityIcon(int amount)
 	{
@@ -247,7 +245,7 @@ internal sealed class Abilities : IRegisterable
 
 		s.RemoveCardFromWhereverItIs(card.uuid);
 		__instance.Abilities.Add(card);
-		__instance.CurrentCooldown[card.uuid] = cooldown;
+		__instance.CurrentCooldown[card.uuid] = 0;
 	}
 
 	private static void CardBrowse_GetMergedDeckForDisplay_Postfix(G g, bool includeTemporaryCards, ref List<Card> __result)
