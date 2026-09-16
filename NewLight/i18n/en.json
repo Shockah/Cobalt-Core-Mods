@@ -20,8 +20,8 @@
 		"Cooldown": {
 			"Name": "Cooldown",
 			"Description": {
-				"WithoutCard": "Decreases each turn by 1. When any Ability reaches <c=cardtrait>Cooldown 0</c>, put <c=card>Abilities</c> in your hand.",
-				"WithCard": "Decreases each turn by 1. When any Ability reaches <c=cardtrait>Cooldown 0</c>, put <c=card>Abilities</c> in your hand."
+				"WithoutCard": "Decreases each turn by 1. When any <c=cardtrait>ability</c> reaches <c=cardtrait>Cooldown 0</c>, put <c=card>Abilities</c> in your hand.",
+				"WithCard": "Decreases each turn by 1. When any <c=cardtrait>ability</c> reaches <c=cardtrait>Cooldown 0</c>, put <c=card>Abilities</c> in your hand."
 			}
 		},
 		"FullAuto": {
@@ -125,6 +125,9 @@
 			}
 		},
 		"Ability": {
+			"BurstGlide": {
+				"Name": "Burst Glide"
+			},
 			"TripleJump": {
 				"Name": "Triple Jump"
 			}

@@ -84,13 +84,19 @@ internal sealed class Abilities : IRegisterable
 		helper.Content.Cards.OnGetDynamicInnateCardTraitOverrides += (_, args) =>
 		{
 			var state = MG.inst.g.state ?? args.State;
+			var combat = state.route as Combat ?? DB.fakeCombat;
 			
-			if (GetCooldown(state, state.route as Combat ?? DB.fakeCombat, args.Card) <= 0)
+			if (GetCooldown(state, combat, args.Card) <= 0)
 				return;
 
 			args.SetOverride(AbilityTrait, true);
-			if (GetCurrentCooldown(state, state.route as Combat ?? DB.fakeCombat, args.Card) > 0)
-				args.SetOverride(CooldownTrait, true);
+
+			if (!combat.Abilities.Contains(args.Card))
+				return;
+			if (GetCurrentCooldown(state, combat, args.Card) <= 0)
+				return;
+
+			args.SetOverride(CooldownTrait, true);
 		};
 		
 		helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnQueueEmptyDuringPlayerTurn), (State state, Combat combat) =>

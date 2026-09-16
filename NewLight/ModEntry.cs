@@ -23,6 +23,7 @@ internal sealed class ModEntry : SimpleMod
 	];
 	
 	private static readonly IEnumerable<Type> AbilityTypes = [
+		typeof(BurstGlideCard),
 		typeof(TripleJumpCard),
 	];
 	
