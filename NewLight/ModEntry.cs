@@ -24,6 +24,7 @@ internal sealed class ModEntry : SimpleMod
 	
 	private static readonly IEnumerable<Type> AbilityTypes = [
 		typeof(BurstGlideCard),
+		typeof(CatapultLiftCard),
 		typeof(TripleJumpCard),
 	];
 	
@@ -84,6 +85,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(Ammo),
 		typeof(BlastAction),
 		typeof(FullAutoCardTrait),
+		typeof(NegativeHermesBoots),
 		typeof(PrecisionCardTrait),
 		typeof(ScatterAction),
 		typeof(TensionCardTrait),

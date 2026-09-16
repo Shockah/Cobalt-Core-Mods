@@ -117,7 +117,7 @@
 		"Special": {
 			"Abilities": {
 				"Name": "Abilities",
-				"Description": "Choose a card from the <c=keyword>ability pile</c>. Put it in your hand.",
+				"Description": "Choose an <c=cardtrait>ability</c> with <c=cardtrait>Cooldown 0</c>. Put it in hand.",
 				"SearchAction": {
 					"Title": "Ability Pile: {{Count}} Cards",
 					"Description": "Choose a card from your <c=keyword>ability pile</c>."
@@ -127,6 +127,9 @@
 		"Ability": {
 			"BurstGlide": {
 				"Name": "Burst Glide"
+			},
+			"CatapultLift": {
+				"Name": "Catapult Lift"
 			},
 			"TripleJump": {
 				"Name": "Triple Jump"

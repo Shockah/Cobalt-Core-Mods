@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
@@ -70,6 +71,6 @@ internal class AbilitiesCard : Card, IRegisterable, IHasCustomCardTraits
 			=> ModEntry.Instance.Localizations.Localize(["Card", "Special", "Abilities", "SearchAction", "Title"], new { Count = cards.Count });
 
 		public IReadOnlyList<Card> GetCards(State state, Combat? combat)
-			=> combat?.Abilities ?? [];
+			=> combat?.Abilities.Where(card => Abilities.GetCurrentCooldown(state, combat, card) <= 0).ToList() ?? [];
 	}
 }
