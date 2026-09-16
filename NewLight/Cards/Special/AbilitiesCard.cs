@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
@@ -24,6 +25,11 @@ internal class AbilitiesCard : Card, IRegisterable, IHasCustomCardTraits
 			Art = helper.Content.Sprites.RegisterSpriteOrDefault(package.PackageRoot.GetRelativeFile("assets/Cards/Ability.png"), StableSpr.cards_riggs).Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Special", "Abilities", "Name"]).Localize,
 		});
+		
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(Card), nameof(GetFullDisplayName)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetFullDisplayName_Postfix))
+		);
 	}
 
 	public override CardData GetData(State state)
@@ -42,6 +48,22 @@ internal class AbilitiesCard : Card, IRegisterable, IHasCustomCardTraits
 				.ModifyCardSelect(new ACardSelect { browseAction = new BrowseAction() })
 				.SetCustomBrowseSource(new BrowseSource()).AsCardAction,
 		];
+
+	private static void Card_GetFullDisplayName_Postfix(Card __instance, ref string __result)
+	{
+		if (__instance is not AbilitiesCard)
+			return;
+		if (MG.inst.g.state is not { } state)
+			return;
+		if (state.route is not Combat combat)
+			return;
+
+		var abilityCount = combat.Abilities.Count(card => Abilities.GetCurrentCooldown(state, combat, card) <= 0);
+		if (abilityCount <= 0)
+			return;
+
+		__result = ModEntry.Instance.Localizations.Localize(["Card", "Special", "Abilities", "StatefulFormat"], new { FullName = __result, Count = abilityCount });
+	}
 
 	private sealed class BrowseAction : CardAction
 	{

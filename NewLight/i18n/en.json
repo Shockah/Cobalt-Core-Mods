@@ -117,6 +117,7 @@
 		"Special": {
 			"Abilities": {
 				"Name": "Abilities",
+				"StatefulFormat": "{{FullName}} ({{Count}})",
 				"Description": "Choose an <c=cardtrait>ability</c> with <c=cardtrait>Cooldown 0</c>. Put it in hand.",
 				"SearchAction": {
 					"Title": "Ability Pile: {{Count}} Cards",
