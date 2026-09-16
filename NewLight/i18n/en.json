@@ -131,6 +131,13 @@
 			"CatapultLift": {
 				"Name": "Catapult Lift"
 			},
+			"HealingRift": {
+				"Name": "Healing Rift",
+				"Status": {
+					"Name": "Healing Rift",
+					"Description": "<c=heal>Heal 1</c> at the start of each turn. <c=downside>Decreases by 1 every turn. Lose all of it upon move.</c>"
+				}
+			},
 			"TripleJump": {
 				"Name": "Triple Jump"
 			}

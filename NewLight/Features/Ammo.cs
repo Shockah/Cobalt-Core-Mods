@@ -40,7 +40,7 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		SpecialStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Special Ammo", new()
+		SpecialStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("SpecialAmmo", new()
 		{
 			Definition = new()
 			{
@@ -51,7 +51,7 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["Status", "SpecialAmmo", "Name"]).Localize,
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["Status", "SpecialAmmo", "Description"]).Localize,
 		});
-		HeavyStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("Heavy Ammo", new()
+		HeavyStatus = ModEntry.Instance.Helper.Content.Statuses.RegisterStatus("HeavyAmmo", new()
 		{
 			Definition = new()
 			{
