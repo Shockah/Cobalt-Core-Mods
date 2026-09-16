@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FSPRO;
 using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
@@ -75,6 +76,7 @@ internal class AbilitiesCard : Card, IRegisterable, IHasCustomCardTraits
 			
 			s.RemoveCardFromWhereverItIs(selectedCard.uuid);
 			c.SendCardToHand(s, selectedCard);
+			Audio.Play(Event.CardHandling);
 		}
 	}
 	

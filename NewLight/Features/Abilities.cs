@@ -111,7 +111,7 @@ internal sealed class Abilities : IRegisterable
 			combat.SendCardToHand(state, new AbilitiesCard());
 		});
 		
-		helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnTurnEnd), (Combat combat) =>
+		helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnTurnStart), (Combat combat) =>
 		{
 			var currentCooldown = combat.CurrentCooldown;
 			foreach (var card in combat.Abilities)
@@ -183,6 +183,12 @@ internal sealed class Abilities : IRegisterable
 
 	public static int GetCurrentCooldown(State state, Combat combat, Card card)
 		=> Math.Max(GetCooldown(state, combat, card) - combat.CurrentCooldown.GetValueOrDefault(card.uuid), 0);
+
+	public static void SetCurrentCooldown(State state, Combat combat, Card card, int value)
+	{
+		var cooldown = GetCooldown(state, combat, card);
+		combat.CurrentCooldown[value] = cooldown - value;
+	}
 
 	private static Spr ObtainAbilityIcon(int amount)
 	{

@@ -125,6 +125,12 @@
 				}
 			}
 		},
+		"Generic": {
+			"RallyBanner": {
+				"Name": "Rally Banner",
+				"Description": "Refill <c=status>special and heavy ammo</c>. Finish all <c=cardtrait>ability cooldowns</c>."
+			}
+		},
 		"Ability": {
 			"BurstGlide": {
 				"Name": "Burst Glide"

@@ -22,6 +22,10 @@ internal sealed class ModEntry : SimpleMod
 		typeof(AbilitiesCard),
 	];
 	
+	private static readonly IEnumerable<Type> GenericCardTypes = [
+		typeof(RallyBannerCard),
+	];
+	
 	private static readonly IEnumerable<Type> AbilityTypes = [
 		typeof(BurstGlideCard),
 		typeof(CatapultLiftCard),
@@ -103,6 +107,7 @@ internal sealed class ModEntry : SimpleMod
 		.. LegendaryWeaponTypes,
 		.. ExoticWeaponTypes,
 		.. AbilityTypes,
+		.. GenericCardTypes,
 		.. SpecialCardTypes,
 	];
 	
