@@ -126,6 +126,9 @@
 			}
 		},
 		"Generic": {
+			"NeverFeltBetter": {
+				"Name": "Never Felt Better"
+			},
 			"RallyBanner": {
 				"Name": "Rally Banner",
 				"Description": "Refill <c=status>special and heavy ammo</c>. Finish all <c=cardtrait>ability cooldowns</c>."
