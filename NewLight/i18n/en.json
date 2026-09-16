@@ -132,6 +132,13 @@
 			"CatapultLift": {
 				"Name": "Catapult Lift"
 			},
+			"EmpoweringRift": {
+				"Name": "Empowering Rift",
+				"Status": {
+					"Name": "Empowering Rift",
+					"Description": "Deal 1 more damage. <c=downside>Decreases by 1 every turn. Lose all of it upon move.</c>"
+				}
+			},
 			"HealingRift": {
 				"Name": "Healing Rift",
 				"Status": {
