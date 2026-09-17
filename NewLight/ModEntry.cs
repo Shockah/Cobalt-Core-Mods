@@ -71,6 +71,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(FafnirCard),
 		typeof(FourthHorsemanCard),
 		typeof(IzanagisBurdenCard),
+		typeof(LeMonarqueCard),
 		typeof(OutbreakPerfectedCard),
 		typeof(ThunderlordCard),
 		typeof(TravelersChosenCard),

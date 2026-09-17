@@ -97,11 +97,11 @@
 			},
 			"RepulsorBrace": {
 				"Name": "Repulsor Brace",
-				"Description": "Once per turn, playing this card gives you 1 <c=status>temp shield</c>."
+				"Description": "Once per turn, playing this card gives you 1 <c=status>TEMP SHIELD</c>."
 			},
 			"Rimestealer": {
 				"Name": "Rimestealer",
-				"Description": "Gain 1 <c=status>temp shield</c> when a <c=midrow>Geode</c> is destroyed with this card."
+				"Description": "Gain 1 <c=status>TEMP SHIELD</c> when a <c=midrow>Geode</c> is destroyed with this card."
 			},
 			"Surrounded": {
 				"Name": "Surrounded",
@@ -155,7 +155,7 @@
 			},
 			"RallyBanner": {
 				"Name": "Rally Banner",
-				"Description": "Refill <c=status>special and heavy ammo</c>. Finish all <c=cardtrait>ability cooldowns</c>."
+				"Description": "Refill <c=status>SPECIAL and HEAVY AMMO</c>. Finish all <c=cardtrait>ability cooldowns</c>."
 			}
 		},
 		"Ability": {
@@ -225,6 +225,13 @@
 				},
 				"IzanagisBurden": {
 					"Name": "Izanagi's Burden"
+				},
+				"LeMonarque": {
+					"Name": "Le Monarque",
+					"CardTrait": {
+						"Name": "Poison Arrows",
+						"Description": "When <c=cardtrait>tensioned</c>, attacks apply 1 <c=status>CORRODE</c>."
+					}
 				},
 				"OutbreakPerfected": {
 					"Name": "Outbreak Perfected"

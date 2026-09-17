@@ -95,6 +95,9 @@ internal sealed class TensionCardTrait : IRegisterable
 
 	public static int GetTension(State state, Card card)
 		=> TensionPerUpgrade.TryGetValue(card.Key(), out var perUpgrade) ? perUpgrade.GetValueOrDefault(card.upgrade) : 0;
+	
+	public static bool IsTensioned(State state, Combat combat, Card card)
+		=> combat.TensionedThisTurn.Contains(card.uuid);
 
 	private static Spr ObtainIcon(int amount)
 	{
