@@ -30,7 +30,7 @@ internal class LeMonarqueCard : ExoticWeaponCard, IHasCustomCardTraits, IRegiste
 		
 		var traitIcon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/CardTraits/ExoticWeaponPerks/LeMonarque.png"));
 		
-		Trait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("TravelersChosen", new()
+		Trait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("LeMonarque", new()
 		{
 			Icon = (_, _) => traitIcon.Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Weapon", "Exotic", "LeMonarque", "CardTrait", "Name"]).Localize,

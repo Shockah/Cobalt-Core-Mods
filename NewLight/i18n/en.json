@@ -245,6 +245,13 @@
 						"Name": "Gathering Light",
 						"Description": "When played, decreases all <c=cardtrait>ability cooldowns</c> by 1."
 					}
+				},
+				"VexMythoclast": {
+					"Name": "Vex Mythoclast",
+					"Status": {
+						"Name": "Vex Overcharge",
+						"Description": "Spend to use the more powerful mode of <c=card>Vex Mythoclast</c>."
+					}
 				}
 			}
 		}
