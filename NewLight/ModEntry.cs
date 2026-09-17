@@ -73,6 +73,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(IzanagisBurdenCard),
 		typeof(OutbreakPerfectedCard),
 		typeof(ThunderlordCard),
+		typeof(TravelersChosenCard),
 	];
 	
 	private static readonly IEnumerable<Type> WeaponPerkTypes = [

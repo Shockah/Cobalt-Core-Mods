@@ -183,7 +183,7 @@
 				}
 			},
 			"Thundercrash": {
-				"Name": "Thundercrash"
+				"Name": "Thunder-crash"
 			},
 			"TripleJump": {
 				"Name": "Triple Jump"
@@ -231,6 +231,13 @@
 				},
 				"Thunderlord": {
 					"Name": "Thunderlord"
+				},
+				"TravelersChosen": {
+					"Name": "Traveler's Chosen",
+					"CardTrait": {
+						"Name": "Gathering Light",
+						"Description": "When played, decreases all <c=cardtrait>ability cooldowns</c> by 1."
+					}
 				}
 			}
 		}
