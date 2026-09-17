@@ -172,12 +172,18 @@
 					"Description": "Deal 1 more damage. <c=downside>Decreases by 1 every turn. Lose all of it upon move.</c>"
 				}
 			},
+			"GoldenGun": {
+				"Name": "Golden Gun"
+			},
 			"HealingRift": {
 				"Name": "Healing Rift",
 				"Status": {
 					"Name": "Healing Rift",
 					"Description": "<c=heal>Heal 1</c> at the start of each turn. <c=downside>Decreases by 1 every turn. Lose all of it upon move.</c>"
 				}
+			},
+			"Thundercrash": {
+				"Name": "Thundercrash"
 			},
 			"TripleJump": {
 				"Name": "Triple Jump"
