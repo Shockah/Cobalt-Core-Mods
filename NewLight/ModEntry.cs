@@ -105,7 +105,9 @@ internal sealed class ModEntry : SimpleMod
 		typeof(WaveAction),
 		typeof(WeaponCard),
 		.. WeaponPerkTypes,
-		typeof(LegendaryWeaponCard), // last for dependency purposes
+		// last for dependency purposes
+		typeof(LegendaryWeaponCard),
+		typeof(ExoticWeaponCard),
 	];
 	
 	private static readonly IEnumerable<Type> RegisterableTypes = [
