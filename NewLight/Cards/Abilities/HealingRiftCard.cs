@@ -41,6 +41,7 @@ internal class HealingRiftCard : GuardianCard, IRegisterable
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Ability", "HealingRift", "Status", "Description"]).Localize,
 		});
 		
+		Abilities.SetAbilityType(entry.UniqueName, Abilities.UTILITY_ABILITY);
 		Abilities.SetBaseCooldown(entry.UniqueName, 5);
 		
 		ModEntry.Instance.Harmony.Patch(

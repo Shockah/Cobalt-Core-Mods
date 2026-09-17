@@ -23,6 +23,7 @@ internal class BurstGlideCard : GuardianCard, IRegisterable
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Ability", "BurstGlide", "Name"]).Localize,
 		});
 		
+		Abilities.SetAbilityType(entry.UniqueName, Abilities.MOVEMENT_ABILITY);
 		Abilities.SetBaseCooldown(entry.UniqueName, Upgrade.None, 2);
 		Abilities.SetBaseCooldown(entry.UniqueName, Upgrade.A, 2);
 		Abilities.SetBaseCooldown(entry.UniqueName, Upgrade.B, 1);

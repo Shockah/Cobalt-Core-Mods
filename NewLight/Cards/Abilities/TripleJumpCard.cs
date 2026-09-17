@@ -23,6 +23,7 @@ internal class TripleJumpCard : GuardianCard, IRegisterable, IHasCustomCardTrait
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Ability", "TripleJump", "Name"]).Localize,
 		});
 		
+		Abilities.SetAbilityType(entry.UniqueName, Abilities.MOVEMENT_ABILITY);
 		Abilities.SetBaseCooldown(entry.UniqueName, Upgrade.None, 4);
 		Abilities.SetBaseCooldown(entry.UniqueName, Upgrade.A, 3);
 		Abilities.SetBaseCooldown(entry.UniqueName, Upgrade.B, 4);

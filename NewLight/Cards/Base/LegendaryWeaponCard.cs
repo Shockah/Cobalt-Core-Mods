@@ -25,6 +25,8 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 	[JsonProperty("WeaponElement")] private WeaponElement? MaybeWeaponElement;
 	[JsonProperty] private Dictionary<Upgrade, string> PerkUniqueNames = [];
 
+	private HashSet<ICardTraitEntry> InnateTraitsSet = [];
+
 	protected abstract Dictionary<WeaponElement, string> ElementWeaponNames { get; }
 
 	protected override WeaponElement WeaponElement
@@ -159,7 +161,8 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 
 	public virtual IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 	{
-		var results = new HashSet<ICardTraitEntry>();
+		var results = InnateTraitsSet;
+		results.Clear();
 		InitializeIfNeeded(state);
 
 		results.Add((PerkUniqueNames.TryGetValue(Upgrade.None, out var basePerkUniqueName) ? ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(basePerkUniqueName) : null) ?? RandomBaseWeaponPerkTrait);

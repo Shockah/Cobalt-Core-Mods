@@ -46,6 +46,7 @@ internal class EmpoweringRiftCard : GuardianCard, IRegisterable
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Ability", "EmpoweringRift", "Status", "Description"]).Localize,
 		});
 		
+		Abilities.SetAbilityType(entry.UniqueName, Abilities.UTILITY_ABILITY);
 		Abilities.SetBaseCooldown(entry.UniqueName, 5);
 		
 		ModEntry.Instance.Harmony.Patch(

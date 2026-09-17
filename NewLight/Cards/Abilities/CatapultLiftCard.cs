@@ -23,7 +23,8 @@ internal class CatapultLiftCard : GuardianCard, IRegisterable, IHasCustomCardTra
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Ability", "CatapultLift", "Name"]).Localize,
 		});
 		
-		Abilities.SetBaseCooldown(entry.UniqueName, 2);
+		Abilities.SetAbilityType(entry.UniqueName, Abilities.MOVEMENT_ABILITY);
+		Abilities.SetBaseCooldown(entry.UniqueName, 3);
 		ModEntry.Instance.KokoroApi.Finite.SetBaseFiniteUses(entry.UniqueName, Upgrade.B, 2);
 	}
 
