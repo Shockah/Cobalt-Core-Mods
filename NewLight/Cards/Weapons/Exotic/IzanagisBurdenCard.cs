@@ -25,6 +25,8 @@ internal class IzanagisBurdenCard : ExoticWeaponCard, IRegisterable
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["Card", "Weapon", "Exotic", "IzanagisBurden", "Name"]).Localize,
 		});
 		
+		Ammo.SetBaseSpecialCost(entry.UniqueName, Upgrade.None, 0);
+		Ammo.SetBaseSpecialCost(entry.UniqueName, Upgrade.A, 0);
 		Ammo.SetBaseSpecialCost(entry.UniqueName, Upgrade.B, 2);
 		PrecisionCardTrait.SetPrecision(entry.UniqueName, Upgrade.None, 4);
 		PrecisionCardTrait.SetPrecision(entry.UniqueName, Upgrade.A, 4);

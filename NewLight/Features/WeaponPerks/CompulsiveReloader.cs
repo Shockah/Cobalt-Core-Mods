@@ -45,12 +45,12 @@ internal sealed class CompulsiveReloaderWeaponPerk : IRegisterable
 
 		var specialCost = Ammo.GetSpecialCost(s, combat, __instance);
 		var heavyCost = Ammo.GetHeavyCost(s, combat, __instance);
-		if (specialCost <= 0 && heavyCost <= 0)
+		if (specialCost is null && heavyCost is null)
 			return;
 		
-		if (specialCost > 0 && s.ship.Get(Ammo.SpecialStatus.Status) < 5)
+		if (specialCost is not null && s.ship.Get(Ammo.SpecialStatus.Status) < 5)
 			return;
-		if (heavyCost > 0 && s.ship.Get(Ammo.HeavyStatus.Status) < 5)
+		if (heavyCost is not null && s.ship.Get(Ammo.HeavyStatus.Status) < 5)
 			return;
 		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, __instance, Trait))
 			return;

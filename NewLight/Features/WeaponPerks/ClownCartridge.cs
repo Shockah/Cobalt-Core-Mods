@@ -117,9 +117,9 @@ internal sealed class ClownCartridgeWeaponPerk : IRegisterable
 
 	private sealed class AmmoHook : Ammo.IHook
 	{
-		public void ModifySpecialAmmoCost(State state, Combat combat, Card card, ref int cost)
+		public void ModifySpecialAmmoCost(State state, Combat combat, Card card, ref int? cost)
 		{
-			if (cost <= 1)
+			if (cost is null or <= 1)
 				return;
 			if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Trait))
 				return;
@@ -127,9 +127,9 @@ internal sealed class ClownCartridgeWeaponPerk : IRegisterable
 			cost--;
 		}
 		
-		public void ModifyHeavyAmmoCost(State state, Combat combat, Card card, ref int cost)
+		public void ModifyHeavyAmmoCost(State state, Combat combat, Card card, ref int? cost)
 		{
-			if (cost <= 1)
+			if (cost is null or <= 1)
 				return;
 			if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, card, Trait))
 				return;

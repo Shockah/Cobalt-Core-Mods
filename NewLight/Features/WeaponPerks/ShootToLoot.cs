@@ -46,19 +46,19 @@ internal sealed class ShootToLootWeaponPerk : IRegisterable
 			timer = 0;
 
 			var cards = c.hand
-				.Where(card => Ammo.GetSpecialCost(s, c, card) > 0 || Ammo.GetHeavyCost(s, c, card) > 0)
+				.Where(card => Ammo.GetSpecialCost(s, c, card) is not null || Ammo.GetHeavyCost(s, c, card) is not null)
 				.ToList();
 			
 			if (cards.Count == 0)
 				cards = c.discard.Concat(s.deck)
-					.Where(card => Ammo.GetSpecialCost(s, c, card) > 0 || Ammo.GetHeavyCost(s, c, card) > 0)
+					.Where(card => Ammo.GetSpecialCost(s, c, card) is not null || Ammo.GetHeavyCost(s, c, card) is not null)
 					.ToList();
 
 			if (cards.Count == 0)
 				return;
 
 			var card = cards[s.rngActions.NextInt() % cards.Count];
-			c.QueueImmediate(new AStatus { targetPlayer = true, status = Ammo.GetSpecialCost(s, c, card) > 0 ? Ammo.SpecialStatus.Status : Ammo.HeavyStatus.Status, statusAmount = 1 });
+			c.QueueImmediate(new AStatus { targetPlayer = true, status = Ammo.GetSpecialCost(s, c, card) is not null ? Ammo.SpecialStatus.Status : Ammo.HeavyStatus.Status, statusAmount = 1 });
 		}
 	}
 }

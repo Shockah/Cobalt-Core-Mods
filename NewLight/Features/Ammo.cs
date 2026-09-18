@@ -19,8 +19,8 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 {
 	public interface IHook
 	{
-		void ModifySpecialAmmoCost(State state, Combat combat, Card card, ref int cost) { }
-		void ModifyHeavyAmmoCost(State state, Combat combat, Card card, ref int cost) { }
+		void ModifySpecialAmmoCost(State state, Combat combat, Card card, ref int? cost) { }
+		void ModifyHeavyAmmoCost(State state, Combat combat, Card card, ref int? cost) { }
 	}
 
 	private Ammo() : base(ModEntry.Instance.Package.Manifest.UniqueName)
@@ -76,19 +76,31 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 		);
 	}
 
-	public static int GetBaseSpecialCost(Card card)
+	public static int? GetBaseSpecialCost(Card card)
 		=> GetBaseSpecialCost(card.Key(), card.upgrade);
 
-	public static int GetBaseHeavyCost(Card card)
+	public static int? GetBaseHeavyCost(Card card)
 		=> GetBaseHeavyCost(card.Key(), card.upgrade);
 
-	public static int GetBaseSpecialCost(string key, Upgrade upgrade)
-		=> BaseSpecialCost.TryGetValue(key, out var perUpgrade) ? perUpgrade.GetValueOrDefault(upgrade) : 0;
+	public static int? GetBaseSpecialCost(string key, Upgrade upgrade)
+	{
+		if (!BaseSpecialCost.TryGetValue(key, out var perUpgrade))
+			return null;
+		if (!perUpgrade.TryGetValue(upgrade, out var value))
+			return null;
+		return value;
+	}
 
-	public static int GetBaseHeavyCost(string key, Upgrade upgrade)
-		=> BaseHeavyCost.TryGetValue(key, out var perUpgrade) ? perUpgrade.GetValueOrDefault(upgrade) : 0;
+	public static int? GetBaseHeavyCost(string key, Upgrade upgrade)
+	{
+		if (!BaseHeavyCost.TryGetValue(key, out var perUpgrade))
+			return null;
+		if (!perUpgrade.TryGetValue(upgrade, out var value))
+			return null;
+		return value;
+	}
 
-	public static int GetSpecialCost(State state, Combat combat, Card card)
+	public static int? GetSpecialCost(State state, Combat combat, Card card)
 	{
 		var cost = GetBaseSpecialCost(card);
 		
@@ -98,7 +110,7 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 		return cost;
 	}
 
-	public static int GetHeavyCost(State state, Combat combat, Card card)
+	public static int? GetHeavyCost(State state, Combat combat, Card card)
 	{
 		var cost = GetBaseHeavyCost(card);
 		
@@ -108,34 +120,58 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 		return cost;
 	}
 
-	public static void SetBaseHeavyCost(string key, int value)
+	public static void SetBaseHeavyCost(string key, int? value)
 	{
 		SetBaseHeavyCost(key, Upgrade.None, value);
 		SetBaseHeavyCost(key, Upgrade.A, value);
 		SetBaseHeavyCost(key, Upgrade.B, value);
 	}
 
-	public static void SetBaseSpecialCost(string key, int value)
+	public static void SetBaseSpecialCost(string key, int? value)
 	{
 		SetBaseSpecialCost(key, Upgrade.None, value);
 		SetBaseSpecialCost(key, Upgrade.A, value);
 		SetBaseSpecialCost(key, Upgrade.B, value);
 	}
 
-	public static void SetBaseSpecialCost(string key, Upgrade upgrade, int value)
+	public static void SetBaseSpecialCost(string key, Upgrade upgrade, int? value)
 	{
-		ref var perUpgrade = ref CollectionsMarshal.GetValueRefOrAddDefault(BaseSpecialCost, key, out var perUpgradeExists);
-		if (!perUpgradeExists)
-			perUpgrade = [];
-		perUpgrade![upgrade] = value;
+		if (value is null)
+		{
+			if (!BaseSpecialCost.TryGetValue(key, out var perUpgrade))
+				return;
+			
+			perUpgrade.Remove(upgrade);
+			if (perUpgrade.Count == 0)
+				BaseSpecialCost.Remove(key);
+		}
+		else
+		{
+			ref var perUpgrade = ref CollectionsMarshal.GetValueRefOrAddDefault(BaseSpecialCost, key, out var perUpgradeExists);
+			if (!perUpgradeExists)
+				perUpgrade = [];
+			perUpgrade![upgrade] = value.Value;
+		}
 	}
 
-	public static void SetBaseHeavyCost(string key, Upgrade upgrade, int value)
+	public static void SetBaseHeavyCost(string key, Upgrade upgrade, int? value)
 	{
-		ref var perUpgrade = ref CollectionsMarshal.GetValueRefOrAddDefault(BaseHeavyCost, key, out var perUpgradeExists);
-		if (!perUpgradeExists)
-			perUpgrade = [];
-		perUpgrade![upgrade] = value;
+		if (value is null)
+		{
+			if (!BaseHeavyCost.TryGetValue(key, out var perUpgrade))
+				return;
+			
+			perUpgrade.Remove(upgrade);
+			if (perUpgrade.Count == 0)
+				BaseHeavyCost.Remove(key);
+		}
+		else
+		{
+			ref var perUpgrade = ref CollectionsMarshal.GetValueRefOrAddDefault(BaseHeavyCost, key, out var perUpgradeExists);
+			if (!perUpgradeExists)
+				perUpgrade = [];
+			perUpgrade![upgrade] = value.Value;
+		}
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
@@ -251,8 +287,10 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 	{
 		if (playNoMatterWhatForFree)
 			return;
-
-		state.ship.Add(SpecialStatus.Status, -GetSpecialCost(state, combat, card));
-		state.ship.Add(HeavyStatus.Status, -GetHeavyCost(state, combat, card));
+		
+		if (GetSpecialCost(state, combat, card) is { } specialCost)
+			state.ship.Add(SpecialStatus.Status, -specialCost);
+		if (GetHeavyCost(state, combat, card) is { } heavyCost)
+			state.ship.Add(HeavyStatus.Status, -heavyCost);
 	}
 }

@@ -42,9 +42,9 @@ internal sealed class AutoLoadingHolsterWeaponPerk : IRegisterable
 		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, card, Trait))
 			return;
 		
-		if (Ammo.GetHeavyCost(s, __instance, card) > 0)
+		if (Ammo.GetHeavyCost(s, __instance, card) is not null)
 			__instance.QueueImmediate(new AStatus { targetPlayer = true, status = Ammo.HeavyStatus.Status, statusAmount = 1 });
-		else if (Ammo.GetSpecialCost(s, __instance, card) > 0)
+		else if (Ammo.GetSpecialCost(s, __instance, card) is not null)
 			__instance.QueueImmediate(new AStatus { targetPlayer = true, status = Ammo.SpecialStatus.Status, statusAmount = 1 });
 	}
 }
