@@ -16,25 +16,25 @@
 				}
 			},
 			"Description": {
-				"Centered": "<c=action>Attack</c>, splitting <c=boldPink>{{Damage}}</c> damage to spaces up to {{Range}} spaces away, preferring the center. <c=downside>Ignores <c=parttrait>weak</c>/<c=parttrait>brittle</c>.</c>",
-				"Left": "<c=action>Attack</c>, splitting <c=boldPink>{{Damage}}</c> damage to spaces up to {{Range}} spaces to the left, preferring rightmost. <c=downside>Ignores <c=parttrait>weak</c>/<c=parttrait>brittle</c>.</c>",
-				"Right": "<c=action>Attack</c>, splitting <c=boldPink>{{Damage}}</c> damage to spaces up to {{Range}} spaces to the right, preferring leftmost. <c=downside>Ignores <c=parttrait>weak</c>/<c=parttrait>brittle</c>.</c>"
+				"Centered": "<c=action>Attack</c>, splitting <c=boldPink>{{Damage}}</c> damage up to {{Range}} spaces away, preferring the center. <c=downside>Ignores <c=parttrait>weak</c>/<c=parttrait>brittle</c>.</c>",
+				"Left": "<c=action>Attack</c>, splitting <c=boldPink>{{Damage}}</c> damage up to {{Range}} spaces away to the left, preferring rightmost. <c=downside>Ignores <c=parttrait>weak</c>/<c=parttrait>brittle</c>.</c>",
+				"Right": "<c=action>Attack</c>, splitting <c=boldPink>{{Damage}}</c> damage up to {{Range}} spaces away to the right, preferring leftmost. <c=downside>Ignores <c=parttrait>weak</c>/<c=parttrait>brittle</c>.</c>"
 			}
 		},
 		"Volley": {
 			"Name": {
 				"Left": {
 					"Short": "Volley Left",
-					"Wide": "Wide Volley Left"
+					"Long": "Wide Volley Left"
 				},
 				"Right": {
 					"Short": "Volley Right",
-					"Wide": "Wide Volley Right"
+					"Long": "Wide Volley Right"
 				}
 			},
 			"Description": {
-				"Left": "<c=action>Attack</c> repeatedly, splitting <c=boldPink>{{Damage}}</c> damage to spaces up to {{Range}} spaces to the left, preferring rightmost. <c=downside>Ignores <c=parttrait>weak</c>/<c=parttrait>brittle</c>.</c>",
-				"Right": "<c=action>Attack</c> repeatedly, splitting <c=boldPink>{{Damage}}</c> damage to spaces up to {{Range}} spaces to the right, preferring leftmost. <c=downside>Ignores <c=parttrait>weak</c>/<c=parttrait>brittle</c>.</c>"
+				"Left": "<c=action>Attack</c> repeatedly, splitting <c=boldPink>{{Damage}}</c> damage up to {{Range}} spaces away to the left, preferring rightmost. <c=downside>Ignores <c=parttrait>weak</c>/<c=parttrait>brittle</c>.</c>",
+				"Right": "<c=action>Attack</c> repeatedly, splitting <c=boldPink>{{Damage}}</c> damage up to {{Range}} spaces away to the right, preferring leftmost. <c=downside>Ignores <c=parttrait>weak</c>/<c=parttrait>brittle</c>.</c>"
 			}
 		},
 		"Scatter": {
@@ -44,9 +44,9 @@
 				"Right": "Scatter Right"
 			},
 			"Description": {
-				"Centered": "<c=action>Attack</c> repeatedly, splitting <c=boldPink>{{Damage}}</c> damage to spaces up to {{Range}} spaces away, preferring the center.",
-				"Left": "<c=action>Attack</c> repeatedly, splitting <c=boldPink>{{Damage}}</c> damage to spaces up to {{Range}} spaces to the left, preferring rightmost.",
-				"Right": "<c=action>Attack</c> repeatedly, splitting <c=boldPink>{{Damage}}</c> damage to spaces up to {{Range}} spaces to the right, preferring leftmost."
+				"Centered": "<c=action>Attack</c> repeatedly, splitting <c=boldPink>{{Damage}}</c> damage up to 1 space away, preferring the center.",
+				"Left": "<c=action>Attack</c> repeatedly, splitting <c=boldPink>{{Damage}}</c> damage with the space to the left, preferring rightmost.",
+				"Right": "<c=action>Attack</c> repeatedly, splitting <c=boldPink>{{Damage}}</c> damage with the space to the right, preferring leftmost."
 			}
 		}
 	},
