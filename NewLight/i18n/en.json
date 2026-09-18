@@ -91,6 +91,14 @@
 				"Name": "Heal Clip",
 				"Description": "If you end your turn with more than 0 <c=energy>ENERGY</c> after playing this card this turn, <c=heal>heal 1</c>."
 			},
+			"MovingTarget": {
+				"Name": "Moving Target",
+				"Description": "When played, reduces the <c=cardtrait>cooldown</c> of the <c=cardtrait>movement ability</c> by 1."
+			},
+			"Pugilist": {
+				"Name": "Pugilist",
+				"Description": "When played, reduces the <c=cardtrait>cooldown</c> of the <c=cardtrait>melee ability</c> by 1."
+			},
 			"Quickdraw": {
 				"Name": "Quickdraw",
 				"Description": "Costs 1 less <c=energy>ENERGY</c> if played first in a turn."
@@ -101,7 +109,7 @@
 			},
 			"RepulsorBrace": {
 				"Name": "Repulsor Brace",
-				"Description": "Once per turn, playing this card gives you 1 <c=status>TEMP SHIELD</c>."
+				"Description": "Once per turn, when played, gives you 1 <c=status>TEMP SHIELD</c>."
 			},
 			"Rimestealer": {
 				"Name": "Rimestealer",
@@ -109,7 +117,11 @@
 			},
 			"ShootToLoot": {
 				"Name": "Shoot to Loot",
-				"Description": "Playing this card grants 1 <c=status>AMMO</c> for one of your <c=cardtrait>weapons</c>, preferring these in hand."
+				"Description": "When played, grants 1 <c=status>AMMO</c> for one of your <c=cardtrait>weapons</c>, preferring these in hand."
+			},
+			"Strategist": {
+				"Name": "Strategist",
+				"Description": "When played, reduces the <c=cardtrait>cooldown</c> of the <c=cardtrait>utility ability</c> by 1."
 			},
 			"Surrounded": {
 				"Name": "Surrounded",
