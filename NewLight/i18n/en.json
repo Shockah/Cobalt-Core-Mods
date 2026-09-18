@@ -103,6 +103,10 @@
 				"Name": "Rimestealer",
 				"Description": "Gain 1 <c=status>TEMP SHIELD</c> when a <c=midrow>Geode</c> is destroyed with this card."
 			},
+			"ShootToLoot": {
+				"Name": "Shoot to Loot",
+				"Description": "Playing this card grants 1 <c=status>AMMO</c> for one of your <c=cardtrait>weapons</c>, preferring these in hand."
+			},
 			"Surrounded": {
 				"Name": "Surrounded",
 				"Description": "Deals 1 more damage while the ships fully overlap."

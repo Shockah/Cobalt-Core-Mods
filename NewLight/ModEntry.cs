@@ -91,6 +91,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(RampageWeaponPerk),
 		typeof(RepulsorBraceWeaponPerk),
 		typeof(RimestealerWeaponPerk),
+		typeof(ShootToLootWeaponPerk),
 		typeof(SurroundedWeaponPerk),
 		typeof(VorpalWeaponWeaponPerk),
 	];
