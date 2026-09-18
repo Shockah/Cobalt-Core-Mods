@@ -40,6 +40,6 @@ internal class WaveGrenadeLauncherCard : LegendaryWeaponCard, WeaponCard.IEnergy
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new BlastAction { damage = GetDmg(s, 3), Range = 2, Direction = flipped ? -2 : 2 },
+			new AAttack { damage = GetDmg(s, 3), BlastRange = 2, BlastDirection = flipped ? -2 : 2 },
 		];
 }

@@ -96,6 +96,7 @@ internal class LeMonarqueCard : ExoticWeaponCard, IHasCustomCardTraits, IRegiste
 			{
 				if (wrappedAction is not AAttack attack)
 					continue;
+				
 				attack.status = Status.corrode;
 				attack.statusAmount = 1;
 			}

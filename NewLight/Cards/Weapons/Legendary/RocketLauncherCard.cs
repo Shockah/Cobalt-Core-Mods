@@ -40,6 +40,6 @@ internal class RocketLauncherCard : LegendaryWeaponCard, WeaponCard.IUsesAmmo.IO
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new BlastAction { damage = GetDmg(s, 10), Range = 2 },
+			new AAttack { damage = GetDmg(s, 10), BlastRange = 2 },
 		];
 }

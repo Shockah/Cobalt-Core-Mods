@@ -84,6 +84,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(CompulsiveReloaderWeaponPerk),
 		typeof(DemoralizeWeaponPerk),
 		typeof(EnviousArsenalWeaponPerk),
+		typeof(ExplosivePayloadWeaponPerk),
 		typeof(FrenzyWeaponPerk),
 		typeof(HeadstoneWeaponPerk),
 		typeof(HealClipWeaponPerk),

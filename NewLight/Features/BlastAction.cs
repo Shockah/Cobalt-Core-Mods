@@ -14,52 +14,67 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal sealed class BlastAction : AAttack, IRegisterable
+public static class BlastActionExt
 {
-	public int Range = 1;
-	public int Direction;
+	extension(AAttack attack)
+	{
+		public bool HideBlastInCardRendering
+		{
+			get => ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(attack, "HideBlastInCardRendering");
+			set => ModEntry.Instance.Helper.ModData.SetModData(attack, "HideBlastInCardRendering", value);
+		}
+		
+		public bool CanPrimaryBlastDamageCrit
+		{
+			get => ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(attack, "CanPrimaryBlastDamageCrit");
+			set => ModEntry.Instance.Helper.ModData.SetModData(attack, "CanPrimaryBlastDamageCrit", value);
+		}
+		
+		public bool CanSecondaryBlastDamageCrit
+		{
+			get => ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(attack, "CanSecondaryBlastDamageCrit");
+			set => ModEntry.Instance.Helper.ModData.SetModData(attack, "CanSecondaryBlastDamageCrit", value);
+		}
+		
+		public int BlastRange
+		{
+			get => ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(attack, "BlastRange");
+			set => ModEntry.Instance.Helper.ModData.SetModData(attack, "BlastRange", value);
+		}
+		
+		public int BlastDirection
+		{
+			get => ModEntry.Instance.Helper.ModData.GetModDataOrDefault<int>(attack, "BlastDirection");
+			set => ModEntry.Instance.Helper.ModData.SetModData(attack, "BlastDirection", value);
+		}
+		
+		public int? BlastDamage
+		{
+			get => ModEntry.Instance.Helper.ModData.GetOptionalModData<int>(attack, "BlastDamage");
+			set => ModEntry.Instance.Helper.ModData.SetOptionalModData(attack, "BlastDamage", value);
+		}
+	}
+}
 
-	private int BlastDamage;
-	
+internal sealed class BlastAction : IRegisterable
+{
 	private static ISpriteEntry Icon = null!;
 
-	private static BlastAction? AttackContext;
+	private static AAttack? AttackContext;
 	private static bool IsDuringBlastEffect;
-
-	public override Icon? GetIcon(State s)
-	{
-		if (base.GetIcon(s) is { } icon)
-			return icon with { path = Icon.Sprite };
-		return new(Icon.Sprite, damage, Colors.redd);
-	}
-
-	public override void Begin(G g, State s, Combat c)
-	{
-		try
-		{
-			AttackContext = this;
-			
-			var attackCount = Direction == 0 ? Range * 2 + 1 : Range + 1;
-			var splitDamage = damage / attackCount;
-			var leftoverDamage = damage % attackCount;
-			
-			damage = splitDamage + leftoverDamage;
-			BlastDamage = splitDamage;
-			
-			base.Begin(g, s, c);
-		}
-		finally
-		{
-			AttackContext = null;
-		}
-	}
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		Icon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Actions/Blast.png"));
 		
 		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.GetIcon)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_GetIcon_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
+			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Prefix_VeryHigh)), priority: Priority.VeryHigh),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Finalizer)),
 			transpiler: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Transpiler))
 		);
 		ModEntry.Instance.Harmony.Patch(
@@ -71,10 +86,45 @@ internal sealed class BlastAction : AAttack, IRegisterable
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Part_GetDamageModifier_Postfix))
 		);
 	}
+
+	private static void AAttack_GetIcon_Postfix(AAttack __instance, ref Icon? __result)
+	{
+		if (__instance.BlastRange <= 0)
+			return;
+		if (__instance.HideBlastInCardRendering)
+			return;
+
+		if (__result is null)
+			__result = new(Icon.Sprite, __instance.damage, Colors.redd);
+		else
+			__result = __result.Value with { path = Icon.Sprite };
+	}
+
+	private static void AAttack_Begin_Prefix_VeryHigh(AAttack __instance)
+	{
+		AttackContext = __instance;
+		
+		if (__instance.BlastRange <= 0)
+			return;
+		if (__instance.BlastDamage is not null)
+			return;
+		
+		var attackCount = __instance.BlastDirection == 0 ? __instance.BlastRange * 2 + 1 : __instance.BlastRange + 1;
+		var splitDamage = __instance.damage / attackCount;
+		var leftoverDamage = __instance.damage % attackCount;
+			
+		__instance.damage = splitDamage + leftoverDamage;
+		__instance.BlastDamage = splitDamage;
+	}
+
+	private static void AAttack_Begin_Finalizer()
+		=> AttackContext = null;
 	
 	private static void TriggerBlastIfNeeded(State state, Combat combat, int worldX, bool targetPlayer, bool hitMidrow)
 	{
 		if (AttackContext is null)
+			return;
+		if (AttackContext.BlastDamage is not { } blastDamage)
 			return;
 
 		var targetShip = targetPlayer ? state.ship : combat.otherShip;
@@ -88,9 +138,9 @@ internal sealed class BlastAction : AAttack, IRegisterable
 			TargetPlayer = targetPlayer,
 			WorldX = hitMidrow ? worldX : null,
 			LocalX = worldX - targetShip.x,
-			Damage = AttackContext.BlastDamage,
-			Range = AttackContext.Range,
-			Direction = AttackContext.Direction,
+			Damage = blastDamage,
+			Range = AttackContext.BlastRange,
+			Direction = AttackContext.BlastDirection,
 			HitMidrow = hitMidrow,
 		});
 	}
@@ -141,8 +191,18 @@ internal sealed class BlastAction : AAttack, IRegisterable
 
 	private static void Part_GetDamageModifier_Postfix(ref PDamMod __result)
 	{
-		if (AttackContext is null && !IsDuringBlastEffect)
+		if (AttackContext is null)
 			return;
+		if (IsDuringBlastEffect && AttackContext.CanSecondaryBlastDamageCrit)
+			return;
+		if (!IsDuringBlastEffect)
+		{
+			if (AttackContext.BlastRange == 0)
+				return;
+			if (AttackContext.CanPrimaryBlastDamageCrit)
+				return;
+		}
+		
 		if (__result is PDamMod.weak or PDamMod.brittle)
 			__result = PDamMod.none;
 	}
@@ -151,7 +211,7 @@ internal sealed class BlastAction : AAttack, IRegisterable
 	{
 		private const double SinglePartDuration = 0.2;
 
-		public BlastAction? Source;
+		public AAttack? Source;
 		public bool TargetPlayer;
 		public int LocalX;
 		public int? WorldX;

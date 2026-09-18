@@ -75,6 +75,10 @@
 				"Name": "Envious Arsenal",
 				"Description": "While in hand, playing another <c=cardtrait>Weapon</c> <c=cardtrait>discounts</c> this card by 1."
 			},
+			"ExplosivePayload": {
+				"Name": "Explosive Payload",
+				"Description": "<c=downside>Deals 1 less damage</c>, but additionally deals 1 damage to adjacent spots, ignoring <c=parttrait>weak</c>/<c=parttrait>brittle</c>."
+			},
 			"Frenzy": {
 				"Name": "Frenzy",
 				"Description": "Deals 1 more damage if you dealt any damage last turn."

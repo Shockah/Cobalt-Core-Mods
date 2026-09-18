@@ -41,6 +41,6 @@ internal class LightweightGrenadeLauncherCard : LegendaryWeaponCard, WeaponCard.
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new BlastAction { damage = GetDmg(s, 4) },
+			new AAttack { damage = GetDmg(s, 4), BlastRange = 1 },
 		];
 }

@@ -38,7 +38,7 @@ internal class MissilePulseRifleCard : LegendaryWeaponCard, WeaponCard.IUsesAmmo
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new BlastAction { damage = GetDmg(s, 3) },
-			new BlastAction { damage = GetDmg(s, 3) },
+			new AAttack { damage = GetDmg(s, 3), BlastRange = 1 },
+			new AAttack { damage = GetDmg(s, 3), BlastRange = 1 },
 		];
 }

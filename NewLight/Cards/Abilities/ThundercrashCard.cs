@@ -35,17 +35,17 @@ internal class ThundercrashCard : GuardianCard, IRegisterable
 		{
 			Upgrade.B => [
 				new AMove { targetPlayer = true, dir = 3, isRandom = true },
-				new BlastAction { damage = GetDmg(s, 12), Range = 2 },
+				new AAttack { damage = GetDmg(s, 12), BlastRange = 2 },
 				new AMove { targetPlayer = true, dir = 2 },
 			],
 			Upgrade.A => [
 				new AMove { targetPlayer = true, dir = 3 },
-				new BlastAction { damage = GetDmg(s, 10), Range = 2 },
+				new AAttack { damage = GetDmg(s, 10), BlastRange = 2 },
 				new AMove { targetPlayer = true, dir = 1, isRandom = true },
 			],
 			_ => [
 				new AMove { targetPlayer = true, dir = 5 },
-				new BlastAction { damage = GetDmg(s, 10), Range = 2 },
+				new AAttack { damage = GetDmg(s, 10), BlastRange = 2 },
 				new AMove { targetPlayer = true, dir = 2, isRandom = true },
 			],
 		};
