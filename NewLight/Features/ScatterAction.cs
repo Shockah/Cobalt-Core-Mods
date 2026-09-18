@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using Nanoray.PluginManager;
@@ -9,18 +10,49 @@ namespace Shockah.NewLight;
 
 internal sealed class ScatterAction : AAttack, IRegisterable
 {
-	private static ISpriteEntry Icon = null!;
+	private static readonly Dictionary<int, ISpriteEntry> Icons = [];
 
-	public int Direction;
+	public int ScatterDirection;
 	
 	[JsonProperty]
 	private bool Scattered;
 
 	public override Icon? GetIcon(State s)
 	{
-		if (base.GetIcon(s) is { } icon)
-			return icon with { path = Icon.Sprite };
-		return new(Icon.Sprite, damage, Colors.redd);
+		var icon = Icons[Math.Sign(ScatterDirection)];
+		if (base.GetIcon(s) is { } result)
+			return result with { path = icon.Sprite };
+		return new(icon.Sprite, damage, Colors.redd);
+	}
+
+	public override List<Tooltip> GetTooltips(State s)
+	{
+		var results = base.GetTooltips(s);
+		
+		var directionString = ScatterDirection switch
+		{
+			< 0 => "Left",
+			> 0 => "Right",
+			_ => "Centered"
+		};
+		
+		for (var i = 0; i < results.Count; i++)
+		{
+			if (results[i] is not TTGlossary { key: "action.attack.name" })
+				continue;
+			
+			var icon = Icons[Math.Sign(ScatterDirection)];
+			results[i] = new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::Scatter{directionString}")
+			{
+				Icon = icon.Sprite,
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["Action", "Scatter", "Name", directionString]),
+				Description = ModEntry.Instance.Localizations.Localize(["Action", "Scatter", "Description", directionString], new { Damage = damage }),
+			};
+			break;
+		}
+		
+		return results;
 	}
 
 	public override void Begin(G g, State s, Combat c)
@@ -33,7 +65,7 @@ internal sealed class ScatterAction : AAttack, IRegisterable
 			return;
 		}
 
-		if (Direction == 0)
+		if (ScatterDirection == 0)
 		{
 			var midAttack = Mutil.DeepCopy(this);
 			midAttack.Scattered = true;
@@ -47,11 +79,11 @@ internal sealed class ScatterAction : AAttack, IRegisterable
 			midAttack.timer *= 0.5;
 			
 			leftAttack.damage = splitDamage;
-			leftAttack.Direction = -1;
+			leftAttack.ScatterDirection = -1;
 			leftAttack.timer *= 0.25;
 			
 			rightAttack.damage = splitDamage;
-			rightAttack.Direction = 1;
+			rightAttack.ScatterDirection = 1;
 			rightAttack.timer *= 0.25;
 		
 			c.QueueImmediate([leftAttack, rightAttack, midAttack]);
@@ -69,7 +101,7 @@ internal sealed class ScatterAction : AAttack, IRegisterable
 			midAttack.timer *= 0.75;
 			
 			sideAttack.damage = splitDamage;
-			sideAttack.Direction = Math.Sign(Direction);
+			sideAttack.ScatterDirection = Math.Sign(ScatterDirection);
 			sideAttack.timer *= 0.25;
 		
 			c.QueueImmediate([sideAttack, midAttack]);
@@ -80,7 +112,16 @@ internal sealed class ScatterAction : AAttack, IRegisterable
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		Icon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Actions/Scatter.png"));
+		for (var direction = -1; direction <= 1; direction++)
+		{
+			var directionString = direction switch
+			{
+				< 0 => "Left",
+				> 0 => "Right",
+				_ => "Centered"
+			};
+			Icons[direction] = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Actions/Scatter{directionString}.png"));
+		}
 		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(GetFromX)),
@@ -97,6 +138,6 @@ internal sealed class ScatterAction : AAttack, IRegisterable
 		if (__result is not { } result)
 			return;
 
-		__result = result + scatterAction.Direction;
+		__result = result + scatterAction.ScatterDirection;
 	}
 }

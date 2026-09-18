@@ -58,18 +58,32 @@ public static class BlastActionExt
 
 internal sealed class BlastAction : IRegisterable
 {
-	private static ISpriteEntry Icon = null!;
+	private static readonly Dictionary<(int direction, bool isShort), ISpriteEntry> Icons = [];
 
 	private static AAttack? AttackContext;
 	private static bool IsDuringBlastEffect;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		Icon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Actions/Blast.png"));
+		for (var direction = -1; direction <= 1; direction++)
+		{
+			var directionString = direction switch
+			{
+				< 0 => "Left",
+				> 0 => "Right",
+				_ => "Centered"
+			};
+			Icons[(direction, true)] = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Actions/Blast{directionString}Short.png"));
+			Icons[(direction, false)] = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile($"assets/Actions/Blast{directionString}Wide.png"));
+		}
 		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.GetIcon)),
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_GetIcon_Postfix))
+		);
+		ModEntry.Instance.Harmony.Patch(
+			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.GetTooltips)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_GetTooltips_Postfix))
 		);
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
@@ -94,10 +108,44 @@ internal sealed class BlastAction : IRegisterable
 		if (__instance.HideBlastInCardRendering)
 			return;
 
+		var icon = Icons[(Math.Sign(__instance.BlastDirection), __instance.BlastRange == 1)];
 		if (__result is null)
-			__result = new(Icon.Sprite, __instance.damage, Colors.redd);
+			__result = new(icon.Sprite, __instance.damage, Colors.redd);
 		else
-			__result = __result.Value with { path = Icon.Sprite };
+			__result = __result.Value with { path = icon.Sprite };
+	}
+
+	private static void AAttack_GetTooltips_Postfix(AAttack __instance, ref List<Tooltip> __result)
+	{
+		if (__instance.BlastRange <= 0)
+			return;
+		if (__instance.HideBlastInCardRendering)
+			return;
+
+		var isShort = __instance.BlastRange == 1;
+		var shortOrWideString = isShort ? "Short" : "Wide";
+		var directionString = __instance.BlastDirection switch
+		{
+			< 0 => "Left",
+			> 0 => "Right",
+			_ => "Centered"
+		};
+		
+		for (var i = 0; i < __result.Count; i++)
+		{
+			if (__result[i] is not TTGlossary { key: "action.attack.name" })
+				continue;
+			
+			var icon = Icons[(Math.Sign(__instance.BlastDirection), isShort)];
+			__result[i] = new GlossaryTooltip($"action.{ModEntry.Instance.Package.Manifest.UniqueName}::Blast{directionString}{shortOrWideString}")
+			{
+				Icon = icon.Sprite,
+				TitleColor = Colors.action,
+				Title = ModEntry.Instance.Localizations.Localize(["Action", "Blast", "Name", directionString, shortOrWideString]),
+				Description = ModEntry.Instance.Localizations.Localize(["Action", "Blast", "Description", directionString], new { Damage = __instance.damage, Range = __instance.BlastRange }),
+			};
+			break;
+		}
 	}
 
 	private static void AAttack_Begin_Prefix_VeryHigh(AAttack __instance)

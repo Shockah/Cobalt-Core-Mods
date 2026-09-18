@@ -50,7 +50,7 @@ internal class FourthHorsemanCard : ExoticWeaponCard, IHasCustomCardTraits, IReg
 			],
 			_ => [
 				new AMove { targetPlayer = true, dir = 1 },
-				new ScatterAction { damage = GetDmg(s, 2), Direction = flipped ? 1 : -1 },
+				new ScatterAction { damage = GetDmg(s, 2), ScatterDirection = flipped ? 1 : -1 },
 			],
 		};
 }

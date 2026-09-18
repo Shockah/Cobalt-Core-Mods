@@ -40,7 +40,7 @@ internal class VortexSwordCard : LegendaryWeaponCard, WeaponCard.IUsesAmmo, Weap
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new WaveAction { damage = GetDmg(s, 5), Direction = flipped ? -2 : 2 },
+			new VolleyAction { damage = GetDmg(s, 5), VolleyDirection = flipped ? -2 : 2 },
 			new AMove { targetPlayer = true, dir = 3 },
 		];
 }

@@ -50,6 +50,6 @@ internal class RapidFireFusionRifleCard : LegendaryWeaponCard, WeaponCard.IUsesA
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new WaveAction { damage = GetDmg(s, 5), Direction = flipped ? -1 : 1 },
+			new VolleyAction { damage = GetDmg(s, 5), VolleyDirection = flipped ? -1 : 1 },
 		];
 }

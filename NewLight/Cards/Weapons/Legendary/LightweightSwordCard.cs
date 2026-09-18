@@ -49,7 +49,7 @@ internal class LightweightSwordCard : LegendaryWeaponCard, WeaponCard.IUsesAmmo.
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new WaveAction { damage = GetDmg(s, 3), Direction = flipped ? -1 : 1 },
+			new VolleyAction { damage = GetDmg(s, 3), VolleyDirection = flipped ? -1 : 1 },
 			new AMove { targetPlayer = true, dir = 2 },
 		];
 }

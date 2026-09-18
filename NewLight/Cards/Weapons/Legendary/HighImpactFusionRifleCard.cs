@@ -40,6 +40,6 @@ internal class HighImpactFusionRifleCard : LegendaryWeaponCard, WeaponCard.IUses
 
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
-			new WaveAction { damage = GetDmg(s, 7), Direction = flipped ? -1 : 1 },
+			new VolleyAction { damage = GetDmg(s, 7), VolleyDirection = flipped ? -1 : 1 },
 		];
 }

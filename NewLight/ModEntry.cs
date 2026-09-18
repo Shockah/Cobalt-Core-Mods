@@ -110,7 +110,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(PrecisionCardTrait),
 		typeof(ScatterAction),
 		typeof(TensionCardTrait),
-		typeof(WaveAction),
+		typeof(VolleyAction),
 		typeof(WeaponCard),
 		.. WeaponPerkTypes,
 		// last for dependency purposes

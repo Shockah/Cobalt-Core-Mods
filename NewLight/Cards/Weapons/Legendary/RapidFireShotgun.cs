@@ -51,6 +51,6 @@ internal class RapidFireShotgunCard : LegendaryWeaponCard, WeaponCard.IUsesAmmo.
 	public override List<CardAction> GetActions(State s, Combat c)
 		=> [
 			new AMove { targetPlayer = true, dir = 1 },
-			new ScatterAction { damage = GetDmg(s, 2), Direction = flipped ? 1 : -1 },
+			new ScatterAction { damage = GetDmg(s, 2), ScatterDirection = flipped ? 1 : -1 },
 		];
 }
