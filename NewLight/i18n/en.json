@@ -55,6 +55,10 @@
 				"Name": "Auto-Loading Holster",
 				"Description": "When drawn, gain 1 <c=status>AMMO</c> of this card's cost."
 			},
+			"BeaconRounds": {
+				"Name": "Beacon Rounds",
+				"Description": "This card's attacks are <c=keyword>seeking</c> up to 1 tile away."
+			},
 			"ClownCartridge": {
 				"Name": "Clown Cartridge",
 				"Description": {
@@ -175,7 +179,7 @@
 			},
 			"RallyBanner": {
 				"Name": "Rally Banner",
-				"Description": "Refill <c=status>SPECIAL and HEAVY AMMO</c>. Finish all <c=cardtrait>ability cooldowns</c>."
+				"Description": "Refill <c=status>special and heavy ammo</c>. Finish all <c=cardtrait>ability cooldowns</c>."
 			}
 		},
 		"Ability": {
