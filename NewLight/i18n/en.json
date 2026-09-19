@@ -150,6 +150,10 @@
 				"Name": "Heal Clip",
 				"Description": "If you end your turn with more than 0 <c=energy>ENERGY</c> after playing this card this turn, <c=heal>heal 1</c>."
 			},
+			"HighCaliberRounds": {
+				"Name": "High-Caliber Rounds",
+				"Description": "This card's attacks push the enemy 1 space left."
+			},
 			"MovingTarget": {
 				"Name": "Moving Target",
 				"Description": "When played, reduces the <c=cardtrait>cooldown</c> of the <c=cardtrait>movement ability</c> by 1."

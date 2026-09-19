@@ -90,6 +90,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(FrenzyWeaponPerk),
 		typeof(HeadstoneWeaponPerk),
 		typeof(HealClipWeaponPerk),
+		typeof(HighCaliberRoundsWeaponPerk),
 		typeof(MovingTargetWeaponPerk),
 		typeof(PugilistWeaponPerk),
 		typeof(QuickdrawWeaponPerk),
