@@ -6,7 +6,7 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal class ScoutRifleCard : LegendaryWeaponCard, IRegisterable
+internal class ScoutRifleCard : LegendaryWeaponCard, WeaponCard.IPierces, IRegisterable
 {
 	protected override Dictionary<WeaponElement, string> ElementWeaponNames { get; } = new()
 	{

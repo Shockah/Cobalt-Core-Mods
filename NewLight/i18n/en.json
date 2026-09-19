@@ -102,6 +102,10 @@
 			}
 		},
 		"WeaponPerk": {
+			"ArmorPiercingRounds": {
+				"Name": "Armor-Piercing Rounds",
+				"Description": "This card's attacks are <c=keyword>piercing</c>."
+			},
 			"AutoLoadingHolster": {
 				"Name": "Auto-Loading Holster",
 				"Description": "When drawn, gain 1 <c=status>AMMO</c> of this card's cost."

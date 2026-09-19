@@ -24,6 +24,7 @@ internal abstract class WeaponCard : Card, IRegisterable
 	public interface ICannotCrit;
 	public interface IEnergyFree;
 	public interface IRepeatable;
+	public interface IPierces;
 
 	public interface IUsesAmmo
 	{
