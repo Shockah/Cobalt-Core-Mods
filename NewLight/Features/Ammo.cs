@@ -22,12 +22,12 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 		void ModifySpecialAmmoCost(State state, Combat combat, Card card, ref int? cost) { }
 		void ModifyHeavyAmmoCost(State state, Combat combat, Card card, ref int? cost) { }
 	}
+	
+	internal static readonly Ammo Instance = new();
 
 	private Ammo() : base(ModEntry.Instance.Package.Manifest.UniqueName)
 	{
 	}
-	
-	internal static readonly Ammo Instance = new();
 
 	internal static IStatusEntry SpecialStatus { get; private set; } = null!;
 	internal static IStatusEntry HeavyStatus { get; private set; } = null!;

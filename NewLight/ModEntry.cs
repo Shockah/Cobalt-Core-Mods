@@ -103,6 +103,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(StrategistWeaponPerk),
 		typeof(SurroundedWeaponPerk),
 		typeof(TearWeaponPerk),
+		typeof(VoltshotWeaponPerk),
 		typeof(VorpalWeaponWeaponPerk),
 	];
 	
@@ -110,8 +111,10 @@ internal sealed class ModEntry : SimpleMod
 		typeof(Abilities),
 		typeof(Ammo),
 		typeof(BlastAction),
+		typeof(Crits),
 		typeof(CustomPartTraits),
 		typeof(FullAutoCardTrait),
+		typeof(Jolted),
 		typeof(NegativeHermesBoots),
 		typeof(PrecisionCardTrait),
 		typeof(ScatterAction),

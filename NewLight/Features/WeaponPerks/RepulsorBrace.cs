@@ -25,7 +25,8 @@ internal sealed class RepulsorBraceWeaponPerk : IRegisterable
 					TitleColor = Colors.cardtrait,
 					Title = ModEntry.Instance.Localizations.Localize(["CardTrait", "WeaponPerk", "RepulsorBrace", "Name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["CardTrait", "WeaponPerk", "RepulsorBrace", "Description"]),
-				}
+				},
+				.. StatusMeta.GetTooltips(Status.tempShield, 1),
 			]
 		});
 

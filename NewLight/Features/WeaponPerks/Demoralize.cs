@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
-using HarmonyLib;
 using Nanoray.PluginManager;
 using Nickel;
 
@@ -9,8 +7,6 @@ namespace Shockah.NewLight;
 internal sealed class DemoralizeWeaponPerk : IRegisterable
 {
 	public static ICardTraitEntry Trait { get; private set; } = null!;
-	
-	private static AAttack? AttackContext;
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -36,63 +32,42 @@ internal sealed class DemoralizeWeaponPerk : IRegisterable
 		LegendaryWeaponCard.WeaponPerkConditions[Trait.UniqueName] = weapon => weapon is not WeaponCard.ICannotCrit;
 		LegendaryWeaponCard.WeaponPerkElementAssignments[Trait.UniqueName] = WeaponElement.Void;
 		
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Prefix)),
-			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Finalizer))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_NormalDamage_Postfix))
-		);
+		Crits.Instance.Register(new CritHook(), 0);
 	}
 
-	private static void AAttack_Begin_Prefix(AAttack __instance)
-		=> AttackContext = __instance;
-
-	private static void AAttack_Begin_Finalizer()
-		=> AttackContext = null;
-
-	private static void Ship_NormalDamage_Postfix(Ship __instance, State s, Combat c, int? maybeWorldGridX)
+	private sealed class CritHook : Crits.IHook
 	{
-		if (AttackContext is null)
-			return;
-		if (maybeWorldGridX is not { } worldGridX)
-			return;
-		if (__instance.isPlayerShip)
-			return;
-		if (__instance.GetPartAtWorldX(worldGridX) is not { } part)
-			return;
-
-		var damageModifier = part.GetDamageModifier();
-		if (damageModifier is not (PDamMod.brittle or PDamMod.weak))
-			return;
-		
-		if (ModEntry.Instance.KokoroApi.ActionInfo.GetSourceCard(s, AttackContext) is not { } sourceCard)
-			return;
-		if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(s, sourceCard, Trait))
-			return;
-
-		var newTargetWorldX = worldGridX - 1;
-		var newTargetPart = __instance.GetPartAtWorldX(newTargetWorldX);
-		var newTargetPartDamageModifier = newTargetPart?.GetDamageModifier();
-		if (newTargetPart is null || newTargetPart.type == PType.empty || newTargetPartDamageModifier == PDamMod.brittle || (newTargetPartDamageModifier == PDamMod.weak && damageModifier == PDamMod.brittle))
+		public void OnCrit(Crits.IHook.OnCritArgs args)
 		{
-			newTargetWorldX = worldGridX + 1;
-			newTargetPart = __instance.GetPartAtWorldX(newTargetWorldX);
-			newTargetPartDamageModifier = newTargetPart?.GetDamageModifier();
-		}
-		if (newTargetPart is null || newTargetPart.type == PType.empty || newTargetPartDamageModifier == PDamMod.brittle || (newTargetPartDamageModifier == PDamMod.weak && damageModifier == PDamMod.brittle))
-			return;
-		
-		if (!c.TriggeredDemoralizeCards.Add(sourceCard.uuid))
-			return;
+			if (args.Ship.isPlayerShip)
+				return;
+			if (ModEntry.Instance.KokoroApi.ActionInfo.GetSourceCard(args.State, args.Attack) is not { } sourceCard)
+				return;
+			if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(args.State, sourceCard, Trait))
+				return;
+			if (args.Combat.TriggeredDemoralizeCards.Contains(sourceCard.uuid))
+				return;
 
-		c.QueueImmediate(
-			damageModifier == PDamMod.brittle
-				? new ABrittle { targetPlayer = false, worldX = newTargetWorldX }
-				: new AWeaken { targetPlayer = false, worldX = newTargetWorldX }
-		);
+			var newTargetLocalX = args.LocalX - 1;
+			var newTargetPart = args.Ship.GetPartAtLocalX(newTargetLocalX);
+			var newTargetPartDamageModifier = newTargetPart?.GetDamageModifier();
+			if (newTargetPart is null || newTargetPart.type == PType.empty || newTargetPartDamageModifier == PDamMod.brittle || (newTargetPartDamageModifier == PDamMod.weak && args.DamageModifier == PDamMod.brittle))
+			{
+				newTargetLocalX = args.LocalX + 1;
+				newTargetPart = args.Ship.GetPartAtLocalX(newTargetLocalX);
+				newTargetPartDamageModifier = newTargetPart?.GetDamageModifier();
+			}
+			if (newTargetPart is null || newTargetPart.type == PType.empty || newTargetPartDamageModifier == PDamMod.brittle || (newTargetPartDamageModifier == PDamMod.weak && args.DamageModifier == PDamMod.brittle))
+				return;
+
+			var newTargetWorldX = args.Ship.x + newTargetLocalX;
+			args.Combat.TriggeredDemoralizeCards.Add(sourceCard.uuid);
+			args.Combat.QueueImmediate(
+				args.DamageModifier == PDamMod.brittle
+					? new ABrittle { targetPlayer = false, worldX = newTargetWorldX }
+					: new AWeaken { targetPlayer = false, worldX = newTargetWorldX }
+			);
+		}
 	}
 }
 

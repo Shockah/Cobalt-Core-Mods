@@ -61,6 +61,11 @@
 		}
 	},
 	"PartTrait": {
+		"Jolted": {
+			"Name": "Jolted",
+			"Description": "When damaged by an attack this turn, also deals 1 damage to a random adjacent part.",
+			"FullDescription": "When damaged by an attack this turn, also deals 1 damage to a random adjacent part. If applied to a <c=midrow>midrow object</c>, instead immediately deals 1 damage to a random adjacent <c=midrow>midrow object</c>."
+		},
 		"Scorch": {
 			"Name": "Scorch",
 			"TooltipTitle": "Scorch ({{Amount}})",
@@ -212,6 +217,10 @@
 			"Tear": {
 				"Name": "Tear",
 				"Description": "Hitting a <c=parttrait>weak</c>/<c=parttrait>brittle</c> part applies <c=parttrait>SEVERED</c> to adjacent parts."
+			},
+			"Voltshot": {
+				"Name": "Voltshot",
+				"Description": "Hitting a <c=parttrait>weak</c>/<c=parttrait>brittle</c> part <c=keyword>primes</c> this perk for the next time it's played. When <c=keyword>primed</c>, attacks apply <c=parttrait>JOLTED</c>."
 			},
 			"VorpalWeapon": {
 				"Name": "Vorpal Weapon",

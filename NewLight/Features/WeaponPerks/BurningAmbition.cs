@@ -28,7 +28,8 @@ internal sealed class BurningAmbitionWeaponPerk : IRegisterable
 					TitleColor = Colors.cardtrait,
 					Title = ModEntry.Instance.Localizations.Localize(["CardTrait", "WeaponPerk", "BurningAmbition", "Name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["CardTrait", "WeaponPerk", "BurningAmbition", "Description"]),
-				}
+				},
+				.. Scorch.GetTooltips(2),
 			]
 		});
 

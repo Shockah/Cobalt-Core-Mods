@@ -28,7 +28,8 @@ internal sealed class RimestealerWeaponPerk : IRegisterable
 					TitleColor = Colors.cardtrait,
 					Title = ModEntry.Instance.Localizations.Localize(["CardTrait", "WeaponPerk", "Rimestealer", "Name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["CardTrait", "WeaponPerk", "Rimestealer", "Description"]),
-				}
+				},
+				.. StatusMeta.GetTooltips(Status.tempShield, 1),
 			]
 		});
 

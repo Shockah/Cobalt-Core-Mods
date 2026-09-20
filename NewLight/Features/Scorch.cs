@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using FSPRO;
 using HarmonyLib;
@@ -10,25 +11,17 @@ namespace Shockah.NewLight;
 internal sealed class Scorch : IRegisterable
 {
 	public static CustomPartTraits.ITraitEntry Trait { get; private set; } = null!;
+	private static ISpriteEntry Icon = null!;
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		var icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/PartTraits/Scorch.png"));
+		Icon = ModEntry.Instance.Helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/PartTraits/Scorch.png"));
 		
 		Trait = CustomPartTraits.RegisterTrait(package.Manifest, "Scorch", new()
 		{
-			Icon = _ => icon.Sprite,
+			Icon = _ => Icon.Sprite,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["PartTrait", "Scorch", "Name"]).Localize,
-			Tooltips = args =>
-			[
-				new GlossaryTooltip($"parttrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Scorch")
-				{
-					Icon = icon.Sprite,
-					TitleColor = Colors.parttrait,
-					Title = ModEntry.Instance.Localizations.Localize(["PartTrait", "Scorch", "TooltipTitle"], new { Amount = Math.Max(args.Part.Scorch, 1) }),
-					Description = ModEntry.Instance.Localizations.Localize(["PartTrait", "Scorch", "Description"], new { Amount = Math.Max(args.Part.Scorch, 1) }),
-				}
-			],
+			Tooltips = args => GetTooltips(args.Part.Scorch),
 		});
 		
 		CustomPartTraits.Instance.Register(new CustomPartTraitsHook(), 0);
@@ -38,6 +31,17 @@ internal sealed class Scorch : IRegisterable
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_OnBeginTurn_Postfix))
 		);
 	}
+
+	public static IEnumerable<Tooltip> GetTooltips(int amount)
+		=> [
+			new GlossaryTooltip($"parttrait.{ModEntry.Instance.Package.Manifest.UniqueName}::Scorch")
+			{
+				Icon = Icon.Sprite,
+				TitleColor = Colors.parttrait,
+				Title = ModEntry.Instance.Localizations.Localize(["PartTrait", "Scorch", "TooltipTitle"], new { Amount = Math.Max(amount, 1) }),
+				Description = ModEntry.Instance.Localizations.Localize(["PartTrait", "Scorch", "Description"], new { Amount = Math.Max(amount, 1) }),
+			}
+		];
 
 	private static void Ship_OnBeginTurn_Postfix(Ship __instance, Combat c)
 	{

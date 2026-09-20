@@ -9,8 +9,6 @@ namespace Shockah.NewLight;
 internal sealed class SliceWeaponPerk : IRegisterable
 {
 	public static ICardTraitEntry Trait { get; private set; } = null!;
-	
-	private static AAttack? AttackContext;
 
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -28,7 +26,8 @@ internal sealed class SliceWeaponPerk : IRegisterable
 					TitleColor = Colors.cardtrait,
 					Title = ModEntry.Instance.Localizations.Localize(["CardTrait", "WeaponPerk", "Slice", "Name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["CardTrait", "WeaponPerk", "Slice", "Description"]),
-				}
+				},
+				.. Severed.GetTooltips(),
 			]
 		});
 
@@ -51,15 +50,6 @@ internal sealed class SliceWeaponPerk : IRegisterable
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
 			postfix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetActionsOverridden_Postfix_VeryHigh)), priority: Priority.VeryHigh)
 		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Prefix)),
-			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Finalizer))
-		);
-		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
-			prefix: new HarmonyMethod(AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Ship_NormalDamage_Prefix)), priority: Priority.Low)
-		);
 	}
 
 	private static void Card_GetActionsOverridden_Postfix_VeryHigh(Card __instance, State s, Combat c, ref List<CardAction> __result)
@@ -76,29 +66,9 @@ internal sealed class SliceWeaponPerk : IRegisterable
 				if (wrappedAction is not AAttack attack)
 					continue;
 
-				attack.Slice = true;
+				attack.Sever = true;
 			}
 		}
-	}
-
-	private static void AAttack_Begin_Prefix(AAttack __instance)
-		=> AttackContext = __instance;
-
-	private static void AAttack_Begin_Finalizer()
-		=> AttackContext = null;
-
-	private static void Ship_NormalDamage_Prefix(Ship __instance, State s, Combat c, int? maybeWorldGridX)
-	{
-		if (AttackContext is null)
-			return;
-		if (maybeWorldGridX is not { } worldGridX)
-			return;
-		if (__instance.GetPartAtWorldX(worldGridX) is not { } part || part.type == PType.empty)
-			return;
-		if (!AttackContext.Slice)
-			return;
-
-		part.Severed = true;
 	}
 }
 
@@ -116,15 +86,6 @@ file static class SliceWeaponPerkExt
 				else
 					ModEntry.Instance.Helper.ModData.RemoveModData(combat, "SliceThisTurn");
 			}
-		}
-	}
-	
-	extension(AAttack attack)
-	{
-		public bool Slice
-		{
-			get => ModEntry.Instance.Helper.ModData.GetModDataOrDefault<bool>(attack, "Slice");
-			set => ModEntry.Instance.Helper.ModData.SetModData(attack, "Slice", value);
 		}
 	}
 }
