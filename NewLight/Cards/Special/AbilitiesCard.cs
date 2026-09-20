@@ -80,7 +80,7 @@ internal class AbilitiesCard : Card, IRegisterable, IHasCustomCardTraits
 		}
 	}
 	
-	public sealed class BrowseSource : IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource
+	private sealed class BrowseSource : IKokoroApi.IV2.ICustomCardBrowseSourceApi.ICustomCardBrowseSource
 	{
 		public IReadOnlyList<Tooltip> GetSearchTooltips(State state)
 			=> [new GlossaryTooltip("action.searchCardNew")

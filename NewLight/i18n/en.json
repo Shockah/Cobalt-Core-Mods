@@ -60,6 +60,13 @@
 			"Description": "Required for some <c=cardtrait>weapons</c>. Max 5."
 		}
 	},
+	"PartTrait": {
+		"Scorch": {
+			"Name": "Scorch",
+			"TooltipTitle": "Scorch ({{Amount}})",
+			"Description": "Gain 1 <c=status>HEAT</c> each turn. Decreases by 1 each turn. If it reaches 3, clear it, lose 1 hull, apply 2 <c=parttrait>SCORCH</c> to adjacent parts."
+		}
+	},
 	"CardTrait": {
 		"Ability": {
 			"Name": "Ability",
@@ -113,6 +120,10 @@
 			"BeaconRounds": {
 				"Name": "Beacon Rounds",
 				"Description": "This card's attacks <c=keyword>seek</c> up to 1 space away."
+			},
+			"BurningAmbition": {
+				"Name": "Burning Ambition",
+				"Description": "This card's attacks apply 2 <c=parttrait>SCORCH</c>."
 			},
 			"ClownCartridge": {
 				"Name": "Clown Cartridge",

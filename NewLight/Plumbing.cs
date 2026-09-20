@@ -12,5 +12,5 @@ internal interface IRegisterable
 [EnumByName(typeof(Spr))]
 internal static partial class StableSpr;
 
-// [EnumByName(typeof(UK))]
-// internal static partial class StableUK;
+[EnumByName(typeof(UK))]
+internal static partial class StableUK;
