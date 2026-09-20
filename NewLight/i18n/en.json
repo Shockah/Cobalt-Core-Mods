@@ -65,6 +65,10 @@
 			"Name": "Scorch",
 			"TooltipTitle": "Scorch ({{Amount}})",
 			"Description": "Gain 1 <c=status>HEAT</c> each turn. Decreases by 1 each turn. If it reaches 3, clear it, lose 1 hull, apply 2 <c=parttrait>SCORCH</c> to adjacent parts."
+		},
+		"Severed": {
+			"Name": "Severed",
+			"Description": "Deals 1 less damage until next turn."
 		}
 	},
 	"CardTrait": {
@@ -193,6 +197,10 @@
 				"Name": "Shoot to Loot",
 				"Description": "When played, grants 1 <c=status>AMMO</c> for one of your <c=cardtrait>weapons</c>, preferring these in hand."
 			},
+			"Slice": {
+				"Name": "Slice",
+				"Description": "If you have played an <c=cardtrait>ability</c> this turn, this card's attacks apply <c=parttrait>SEVERED</c>."
+			},
 			"Strategist": {
 				"Name": "Strategist",
 				"Description": "When played, reduces the <c=cardtrait>cooldown</c> of the <c=cardtrait>utility ability</c> by 1."
@@ -200,6 +208,10 @@
 			"Surrounded": {
 				"Name": "Surrounded",
 				"Description": "Deals 1 more damage while the ships fully overlap."
+			},
+			"Tear": {
+				"Name": "Tear",
+				"Description": "Hitting a <c=parttrait>weak</c>/<c=parttrait>brittle</c> part applies <c=parttrait>SEVERED</c> to adjacent parts."
 			},
 			"VorpalWeapon": {
 				"Name": "Vorpal Weapon",

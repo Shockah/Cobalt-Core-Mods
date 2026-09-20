@@ -99,8 +99,10 @@ internal sealed class ModEntry : SimpleMod
 		typeof(RepulsorBraceWeaponPerk),
 		typeof(RimestealerWeaponPerk),
 		typeof(ShootToLootWeaponPerk),
+		typeof(SliceWeaponPerk),
 		typeof(StrategistWeaponPerk),
 		typeof(SurroundedWeaponPerk),
+		typeof(TearWeaponPerk),
 		typeof(VorpalWeaponWeaponPerk),
 	];
 	
@@ -114,6 +116,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(PrecisionCardTrait),
 		typeof(ScatterAction),
 		typeof(Scorch),
+		typeof(Severed),
 		typeof(TensionCardTrait),
 		typeof(VolleyAction),
 		typeof(WeaponCard),
