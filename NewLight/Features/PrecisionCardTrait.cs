@@ -9,14 +9,34 @@ using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
-internal sealed class PrecisionCardTrait : IRegisterable
+internal sealed class PrecisionCardTrait : HookManager<PrecisionCardTrait.IHook>, IRegisterable
 {
+	public interface IHook
+	{
+		void ModifyPrecision(ref ModifyPrecisionArgs args) { }
+
+		public struct ModifyPrecisionArgs
+		{
+			public State State { get; internal init; }
+			public Combat Combat { get; internal init; }
+			public Card Card { get; internal init; }
+			public int BasePrecision { get; internal init; }
+			public int Precision { get; set; }
+		}
+	}
+	
 	public static ICardTraitEntry Trait { get; private set; } = null!;
+	
+	internal static readonly PrecisionCardTrait Instance = new();
 
 	private static ISpriteEntry BaseIcon = null!;
 	private static readonly Dictionary<int, Spr> Icons = [];
 	private static readonly Dictionary<string, Dictionary<Upgrade, int>> PrecisionPerUpgrade = [];
 	private static AAttack? AttackContext;
+
+	private PrecisionCardTrait() : base(ModEntry.Instance.Package.Manifest.UniqueName)
+	{
+	}
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
@@ -79,7 +99,21 @@ internal sealed class PrecisionCardTrait : IRegisterable
 	}
 
 	public static int GetPrecision(State state, Card card)
-		=> PrecisionPerUpgrade.TryGetValue(card.Key(), out var perUpgrade) ? perUpgrade.GetValueOrDefault(card.upgrade) : 0;
+	{
+		var basePrecision = PrecisionPerUpgrade.TryGetValue(card.Key(), out var perUpgrade) ? perUpgrade.GetValueOrDefault(card.upgrade) : 0;
+		var args = new IHook.ModifyPrecisionArgs
+		{
+			State = state,
+			Combat = (state.route as Combat) ?? DB.fakeCombat,
+			Card = card,
+			BasePrecision = basePrecision,
+			Precision = basePrecision,
+		};
+		
+		foreach (var hook in Instance)
+			hook.ModifyPrecision(ref args);
+		return args.Precision;
+	}
 
 	private static Spr ObtainIcon(int amount)
 	{
