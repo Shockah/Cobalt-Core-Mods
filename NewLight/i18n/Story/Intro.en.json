@@ -1,5 +1,5 @@
 ﻿{
-	"Lines": [
+	"Initial": [
 		/* Ghost */ "Hello?",
 		/* CAT */ "Huh? Who's there?",
 		/* Ghost */ "I'm... Ghost.",
@@ -13,5 +13,18 @@
 		/* Ghost */ "Were they dead before?",
 		/* CAT */ "Uhhh... given the time loop shenanigans... you could say that?",
 		/* Ghost */ "This will do."
+	],
+	"Dizzy1": [
+		/* Dizzy */ "Hey... Mr. Ghost...?",
+		/* Ghost */ "Please, just call me Ghost.",
+		/* Dizzy */ "But adding \"Mr.\" makes it less scary for me.",
+		/* Ghost */ "Scary?",
+		/* Dizzy */ "Well, you are a Ghost, aren't you, Mr. Ghost?",
+		/* Dizzy */ "Ghosts are scary.",
+		/* Ghost */ "I'm not a LITERAL ghost. At least, not the type you're thinking of.",
+		/* Dizzy */ "Phew, okay, good. Guess I don't need to get Peri to use the ghost mode on her gun.",
+		/* CAT */ "That's not a thing.",
+		/* Dizzy */ "...I can make it a thing.",
+		/* Ghost */ "..."
 	]
 }

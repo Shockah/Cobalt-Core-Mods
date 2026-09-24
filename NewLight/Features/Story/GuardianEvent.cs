@@ -14,7 +14,7 @@ internal sealed class GuardianEventStory : BaseStory, IRegisterable
 	private static ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations = null!;
 	private static ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations = null!;
 	
-	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
+	public new static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
 		AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -29,9 +29,10 @@ internal sealed class GuardianEventStory : BaseStory, IRegisterable
 		var mainName = $"{package.Manifest.UniqueName}::GuardianEvent";
 		DB.story.all[$"{mainName}Initial"] = new()
 		{
+			type = NodeType.@event,
 			lookup = [mainName],
 			zones = ["zone_first"],
-			requiredScenes = [$"{package.Manifest.UniqueName}::Intro"],
+			requiredScenes = [$"{package.Manifest.UniqueName}::IntroInitial"],
 			oncePerRun = true,
 			lines = [
 				new Say { who = ghost, loopTag = "neutral", hash = "0" },
@@ -40,6 +41,7 @@ internal sealed class GuardianEventStory : BaseStory, IRegisterable
 		};
 		DB.story.all[$"{mainName}Infinite"] = new()
 		{
+			type = NodeType.@event,
 			lookup = [mainName],
 			zones = ["zone_lawless", "zone_three"],
 			requiredScenes = [$"{mainName}Initial"],
@@ -120,6 +122,9 @@ internal sealed class GuardianEventStory : BaseStory, IRegisterable
 			base.Begin(g, s, c);
 			timer = 0;
 			
+			if (s.characters.Any(character => character.deckType == Who && character.artifacts.Any(a => a is GhostArtifact)))
+				return;
+			
 			s.GetCurrentQueue().AddRange([
 				new ALoseArtifact { artifactType = GhostArtifact.Entry.UniqueName },
 				new AAddArtifact { artifact = new GhostArtifact(), timer = 0 },
@@ -169,6 +174,9 @@ internal sealed class GuardianEventStory : BaseStory, IRegisterable
 		{
 			base.Begin(g, s, c);
 			timer = 0;
+
+			if (s.artifacts.Any(a => a is GhostArtifact))
+				return;
 			
 			s.GetCurrentQueue().AddRange([
 				new ALoseArtifact { artifactType = GhostArtifact.Entry.UniqueName },

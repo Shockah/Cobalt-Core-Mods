@@ -114,6 +114,7 @@ internal sealed class ModEntry : SimpleMod
 	private static readonly IEnumerable<Type> FeatureTypes = [
 		typeof(Abilities),
 		typeof(Ammo),
+		typeof(BaseStory),
 		typeof(BlastAction),
 		typeof(Crits),
 		typeof(CustomPartTraits),
@@ -134,8 +135,8 @@ internal sealed class ModEntry : SimpleMod
 	];
 
 	private static readonly IEnumerable<Type> StoryTypes = [
-		typeof(IntroStory),
 		typeof(GuardianEventStory),
+		typeof(IntroStory),
 	];
 	
 	private static readonly IEnumerable<Type> RegisterableTypes = [
