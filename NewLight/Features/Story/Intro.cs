@@ -23,6 +23,7 @@ internal sealed class IntroStory : BaseStory, IRegisterable
 		
 		var ghost = ModEntry.Instance.GhostCharacter.CharacterType;
 		var dizzy = Deck.dizzy.Key();
+		var isaac = Deck.goat.Key();
 		const string cat = "comp";
 		
 		var mainName = $"{package.Manifest.UniqueName}::Intro";
@@ -52,7 +53,7 @@ internal sealed class IntroStory : BaseStory, IRegisterable
 			once = true,
 			priority = true,
 			LookupAny = ["zone_first", "zone_lawless", "zone_third"],
-			requiredScenes = ["Peri_Memory_3"],
+			requiredScenes = [$"{mainName}Initial", "Peri_Memory_3"],
 			allPresent = [dizzy],
 			lines = [
 				new Say { who = dizzy, loopTag = "intense", hash = "0" },
@@ -68,6 +69,25 @@ internal sealed class IntroStory : BaseStory, IRegisterable
 				new Say { who = ghost, loopTag = "neutral", flipped = true, hash = "10" },
 			],
 		};
+		DB.story.all[$"{mainName}Isaac1"] = new()
+		{
+			type = NodeType.@event,
+			once = true,
+			priority = true,
+			LookupAny = ["zone_first", "zone_lawless", "zone_third"],
+			requiredScenes = [$"{mainName}Initial", "Goat_1"],
+			allPresent = [isaac],
+			lines = [
+				new Say { who = isaac, loopTag = "neutral", hash = "0" },
+				new Say { who = ghost, loopTag = "neutral", flipped = true, hash = "1" },
+				new Say { who = isaac, loopTag = "neutral", hash = "2" },
+				new Say { who = ghost, loopTag = "neutral", flipped = true, hash = "3" },
+				new Say { who = isaac, loopTag = "squint", hash = "4" },
+				new Wait { secs = 2 },
+				new Say { who = isaac, loopTag = "writing", hash = "5" },
+				new Say { who = ghost, loopTag = "neutral", flipped = true, hash = "6" },
+			],
+		};
 
 		InjectLocalizations(helper, localizations =>
 		{
@@ -75,6 +95,8 @@ internal sealed class IntroStory : BaseStory, IRegisterable
 				localizations[$"{mainName}Initial:{i}"] = Localizations.Localize(["Initial", i.ToString()]);
 			for (var i = 0; i <= 10; i++)
 				localizations[$"{mainName}Dizzy1:{i}"] = Localizations.Localize(["Dizzy1", i.ToString()]);
+			for (var i = 0; i <= 6; i++)
+				localizations[$"{mainName}Isaac1:{i}"] = Localizations.Localize(["Isaac1", i.ToString()]);
 		});
 		
 		ModEntry.Instance.Harmony.Patch(

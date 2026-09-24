@@ -26,5 +26,14 @@
 		/* CAT */ "That's not a thing.",
 		/* Dizzy */ "...I can make it a thing.",
 		/* Ghost */ "..."
+	],
+	"Isaac1": [
+		/* Isaac */ "Hey, Ghost?",
+		/* Ghost */ "What's going on, Isaac?",
+		/* Isaac */ "What's your name? Like, real name.",
+		/* Ghost */ "It's Ghost.",
+		/* Isaac */ "That's lame.",
+		/* Isaac */ "How about Casper?",
+		/* Ghost */ "...No."
 	]
 }
