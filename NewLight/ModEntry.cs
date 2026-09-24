@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using Shockah.Kokoro;
+using Shockah.Shared;
 
 namespace Shockah.NewLight;
 
@@ -17,6 +19,7 @@ internal sealed class ModEntry : SimpleMod
 	internal readonly ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
 
 	internal readonly IDeckEntry GuardianDeck;
+	internal readonly INonPlayableCharacterEntryV2 GhostCharacter;
 	
 	private static readonly IEnumerable<Type> SpecialCardTypes = [
 		typeof(AbilitiesCard),
@@ -129,6 +132,11 @@ internal sealed class ModEntry : SimpleMod
 		typeof(LegendaryWeaponCard),
 		typeof(ExoticWeaponCard),
 	];
+
+	private static readonly IEnumerable<Type> StoryTypes = [
+		typeof(IntroStory),
+		typeof(GuardianEventStory),
+	];
 	
 	private static readonly IEnumerable<Type> RegisterableTypes = [
 		typeof(GhostArtifact),
@@ -138,6 +146,7 @@ internal sealed class ModEntry : SimpleMod
 		.. AbilityTypes,
 		.. GenericCardTypes,
 		.. SpecialCardTypes,
+		.. StoryTypes,
 	];
 	
 	public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
@@ -160,7 +169,7 @@ internal sealed class ModEntry : SimpleMod
 			DefaultCardArt = StableSpr.cards_colorless,
 			// BorderSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/CardFrame.png")).Sprite,
 			BorderSprite = StableSpr.cardShared_border_ephemeral,
-			Name = this.AnyLocalizations.Bind(["character", "name"]).Localize,
+			Name = this.AnyLocalizations.Bind(["Deck", "Guardian", "Name"]).Localize,
 			ShineColorOverride = args => DB.decks[args.Card.GetMeta().deck].color.normalize().gain(0.5),
 			CardFrameOverride = args =>
 			{
@@ -168,6 +177,22 @@ internal sealed class ModEntry : SimpleMod
 					return weapon.OverrideCardFrame(args);
 				return args.DefaultFrameSprite;
 			},
+		});
+
+		GhostCharacter = helper.Content.Characters.V2.RegisterNonPlayableCharacter("Ghost", new()
+		{
+			CharacterType = $"{package.Manifest.UniqueName}::Ghost",
+			Name = this.AnyLocalizations.Bind(["Character", "Ghost", "Name"]).Localize,
+		});
+
+		helper.Content.Characters.V2.RegisterCharacterAnimation(new()
+		{
+			CharacterType = GhostCharacter.CharacterType,
+			LoopTag = "neutral",
+			Frames = package.PackageRoot.GetRelativeDirectory("assets/Characters/Ghost/Neutral")
+				.GetSequentialFiles(i => $"{i}.png")
+				.Select(file => helper.Content.Sprites.RegisterSprite(file).Sprite)
+				.ToList(),
 		});
 
 		foreach (var type in RegisterableTypes)

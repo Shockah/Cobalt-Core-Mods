@@ -6,8 +6,8 @@ using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nanoray.Shrike;
+using Nanoray.Shrike.Harmony;
 using Nickel;
-using ILMatches = Nanoray.Shrike.Harmony.ILMatches;
 
 namespace Shockah.NewLight;
 

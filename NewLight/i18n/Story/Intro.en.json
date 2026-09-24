@@ -1,0 +1,17 @@
+﻿{
+	"Lines": [
+		/* Ghost */ "Hello?",
+		/* CAT */ "Huh? Who's there?",
+		/* Ghost */ "I'm... Ghost.",
+		/* CAT */ "You don't look like a ghost to me.",
+		/* Ghost */ "It's what they call us. Ghosts.",
+		/* Ghost */ "Actually, it's also what they call *me*. My name is Ghost.",
+		/* CAT */ "Creative.",
+		/* CAT */ "Wait. What are you doing here?",
+		/* Ghost */ "I'm... essentially looking for deceased individuals capable of wielding <c=ffffff>Light</c> and becoming <c=ffffff>Guardians</c>.",
+		/* CAT */ "Putting all the Light and Guardian nonsense aside, I'm afraid none of the crew are dead.",
+		/* Ghost */ "Were they dead before?",
+		/* CAT */ "Uhhh... given the time loop shenanigans... you could say that?",
+		/* Ghost */ "This will do."
+	]
+}

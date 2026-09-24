@@ -1,0 +1,30 @@
+﻿{
+	"Initial": [
+		/* Ghost */ "Which of you shall become a <c=ffffff>Guardian</c>?"
+	],
+	"Infinite": [
+		/* Ghost */ "It's been a while. You may change your mind on who's the <c=ffffff>Guardian</c>."
+	],
+	"Choice": {
+		"Single": {
+			"Action": {
+				"Name": "Become Guardian",
+				"Description": "This character's reward choices sometimes get replaced with <c=ffffff>Light</c> abilities, <c=ffffff>Guardian cards</c> and <c=cardtrait>weapons</c>."
+			}
+		},
+		"Share": {
+			"Name": "Can we share?",
+			"Action": {
+				"Name": "Share the Light",
+				"Description": "This character's reward choices sometimes get replaced with <c=ffffff>Light</c> abilities, <c=ffffff>Guardian cards</c> and <c=cardtrait>weapons</c>."
+			}
+		},
+		"NoOne": {
+			"Name": "We're good.",
+			"Action": {
+				"Name": "Set Aside the Light",
+				"Description": "Character reward choices return to normal."
+			}
+		}
+	}
+}

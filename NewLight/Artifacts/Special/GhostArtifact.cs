@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
@@ -16,10 +17,12 @@ internal sealed class GhostArtifact : Artifact, IRegisterable
 {
 	private const double OWNED_REPLACEMENT_CHANCE = 0.5;
 	private const double UNOWNED_REPLACEMENT_CHANCE = 0.3333;
+
+	public static IArtifactEntry Entry { get; private set; } = null!;
 	
 	public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
 	{
-		helper.Content.Artifacts.RegisterArtifact("Composure", new()
+		Entry = helper.Content.Artifacts.RegisterArtifact("Ghost", new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
 			Meta = new()
@@ -29,8 +32,8 @@ internal sealed class GhostArtifact : Artifact, IRegisterable
 				unremovable = true,
 			},
 			Sprite = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("assets/Artifacts/Special/Ghost.png")).Sprite,
-			Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Composure", "name"]).Localize,
-			Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "Composure", "description"]).Localize
+			Name = ModEntry.Instance.AnyLocalizations.Bind(["Artifact", "Special", "Ghost", "Name"]).Localize,
+			Description = ModEntry.Instance.AnyLocalizations.Bind(["Artifact", "Special", "Ghost", "Description"]).Localize
 		});
 		
 		ModEntry.Instance.Harmony.Patch(
@@ -57,9 +60,9 @@ internal sealed class GhostArtifact : Artifact, IRegisterable
 					ILMatches.Ldloca<Deck?>(originalMethod),
 					ILMatches.Call("get_HasValue"),
 				])
-				.Find(ILMatches.Stfld("deck"))
+				.Find(ILMatches.Stfld("deck").ExtractLabels(out var labels))
 				.Insert(SequenceMatcherPastBoundsDirection.Before, SequenceMatcherInsertionResultingBounds.IncludingInsertion, [
-					new CodeInstruction(OpCodes.Ldarg_0),
+					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
 					new CodeInstruction(OpCodes.Ldarg_2),
 					new CodeInstruction(OpCodes.Ldloc, rngSourceLocalIndex.Value),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(CardReward_GetOffering_Transpiler_ModifyDeck))),
@@ -79,11 +82,11 @@ internal sealed class GhostArtifact : Artifact, IRegisterable
 			return deck;
 		if (ownerDeck is not null && deck != ownerDeck)
 			return deck;
-
+		
 		var chance = ownerDeck is null ? UNOWNED_REPLACEMENT_CHANCE : OWNED_REPLACEMENT_CHANCE;
 		if (rand.Next() > chance)
 			return deck;
-
+		
 		return ModEntry.Instance.GuardianDeck.Deck;
 	}
 }

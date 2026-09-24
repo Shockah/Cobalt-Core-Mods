@@ -1,4 +1,14 @@
 {
+	"Deck": {
+		"Guardian": {
+			"Name": "Guardian"
+		}
+	},
+	"Character": {
+		"Ghost": {
+			"Name": "Ghost"
+		}
+	},
 	"Action": {
 		"Blast": {
 			"Name": {
@@ -58,6 +68,14 @@
 		"HeavyAmmo": {
 			"Name": "Heavy Ammo",
 			"Description": "Required for some <c=cardtrait>weapons</c>. Max 5."
+		}
+	},
+	"Artifact": {
+		"Special": {
+			"Ghost": {
+				"Name": "GHOST",
+				"Description": "<c=7f7f7f>A small, sapient machine created by the Traveler. Purpose: locate and resurrect deceased individuals capable of wielding the <c=ffffff>Light</c> as <c=ffffff>Guardians</c>, and support them in combat.</c>"
+			}
 		}
 	},
 	"PartTrait": {

@@ -11,7 +11,6 @@ using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
 using Nickel;
 using Shockah.Shared;
-using ILMatches = Nanoray.Shrike.Harmony.ILMatches;
 
 namespace Shockah.NewLight;
 
