@@ -61,7 +61,7 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 	
 	internal static readonly Ammo Instance = new();
 
-	private static AAttack? AttackContext;
+	private static CardAction? CurrentActionContext;
 	private static bool IsDuringNormalDamage;
 
 	private Ammo() : base(ModEntry.Instance.Package.Manifest.UniqueName)
@@ -145,13 +145,13 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_SendCardToExhaust_Postfix))
 		);
 		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(State), nameof(State.SendCardToDeck)),
-			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(State_SendCardToDeck_Postfix))
+			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.BeginCardAction)),
+			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_BeginCardAction_Prefix)),
+			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Combat_BeginCardAction_Finalizer))
 		);
 		ModEntry.Instance.Harmony.Patch(
-			original: AccessTools.DeclaredMethod(typeof(AAttack), nameof(AAttack.Begin)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Prefix)),
-			finalizer: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(AAttack_Begin_Finalizer))
+			original: AccessTools.DeclaredMethod(typeof(State), nameof(State.SendCardToDeck)),
+			postfix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(State_SendCardToDeck_Postfix))
 		);
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Ship), nameof(Ship.NormalDamage)),
@@ -353,11 +353,11 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 			combat.HasHeavyAmmoCards = true;
 	}
 
-	private static void GrantAmmoProgressIfNeeded(State state, Combat combat, AAttack? attack)
+	private static void GrantAmmoProgressIfNeeded(State state, Combat combat, CardAction? action)
 	{
 		if (combat is { HasSpecialAmmoCards: false, HasHeavyAmmoCards: false })
 			return;
-		if (attack is not null && ModEntry.Instance.KokoroApi.ActionInfo.GetSourceCard(state, attack) is { } sourceCard)
+		if (action is not null && ModEntry.Instance.KokoroApi.ActionInfo.GetSourceCard(state, action) is { } sourceCard)
 		{
 			if (GetSpecialCost(state, combat, sourceCard) is not null)
 				return;
@@ -453,6 +453,14 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 		{
 			return new SequenceBlockMatcher<CodeInstruction>(instructions)
 				.Find([
+					ILMatches.Ldloc<Vec>(originalMethod).GetLocalIndex(out var positionLocalIndex),
+					ILMatches.Ldarg(0),
+					ILMatches.Ldarg(1),
+					ILMatches.Call(nameof(Card.GetShakeOffset)),
+					ILMatches.Call("op_Addition"),
+					ILMatches.Stloc<Vec>(originalMethod),
+				])
+				.Find([
 					ILMatches.Ldarg(0),
 					ILMatches.Isinst<YellowCardTrash>(),
 					ILMatches.Brtrue.GetBranchTarget(out var pastCostRenderingLabel),
@@ -463,7 +471,7 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 					new CodeInstruction(OpCodes.Ldarg_0).WithLabels(labels),
 					new CodeInstruction(OpCodes.Ldarg_1),
 					new CodeInstruction(OpCodes.Ldarg_3),
-					new CodeInstruction(OpCodes.Ldarg, 10),
+					new CodeInstruction(OpCodes.Ldloc, positionLocalIndex.Value),
 					new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_Render_Transpiler_RenderAmmoCost))),
 				])
 				.AllElements();
@@ -475,24 +483,18 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 		}
 	}
 
-	private static void Card_Render_Transpiler_RenderAmmoCost(Card card, G g, State? fakeState, UIKey? keyOverride)
+	private static void Card_Render_Transpiler_RenderAmmoCost(Card card, G g, State? fakeState, Vec position)
 	{
 		var state = fakeState ?? g.state;
-		var key = keyOverride ?? card.UIKey();
-		if (g.boxes.LastOrDefault(b => b.key == key) is not { } box)
-			return;
-
-		var position = box.rect.xy + card.GetShakeOffset(g);
-
 		var color = Color.Lerp(Colors.white, Colors.redd, card.shakeNoAnim);
 		var ammoIndex = 0;
 		var heavyAmmoCost = GetHeavyCost(state, (state.route as Combat) ?? DB.fakeCombat, card);
 		var specialAmmoCost = GetSpecialCost(state, (state.route as Combat) ?? DB.fakeCombat, card);
 
 		for (var i = 0; i < heavyAmmoCost; i++)
-			Draw.Sprite(HeavyCostIcon.Sprite, position.x + 12 + (ammoIndex++) * 2, position.y + 19, color: color);
+			Draw.Sprite(HeavyCostIcon.Sprite, position.x + 12 + (ammoIndex++) * 2, position.y + 18, color: color);
 		for (var i = 0; i < specialAmmoCost; i++)
-			Draw.Sprite(SpecialCostIcon.Sprite, position.x + 12 + (ammoIndex++) * 2, position.y + 19, color: color);
+			Draw.Sprite(SpecialCostIcon.Sprite, position.x + 12 + (ammoIndex++) * 2, position.y + 18, color: color);
 	}
 	
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
@@ -574,6 +576,12 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 
 	private static void Combat_SendCardToExhaust_Postfix(Combat __instance, State s, Card card)
 		=> UpdateCombatAmmoState(s, __instance, card);
+	
+	private static void Combat_BeginCardAction_Prefix(CardAction a)
+		=> CurrentActionContext = a;
+
+	private static void Combat_BeginCardAction_Finalizer()
+		=> CurrentActionContext = null;
 
 	private static void State_SendCardToDeck_Postfix(State __instance, Card card)
 	{
@@ -581,12 +589,6 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 			return;
 		UpdateCombatAmmoState(__instance, combat, card);
 	}
-	
-	private static void AAttack_Begin_Prefix(AAttack __instance)
-		=> AttackContext = __instance;
-
-	private static void AAttack_Begin_Finalizer()
-		=> AttackContext = null;
 
 	private static void Ship_NormalDamage_Prefix(Ship __instance, out (int Hull, int Shield, int TempShield) __state)
 	{
@@ -601,7 +603,7 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 		if (__state.Hull - __instance.hull <= 0 && __state.Shield - __instance.Get(Status.shield) <= 0 && __state.TempShield - __instance.Get(Status.tempShield) <= 0)
 			return;
 
-		GrantAmmoProgressIfNeeded(s, c, AttackContext);
+		GrantAmmoProgressIfNeeded(s, c, CurrentActionContext);
 	}
 
 	private static void Ship_NormalDamage_Finalizer()
@@ -619,7 +621,7 @@ internal sealed class Ammo : HookManager<Ammo.IHook>, IRegisterable
 		if (__state.Hull - __instance.hull <= 0 && __state.Shield - __instance.Get(Status.shield) <= 0 && __state.TempShield - __instance.Get(Status.tempShield) <= 0)
 			return;
 
-		GrantAmmoProgressIfNeeded(s, c, AttackContext);
+		GrantAmmoProgressIfNeeded(s, c, CurrentActionContext);
 	}
 
 	private sealed class StatusLogicHook : IKokoroApi.IV2.IStatusLogicApi.IHook

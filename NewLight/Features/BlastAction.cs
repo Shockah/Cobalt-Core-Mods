@@ -170,9 +170,9 @@ internal sealed class BlastAction : IRegisterable
 	
 	private static void TriggerBlastIfNeeded(State state, Combat combat, int worldX, bool targetPlayer, bool hitMidrow)
 	{
-		if (AttackContext is null)
+		if (IsDuringBlastEffect)
 			return;
-		if (AttackContext.BlastDamage is not { } blastDamage)
+		if (AttackContext?.BlastDamage is not { } blastDamage)
 			return;
 
 		var targetShip = targetPlayer ? state.ship : combat.otherShip;
@@ -180,7 +180,7 @@ internal sealed class BlastAction : IRegisterable
 			return;
 
 		AttackContext.timer *= 0.5;
-		combat.QueueImmediate(new EffectAction
+		var effectAction = new EffectAction
 		{
 			Source = AttackContext,
 			TargetPlayer = targetPlayer,
@@ -190,7 +190,9 @@ internal sealed class BlastAction : IRegisterable
 			Range = AttackContext.BlastRange,
 			Direction = AttackContext.BlastDirection,
 			HitMidrow = hitMidrow,
-		});
+		};
+		ModEntry.Instance.KokoroApi.ActionInfo.SetSourceCardId(effectAction, ModEntry.Instance.KokoroApi.ActionInfo.GetSourceCardId(AttackContext));
+		combat.QueueImmediate(effectAction);
 	}
 
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
@@ -297,6 +299,7 @@ internal sealed class BlastAction : IRegisterable
 		{
 			try
 			{
+				AttackContext = Source;
 				IsDuringBlastEffect = true;
 				
 				var targetShip = TargetPlayer ? state.ship : combat.otherShip;
@@ -384,6 +387,7 @@ internal sealed class BlastAction : IRegisterable
 			}
 			finally
 			{
+				AttackContext = null;
 				IsDuringBlastEffect = false;
 			}
 		}
