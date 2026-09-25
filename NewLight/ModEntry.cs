@@ -109,6 +109,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(TearWeaponPerk),
 		typeof(VoltshotWeaponPerk),
 		typeof(VorpalWeaponWeaponPerk),
+		typeof(WellspringWeaponPerk),
 	];
 	
 	private static readonly IEnumerable<Type> FeatureTypes = [

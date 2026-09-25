@@ -251,6 +251,10 @@
 			"VorpalWeapon": {
 				"Name": "Vorpal Weapon",
 				"Description": "Deals 1 more damage against bosses."
+			},
+			"Wellspring": {
+				"Name": "Wellspring",
+				"Description": "When played, reduces the <c=cardtrait>cooldown</c> of the <c=cardtrait>non-Super ability</c> with the highest <c=cardtrait>cooldown</c> by 1."
 			}
 		}
 	},
