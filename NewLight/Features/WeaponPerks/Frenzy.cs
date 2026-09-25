@@ -70,7 +70,7 @@ internal sealed class FrenzyWeaponPerk : IRegisterable
 
 	private static void Ship_NormalDamage_Postfix(Ship __instance, Combat c, ref (int Hull, int Shield, int TempShield) __state)
 	{
-		if (__instance != c.otherShip)
+		if (__instance.isPlayerShip)
 			return;
 		if (__state.Hull - __instance.hull <= 0 && __state.Shield - __instance.Get(Status.shield) <= 0 && __state.TempShield - __instance.Get(Status.tempShield) <= 0)
 			return;
@@ -83,7 +83,7 @@ internal sealed class FrenzyWeaponPerk : IRegisterable
 
 	private static void Ship_DirectHullDamage_Postfix(Ship __instance, Combat c, ref (int Hull, int Shield, int TempShield) __state)
 	{
-		if (__instance != c.otherShip)
+		if (__instance.isPlayerShip)
 			return;
 		if (__state.Hull - __instance.hull <= 0 && __state.Shield - __instance.Get(Status.shield) <= 0 && __state.TempShield - __instance.Get(Status.tempShield) <= 0)
 			return;
