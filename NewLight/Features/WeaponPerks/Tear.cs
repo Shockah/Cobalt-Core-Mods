@@ -40,6 +40,10 @@ internal sealed class TearWeaponPerk : IRegisterable
 		{
 			if (args.Ship.isPlayerShip)
 				return;
+			if (ModEntry.Instance.KokoroApi.ActionInfo.GetSourceCard(args.State, args.Attack) is not { } sourceCard)
+				return;
+			if (!ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(args.State, sourceCard, Trait))
+				return;
 			
 			if (args.Ship.GetPartAtLocalX(args.LocalX - 1) is { } leftPart && leftPart.type != PType.empty)
 				leftPart.Severed = true;

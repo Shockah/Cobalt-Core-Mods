@@ -30,7 +30,7 @@ internal sealed class ArmorPiercingRoundsWeaponPerk : IRegisterable
 			]
 		});
 
-		LegendaryWeaponCard.WeaponPerkConditions[Trait.UniqueName] = weapon => weapon is not WeaponCard.IPierces;
+		LegendaryWeaponCard.WeaponPerkConditions[Trait.UniqueName] = weapon => weapon is not WeaponCard.ICannotCrit && weapon is not WeaponCard.IPierces;
 		
 		ModEntry.Instance.Harmony.Patch(
 			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),

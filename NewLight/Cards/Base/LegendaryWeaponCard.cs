@@ -25,7 +25,7 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 	[JsonProperty("WeaponElement")] private WeaponElement? MaybeWeaponElement;
 	[JsonProperty] private Dictionary<Upgrade, string> PerkUniqueNames = [];
 
-	private HashSet<ICardTraitEntry> InnateTraitsSet = [];
+	private readonly HashSet<ICardTraitEntry> InnateTraitsSet = [];
 
 	protected abstract Dictionary<WeaponElement, string> ElementWeaponNames { get; }
 
@@ -161,15 +161,14 @@ internal abstract class LegendaryWeaponCard : WeaponCard, IHasCustomCardTraits, 
 
 	public virtual IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 	{
-		var results = InnateTraitsSet;
-		results.Clear();
+		InnateTraitsSet.Clear();
 		InitializeIfNeeded(state);
 
-		results.Add((PerkUniqueNames.TryGetValue(Upgrade.None, out var basePerkUniqueName) ? ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(basePerkUniqueName) : null) ?? RandomBaseWeaponPerkTrait);
+		InnateTraitsSet.Add((PerkUniqueNames.TryGetValue(Upgrade.None, out var basePerkUniqueName) ? ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(basePerkUniqueName) : null) ?? RandomBaseWeaponPerkTrait);
 		if (upgrade != Upgrade.None)
-			results.Add((PerkUniqueNames.TryGetValue(upgrade, out var upgradedPerkUniqueName) ? ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(upgradedPerkUniqueName) : null) ?? RandomUpgradedWeaponPerkTrait);
+			InnateTraitsSet.Add((PerkUniqueNames.TryGetValue(upgrade, out var upgradedPerkUniqueName) ? ModEntry.Instance.Helper.Content.Cards.LookupTraitByUniqueName(upgradedPerkUniqueName) : null) ?? RandomUpgradedWeaponPerkTrait);
 		
-		return results;
+		return InnateTraitsSet;
 	}
 
 	private static void Card_GetLocName_Postfix(Card __instance, ref string __result)

@@ -38,14 +38,14 @@ internal class OutbreakPerfectedCard : ExoticWeaponCard, IRegisterable
 		=> upgrade switch
 		{
 			Upgrade.B => [
-				new AAttack { damage = GetDmg(s, 1) },
+				new AAttack { damage = GetDmg(s, 1), fast = true },
 				ModEntry.Instance.KokoroApi.TimesPlayed.MakeVariableHintAction(uuid, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat).AsCardAction,
-				new AAttack { damage = GetDmg(s, (ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat) + 1) * 2), xHint = 2 },
+				new AAttack { damage = GetDmg(s, (ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat) + 1) * 2), fast = true, xHint = 2 },
 			],
 			_ => [
-				new AAttack { damage = GetDmg(s, 2) },
+				new AAttack { damage = GetDmg(s, 2), fast = true },
 				ModEntry.Instance.KokoroApi.TimesPlayed.MakeVariableHintAction(uuid, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat).AsCardAction,
-				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat) + 1), xHint = 1 },
+				new AAttack { damage = GetDmg(s, ModEntry.Instance.KokoroApi.TimesPlayed.GetTimesPlayed(this, IKokoroApi.IV2.ITimesPlayedApi.Interval.Combat) + 1), fast = true, xHint = 1 },
 			],
 		};
 }

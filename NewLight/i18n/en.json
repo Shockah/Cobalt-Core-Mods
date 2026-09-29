@@ -63,11 +63,19 @@
 	"Status": {
 		"SpecialAmmo": {
 			"Name": "Special Ammo",
-			"Description": "Required for some <c=cardtrait>weapons</c>. Max 5."
+			"Description": "Required for some <c=cardtrait>weapons</c>. Max {{Max}}. Gain 1 progress each time you deal non-<c=status>ammo</c> damage.",
+			"CostTooltip": {
+				"Name": "Ammo Cost",
+				"Description": "Costs {{Amount}} <c=status>SPECIAL AMMO</c> to play. Gain 1 each combat."
+			}
 		},
 		"HeavyAmmo": {
 			"Name": "Heavy Ammo",
-			"Description": "Required for some <c=cardtrait>weapons</c>. Max 5."
+			"Description": "Required for some <c=cardtrait>weapons</c>. Max {{Max}}. Gain 1 progress each time you deal non-<c=status>ammo</c> damage.",
+			"CostTooltip": {
+				"Name": "Ammo Cost",
+				"Description": "Costs {{Amount}} <c=status>HEAVY AMMO</c> to play. Gain 1 each combat."
+			}
 		}
 	},
 	"Artifact": {
@@ -243,6 +251,10 @@
 			"VorpalWeapon": {
 				"Name": "Vorpal Weapon",
 				"Description": "Deals 1 more damage against bosses."
+			},
+			"Wellspring": {
+				"Name": "Wellspring",
+				"Description": "When played, reduces the <c=cardtrait>cooldown</c> of the <c=cardtrait>non-Super ability</c> with the highest <c=cardtrait>cooldown</c> by 1."
 			}
 		}
 	},
