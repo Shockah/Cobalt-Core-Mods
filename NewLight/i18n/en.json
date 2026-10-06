@@ -279,6 +279,9 @@
 					"B": "Gain 1 of 3 <c=cardtrait>temp</c> <c=ffffff>exotic weapon</c> cards."
 				}
 			},
+			"HowsYourSister": {
+				"Name": "How's Your Sister?"
+			},
 			"LegendaryEngram": {
 				"Name": "Legendary Engram",
 				"Description": {

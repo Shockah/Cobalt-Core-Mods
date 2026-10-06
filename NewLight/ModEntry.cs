@@ -27,6 +27,7 @@ internal sealed class ModEntry : SimpleMod
 	
 	private static readonly IEnumerable<Type> GenericCardTypes = [
 		typeof(ExoticEngramCard),
+		typeof(HowsYourSisterCard),
 		typeof(LegendaryEngramCard),
 		typeof(MakeYourOwnFateCard),
 		typeof(NeverFeltBetterCard),
