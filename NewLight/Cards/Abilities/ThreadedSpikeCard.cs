@@ -114,17 +114,24 @@ internal class ThreadedSpikeCard : GuardianCard, IRegisterable
 		}
 	}
 
-	private sealed class ExtraCard : GuardianCard
+	private sealed class ExtraCard : GuardianCard, IHasCustomCardTraits
 	{
 		public override CardData GetData(State state)
 		{
 			var data = base.GetData(state) with { description = ModEntry.Instance.Localizations.Localize(["Card", "Ability", "ThreadedSpike", "ExtraCard", "Description", upgrade.ToString()]) };
 			return upgrade switch
 			{
-				Upgrade.B => data with { cost = 1, temporary = true, infinite = true, retain = true },
+				Upgrade.B => data with { cost = 1, temporary = true, infinite = true },
 				_ => data with { cost = 1, temporary = true, singleUse = true },
 			};
 		}
+
+		public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
+			=> upgrade switch
+			{
+				Upgrade.B => new HashSet<ICardTraitEntry> { ModEntry.Instance.KokoroApi.Heavy.Trait, ModEntry.Instance.KokoroApi.Fleeting.Trait },
+				_ => new HashSet<ICardTraitEntry>()
+			};
 
 		public override List<CardAction> GetActions(State s, Combat c)
 			=> upgrade switch
