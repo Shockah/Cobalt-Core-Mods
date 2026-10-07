@@ -40,6 +40,7 @@ internal sealed class ModEntry : SimpleMod
 		typeof(EmpoweringRiftCard),
 		typeof(GoldenGunCard),
 		typeof(HealingRiftCard),
+		typeof(ThreadedSpikeCard),
 		typeof(ThundercrashCard),
 		typeof(TripleJumpCard),
 	];

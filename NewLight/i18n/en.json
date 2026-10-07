@@ -330,6 +330,22 @@
 					"Description": "<c=heal>Heal 1</c> at the start of each turn. <c=downside>Decreases by 1 every turn. Lose all of it upon move.</c>"
 				}
 			},
+			"ThreadedSpike": {
+				"Name": "Threaded Spike",
+				"Description": {
+					"None": "<c=parttrait>Sever</c> and deal 1 damage to 2 attacking parts. Gain <c=card>Reclaim</c>.",
+					"A": "<c=parttrait>Sever</c> and deal 1 damage to 3 attacking parts. Gain <c=card>Reclaim</c>.",
+					"B": "<c=parttrait>Sever</c> 5 attacking parts. Gain <c=card>Reclaim</c>."
+				},
+				"ExtraCard": {
+					"Name": "Reclaim",
+					"Description": {
+						"None": "Decrease <c=card>Threaded Spike</c>'s <c=cardtrait>cooldown</c> by 3.",
+						"A": "Decrease <c=card>Threaded Spike</c>'s <c=cardtrait>cooldown</c> by 5.",
+						"B": "Decrease <c=card>Threaded Spike</c>'s <c=cardtrait>cooldown</c> by 3."
+					}
+				}
+			},
 			"Thundercrash": {
 				"Name": "Thunder-crash"
 			},

@@ -213,7 +213,7 @@ internal sealed class Abilities : IRegisterable
 	public static void SetCurrentCooldown(State state, Combat combat, Card card, int value)
 	{
 		var cooldown = GetCooldown(state, combat, card);
-		combat.CurrentCooldown[value] = cooldown - value;
+		combat.CurrentCooldown[card.uuid] = cooldown - value;
 	}
 
 	private static Spr ObtainAbilityIcon(int amount)
