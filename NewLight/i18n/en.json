@@ -320,6 +320,20 @@
 					"Description": "Deal 1 more damage. <c=downside>Decreases by 1 every turn. Lose all of it upon move.</c>"
 				}
 			},
+			"GamblersDodge": {
+				"Name": "Gambler's Dodge",
+				"Description": {
+					"None": {
+						"Left": "Move 1 <c=keyword>left</c>. Finish a <c=cardtrait>melee ability's cooldown</c>.",
+						"Right": "Move 1 <c=keyword>right</c>. Finish a <c=cardtrait>melee ability's cooldown</c>."
+					},
+					"A": "Gain 1 <c=status>evade</c>. Finish a <c=cardtrait>melee ability's cooldown</c>.",
+					"B": {
+						"Left": "Move 2 <c=keyword>left</c>. Finish a <c=cardtrait>melee ability's cooldown</c>.",
+						"Right": "Move 2 <c=keyword>right</c>. Finish a <c=cardtrait>melee ability's cooldown</c>."
+					}
+				}
+			},
 			"GoldenGun": {
 				"Name": "Golden Gun"
 			},
@@ -328,6 +342,20 @@
 				"Status": {
 					"Name": "Healing Rift",
 					"Description": "<c=heal>Heal 1</c> at the start of each turn. <c=downside>Decreases by 1 every turn. Lose all of it upon move.</c>"
+				}
+			},
+			"MarksmansDodge": {
+				"Name": "Marksman's Dodge",
+				"Description": {
+					"None": {
+						"Left": "Move 1 <c=keyword>left</c>. Draw a <c=cardtrait>weapon</c> card and <c=cardtrait>discount</c> it by 1.",
+						"Right": "Move 1 <c=keyword>right</c>. Draw a <c=cardtrait>weapon</c> card and <c=cardtrait>discount</c> it by 1."
+					},
+					"A": "Gain 1 <c=status>evade</c>. Draw a <c=cardtrait>weapon</c> card and <c=cardtrait>discount</c> it by 1.",
+					"B": {
+						"Left": "Move 2 <c=keyword>left</c>. Draw a <c=cardtrait>weapon</c> card and <c=cardtrait>discount</c> it by 1.",
+						"Right": "Move 2 <c=keyword>right</c>. Draw a <c=cardtrait>weapon</c> card and <c=cardtrait>discount</c> it by 1."
+					}
 				}
 			},
 			"ThreadedSpike": {
