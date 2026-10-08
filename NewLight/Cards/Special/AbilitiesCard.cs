@@ -48,6 +48,7 @@ internal class AbilitiesCard : Card, IRegisterable, IHasCustomCardTraits
 			ModEntry.Instance.KokoroApi.CustomCardBrowseSource
 				.ModifyCardSelect(new ACardSelect { browseAction = new BrowseAction() })
 				.SetCustomBrowseSource(new BrowseSource()).AsCardAction,
+			new TooltipAction(),
 		];
 
 	private static void Card_GetFullDisplayName_Postfix(Card __instance, ref string __result)
@@ -64,6 +65,37 @@ internal class AbilitiesCard : Card, IRegisterable, IHasCustomCardTraits
 			return;
 
 		__result = ModEntry.Instance.Localizations.Localize(["Card", "Special", "Abilities", "StatefulFormat"], new { FullName = __result, Count = abilityCount });
+	}
+
+	private sealed class TooltipAction : CardAction
+	{
+		public TooltipAction()
+		{
+			timer = 0;
+		}
+		
+		public override List<Tooltip> GetTooltips(State s)
+		{
+			var results = new List<Tooltip>();
+			if (s.route is not Combat combat)
+				return results;
+
+			var abilities = combat.Abilities.Where(card => Abilities.GetCurrentCooldown(s, combat, card) <= 0).ToList();
+			if (abilities.Count <= 0)
+				return results;
+
+			var tooltipString = ModEntry.Instance.Localizations.Localize(["Card", "Special", "Abilities", "Tooltip", "Main"], new
+			{
+				Count = abilities.Count,
+				List = string.Join(
+					ModEntry.Instance.Localizations.Localize(["Card", "Special", "Abilities", "Tooltip", "ListSeparator"]),
+					abilities.Select(card => card.GetFullDisplayName()).Order().Select(name => ModEntry.Instance.Localizations.Localize(["Card", "Special", "Abilities", "Tooltip", "ListItem"], new { FullName = name }))
+				),
+			});
+			results.Add(new TTText(tooltipString));
+			
+			return results;
+		}
 	}
 
 	private sealed class BrowseAction : CardAction

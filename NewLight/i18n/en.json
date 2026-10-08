@@ -267,6 +267,11 @@
 				"SearchAction": {
 					"Title": "Ability Pile: {{Count}} Cards",
 					"Description": "Choose a card from your <c=keyword>ability pile</c>."
+				},
+				"Tooltip": {
+					"Main": "<c=keyword>Abilities ({{Count}}):</c>\n{{List}}",
+					"ListSeparator": "\n",
+					"ListItem": "* <c=card>{{FullName}}</c>"
 				}
 			}
 		},
@@ -312,6 +317,10 @@
 			},
 			"CatapultLift": {
 				"Name": "Catapult Lift"
+			},
+			"CombinationBlow": {
+				"Name": "Combination Blow",
+				"Description": "Attack for {{Damage}}. Finish a <c=cardtrait>utility ability's cooldown</c>."
 			},
 			"EmpoweringRift": {
 				"Name": "Empowering Rift",
