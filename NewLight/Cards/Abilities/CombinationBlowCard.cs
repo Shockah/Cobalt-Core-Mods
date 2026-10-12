@@ -26,37 +26,35 @@ internal class CombinationBlowCard : GuardianCard, IHasCustomCardTraits, IRegist
 		});
 		
 		Abilities.SetAbilityType(entry.UniqueName, Abilities.MELEE_ABILITY);
-		Abilities.SetBaseCooldown(entry.UniqueName, Upgrade.None, 5);
-		Abilities.SetBaseCooldown(entry.UniqueName, Upgrade.A, 5);
-		Abilities.SetBaseCooldown(entry.UniqueName, Upgrade.B, 2);
+		Abilities.SetBaseCooldown(entry.UniqueName, 5);
 	}
 
 	public override CardData GetData(State state)
 		=> base.GetData(state) with
 		{
 			cost = 1,
-			description = ModEntry.Instance.Localizations.Localize(["Card", "Ability", "CombinationBlow", "Description"], new { Damage = GetDmg(state, BaseDamage) }),
+			description = ModEntry.Instance.Localizations.Localize(["Card", "Ability", "CombinationBlow", "Description", upgrade.ToString()], new { Damage = GetDmg(state, 2) }),
 		};
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
 		=> upgrade switch
 		{
-			Upgrade.A => new HashSet<ICardTraitEntry> { RampageWeaponPerk.Trait },
+			Upgrade.B => new HashSet<ICardTraitEntry> { RampageWeaponPerk.Trait },
 			_ => new HashSet<ICardTraitEntry>(),
 		};
 
-	private int BaseDamage
+	public override List<CardAction> GetActions(State s, Combat c)
 		=> upgrade switch
 		{
-			Upgrade.B => 1,
-			_ => 2,
+			Upgrade.A => [
+				new AAttack { damage = GetDmg(s, 2), stunEnemy = true },
+				new Action(),
+			],
+			_ => [
+				new AAttack { damage = GetDmg(s, 2) },
+				new Action(),
+			],
 		};
-
-	public override List<CardAction> GetActions(State s, Combat c)
-		=> [
-			new AAttack { damage = GetDmg(s, BaseDamage) },
-			new Action(),
-		];
 	
 	private sealed class Action : CardAction
 	{

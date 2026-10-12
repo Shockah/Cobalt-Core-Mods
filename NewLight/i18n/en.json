@@ -320,7 +320,11 @@
 			},
 			"CombinationBlow": {
 				"Name": "Combination Blow",
-				"Description": "Attack for {{Damage}}. Finish a <c=cardtrait>utility ability's cooldown</c>."
+				"Description": {
+					"None": "Attack for {{Damage}}. Finish a <c=cardtrait>utility ability's cooldown</c>.",
+					"A": "Attack for {{Damage}}. It stuns. Finish a <c=cardtrait>utility ability's cooldown</c>.",
+					"B": "Attack for {{Damage}}. Finish a <c=cardtrait>utility ability's cooldown</c>."
+				}
 			},
 			"EmpoweringRift": {
 				"Name": "Empowering Rift",
